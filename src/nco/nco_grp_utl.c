@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.444 2013-02-07 08:28:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.445 2013-02-07 08:44:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2637,6 +2637,46 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 } /* end nco_blb_dmn_trv() */
 
 void
+nco_prn_var_val_trv                   /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+(const int nc_id,                     /* I netCDF file ID */
+ char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
+ const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
+ const nco_bool PRN_DMN_UNITS,        /* I [flg] Print units attribute, if any */
+ const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
+ const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
+ const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  const char fnc_nm[]="nco_prn_var_val_trv()"; /* [sng] Function name */
+
+  int grp_id; /* [ID] Group ID */
+  int var_id; /* [ID] Variable ID */
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_sct trv=trv_tbl->lst[uidx];
+    if(trv.flg_xtr && trv.typ == nco_obj_typ_var){
+
+      /* Obtain group ID from netCDF API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+
+      /* Obtain variable ID from netCDF API using group ID */
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+
+      /* Print full name of variable */
+      if(!dlm_sng && trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
+
+      /* Print variable values */
+      (void)nco_msa_prn_var_val_trv(grp_id,trv.nm,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
+
+    } /* end flg_xtr */
+  } /* end uidx */
+
+  return;
+} /* end nco_prn_var_val_trv() */
+
+
+void
 nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -2753,7 +2793,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   } /* End Loop input name list (can have duplicate names)  */
 
 
-  /* Step 4) Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) )  */
+   /* Step 4) Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) )  */
 
   /* Loop table dimensions  */
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
@@ -2763,6 +2803,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
 
 
+   
 
   } /* End Loop table dimensions  */
 
@@ -2776,6 +2817,9 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     /* Current index of dimension limits for table dimension  */
     int lmt_crr=trv_tbl->lst_dmn[dmn_idx].lmt_crr;
 
+    /* lmt_dmn_nbr can be incremented for wrapped limits; always sync   */
+    assert(lmt_crr == lmt_dmn_nbr);
+
 
 
 
@@ -2786,20 +2830,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 } /* End nco_bld_lmt_trv() */
 
 
-void
-nco_prn_var_val_trv                   /* [fnc] Print variable data (called with PRN_VAR_DATA) */
-(const int nc_id,                     /* I netCDF file ID */
- char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
- const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
- const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
- const nco_bool PRN_DMN_UNITS,        /* I [flg] Print units attribute, if any */
- const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
- const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
- const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
-{
 
-}
 
 
 void
