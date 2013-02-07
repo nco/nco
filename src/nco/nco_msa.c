@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.142 2013-02-06 05:37:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.143 2013-02-07 05:31:20 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1659,8 +1659,128 @@ void
 nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (traversal table version) */
 (dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from traversal table */
 {
-  /* Purpose: Same as nco_msa_wrp_splt() but applied to the Dimension structure from traversal table */
+  /* Purpose: Same as nco_msa_wrp_splt() but applied to the Dimension structure from traversal table 
+  Differences from nco_msa_wrp_splt() are marked "trv" 
+  Goal here is to replace a wrapped limit by 2 non-wrapped limits 
+  Wrapped hyperslabs are dimensions broken into the "wrong" order,e.g. from
+  -d time,8,2 broken into -d time,8,9 -d time,0,2 
+  WRP flag set only when list contains dimensions split as above
 
+  Tests:
+  ncks -d time,8,2 -v time -H ~/nco/data/in_grp.nc
+  */
+
+  const char fnc_nm[]="nco_msa_wrp_splt_trv()"; /* [sng] Function name  */
+
+  int idx;
+  int jdx;
+  int size=dmn_trv->lmt_dmn_nbr;  /* [nbr] Number of limit structures */
+  long dmn_sz_org=dmn_trv->sz;    /* [nbr] Size of dimension */
+  long srt;
+  long cnt;
+  long srd;
+  long kdx=0; 
+  lmt_sct *lmt_wrp;
+
+  for(idx=0;idx<size;idx++){
+
+    if(dmn_trv->lmt_dmn[idx]->srt > dmn_trv->lmt_dmn[idx]->end){
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%d->%d):\n",
+          prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_dmn[idx]->srt,dmn_trv->lmt_dmn[idx]->end);
+      }
+
+      lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
+
+      /* "trv": Initialize  */
+      (void)nco_lmt_init(&lmt_wrp[0]);
+      (void)nco_lmt_init(&lmt_wrp[1]);
+
+      srt=dmn_trv->lmt_dmn[idx]->srt;
+      cnt=dmn_trv->lmt_dmn[idx]->cnt;
+      srd=dmn_trv->lmt_dmn[idx]->srd;
+
+      for(jdx=0;jdx<cnt;jdx++){
+        kdx=(srt+srd*jdx)%dmn_sz_org;
+        if(kdx<srt) break;
+      } /* end loop over jdx */
+
+      /* "trv": Instead of shallow copy in nco_msa_wrp_splt(), make a deep copy to the 2 new limits lmt_wrp */ 
+      (void)nco_lmt_cpy(dmn_trv->lmt_dmn[idx],&lmt_wrp[0]);
+      (void)nco_lmt_cpy(dmn_trv->lmt_dmn[idx],&lmt_wrp[1]);
+
+      lmt_wrp[0].srt=srt;
+
+      if(jdx == 1){
+        lmt_wrp[0].end=srt;
+        lmt_wrp[0].cnt=1L;
+        lmt_wrp[0].srd=1L;
+      }else{
+        lmt_wrp[0].end=srt+srd*(jdx-1);
+        lmt_wrp[0].cnt=jdx;
+        lmt_wrp[0].srd=srd;
+      } /* end else */
+
+      lmt_wrp[1].srt=kdx;
+      lmt_wrp[1].cnt=cnt-lmt_wrp[0].cnt;
+      if(lmt_wrp[1].cnt == 1L){
+        lmt_wrp[1].end=kdx;
+        lmt_wrp[1].srd=1L;
+      }else{
+        lmt_wrp[1].end=kdx+(lmt_wrp[1].cnt-1)*srd;
+        lmt_wrp[1].srd=srd;
+      } /* end else */
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",prg_nm_get(),fnc_nm,dmn_trv->nm_fll);
+        (void)fprintf(stdout,"%d:\n",dmn_trv->lmt_dmn_nbr);
+      }
+
+
+      /* "trv": Insert 2 non-wrapped limits */ 
+
+      /* Current number of dimension limits for this table dimension  */
+      int lmt_dmn_nbr=dmn_trv->lmt_dmn_nbr;
+
+      /* Current index (lmt_crr) of dimension limits for this table dimension  */
+      int lmt_crr=dmn_trv->lmt_crr;
+
+      /* Index of new limit  */
+      int lmt_new_idx=idx+1;
+
+      /* Make space for 1 more limit  */
+      dmn_trv->lmt_dmn=(lmt_sct **)nco_realloc(dmn_trv->lmt_dmn,(lmt_dmn_nbr+1)*sizeof(lmt_sct *));
+
+      /* Alloc the extra limit  */
+      dmn_trv->lmt_dmn[lmt_new_idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+
+      /* Initialize the extra limit */
+      (void)nco_lmt_init(dmn_trv->lmt_dmn[lmt_new_idx]);
+
+      /* Insert the limits to table (allocated; idx was already there; lmt_new_idx was alloced here)   */
+      (void)nco_lmt_cpy(&lmt_wrp[0],dmn_trv->lmt_dmn[idx]);
+      (void)nco_lmt_cpy(&lmt_wrp[1],dmn_trv->lmt_dmn[lmt_new_idx]);
+
+      /* Update number of dimension limits for this table dimension  */
+      dmn_trv->lmt_dmn_nbr++;
+
+      /* Update current index of dimension limits for this table dimension  */
+      dmn_trv->lmt_crr++;
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%d->%d) - (%d->%d):\n",
+          prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_dmn[idx]->srt,dmn_trv->lmt_dmn[idx]->end,
+          dmn_trv->lmt_dmn[lmt_new_idx]->srt,dmn_trv->lmt_dmn[lmt_new_idx]->end);
+      }
+
+    } /* endif srt > end */
+  } /* end loop over size */
+
+  /* Check if genuine wrapped co-ordinate */
+  if(size==1 && dmn_trv->lmt_dmn_nbr==2){
+    dmn_trv->WRP=True;
+  }
 
 } /* End nco_msa_wrp_splt_trv() */
 
@@ -1674,7 +1794,7 @@ nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (traversa
 
 } /* End nco_msa_clc_cnt_trv() */
 
-nco_bool                /* O [flg] return true if limits overlap (traversal table version) */
+nco_bool                /* O [flg] Return true if limits overlap (traversal table version) */
 nco_msa_ovl_trv         /* [fnc] See if limits overlap */ 
 (dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from traversal table */
 {

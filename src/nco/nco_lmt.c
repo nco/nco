@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.167 2013-02-06 23:28:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.168 2013-02-07 05:31:20 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -101,9 +101,13 @@ nco_lmt_prt /* [fnc] Print a Limit structure */
 void
 nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
 (const lmt_sct * const lmt1, /* I [sct] Limit structure to copy */
- lmt_sct *lmt2) /* O [sct] New limit structure */
+ lmt_sct *lmt2) /* O [sct] New limit structure (must be alloced before) */
 {
   assert(lmt1->nm);
+
+  /* Initialize to NULL/invalid */
+  (void)nco_lmt_init(lmt2);
+
   lmt2->nm=(char *)strdup(lmt1->nm);
   if(lmt1->drn_sng) lmt2->drn_sng=(char *)strdup(lmt1->drn_sng);      
   if(lmt1->max_sng) lmt2->max_sng=(char *)strdup(lmt1->max_sng);
