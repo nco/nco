@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.146 2013-02-07 11:57:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.147 2013-02-08 06:02:01 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1886,10 +1886,38 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
  const nco_bool PRN_DMN_IDX_CRD_VAL,/* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM,     /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
- const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
-  /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
-  /* Purpose: Print variable with limits from input file */
+  /* Purpose:
+  Get variable with limits from input file
+  User supplied dlm_sng, print var (includes nbr_dim == 0)
+  Get dimensional units
+  if nbr_dim ==0 and dlm_sng==NULL  print variable
+  if PRN.. = False print var taking account of FORTRAN (need var indices)
+  if PRN_DMN_IDX_CRD_VAL then read in co-ord dims
+  if PRN.. = True print var taking account of FORTRAN (Use dims to calculate var indices 
+  */
+
+  char *unit_sng;                            /* [sng] Units string */ 
+  char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
+  char mss_val_sng[NCO_MAX_LEN_FMT_SNG]="_"; /* [sng] Print this instead of numerical missing value */
+  char nul_chr='\0';                         /* [sng] Character to end string */ 
+
+  dmn_sct *dim=NULL_CEWI;                    /* [sct] Dimension structure */
+
+  int val_sz_byt;                            /* [nbr] Type size */
+
+  long lmn;                                  /* [nbr] Index to print variable data */
+
+  var_sct var;                               /* [sct] Variable structure */
+
+  nco_bool is_mss_val=False;                /* [flg] Current value is missing value */
+  nco_bool MALLOC_UNITS_SNG=False;          /* [flg] Allocated memory for units string */
+
+   
+
+
+
 
 
 } /* end nco_msa_prn_var_val_trv() */

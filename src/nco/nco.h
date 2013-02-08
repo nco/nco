@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.235 2013-02-07 06:50:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.236 2013-02-08 06:02:01 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -652,7 +652,7 @@ extern "C" {
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
 
-  /* Dimension structure; it contains NetCDF model fields and NCO limit (-d) fields */
+  /* Traversal dimension structure; it contains NetCDF model fields and NCO limit (-d) fields */
   typedef struct{ 
     char *grp_nm_fll; /* [sng] Full group name where dimension was defined */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
