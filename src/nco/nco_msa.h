@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.54 2013-02-07 10:40:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.55 2013-02-08 09:00:19 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -167,7 +167,7 @@ nco_msa_qsort_srt_trv   /* [fnc] Sort limits by srt values (traversal table vers
 
 void
 nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
-(const int in_id,                   /* I [id] netCDF input file ID */
+(const int in_id,                   /* I [id] Group ID */
  const char * const var_nm,         /* I [sng] Variable name */
  char * const dlm_sng,              /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV,    /* I [flg] Hyperslab indices obey Fortran convention */
@@ -176,7 +176,8 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
  const nco_bool PRN_DMN_IDX_CRD_VAL,/* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM,     /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+ const trv_sct * const trv,         /* I [sct] Object to print */
+ const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
 
 void
 nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to output file */

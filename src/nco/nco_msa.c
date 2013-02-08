@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.147 2013-02-08 06:02:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.148 2013-02-08 09:00:19 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1876,8 +1876,8 @@ nco_msa_ovl_trv         /* [fnc] See if limits overlap */
 
 
 void
-nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
-(const int in_id,                   /* I [id] netCDF input file ID */
+nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal table version) */
+(const int in_id,                   /* I [id] Group ID */
  const char * const var_nm,         /* I [sng] Variable name */
  char * const dlm_sng,              /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV,    /* I [flg] Hyperslab indices obey Fortran convention */
@@ -1886,6 +1886,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
  const nco_bool PRN_DMN_IDX_CRD_VAL,/* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM,     /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
+ const trv_sct * const trv,         /* I [sct] Object to print */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
   /* Purpose:
@@ -1896,7 +1897,18 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
   if PRN.. = False print var taking account of FORTRAN (need var indices)
   if PRN_DMN_IDX_CRD_VAL then read in co-ord dims
   if PRN.. = True print var taking account of FORTRAN (Use dims to calculate var indices 
+
+  Similar to nco_msa_prn_var_val() but uses limit information contained in traversal table 
+  Differences are marked "trv"
+  1) It is not needed to retrieve dimension IDs for variable, these were used in nco_msa_prn_var_val()
+  to match limits
+  2) Traversal table contains 2 separate lists: objects(groups,variables) and unique dimensions
+
+  Tests:
+  ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
+
   */
+  const char fnc_nm[]="nco_msa_prn_var_val_trv()"; /* [sng] Function name  */
 
   char *unit_sng;                            /* [sng] Units string */ 
   char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
@@ -1911,12 +1923,38 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
 
   var_sct var;                               /* [sct] Variable structure */
 
-  nco_bool is_mss_val=False;                /* [flg] Current value is missing value */
-  nco_bool MALLOC_UNITS_SNG=False;          /* [flg] Allocated memory for units string */
+  nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
+  nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
 
-   
+  /* Set defaults */
+  (void)var_dfl_set(&var); 
+
+  /* Initialize units string, overwrite later if necessary */
+  unit_sng=&nul_chr;
+
+  assert(trv->typ == nco_obj_typ_var);
+
+  /* Loop dimensions for object to print (variable) */
+  for(int dmn_idx_var=0;dmn_idx_var<trv->nbr_dmn;dmn_idx_var++) {
+    
+    /* Loop unique dimensions (these contain limits) */
+    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+      /* Match full dimension name */ 
+      if(strcmp(trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s printing <%s>: <%s>:\n",prg_nm_get(),fnc_nm,trv->nm_fll,dmn_trv.nm_fll);
+        }
 
 
+
+
+
+      } /* Match full dimension name */ 
+    } /* End  Loop unique dimensions (these contain limits)  */
+  } /* Loop dimensions for object to print (variable) */
 
 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.236 2013-02-08 06:02:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.237 2013-02-08 09:00:19 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -609,7 +609,7 @@ extern "C" {
 
   /* Structure containing definition groups of all dimensions */
   typedef struct{ 
-    int nbr_dmn; /* [nbr] Number of dimensions for variable */
+    int nbr_dmn; /* [nbr][CHK] Number of dimensions for variable */
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions (size is nbr_dmn) */
   } var_dmn_sct; 
   
@@ -620,10 +620,15 @@ extern "C" {
      Initialize trv_sct structure to defaults in trv_tbl_init()
      Populate trv_sct structure with correct values in nco_grp_itr()
      Deep-copy each pointer member of trv_sct structure in trv_tbl_add()
-     free() each pointer member of trv_sct structure in trv_tbl_free() */
+     free() each pointer member of trv_sct structure in trv_tbl_free() 
+     
+     Some fields in "trv_sct", "dmn_fll_sct", "var_dmn_sct" are redundant;
+     They are used either for convenience or for model validation (sanity check), or used in development stage;
+     These are marked [CHK]   
+     */
   typedef struct{ 
     char *nm_fll; /* [sng] Fully qualified name (path) */
-    var_dmn_sct var_dmn_fll; /* [sct] Array of full dimension names for variable (nbr_dmn is redundant) */
+    var_dmn_sct var_dmn_fll; /* [sct] Array of full dimension names for variable (nbr_dmn [CHK]) */
     size_t nm_fll_lng; /* [sng] Length of full name */
     char *grp_nm_fll; /* [sng] Full group name (for groups, same as nm_fll) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
@@ -654,7 +659,7 @@ extern "C" {
 
   /* Traversal dimension structure; it contains NetCDF model fields and NCO limit (-d) fields */
   typedef struct{ 
-    char *grp_nm_fll; /* [sng] Full group name where dimension was defined */
+    char *grp_nm_fll; /* [sng][CHK] Full group name where dimension was defined */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     nco_bool has_crd_var; /* [flg] Does it have an associated variable? (coordinate variable) */
