@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.149 2013-02-08 09:25:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.150 2013-02-08 22:49:28 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1878,7 +1878,6 @@ nco_msa_ovl_trv         /* [fnc] See if limits overlap */
 void
 nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal table version) */
 (const int in_id,                   /* I [id] Group ID */
- const char * const var_nm,         /* I [sng] Variable name */
  char * const dlm_sng,              /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV,    /* I [flg] Hyperslab indices obey Fortran convention */
  const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
@@ -1901,8 +1900,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   Similar to nco_msa_prn_var_val() but uses limit information contained in traversal table 
   Differences are marked "trv"
   1) It is not needed to retrieve dimension IDs for variable, these were used in nco_msa_prn_var_val()
-  to match limits (Group Traversal Table should be "ID free" ):
-  2) Traversal table contains 2 separate lists: objects(groups,variables) and unique dimensions
+  to match limits (Group Traversal Table should be "ID free" )
 
   Tests:
   ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
@@ -1932,34 +1930,19 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   /* Initialize units string, overwrite later if necessary */
   unit_sng=&nul_chr;
 
-  assert(var_trv->typ == nco_obj_typ_var);
-  assert(var_trv->nbr_dmn == var_trv->var_dmn_fll.nbr_dmn);
-  
-  /* Loop dimensions for object to print (variable) */
-  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
-    
-    /* Loop unique dimensions (these contain limits) */
-    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  /* Get ID for requested variable; needed only to get variable type */
+  var.nm=(char *)strdup(var_trv->nm);
+  var.nc_id=in_id;
+  (void)nco_inq_varid(in_id,var_trv->nm,&var.id);
 
-      /* Match full dimension name */ 
-      if(strcmp(var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
+  /* Get type and number of dimensions for variable */
+  (void)nco_inq_var(in_id,var.id,(char *)NULL,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s printing <%s>: <%s>:\n",prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_trv.nm_fll);
-        }
+  /* Get dimensions for variable */
+  dmn_fll_sct *dmn_trv=nco_dnm_trv(var_trv,trv_tbl);
 
-
-        /* Call super-dooper recursive routine; "trv" version with dimension (contains limits) */
-        var.val.vp=nco_msa_rcr_clc_trv(0,var_trv->nbr_dmn,&dmn_trv,&var);
-
-
-
-
-
-      } /* Match full dimension name */ 
-    } /* End  Loop unique dimensions (these contain limits)  */
-  } /* Loop dimensions for object to print (variable) */
+  /* Call super-dooper recursive routine; "trv" version with dimension (contains limits) */
+  var.val.vp=nco_msa_rcr_clc_trv(0,var_trv->nbr_dmn,dmn_trv,&var);
 
 
 
@@ -1968,15 +1951,20 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
 
 
 void *
-nco_msa_rcr_clc_trv                 /* [fnc] Multi-slab algorithm (recursive routine, returns a single slab pointer */
-(int dpt_crr,                       /* [nbr] Current depth, we start at 0 */
- int dpt_crr_max,                   /* [nbr] Maximium depth (i.e., number of dimensions in variable (does not change) */
- dmn_fll_sct *dmn_trv,              /* [sct] Traversal dimension structure (contains -d limits) */
- var_sct *vara)                     /* [sct] Information for routine to read variable information and pass information between calls */
+nco_msa_rcr_clc_trv        /* [fnc] Multi-slab algorithm (recursive routine, returns a single slab pointer */
+(int dpt_crr,              /* [nbr] Current depth, we start at 0 */
+ int dpt_crr_max,          /* [nbr] Maximium depth (i.e., number of dimensions in variable (does not change) */
+ dmn_fll_sct *dmn_trv,     /* [sct] Traversal dimension structure (contains -d limits) */
+ var_sct *vara)            /* [sct] Information for routine to read variable information and pass information between calls */
 {
+  /* Purpose: Multi-slab algorithm (recursive routine, returns a single slab pointer) 
+  Same as nco_msa_rcr_clc(), uses limits from traversal table dimension instead 
 
+  */
+  
   return NULL;
-}
+
+} /* End nco_msa_rcr_clc_trv() */
 
 
 

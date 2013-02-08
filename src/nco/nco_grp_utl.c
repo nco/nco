@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.447 2013-02-08 09:00:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.448 2013-02-08 22:49:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2552,7 +2552,6 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
           (void)nco_inq_dimname(grp_id,dmn_id_grp[dmn_idx_grp],dmn_nm_grp);
 
           /* Does dimension name for *variable* match dimension name for *group* ? */ 
-          /* NB: Key is name, not pair name,lenght */
           if(strcmp(dmn_nm_var,dmn_nm_grp) == 0){
 
             /* Now...we know that *somewhere* for all this group dimensions one is the real deal 
@@ -2651,26 +2650,23 @@ nco_prn_var_val_trv                   /* [fnc] Print variable data (called with 
   const char fnc_nm[]="nco_prn_var_val_trv()"; /* [sng] Function name */
 
   int grp_id; /* [ID] Group ID */
-  int var_id; /* [ID] Variable ID */
 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
+  /* Loop variables in table */
+  for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+    trv_sct trv=trv_tbl->lst[var_idx];
     if(trv.flg_xtr && trv.typ == nco_obj_typ_var){
 
-      /* Obtain group ID from netCDF API using full group name */
+      /* Obtain group ID using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-
-      /* Obtain variable ID from netCDF API using group ID */
-      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
       /* Print full name of variable */
       if(!dlm_sng && trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
 
       /* Print variable values */
-      (void)nco_msa_prn_var_val_trv(grp_id,trv.nm,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&trv,trv_tbl);
+      (void)nco_msa_prn_var_val_trv(grp_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&trv,trv_tbl);
 
-    } /* end flg_xtr */
-  } /* end uidx */
+    } /* End flg_xtr */
+  } /* End Loop variables in table */
 
   return;
 } /* end nco_prn_var_val_trv() */
@@ -2905,8 +2901,34 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
 } /* End nco_bld_lmt_trv() */
 
+dmn_fll_sct *                       /* [O] Dimension structure */
+nco_dnm_trv                         /* [fnc] Return dimension for object "var_trv" */
+(const trv_sct * const var_trv,     /* I [sct] Object to print (variable) */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+{
+  /* Purpose: Return Dimension structure for variable 
+  Traversal table contains 2 separate lists: objects(groups,variables) and unique dimensions */
 
+  assert(var_trv->typ == nco_obj_typ_var);
 
+  /* Loop dimensions for object (variable) */
+  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
+
+    /* Loop unique dimensions list (these contain limits) */
+    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+      /* Match full dimension name */ 
+      if(strcmp(var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var],trv_tbl->lst_dmn[dmn_idx].nm_fll) == 0){
+        return &trv_tbl->lst_dmn[dmn_idx];
+
+      } /* Match full dimension name */ 
+    } /* End  Loop unique dimensions (these contain limits)  */
+  } /* Loop dimensions for object (variable) */
+
+  assert(0);
+  return NULL;
+}
 
 
 void

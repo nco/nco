@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.56 2013-02-08 09:25:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.57 2013-02-08 22:49:28 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -168,7 +168,6 @@ nco_msa_qsort_srt_trv   /* [fnc] Sort limits by srt values (traversal table vers
 void
 nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
 (const int in_id,                   /* I [id] Group ID */
- const char * const var_nm,         /* I [sng] Variable name */
  char * const dlm_sng,              /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV,    /* I [flg] Hyperslab indices obey Fortran convention */
  const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
