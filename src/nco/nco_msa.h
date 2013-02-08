@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.55 2013-02-08 09:00:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.56 2013-02-08 09:25:10 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -179,29 +179,14 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
  const trv_sct * const trv,         /* I [sct] Object to print */
  const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
 
-void
-nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to output file */
-(const int in_id,                   /* I [id] netCDF input file ID */
- const int out_id,                  /* I [id] netCDF output file ID */
- FILE * const fp_bnr,               /* I [fl] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
- char *var_nm,                      /* I [sng] Variable name */
- const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
-
 void *
 nco_msa_rcr_clc_trv                 /* [fnc] Multi-slab algorithm (recursive routine, returns a single slab pointer */
 (int dpt_crr,                       /* [nbr] Current depth, we start at 0 */
  int dpt_crr_max,                   /* [nbr] Maximium depth (i.e., number of dimensions in variable (does not change) */
- var_sct *vara,                     /* [sct] Information for routine to read variable information and pass information between calls */
- const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
+ dmn_fll_sct *dmn_trv,              /* [sct] Traversal dimension structure (contains -d limits) */
+ var_sct *vara);                    /* [sct] Information for routine to read variable information and pass information between calls */
 
-void
-nco_msa_ram_2_dsk_trv               /* Convert hyperslab indices (in RAM) to hyperlsab indices relative to disk */
-(long *dmn_sbs_ram,   
- int nbr_dim,
- long *dmn_sbs_dsk,
- nco_bool flg_free,
- const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
