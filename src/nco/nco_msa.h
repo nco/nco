@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.57 2013-02-08 22:49:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.58 2013-02-09 04:49:27 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -185,6 +185,13 @@ nco_msa_rcr_clc_trv                 /* [fnc] Multi-slab algorithm (recursive rou
  dmn_fll_sct *dmn_trv,              /* [sct] Traversal dimension structure (contains -d limits) */
  var_sct *vara);                    /* [sct] Information for routine to read variable information and pass information between calls */
 
+void
+nco_msa_ram_2_dsk_trv               /* [fnc] Convert hyperslab indices (in RAM) to hyperlsab indices relative to disk */
+(long *dmn_sbs_ram,   
+ dmn_fll_sct *dmn_trv,              /* [sct] Traversal dimension structure (contains -d limits) */
+ int nbr_dim,
+ long *dmn_sbs_dsk,
+ nco_bool flg_free);
 
 
 #ifdef __cplusplus

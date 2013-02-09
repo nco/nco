@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.151 2013-02-09 01:06:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.152 2013-02-09 04:49:27 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1915,18 +1915,25 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   char nul_chr='\0';                         /* [sng] Character to end string */ 
   char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (used for validation only) */ 
 
-  dmn_sct *dim=NULL_CEWI;                    /* [sct] Dimension structure */
-
   int val_sz_byt;                            /* [nbr] Type size */
 
   long lmn;                                  /* [nbr] Index to print variable data */
+  long var_dsk;                              /* [nbr] Variable index relative to disk */
 
   var_sct var;                               /* [sct] Variable structure */
+  var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
 
   nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
   nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
 
-  dmn_fll_sct *dmn_trv=NULL;                 /* [sct] Dimension structure */
+  long mod_map_in[NC_MAX_DIMS];
+  long mod_map_cnt[NC_MAX_DIMS];
+  long dmn_sbs_ram[NC_MAX_DIMS];             /* [nbr] Indices in hyperslab */
+  long dmn_sbs_dsk[NC_MAX_DIMS];             /* [nbr] Indices of hyperslab relative to original on disk */
+
+  dmn_sct dim[NC_MAX_DIMS];                  /* [sct] Dimension structure (make life easier with static arrays) */
+
+  dmn_fll_sct *dmn_trv=NULL;                 /* [sct] Traversal dimension structure (contains limits) */
 
   /* Set defaults */
   (void)var_dfl_set(&var); 
@@ -1934,7 +1941,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   /* Initialize units string, overwrite later if necessary */
   unit_sng=&nul_chr;
 
-  /* Get ID for requested variable; needed only to get variable type */
+  /* Get ID for requested variable */
   var.nm=(char *)strdup(var_trv->nm);
   var.nc_id=in_id;
   (void)nco_inq_varid(in_id,var_trv->nm,&var.id);
@@ -1958,7 +1965,6 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   else
   {
     assert(var.nbr_dim == 0);
-    assert(var.nc_id == in_id);
     var.sz=1L;
     var.val.vp=(void *)nco_malloc(var.sz*nco_typ_lng(var.type));
     (void)nco_get_vara(var.nc_id,var.id,(long *)NULL,(long *)NULL,var.val.vp,var.type);
@@ -2105,8 +2111,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   } /* end if variable is scalar, byte, or character */
 
 
-
-
+  
 
 } /* end nco_msa_prn_var_val_trv() */
 
@@ -2121,11 +2126,31 @@ nco_msa_rcr_clc_trv        /* [fnc] Multi-slab algorithm (recursive routine, ret
   /* Purpose: Multi-slab algorithm (recursive routine, returns a single slab pointer) 
   Same as nco_msa_rcr_clc(), uses limits from traversal table dimension instead 
   */
+
+#if 0
  
+
+#else
   return NULL;
+#endif
+
 } /* End nco_msa_rcr_clc_trv() */
 
 
+void
+nco_msa_ram_2_dsk_trv               /* [fnc] Convert hyperslab indices (in RAM) to hyperlsab indices relative to disk */
+(long *dmn_sbs_ram,   
+ dmn_fll_sct *dmn_trv,              /* [sct] Traversal dimension structure (contains -d limits) */
+ int nbr_dim,
+ long *dmn_sbs_dsk,
+ nco_bool flg_free)
+{
 
+#if 0
+
+#else
+
+#endif
+}
 
 
