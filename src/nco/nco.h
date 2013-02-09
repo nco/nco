@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.238 2013-02-09 00:19:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.239 2013-02-09 02:27:12 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -633,7 +633,7 @@ extern "C" {
     size_t nm_fll_lng; /* [sng] Length of full name */
     char *grp_nm_fll; /* [sng] Full group name (for groups, same as nm_fll) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
-    size_t  nm_lng; /* [sng] Length of short name */
+    size_t nm_lng; /* [sng] Length of short name */
     nco_obj_typ typ; /* [enm] netCDF4 object type: group or variable */
     int grp_dpt; /* [nbr] Depth of group (root = 0) */
     int grp_id_in; /* [id] Group ID in input file */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.451 2013-02-09 01:29:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.452 2013-02-09 02:27:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -712,7 +712,7 @@ nco_aux_grp_id                        /* [fnc] Return group ID from variable ful
   int lng_fll; /* Length of fully qualified group where variable resides */
 
   char *ptr_chr; /* [sng] Pointer to character '/' in full name */
-  int pos_chr; /* [nbr] Position of character '/' in in full name */
+  int psn_chr; /* [nbr] Position of character '/' in in full name */
 
   /* Get group full name */
   lng_fll=strlen(var_nm_fll);
@@ -721,8 +721,8 @@ nco_aux_grp_id                        /* [fnc] Return group ID from variable ful
   /* Find last occurence of '/' */
   ptr_chr=strrchr(grp_nm_fll,'/');
   /* Trim variable name */
-  pos_chr=ptr_chr-grp_nm_fll;
-  grp_nm_fll[pos_chr]='\0';
+  psn_chr=ptr_chr-grp_nm_fll;
+  grp_nm_fll[psn_chr]='\0';
 
   /* Obtain group ID from netCDF API using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
@@ -1389,7 +1389,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
 
   char *ptr_chr; /* [sng] Pointer to character '/' in full name */
-  int pos_chr; /* [nbr] Position of character '/' in in full name */
+  int psn_chr; /* [nbr] Position of character '/' in in full name */
 
   int grp_id; /* [id] Group ID */
   int nbr_att; /* [nbr] Number of attributes */
@@ -1449,8 +1449,8 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
             grp_nm_fll=(char *)nco_malloc((var_nm_lng+1L)*sizeof(char));
             strcpy(grp_nm_fll,var_nm_fll);
             ptr_chr=strrchr(grp_nm_fll,'/');
-            pos_chr=ptr_chr-grp_nm_fll;
-            grp_nm_fll[pos_chr]='\0';
+            psn_chr=ptr_chr-grp_nm_fll;
+            grp_nm_fll[psn_chr]='\0';
 
             /* Construct full variable name */
             cf_nm_fll=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(cf_lst_var)+2L);
@@ -1503,7 +1503,7 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
   const char sls_sng[]="/"; /* [sng] Slash string */
 
   char *ptr_chr; /* [sng] Pointer to character '/' in full name */
-  int pos_chr; /* [nbr] Position of character '/' in in full name */
+  int psn_chr; /* [nbr] Position of character '/' in in full name */
 
   const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
 
@@ -1557,7 +1557,7 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
 
       /* Find last occurence of '/' */
       ptr_chr=strrchr(dmn_nm_fll,sls_chr);
-      pos_chr=ptr_chr-dmn_nm_fll;
+      psn_chr=ptr_chr-dmn_nm_fll;
       while(ptr_chr){
         /* If variable is on list, mark it for extraction */
         if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
@@ -1582,16 +1582,16 @@ nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that ma
           break;
 
         } /* endif */
-        dmn_nm_fll[pos_chr]='\0';
+        dmn_nm_fll[psn_chr]='\0';
         ptr_chr=strrchr(dmn_nm_fll,sls_chr);
         if(ptr_chr){
-          pos_chr=ptr_chr-dmn_nm_fll;
-          dmn_nm_fll[pos_chr]='\0';
+          psn_chr=ptr_chr-dmn_nm_fll;
+          dmn_nm_fll[psn_chr]='\0';
           /* Re-add variable name to shortened path */
           if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
           strcat(dmn_nm_fll,dmn_nm);
           ptr_chr=strrchr(dmn_nm_fll,sls_chr);
-          pos_chr=ptr_chr-dmn_nm_fll;
+          psn_chr=ptr_chr-dmn_nm_fll;
         } /* !ptr_chr */
       } /* end while */
 
@@ -2192,7 +2192,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
   const char sls_sng[]="/";    /* [sng] Slash string */
 
   char *ptr_chr; /* [sng] Pointer to character '/' in full name */
-  int pos_chr; /* [nbr] Position of character '/' in in full name */
+  int psn_chr; /* [nbr] Position of character '/' in in full name */
 
   /* Inititialize output value */
   *nbr_dmn=0;
@@ -2259,7 +2259,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
 
               /* Find last occurence of '/' */
               ptr_chr=strrchr(dmn_nm_fll,sls_chr);
-              pos_chr=ptr_chr-dmn_nm_fll;
+              psn_chr=ptr_chr-dmn_nm_fll;
               while(ptr_chr){
                 /* Search table for existing "dmn_nm_fll" */
                 if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
@@ -2292,16 +2292,16 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
                   break;
 
                 } /* endif */
-                dmn_nm_fll[pos_chr]='\0';
+                dmn_nm_fll[psn_chr]='\0';
                 ptr_chr=strrchr(dmn_nm_fll,sls_chr);
                 if(ptr_chr){
-                  pos_chr=ptr_chr-dmn_nm_fll;
-                  dmn_nm_fll[pos_chr]='\0';
+                  psn_chr=ptr_chr-dmn_nm_fll;
+                  dmn_nm_fll[psn_chr]='\0';
                   /* Re-add variable name to shortened path */
                   if(strcmp(trv.grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
                   strcat(dmn_nm_fll,dmn_nm);
                   ptr_chr=strrchr(dmn_nm_fll,sls_chr);
-                  pos_chr=ptr_chr-dmn_nm_fll;
+                  psn_chr=ptr_chr-dmn_nm_fll;
                 } /* !ptr_chr */
               } /* end while */
 
@@ -2510,7 +2510,7 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
   int grp_id;                  /* [id] ID of group */
 
   char *ptr_chr;               /* [sng] Pointer to character '/' in full name */
-  int pos_chr;                 /* [nbr] Position of character '/' in in full name */
+  int psn_chr;                 /* [nbr] Position of character '/' in in full name */
 
   /* Loop *object* traversal table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -2582,7 +2582,7 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 
             /* Find last occurence of '/' */
             ptr_chr=strrchr(dmn_nm_fll,'/');
-            pos_chr=ptr_chr-dmn_nm_fll;
+            psn_chr=ptr_chr-dmn_nm_fll;
 
             /* While there is a possible dimension path */
             while(ptr_chr && !dmn_was_found){
@@ -2615,15 +2615,15 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 
               /* If a valid (pointer) name here, then the constructed name was not found */
               if(dmn_nm_fll) {
-                dmn_nm_fll[pos_chr]='\0';
+                dmn_nm_fll[psn_chr]='\0';
                 ptr_chr=strrchr(dmn_nm_fll,'/');
                 if(ptr_chr){
-                  pos_chr=ptr_chr-dmn_nm_fll;
-                  dmn_nm_fll[pos_chr]='\0';
+                  psn_chr=ptr_chr-dmn_nm_fll;
+                  dmn_nm_fll[psn_chr]='\0';
                   if(strcmp(dmn_nm_fll,"/")) strcat(dmn_nm_fll,"/");
                   strcat(dmn_nm_fll,dmn_nm_var);
                   ptr_chr=strrchr(dmn_nm_fll,'/');
-                  pos_chr=ptr_chr-dmn_nm_fll;
+                  psn_chr=ptr_chr-dmn_nm_fll;
                 } /* !ptr_chr */
               } /* If dmn_nm_fll */
             } /* End While there is a possible dimension path */ 

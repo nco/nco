@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.77 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.78 2013-02-09 02:27:12 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -192,6 +192,9 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
      NB: This function only writes True to the match flag, it never writes False.
      Input flags are assumed to be statefull, and may contain Trues from previous calls */
 
+  char *sng2mch; /* [sng] String to match to regular expression */
+  const char sls_chr='/'; /* [chr] Slash character */
+
   int mch_nbr=0;
 #ifndef NCO_HAVE_REGEX_FUNCTIONALITY
   (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),rx_sng);
@@ -247,7 +250,10 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
     /* Check apples against apples and oranges against oranges */
     if(trv_tbl->lst[obj_idx].typ == obj_typ){
       /* NB: Here is where match flag would be set to False if input were stateless */
-      if(!regexec(rx,trv_tbl->lst[obj_idx].nm,rx_prn_sub_xpr_nbr,result,flg_exe)){
+      /* Regular expressions embedded in simple strings (without forward slashes) apply to stubs
+	 Presence of slash indicates that regular expression applies to full pathname */
+      if(strchr(rx_sng,sls_chr)) sng2mch=trv_tbl->lst[obj_idx].nm_fll; else sng2mch=trv_tbl->lst[obj_idx].nm; 
+      if(!regexec(rx,sng2mch,rx_prn_sub_xpr_nbr,result,flg_exe)){
         trv_tbl->lst[obj_idx].flg_mch=True;
         trv_tbl->lst[obj_idx].flg_xtr=True;
         mch_nbr++;

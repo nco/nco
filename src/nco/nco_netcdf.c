@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.184 2013-02-09 00:19:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.185 2013-02-09 02:27:12 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -165,7 +165,7 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 (const nc_type type) /* I [enm] netCDF type */
 {
 
-  if(type >= NC_FIRSTUSERTYPEID) return "User-defined type";
+  if(type >= NC_FIRSTUSERTYPEID) return "User-defined";
 
   switch(type){
   case NC_FLOAT:

@@ -1,5 +1,9 @@
 2013-02-08  Charlie Zender  <zender@uci.edu>
 
+	* Match rx containing slashes to full path not to stub
+	This allows rx's like /g11/uint_.+ to succeed
+	Previously, rx's only worked on stubs (last components of full names)
+
 	* Re-format global metadata output
 
 	* Add all coordinates necessary to make in_grp.cdl well-defined CF file (i.e., squelch CF warnings)
