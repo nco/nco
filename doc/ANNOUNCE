@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.542 2013-02-09 03:43:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.543 2013-02-09 03:46:16 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
@@ -107,6 +107,9 @@ E. NOT YET FIXED
    Demonstration:
    ncap2 -O -4 -v -s 'var_uint_max=2147483647u;' ~/nco/data/in.nc ~/foo.nc
    ncap2 -O -4 -v -s 'var_uint_max=2147483648u;' ~/nco/data/in.nc ~/foo.nc
+
+   20130208: Verified problem still exists. 
+   Bug report filed: netCDF #PUX-602809: Problem with nc_get_var1_uint()?
 
 "Sticky" reminders:
 
