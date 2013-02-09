@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.578 2013-02-09 01:38:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.579 2013-02-09 02:39:31 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -52,6 +52,11 @@
    ncks -O -G :-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -v time ~/in_grp.nc ~/foo.nc */
+
+#if 1
+/* Use lmt_all_sct **lmt_all_lst, List of *lmt_all structures; to remove once replaced by "trv" limit functions */
+#define USE_LMT_ALL 
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -147,8 +152,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.578 2013-02-09 01:38:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.578 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.579 2013-02-09 02:39:31 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.579 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -198,7 +203,9 @@ main(int argc,char **argv)
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
 
+#ifdef USE_LMT_ALL
   lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
+#endif
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -688,6 +695,7 @@ main(int argc,char **argv)
   /* Print extraction list in verbose mode */
   if(dbg_lvl_get() == nco_dbg_crr) (void)trv_tbl_prn_xtr(trv_tbl);
 
+#ifdef USE_LMT_ALL
   /* Find coordinate/dimension values associated with user-specified limits
   NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   if(lmt_nbr) (void)nco_lmt_evl_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);    
@@ -697,6 +705,7 @@ main(int argc,char **argv)
 
   /* Initialize lmt_all_sct's */ 
   (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
+#endif
   
   if(fl_out){
     /* Copy everything (all data and metadata) to output file by default */
@@ -761,7 +770,11 @@ main(int argc,char **argv)
     } /* !gpe */
 
     /* Define extracted groups, variables, and attributes in output file */
+#ifdef USE_LMT_ALL
     (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,trv_tbl);
+#else
+    (void)nco_xtr_dfn_trv(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,trv_tbl);
+#endif
 
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -786,7 +799,11 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
     /* Write extracted data to output file */
+#ifdef USE_LMT_ALL
     (void)nco_xtr_wrt(in_id,out_id,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,trv_tbl);
+#else
+    (void)nco_xtr_wrt_trv(in_id,out_id,fp_bnr,MD5_DIGEST,trv_tbl);
+#endif
 
     /* [fnc] Close unformatted binary data file */
     if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
@@ -818,7 +835,12 @@ main(int argc,char **argv)
     
     if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,trv_tbl);
 
-    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
+#ifdef USE_LMT_ALL
+    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);    
+#else
+    if(PRN_VAR_DATA) (void)nco_prn_var_val_trv(in_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
+#endif
+
   } /* !fl_out */
   
  close_and_free: /* goto close_and_free */
@@ -835,13 +857,19 @@ main(int argc,char **argv)
    if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
 
+
    /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
+#ifdef USE_LMT_ALL
    for(idx=0;idx<nbr_dmn_fl;idx++)
      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+#endif
 
    lmt=(lmt_sct **)nco_free(lmt); 
+
+#ifdef USE_LMT_ALL
    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
+#endif
 
    /* NCO-generic clean-up */
    /* Free individual strings/arrays */
