@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.46 2013-02-07 05:31:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.47 2013-02-09 01:29:48 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -105,7 +105,7 @@ trv_tbl_free
 
   /* Dimension list */
 
-  for(int dmn_idx=0;dmn_idx<tbl->sz_dmn;dmn_idx++){
+  for(unsigned int dmn_idx=0;dmn_idx<tbl->sz_dmn;dmn_idx++){
     tbl->lst_dmn[dmn_idx].nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].nm_fll);
     tbl->lst_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].grp_nm_fll);
 
@@ -180,31 +180,34 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
 (int * const att_nbr_all,            /* O [nbr] Number of global+group attributes in file */
  int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
  int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
+ int * const ntm_nbr_all,            /* O [nbr] Number of non-atomic variables in file */
  int * const rec_nbr_all,            /* O [nbr] Number of record dimensions in file */
- int * const var_nbr_all,            /* O [nbr] Number of variables in file */
+ int * const tmc_nbr_all,            /* O [nbr] Number of atomic-type variables in file */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* [fnc] Find and return global totals of dimensions, variables, attributes */
   int att_nbr_lcl; /* [nbr] Number of global+group attributes in file */
-  int dmn_nbr_lcl; /* [nbr] Number of dimensions in file */
   int grp_nbr_lcl; /* [nbr] Number of groups in file */
+  int ntm_nbr_lcl; /* [nbr] Number of non-atomic variables in file */
   int rec_nbr_lcl; /* [nbr] Number of record dimensions in file */
-  int var_nbr_lcl; /* [nbr] Number of variables in file */
+  int tmc_nbr_lcl; /* [nbr] Number of atomic-type variables in file */
 
   /* Initialize */
   att_nbr_lcl=0;
   grp_nbr_lcl=0;
+  ntm_nbr_lcl=0;
   rec_nbr_lcl=0;
-  var_nbr_lcl=0;
+  tmc_nbr_lcl=0;
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx]; 
+    if(trv.typ == nco_obj_typ_nonatomic_var) ntm_nbr_lcl++;
     if(trv.typ == nco_obj_typ_grp){ 
       /* Increment */
       att_nbr_lcl+=trv.nbr_att; 
       grp_nbr_lcl+=trv.nbr_grp;
       rec_nbr_lcl+=trv.nbr_rec;
-      var_nbr_lcl+=trv.nbr_var;
+      tmc_nbr_lcl+=trv.nbr_var;
     } /* end nco_obj_typ_grp */
   } /* end uidx */
 
@@ -214,8 +217,9 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   if(att_nbr_all) *att_nbr_all=att_nbr_lcl;
   if(dmn_nbr_all) *dmn_nbr_all=trv_tbl->nbr_dmn;
   if(grp_nbr_all) *grp_nbr_all=grp_nbr_lcl;
+  if(ntm_nbr_all) *ntm_nbr_all=ntm_nbr_lcl;
   if(rec_nbr_all) *rec_nbr_all=rec_nbr_lcl;
-  if(var_nbr_all) *var_nbr_all=var_nbr_lcl;
+  if(tmc_nbr_all) *tmc_nbr_all=tmc_nbr_lcl;
 
   return;
 } /* end trv_tbl_inq() */

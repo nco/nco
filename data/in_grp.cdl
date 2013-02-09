@@ -30,13 +30,20 @@
 
 netcdf in_grp {
  dimensions:
-  lat=2,lev=3,lon=4,gds_crd=8,time=unlimited,tm2=unlimited,tm3=unlimited;
+  lat=2,lev=3,lon=4,gds_crd=8,time=unlimited,tm2=unlimited,tm3=unlimited,vrt_nbr=2;
  variables:
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.57 2013-02-09 00:19:34 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.58 2013-02-09 01:29:47 zender Exp $";
   // Coordinate variables: lat, lev, lon, time, tm2, tm3, gds_crd (7 at root)
+  float ilev(lev,vrt_nbr);
+ ilev:purpose = "Cell boundaries for lev coordinate";
+  double lat_gds(gds_crd);
+ lat_gds:long_name = "Latitude";  
+ lat_gds:standard_name = "latitude";
+ lat_gds:units="degree";
+ lat_gds:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
   float lat(lat);
  lat:units = "degrees_north";
   float lev(lev);
@@ -44,14 +51,22 @@ netcdf in_grp {
  lev:bounds = "ilev";
   float lon(lon);
  lon:units = "degrees_east";
+  double lon_gds(gds_crd);
+ lon_gds:long_name = "Longitude";
+ lon_gds:standard_name = "longitude";
+ lon_gds:units="degree";
+ lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
   double time(time);
   float tm2(tm2);
  tm2:purpose = "a short record coordinate for testing mutiple record dimensions";
   float tm3(tm3);
  tm3:purpose = "another short record coordinate for testing mutiple record dimensions";
   float gds_crd(gds_crd);
+ gds_crd:long_name = "Geodesic coordinate";
  gds_crd:units = "degree";
+ gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
  gds_crd:coordinates = "lat_gds lon_gds";
+  
   // Non-coordinate variables
   float scl;
   integer unique;
@@ -66,15 +81,18 @@ netcdf in_grp {
  data:
   area=10.,10.;
   gds_crd=0,1,2,3,4,5,6,7;
+  lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
+  lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
   lat=-90,90;
   lat_lon=1.,2.,3.,4.,5.,6.,7.,8;
+  ilev=0,300,300,750,750,1013.25;
   lev=100,500,1000;
   lon=0,90,180,270;
   scl=1.0;
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   tm2=1.,2.;
   tm3=1.,2.,3.;
-  // 20130127: Braces are required to disambiguate correct record dimension sizes, but brace syntax but was not supported by ncgen until netCDF snapshots ~201207. Uggh.
+  // 20130127: Braces are required to disambiguate correct record dimension sizes, but brace syntax but was not supported by ncgen until netCDF snapshots ~201211, i.e., post netCDF 4.2.1.1. Uggh.
   //tm2_tm3={1.,2.,3.},{4.,5.,6.};
   unique=73;
   //
@@ -348,8 +366,8 @@ netcdf in_grp {
 
  group: g12 { // Level 1
     // Purpose: Test netCDF4 vlen type
-    // 20130208: ncgen from netCDF 4.2.1 completely broken for vlen types
-    // Possibly broken on all snapshots until ~201211 because brace-handling broken
+    // 20130208: ncgen from netCDF 4.2.1- broken for vlen types
+    // Probably broken on all snapshots until ~201211 because brace-handling broken
   types:
     int(*) vlen_t;
   variables:
@@ -367,7 +385,7 @@ netcdf in_grp {
  group: g14 { // Level 1
     // Purpose: Test netCDF4 enum type
   types:
-    ubyte enum enum_t {Clear = 0, Cumulonimbus = 1, Stratus = 2};
+    ubyte enum enum_t {Clear=0,Cumulonimbus=1,Stratus=2};
   variables:
     enum_t cloud_flg(lon);
   data:
@@ -377,7 +395,7 @@ netcdf in_grp {
  group: g15 { // Level 1
     // Purpose: Test netCDF4 compound type
   types:
-    compound cmpd_t { vlen_t f1; enum_t f2;};
+    compound cmpd_t {vlen_t f1;enum_t f2;};
   variables:
     cmpd_t compound_var;
   data:

@@ -1,5 +1,7 @@
 2013-02-08  Charlie Zender  <zender@uci.edu>
 
+	* Add all coordinates necessary to make in_grp.cdl well-defined CF file (i.e., squelch CF warnings)
+
 	* NCO 4.2.6 release procedure:
  	Changes since nco-4_2_5: --rec_apn, non-atomic ignore
 	cd ~/nco;cvs tag -d nco-4_2_6;cvs tag -d nco-4_2_6-1

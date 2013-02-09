@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.576 2013-02-06 04:28:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.577 2013-02-09 01:29:47 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.576 2013-02-06 04:28:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.576 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.577 2013-02-09 01:29:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.577 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -187,6 +187,7 @@ main(int argc,char **argv)
   int nbr_dmn_fl;
   int nbr_glb_att;
   int nbr_grp_fl;
+  int nbr_ntm_fl;
   int nbr_rec_fl;
   int nbr_var_fl;
   int opt;
@@ -614,7 +615,7 @@ main(int argc,char **argv)
   if(lmt_nbr) (void)nco_bld_lmt_trv(in_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
-  (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_grp_fl,&nbr_rec_fl,&nbr_var_fl,trv_tbl);
+  (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_grp_fl,&nbr_ntm_fl,&nbr_rec_fl,&nbr_var_fl,trv_tbl);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Make output and input files consanguinous */
@@ -646,7 +647,7 @@ main(int argc,char **argv)
   /* Process --get_file_info option if requested */ 
   if(GET_FILE_INFO){ 
     (void)fprintf(stderr,"%s: INFO reports file information\n",prg_nm_get());
-    (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d variables\n",nbr_grp_fl,trv_tbl->nbr_dmn-nbr_rec_fl,nbr_rec_fl,nbr_glb_att,nbr_var_fl);
+    (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d atomic-type variables, %d non-atomic variables\n",nbr_grp_fl,trv_tbl->nbr_dmn-nbr_rec_fl,nbr_rec_fl,nbr_glb_att,nbr_var_fl,nbr_ntm_fl);
     goto close_and_free; 
   } /* end GET_FILE_INFO */
 

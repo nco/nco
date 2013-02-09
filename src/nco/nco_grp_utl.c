@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.450 2013-02-09 01:06:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.451 2013-02-09 01:29:48 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -423,13 +423,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     /* Get type of variable and number of dimensions */
     rcd+=nco_inq_var(grp_id,var_idx,var_nm,&var_typ,&nbr_dmn_var,(int *)NULL,&nbr_att);
 
-    if(var_typ <= NC_MAX_ATOMIC_TYPE){
-      obj_typ=nco_obj_typ_var;
-    }else{ /* > NC_MAX_ATOMIC_TYPE */
-      (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic types. Variable %s is of type %d = %s, and will be ignored in subsequent processing.\n",prg_nm_get(),var_nm,var_typ,nco_typ_sng(var_typ));
-      obj_typ=nco_obj_typ_nonatomic_var;
-    } /* > NC_MAX_ATOMIC_TYPE */
-
     /* Allocate path buffer and include space for trailing NUL */ 
     var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2L);
 
@@ -441,6 +434,13 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
     /* Concatenate variable to absolute group path */
     strcat(var_nm_fll,var_nm);
+
+    if(var_typ <= NC_MAX_ATOMIC_TYPE){
+      obj_typ=nco_obj_typ_var;
+    }else{ /* > NC_MAX_ATOMIC_TYPE */
+      (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
+      obj_typ=nco_obj_typ_nonatomic_var;
+    } /* > NC_MAX_ATOMIC_TYPE */
 
     /* Add variable to table NB: nbr_var, nbr_grp, flg_rcr not valid here */
     strcpy(obj.nm,var_nm);
@@ -2198,7 +2198,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
   *nbr_dmn=0;
 
   /* Get total number of dimensions and variables in file. NB: these are dimensions in groups */
-  (void)trv_tbl_inq((int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
+  (void)trv_tbl_inq((int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
 
   /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
@@ -2480,7 +2480,7 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
   int nbr_rec_fl; /* [nbr] Number of record dimensions in file */
 
   /* Get number of dimensions in file */
-  (void)trv_tbl_inq((int *)NULL,&nbr_dmn_fl,(int *)NULL,&nbr_rec_fl,(int *)NULL,trv_tbl);
+  (void)trv_tbl_inq((int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,&nbr_rec_fl,(int *)NULL,trv_tbl);
   assert(trv_tbl->nbr_dmn == (unsigned int)nbr_dmn_fl);
 #endif
 
