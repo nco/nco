@@ -1,4 +1,4 @@
-// -*-c++-mode-*-
+// -*-C++-*-
 
 // Purpose: CDL file to generate netCDF test file for NCO
 
@@ -38,12 +38,15 @@
 // My (and NCO's) convention is that the _FillValue, if any, of any packed variable should be of the same type as the expanded variable. Hence _FillValue, add_offset, and scale_factor should all be of the same type. Variables that do not adhere to this convention are not supported.
 
 // CDL Data constants:
+// http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/CDL-Syntax.html
 // byte: 'a'
 // char: "a"
 // short: 1s
 // int: 1 (no decimal point)
 // float: 1.f (decimal point is required, f is required to distinguish from double)
 // double: 1.0, 1.d, 1.0e-20 (decimal point is required, d is not required)
+// CDL complex types:
+// roulee:/data/zender/tmp/netcdf-4.2.1/nc_test/ref_tst_diskless2.cdl
 
 // NCL usage:
 // id_in=addfile("/home/zender/nco/data/in.nc","r")
@@ -57,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.162 2013-01-15 19:53:31 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.163 2013-02-09 00:19:34 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";

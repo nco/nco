@@ -11,13 +11,16 @@
 // scp ~/nco/data/in_grp.nc dust.ess.uci.edu:/var/www/html/nco
 // scp dust.ess.uci.edu:/var/www/html/nco/in_grp.nc ~/nco/data
 
-// Data constants in CDL:
+// CDL Data constants:
 // byte: 'a'
 // char: "a"
 // short: 1s
 // int: 1 (no decimal point)
 // float: 1.f (decimal point is required, f is required to distinguish from double)
 // double: 1.0, 1.d, 1.0e-20 (decimal point is required, d is not required)
+// CDL complex types:
+// man ncgen describes all
+// roulee:/data/zender/tmp/netcdf-4.2.1/nc_test/ref_tst_diskless2.cdl
 
 // NCL usage:
 // id_in=addfile("/home/zender/nco/data/in_grp.nc","r")
@@ -32,7 +35,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.56 2013-01-31 00:12:01 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.57 2013-02-09 00:19:34 zender Exp $";
   // Coordinate variables: lat, lev, lon, time, tm2, tm3, gds_crd (7 at root)
   float lat(lat);
  lat:units = "degrees_north";
@@ -307,4 +310,78 @@ netcdf in_grp {
       65,66,67,68,69,70,71,72,
       73,74,75,76,77,78,79,80;
   } // end g10
+
+ group: g11 { // Level 1
+    // Purpose: Test netCDF4-specific atomic types
+  variables:
+    int64 int64_var;
+  int64_var:long_name = "int64-type variable";
+    
+    string string_var;
+  string_var:long_name = "string-type variable";
+    
+    ubyte ubyte_var;
+  ubyte_var:long_name = "ubyte-type variable";
+    
+    uint uint_var;
+  uint_var:long_name = "uint-type variable";
+    
+    uint uint_arr(lat);
+  uint_arr:long_name = "uint-type array variable";
+    
+    uint64 uint64_var;
+  uint64_var:long_name = "uint64-type variable";
+    
+    ushort ushort_var;
+  ushort_var:long_name = "ushort-type variable";
+  data:
+    int64_var=9223372036854775807; // LLONG_MAX = 9223372036854775807, NC_FILL_INT64 is -9223372036854775806LL
+    string_var="If you prick us, do we not bleed? If you tickle us, do we not laugh? If you poison us, do we not die? And if you wrong us, shall we not revenge?";
+    ubyte_var='z'; // UCHAR_MAX = 255, NC_FILL_UBYTE = 255
+    // 20130208: netCDF 4.2.1 and snapshots to date fail as nc_get_var1_uint() returns -60 = NetCDF: Numeric conversion not representable on following (valid) input value. Works for 0, though, and for arrays.
+    // uint_var=4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
+    uint_var=0; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
+    uint_arr=4294967295,4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
+    uint64_var=18446744073709551615; // ULLONG_MAX = 18446744073709551615, NC_FILL_UINT is 18446744073709551614ULL
+    ushort_var=65535; // USHRT_MAX = 65535, NC_FILL_USHORT = 65535
+ } // end g11
+
+ group: g12 { // Level 1
+    // Purpose: Test netCDF4 vlen type
+    // 20130208: ncgen from netCDF 4.2.1 completely broken for vlen types
+    // Possibly broken on all snapshots until ~201211 because brace-handling broken
+  types:
+    int(*) vlen_t;
+  variables:
+    vlen_t vlen_var;
+  data:
+    vlen_var={17,18,19};
+  } // end g12
+
+ group: g13 { // Level 1
+    // Purpose: Test netCDF4 opaque type
+  types:
+    opaque(11) opaque_t;
+  } // end g13
+
+ group: g14 { // Level 1
+    // Purpose: Test netCDF4 enum type
+  types:
+    ubyte enum enum_t {Clear = 0, Cumulonimbus = 1, Stratus = 2};
+  variables:
+    enum_t cloud_flg(lon);
+  data:
+    cloud_flg=Stratus,Stratus,Cumulonimbus;
+  } // end g14
+
+ group: g15 { // Level 1
+    // Purpose: Test netCDF4 compound type
+  types:
+    compound cmpd_t { vlen_t f1; enum_t f2;};
+  variables:
+    cmpd_t compound_var;
+  data:
+    compound_var={{3,4,5},Stratus};
+  } // end g15
+
 } // end root group

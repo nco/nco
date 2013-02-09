@@ -1,14 +1,25 @@
+2013-02-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.2.6 release procedure:
+ 	Changes since nco-4_2_5: --rec_apn, non-atomic ignore
+	cd ~/nco;cvs tag -d nco-4_2_6;cvs tag -d nco-4_2_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.6 release"
+	cvs tag -c nco-4_2_6;cvs tag -c nco-4_2_6-1
+
+	* Code to ignore non-atomic types appears to work
+
+	* Add non-atomic types to in_grp.cdl.
+	Initializations break ncgen from netCDF prior to ~201211. What to do?
+
+	* Update to netCDF 20130208 snapshot
+
+	* Add support for ignoring (instead of failing on) non-atomic types
+
 2013-02-04  Charlie Zender  <zender@uci.edu>
 
 	* Split ncks dimension report into unique fixed and record dimensions
 
 2013-02-01  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.6 release procedure:
- 	Changes since nco-4_2_5: --rec_apn
-	cd ~/nco;cvs tag -d nco-4_2_6;cvs tag -d nco-4_2_6-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.6 release"
-	cvs tag -c nco-4_2_6;cvs tag -c nco-4_2_6-1
 
 	* Add --rec_apn documentation to nco.texi
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.218 2013-01-28 02:50:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.219 2013-02-09 00:19:39 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -463,8 +463,9 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   const char fnc_nm[]="nco_cpy_var_val()"; /* [sng] Function name */
 
   int *dmn_id;
-  int idx;
+
   int dmn_nbr;
+  int idx;
   int nbr_dmn_in;
   int nbr_dmn_out;
   int var_in_id;
@@ -473,6 +474,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   long *dmn_cnt;
   long *dmn_sz;
   long *dmn_srt;
+
   long var_sz=1L;
 
   nc_type var_typ;
@@ -517,7 +519,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* Get variable */
-  if(dmn_nbr==0){
+  if(dmn_nbr == 0){
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
   }else{ /* end if variable is scalar */
@@ -900,8 +902,8 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   int *dmn_id;
 
   int dmn_idx;
-  int lmt_idx;
   int dmn_nbr;
+  int lmt_idx;
   int nbr_dmn_in;
   int nbr_dmn_out;
   int var_in_id;

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.539 2013-02-01 20:40:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.540 2013-02-09 00:19:38 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
@@ -63,7 +63,7 @@ KNOWN BUGS NOT YET FIXED:
    This section of the ANNOUNCE file reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.2.5 built/tested with netCDF
-   4.2.1 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.2.1.1-snapshot2013020723 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism

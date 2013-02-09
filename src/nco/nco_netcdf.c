@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.183 2013-01-28 19:42:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.184 2013-02-09 00:19:38 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -33,7 +33,9 @@
    To ensure this is the case, it is only safe to print diagnostics on
    variables which are supposed to be valid on input. */
 
-/* NB: nco_netcdf.c does not #include nco.h which #defines forward-compatibility tokens
+/* NB: 
+   nco_netcdf.c does #include nco_typ.h which #defines some forward-compatibility tokens
+   nco_netcdf.c does not #include nco.h which #defines some forward-compatibility tokens
    This barrier helps segregate NCO from wrappers
    Re-define minimal sub-set of tokens for nco_netcdf.c as necessary
    This is small exception to the barrier */
@@ -162,6 +164,9 @@ const char * /* O [sng] String describing type */
 nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 (const nc_type type) /* I [enm] netCDF type */
 {
+
+  if(type >= NC_FIRSTUSERTYPEID) return "User-defined type";
+
   switch(type){
   case NC_FLOAT:
     return "NC_FLOAT";
@@ -187,6 +192,14 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
     return "NC_UINT64";
   case NC_STRING:
     return "NC_STRING";
+  case NC_VLEN:
+    return "NC_VLEN";
+  case NC_OPAQUE:
+    return "NC_OPAQUE";
+  case NC_ENUM:
+    return "NC_ENUM";
+  case NC_COMPOUND:
+    return "NC_COMPOUND";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 

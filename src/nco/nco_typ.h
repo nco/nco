@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.35 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_typ.h,v 1.36 2013-02-09 00:19:38 zender Exp $ */
 
 /* Purpose: Type definitions, opaque types */
 
@@ -86,6 +86,25 @@ C code." */
 #ifndef NC_STRING
 # define	NC_STRING 	12	/* string */
 #endif
+#ifndef NC_VLEN
+# define	NC_VLEN 	13	/* vlen */
+#endif
+#ifndef NC_OPAQUE
+# define	NC_OPAQUE 	14	/* opaque */
+#endif
+#ifndef NC_ENUM
+# define	NC_ENUM 	15	/* enum */
+#endif
+#ifndef NC_COMPOUND
+# define	NC_COMPOUND 	16	/* compound */
+#endif
+#ifndef NC_MAX_ATOMIC_TYPE
+#define NC_MAX_ATOMIC_TYPE NC_STRING
+#endif
+#ifndef NC_FIRSTUSERTYPEID
+#define NC_FIRSTUSERTYPEID 32
+#endif
+
 /* Fill values for netCDF4 datatypes. Referenced in nco_mss_val.c: */
 #ifndef NC_FILL_UBYTE
 # define NC_FILL_UBYTE   (255)

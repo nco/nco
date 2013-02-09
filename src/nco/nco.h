@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.237 2013-02-08 09:00:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.238 2013-02-09 00:19:38 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -387,7 +387,8 @@ extern "C" {
   typedef enum nco_obj_typ_enm{ /* [enm] netCDF4 object type: group, variable */
     nco_obj_typ_err=-1, /* -1 Invalid type for initialization */
     nco_obj_typ_grp,    /*  0, Group */
-    nco_obj_typ_var     /*  1, variable */
+    nco_obj_typ_var,    /*  1, Variable of atomic type */
+    nco_obj_typ_nonatomic_var /*  2, Variable of non-atomic type (vlen, opaque, enum, compound, user-defined) */
   } nco_obj_typ; 
   
   typedef enum aed{ /* [enm] Attribute editor mode */
