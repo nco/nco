@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.541 2013-02-09 02:27:12 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.542 2013-02-09 03:43:36 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
@@ -98,6 +98,15 @@ D. NOT YET FIXED
    20120801: Verified problem still exists
    Bug report not filed
    Cause: DAP translates scalar characters into 64-element, NUL-terminated strings so MD5 agreement fails
+
+E. NOT YET FIXED
+   NCO fails to retrieve single element hyperslabs of unsigned int
+   variables with values larger than INT_MAX=2147483647 (rather than
+   being valid up to UINT_MAX = 4294967295).
+
+   Demonstration:
+   ncap2 -O -4 -v -s 'var_uint_max=2147483647u;' ~/nco/data/in.nc ~/foo.nc
+   ncap2 -O -4 -v -s 'var_uint_max=2147483648u;' ~/nco/data/in.nc ~/foo.nc
 
 "Sticky" reminders:
 

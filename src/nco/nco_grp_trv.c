@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.47 2013-02-09 01:29:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.48 2013-02-09 03:43:36 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -206,7 +206,6 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
       /* Increment */
       att_nbr_lcl+=trv.nbr_att; 
       grp_nbr_lcl+=trv.nbr_grp;
-      rec_nbr_lcl+=trv.nbr_rec;
       tmc_nbr_lcl+=trv.nbr_var;
     } /* end nco_obj_typ_grp */
   } /* end uidx */

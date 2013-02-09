@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.15 2010-10-11 20:07:36 zender Exp $ -*-C++-*-
+// $Header: /data/zender/nco_20150216/nco/data/netcdf4.nco,v 1.16 2013-02-09 03:43:36 zender Exp $ -*-C++-*-
 
 // Purpose: Sample input script for netCDF4-enabled ncap2
 // Stress-test netCDF4 atomic types and features
@@ -42,6 +42,9 @@ var_short_ttl_max=var_short_max+var_short_max; // 20090504: -2 overflow OK
 var_int64_ttl=var_int64+var_int64;
 var_int64_max=9223372036854775807ll;
 var_int64_ttl_max=var_int64_max+var_int64_max; // 20090504: -2 overflow OK
+var_uint_max=4294967295u;
+var_uint_ttl=var_uint+var_uint;
+var_uint_ttl_max=var_uint_max+var_uint_max;
 var_uint64_max=18446744073709551615ull;
 var_uint64_ttl=0ull+var_int64+var_int64;
 var_uint64_ttl_max=var_uint64_max+var_uint64_max; // 20090504: 18446744073709551614ull overflow OK?
