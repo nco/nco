@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.152 2013-02-09 04:49:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.153 2013-02-09 09:55:50 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -835,20 +835,36 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
   /* Purpose: Print variable with limits from input file */
 
-  char *unit_sng;
-  char var_sng[NCO_MAX_LEN_FMT_SNG];
+  const char fnc_nm[]="nco_msa_prn_var_val()"; /* [sng] Function name  */
+
+  char *unit_sng;                            /* [sng] Units string */ 
+  char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
   char mss_val_sng[NCO_MAX_LEN_FMT_SNG]="_"; /* [sng] Print this instead of numerical missing value */
-  char nul_chr='\0';
-  dmn_sct *dim=NULL_CEWI;
+  char nul_chr='\0';                         /* [sng] Character to end string */ 
+
+  int val_sz_byt;                            /* [nbr] Type size */
+
+  long lmn;                                  /* [nbr] Index to print variable data */
+  long var_dsk;                              /* [nbr] Variable index relative to disk */
+
+  var_sct var;                               /* [sct] Variable structure */
+  var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
+
+  nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
+  nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
+
+  long mod_map_in[NC_MAX_DIMS];
+  long mod_map_cnt[NC_MAX_DIMS];
+  long dmn_sbs_ram[NC_MAX_DIMS];             /* [nbr] Indices in hyperslab */
+  long dmn_sbs_dsk[NC_MAX_DIMS];             /* [nbr] Indices of hyperslab relative to original on disk */
+
+  dmn_sct dim[NC_MAX_DIMS];                  /* [sct] Dimension structure (make life easier with static arrays) */
+  
+ 
   int *dmn_id=NULL_CEWI;
   int rcd;
-  int val_sz_byt;
-  long lmn;
-  var_sct var;
   lmt_all_sct **lmt_msa=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
-  nco_bool is_mss_val=False;        /* [flg] Current value is missing value */
-  nco_bool MALLOC_UNITS_SNG=False;  /* [flg] Allocated memory for units string */
 
   int nbr_dmn_grp;                  /* [nbr] Number of dimensions in group */
   int dmn_ids_grp[NC_MAX_VAR_DIMS]; /* [id]  Dimension IDs for group */ 
@@ -1180,34 +1196,41 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end if variable is scalar, byte, or character */
 
     if(var.nbr_dim > 0 && dlm_sng == NULL){
-      long *mod_map_in;
-      long *mod_map_cnt;
-      long *dmn_sbs_ram; /* Indices in hyperslab */
-      long *dmn_sbs_dsk; /* Indices of hyperslab relative to original on disk */  
-      long var_dsk;
-
-      mod_map_in=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-      mod_map_cnt=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-      dmn_sbs_ram=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-      dmn_sbs_dsk=(long *)nco_malloc(var.nbr_dim*sizeof(long));
-
+      
       /* Create mod_map_in */
       for(int idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
       for(int idx=0;idx<var.nbr_dim;idx++)
+      {
         for(int jdx=idx+1;jdx<var.nbr_dim;jdx++)
+        {
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            printf("[%d][%d]%s(%d)=%li\n",idx,jdx,lmt_msa[jdx]->dmn_nm,lmt_msa[jdx]->dmn_sz_org,mod_map_in[idx]);
+          }
+
           mod_map_in[idx]*=lmt_msa[jdx]->dmn_sz_org;
+        }
+      }
 
       /* Create mod_map_cnt */
       for(int idx=0;idx<var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
-      for(int idx=0;idx<var.nbr_dim;idx++) 
+      for(int idx=0;idx<var.nbr_dim;idx++)
+      {
         for(int jdx=idx;jdx<var.nbr_dim;jdx++)
+        {
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            printf("[%d][%d]%s(%d)=%li\n",idx,jdx,lmt_msa[jdx]->dmn_nm,lmt_msa[jdx]->dmn_sz_org,mod_map_cnt[idx]);
+          }
+
           mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
+        }
+      }
 
       /* Read coordinate dimensions if required */
       if(PRN_DMN_IDX_CRD_VAL){
         var_sct var_crd;
 
-        dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
         for(int idx=0;idx<var.nbr_dim;idx++){
           dim[idx].val.vp=NULL;
           dim[idx].nm=lmt_msa[idx]->dmn_nm;
@@ -1241,14 +1264,19 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
         /* Calculate RAM indices from current limit */
         for(int idx=0;idx <var.nbr_dim;idx++) 
+        {
           dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
+        }
 
         /* Calculate disk indices from RAM indices */
         (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_msa,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz-1));
 
         /* Find variable index relative to disk */
         var_dsk=0;
-        for(int idx=0;idx <var.nbr_dim;idx++)	var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
+        for(int idx=0;idx <var.nbr_dim;idx++)
+        {
+          var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
+        }
 
         /* Skip rest of loop unless element is first in string */
         if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] > 0) goto lbl_chr_prn;
@@ -1417,10 +1445,6 @@ lbl_chr_prn:
         } /* !is_mss_val */
       } /* end loop over elements */
 
-      (void)nco_free(mod_map_in);
-      (void)nco_free(mod_map_cnt);
-      (void)nco_free(dmn_sbs_ram);
-      (void)nco_free(dmn_sbs_dsk);
 
       /* Additional newline between consecutive variables or final variable and prompt */
       (void)fprintf(stdout,"\n");
@@ -1442,7 +1466,6 @@ lbl_chr_prn:
 
     if(PRN_DMN_IDX_CRD_VAL && dlm_sng==NULL){
       for(int idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=nco_free(dim[idx].val.vp);
-      dim=(dmn_sct *)nco_free(dim);
     } /* end if */
 
 } /* end nco_msa_prn_var_val() */
@@ -1904,7 +1927,9 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
 
   Tests:
   ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
-  ncks -D 11 -v unique -H ~/nco/data/in_grp.nc #scalar
+  ncks -D 11 -v unique -H ~/nco/data/in_grp.nc # scalar
+  ncks -D 11 -C -d time,1,2,1 -v two_dmn_rec_var -H ../../data/in_grp.nc # two_dmn_rec_var(time,lev);
+  ncks -D 11 -C -d time,1,2,1 -d lev,1,1,1 -v two_dmn_rec_var -H ../../data/in_grp.nc # two_dmn_rec_var(time,lev);
 
   */
   const char fnc_nm[]="nco_msa_prn_var_val_trv()"; /* [sng] Function name  */
@@ -2112,6 +2137,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
 
 
   
+
 
 } /* end nco_msa_prn_var_val_trv() */
 
