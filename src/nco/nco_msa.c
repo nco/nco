@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.150 2013-02-08 22:49:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.151 2013-02-09 01:06:22 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1904,6 +1904,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
 
   Tests:
   ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
+  ncks -D 11 -v unique -H ~/nco/data/in_grp.nc #scalar
 
   */
   const char fnc_nm[]="nco_msa_prn_var_val_trv()"; /* [sng] Function name  */
@@ -1912,6 +1913,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
   char mss_val_sng[NCO_MAX_LEN_FMT_SNG]="_"; /* [sng] Print this instead of numerical missing value */
   char nul_chr='\0';                         /* [sng] Character to end string */ 
+  char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (used for validation only) */ 
 
   dmn_sct *dim=NULL_CEWI;                    /* [sct] Dimension structure */
 
@@ -1924,6 +1926,8 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
   nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
 
+  dmn_fll_sct *dmn_trv=NULL;                 /* [sct] Dimension structure */
+
   /* Set defaults */
   (void)var_dfl_set(&var); 
 
@@ -1935,14 +1939,171 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   var.nc_id=in_id;
   (void)nco_inq_varid(in_id,var_trv->nm,&var.id);
 
-  /* Get type and number of dimensions for variable */
-  (void)nco_inq_var(in_id,var.id,(char *)NULL,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
+  /* Get type of variable (get also name and number of dimensions for validation against parameter object) */
+  (void)nco_inq_var(in_id,var.id,var_nm,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
+
+  /* Just make sure we got the right variable */
+  assert(var.nbr_dim == var_trv->nbr_dmn);
+  assert(strcmp(var_nm,var_trv->nm) == 0);
 
   /* Get dimensions for variable */
-  dmn_fll_sct *dmn_trv=nco_dnm_trv(var_trv,trv_tbl);
+  dmn_trv=nco_dnm_trv(var_trv,trv_tbl);
 
   /* Call super-dooper recursive routine; "trv" version with dimension (contains limits) */
-  var.val.vp=nco_msa_rcr_clc_trv(0,var_trv->nbr_dmn,dmn_trv,&var);
+  if (dmn_trv)
+  {
+    var.val.vp=nco_msa_rcr_clc_trv(0,var_trv->nbr_dmn,dmn_trv,&var);
+  }
+  /* Scalar case */
+  else
+  {
+    assert(var.nbr_dim == 0);
+    assert(var.nc_id == in_id);
+    var.sz=1L;
+    var.val.vp=(void *)nco_malloc(var.sz*nco_typ_lng(var.type));
+    (void)nco_get_vara(var.nc_id,var.id,(long *)NULL,(long *)NULL,var.val.vp,var.type);
+  }
+
+  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var.sz*nco_typ_lng(var.type),in_id,(long *)NULL,(long *)NULL,var.val.vp);
+
+  /* Warn if variable is packed */
+  if(nco_pck_dsk_inq(in_id,&var)) (void)fprintf(stderr,"%s: WARNING about to print packed contents of variable \"%s\". Consider unpacking variable first using ncpdq -U.\n",prg_nm_get(),var_nm);
+
+  /* Get missing value */
+  var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
+
+  /* Refresh number of attributes and missing value attribute, if any */
+  if(var.has_mss_val) val_sz_byt=nco_typ_lng(var.type);
+
+  /* User supplied dlm_sng, print variable (includes nbr_dmn == 0) */  
+  if(dlm_sng){
+    char *fmt_sng_mss_val=NULL;
+
+    /* Print each element with user-supplied formatting code */
+    /* Replace C language '\X' escape codes with ASCII bytes */
+    (void)sng_ascii_trn(dlm_sng);
+
+    /* Assume -s argument (dlm_sng) formats entire string
+    Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
+    and that user is only allowed to affect text between fields. 
+    This would be accomplished with:
+    (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
+
+    /* Find replacement format string at most once, then re-use */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+    /* Replace printf()-format statements with format for missing values */
+    fmt_sng_mss_val=nco_fmt_sng_printf_subst(dlm_sng);
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+
+    for(lmn=0;lmn<var.sz;lmn++){
+
+      /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
+      if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
+
+      if(PRN_MSS_VAL_BLANK && is_mss_val){
+        if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(stdout,"%s, ",mss_val_sng);
+      }else{ /* !is_mss_val */
+        switch(var.type){
+        case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var.val.fp[lmn]); break;
+        case NC_DOUBLE: (void)fprintf(stdout,dlm_sng,var.val.dp[lmn]); break;
+        case NC_SHORT: (void)fprintf(stdout,dlm_sng,var.val.sp[lmn]); break;
+        case NC_INT: (void)fprintf(stdout,dlm_sng,var.val.ip[lmn]); break;
+        case NC_CHAR: (void)fprintf(stdout,dlm_sng,var.val.cp[lmn]); break;
+        case NC_BYTE: (void)fprintf(stdout,dlm_sng,var.val.bp[lmn]); break;
+        case NC_UBYTE: (void)fprintf(stdout,dlm_sng,var.val.ubp[lmn]); break;
+        case NC_USHORT: (void)fprintf(stdout,dlm_sng,var.val.usp[lmn]); break;
+        case NC_UINT: (void)fprintf(stdout,dlm_sng,var.val.uip[lmn]); break;
+        case NC_INT64: (void)fprintf(stdout,dlm_sng,var.val.i64p[lmn]); break;
+        case NC_UINT64: (void)fprintf(stdout,dlm_sng,var.val.ui64p[lmn]); break;
+        case NC_STRING: (void)fprintf(stdout,dlm_sng,var.val.sngp[lmn]); break;
+        default: nco_dfl_case_nc_type_err(); break;
+        } /* end switch */
+      } /* !is_mss_val */
+    } /* end loop over element */
+    (void)fprintf(stdout,"\n");
+
+    if(fmt_sng_mss_val) fmt_sng_mss_val=(char *)nco_free(fmt_sng_mss_val);
+
+  } /* end if dlm_sng */
+
+  if(PRN_DMN_UNITS){
+    const char units_nm[]="units"; /* [sng] Name of units attribute */
+    int rcd_lcl; /* [rcd] Return code */
+    int att_id; /* [id] Attribute ID */
+    long att_sz;
+    nc_type att_typ;
+
+    /* Does variable have character attribute named units_nm? */
+    rcd_lcl=nco_inq_attid_flg(in_id,var.id,units_nm,&att_id);
+    if(rcd_lcl == NC_NOERR){
+      (void)nco_inq_att(in_id,var.id,units_nm,&att_typ,&att_sz);
+      if(att_typ == NC_CHAR){
+        unit_sng=(char *)nco_malloc((att_sz+1)*nco_typ_lng(att_typ));
+        (void)nco_get_att(in_id,var.id,units_nm,unit_sng,att_typ);
+        unit_sng[(att_sz+1)*nco_typ_lng(att_typ)-1]='\0';
+        MALLOC_UNITS_SNG=True; /* [flg] Allocated memory for units string */
+      } /* end if */
+    } /* end if */
+  } /* end if PRN_DMN_UNITS */
+
+  if(var.nbr_dim == 0 && dlm_sng == NULL){
+    /* Variable is scalar, byte, or character */
+    lmn=0L;
+    if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byt) : False; 
+    if(PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
+    if(PRN_MSS_VAL_BLANK && is_mss_val){
+      if(PRN_DMN_VAR_NM) (void)fprintf(stdout,"%s = %s %s\n",var_nm,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
+    }else{ /* !is_mss_val */
+      if(PRN_DMN_VAR_NM){
+        switch(var.type){
+        case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
+        case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
+        case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
+        case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.ip[lmn],unit_sng); break;
+        case NC_CHAR:
+          if(var.val.cp[lmn] != '\0'){
+            (void)sprintf(var_sng,"%%s = '%s' %%s\n",nco_typ_fmt_sng(var.type));
+            (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
+          }else{ /* Deal with NUL character here */
+            (void)fprintf(stdout, "%s = \"\" %s\n",var_nm,unit_sng);
+          } /* end if */
+          break;
+        case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
+        case NC_UBYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.ubp[lmn],unit_sng); break;
+        case NC_USHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.usp[lmn],unit_sng); break;
+        case NC_UINT: (void)fprintf(stdout,var_sng,var_nm,var.val.uip[lmn],unit_sng); break;
+        case NC_INT64: (void)fprintf(stdout,var_sng,var_nm,var.val.i64p[lmn],unit_sng); break;
+        case NC_UINT64: (void)fprintf(stdout,var_sng,var_nm,var.val.ui64p[lmn],unit_sng); break;
+        case NC_STRING: (void)fprintf(stdout,var_sng,var_nm,var.val.sngp[lmn],unit_sng); break;
+        default: nco_dfl_case_nc_type_err(); break;
+        } /* end switch */
+      }else{ /* !PRN_DMN_VAR_NM */
+        switch(var.type){
+        case NC_FLOAT: (void)fprintf(stdout,var_sng,var.val.fp[lmn]); break;
+        case NC_DOUBLE: (void)fprintf(stdout,var_sng,var.val.dp[lmn]); break;
+        case NC_SHORT: (void)fprintf(stdout,var_sng,var.val.sp[lmn]); break;
+        case NC_INT: (void)fprintf(stdout,var_sng,var.val.ip[lmn]); break;
+        case NC_CHAR:
+          if(var.val.cp[lmn] != '\0'){
+            (void)sprintf(var_sng,"'%s'\n",nco_typ_fmt_sng(var.type));
+            (void)fprintf(stdout,var_sng,var.val.cp[lmn]);
+          }else{ /* Deal with NUL character here */
+            (void)fprintf(stdout, "\"\"\n");
+          } /* end if */
+          break;
+        case NC_BYTE: (void)fprintf(stdout,var_sng,(unsigned char)var.val.bp[lmn]); break;
+        case NC_UBYTE: (void)fprintf(stdout,var_sng,var.val.ubp[lmn]); break;
+        case NC_USHORT: (void)fprintf(stdout,var_sng,var.val.usp[lmn]); break;
+        case NC_UINT: (void)fprintf(stdout,var_sng,var.val.uip[lmn]); break;
+        case NC_INT64: (void)fprintf(stdout,var_sng,var.val.i64p[lmn]); break;
+        case NC_UINT64: (void)fprintf(stdout,var_sng,var.val.ui64p[lmn]); break;
+        case NC_STRING: (void)fprintf(stdout,var_sng,var.val.sngp[lmn]); break;
+        default: nco_dfl_case_nc_type_err(); break;
+        } /* end switch */
+      } /* !PRN_DMN_VAR_NM */
+    } /* !is_mss_val */
+  } /* end if variable is scalar, byte, or character */
+
 
 
 
@@ -1959,11 +2120,9 @@ nco_msa_rcr_clc_trv        /* [fnc] Multi-slab algorithm (recursive routine, ret
 {
   /* Purpose: Multi-slab algorithm (recursive routine, returns a single slab pointer) 
   Same as nco_msa_rcr_clc(), uses limits from traversal table dimension instead 
-
   */
-  
+ 
   return NULL;
-
 } /* End nco_msa_rcr_clc_trv() */
 
 

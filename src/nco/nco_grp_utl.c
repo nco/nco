@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.449 2013-02-09 00:19:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.450 2013-02-09 01:06:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2905,7 +2905,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
 } /* End nco_bld_lmt_trv() */
 
-dmn_fll_sct *                       /* [O] Dimension structure */
+dmn_fll_sct *                       /* [O] Dimension structure or NULL for scalars (0 dimensions) */
 nco_dnm_trv                         /* [fnc] Return dimension for object "var_trv" */
 (const trv_sct * const var_trv,     /* I [sct] Object to print (variable) */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
@@ -2930,7 +2930,6 @@ nco_dnm_trv                         /* [fnc] Return dimension for object "var_tr
     } /* End  Loop unique dimensions (these contain limits)  */
   } /* Loop dimensions for object (variable) */
 
-  assert(0);
   return NULL;
 }
 
