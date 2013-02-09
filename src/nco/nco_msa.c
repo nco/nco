@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.153 2013-02-09 09:55:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.154 2013-02-09 10:14:15 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1205,7 +1205,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         {
 
           if(dbg_lvl_get() >= nco_dbg_dev){
-            printf("[%d][%d]%s(%d)=%li\n",idx,jdx,lmt_msa[jdx]->dmn_nm,lmt_msa[jdx]->dmn_sz_org,mod_map_in[idx]);
+            (void)fprintf(stdout,"%s: INFO %s [%d][%d]%s(%d)in=%li\n",prg_nm_get(),fnc_nm,
+              idx,jdx,lmt_msa[jdx]->dmn_nm,lmt_msa[jdx]->dmn_sz_org,mod_map_in[idx]);
           }
 
           mod_map_in[idx]*=lmt_msa[jdx]->dmn_sz_org;
@@ -1220,7 +1221,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         {
 
           if(dbg_lvl_get() >= nco_dbg_dev){
-            printf("[%d][%d]%s(%d)=%li\n",idx,jdx,lmt_msa[jdx]->dmn_nm,lmt_msa[jdx]->dmn_sz_org,mod_map_cnt[idx]);
+            (void)fprintf(stdout,"%s: INFO %s [%d][%d]%s(%d)cnt=%li\n",prg_nm_get(),fnc_nm,
+              idx,jdx,lmt_msa[jdx]->dmn_nm,lmt_msa[jdx]->dmn_sz_org,mod_map_cnt[idx]);
           }
 
           mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
@@ -1229,7 +1231,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
       /* Read coordinate dimensions if required */
       if(PRN_DMN_IDX_CRD_VAL){
-        var_sct var_crd;
 
         for(int idx=0;idx<var.nbr_dim;idx++){
           dim[idx].val.vp=NULL;
@@ -2178,5 +2179,8 @@ nco_msa_ram_2_dsk_trv               /* [fnc] Convert hyperslab indices (in RAM) 
 
 #endif
 }
+
+
+
 
 
