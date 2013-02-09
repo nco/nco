@@ -1,5 +1,7 @@
 2013-02-08  Charlie Zender  <zender@uci.edu>
 
+	* Re-format global metadata output
+
 	* Add all coordinates necessary to make in_grp.cdl well-defined CF file (i.e., squelch CF warnings)
 
 	* NCO 4.2.6 release procedure:

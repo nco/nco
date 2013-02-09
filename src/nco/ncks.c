@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.577 2013-02-09 01:29:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.578 2013-02-09 01:38:27 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.577 2013-02-09 01:29:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.577 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.578 2013-02-09 01:38:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.578 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -800,7 +800,7 @@ main(int argc,char **argv)
       int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
       int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
       /* File summary line */
-      (void)fprintf(stdout,"Opened file %s: groups = %i, fixed dimensions = %i, record dimensions = %i, variables = %i, group+global atts. = %i, type = %s\n",fl_in,nbr_grp_fl,trv_tbl->nbr_dmn-nbr_rec_fl,nbr_rec_fl,nbr_var_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
+      (void)fprintf(stdout,"Opened file %s: %i groups, %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i group+global atts., filetype = %s\n",fl_in,nbr_grp_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-nbr_rec_fl,nbr_rec_fl,nbr_var_fl+nbr_ntm_fl,nbr_var_fl,nbr_ntm_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
       /* Get unlimited dimension information from input file/group */
       rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
       if(nbr_rec_lcl > 0){
