@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.211 2013-02-08 22:49:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.212 2013-02-09 11:37:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -300,11 +300,6 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
  lmt_sct **lmt,                       /* I/O [sct] Structure comming from nco_lmt_prs() */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-dmn_fll_sct *                        /* [O] Dimension structure */
-nco_dnm_trv                          /* [fnc] Return dimension for object "var_trv" */
-(const trv_sct * const var_trv,      /* I [sct] Object to print (variable) */
- const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void
 nco_prn_var_val_trv                   /* [fnc] Print variable data (called with PRN_VAR_DATA) */

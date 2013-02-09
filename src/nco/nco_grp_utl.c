@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.452 2013-02-09 02:27:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.453 2013-02-09 11:37:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2904,35 +2904,6 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 #endif /* NCO_SANITY_CHECK */
 
 } /* End nco_bld_lmt_trv() */
-
-dmn_fll_sct *                       /* [O] Dimension structure or NULL for scalars (0 dimensions) */
-nco_dnm_trv                         /* [fnc] Return dimension for object "var_trv" */
-(const trv_sct * const var_trv,     /* I [sct] Object to print (variable) */
- const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
-{
-  /* Purpose: Return Dimension structure for variable 
-  Traversal table contains 2 separate lists: objects(groups,variables) and unique dimensions */
-
-  assert(var_trv->typ == nco_obj_typ_var);
-
-  /* Loop dimensions for object (variable) */
-  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
-
-    /* Loop unique dimensions list (these contain limits) */
-    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-
-      /* Match full dimension name */ 
-      if(strcmp(var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var],trv_tbl->lst_dmn[dmn_idx].nm_fll) == 0){
-        return &trv_tbl->lst_dmn[dmn_idx];
-
-      } /* Match full dimension name */ 
-    } /* End  Loop unique dimensions (these contain limits)  */
-  } /* Loop dimensions for object (variable) */
-
-  return NULL;
-}
-
 
 void
 nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables, and attributes in output file */
