@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.168 2013-02-10 23:18:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.169 2013-02-10 23:50:09 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -2538,7 +2538,6 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   1) Object and GTT are passed as parameter instead of variable name only and limits array 
   2) Pair Object/GTT is needed to do a GTT to MSA limits conversion 
   3) Other than 2) and 3), function is identical to original nco_cpy_var_val_mlt_lmt(), regarding MSA call and writing variable
-  4) Changes from printing version: MD5 dimension vectors need to be obtained 
   */
 
   const char fnc_nm[]="nco_cpy_var_val_mlt_lmt_trv()"; /* [sng] Function name  */
@@ -2551,9 +2550,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   int var_in_id;                   /* [nbr] Variable ID */
   int var_out_id;                  /* [nbr] Variable ID */
 
-  long *dmn_map_in;                /* [nbr] MD5 Contiguous vector of lengths */
-  long *dmn_map_cnt;               /* [nbr] MD5 Contiguous vector of lengths of hyperslab on disk */
-  long *dmn_map_srt;               /* [nbr] MD5 Contiguous vector of indices to start of hyperslab on disk */
+  long *dmn_map_cnt;               /* [nbr] Contiguous vector of lengths of hyperslab on disk */
+  long *dmn_map_srt;               /* [nbr] Contiguous vector of indices to start of hyperslab on disk */
 
   long var_sz=1L;                  /* [nbr] Variable size */
 
@@ -2562,8 +2560,6 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   var_sct vara;                    /* [sct] Variable structure, to hold basic data in_id, var_id, nctype for recusive routine */
 
   void *void_ptr;                  /* [nbr] Pointer to data */
-
-  int dmn_id[NC_MAX_DIMS];         /* [nbr] Dimension IDs for variable */
 
   lmt_all_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI;         /* [sct] Auxiliary Limit used in MSA */
@@ -2725,30 +2721,17 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   } /* Loop dimensions for object (variable) */
 
 
-  /* Changes from printing version: MD5 dimension vectors need to be initialized */
-  dmn_map_in=(long *)nco_malloc(nbr_dim*sizeof(long));
+  /* Dimension vectors */
   dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
 
-  /* Get dimension IDs for variable */
-  (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
-
   /* Loop dimesnions */
   for(int dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
-    char dmn_nm[NC_MAX_NAME];
-    long dmn_sz;
 
-    /* Get name and size */
-    (void)nco_inq_dim(in_id,dmn_id[dmn_idx],dmn_nm,&dmn_sz);
-
-    /* Get size */
-    (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],&dmn_map_in[dmn_idx]);
-
-    /* Store in MD5 arrays */
+    /* Store in arrays */
     dmn_map_cnt[dmn_idx]=lmt_msa[dmn_idx]->dmn_cnt;
     dmn_map_srt[dmn_idx]=0L;
   } /* End loop dimesnions */
-
 
 
   /* Initalize variable structure with in_id, var_in_id, nctype, etc., so recursive routine can read data */
@@ -2774,7 +2757,6 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   /* Free */
   (void)nco_free(void_ptr);
-  (void)nco_free(dmn_map_in);
   (void)nco_free(dmn_map_cnt);
   (void)nco_free(dmn_map_srt);
 
