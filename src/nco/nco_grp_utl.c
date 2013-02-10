@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.454 2013-02-10 00:08:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.455 2013-02-10 00:12:57 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -695,7 +695,7 @@ nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes 
 
       /* List attributes using obtained group ID */
       if(nbr_att){
-        if(trv.grp_dpt > 0) (void)fprintf(stdout,"%s %s attributes:\n",(strlen(trv.nm_fll) == 1L) ? "Global" : "Group",trv.nm_fll); 
+        if(trv.grp_dpt > 0) (void)fprintf(stdout,"Group %s attributes:\n",trv.nm_fll); else (void)fprintf(stdout,"Global attributes:\n"); 
         (void)nco_prn_att(nc_id,grp_id,NC_GLOBAL); 
       } /* nbr_att */
     } /* end nco_obj_typ_grp */
