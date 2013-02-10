@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.162 2013-02-10 20:52:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.163 2013-02-10 21:23:32 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1918,6 +1918,9 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   consecutive entries. mod_map_in and mod_map_cnt keep track of these distances. They are mappings between index-based 
   access and RAM-based access. The location of an N-dimensional array element in RAM is the sum of the products of 
   each index (dimensional subscript) times the stride (mod_map) of the corresponding dimension.
+  4) Object and GTT are passed as parameter instead of variable name only  
+  5) Pair Object/GTT is needed to do a GTT to MSA limits conversion 
+  6) Other than 4) and 5), function is identical to original nco_msa_prn_var_val(), regarding MSA call and printing
 
   Tests:
   ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
@@ -2525,43 +2528,45 @@ void
 nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to output file */
 (const int in_id,                   /* I [id] Input group ID */
  const int out_id,                  /* I [id] Output file ID */
- FILE * const fp_bnr,               /* I [fl] Unformatted binary output file handle */
+ FILE * const fp_bnr,               /* I [flg] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
  const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  /* 20130209 pvn Copy-cat of nco_cpy_var_val_mlt_lmt() without evil "lmt_all_lst" array: under construction
-  1) Apply same method as nco_msa_prn_var_val_trv: to do  */
+  /* Purpose: Copy variable data from input netCDF file to output netCDF file 
+  Routine truncates dimensions in variable definition in output file according to user-specified limits.
+  Routine copies variable-by-variable, old-style, used only by ncks 
+
+  "trv" changes from the original nco_cpy_var_val_mlt_lmt():
+  1) Object and GTT are passed as parameter instead of variable name only  
+  2) Pair Object/GTT is needed to do a GTT to MSA limits conversion 
+  3) Other than 2) and 3), function is identical to original nco_cpy_var_val_mlt_lmt(), regarding MSA call and writing variable
+  */
 
   return;
 
-  /* Purpose: Copy variable data from input netCDF file to output netCDF file 
-  Routine truncates dimensions in variable definition in output file according to user-specified limits.
-  Routine copies variable-by-variable, old-style, used only by ncks */
+  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 
 
+  int nbr_dim;                     /* [nbr] Number of dimensions */
+  int nbr_dmn_in;                  /* [nbr] Number of dimensions */
+  int nbr_dmn_out;                 /* [nbr] Number of dimensions */
+  int var_in_id;                   /* [nbr] Variable ID */
+  int var_out_id;                  /* [nbr] Variable ID */
 
-  char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (local copy of object name) */ 
+  long *dmn_map_in;                /* [nbr] MD5 Contiguous vector of lengths */
+  long *dmn_map_cnt;               /* [nbr] MD5 Contiguous vector of lengths of hyperslab on disk */
+  long *dmn_map_srt;               /* [nbr] MD5 Contiguous vector of indices to start of hyperslab on disk */
 
-  int nbr_dim;
-  int nbr_dmn_in;
-  int nbr_dmn_out;
-  int var_in_id;
-  int var_out_id;
+  long var_sz=1L;                  /* [nbr] Variable size */
 
-  /* For regular data */
-  long *dmn_map_in;
-  long *dmn_map_cnt;
-  long *dmn_map_srt;
-  long var_sz=1L;
+  nc_type var_typ;                 /* [nbr] Variable type  */
 
-  nc_type var_typ;
+  var_sct vara;                    /* [sct] Variable structure, to hold basic data in_id, var_id, nctype for recusive routine */
 
-  var_sct vara;/* To hold basic data in_id, var_id, nctype for recusive routine */
+  void *void_ptr;                  /* [nbr] Pointer to data */
 
-  void *void_ptr;
-
-  lmt_all_sct **lmt_msa;
-  lmt_sct **lmt;
+  lmt_all_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
+  lmt_sct **lmt=NULL_CEWI;         /* [sct] Auxiliary Limit used in MSA */
 
   assert(nco_obj_typ_var == var_trv->typ);
 
@@ -2586,16 +2591,23 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     var_sz=1L;
     void_ptr=nco_malloc(nco_typ_lng(var_typ));
 
+    /* Read */
     (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
 
+    /* Write */
     (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
 
     /* Perform MD5 digest of input and output data if requested */
     if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
+
+    /* Write unformatted binary data */
     if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+
+    /* Done */
     (void)nco_free(void_ptr);
     return;
-  } /* end if */
+  } /* End Deal with scalar variables */
+
 
   dmn_map_in=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
@@ -2604,14 +2616,12 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
 
-
 #ifdef REPLACE_WITH_GTT_INFORMATION
 
 
 #endif
 
-
-  /* Initalize vara with in_id, var_in_id, nctype, etc., so recursive routine can read data */
+  /* Initalize variable structure with in_id, var_in_id, nctype, etc., so recursive routine can read data */
   vara.nm=var_nm;
   vara.id=var_in_id;
   vara.nc_id=in_id;
@@ -2619,14 +2629,20 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   /* Call super-dooper recursive routine */
   void_ptr=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,&vara);
+
+  /* After MSA, we have the size to write */
   var_sz=vara.sz;
 
+  /* Write variable */
   (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ);
 
   /* Perform MD5 digest of input and output data if requested */
   if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
+
+  /* Write unformatted binary data */
   if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
 
+  /* Free */
   (void)nco_free(void_ptr);
   (void)nco_free(dmn_map_in);
   (void)nco_free(dmn_map_cnt);
