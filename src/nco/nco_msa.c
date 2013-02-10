@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.161 2013-02-10 09:37:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.162 2013-02-10 20:52:04 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1896,7 +1896,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
  const nco_bool PRN_DMN_VAR_NM,     /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
  const trv_sct * const var_trv,     /* I [sct] Object to print (variable) */
- const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose:
   Get variable with limits from input file
@@ -2522,13 +2522,13 @@ lbl_chr_prn:
 
 
 void
-nco_cpy_var_val_mlt_lmt_trv /* [fnc] Copy variable data from input to output file */
-(const int in_id, /* I [id] netCDF input file ID */
- const int out_id, /* I [id] netCDF output file ID */
- FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
- char *var_nm, /* I [sng] Variable name */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to output file */
+(const int in_id,                   /* I [id] Input group ID */
+ const int out_id,                  /* I [id] Output file ID */
+ FILE * const fp_bnr,               /* I [fl] Unformatted binary output file handle */
+ const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
+ const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* 20130209 pvn Copy-cat of nco_cpy_var_val_mlt_lmt() without evil "lmt_all_lst" array: under construction
   1) Apply same method as nco_msa_prn_var_val_trv: to do  */
@@ -2539,9 +2539,9 @@ nco_cpy_var_val_mlt_lmt_trv /* [fnc] Copy variable data from input to output fil
   Routine truncates dimensions in variable definition in output file according to user-specified limits.
   Routine copies variable-by-variable, old-style, used only by ncks */
 
-  int *dmn_id;
-  int idx;
-  int jdx;
+
+  char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (local copy of object name) */ 
+
   int nbr_dim;
   int nbr_dmn_in;
   int nbr_dmn_out;
@@ -2563,9 +2563,14 @@ nco_cpy_var_val_mlt_lmt_trv /* [fnc] Copy variable data from input to output fil
   lmt_all_sct **lmt_msa;
   lmt_sct **lmt;
 
-  /* Get var_id for requested variable from both files */
-  nco_inq_varid(in_id,var_nm,&var_in_id);
-  nco_inq_varid(out_id,var_nm,&var_out_id);
+  assert(nco_obj_typ_var == var_trv->typ);
+
+  /* Local copy of object name */ 
+  strcpy(var_nm,var_trv->nm);                
+
+  /* Get ID for requested variable from both files */
+  (void)nco_inq_varid(in_id,var_nm,&var_in_id);
+  (void)nco_inq_varid(out_id,var_nm,&var_out_id);
 
   /* Get type and number of dimensions for variable */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
@@ -2595,20 +2600,9 @@ nco_cpy_var_val_mlt_lmt_trv /* [fnc] Copy variable data from input to output fil
   dmn_map_in=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
 
   lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
-
-  /* Initialize */
-  for(idx=0;idx<nbr_dim;idx++) lmt_msa[idx]=NULL;
-
-  /* Get dimension IDs from input file */
-  (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
-
-  /* Get netCDF file format */
-  int fl_fmt;
-  (void)nco_inq_format(in_id,&fl_fmt);
 
 
 #ifdef REPLACE_WITH_GTT_INFORMATION
@@ -2637,7 +2631,6 @@ nco_cpy_var_val_mlt_lmt_trv /* [fnc] Copy variable data from input to output fil
   (void)nco_free(dmn_map_in);
   (void)nco_free(dmn_map_cnt);
   (void)nco_free(dmn_map_srt);
-  (void)nco_free(dmn_id);
   (void)nco_free(lmt_msa);
   (void)nco_free(lmt);
 

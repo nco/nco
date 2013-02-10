@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.457 2013-02-10 08:31:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.458 2013-02-10 20:52:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3185,7 +3185,7 @@ nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output fi
 
       /* If object is an extracted variable... */ 
       if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
-        if(HAVE_LIMITS) (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm,trv_tbl); 
+        if(HAVE_LIMITS) (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,&trv,trv_tbl); 
         else (void)nco_cpy_var_val(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm);
       } /* endif */
 
