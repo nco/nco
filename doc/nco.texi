@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.759 2013-02-01 20:40:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.760 2013-02-10 21:28:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3394,6 +3394,7 @@ build time.
 <a name="var"></a> <!-- http://nco.sf.net/nco.html#var -->
 <a name="xcl"></a> <!-- http://nco.sf.net/nco.html#xcl -->
 <a name="sbs"></a> <!-- http://nco.sf.net/nco.html#sbs -->
+<a name="subset"></a> <!-- http://nco.sf.net/nco.html#subset -->
 @end html
 @node Subsetting Files, Subsetting Coordinate Variables, Large File Support, Common features
 @section Subsetting Files

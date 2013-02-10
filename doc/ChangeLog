@@ -1,3 +1,13 @@
+2013-02-10  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.2.6 release procedure:
+ 	Changes since nco-4_2_5: --rec_apn, non-atomic ignore
+	cd ~/nco;cvs tag -d nco-4_2_6;cvs tag -d nco-4_2_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.6 release"
+	cvs tag -c nco-4_2_6;cvs tag -c nco-4_2_6-1
+
+	* Improve error message when appending variable with rank mismatch
+
 2013-02-09  Charlie Zender  <zender@uci.edu>
 
 	* Reformat metadata printing, include more max. depth, number variable attributes
@@ -13,12 +23,6 @@
 	* Re-format global metadata output
 
 	* Add all coordinates necessary to make in_grp.cdl well-defined CF file (i.e., squelch CF warnings)
-
-	* NCO 4.2.6 release procedure:
- 	Changes since nco-4_2_5: --rec_apn, non-atomic ignore
-	cd ~/nco;cvs tag -d nco-4_2_6;cvs tag -d nco-4_2_6-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.6 release"
-	cvs tag -c nco-4_2_6;cvs tag -c nco-4_2_6-1
 
 	* Code to ignore non-atomic types appears to work
 

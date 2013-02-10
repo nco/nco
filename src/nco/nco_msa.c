@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.163 2013-02-10 21:23:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.164 2013-02-10 21:28:18 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -659,7 +659,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
-    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
+    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out,var_nm,var_nm,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
   nbr_dim=nbr_dmn_out;
@@ -2093,7 +2093,6 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   assert(var.nbr_dim == var_trv->nbr_dmn);
   assert(strcmp(var_nm,var_trv->nm) == 0);
 
-
   /* Scalars */
   if(var.nbr_dim == 0){
     var.sz=1L;
@@ -2103,7 +2102,6 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
       (void)nco_get_var1(in_id,var.id,0L,var.val.vp,var.type);
     } /* end potential OpenMP critical */
   } /* end if */
-
 
   /* Call super-dooper recursive routine */
   var.val.vp=nco_msa_rcr_clc(0,var.nbr_dim,lmt,lmt_msa,&var);
@@ -2519,7 +2517,6 @@ lbl_chr_prn:
     (void)nco_free(lmt_msa);
     (void)nco_free(lmt);
   } /* end if */
-
 
 } /* end nco_msa_prn_var_val_trv() */
 
