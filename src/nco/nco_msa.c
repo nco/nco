@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.160 2013-02-10 08:31:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.161 2013-02-10 09:37:33 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -2530,9 +2530,119 @@ nco_cpy_var_val_mlt_lmt_trv /* [fnc] Copy variable data from input to output fil
  char *var_nm, /* I [sng] Variable name */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
+  /* 20130209 pvn Copy-cat of nco_cpy_var_val_mlt_lmt() without evil "lmt_all_lst" array: under construction
+  1) Apply same method as nco_msa_prn_var_val_trv: to do  */
+
+  return;
+
+  /* Purpose: Copy variable data from input netCDF file to output netCDF file 
+  Routine truncates dimensions in variable definition in output file according to user-specified limits.
+  Routine copies variable-by-variable, old-style, used only by ncks */
+
+  int *dmn_id;
+  int idx;
+  int jdx;
+  int nbr_dim;
+  int nbr_dmn_in;
+  int nbr_dmn_out;
+  int var_in_id;
+  int var_out_id;
+
+  /* For regular data */
+  long *dmn_map_in;
+  long *dmn_map_cnt;
+  long *dmn_map_srt;
+  long var_sz=1L;
+
+  nc_type var_typ;
+
+  var_sct vara;/* To hold basic data in_id, var_id, nctype for recusive routine */
+
+  void *void_ptr;
+
+  lmt_all_sct **lmt_msa;
+  lmt_sct **lmt;
+
+  /* Get var_id for requested variable from both files */
+  nco_inq_varid(in_id,var_nm,&var_in_id);
+  nco_inq_varid(out_id,var_nm,&var_out_id);
+
+  /* Get type and number of dimensions for variable */
+  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+  if(nbr_dmn_out != nbr_dmn_in){
+    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+  nbr_dim=nbr_dmn_out;
+
+  /* Deal with scalar variables */
+  if(nbr_dim == 0){
+    var_sz=1L;
+    void_ptr=nco_malloc(nco_typ_lng(var_typ));
+
+    (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
+
+    (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
+
+    /* Perform MD5 digest of input and output data if requested */
+    if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
+    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+    (void)nco_free(void_ptr);
+    return;
+  } /* end if */
+
+  dmn_map_in=(long *)nco_malloc(nbr_dim*sizeof(long));
+  dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
+  dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
+  dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
+
+  lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
+  lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
+
+  /* Initialize */
+  for(idx=0;idx<nbr_dim;idx++) lmt_msa[idx]=NULL;
+
+  /* Get dimension IDs from input file */
+  (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
+
+  /* Get netCDF file format */
+  int fl_fmt;
+  (void)nco_inq_format(in_id,&fl_fmt);
 
 
-}
+#ifdef REPLACE_WITH_GTT_INFORMATION
+
+
+#endif
+
+
+  /* Initalize vara with in_id, var_in_id, nctype, etc., so recursive routine can read data */
+  vara.nm=var_nm;
+  vara.id=var_in_id;
+  vara.nc_id=in_id;
+  vara.type=var_typ;
+
+  /* Call super-dooper recursive routine */
+  void_ptr=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,&vara);
+  var_sz=vara.sz;
+
+  (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ);
+
+  /* Perform MD5 digest of input and output data if requested */
+  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
+  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+
+  (void)nco_free(void_ptr);
+  (void)nco_free(dmn_map_in);
+  (void)nco_free(dmn_map_cnt);
+  (void)nco_free(dmn_map_srt);
+  (void)nco_free(dmn_id);
+  (void)nco_free(lmt_msa);
+  (void)nco_free(lmt);
+
+  return;
+} /* end nco_cpy_var_val_mlt_lmt_trv() */
 
 
 
