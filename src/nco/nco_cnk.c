@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.37 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.38 2013-02-10 08:31:36 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -650,3 +650,24 @@ nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
 } /* end nco_is_chunkable() */
 
 #endif /* endif 0 */
+
+
+void
+nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters */
+(const int nc_id, /* I [id] netCDF file ID */
+ int * const cnk_map_ptr, /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr, /* I/O [enm] Chunking policy */
+ const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr, /* I [nbr] Number of dimensions with user-specified chunking */
+ const trv_tbl_sct * const trv_tbl)       /* I [sct] Traversal table */
+{
+
+
+  return;
+}
+
+
+
+
+

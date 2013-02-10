@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.582 2013-02-10 00:08:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.583 2013-02-10 08:31:36 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -53,7 +53,7 @@
    ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -v time ~/in_grp.nc ~/foo.nc */
 
-#if 1
+#if 1 
 /* Use lmt_all_sct **lmt_all_lst, List of *lmt_all structures; to remove once replaced by "trv" limit functions */
 #define USE_LMT_ALL 
 #endif
@@ -107,6 +107,7 @@ main(int argc,char **argv)
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
@@ -152,8 +153,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.582 2013-02-10 00:08:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.582 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.583 2013-02-10 08:31:36 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.583 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -623,7 +624,10 @@ main(int argc,char **argv)
 
   /* Add dimension limits to traversal table */
 #ifndef USE_LMT_ALL
-  if(lmt_nbr) (void)nco_bld_lmt_trv(in_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
+  if(lmt_nbr){
+    (void)nco_bld_lmt_trv(in_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
+    HAVE_LIMITS=True;
+  }
 #endif
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
@@ -778,7 +782,7 @@ main(int argc,char **argv)
 #ifdef USE_LMT_ALL
     (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,dmn_nbr_fl,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,trv_tbl);
 #else
-    (void)nco_xtr_dfn_trv(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,trv_tbl);
+    (void)nco_xtr_dfn_trv(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,HAVE_LIMITS,trv_tbl);
 #endif
 
     /* Catenate timestamped command line to "history" global attribute */
@@ -807,7 +811,7 @@ main(int argc,char **argv)
 #ifdef USE_LMT_ALL
     (void)nco_xtr_wrt(in_id,out_id,lmt_nbr,lmt_all_lst,dmn_nbr_fl,fp_bnr,MD5_DIGEST,trv_tbl);
 #else
-    (void)nco_xtr_wrt_trv(in_id,out_id,fp_bnr,MD5_DIGEST,trv_tbl);
+    (void)nco_xtr_wrt_trv(in_id,out_id,fp_bnr,MD5_DIGEST,HAVE_LIMITS,trv_tbl);
 #endif
 
     /* [fnc] Close unformatted binary data file */

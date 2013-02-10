@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.212 2013-02-09 11:37:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.213 2013-02-10 08:31:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -328,6 +328,7 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
  const nco_bool CPY_GRP_METADATA,    /* I [flg] Copy group metadata (attributes) */
  const nco_bool CPY_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
  const char * const rec_dmn_nm,      /* I [sng] Record dimension name */
+ const nco_bool HAVE_LIMITS,         /* I [flg] Dimension limits exist */
  trv_tbl_sct * const trv_tbl);       /* I/O [sct] Traversal table */
 
 void
@@ -336,6 +337,7 @@ nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output fi
  const int nc_out_id,                 /* I [ID] netCDF output file ID */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
+ const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 
