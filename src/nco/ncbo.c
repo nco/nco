@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.204 2013-02-09 01:29:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.205 2013-02-10 00:08:45 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.204 2013-02-09 01:29:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.204 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.205 2013-02-10 00:08:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.205 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -595,8 +595,8 @@ main(int argc,char **argv)
 
 #ifdef USE_TRV_API
   /* Get number of variables, dimensions, and global attributes in file, file format */
-  (void)trv_tbl_inq(&nbr_glb_att_1,&nbr_dmn_fl_1,&nbr_grp_fl_1,(int *)NULL,&nbr_rec_fl_1,&nbr_var_fl_1,trv_tbl_1);
-  (void)trv_tbl_inq(&nbr_glb_att_2,&nbr_dmn_fl_2,&nbr_grp_fl_2,(int *)NULL,&nbr_rec_fl_2,&nbr_var_fl_2,trv_tbl_2);
+  (void)trv_tbl_inq(&nbr_glb_att_1,(int *)NULL,(int *)NULL,&nbr_dmn_fl_1,&nbr_rec_fl_1,(int *)NULL,&nbr_grp_fl_1,(int *)NULL,&nbr_var_fl_1,trv_tbl_1);
+  (void)trv_tbl_inq(&nbr_glb_att_2,(int *)NULL,(int *)NULL,&nbr_dmn_fl_2,&nbr_rec_fl_2,(int *)NULL,&nbr_grp_fl_2,(int *)NULL,&nbr_var_fl_2,trv_tbl_2);
   (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
   (void)nco_inq_format(in_id_2,&fl_in_fmt_2);
 

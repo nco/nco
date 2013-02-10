@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.30 2013-02-09 01:29:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.31 2013-02-10 00:08:45 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -44,12 +44,15 @@ trv_tbl_add
 
 void                       
 trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(int * const att_nbr_all,            /* O [nbr] Number of global+group attributes in file */
+(int * const att_glb_all,            /* O [nbr] Number of global attributes in file */
+ int * const att_grp_all,            /* O [nbr] Number of group attributes in file */
+ int * const att_var_all,            /* O [nbr] Number of variable attributes in file */
  int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
+ int * const dmn_rec_all,            /* O [nbr] Number of record dimensions in file */
+ int * const grp_dpt_all,            /* O [nbr] Maximum group depth (root = 0) */
  int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
- int * const ntm_nbr_all,            /* O [nbr] Number of non-atomic variables in file */
- int * const rec_nbr_all,            /* O [nbr] Number of record dimensions in file */
- int * const tmc_nbr_all,            /* O [nbr] Number of atomic-type variables in file */
+ int * const var_ntm_all,            /* O [nbr] Number of non-atomic variables in file */
+ int * const var_tmc_all,            /* O [nbr] Number of atomic-type variables in file */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void 

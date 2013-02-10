@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.581 2013-02-09 10:27:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.582 2013-02-10 00:08:45 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.581 2013-02-09 10:27:22 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.581 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.582 2013-02-10 00:08:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.582 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -173,31 +173,34 @@ main(int argc,char **argv)
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
   int abb_arg_nbr=0;
+  int att_glb_nbr;
+  int att_grp_nbr;
+  int att_var_nbr;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=0; /* [enm] Deflate level */
+  int dmn_nbr_fl;
+  int dmn_rec_fl;
   int fl_in_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Input file format */
   int fl_nbr=0;
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
+  int grp_dpt_fl; /* [nbr] Maximum group depth (root = 0) */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int grp_nbr=0; /* [nbr] Number of groups to extract */
+  int grp_nbr_fl;
   int idx;
   int in_id;  
   int jdx;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
-  int nbr_dmn_fl;
-  int nbr_glb_att;
-  int nbr_grp_fl;
-  int nbr_ntm_fl;
-  int nbr_rec_fl;
-  int nbr_var_fl;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_lst_in_nbr=0;
+  int var_nbr_fl;
+  int var_ntm_fl;
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
@@ -624,7 +627,7 @@ main(int argc,char **argv)
 #endif
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
-  (void)trv_tbl_inq(&nbr_glb_att,&nbr_dmn_fl,&nbr_grp_fl,&nbr_ntm_fl,&nbr_rec_fl,&nbr_var_fl,trv_tbl);
+  (void)trv_tbl_inq(&att_glb_nbr,&att_grp_nbr,&att_var_nbr,&dmn_nbr_fl,&dmn_rec_fl,&grp_dpt_fl,&grp_nbr_fl,&var_ntm_fl,&var_nbr_fl,trv_tbl);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Make output and input files consanguinous */
@@ -656,7 +659,7 @@ main(int argc,char **argv)
   /* Process --get_file_info option if requested */ 
   if(GET_FILE_INFO){ 
     (void)fprintf(stderr,"%s: INFO reports file information\n",prg_nm_get());
-    (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d atomic-type variables, %d non-atomic variables\n",nbr_grp_fl,trv_tbl->nbr_dmn-nbr_rec_fl,nbr_rec_fl,nbr_glb_att,nbr_var_fl,nbr_ntm_fl);
+    (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d atomic-type variables, %d non-atomic variables\n",grp_nbr_fl,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,att_glb_nbr+att_glb_nbr,var_nbr_fl,var_ntm_fl);
     goto close_and_free; 
   } /* end GET_FILE_INFO */
 
@@ -703,10 +706,10 @@ main(int argc,char **argv)
   if(lmt_nbr) (void)nco_lmt_evl_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);    
 
   /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
+  lmt_all_lst=(lmt_all_sct **)nco_malloc(dmn_nbr_fl*sizeof(lmt_all_sct *));
 
   /* Initialize lmt_all_sct's */ 
-  (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
+  (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,dmn_nbr_fl,lmt,lmt_nbr,trv_tbl);
 #endif
   
   if(fl_out){
@@ -773,7 +776,7 @@ main(int argc,char **argv)
 
     /* Define extracted groups, variables, and attributes in output file */
 #ifdef USE_LMT_ALL
-    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,trv_tbl);
+    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,dmn_nbr_fl,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,trv_tbl);
 #else
     (void)nco_xtr_dfn_trv(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,trv_tbl);
 #endif
@@ -802,7 +805,7 @@ main(int argc,char **argv)
 
     /* Write extracted data to output file */
 #ifdef USE_LMT_ALL
-    (void)nco_xtr_wrt(in_id,out_id,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,trv_tbl);
+    (void)nco_xtr_wrt(in_id,out_id,lmt_nbr,lmt_all_lst,dmn_nbr_fl,fp_bnr,MD5_DIGEST,trv_tbl);
 #else
     (void)nco_xtr_wrt_trv(in_id,out_id,fp_bnr,MD5_DIGEST,trv_tbl);
 #endif
@@ -819,7 +822,7 @@ main(int argc,char **argv)
       int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
       int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
       /* File summary line */
-      (void)fprintf(stdout,"Opened file %s: %i groups, %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i global+group atts., filetype = %s\n",fl_in,nbr_grp_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-nbr_rec_fl,nbr_rec_fl,nbr_var_fl+nbr_ntm_fl,nbr_var_fl,nbr_ntm_fl,nbr_glb_att,nco_fmt_sng(fl_in_fmt));
+      (void)fprintf(stdout,"Opened file %s: %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable), filetype = %s\n",fl_in,grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr,nco_fmt_sng(fl_in_fmt));
       /* Get unlimited dimension information from input file/group */
       rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
       if(nbr_rec_lcl > 0){
@@ -838,7 +841,7 @@ main(int argc,char **argv)
     if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,trv_tbl);
 
 #ifdef USE_LMT_ALL
-    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,lmt_all_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);    
+    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,lmt_all_lst,dmn_nbr_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);    
 #else
     if(PRN_VAR_DATA) (void)nco_prn_var_val_trv(in_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
 #endif
@@ -862,7 +865,7 @@ main(int argc,char **argv)
 
    /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
 #ifdef USE_LMT_ALL
-   for(idx=0;idx<nbr_dmn_fl;idx++)
+   for(idx=0;idx<dmn_nbr_fl;idx++)
      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
 #endif
@@ -870,7 +873,7 @@ main(int argc,char **argv)
    lmt=(lmt_sct **)nco_free(lmt); 
 
 #ifdef USE_LMT_ALL
-   if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
+   if(dmn_nbr_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,dmn_nbr_fl);
 #endif
 
    /* NCO-generic clean-up */

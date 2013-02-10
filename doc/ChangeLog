@@ -1,3 +1,7 @@
+2013-02-09  Charlie Zender  <zender@uci.edu>
+
+	* Reformat metadata printing, include more max. depth, number variable attributes
+
 2013-02-08  Charlie Zender  <zender@uci.edu>
 
 	* Fix overcount of record dimensions

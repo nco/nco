@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.48 2013-02-09 03:43:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.49 2013-02-10 00:08:45 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -177,48 +177,62 @@ trv_tbl_add
 
 void                       
 trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
-(int * const att_nbr_all,            /* O [nbr] Number of global+group attributes in file */
+(int * const att_glb_all,            /* O [nbr] Number of global attributes in file */
+ int * const att_grp_all,            /* O [nbr] Number of group attributes in file */
+ int * const att_var_all,            /* O [nbr] Number of variable attributes in file */
  int * const dmn_nbr_all,            /* O [nbr] Number of dimensions in file */
+ int * const dmn_rec_all,            /* O [nbr] Number of record dimensions in file */
+ int * const grp_dpt_all,            /* O [nbr] Maximum group depth (root = 0) */
  int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
- int * const ntm_nbr_all,            /* O [nbr] Number of non-atomic variables in file */
- int * const rec_nbr_all,            /* O [nbr] Number of record dimensions in file */
- int * const tmc_nbr_all,            /* O [nbr] Number of atomic-type variables in file */
+ int * const var_ntm_all,            /* O [nbr] Number of non-atomic variables in file */
+ int * const var_tmc_all,            /* O [nbr] Number of atomic-type variables in file */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
-  /* [fnc] Find and return global totals of dimensions, variables, attributes */
-  int att_nbr_lcl; /* [nbr] Number of global+group attributes in file */
-  int grp_nbr_lcl; /* [nbr] Number of groups in file */
-  int ntm_nbr_lcl; /* [nbr] Number of non-atomic variables in file */
-  int rec_nbr_lcl; /* [nbr] Number of record dimensions in file */
-  int tmc_nbr_lcl; /* [nbr] Number of atomic-type variables in file */
+  /* [fnc] Find and return global file summaries like # of dimensions, variables, attributes */
 
+  int att_glb_lcl; /* [nbr] Number of global attributes in file */
+  int att_grp_lcl; /* [nbr] Number of group attributes in file */
+  int att_var_lcl; /* [nbr] Number of variable attributes in file */
+  int dmn_rec_lcl; /* [nbr] Number of record dimensions in file */
+  int grp_dpt_lcl; /* [nbr] Maximum group depth (root = 0) */
+  int grp_nbr_lcl; /* [nbr] Number of groups in file */
+  int var_ntm_lcl; /* [nbr] Number of non-atomic variables in file */
+  int var_tmc_lcl; /* [nbr] Number of atomic-type variables in file */
+ 
   /* Initialize */
-  att_nbr_lcl=0;
+  att_glb_lcl=0;
+  att_grp_lcl=0;
+  att_var_lcl=0;
+  dmn_rec_lcl=0;
+  grp_dpt_lcl=0;
   grp_nbr_lcl=0;
-  ntm_nbr_lcl=0;
-  rec_nbr_lcl=0;
-  tmc_nbr_lcl=0;
+  var_ntm_lcl=0;
+  var_tmc_lcl=0;
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx]; 
-    if(trv.typ == nco_obj_typ_nonatomic_var) ntm_nbr_lcl++;
+    if(trv.typ == nco_obj_typ_var) att_var_lcl+=trv.nbr_att;
+    if(trv.typ == nco_obj_typ_nonatomic_var) var_ntm_lcl++;
     if(trv.typ == nco_obj_typ_grp){ 
-      /* Increment */
-      att_nbr_lcl+=trv.nbr_att; 
       grp_nbr_lcl+=trv.nbr_grp;
-      tmc_nbr_lcl+=trv.nbr_var;
+      var_tmc_lcl+=trv.nbr_var;
+      if(grp_dpt_lcl < trv.grp_dpt) grp_dpt_lcl=trv.grp_dpt;
+      if(!strcmp(trv.nm_fll,"/")) att_glb_lcl=trv.nbr_att; else att_grp_lcl+=trv.nbr_att; 
     } /* end nco_obj_typ_grp */
   } /* end uidx */
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr_dmn;uidx++)
-    if(trv_tbl->lst_dmn[uidx].is_rec_dmn) rec_nbr_lcl++;
+    if(trv_tbl->lst_dmn[uidx].is_rec_dmn) dmn_rec_lcl++;
 
-  if(att_nbr_all) *att_nbr_all=att_nbr_lcl;
+  if(att_glb_all) *att_glb_all=att_glb_lcl;
+  if(att_grp_all) *att_grp_all=att_grp_lcl;
+  if(att_var_all) *att_var_all=att_var_lcl;
   if(dmn_nbr_all) *dmn_nbr_all=trv_tbl->nbr_dmn;
+  if(dmn_rec_all) *dmn_rec_all=dmn_rec_lcl;
+  if(grp_dpt_all) *grp_dpt_all=grp_dpt_lcl;
   if(grp_nbr_all) *grp_nbr_all=grp_nbr_lcl;
-  if(ntm_nbr_all) *ntm_nbr_all=ntm_nbr_lcl;
-  if(rec_nbr_all) *rec_nbr_all=rec_nbr_lcl;
-  if(tmc_nbr_all) *tmc_nbr_all=tmc_nbr_lcl;
+  if(var_ntm_all) *var_ntm_all=var_ntm_lcl;
+  if(var_tmc_all) *var_tmc_all=var_tmc_lcl;
 
   return;
 } /* end trv_tbl_inq() */
@@ -322,7 +336,6 @@ trv_tbl_srt /* [fnc] Sort traversal table */
      This produces easy-to-search variable name screen output with ncks */
   qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),nco_cmp_trv_tbl_nm_fll);
 } /* end trv_tbl_srt() */
-
 
 void                          
 trv_tbl_mch                           /* [fnc] Match 2 tables (find common objects) */
@@ -495,7 +508,6 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
   cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
 } /* end trv_tbl_mch() */
-
 
 void 
 trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  */
