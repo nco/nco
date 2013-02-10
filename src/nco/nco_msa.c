@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.156 2013-02-10 01:46:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.157 2013-02-10 05:47:29 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -835,8 +835,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* NB: nco_msa_prn_var_val() with same nc_id contains OpenMP critical region */
   /* Purpose: Print variable with limits from input file */
 
-  const char fnc_nm[]="nco_msa_prn_var_val()"; /* [sng] Function name  */
-
   char *unit_sng;                            /* [sng] Units string */ 
   char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
   char mss_val_sng[NCO_MAX_LEN_FMT_SNG]="_"; /* [sng] Print this instead of numerical missing value */
@@ -1203,12 +1201,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       {
         for(int jdx=idx+1;jdx<var.nbr_dim;jdx++)
         {
-
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: INFO %s [%d][%d]%s(%d)in=%li\n",prg_nm_get(),fnc_nm,
-              idx,jdx,lmt_msa[jdx]->dmn_nm,lmt_msa[jdx]->dmn_sz_org,mod_map_in[idx]);
-          }
-
           mod_map_in[idx]*=lmt_msa[jdx]->dmn_sz_org;
         }
       }
@@ -1219,12 +1211,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       {
         for(int jdx=idx;jdx<var.nbr_dim;jdx++)
         {
-
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: INFO %s [%d][%d]%s(%d)cnt=%li\n",prg_nm_get(),fnc_nm,
-              idx,jdx,lmt_msa[jdx]->dmn_nm,lmt_msa[jdx]->dmn_sz_org,mod_map_cnt[idx]);
-          }
-
           mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
         }
       }
@@ -1711,7 +1697,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (traversal table versio
     if(dmn_trv->lmt_dmn[idx]->srt > dmn_trv->lmt_dmn[idx]->end){
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%d->%d):\n",
+        (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%li->%li):\n",
           prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_dmn[idx]->srt,dmn_trv->lmt_dmn[idx]->end);
       }
 
@@ -1790,7 +1776,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (traversal table versio
       dmn_trv->lmt_crr++;
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%d->%d) - (%d->%d):\n",
+        (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",
           prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_dmn[idx]->srt,dmn_trv->lmt_dmn[idx]->end,
           dmn_trv->lmt_dmn[lmt_new_idx]->srt,dmn_trv->lmt_dmn[lmt_new_idx]->end);
       }
@@ -1925,7 +1911,13 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   Differences are marked "trv"
   1) It is not needed to retrieve dimension IDs for variable, these were used in nco_msa_prn_var_val()
   to match limits; Group Traversal Table (GTT)should be "ID free".
-  2) GTT contains 2 separate lists: 
+  2) GTT contains 2 separate lists: it is needed to traverse both and match by absolute name
+  3) MSA: Modulo arrays: Changing the subscript of the first (least rapidly varying) dimension by one moves very quickly through 
+  address space. Changing the subscript of the last (most rapidly varying) dimension by one moves exactly one location 
+  (e.g., 8 bytes for a double) in address space. Each dimension has its own "stride" or length of RAM space between
+  consecutive entries. mod_map_in and mod_map_cnt keep track of these distances. They are mappings between index-based 
+  access and RAM-based access. The location of an N-dimensional array element in RAM is the sum of the products of 
+  each index (dimensional subscript) times the stride (mod_map) of the corresponding dimension.
 
   Tests:
   ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
@@ -1953,14 +1945,12 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
   nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
 
-  long mod_map_in[NC_MAX_DIMS];
-  long mod_map_cnt[NC_MAX_DIMS];
+  long mod_map_in[NC_MAX_DIMS];              /* [nbr] MSA modulo array */
+  long mod_map_cnt[NC_MAX_DIMS];             /* [nbr] MSA modulo array */
   long dmn_sbs_ram[NC_MAX_DIMS];             /* [nbr] Indices in hyperslab */
   long dmn_sbs_dsk[NC_MAX_DIMS];             /* [nbr] Indices of hyperslab relative to original on disk */
 
   dmn_sct dim[NC_MAX_DIMS];                  /* [sct] Dimension structure (make life easier with static arrays) */
-
-  dmn_fll_sct *dmn_trv=NULL;                 /* [sct] Traversal dimension structure (contains limits) */
 
   lmt_all_sct **lmt_msa=NULL_CEWI;           /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI;                   /* [sct] Auxiliary Limit used in MSA */
@@ -1973,7 +1963,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   Or do double 2 loop sequences to find what we need first...
   */ 
 
-  /* Allocate; we don't know how many limits needed at this point */
+  /* Allocate; we don't know how many limits needed at this point, if any */
   lmt_msa=(lmt_all_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
 
@@ -1992,20 +1982,25 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
     for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
       dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
-      /* Match full dimension name */ 
+      /* Match full dimension name; found the dimension and possible limits in it */ 
       if(strcmp(var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
 
         if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout," %d limits: ",dmn_trv.lmt_dmn_nbr);
         }
 
-        /* Found the dimension and possible limits in it */
-
         lmt_msa[lmt_msa_idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
 
+        /* Initialize to NULL the limit array */
         lmt_msa[lmt_msa_idx]->lmt_dmn=NULL;
 
+        /* Initialize to NULL the auxiliary MSA limit array; crucial to MSA in case of no limits to use all data to read */
+        lmt[lmt_msa_idx]=NULL;
+
+        /* If limits, make space for them */
         if (dmn_trv.lmt_dmn_nbr) lmt_msa[lmt_msa_idx]->lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_dmn_nbr*sizeof(lmt_sct *));
+
+        /* And deep-copy the structure made while building limits  */
         lmt_msa[lmt_msa_idx]->BASIC_DMN=dmn_trv.BASIC_DMN;
         lmt_msa[lmt_msa_idx]->dmn_cnt=dmn_trv.dmn_cnt;
         lmt_msa[lmt_msa_idx]->dmn_nm=strdup(dmn_trv.nm);
@@ -2015,7 +2010,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
         lmt_msa[lmt_msa_idx]->WRP=dmn_trv.WRP;
 
         /* Loop needed limits */
-        for(unsigned lmt_idx=0;lmt_idx<dmn_trv.lmt_dmn_nbr;lmt_idx++){
+        for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_dmn_nbr;lmt_idx++){
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"[%d]:%s->",lmt_idx,trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_idx]->nm);
@@ -2024,10 +2019,10 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
           /* Alloc new limit */
           lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 
-          /* Initialize */
+          /* Initialize NULL/invalid */
           (void)nco_lmt_init(lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]);
 
-          /* Copy */ 
+          /* Deep copy from table to local array */ 
           (void)nco_lmt_cpy(trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_idx],lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]);
 
           if(dbg_lvl_get() >= nco_dbg_dev){
@@ -2036,15 +2031,19 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
 
         } /* End Loop needed limits */
 
-        /* But... wait... MSA super-dooper recursive function needs an allocated limit always
-        So, in case of no limits we default to the no limits case, allocate a dummy limit to read all data ...
-        or modify MSA to allow for the simplest case of no limits  */
+        /* But... wait... MSA super-dooper recursive function needs an allocated limit always; 2 options here:
+        1) Allocate a dummy limit to read all data 
+        2) Modify MSA to allow for the simplest case of no limits; MSA passes "var_sct var" while recursing;
+        the variable for number of elemnts (.sz) is being incremented...but we can use the member of "lmt_all_sct"
+        that stores the *original* size "dmn_sz_org".     
+        */
 
         if (dmn_trv.lmt_dmn_nbr == 0)
         {
+          if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Warning...no limit zone "); 
 
-          (void)fprintf(stdout,"Warning .... no limit zone...\n");        
-
+          /* Needed for MSA modulo arrays (cannot divide by zero) */ 
+          lmt_msa[lmt_msa_idx]->dmn_cnt=1;
         }
 
         if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"...done!\n");  
@@ -2485,42 +2484,25 @@ lbl_chr_prn:
     for(int idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=nco_free(dim[idx].val.vp);
   } /* end if */
 
-#if 0
+  /* Loop limits */
+  for(int lmt_idx_var=0;lmt_idx_var<lmt_msa_idx;lmt_idx_var++) {
+    /* Allocated number of limits */
+    int lmt_dmn_nbr=lmt_msa[lmt_idx_var]->lmt_dmn_nbr;
 
-  /* Find a way to free all this pointerish later */
+    /* Loop needed limits */
+    for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
+      lmt_msa[lmt_idx_var]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[lmt_idx_var]->lmt_dmn[lmt_idx]);
+    } /* End Loop needed limits */
 
-  /* Loop dimensions for object (variable) */
-  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
-
-    /* Loop unique dimensions list (these contain limits) */
-    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-
-      /* Match full dimension name */ 
-      if(strcmp(var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
-
-        /* Loop needed limits */
-        for(unsigned lmt_idx=0;lmt_idx<dmn_trv.lmt_dmn_nbr;lmt_idx++){
-          lmt_msa[dmn_idx_var]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[dmn_idx_var]->lmt_dmn[lmt_idx]);
-        } /* End Loop needed limits */
-
-        lmt_msa[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[dmn_idx_var]->lmt_dmn);
-
-        /* Exit found dimension loop */
-        break;
-
-      } /* Match full dimension name */ 
-    } /* End  Loop unique dimensions (these contain limits)  */
-
-    lmt_msa[dmn_idx_var]=(lmt_all_sct *)nco_free(lmt_msa[dmn_idx_var]);
-  } /* Loop dimensions for object (variable) */
+    lmt_msa[lmt_idx_var]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[lmt_idx_var]->lmt_dmn);
+  }/* End Loop limits */
 
   /* Finally...Phew... */
   if(var.nbr_dim > 0){
     (void)nco_free(lmt_msa);
     (void)nco_free(lmt);
   } /* end if */
-#endif
+
 
 } /* end nco_msa_prn_var_val_trv() */
 
