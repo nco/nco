@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.166 2013-02-10 22:27:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.167 2013-02-10 22:40:47 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -2541,7 +2541,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   4) Changes from printing version: MD5 dimension vectors need to be obtained from group 
   */
 
-  const char fnc_nm[]="nco_msa_prn_var_val_trv()"; /* [sng] Function name  */
+  const char fnc_nm[]="nco_cpy_var_val_mlt_lmt_trv()"; /* [sng] Function name  */
 
   char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 
 
