@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.455 2013-02-10 00:12:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.456 2013-02-10 00:58:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2738,9 +2738,12 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
   /* Loop table dimensions and initialize limit information */
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    /* Number of dimension limits for table dimension  */
-    unsigned int lmt_dmn_nbr=trv_tbl->lst_dmn[dmn_idx].lmt_dmn_nbr;
-    trv_tbl->lst_dmn[dmn_idx].lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+    trv_tbl->lst_dmn[dmn_idx].lmt_dmn=NULL;
+
+    /* Alloc limits if there are any  */
+    if (dmn_trv.lmt_dmn_nbr) trv_tbl->lst_dmn[dmn_idx].lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_dmn_nbr*sizeof(lmt_sct *));
     trv_tbl->lst_dmn[dmn_idx].lmt_crr=0;
     trv_tbl->lst_dmn[dmn_idx].WRP=False;
     trv_tbl->lst_dmn[dmn_idx].BASIC_DMN=True;
@@ -2779,8 +2782,10 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
         /* Increment current index being initialized  */
         trv_tbl->lst_dmn[dmn_idx].lmt_crr++;
 
-        /* Initialize this entry */
+        /* Alloc this limit */
         trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+
+        /* Initialize this entry */
         (void)nco_lmt_init(trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_crr]);
 
         /* Store this valid input; deep-copy to table */ 
