@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.165 2013-02-10 22:11:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.166 2013-02-10 22:27:53 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -2538,10 +2538,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   1) Object and GTT are passed as parameter instead of variable name only and limits array 
   2) Pair Object/GTT is needed to do a GTT to MSA limits conversion 
   3) Other than 2) and 3), function is identical to original nco_cpy_var_val_mlt_lmt(), regarding MSA call and writing variable
-  4) Changes from printing version: MD5 dimension vectors need to be initialized in the GTT to MSA limits conversion
+  4) Changes from printing version: MD5 dimension vectors need to be obtained from group 
   */
-
-  return;
 
   const char fnc_nm[]="nco_msa_prn_var_val_trv()"; /* [sng] Function name  */
 
@@ -2614,11 +2612,6 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   A special index match counter must be used, not a regular 2 loop array of variable dimensions and group dimensions...
   Or do double 2 loop sequences to find what we need first...
   */ 
-
-  /* Changes from printing version: MD5 dimension vectors need to be initialized in the GTT to MSA limits conversion */
-  dmn_map_in=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
 
   /* Allocate; we don't know how many limits needed at this point, if any */
   lmt_msa=(lmt_all_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_all_sct *));
@@ -2728,6 +2721,29 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
       } /* Match full dimension name */ 
     } /* End  Loop unique dimensions (these contain limits)  */
   } /* Loop dimensions for object (variable) */
+
+
+  /* Changes from printing version: MD5 dimension vectors need to be initialized */
+  dmn_map_in=(long *)nco_malloc(nbr_dim*sizeof(long));
+  dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
+  dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
+
+  /* Iterate group */
+  int dmn_id[NC_MAX_DIMS]; 
+  for(int dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+    char dmn_nm[NC_MAX_NAME];
+    long dmn_sz;
+
+    /* Get name and size */
+    (void)nco_inq_dim(in_id,dmn_id[dmn_idx],dmn_nm,&dmn_sz);
+
+    /* Get size */
+    (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],&dmn_map_in[dmn_idx]);
+
+    /* Store in MD5 arrays */
+    dmn_map_cnt[dmn_idx]=lmt_msa[dmn_idx]->dmn_cnt;
+    dmn_map_srt[dmn_idx]=0L;
+  } /* End Iterate group */
 
 
 
