@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.157 2013-02-10 05:47:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.158 2013-02-10 06:49:34 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1994,7 +1994,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
         /* Initialize to NULL the limit array */
         lmt_msa[lmt_msa_idx]->lmt_dmn=NULL;
 
-        /* Initialize to NULL the auxiliary MSA limit array; crucial to MSA in case of no limits to use all data to read */
+        /* Initialize to NULL the auxiliary MSA limit array; not needed, but always a good idea */
         lmt[lmt_msa_idx]=NULL;
 
         /* If limits, make space for them */
@@ -2032,15 +2032,29 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
         } /* End Loop needed limits */
 
         /* But... wait... MSA super-dooper recursive function needs an allocated limit always; 2 options here:
-        1) Allocate a dummy limit to read all data 
+        1) Allocate a dummy limit to read all data
         2) Modify MSA to allow for the simplest case of no limits; MSA passes "var_sct var" while recursing;
         the variable for number of elemnts (.sz) is being incremented...but we can use the member of "lmt_all_sct"
         that stores the *original* size "dmn_sz_org".     
         */
 
+        /* Go for Option 1); this translates to a "nameless" limit, with all members NULL/invalid..except the ones below */
         if (dmn_trv.lmt_dmn_nbr == 0)
         {
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Warning...no limit zone "); 
+
+          /* Alloc 1 dummy limit */
+          lmt_msa[lmt_msa_idx]->lmt_dmn_nbr=1;
+          lmt_msa[lmt_msa_idx]->lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
+          lmt_msa[lmt_msa_idx]->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+
+          /* Initialize NULL/invalid */
+          (void)nco_lmt_init(lmt_msa[lmt_msa_idx]->lmt_dmn[0]);
+
+          /* And set start,count,stride to read everything ...major success */
+          lmt_msa[lmt_msa_idx]->lmt_dmn[0]->srt=0;
+          lmt_msa[lmt_msa_idx]->lmt_dmn[0]->cnt=lmt_msa[lmt_msa_idx]->dmn_sz_org;
+          lmt_msa[lmt_msa_idx]->lmt_dmn[0]->srd=1;
 
           /* Needed for MSA modulo arrays (cannot divide by zero) */ 
           lmt_msa[lmt_msa_idx]->dmn_cnt=1;
