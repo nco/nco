@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.239 2013-02-09 02:27:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.240 2013-02-11 01:03:49 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -658,7 +658,9 @@ extern "C" {
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
 
-  /* Traversal dimension structure; it contains NetCDF model fields and NCO limit (-d) fields */
+  /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and NCO limit (-d) fields 
+     When writing variables the limits need to be distributed to variables 
+     Need a way to do this after table is built */
   typedef struct{ 
     char *grp_nm_fll; /* [sng][CHK] Full group name where dimension was defined */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
@@ -675,9 +677,9 @@ extern "C" {
     long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
   } dmn_fll_sct; 
  
-  /* Traversal table structure contains two lists
+  /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
-     2) lst_dmn: All dimensions in file tree (netCDF addition to HDF5) */
+     2) lst_dmn: All unique dimensions (in groups) in file tree (netCDF addition to HDF5) */
   typedef struct{
     trv_sct *lst;           /* [sct] Array of trv_sct */
     unsigned int sz;        /* [nbr] Allocated size of trv_sct array */
