@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.462 2013-02-11 08:45:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.463 2013-02-11 09:49:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2749,7 +2749,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     trv_tbl->lst_dmn[dmn_idx].WRP=False;
     trv_tbl->lst_dmn[dmn_idx].BASIC_DMN=True;
     trv_tbl->lst_dmn[dmn_idx].MSA_USR_RDR=False;  
-    trv_tbl->lst_dmn[dmn_idx].dmn_cnt=0;
+    trv_tbl->lst_dmn[dmn_idx].dmn_cnt=-1;
   } /* End Loop table dimensions  */
 
   /* Step 3) Store matches in table, match at the current index, increment current index  */

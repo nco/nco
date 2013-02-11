@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.170 2013-02-11 08:03:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.171 2013-02-11 09:49:31 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -2059,8 +2059,8 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
           lmt_msa[lmt_msa_idx]->lmt_dmn[0]->cnt=lmt_msa[lmt_msa_idx]->dmn_sz_org;
           lmt_msa[lmt_msa_idx]->lmt_dmn[0]->srd=1;
 
-          /* Needed for MSA modulo arrays (cannot divide by zero) */ 
-          lmt_msa[lmt_msa_idx]->dmn_cnt=1;
+          /* Needed for MSA modulo arrays to get correct indexes */ 
+          lmt_msa[lmt_msa_idx]->dmn_cnt=lmt_msa[lmt_msa_idx]->dmn_sz_org;
         }
 
         if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"...done!\n");  
@@ -2704,8 +2704,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
           lmt_msa[lmt_msa_idx]->lmt_dmn[0]->cnt=lmt_msa[lmt_msa_idx]->dmn_sz_org;
           lmt_msa[lmt_msa_idx]->lmt_dmn[0]->srd=1;
 
-          /* Needed for MSA modulo arrays (cannot divide by zero) */ 
-          lmt_msa[lmt_msa_idx]->dmn_cnt=1;
+          /* Needed for MSA modulo arrays to get correct indexes */ 
+          lmt_msa[lmt_msa_idx]->dmn_cnt=lmt_msa[lmt_msa_idx]->dmn_sz_org;
         }
 
         if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"...done!\n");  
