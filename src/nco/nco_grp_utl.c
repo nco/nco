@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.458 2013-02-10 20:52:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.459 2013-02-11 00:44:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2651,8 +2651,6 @@ nco_prn_var_val_trv                   /* [fnc] Print variable data (called with 
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
-  const char fnc_nm[]="nco_prn_var_val_trv()"; /* [sng] Function name */
-
   int grp_id; /* [ID] Group ID */
 
   /* Loop variables in table */
@@ -3091,7 +3089,11 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
       } /* !GPE */
 
       /* Define variable in output file */
-      if(HAVE_LIMITS) var_out_id=nco_cpy_var_dfn_lmt_trv(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl,trv_tbl); 
+
+      /* 20130210 pvn nco_cpy_var_dfn_lmt_trv() should be always used (eliminate HAVE_LIMITS)
+         pass the object for variable instead of variable name only */
+
+      if(HAVE_LIMITS) var_out_id=nco_cpy_var_dfn_lmt_trv(grp_id,grp_out_id,rec_dmn_nm,dfl_lvl,&trv,trv_tbl); 
       else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
 
       /* Set chunksize parameters */

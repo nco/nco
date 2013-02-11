@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.80 2013-02-10 09:37:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.81 2013-02-11 00:44:33 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -186,8 +186,8 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
 (const int in_id,                   /* I [id] netCDF input file ID */
  const int out_id,                  /* I [id] netCDF output file ID */
  const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
- const char * const var_nm,         /* I [sng] Input variable name */
  const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
+ const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus

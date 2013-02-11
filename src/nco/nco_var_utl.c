@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.222 2013-02-10 21:28:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.223 2013-02-11 00:44:33 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2151,13 +2151,15 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
 (const int in_id,                   /* I [id] netCDF input file ID */
  const int out_id,                  /* I [id] netCDF output file ID */
  const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
- const char * const var_nm,         /* I [sng] Input variable name */
  const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
+ const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* 20130209 pvn Copy-cat of nco_cpy_var_dfn_lmt() without evil "lmt_all_lst" array: under construction;
      1) The traversal object should be passed instead; avoid IDs floating around
-     2) nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt() Unified function needed , both with GTT */
+     2) nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt() Unified function needed , both with GTT 
+     3) pass the object for variable instead of variable name only  
+     */
 
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
   Routine is based on nco_cpy_dfn_lmt(), and differs trivially from it
@@ -2169,6 +2171,8 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
   Otherwise, re-use old record dimension name */
 
   const char fnc_nm[]="nco_cpy_var_dfn_lmt()"; /* [sng] Function name */
+
+  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 
 
   char *rec_dmn_nm=NULL; /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL; /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
@@ -2193,6 +2197,12 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
   nco_bool FIX_REC_DMN=False; /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
   nco_bool CRR_DMN_IS_REC_IN_INPUT; /* [flg] Current dimension of variable is record dimension of variable in input file/group */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
+
+
+  assert(nco_obj_typ_var == var_trv->typ);
+
+  /* Local copy of object name */ 
+  strcpy(var_nm,var_trv->nm);       
 
   /* Recall:
   1. Dimensions must be defined before variables
@@ -2338,8 +2348,11 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
             break;
           } /* end if */
         } /* end loop over lmt_all_idx */
-#endif
+#else /* REPLACE_WITH_GTT_INFORMATION */
 
+
+
+#endif /* REPLACE_WITH_GTT_INFORMATION */
 
         (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
