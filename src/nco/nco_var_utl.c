@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.224 2013-02-11 00:54:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.225 2013-02-11 04:11:35 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2350,7 +2350,15 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
         } /* end loop over lmt_all_idx */
 #else /* REPLACE_WITH_GTT_INFORMATION */
 
+        /* Find dimension of the object variable by searching in the list of unique dimensions */
+        dmn_fll_sct *dmn_trv=nco_fnd_var_lmt_trv(dmn_idx,var_trv,trv_tbl);
 
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s defining [%d]:%s(%d): with size=%d\n",prg_nm_get(),fnc_nm,
+            dmn_idx,dmn_trv->nm_fll,dmn_trv->sz,dmn_trv->dmn_cnt);
+        }
+
+        dmn_sz=dmn_trv->dmn_cnt;
 
 #endif /* REPLACE_WITH_GTT_INFORMATION */
 
