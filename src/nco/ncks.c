@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.585 2013-02-11 08:03:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.586 2013-02-11 08:45:27 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -60,9 +60,11 @@ functions to remove:
 1) nco_msa_lmt_all_int_trv [fnc] Initilaize lmt_all_sct's; recursive version 
 ->use original nco_msa_lmt_all_int() for other operators
 2) nco_xtr_wrt [fnc] Write extracted data to output file 
-->use nco_xtr_wrt_trv() that has GTT 
+->use nco_xtr_wrt_trv() that has GTT->MSA 
 3) nco_xtr_dfn [fnc] Define extracted groups, variables, and attributes in output file
 -> use nco_xtr_dfn() that has GTT 
+4) nco_prn_var_val [fnc] Print variable data
+-> use nco_prn_var_val_trv that has GTT->MSA
 */
 #endif
 
@@ -161,8 +163,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.585 2013-02-11 08:03:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.585 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.586 2013-02-11 08:45:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.586 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;

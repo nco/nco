@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.461 2013-02-11 08:03:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.462 2013-02-11 08:45:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -380,7 +380,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   sls_psn=grp_nm_fll;
   if(!strcmp(grp_nm_fll,sls_sng)) grp_dpt=0; else grp_dpt=1;
   while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
-  if(dbg_lvl_get() > nco_dbg_var) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",prg_nm_get(),grp_nm_fll,grp_dpt);
+  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",prg_nm_get(),grp_nm_fll,grp_dpt);
 
   /* Add group to table */
   strcpy(obj.nm,grp_nm);
@@ -2069,11 +2069,6 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
   int grp_id; /* [ID] Group ID */
   int var_id; /* [ID] Variable ID */
 
-  if(dbg_lvl_get() == nco_dbg_crr){
-    (void)fprintf(stdout,"%s: INFO %s reports %d dimension limits:\n",prg_nm_get(),fnc_nm,lmt_nbr);
-    for(int idx=0;idx<lmt_nbr;idx++) (void)fprintf(stdout,"[%d]%s(%li)\n",idx,lmt_lst[idx]->dmn_nm_fll,lmt_lst[idx]->dmn_sz_org);
-  } /* endif dbg */
-
   /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
 
@@ -2720,10 +2715,6 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   const char fnc_nm[]="nco_bld_lmt_trv()"; /* [sng] Function name  */
 
   if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO %s reports %d unique dimensions in table\n",prg_nm_get(),fnc_nm,trv_tbl->nbr_dmn);
-    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-      (void)fprintf(stdout,"[%d]%s\n",dmn_idx,trv_tbl->lst_dmn[dmn_idx].nm_fll);
-    }
     (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits: ",prg_nm_get(),fnc_nm,lmt_nbr);
     for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++)(void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
     (void)fprintf(stdout,"\n");      
