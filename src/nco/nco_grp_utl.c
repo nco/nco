@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.460 2013-02-11 04:11:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.461 2013-02-11 08:03:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -21,7 +21,7 @@ void
 nco_flg_set_grp_var_ass               /* [fnc] Set flags for groups and variables associated with matched object */
 (const char * const grp_nm_fll,       /* I [sng] Full name of group */
  const nco_obj_typ obj_typ,           /* I [enm] Object type (group or variable) */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Set flags for groups and variables associated with matched object */  
 
@@ -319,7 +319,7 @@ int /* [rcd] Return code */
 nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */
 (const int grp_id, /* I [ID] Group ID */
  char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
- trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Populate traversal table by examining, recursively, subgroups of parent */
 
@@ -615,7 +615,7 @@ nco_lmt_evl_trv                       /* [fnc] Parse user-specified limits into 
  int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt,                       /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
 
@@ -674,7 +674,7 @@ nco_lmt_evl_trv                       /* [fnc] Parse user-specified limits into 
 void 
 nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes */
 (const int nc_id, /* I [id] netCDF file ID */
- const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   int fl_fmt;                 /* [enm] netCDF file format */
   int grp_id;                 /* [ID] Group ID */
@@ -741,7 +741,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
  const int var_xtr_nbr,               /* I [nbr] Number of variables in list */
  const nco_bool EXTRACT_ALL_COORDINATES, /* I [flg] Process all coordinates */ 
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Verify all user-specified objects exist in file and create extraction list
      Verify both variables and groups
@@ -1026,8 +1026,10 @@ nco_msa_lmt_all_int_trv               /* [fnc] Initilaize lmt_all_sct's; recursi
  int nbr_dmn_fl,                      /* I [nbr] Number of dimensions in file */
  lmt_sct **lmt,                       /* [sct] Limits of the current hyperslab */
  int lmt_nbr,                         /* I [nbr] Number of limit structures in list */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
+  /* 20130211 pvn deprecate all "lmt_all_sct **lmt_all_lst" use from ncks ASAP */
+
   lmt_sct *lmt_rgl;
   lmt_all_sct * lmt_all_crr;
   int nbr_dmn_all;             /* [nbr] Total number of dimensions in file */
@@ -1244,7 +1246,7 @@ nco_fnd_dmn                           /* [fnc] Find a dimension that matches dmn
 
 void
 nco_xtr_xcl                           /* [fnc] Convert extraction list to exclusion list */
-(trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+(trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Convert extraction list to exclusion list */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
@@ -1257,7 +1259,7 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
 void
 nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction list */
 (const int nc_id,                     /* I [ID] netCDF file ID */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Add all coordinates to extraction list
      Find all coordinates (variables with same names and sizes as dimensions) and
@@ -1354,7 +1356,7 @@ void
 nco_xtr_cf_add                        /* [fnc] Add to extraction list variables associated with CF convention */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const char * const cf_nm,            /* I [sng] CF convention ("coordinates" or "bounds") */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Add to extraction list all variables associated with specified CF convention
      Driver routine for nco_xtr_cf_prv_add()
@@ -1376,7 +1378,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
  const char * const var_nm_fll,       /* I [sng] Full variable name */
  const char * const var_nm,           /* I [sng] Variable relative name */
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Detect associated coordinates specified by CF "bounds" or "coordinates" convention for single variable
      Private routine called by nco_xtr_cf_add()
@@ -1606,7 +1608,7 @@ nm_id_sct *                           /* O [sct] Extraction list */
 nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_sct from traversal table */
 (const int nc_id,                     /* I [id] netCDF file ID */
  int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Create extraction list of nm_id_sct from traversal table */
 
@@ -1649,7 +1651,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
 void
 nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id,                     /* I [ID] netCDF file ID */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Add to extraction list all coordinates associated with extracted variables */
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
@@ -1738,8 +1740,10 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
  const int lmt_all_lst_nbr,           /* I [nbr] Number of hyperslab limits */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
+  /* 20130211 pvn deprecate all "lmt_all_sct **lmt_all_lst" use from ncks ASAP */
+
   /* Purpose: Write extracted variables to output file */
 
   int fl_out_fmt; /* [enm] File format */
@@ -1819,8 +1823,10 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
  const nco_bool CPY_GRP_METADATA,     /* I [flg] Copy group metadata (attributes) */
  const nco_bool CPY_VAR_METADATA,     /* I [flg] Copy variable metadata (attributes) */
  const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
+  /* 20130211 pvn deprecate all "lmt_all_sct **lmt_all_lst" use from ncks ASAP */
+
   /* Purpose: Define groups, variables, and attributes in output file
      rec_dmn_nm, if any, is name requested for (netCDF3) sole record dimension */
   
@@ -2014,7 +2020,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
 void
 nco_prn_xtr_dfn /* [fnc] Print variable metadata */
 (const int nc_id, /* I [id] netCDF file ID */
- const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 { 
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
@@ -2055,7 +2061,7 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
  const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 { 
   const char fnc_nm[]="nco_prn_var_val()"; /* [sng] Function name */
 
@@ -2145,7 +2151,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
 (const int nc_id,                     /* I [id] netCDF file ID */
  nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
  const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
  const nco_bool NM_ID_SAME_ORDER)     /* I [flg] Both nm_id_sct have the same order */
 {
   nm_id_sct *xtr_lst_chk=NULL;
@@ -2164,7 +2170,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
 nm_id_sct *                           /* O [sct] List of dimensions associated with input variable list */ 
 nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions associated with input variable list */
 (const int nc_id,                     /* I [id] netCDF input-file ID */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
  int * const nbr_dmn)                 /* O [nbr] Number of dimensions associated with input variable list */
 {
   /* Purpose: Create list of all dimensions associated with input variable list;
@@ -2395,10 +2401,10 @@ nco_prt_dmn /* [fnc] Print dimensions for a group  */
 void                          
 nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get_grp_info  */
 (const int nc_id, /* I [ID] File ID */
- const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  int fl_fmt; /* [enm] netCDF file format */
-  int grp_id; /* [ID]  Group ID */
+  int fl_fmt;  /* [enm] netCDF file format */
+  int grp_id;  /* [ID]  Group ID */
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_dmn; /* [nbr] Number of dimensions */
   int nbr_var; /* [nbr] Number of variables */
@@ -2489,7 +2495,7 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 void                          
 nco_bld_dmn_trv                       /* [fnc] Build dimension info for all variables */
 (const int nc_id,                     /* I [ID] File ID */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: a netCDF4 variable can have its dimensions located anywhere below *in the group path*
   Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
@@ -2649,8 +2655,14 @@ nco_prn_var_val_trv                   /* [fnc] Print variable data (called with 
  const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
+  /* Purpose: Print variable data (called with PRN_VAR_DATA) 
+
+  20130209 pvn Copy-cat of nco_prn_var_val() without evil "lmt_all_lst" array
+  nco_prn_var_val_trv() passes passes the Variable Object instead of variable name only and limits array
+  */
+
   int grp_id; /* [ID] Group ID */
 
   /* Loop variables in table */
@@ -2681,7 +2693,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
  int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits (total number of -d inputs) */
  lmt_sct **lmt,                       /* I/O [sct] Structure comming from nco_lmt_prs()  */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Assign user-specified dimension limits to traversal table dimensions structure 
   At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known 
@@ -2923,12 +2935,15 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
  const nco_bool CPY_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
  const char * const rec_dmn_nm,      /* I [sng] Record dimension name */
  const nco_bool HAVE_LIMITS,         /* I [flg] Dimension limits exist ( For convenience, ideally... not needed ) */
- trv_tbl_sct * const trv_tbl)        /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
 {
-  /* 20130209 pvn Copy-cat of nco_xtr_dfn() without evil "lmt_all_lst" array: under construction  */
-
   /* Purpose: Define groups, variables, and attributes in output file
-  rec_dmn_nm, if any, is name requested for (netCDF3) sole record dimension */
+  rec_dmn_nm, if any, is name requested for (netCDF3) sole record dimension 
+
+  20130209 pvn Copy-cat of nco_xtr_dfn() without evil "lmt_all_lst" array
+  1) nco_cpy_var_dfn_lmt_trv() passes passes the Variable Object instead of variable name only and limits array
+  2) Improvemnents: nco_cpy_var_dfn_lmt_trv() should be always used (eliminate HAVE_LIMITS)
+  */
 
   const char fnc_nm[]="nco_xtr_dfn_trv()"; /* [sng] Function name */
   const char sls_sng[]="/"; /* [sng] Slash string */
@@ -3089,10 +3104,6 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
       } /* !GPE */
 
       /* Define variable in output file */
-
-      /* 20130210 pvn nco_cpy_var_dfn_lmt_trv() should be always used (eliminate HAVE_LIMITS)
-         pass the object for variable instead of variable name only */
-
       if(HAVE_LIMITS) var_out_id=nco_cpy_var_dfn_lmt_trv(grp_id,grp_out_id,rec_dmn_nm,dfl_lvl,&trv,trv_tbl); 
       else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
 
@@ -3130,11 +3141,14 @@ nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output fi
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist ( For convenience, ideally... not needed ) */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
-  /* 20130209 pvn Copy-cat of nco_xtr_wrt() without evil "lmt_all_lst" array: done  */
+  /* Purpose: Write extracted variables to output file 
 
-  /* Purpose: Write extracted variables to output file */
+  20130209 pvn Copy-cat of nco_xtr_wrt() without evil "lmt_all_lst" array
+  1) nco_cpy_var_val_mlt_lmt_trv() passes passes the Variable Object instead of variable name only and limits array
+  2) Improvemnents: nco_cpy_var_val_mlt_lmt_trv() should be always used (eliminate HAVE_LIMITS) 
+  */
 
   int fl_out_fmt; /* [enm] File format */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.584 2013-02-10 09:37:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.585 2013-02-11 08:03:04 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -54,8 +54,16 @@
    ncks -O -v time ~/in_grp.nc ~/foo.nc */
 
 #if 1
-/* Use lmt_all_sct **lmt_all_lst, List of *lmt_all structures; to remove once replaced by "trv" limit functions */
-#define USE_LMT_ALL 
+#define USE_LMT_ALL
+/* Use lmt_all_sct **lmt_all_lst, List of *lmt_all structures; to remove once replaced by "trv" limit functions 
+functions to remove:
+1) nco_msa_lmt_all_int_trv [fnc] Initilaize lmt_all_sct's; recursive version 
+->use original nco_msa_lmt_all_int() for other operators
+2) nco_xtr_wrt [fnc] Write extracted data to output file 
+->use nco_xtr_wrt_trv() that has GTT 
+3) nco_xtr_dfn [fnc] Define extracted groups, variables, and attributes in output file
+-> use nco_xtr_dfn() that has GTT 
+*/
 #endif
 
 #ifdef HAVE_CONFIG_H
@@ -153,8 +161,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.584 2013-02-10 09:37:33 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.584 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.585 2013-02-11 08:03:04 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.585 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;

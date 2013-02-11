@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.169 2013-02-10 23:50:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.170 2013-02-11 08:03:04 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1666,10 +1666,10 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
 
 
 void
-nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (traversal table version) */
-(dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from traversal table */
+nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
+(dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from GTT */
 {
-  /* Purpose: Same as nco_msa_wrp_splt() but applied to the Dimension structure from traversal table 
+  /* Purpose: Same as nco_msa_wrp_splt() but applied to the Dimension structure from GTT 
   Differences from nco_msa_wrp_splt() are marked "trv" 
   Goal here is to replace a wrapped limit by 2 non-wrapped limits 
   Wrapped hyperslabs are dimensions broken into the "wrong" order,e.g. from
@@ -1793,10 +1793,10 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (traversal table versio
 
 
 void 
-nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (traversal table version) */ 
-(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from traversal table */
+nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (GTT version) */ 
+(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from GTT */
 {
-  /* Purpose: Same as nco_msa_clc_cnt() but applied to the Dimension structure from traversal table */
+  /* Purpose: Same as nco_msa_clc_cnt() but applied to the Dimension structure from GTT */
 
   int idx;
   long cnt=0;
@@ -1841,10 +1841,10 @@ nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (traversa
 } /* End nco_msa_clc_cnt_trv() */
 
 void             
-nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (traversal table version) */
-(dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from traversal table */
+nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (GTT version) */
+(dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from GTT */
 {
-  /* Purpose: Same as nco_msa_qsort_srt() but applied to the Dimension structure from traversal table */
+  /* Purpose: Same as nco_msa_qsort_srt() but applied to the Dimension structure from GTT */
 
   lmt_sct **lmt;
   long sz;           /* [nbr] Number of limit structures */
@@ -1860,11 +1860,11 @@ nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (traversal table versi
 
 
 
-nco_bool                /* O [flg] Return true if limits overlap (traversal table version) */
+nco_bool                /* O [flg] Return true if limits overlap (GTT version) */
 nco_msa_ovl_trv         /* [fnc] See if limits overlap */ 
-(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from traversal table */
+(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from GTT */
 {
-  /* Purpose: Same as nco_msa_ovl() but applied to the Dimension structure from traversal table 
+  /* Purpose: Same as nco_msa_ovl() but applied to the Dimension structure from GTT 
   Return true if limits overlap NB: Assumes that limits have been sorted */
 
   long idx;
@@ -1886,7 +1886,7 @@ nco_msa_ovl_trv         /* [fnc] See if limits overlap */
 
 
 void
-nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal table version) */
+nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 (const int in_id,                   /* I [id] Group ID */
  char * const dlm_sng,              /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV,    /* I [flg] Hyperslab indices obey Fortran convention */
@@ -1907,7 +1907,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (traversal tabl
   if PRN_DMN_IDX_CRD_VAL then read in co-ord dims
   if PRN.. = True print var taking account of FORTRAN (Use dims to calculate var indices 
 
-  Similar to nco_msa_prn_var_val() but uses limit information contained in traversal table 
+  Similar to nco_msa_prn_var_val() but uses limit information contained in GTT 
   Differences are marked "trv"
   1) It is not needed to retrieve dimension IDs for variable, these were used in nco_msa_prn_var_val()
   to match limits; Group Traversal Table (GTT)should be "ID free".
@@ -2725,13 +2725,13 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
 
-  /* Loop dimesnions */
+  /* Loop dimensions */
   for(int dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
 
     /* Store in arrays */
     dmn_map_cnt[dmn_idx]=lmt_msa[dmn_idx]->dmn_cnt;
     dmn_map_srt[dmn_idx]=0L;
-  } /* End loop dimesnions */
+  } /* End loop dimensions */
 
 
   /* Initalize variable structure with in_id, var_in_id, nctype, etc., so recursive routine can read data */
