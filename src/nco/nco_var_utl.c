@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.223 2013-02-11 00:44:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.224 2013-02-11 00:54:44 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -29,10 +29,10 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
 
   char *rec_dmn_nm=NULL; /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL; /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
-  
+
   int *dmn_in_id;
   int *dmn_out_id;
-  
+
   int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
 
   int dmn_idx;
@@ -52,8 +52,8 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
 
   /* Recall:
-     1. Dimensions must be defined before variables
-     2. Variables must be defined before attributes */
+  1. Dimensions must be defined before variables
+  2. Variables must be defined before attributes */
 
   /* Is requested variable already in output file? */
   rcd=nco_inq_varid_flg(out_id,var_nm,&var_out_id);
@@ -82,7 +82,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   /* Does user want a record dimension to receive special handling? */
   if(rec_dmn_nm_cst){
     /* Create (and later free()) local copy to preserve const-ness of passed value
-       For simplicity, work with canonical name rec_dmn_nm */
+    For simplicity, work with canonical name rec_dmn_nm */
     rec_dmn_nm_mlc=strdup(rec_dmn_nm_cst);
     /* Parse rec_dmn_nm argument */
     if(!strncmp("fix_",rec_dmn_nm_mlc,(size_t)4)){
@@ -93,11 +93,11 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
       rec_dmn_nm=rec_dmn_nm_mlc;
     } /* strncmp() */    
   } /* !rec_dmn_nm_cst */
-  
+
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
     /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
-       rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL); */
+    rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL); */
     int rec_dmn_id_dmy;
     rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,&rec_dmn_id_dmy);
     if(rcd != NC_NOERR){
@@ -108,8 +108,8 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
     /* Does variable contain requested record dimension? */
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       if(dmn_in_id[dmn_idx] == rec_dmn_id_dmy){
-	if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
-	break;
+        if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+        break;
       } /* endif */
     } /* end loop over dmn_idx */
   } /* !rec_dmn_nm */
@@ -132,55 +132,55 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
     if(rcd_lcl != NC_NOERR){
 
       /* Here begins a complex tree to decide a simple, binary output:
-	 Will current input dimension be defined as an output record dimension or as a fixed dimension?
-	 Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
-	 Otherwise would repeat netCDF action code too many times */
+      Will current input dimension be defined as an output record dimension or as a fixed dimension?
+      Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
+      Otherwise would repeat netCDF action code too many times */
 
       /* Is dimension unlimited in input file? */
       for(rec_idx=0;rec_idx<nbr_rec;rec_idx++)
-	if(dmn_in_id[dmn_idx] == dmn_ids_rec[rec_idx]) break;
+        if(dmn_in_id[dmn_idx] == dmn_ids_rec[rec_idx]) break;
       if(rec_idx < nbr_rec) CRR_DMN_IS_REC_IN_INPUT=True; else CRR_DMN_IS_REC_IN_INPUT=False;
 
       /* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
       if(rec_dmn_nm){
-	/* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
-	if(!strcmp(dmn_nm,rec_dmn_nm)){
-	  /* ... then honor user's request to define it as a fixed or record dimension ... */
-	  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
-	  if(FIX_REC_DMN) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=True;
-	}else{ /* strcmp() */
-	  if(FIX_REC_DMN){
-	    /* ... fix_rec_dmn case is straightforward: output dimension has same format as input dimension */
-	    if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-	  }else{ /* !FIX_REC_DMN */
-	    /* ... otherwise we are in the --mk_rec_dmn case where things get complicated ... 
-	       This dimension can be a record dimension only if it would not conflict with the requested 
-	       record dimension being defined a record dimension, and that depends on file format. Uggh.
-	       1. netCDF3 API allows only one record-dimension so conflicts are possible
-	       2. netCDF4 API permits any number of unlimited dimensions so conflicts are impossible */
-	    if(fl_fmt == NC_FORMAT_NETCDF4){
-	      /* ... no conflicts possible so define dimension in output same as in input ... */
-	      if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-	    }else{ /* !netCDF4 */
-	      /* ... output file adheres to netCDF3 API so there can be only one record dimension.
-		 In other words, define all other dimensions as fixed, non-record dimensions, even
-		 if they are a record dimension in the input file ... */
-	      if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
-	      DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-	    } /* !netCDF4 */
-	  } /* !FIX_REC_DMN */
-	} /* strcmp() */
+        /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
+        if(!strcmp(dmn_nm,rec_dmn_nm)){
+          /* ... then honor user's request to define it as a fixed or record dimension ... */
+          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
+          if(FIX_REC_DMN) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=True;
+        }else{ /* strcmp() */
+          if(FIX_REC_DMN){
+            /* ... fix_rec_dmn case is straightforward: output dimension has same format as input dimension */
+            if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+          }else{ /* !FIX_REC_DMN */
+            /* ... otherwise we are in the --mk_rec_dmn case where things get complicated ... 
+            This dimension can be a record dimension only if it would not conflict with the requested 
+            record dimension being defined a record dimension, and that depends on file format. Uggh.
+            1. netCDF3 API allows only one record-dimension so conflicts are possible
+            2. netCDF4 API permits any number of unlimited dimensions so conflicts are impossible */
+            if(fl_fmt == NC_FORMAT_NETCDF4){
+              /* ... no conflicts possible so define dimension in output same as in input ... */
+              if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+            }else{ /* !netCDF4 */
+              /* ... output file adheres to netCDF3 API so there can be only one record dimension.
+              In other words, define all other dimensions as fixed, non-record dimensions, even
+              if they are a record dimension in the input file ... */
+              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
+              DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+            } /* !netCDF4 */
+          } /* !FIX_REC_DMN */
+        } /* strcmp() */
       }else{ /* !rec_dmn_nm */
-	/* ... no user-specified record dimension so define dimension in output same as in input ... */
-	if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+        /* ... no user-specified record dimension so define dimension in output same as in input ... */
+        if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
       } /* !rec_dmn_nm */ 
-      
+
       /* At long last ... */
       if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
-	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+dmn_idx);
-	rec_dmn_out_id=dmn_out_id[dmn_idx];
+        (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+dmn_idx);
+        rec_dmn_out_id=dmn_out_id[dmn_idx];
       }else{ /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
-	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
+        (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 
     } /* end if dimension is not yet defined */
@@ -245,10 +245,10 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 
   char *rec_dmn_nm=NULL; /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL; /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
-  
+
   int *dmn_in_id;
   int *dmn_out_id;
-  
+
   int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
 
   int dmn_idx;
@@ -268,8 +268,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
 
   /* Recall:
-     1. Dimensions must be defined before variables
-     2. Variables must be defined before attributes */
+  1. Dimensions must be defined before variables
+  2. Variables must be defined before attributes */
 
   /* Is requested variable already in output file? */
   rcd=nco_inq_varid_flg(out_id,var_nm,&var_out_id);
@@ -298,7 +298,7 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   /* Does user want a record dimension to receive special handling? */
   if(rec_dmn_nm_cst){
     /* Create (and later free()) local copy to preserve const-ness of passed value
-       For simplicity, work with canonical name rec_dmn_nm */
+    For simplicity, work with canonical name rec_dmn_nm */
     rec_dmn_nm_mlc=strdup(rec_dmn_nm_cst);
     /* Parse rec_dmn_nm argument */
     if(!strncmp("fix_",rec_dmn_nm_mlc,(size_t)4)){
@@ -309,11 +309,11 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
       rec_dmn_nm=rec_dmn_nm_mlc;
     } /* strncmp() */    
   } /* !rec_dmn_nm_cst */
-  
+
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
     /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
-       rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL); */
+    rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL); */
     int rec_dmn_id_dmy;
     rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,&rec_dmn_id_dmy);
     if(rcd != NC_NOERR){
@@ -324,8 +324,8 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     /* Does variable contain requested record dimension? */
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       if(dmn_in_id[dmn_idx] == rec_dmn_id_dmy){
-	if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
-	break;
+        if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+        break;
       } /* endif */
     } /* end loop over dmn_idx */
   } /* !rec_dmn_nm */
@@ -348,64 +348,64 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
     if(rcd_lcl != NC_NOERR){
 
       /* Here begins a complex tree to decide a simple, binary output:
-	 Will current input dimension be defined as an output record dimension or as a fixed dimension?
-	 Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
-	 Otherwise would repeat netCDF action code too many times */
+      Will current input dimension be defined as an output record dimension or as a fixed dimension?
+      Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
+      Otherwise would repeat netCDF action code too many times */
 
       /* Is dimension unlimited in input file? */
       for(rec_idx=0;rec_idx<nbr_rec;rec_idx++)
-	if(dmn_in_id[dmn_idx] == dmn_ids_rec[rec_idx]) break;
+        if(dmn_in_id[dmn_idx] == dmn_ids_rec[rec_idx]) break;
       if(rec_idx < nbr_rec) CRR_DMN_IS_REC_IN_INPUT=True; else CRR_DMN_IS_REC_IN_INPUT=False;
 
       /* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
       if(rec_dmn_nm){
-	/* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
-	if(!strcmp(dmn_nm,rec_dmn_nm)){
-	  /* ... then honor user's request to define it as a fixed or record dimension ... */
-	  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
-	  if(FIX_REC_DMN) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=True;
-	}else{ /* strcmp() */
-	  if(FIX_REC_DMN){
-	    /* ... fix_rec_dmn case is straightforward: output dimension has same format as input dimension */
-	    if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-	  }else{ /* !FIX_REC_DMN */
-	    /* ... otherwise we are in the --mk_rec_dmn case where things get complicated ... 
-	       This dimension can be a record dimension only if it would not conflict with the requested 
-	       record dimension being defined a record dimension, and that depends on file format. Uggh.
-	       1. netCDF3 API allows only one record-dimension so conflicts are possible
-	       2. netCDF4 API permits any number of unlimited dimensions so conflicts are impossible */
-	    if(fl_fmt == NC_FORMAT_NETCDF4){
-	      /* ... no conflicts possible so define dimension in output same as in input ... */
-	      if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-	    }else{ /* !netCDF4 */
-	      /* ... output file adheres to netCDF3 API so there can be only one record dimension.
-		 In other words, define all other dimensions as fixed, non-record dimensions, even
-		 if they are a record dimension in the input file ... */
-	      if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
-	      DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-	    } /* !netCDF4 */
-	  } /* !FIX_REC_DMN */
-	} /* strcmp() */
+        /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
+        if(!strcmp(dmn_nm,rec_dmn_nm)){
+          /* ... then honor user's request to define it as a fixed or record dimension ... */
+          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
+          if(FIX_REC_DMN) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=True;
+        }else{ /* strcmp() */
+          if(FIX_REC_DMN){
+            /* ... fix_rec_dmn case is straightforward: output dimension has same format as input dimension */
+            if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+          }else{ /* !FIX_REC_DMN */
+            /* ... otherwise we are in the --mk_rec_dmn case where things get complicated ... 
+            This dimension can be a record dimension only if it would not conflict with the requested 
+            record dimension being defined a record dimension, and that depends on file format. Uggh.
+            1. netCDF3 API allows only one record-dimension so conflicts are possible
+            2. netCDF4 API permits any number of unlimited dimensions so conflicts are impossible */
+            if(fl_fmt == NC_FORMAT_NETCDF4){
+              /* ... no conflicts possible so define dimension in output same as in input ... */
+              if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+            }else{ /* !netCDF4 */
+              /* ... output file adheres to netCDF3 API so there can be only one record dimension.
+              In other words, define all other dimensions as fixed, non-record dimensions, even
+              if they are a record dimension in the input file ... */
+              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
+              DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+            } /* !netCDF4 */
+          } /* !FIX_REC_DMN */
+        } /* strcmp() */
       }else{ /* !rec_dmn_nm */
-	/* ... no user-specified record dimension so define dimension in output same as in input ... */
-	if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+        /* ... no user-specified record dimension so define dimension in output same as in input ... */
+        if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
       } /* !rec_dmn_nm */ 
-      
+
       /* At long last ... */
       if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
-	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+dmn_idx);
-	rec_dmn_out_id=dmn_out_id[dmn_idx];
+        (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+dmn_idx);
+        rec_dmn_out_id=dmn_out_id[dmn_idx];
       }else{ /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
-	/* Does dimension have user-specified limits?
-	   Following block is only difference between nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt() */
-	for(int lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
-	  /* fxm: Why lmt_dmn[0] in following line? */
-	  if(!strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->nm) && nco_fnd_dmn(in_id,dmn_nm)){
-	    dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
-	    break;
-	  } /* end if */
-	} /* end loop over lmt_all_idx */
-	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
+        /* Does dimension have user-specified limits?
+        Following block is only difference between nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt() */
+        for(int lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
+          /* fxm: Why lmt_dmn[0] in following line? */
+          if(!strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->nm) && nco_fnd_dmn(in_id,dmn_nm)){
+            dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
+            break;
+          } /* end if */
+        } /* end loop over lmt_all_idx */
+        (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 
     } /* end if dimension is not yet defined */
@@ -669,38 +669,38 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
 
   /* No advantage to workaround unless reading from or writing to netCDF3 file */
   if(
-     (fl_out_fmt == NC_FORMAT_CLASSIC || fl_out_fmt == NC_FORMAT_64BIT) || /* Cases 1 & 2 above, i.e., MM3->MM3 & MM4->MM3 */
-     ((fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT) && /* Case 3 above, i.e., MM3->MM4 */
-      (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) ||
-     False)
-    {
+    (fl_out_fmt == NC_FORMAT_CLASSIC || fl_out_fmt == NC_FORMAT_64BIT) || /* Cases 1 & 2 above, i.e., MM3->MM3 & MM4->MM3 */
+    ((fl_in_fmt == NC_FORMAT_CLASSIC || fl_in_fmt == NC_FORMAT_64BIT) && /* Case 3 above, i.e., MM3->MM4 */
+    (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) ||
+    False)
+  {
     /* Subsequently, assume output is netCDF3 or classic-compatible netCDF4
-       If file contains record dimension (and netCDF3 files can have only one record dimension)
-       NB: fxm Following check only detects cases where MM3 conditions exist root group (not sub-groups)
-       Copying MM3-worthy subgroup from netCDF4 file to netCDF3 flat file produces false-negative */
+    If file contains record dimension (and netCDF3 files can have only one record dimension)
+    NB: fxm Following check only detects cases where MM3 conditions exist root group (not sub-groups)
+    Copying MM3-worthy subgroup from netCDF4 file to netCDF3 flat file produces false-negative */
     rcd=nco_inq_unlimdim(in_id,&rec_dmn_id);
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
       /* Slowdown only occurs in files with more than one record variable */
       rcd+=nco_inq_nvars(in_id,&var_nbr);
       if(var_nbr > 0){
-	for(idx=0;idx<var_nbr;idx++){
-	  rcd+=nco_inq_varndims(in_id,idx,&dmn_nbr);
-	  if(dmn_nbr > 0){
-	    dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
-	    rcd+=nco_inq_vardimid(in_id,idx,dmn_id);
-	    /* netCDF3 requires record dimension to be first dimension */
-	    if(dmn_id[0] == rec_dmn_id){
-	      rec_var_nbr++;
-	      if(rec_var_nbr > 1) USE_MM3_WORKAROUND=True;
-	    } /* endif record dimnesion */
-	    if(dmn_id) dmn_id=(int*)nco_free(dmn_id);
-	  } /* endif dmn_nbr > 0 */
-	  if(USE_MM3_WORKAROUND) break;
-	} /* end loop over variables */
+        for(idx=0;idx<var_nbr;idx++){
+          rcd+=nco_inq_varndims(in_id,idx,&dmn_nbr);
+          if(dmn_nbr > 0){
+            dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
+            rcd+=nco_inq_vardimid(in_id,idx,dmn_id);
+            /* netCDF3 requires record dimension to be first dimension */
+            if(dmn_id[0] == rec_dmn_id){
+              rec_var_nbr++;
+              if(rec_var_nbr > 1) USE_MM3_WORKAROUND=True;
+            } /* endif record dimnesion */
+            if(dmn_id) dmn_id=(int*)nco_free(dmn_id);
+          } /* endif dmn_nbr > 0 */
+          if(USE_MM3_WORKAROUND) break;
+        } /* end loop over variables */
       } /* endif var_nbr > 0 */
     } /* endif file contains record dimnsion */
   } /* endif file is netCDF3 */
-    
+
   return USE_MM3_WORKAROUND;
 } /* end nco_use_mm3_workaround() */
 
@@ -768,8 +768,8 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
       (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
       if(nbr_dmn_out != nbr_dmn_in){
-	(void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",prg_nm_get(),nbr_dmn_in,var_lst[var_idx]->nm,nbr_dmn_out,var_lst[var_idx]->nm,var_lst[var_idx]->nm,var_lst[var_idx]->nm);
-	nco_exit(EXIT_FAILURE);
+        (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",prg_nm_get(),nbr_dmn_in,var_lst[var_idx]->nm,nbr_dmn_out,var_lst[var_idx]->nm,var_lst[var_idx]->nm,var_lst[var_idx]->nm);
+        nco_exit(EXIT_FAILURE);
       } /* endif */
       dmn_nbr=nbr_dmn_out;
 
@@ -778,52 +778,52 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
       dmn_sz=(long *)nco_malloc(dmn_nbr*sizeof(long));
       dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
-  
+
       /* Get dimension IDs from input file */
       (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
-  
-     /* Get non-record dimension sizes from input file */
+
+      /* Get non-record dimension sizes from input file */
       for(dmn_idx=1;dmn_idx<dmn_nbr;dmn_idx++){
-	(void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
-	/* Initialize indicial offset and stride arrays */
-	dmn_srt[dmn_idx]=0L;
-	var_sz*=dmn_cnt[dmn_idx];
+        (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
+        /* Initialize indicial offset and stride arrays */
+        dmn_srt[dmn_idx]=0L;
+        var_sz*=dmn_cnt[dmn_idx];
       } /* end loop over dim */
       /* Configure hyperslab access for current record */
       dmn_id[0]=rec_dmn_id;
       dmn_cnt[0]=1L;
       dmn_srt[0]=rec_idx;
-      
+
       /* Allocate enough space to hold one record of this variable */
       void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
       /* Get and put one record of variable */
       if(var_sz > 0){ /* Allow for zero-size record variables */
-	nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
-	nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+        nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+        nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       } /* end if var_sz */
-      
+
       /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record)
-	 One check of this condition, per variable, is enough
-	 In regular (non-MM3 workaround) case, we check this condition after reading/writing whole variable
-	 In MM3 workaround-case, check condition after writing last record
-	 20130127: fxm bug here when user eliminates record variables using --fix_rec_dmn
-	 In that case output netCDF3 file does not have record variable so nco_inq_unlimdim() and nco_inq_dimlen() fail
-	 Since following code is purely diagnostic, assume that these failures are due to using --fix_rec_dmn 
-	 And therefore, well, ignore them :) */
+      One check of this condition, per variable, is enough
+      In regular (non-MM3 workaround) case, we check this condition after reading/writing whole variable
+      In MM3 workaround-case, check condition after writing last record
+      20130127: fxm bug here when user eliminates record variables using --fix_rec_dmn
+      In that case output netCDF3 file does not have record variable so nco_inq_unlimdim() and nco_inq_dimlen() fail
+      Since following code is purely diagnostic, assume that these failures are due to using --fix_rec_dmn 
+      And therefore, well, ignore them :) */
       if(rec_idx == rec_sz-1){ 
-	rcd=nco_inq_unlimdim(out_id,&rec_dmn_out_id); 
-	if(rec_dmn_out_id != NCO_REC_DMN_UNDEFINED){
-	  /* ... and if output file has record dimension ... */
-	  (void)nco_inq_dimlen(out_id,rec_dmn_out_id,&rec_out_sz);
-	/* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
-	  if(rec_out_sz > 0){
-	    /* ... then check input vs. output record dimension sizes ... */
-	    if(rec_sz != rec_out_sz){
-	      (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",prg_nm_get(),var_lst[var_idx]->nm,rec_sz,rec_out_sz,var_lst[var_idx]->nm);
-	    } /* endif sizes are incommensurate */
-	  } /* endif records have already been written to output file */
-	} /* endif record dimension exists in output file */
+        rcd=nco_inq_unlimdim(out_id,&rec_dmn_out_id); 
+        if(rec_dmn_out_id != NCO_REC_DMN_UNDEFINED){
+          /* ... and if output file has record dimension ... */
+          (void)nco_inq_dimlen(out_id,rec_dmn_out_id,&rec_out_sz);
+          /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
+          if(rec_out_sz > 0){
+            /* ... then check input vs. output record dimension sizes ... */
+            if(rec_sz != rec_out_sz){
+              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",prg_nm_get(),var_lst[var_idx]->nm,rec_sz,rec_out_sz,var_lst[var_idx]->nm);
+            } /* endif sizes are incommensurate */
+          } /* endif records have already been written to output file */
+        } /* endif record dimension exists in output file */
       } /* endif last record in variable in input file */
 
       /* Free space that held dimension IDs */
@@ -855,10 +855,10 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
       /* Get dimension sizes from input file */
       for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-	(void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
-	/* Initialize indicial offset and stride arrays */
-	dmn_srt[dmn_idx]=0L;
-	var_sz*=dmn_cnt[dmn_idx];
+        (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
+        /* Initialize indicial offset and stride arrays */
+        dmn_srt[dmn_idx]=0L;
+        var_sz*=dmn_cnt[dmn_idx];
       } /* end loop over dim */
       /* Allocate enough space to hold this entire variable */
       void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when doing MD5 or binary write on variable",fnc_nm);
@@ -928,7 +928,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   /* Get var_id for requested variable from both files */
   nco_inq_varid(in_id,var_nm,&var_in_id);
   nco_inq_varid(out_id,var_nm,&var_out_id);
-  
+
   /* Get type and number of dimensions for variable */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
@@ -937,7 +937,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     nco_exit(EXIT_FAILURE);
   } /* endif */
   dmn_nbr=nbr_dmn_out;
-  
+
   /* Allocate space to hold dimension IDs */
   dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
   dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
@@ -946,15 +946,15 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   dmn_out_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
   dmn_srd=(long *)nco_malloc(dmn_nbr*sizeof(long));
   dmn_sz=(long *)nco_malloc(dmn_nbr*sizeof(long));
-  
+
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
-  
+
   /* Get dimension sizes from input file */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-  /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
-     Until a record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
-     Thus we read input file for dimension sizes */
+    /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
+    Until a record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
+    Thus we read input file for dimension sizes */
 
     /* dmn_cnt may be overwritten by user-specified limits */
     (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
@@ -969,18 +969,18 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     /* Decide whether this dimension has user-specified limits */
     for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
       if(lmt[lmt_idx].id == dmn_id[dmn_idx]){
-	dmn_cnt[dmn_idx]=lmt[lmt_idx].cnt;
-	dmn_in_srt[dmn_idx]=lmt[lmt_idx].srt;
-	dmn_srd[dmn_idx]=lmt[lmt_idx].srd;
-	if(lmt[lmt_idx].srt > lmt[lmt_idx].end) WRP=True;
-	if(lmt[lmt_idx].srd != 1L) SRD=True;
-	break;
+        dmn_cnt[dmn_idx]=lmt[lmt_idx].cnt;
+        dmn_in_srt[dmn_idx]=lmt[lmt_idx].srt;
+        dmn_srd[dmn_idx]=lmt[lmt_idx].srd;
+        if(lmt[lmt_idx].srt > lmt[lmt_idx].end) WRP=True;
+        if(lmt[lmt_idx].srd != 1L) SRD=True;
+        break;
       } /* end if */
     } /* end loop over lmt_idx */
 
     var_sz*=dmn_cnt[dmn_idx];
   } /* end loop over dim */
-      
+
   /* Allocate enough space to hold variable */
   void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
@@ -1001,63 +1001,63 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     long *dmn_out_srt_2=NULL;
     long *dmn_cnt_1=NULL;
     long *dmn_cnt_2=NULL;
-    
+
     dmn_in_srt_1=(long *)nco_malloc(dmn_nbr*sizeof(long));
     dmn_in_srt_2=(long *)nco_malloc(dmn_nbr*sizeof(long));
     dmn_out_srt_1=(long *)nco_malloc(dmn_nbr*sizeof(long));
     dmn_out_srt_2=(long *)nco_malloc(dmn_nbr*sizeof(long));
     dmn_cnt_1=(long *)nco_malloc(dmn_nbr*sizeof(long));
     dmn_cnt_2=(long *)nco_malloc(dmn_nbr*sizeof(long));
-    
+
     /* Variable contains a wrapped dimension, requires two reads */
     /* For each dimension in the input variable */
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-      
+
       /* dmn_cnt may be overwritten by user-specified limits */
       (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
-      
+
       /* Set default vectors */
       dmn_cnt[dmn_idx]=dmn_cnt_1[dmn_idx]=dmn_cnt_2[dmn_idx]=dmn_sz[dmn_idx];
       dmn_in_srt[dmn_idx]=dmn_in_srt_1[dmn_idx]=dmn_in_srt_2[dmn_idx]=0L;
       dmn_out_srt[dmn_idx]=dmn_out_srt_1[dmn_idx]=dmn_out_srt_2[dmn_idx]=0L;
       dmn_srd[dmn_idx]=1L;
       dmn_map[dmn_idx]=1L;
-      
+
       /* Is there a limit specified for this dimension? */
       for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
-	if(lmt[lmt_idx].id == dmn_id[dmn_idx]){ /* Yes, there is a limit on this dimension */
-	  dmn_cnt[dmn_idx]=dmn_cnt_1[dmn_idx]=dmn_cnt_2[dmn_idx]=lmt[lmt_idx].cnt;
-	  dmn_in_srt[dmn_idx]=dmn_in_srt_1[dmn_idx]=dmn_in_srt_2[dmn_idx]=lmt[lmt_idx].srt;
-	  dmn_srd[dmn_idx]=lmt[lmt_idx].srd;
-	  if(lmt[lmt_idx].srd != 1L) SRD=True;
-	  if(lmt[lmt_idx].srt > lmt[lmt_idx].end){ /* WRP true for this dimension */
-	    WRP=True;
-	    if(lmt[lmt_idx].srd != 1L){ /* SRD true for this dimension */
-	      long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dmn_sz */
-	      long last_good_idx_1st_hyp_slb; /* C-index of last valid member of 1st hyperslab (= srt+m*srd) */
-	      long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */
-	      /* long first_good_idx_2nd_hyp_slb; *//* C-index of first valid member of 2nd hyperslab, if any */
+        if(lmt[lmt_idx].id == dmn_id[dmn_idx]){ /* Yes, there is a limit on this dimension */
+          dmn_cnt[dmn_idx]=dmn_cnt_1[dmn_idx]=dmn_cnt_2[dmn_idx]=lmt[lmt_idx].cnt;
+          dmn_in_srt[dmn_idx]=dmn_in_srt_1[dmn_idx]=dmn_in_srt_2[dmn_idx]=lmt[lmt_idx].srt;
+          dmn_srd[dmn_idx]=lmt[lmt_idx].srd;
+          if(lmt[lmt_idx].srd != 1L) SRD=True;
+          if(lmt[lmt_idx].srt > lmt[lmt_idx].end){ /* WRP true for this dimension */
+            WRP=True;
+            if(lmt[lmt_idx].srd != 1L){ /* SRD true for this dimension */
+              long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dmn_sz */
+              long last_good_idx_1st_hyp_slb; /* C-index of last valid member of 1st hyperslab (= srt+m*srd) */
+              long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */
+              /* long first_good_idx_2nd_hyp_slb; *//* C-index of first valid member of 2nd hyperslab, if any */
 
-	      /* NB: Perform these operations with integer arithmetic or else! */
-	      dmn_cnt_1[dmn_idx]=1L+(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd; 
-	      /* Wrapped dimensions with stride may not start at idx 0 on second read */
-	      greatest_srd_multiplier_1st_hyp_slb=(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd;
-	      last_good_idx_1st_hyp_slb=lmt[lmt_idx].srt+lmt[lmt_idx].srd*greatest_srd_multiplier_1st_hyp_slb;
-	      left_over_idx_1st_hyp_slb=dmn_sz[dmn_idx]-last_good_idx_1st_hyp_slb-1L;
-	      /* first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt[lmt_idx].srd)%dmn_sz[dmn_idx];*/ /* Variable is unused but instructive anyway */
-	      dmn_in_srt_2[dmn_idx]=lmt[lmt_idx].srd-left_over_idx_1st_hyp_slb-1L;
-	    }else{ /* !SRD */
-	      dmn_in_srt_2[dmn_idx]=0L;
-	      dmn_cnt_1[dmn_idx]=dmn_sz[dmn_idx]-lmt[lmt_idx].srt;
-	    } /* end else */
-	    dmn_cnt_2[dmn_idx]=dmn_cnt[dmn_idx]-dmn_cnt_1[dmn_idx];
-	    dmn_out_srt_2[dmn_idx]=dmn_cnt_1[dmn_idx];
-	  } /* end if WRP */
-	  break; /* Move on to next dimension in variable */
-	} /* end if */
+              /* NB: Perform these operations with integer arithmetic or else! */
+              dmn_cnt_1[dmn_idx]=1L+(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd; 
+              /* Wrapped dimensions with stride may not start at idx 0 on second read */
+              greatest_srd_multiplier_1st_hyp_slb=(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd;
+              last_good_idx_1st_hyp_slb=lmt[lmt_idx].srt+lmt[lmt_idx].srd*greatest_srd_multiplier_1st_hyp_slb;
+              left_over_idx_1st_hyp_slb=dmn_sz[dmn_idx]-last_good_idx_1st_hyp_slb-1L;
+              /* first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt[lmt_idx].srd)%dmn_sz[dmn_idx];*/ /* Variable is unused but instructive anyway */
+              dmn_in_srt_2[dmn_idx]=lmt[lmt_idx].srd-left_over_idx_1st_hyp_slb-1L;
+            }else{ /* !SRD */
+              dmn_in_srt_2[dmn_idx]=0L;
+              dmn_cnt_1[dmn_idx]=dmn_sz[dmn_idx]-lmt[lmt_idx].srt;
+            } /* end else */
+            dmn_cnt_2[dmn_idx]=dmn_cnt[dmn_idx]-dmn_cnt_1[dmn_idx];
+            dmn_out_srt_2[dmn_idx]=dmn_cnt_1[dmn_idx];
+          } /* end if WRP */
+          break; /* Move on to next dimension in variable */
+        } /* end if */
       } /* end loop over lmt */
     } /* end loop over dim */
-    
+
     if(dbg_lvl_get() >= 5){
       (void)fprintf(stderr,"\nvar = %s\n",var_nm);
       (void)fprintf(stderr,"dim\tcnt\tsrtin1\tcnt1\tsrtout1\tsrtin2\tcnt2\tsrtout2\n");
@@ -1078,40 +1078,40 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
       long idx;
 
       if(dmn_nbr == 1){
-	char dmn_nm[NC_MAX_NAME];
-	
-	(void)nco_inq_dimname(in_id,dmn_id[0],dmn_nm);
-	if(!strcmp(dmn_nm,var_nm)) CRD=True; else CRD=False;
+        char dmn_nm[NC_MAX_NAME];
+
+        (void)nco_inq_dimname(in_id,dmn_id[0],dmn_nm);
+        if(!strcmp(dmn_nm,var_nm)) CRD=True; else CRD=False;
       } /* end if */      
-      
+
       if(CRD && MNT){ /* If requested, apply monotonicity filter to wrapped coordinate */
-	(void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_typ);
-	/* Convert coordinate to double */
-	for(idx=0;idx<var_sz;idx++){
-	  switch(var_typ){
-	  case NC_FLOAT: /* val_dbl=void_ptr.fp[idx]; */break; 
-	  case NC_DOUBLE:
-	  case NC_INT:
-	  case NC_SHORT:
-	  case NC_CHAR:
-	  case NC_BYTE:
-	  case NC_UBYTE: break;
-	  case NC_USHORT: break;
-	  case NC_UINT: break;
-	  case NC_INT64: break;
-	  case NC_UINT64: break;
-	  case NC_STRING: break;
-	  default: nco_dfl_case_nc_type_err(); break;
-	  } /* end switch */
-	  
-	  /* Ensure val_dbl is between specified bounds */
-	  wrp_spn=wrp_max-wrp_min;
-	  if(val_dbl < wrp_min) val_dbl+=wrp_spn;
-	  if(val_dbl > wrp_max) val_dbl-=wrp_spn;
-	} /* end loop over idx */
+        (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_typ);
+        /* Convert coordinate to double */
+        for(idx=0;idx<var_sz;idx++){
+          switch(var_typ){
+          case NC_FLOAT: /* val_dbl=void_ptr.fp[idx]; */break; 
+          case NC_DOUBLE:
+          case NC_INT:
+          case NC_SHORT:
+          case NC_CHAR:
+          case NC_BYTE:
+          case NC_UBYTE: break;
+          case NC_USHORT: break;
+          case NC_UINT: break;
+          case NC_INT64: break;
+          case NC_UINT64: break;
+          case NC_STRING: break;
+          default: nco_dfl_case_nc_type_err(); break;
+          } /* end switch */
+
+          /* Ensure val_dbl is between specified bounds */
+          wrp_spn=wrp_max-wrp_min;
+          if(val_dbl < wrp_min) val_dbl+=wrp_spn;
+          if(val_dbl > wrp_max) val_dbl-=wrp_spn;
+        } /* end loop over idx */
       } /* endif CRD && MNT */
     } /* endif False */
-    
+
     /* fxm: Binary writes will not work for wrapped and stride variables until var_sz is changed to reflect actual size */
     if(!SRD){
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_typ);
@@ -1128,7 +1128,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_typ);
       if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
     } /* end else SRD */
-    
+
     dmn_in_srt_1=(long *)nco_free(dmn_in_srt_1);
     dmn_in_srt_2=(long *)nco_free(dmn_in_srt_2);
     dmn_out_srt_1=(long *)nco_free(dmn_out_srt_1);
@@ -1185,13 +1185,13 @@ nco_var_dpl /* [fnc] Duplicate input variable */
       val_in=var->val;
       val_out=var_cpy->val;
       /* Typecast pointer to values before access 
-	 Use local copies of pointer unions to maintain const-ness of var */
+      Use local copies of pointer unions to maintain const-ness of var */
       (void)cast_void_nctype((nc_type)NC_STRING,&val_in); 
       (void)cast_void_nctype((nc_type)NC_STRING,&val_out); 
       for(idx=0;idx<sz;idx++) val_out.sngp[idx]=(char *)strdup(val_in.sngp[idx]);
       /* NB: we operated on local copies of val_in and val_out
-	 Neither is used again in this routine
-	 Therefore not necessary to un-typecast pointer unions */
+      Neither is used again in this routine
+      Therefore not necessary to un-typecast pointer unions */
     } /* endif type */
   } /* end if val */
   if(var->mss_val.vp){
@@ -1260,13 +1260,13 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
 
   /* 20051021: Removed this potentially critical region by parallelizing 
-     over in_id's in calling code */
+  over in_id's in calling code */
   /* 20051019: nco_get_var*() routines are potentially SMP-critical
-     netCDF library allows parallel reads by different processes, not threads
-     Parallel reads to the same nc_id by different threads are critical because
-     the underlying UNIX file open has limited stdin caching
-     Parallel reads to different nc_id's for same underlying file work because
-     each UNIX file open (for same file) creates own stdin caching */
+  netCDF library allows parallel reads by different processes, not threads
+  Parallel reads to the same nc_id by different threads are critical because
+  the underlying UNIX file open has limited stdin caching
+  Parallel reads to different nc_id's for same underlying file work because
+  each UNIX file open (for same file) creates own stdin caching */
   /* 20050629: Removing this critical region and calling with identical nc_id's causes multiple ncwa/ncra regressions */
   { /* begin potential OpenMP critical */
     /* Block is critical/thread-safe for identical/distinct in_id's */
@@ -1276,28 +1276,28 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
 
     if(srd_prd == 1L){ 
       if(var->sz > 1L)
-	(void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
+        (void)nco_get_vara(nc_id,var->id,var->srt,var->cnt,var->val.vp,var->typ_dsk);
       else
-	(void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
+        (void)nco_get_var1(nc_id,var->id,var->srt,var->val.vp,var->typ_dsk);
     }else{ 
       (void)nco_get_varm(nc_id,var->id,var->srt,var->cnt,var->srd,(long *)NULL,var->val.vp,var->typ_dsk);
     } /* endif non-unity stride  */
   } /* end potential OpenMP critical */
-  
+
   /* Packing properties initially obtained by nco_pck_dsk_inq() in nco_var_fll()
-     Multi-file operators (MFOs) call nco_var_get() multiple times for each variable
-     In between subsequent calls to nco_var_get(), variable may be unpacked 
-     When this occurs, packing flags in variable structure will not match disk
-     Thus it is important to refresh (some) packing attributes on each read */
+  Multi-file operators (MFOs) call nco_var_get() multiple times for each variable
+  In between subsequent calls to nco_var_get(), variable may be unpacked 
+  When this occurs, packing flags in variable structure will not match disk
+  Thus it is important to refresh (some) packing attributes on each read */
 
   /* Synchronize missing value type with (possibly) new disk type */
   /* fxm nco427: pck_dbg potential big bug on non-packed types in ncra here,
-     due to potential double conversion of missing_value
-     First conversion to typ_dsk occurs when nco_var_fll() reads in mss_val
-     Second conversion occurs here mss_val again converted to typ_dsk
-     fxm nco457: Why not always convert missing_value to variable type, 
-     even when variable is not packed? Answer: because doing this appears
-     to break some ncra tests */
+  due to potential double conversion of missing_value
+  First conversion to typ_dsk occurs when nco_var_fll() reads in mss_val
+  Second conversion occurs here mss_val again converted to typ_dsk
+  fxm nco457: Why not always convert missing_value to variable type, 
+  even when variable is not packed? Answer: because doing this appears
+  to break some ncra tests */
   if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
   /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
 
@@ -1305,18 +1305,18 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   var->type=var->typ_dsk; /* [enm] Type of variable in RAM */
 
   /* Packing in RAM is now same as packing on disk pck_dbg 
-     fxm: Following call to nco_pck_dsk_inq() is never necessary for non-packed variables */
+  fxm: Following call to nco_pck_dsk_inq() is never necessary for non-packed variables */
   (void)nco_pck_dsk_inq(nc_id,var);
-  
+
   /* Packing/Unpacking */
   if(nco_is_rth_opr(prg_get())){
     /* Arithmetic operators must unpack variables before performing arithmetic
-       Otherwise arithmetic will produce garbage results */
+    Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
-       20050629: Making this region multi-threaded causes no problems */
+    20050629: Making this region multi-threaded causes no problems */
     if(var->pck_dsk) var=nco_var_upk(var);
   } /* endif arithmetic operator */
-  
+
 } /* end nco_var_get() */
 
 void
@@ -1494,41 +1494,41 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   nc_type typ_out; /* [enm] Type in output file */
-  
+
   prg_id=prg_get(); /* [enm] Program ID */
 
   for(idx=0;idx<nbr_var;idx++){
 
     /* Checking only nco_is_rth_opr() is too simplistic
-       1. All variables handled by arithmetic operators are currently unpacked on reading
-       2. However "fixed variables" appear in many arithemetic operators
-	  ncbo treats coordinate variables as fixed (does not subtract them)
-          ncra treats non-record variables as fixed (does not average them)
-	  ncwa treats variables without averaging dimensions as fixed (does not average them)
-	  It is best not to alter [un-]pack fixed (non-processed) variables
-       3. ncap, an arithmetic operator, also has "fixed variables", i.e., 
-          pre-existing non-LHS variables copied directly to output.
-	  These "fixed" ncap variables should remain unaltered
-	  However, this is not presently done
-	  nco_var_dfn() needs more information to handle "fixed" variables correctly because
-	  Some ncap "fixed" variables appear on RHS in definitions of LHS variables
-          These RHS fixed variables must be separately unpacked during RHS algebra
-	  Currently, ncap only calls nco_var_dfn() for fixed variables
-	  ncap uses its own routine, ncap_var_write(), for RHS variable definitions
-       4. All variables in non-arithmetic operators (except ncpdq) should remain un-altered
-       5. ncpdq is non-arithmetic operator
-          However, ncpdq specially handles fine-grained control [un-]packing options */
+    1. All variables handled by arithmetic operators are currently unpacked on reading
+    2. However "fixed variables" appear in many arithemetic operators
+    ncbo treats coordinate variables as fixed (does not subtract them)
+    ncra treats non-record variables as fixed (does not average them)
+    ncwa treats variables without averaging dimensions as fixed (does not average them)
+    It is best not to alter [un-]pack fixed (non-processed) variables
+    3. ncap, an arithmetic operator, also has "fixed variables", i.e., 
+    pre-existing non-LHS variables copied directly to output.
+    These "fixed" ncap variables should remain unaltered
+    However, this is not presently done
+    nco_var_dfn() needs more information to handle "fixed" variables correctly because
+    Some ncap "fixed" variables appear on RHS in definitions of LHS variables
+    These RHS fixed variables must be separately unpacked during RHS algebra
+    Currently, ncap only calls nco_var_dfn() for fixed variables
+    ncap uses its own routine, ncap_var_write(), for RHS variable definitions
+    4. All variables in non-arithmetic operators (except ncpdq) should remain un-altered
+    5. ncpdq is non-arithmetic operator
+    However, ncpdq specially handles fine-grained control [un-]packing options */
     if(nco_is_rth_opr(prg_id)){
       /* Arithmetic operators store values as unpacked... */
       typ_out=var[idx]->typ_upk; 
       /* ...with two exceptions...
-	 ncap [un-]packing precedes nco_var_dfn() call, sets var->type appropriately */
+      ncap [un-]packing precedes nco_var_dfn() call, sets var->type appropriately */
       if(prg_id == ncap) typ_out=var[idx]->type;
       /* ...and pass through fixed (non-processed) variables untouched... */
       if(var[idx]->is_fix_var) typ_out=var[idx]->type;
     }else{
       /* Non-arithmetic operators leave things alone by default
-	 ncpdq first modifies var_out->type, then calls nco_var_dfn(), then [un-]packs */
+      ncpdq first modifies var_out->type, then calls nco_var_dfn(), then [un-]packs */
       typ_out=var[idx]->type;
     } /* endif arithmetic operator */
 
@@ -1537,159 +1537,159 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
     /* If variable has not been defined, define it */
     if(rcd != NC_NOERR){
-      
+
       /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, nco_var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, nco_var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
       if(dmn_ncl || prg_id == ncwa){
-	/* ...operator is ncwa and/or changes variable rank... */
-	int idx_ncl;
-	/* Initialize number of dimensions for current variable */
-	dmn_nbr=0;
-	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++){
-	  /* Is dimension allowed in output file? */
-	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
-	    /* All I can say about this line, is...Yikes! 
-	       No, really, it indicates poor program design
-	       fxm: TODO nco374: have ncwa re-arrange output metadata prior to nco_var_dfn()
-	       Then delete this branch and use straightforward branch of code */
-	    if(var[idx]->xrf->dim[dmn_idx]->id == dmn_ncl[idx_ncl]->xrf->id) break;
-	  } /* end loop over idx_ncl */
-	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[dmn_nbr++]=var[idx]->dim[dmn_idx]->id;
-	} /* end loop over dmn_idx */
+        /* ...operator is ncwa and/or changes variable rank... */
+        int idx_ncl;
+        /* Initialize number of dimensions for current variable */
+        dmn_nbr=0;
+        for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++){
+          /* Is dimension allowed in output file? */
+          for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
+            /* All I can say about this line, is...Yikes! 
+            No, really, it indicates poor program design
+            fxm: TODO nco374: have ncwa re-arrange output metadata prior to nco_var_dfn()
+            Then delete this branch and use straightforward branch of code */
+            if(var[idx]->xrf->dim[dmn_idx]->id == dmn_ncl[idx_ncl]->xrf->id) break;
+          } /* end loop over idx_ncl */
+          if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[dmn_nbr++]=var[idx]->dim[dmn_idx]->id;
+        } /* end loop over dmn_idx */
       }else{ /* ...operator does not change variable rank so handle normally... */
-	/* More straightforward definition used by operators besides ncwa */
-	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++){
-	  dmn_id_vec[dmn_idx]=var[idx]->dim[dmn_idx]->id;
-	} /* end loop over dmn_idx */
-	dmn_nbr=var[idx]->nbr_dim;
+        /* More straightforward definition used by operators besides ncwa */
+        for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++){
+          dmn_id_vec[dmn_idx]=var[idx]->dim[dmn_idx]->id;
+        } /* end loop over dmn_idx */
+        dmn_nbr=var[idx]->nbr_dim;
       } /* end else */
 
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
-	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
-	   contains _wrong name_ when variables will be averaged.
-	   ncwa does contain write name information now if retain_degenerate_dimensions 
-	   option is in effect, but this is the exception rather than the rule. */
-	(void)fprintf(stdout,"%s: DEBUG %s about to define variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
-	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-	  (void)fprintf(stdout,"%s (%d,%s)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,"unknown",(dmn_idx < dmn_nbr-1) ? ", " : "");
-	} /* end loop over dmn */
-	(void)fprintf(stdout,"\n");
+        /* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
+        contains _wrong name_ when variables will be averaged.
+        ncwa does contain write name information now if retain_degenerate_dimensions 
+        option is in effect, but this is the exception rather than the rule. */
+        (void)fprintf(stdout,"%s: DEBUG %s about to define variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
+        for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+          (void)fprintf(stdout,"%s (%d,%s)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,"unknown",(dmn_idx < dmn_nbr-1) ? ", " : "");
+        } /* end loop over dmn */
+        (void)fprintf(stdout,"\n");
       } /* endif dbg */
 
       /* The all-important variable definition call itself... */
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
-      
+
       /* Set HDF Lempel-Ziv compression level, if requested */
       rcd=nco_inq_format(out_id,&fl_fmt);
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-	/* Deflation */
-	if(dmn_nbr > 0){
-	  int shuffle; /* [flg] Turn on shuffle filter */
-	  int deflate; /* [flg] Turn on deflate filter */
-	  int dfl_lvl_in; /* [enm] Deflate level [0..9] */
-	  int var_in_id;
-	  /* Uncertain that output name always exists in input file */
-	  rcd=nco_inq_varid_flg(in_id,var[idx]->nm,&var_in_id);
-	  if(rcd == NC_NOERR){
-	    /* When output name is in input file, inquire input deflation level */
-	    rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
-	    /* Copy original deflation settings */
-	    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var[idx]->id,deflate,shuffle,dfl_lvl_in);
-	  } /* endif */
-	  /* Overwrite HDF Lempel-Ziv compression level, if requested */
-	  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
-	} /* endif */
+        /* Deflation */
+        if(dmn_nbr > 0){
+          int shuffle; /* [flg] Turn on shuffle filter */
+          int deflate; /* [flg] Turn on deflate filter */
+          int dfl_lvl_in; /* [enm] Deflate level [0..9] */
+          int var_in_id;
+          /* Uncertain that output name always exists in input file */
+          rcd=nco_inq_varid_flg(in_id,var[idx]->nm,&var_in_id);
+          if(rcd == NC_NOERR){
+            /* When output name is in input file, inquire input deflation level */
+            rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
+            /* Copy original deflation settings */
+            if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var[idx]->id,deflate,shuffle,dfl_lvl_in);
+          } /* endif */
+          /* Overwrite HDF Lempel-Ziv compression level, if requested */
+          if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
+        } /* endif */
       } /* endif netCDF4 */
 
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
-	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
-	   contains _wrong name_ when variables will be averaged.
-	   ncwa does contain write name information now if retain_degenerate_dimensions 
-	   option is in effect, but this is the exception rather than the rule. */
-	(void)fprintf(stdout,"%s: DEBUG %s defined variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
-	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-	  (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");
-	} /* end loop over dmn */
-	(void)fprintf(stdout,"\n");
+        /* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
+        contains _wrong name_ when variables will be averaged.
+        ncwa does contain write name information now if retain_degenerate_dimensions 
+        option is in effect, but this is the exception rather than the rule. */
+        (void)fprintf(stdout,"%s: DEBUG %s defined variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
+        for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+          (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");
+        } /* end loop over dmn */
+        (void)fprintf(stdout,"\n");
       } /* endif dbg */
 
       /* endif variable has not yet been defined in output file */
     }else{
       /* Variable is already in output file---use existing definition
-	 This branch is executed, e.g., by operators in append mode */
+      This branch is executed, e.g., by operators in append mode */
       (void)fprintf(stdout,"%s: WARNING Using existing definition of variable \"%s\" in %s\n",prg_nm_get(),var[idx]->nm,fl_out);
     } /* end if variable is already in output file */
 
     /* Copy all attributes except in cases where packing/unpacking is involved
-       0. Variable is unpacked on input, unpacked on output
-       --> Copy all attributes
-       1. Variable is packed on input, is not altered, and remains packed on output
-       --> Copy all attributes
-       2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
-       --> Copy all attributes except scale_factor and add_offset
-       3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
-       --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
-       4. Variable is not packed on input, packing is performed, and output is packed
-       --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
+    0. Variable is unpacked on input, unpacked on output
+    --> Copy all attributes
+    1. Variable is packed on input, is not altered, and remains packed on output
+    --> Copy all attributes
+    2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
+    --> Copy all attributes except scale_factor and add_offset
+    3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
+    --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
+    4. Variable is not packed on input, packing is performed, and output is packed
+    --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
 
     /* Do not copy packing attributes "scale_factor" and "add_offset" 
-       if variable is packed in input file and unpacked in output file 
-       Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
-       Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
+    if variable is packed in input file and unpacked in output file 
+    Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
+    Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
     /* Copy exising packing attributes, if any, unless... */
     if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
-       prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
-       !var[idx]->is_fix_var && /* ...and variable is processed (not fixed)... */
-       var[idx]->xrf->pck_dsk) /* ...and variable is packed in input file... */
+      prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
+      !var[idx]->is_fix_var && /* ...and variable is processed (not fixed)... */
+      var[idx]->xrf->pck_dsk) /* ...and variable is packed in input file... */
       PCK_ATT_CPY=False;
 
     /* Do not copy packing attributes when unpacking variables 
-       ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
+    ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
     if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
       PCK_ATT_CPY=False;
-    
+
     /* Recall that:
-       var      refers to output variable structure
-       var->xrf refers to input  variable structure 
-       ncpdq may pre-define packing attributes below regardless of PCK_ATT_CPY */ 
+    var      refers to output variable structure
+    var->xrf refers to input  variable structure 
+    ncpdq may pre-define packing attributes below regardless of PCK_ATT_CPY */ 
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
-    
+
     /* Create dummy packing attributes for ncpdq if necessary 
-       Must apply nearly same logic at end of ncpdq when writing final attributes
-       Recall ncap calls ncap_var_write() to define newly packed LHS variables 
-       If variable is not fixed (e.g., coordinate variables)...*/
+    Must apply nearly same logic at end of ncpdq when writing final attributes
+    Recall ncap calls ncap_var_write() to define newly packed LHS variables 
+    If variable is not fixed (e.g., coordinate variables)...*/
     if(!var[idx]->is_fix_var){
       /* ...and operator will attempt to pack some variables... */
       if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){ 
-	/* ...and expanded variable is pack-able... */
-	if(nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)){
-	  /* ...and operator will pack this particular variable... */
-	  if(
-	     /* ...either because operator newly packs all variables... */
-	     (nco_pck_plc == nco_pck_plc_all_new_att) ||
-	     /* ...or because operator newly packs un-packed variables like this one... */
-	     (nco_pck_plc == nco_pck_plc_all_xst_att && !var[idx]->pck_ram) ||
-	     /* ...or because operator re-packs packed variables like this one... */
-	     (nco_pck_plc == nco_pck_plc_xst_new_att && var[idx]->pck_ram)
-	     ){
-	    
-	    /* ...then add/overwrite dummy scale_factor and add_offset attributes
-	       Overwrite these with correct values once known
-	       Adding dummy attributes of maximum possible size (NC_DOUBLE) now 
-	       reduces likelihood that netCDF layer will impose file copy 
-	       penalties when final attribute values are written later
-	       Either add_offset or scale_factor may be removed in nco_pck_val() 
-	       if nco_var_pck() packing algorithm did not require utilizing it */ 
-	    const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
-	    const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-	    val_unn zero_unn; /* [frc] Generic container for value 0.0 */
-	    var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
-	    zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
-	    zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
-	    (void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
-	    (void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
-	    zero_var=(var_sct *)nco_var_free(zero_var);
-	  } /* endif this variable will be packed or re-packed */
-	} /* !nco_pck_plc_alw */
+        /* ...and expanded variable is pack-able... */
+        if(nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)){
+          /* ...and operator will pack this particular variable... */
+          if(
+            /* ...either because operator newly packs all variables... */
+            (nco_pck_plc == nco_pck_plc_all_new_att) ||
+            /* ...or because operator newly packs un-packed variables like this one... */
+            (nco_pck_plc == nco_pck_plc_all_xst_att && !var[idx]->pck_ram) ||
+            /* ...or because operator re-packs packed variables like this one... */
+            (nco_pck_plc == nco_pck_plc_xst_new_att && var[idx]->pck_ram)
+            ){
+
+              /* ...then add/overwrite dummy scale_factor and add_offset attributes
+              Overwrite these with correct values once known
+              Adding dummy attributes of maximum possible size (NC_DOUBLE) now 
+              reduces likelihood that netCDF layer will impose file copy 
+              penalties when final attribute values are written later
+              Either add_offset or scale_factor may be removed in nco_pck_val() 
+              if nco_var_pck() packing algorithm did not require utilizing it */ 
+              const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+              const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+              val_unn zero_unn; /* [frc] Generic container for value 0.0 */
+              var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
+              zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
+              zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
+              (void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
+              (void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
+              zero_var=(var_sct *)nco_var_free(zero_var);
+          } /* endif this variable will be packed or re-packed */
+        } /* !nco_pck_plc_alw */
       } /* endif nco_pck_plc involves packing */
     } /* endif variable is processed (not fixed) */
   } /* end loop over idx variables to define */
@@ -1709,7 +1709,7 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
   int idx;
   int dmn_idx;
   long srd_prd=1L; /* [nbr] Product of strides */
-  
+
   for(idx=0;idx<nbr_var;idx++){
     var[idx]->xrf->val.vp=var[idx]->val.vp=(void *)nco_malloc(var[idx]->sz*nco_typ_lng(var[idx]->type));
     if(var[idx]->nbr_dim == 0){
@@ -1718,16 +1718,16 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
     }else{ /* end if variable is scalar */
       if(var[idx]->sz > 0){ /* Do nothing for zero-size record variables */
 
-	/* Is stride > 1? */
-	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++) srd_prd*=var[idx]->srd[dmn_idx];
+        /* Is stride > 1? */
+        for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++) srd_prd*=var[idx]->srd[dmn_idx];
 
-	if(srd_prd == 1L){ 
-	  nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
-	  nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);
-	}else{
-	  (void)nco_get_varm(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
-	  (void)nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->xrf->val.vp,var[idx]->type);
-	} /* endif variable has non-unity stride */
+        if(srd_prd == 1L){ 
+          nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
+          nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);
+        }else{
+          (void)nco_get_varm(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->srd,(long *)NULL,var[idx]->val.vp,var[idx]->type);
+          (void)nco_put_varm(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->srd,(long *)NULL,var[idx]->xrf->val.vp,var[idx]->type);
+        } /* endif variable has non-unity stride */
       } /* end if var_sz */
     } /* end if variable is an array */
     var[idx]->val.vp=var[idx]->xrf->val.vp=nco_free(var[idx]->val.vp);
@@ -1758,7 +1758,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
   /* Get record dimension ID */
   (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
-  
+
   /* Allocate space for variable structure */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
@@ -1783,7 +1783,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(var->nc_id,var->id,var->dmn_id);
-  
+
   /* Type in memory begins as same type as on disk */
   var->type=var->typ_dsk; /* [enm] Type of variable in RAM */
   /* Type of packed data on disk */
@@ -1796,11 +1796,11 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   for(idx=0;idx<var->nbr_dim;idx++){
     for(dmn_idx=0;dmn_idx<var->nbr_dim;dmn_idx++){
       if(idx != dmn_idx){
-	if(var->dmn_id[idx] == var->dmn_id[dmn_idx]){
-	  /* Dimensions are duplicated when IDs for different ordinal dimensions are equal */
-	  var->has_dpl_dmn=True;
-	  break;
-	} /* endif IDs are equal */
+        if(var->dmn_id[idx] == var->dmn_id[dmn_idx]){
+          /* Dimensions are duplicated when IDs for different ordinal dimensions are equal */
+          var->has_dpl_dmn=True;
+          break;
+        } /* endif IDs are equal */
       } /* endif navel gazing */
     } /* endif inner dimension */
     /* Found a duplicate, so stop looking */
@@ -1823,8 +1823,8 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
     /* fxm: hmb, what is this for? */
     /* Re-define dmn_id so that if dim is dimension list from output file
-       then we get correct dmn_id. Should not affect normal running of 
-       routine as usually dim is dimension list from input file */
+    then we get correct dmn_id. Should not affect normal running of 
+    routine as usually dim is dimension list from input file */
     var->dmn_id[idx]=dim[dmn_idx]->id;
 
     var->dim[idx]=dim[dmn_idx];
@@ -1836,12 +1836,12 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     if(var->dmn_id[idx] == rec_dmn_id) var->is_rec_var=True; else var->sz_rec*=var->cnt[idx];
 
     /* NB: dim[idx]->cid will be uninitialized unless dim[idx] is a coordinate 
-       Hence divide this into to sequential if statements so valgrind does not
-       complain about relying on uninitialized values */
+    Hence divide this into to sequential if statements so valgrind does not
+    complain about relying on uninitialized values */
     if(var->dim[idx]->is_crd_dmn){
       if(var->id == var->dim[idx]->cid){
-	var->is_crd_var=True;
-	var->cid=var->dmn_id[idx];
+        var->is_crd_var=True;
+        var->cid=var->dmn_id[idx];
       } /* end if */
     } /* end if */
 
@@ -1850,20 +1850,20 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   } /* end loop over dim */
 
   /* 20130112: Variables associated with "bounds" and "coordinates" attributes should,
-     in most cases, be treated as coordinates */
+  in most cases, be treated as coordinates */
   if(nco_is_spc_in_bnd_att(var->nc_id,var->id)) var->is_crd_var=True;
   if(nco_is_spc_in_crd_att(var->nc_id,var->id)) var->is_crd_var=True;
 
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
-     nco_pck_dsk_inq() fills in these portions harmlessly */
+  nco_pck_dsk_inq() fills in these portions harmlessly */
   (void)nco_pck_dsk_inq(nc_id,var);
-  
+
   /* Set deflate and chunking to defaults */  
   var->dfl_lvl=0; /* [enm] Deflate level */
   var->shuffle=False; /* [flg] Turn on shuffle filter */
-  
+
   for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
-  
+
   /* Read deflate levels and chunking (if any) */  
   if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC){
     int deflate; /* [enm] Deflate filter is on */
@@ -1871,7 +1871,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     (void)nco_inq_var_deflate(nc_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    
     (void)nco_inq_var_chunking(nc_id,var->id,&srg_typ,var->cnk_sz);   
   } /* endif */
-  
+
   var->undefined=False; /* [flg] Used by ncap parser */
   return var;
 } /* end nco_var_fll() */
@@ -1904,7 +1904,7 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
   int var_id; /* [id] Variable ID */
   long att_sz;
   nc_type att_typ;
-  
+
   /* May need variable name for later comparison to "coordinates" attribute */
   rcd+=nco_inq_varname(nc_id,var_trg_id,var_trg_nm);
   rcd+=nco_inq_nvars(nc_id,&nbr_var);
@@ -1912,7 +1912,7 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
   for(idx_var=0;idx_var<nbr_var;idx_var++){
     /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
     var_id=idx_var;
-    
+
     /* Find number of attributes */
     rcd+=nco_inq_varnatts(nc_id,var_id,&nbr_att);
     for(idx_att=0;idx_att<nbr_att;idx_att++){
@@ -1945,7 +1945,7 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
       } /* !coordinates */
     } /* end loop over attributes */
   } /* end loop over idx_var */
-  
+
   return IS_SPC_IN_CRD_ATT; /* [flg] Variable is listed in a "coordinates" attribute  */
 } /* end nco_is_spc_in_crd_att() */
 
@@ -1978,7 +1978,7 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
   int var_id; /* [id] Variable ID */
   long att_sz;
   nc_type att_typ;
-  
+
   /* May need variable name for later comparison to "bounds" attribute */
   rcd+=nco_inq_varname(nc_id,var_trg_id,var_trg_nm);
   rcd+=nco_inq_nvars(nc_id,&nbr_var);
@@ -1986,7 +1986,7 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
   for(idx_var=0;idx_var<nbr_var;idx_var++){
     /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
     var_id=idx_var;
-    
+
     /* Find number of attributes */
     rcd+=nco_inq_varnatts(nc_id,var_id,&nbr_att);
     for(idx_att=0;idx_att<nbr_att;idx_att++){
@@ -2019,7 +2019,7 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
       } /* !coordinates */
     } /* end loop over attributes */
   } /* end loop over idx_var */
-  
+
   return IS_SPC_IN_BND_ATT; /* [flg] Variable is listed in a "bounds" attribute  */
 } /* end nco_is_spc_in_bnd_att() */
 
@@ -2045,12 +2045,12 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
   int nbr_dim_old;
 
   var->nc_id=nc_id;
-  
+
   /* 20050519: Not sure why I originally made next four lines SMP-critical
-     20050629: Making next four lines multi-threaded causes no problems */
+  20050629: Making next four lines multi-threaded causes no problems */
   /* Refresh variable ID first */
   rcd+=nco_inq_varid(var->nc_id,var->nm,&var->id);
-  
+
   /* fxm: Not sure if/why necessary to refresh number of dimensions...though it should not hurt */
   /* Refresh number of dimensions in variable */
   nbr_dim_old=var->nbr_dim;
@@ -2059,15 +2059,15 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
     (void)fprintf(stdout,"%s: ERROR Variable \"%s\" changed number of dimensions from %d to %d\n",prg_nm_get(),var->nm,nbr_dim_old,var->nbr_dim);
     nco_err_exit(0,"nco_var_mtd_refresh()");
   } /* endif err */
-    
+
   /* 20100923: Any need to refresh storage properties (shuffle,deflate,dfl_lvl,cnk_sz) here?
-     Certainly they can change between files, that alone is not reason to refresh them
-     Unlike missing values, storage properties in input are transparent to arithmetic
-     The netCDF/HDF5 I/O layer handles all this transparently
-     Moreover, output storage properties must be set just after variable definition, long before nco_var_mtd_refresh()
-     So storage properties of variable in current file cannot affect arithmetic, nor output
-     Hence there is no reason to track current storage properties in var_sct
-     However, if that ever changes, here are hooks to do so */
+  Certainly they can change between files, that alone is not reason to refresh them
+  Unlike missing values, storage properties in input are transparent to arithmetic
+  The netCDF/HDF5 I/O layer handles all this transparently
+  Moreover, output storage properties must be set just after variable definition, long before nco_var_mtd_refresh()
+  So storage properties of variable in current file cannot affect arithmetic, nor output
+  Hence there is no reason to track current storage properties in var_sct
+  However, if that ever changes, here are hooks to do so */
   if(False && var->nbr_dim > 0){
     int deflate; /* [flg] Turn on deflate filter */
     int srg_typ; /* [enm] Storage type */
@@ -2080,12 +2080,12 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
 
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
-  
+
 #if 0
   /* PJR requested warning to be added when multiple file operators worked on 
-     variables with missing_value since so many things could go wrong
-     Now un-necessary since multi-file packing ostensibly works
-     Leave code here in case we find it does not work */
+  variables with missing_value since so many things could go wrong
+  Now un-necessary since multi-file packing ostensibly works
+  Leave code here in case we find it does not work */
   if(nco_is_rth_opr(prg_get()) && var->pck_dsk){
     if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"NCO_MSS_VAL_SNG\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...\n",prg_nm_get(),var_nm);
   } /* endif variable is packed */
