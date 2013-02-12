@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.242 2013-02-12 01:36:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.243 2013-02-12 09:10:14 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -489,19 +489,6 @@ extern "C" {
     nco_bool is_usr_spc_min; /* True if user-specified, else False */
     nco_cln_typ lmt_cln; /* Used by ncra, ncrcat to store enum of calendar-type attribute */
   } lmt_sct;
-
-  /* Container holding all limit structures indexible by dimension */
-  typedef struct { /* lmt_all_sct */
-    char *dmn_nm; /* [sng] Dimension name */
-    char *dmn_nm_fll; /* [sng] Full dimension name */
-    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
-    long dmn_sz_org; /* [nbr] Size of dimension in INPUT file */
-    int lmt_dmn_nbr; /* [nbr] Number of lmt arguments */
-    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
-    nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
-    nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
-  } lmt_all_sct;
   
   /* Name ID structure */
   typedef struct{ /* nm_id_sct */
@@ -608,10 +595,22 @@ extern "C" {
     size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
   } gpe_sct;
 
+  /* Container holding all limit structures indexible by dimension */
+  typedef struct { /* lmt_all_sct */
+    char *dmn_nm; /* [sng] Dimension name */
+    char *dmn_nm_fll; /* [sng] Full dimension name */
+    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
+    long dmn_sz_org; /* [nbr] Size of dimension in INPUT file */
+    int lmt_dmn_nbr; /* [nbr] Number of lmt arguments */
+    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
+    nco_bool WRP; /* [flg] Limit is wrapped (true if wrapping, lmt_dmn_nbr==2) */ 
+    nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
+  } lmt_all_sct;
+
   /* Structure containing definition groups of all dimensions */
   typedef struct{ 
     int nbr_dmn; /* [nbr][CHK] Number of dimensions for variable */
-    char *dmn_nm[NC_MAX_DIMS]; /* [sng] Array with dimension name for all dimensions (size is nbr_dmn) Needed to distribute limits from groups to variables  */
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions (size is nbr_dmn) */  
   } var_dmn_sct; 
   
