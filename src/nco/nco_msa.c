@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.172 2013-02-12 01:36:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.173 2013-02-12 22:06:10 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1920,7 +1920,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   each index (dimensional subscript) times the stride (mod_map) of the corresponding dimension.
   4) Object and GTT are passed as parameter instead of variable name only  
   5) Pair Object/GTT is needed to do a GTT to MSA limits conversion 
-  6) Other than 4) and 5), function is identical to original nco_msa_prn_var_val(), regarding MSA call and printing
+  6) Besides 4) and 5), other differences from original nco_msa_prn_var_val() are marked "GTT" below.
 
   Tests:
   ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
@@ -2273,12 +2273,27 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         dim[idx].val.vp=NULL;
         dim[idx].nm=lmt_msa[idx]->dmn_nm;
         rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s <%s>: reading dimension[%d]:%s: ",prg_nm_get(),fnc_nm,
+            var_trv->nm_fll,idx,dim[idx].nm);
+        }
+
         /* If not a variable */
         if(rcd != NC_NOERR){
           dim[idx].is_crd_dmn=False;
           dim[idx].cid=-1;
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"not a variable\n");
+          }
+
           continue;
         } /* end if */
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"variable found\n");
+        }
 
         dim[idx].is_crd_dmn=True;
         (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
