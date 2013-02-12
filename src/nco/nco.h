@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.241 2013-02-12 00:37:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.242 2013-02-12 01:36:53 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -611,7 +611,8 @@ extern "C" {
   /* Structure containing definition groups of all dimensions */
   typedef struct{ 
     int nbr_dmn; /* [nbr][CHK] Number of dimensions for variable */
-    char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions (size is nbr_dmn) */
+    char *dmn_nm[NC_MAX_DIMS]; /* [sng] Array with dimension name for all dimensions (size is nbr_dmn) Needed to distribute limits from groups to variables  */
+    char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions (size is nbr_dmn) */  
   } var_dmn_sct; 
   
   /* Object structure 
@@ -622,14 +623,14 @@ extern "C" {
      Populate trv_sct structure with correct values in nco_grp_itr()
      Deep-copy each pointer member of trv_sct structure in trv_tbl_add()
      free() each pointer member of trv_sct structure in trv_tbl_free() 
-     
+
      Some fields in "trv_sct", "dmn_fll_sct", "var_dmn_sct" are redundant;
      They are used either for convenience or for model validation (sanity check), or used in development stage;
      These are marked [CHK]   
      */
   typedef struct{ 
     char *nm_fll; /* [sng] Fully qualified name (path) */
-    var_dmn_sct var_dmn_fll; /* [sct] Array of full dimension names for variable (nbr_dmn [CHK]) */
+    var_dmn_sct var_dmn; /* [sct] Array of dimension names for variable (nbr_dmn [CHK]) */
     size_t nm_fll_lng; /* [sng] Length of full name */
     char *grp_nm_fll; /* [sng] Full group name (for groups, same as nm_fll) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */

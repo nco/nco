@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.464 2013-02-12 00:37:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.465 2013-02-12 01:36:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2063,14 +2063,8 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 { 
-  const char fnc_nm[]="nco_prn_var_val()"; /* [sng] Function name */
-
-  int fl_fmt; /* [enm] File format */
   int grp_id; /* [ID] Group ID */
   int var_id; /* [ID] Variable ID */
-
-  /* Get file format */
-  (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
@@ -2441,7 +2435,7 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 
       /* Full dimension names for each variable */
       for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++) 
-        (void)fprintf(stdout,"%s : ",trv.var_dmn_fll.dmn_nm_fll[dmn_idx_var]); 
+        (void)fprintf(stdout,"%s : ",trv.var_dmn.dmn_nm_fll[dmn_idx_var]); 
 
       (void)fprintf(stdout,"\n");
 
@@ -2596,10 +2590,10 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
                 if(strcmp(dmn_fll.nm_fll,dmn_nm_fll) == 0){
 
                   /* Store full dimension name in "var_dmn_sct" member at index "dmn_idx_var" */
-                  trv_tbl->lst[uidx].var_dmn_fll.dmn_nm_fll[dmn_idx_var]=strdup(dmn_nm_fll);
+                  trv_tbl->lst[uidx].var_dmn.dmn_nm_fll[dmn_idx_var]=strdup(dmn_nm_fll);
 
                   /* Increment the number of dimensions for *variable* in table */
-                  trv_tbl->lst[uidx].var_dmn_fll.nbr_dmn++;
+                  trv_tbl->lst[uidx].var_dmn.nbr_dmn++;
 
                   /* Free allocated */
                   dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
@@ -2703,8 +2697,8 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
   Step 3) Deep copy matches to table, match at the current index, increment current index
           [ID] Dimension ID is set to -1 (Traversal code should be ID free)
   Step 4) Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) ) 
-          At this point lmt_sct is no longer needed;    
-  Step 5) Do a Sanity Check   
+          At this point lmt_sct is no longer needed;  
+  
 
   Tests:
   ncks -D 11 -d lon,0,0,1 -d lon,1,1,1 -d lat,0,0,1 -d time,1,2,1 -d time,6,7,1 -v lon,lat,time -H ~/nco/data/in_grp.nc
@@ -2864,10 +2858,11 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
       if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[dmn_idx].nm); 
       else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[dmn_idx].nm); 
     } 
-
   } /* End Loop table dimensions  */
 
-  /* Step 5) Do a Sanity Check */
+  
+
+  /* Step 4) Validate...need more here */
 
 #ifdef NCO_SANITY_CHECK
   /* Loop table dimensions */
@@ -2901,12 +2896,8 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
       /* Need more MRA sanity checks here; checking srt <= end now */
       assert(dmn_trv.lmt_dmn[lmt_idx]->srt <= dmn_trv.lmt_dmn[lmt_idx]->end);
       assert(dmn_trv.lmt_dmn[lmt_idx]->srd >= 1);
-
-
     }/* End Loop limits for each dimension */
-
   } /* End Loop table dimensions  */
-
 #endif /* NCO_SANITY_CHECK */
 
 } /* End nco_bld_lmt_trv() */
@@ -3216,7 +3207,7 @@ nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variab
 
     if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s <%s>:[%d]:%s: \n",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,dmn_idx_var,var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var]);
+        var_trv->nm_fll,dmn_idx_var,var_trv->var_dmn.dmn_nm_fll[dmn_idx_var]);
     }
 
     if (var_dmn_idx != dmn_idx_var) continue; 
@@ -3226,7 +3217,7 @@ nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variab
       dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
       /* Match full dimension name */ 
-      if(strcmp(var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
+      if(strcmp(var_trv->var_dmn.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
 
         return &trv_tbl->lst_dmn[dmn_idx]; 
 

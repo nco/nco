@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.171 2013-02-11 09:49:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.172 2013-02-12 01:36:53 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1978,7 +1978,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
     if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s <%s>:[%d]:%s: ",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,dmn_idx_var,var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var]);
+        var_trv->nm_fll,dmn_idx_var,var_trv->var_dmn.dmn_nm_fll[dmn_idx_var]);
     }
 
     /* Loop unique dimensions list (these contain limits) */
@@ -1986,7 +1986,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
       dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
       /* Match full dimension name; found the dimension and possible limits in it */ 
-      if(strcmp(var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
+      if(strcmp(var_trv->var_dmn.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
 
         if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout," %d limits: ",dmn_trv.lmt_dmn_nbr);
@@ -2623,7 +2623,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
     if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s <%s>:[%d]:%s: ",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,dmn_idx_var,var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var]);
+        var_trv->nm_fll,dmn_idx_var,var_trv->var_dmn.dmn_nm_fll[dmn_idx_var]);
     }
 
     /* Loop unique dimensions list (these contain limits) */
@@ -2631,7 +2631,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
       dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
       /* Match full dimension name; found the dimension and possible limits in it */ 
-      if(strcmp(var_trv->var_dmn_fll.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
+      if(strcmp(var_trv->var_dmn.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
 
         if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout," %d limits: ",dmn_trv.lmt_dmn_nbr);
