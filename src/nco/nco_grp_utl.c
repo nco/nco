@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.463 2013-02-11 09:49:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.464 2013-02-12 00:37:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2406,7 +2406,7 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 
   (void)nco_inq_format(nc_id,&fl_fmt);
 
-  (void)fprintf(stderr,"%s: INFO reports group information\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO reports group information\n",prg_nm_get());
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].typ == nco_obj_typ_grp){
       trv_sct trv=trv_tbl->lst[uidx];            
@@ -2433,7 +2433,7 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 
 
   (void)fprintf(stdout,"\n");
-  (void)fprintf(stderr,"%s: INFO reports variable information\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO reports variable information\n",prg_nm_get());
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].typ == nco_obj_typ_var){
       trv_sct trv=trv_tbl->lst[uidx];            
@@ -2453,7 +2453,7 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 
 
   (void)fprintf(stdout,"\n");
-  (void)fprintf(stderr,"%s: INFO reports dimension information: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
+  (void)fprintf(stdout,"%s: INFO reports dimension information: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
   for(unsigned uidx=0;uidx<trv_tbl->nbr_dmn;uidx++){
     dmn_fll_sct trv=trv_tbl->lst_dmn[uidx]; 
 

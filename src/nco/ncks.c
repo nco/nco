@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.586 2013-02-11 08:45:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.587 2013-02-12 00:37:41 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -62,7 +62,7 @@ functions to remove:
 2) nco_xtr_wrt [fnc] Write extracted data to output file 
 ->use nco_xtr_wrt_trv() that has GTT->MSA 
 3) nco_xtr_dfn [fnc] Define extracted groups, variables, and attributes in output file
--> use nco_xtr_dfn() that has GTT 
+-> use nco_xtr_dfn_trv() that has GTT 
 4) nco_prn_var_val [fnc] Print variable data
 -> use nco_prn_var_val_trv that has GTT->MSA
 */
@@ -163,8 +163,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.586 2013-02-11 08:45:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.586 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.587 2013-02-12 00:37:41 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.587 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -403,10 +403,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")){
-	const char fix_pfx[]="fix_"; /* [sng] Prefix string to fix dimension */
-	rec_dmn_nm=(char *)nco_malloc((strlen(fix_pfx)+strlen(optarg)+1L)*sizeof(char));
-	rec_dmn_nm=strcpy(rec_dmn_nm,fix_pfx);
-	rec_dmn_nm=strcat(rec_dmn_nm,optarg);
+        const char fix_pfx[]="fix_"; /* [sng] Prefix string to fix dimension */
+        rec_dmn_nm=(char *)nco_malloc((strlen(fix_pfx)+strlen(optarg)+1L)*sizeof(char));
+        rec_dmn_nm=strcpy(rec_dmn_nm,fix_pfx);
+        rec_dmn_nm=strcat(rec_dmn_nm,optarg);
       } /* endif fix_rec_dmn */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
