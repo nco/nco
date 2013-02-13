@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.173 2013-02-12 22:06:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.174 2013-02-13 10:16:12 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -2007,6 +2007,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         lmt_msa[lmt_msa_idx]->BASIC_DMN=dmn_trv.BASIC_DMN;
         lmt_msa[lmt_msa_idx]->dmn_cnt=dmn_trv.dmn_cnt;
         lmt_msa[lmt_msa_idx]->dmn_nm=strdup(dmn_trv.nm);
+        lmt_msa[lmt_msa_idx]->dmn_nm_fll=strdup(dmn_trv.nm_fll);
         lmt_msa[lmt_msa_idx]->dmn_sz_org=dmn_trv.sz;
         lmt_msa[lmt_msa_idx]->lmt_dmn_nbr=dmn_trv.lmt_dmn_nbr;
         lmt_msa[lmt_msa_idx]->MSA_USR_RDR=dmn_trv.MSA_USR_RDR;
@@ -2090,6 +2091,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   (void)nco_inq_var(in_id,var.id,var_nm,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
 
   /* Just make sure we got the right variable */
+  assert(var_trv->typ == nco_obj_typ_var);
   assert(var.nbr_dim == var_trv->nbr_dmn);
   assert(strcmp(var_nm,var_trv->nm) == 0);
 
