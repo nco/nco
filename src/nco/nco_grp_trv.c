@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.53 2013-02-13 11:01:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.54 2013-02-13 20:26:04 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -533,11 +533,6 @@ trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  
     for(idx=tbl->nbr_dmn;idx<tbl->sz_dmn;idx++){
 
       tbl->lst_dmn[idx].grp_nm_fll=NULL; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
-
-#if NOT_CRD_VAR_HERE
-      tbl->lst_dmn[idx].has_crd_var=-1; /* [flg] Does it have an associated variable? (coordinate variable) */
-#endif
-
       tbl->lst_dmn[idx].is_rec_dmn=-1; /* [flg] Is a record dimension? */
       tbl->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
       tbl->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
@@ -561,10 +556,6 @@ trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  
   tbl->lst_dmn[idx].nm_fll=(char *)strdup(obj.nm_fll);
   tbl->lst_dmn[idx].grp_nm_fll=(char *)strdup(obj.grp_nm_fll);
   strcpy(tbl->lst_dmn[idx].nm,obj.nm);
-
-#if NOT_CRD_VAR_HERE
-  tbl->lst_dmn[idx].has_crd_var=obj.has_crd_var;
-#endif
   tbl->lst_dmn[idx].is_rec_dmn=obj.is_rec_dmn;
   tbl->lst_dmn[idx].sz=obj.sz;
 

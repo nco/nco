@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.468 2013-02-13 19:22:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.469 2013-02-13 20:26:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3195,3 +3195,18 @@ nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variab
   return NULL;
 } /* end nco_fnd_var_lmt_trv() */
 
+void                      
+nco_blb_crd_var_trv                   /* [fnc] Build dimension information for all variables */
+(const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Build dimension information for all variables */
+
+  /* Loop unique dimensions list in groups */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+
+
+
+  } /* End  Loop unique dimensions list in groups  */
+} /* nco_blb_crd_var_trv() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.214 2013-02-11 04:11:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.215 2013-02-13 20:26:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -345,6 +345,10 @@ nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variab
 (const int var_dmn_idx,               /* I [sct] Dimension index of Variable Object */
  const trv_sct * const var_trv,       /* I [sct] Variable Object */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
+void                      
+nco_blb_crd_var_trv                   /* [fnc] Build dimension information for all variables */
+(const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 
 #ifdef __cplusplus
