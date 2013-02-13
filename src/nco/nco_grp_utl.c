@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.466 2013-02-13 04:33:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.467 2013-02-13 10:58:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -481,7 +481,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     var_nm_fll=(char *)nco_free(var_nm_fll);
   } /* end loop over variables */
 
-  /* Add dimension objects; detect possible coordinate variables, match record/non-record dimension */ 
+  /* Add dimension objects */ 
 
   /* Iterate dimensions (for group; dimensions are defined *for* groups) */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
@@ -490,9 +490,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
     /* Initialize dimension as a non-record dimension */
     obj_dmn.is_rec_dmn=False;
-
-    /* Initialize dimension as not having associated coordinate variable  */
-    obj_dmn.has_crd_var=False;
 
     /* Get dimension name */
     rcd+=nco_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_nm,&dmn_sz);
@@ -509,44 +506,10 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
         /* Dimension is a record dimension */
         obj_dmn.is_rec_dmn=True;
 
-        /* Iterate variables to detect if a coordinate variable exists (same name as dimension) */
-        /* This must be done for both dimension/record dimension loops */
-        for(int var_idx=0;var_idx<nbr_var;var_idx++){
-
-          /* Get type of variable and number of dimensions */
-          rcd+=nco_inq_var(grp_id,var_idx,var_nm,(nc_type *)NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
-
-          /* NB: comparing record dimension here */
-          if(!strcmp(rec_nm,var_nm)){
-            /* Dimension has coordinate varible */
-            obj_dmn.has_crd_var=True;
-            break;
-          } /* end match variable name to record dimension name */
-        } /* end variable loop */
-
         /* Exit record dimension loop; we found it */
         break;
       } /* end match record dimension name */
     } /* end record dimension loop */
-
-    /* Iterate variables to detect if a coordinate variable exists (same name as dimension) */
-    /* This must be done for both dimension/record dimension loops */
-    for(int var_idx=0;var_idx<nbr_var;var_idx++){
-
-      /* Get type of variable and number of dimensions */
-      rcd+=nco_inq_var(grp_id,var_idx,var_nm,(nc_type *)NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
-
-      /* NB: comparing dimension here */
-      if(strcmp(dmn_nm,var_nm) == 0 ){
-        /* Dimension has a coordinate varible  */
-        obj_dmn.has_crd_var=True;
-
-        /* Exit variable loop; we found it */
-        break;
-      } /* end match variable name to record dimension name */
-    } /* end variable loop */
-
-    /* Both members "is_rec_dmn" and "has_crd_var" are done; now do the easy part, full name, name, and size */
 
     /* Allocate path buffer and include space for trailing NUL */ 
     dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
@@ -564,7 +527,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     strcpy(obj_dmn.nm,dmn_nm);
     obj_dmn.nm_fll=dmn_nm_fll;
     obj_dmn.sz=dmn_sz;
-    /* Don't forget group name full, we will need it (all reason for dimension object) */
     obj_dmn.grp_nm_fll=grp_nm_fll;
 
     /* Call dimension object add function */
@@ -1633,7 +1595,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
       xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
       xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
-      /* To deprecate: generate ID needed only to test netCDF3 library and netCDf3 only functions to deprecate */
+      /* To deprecate: variable ID valid only in a netCDF3 context */
       int var_id;
       int grp_id;
       (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[uidx].grp_nm_fll,&grp_id);
@@ -2457,9 +2419,6 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
     /* Filter output */
     if (trv.is_rec_dmn) (void)fprintf(stdout," record dimension (%li)",trv.sz);
     else (void)fprintf(stdout," dimension (%li)",trv.sz);
-
-    /* Filter output */
-    if (trv.has_crd_var) (void)fprintf(stdout," coordinate variable");
 
     /* Terminate line */
     (void)fprintf(stdout,"\n");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.52 2013-02-13 09:55:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.53 2013-02-13 11:01:41 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -74,7 +74,6 @@ trv_tbl_init
 
   for(idx=0;idx<tb->sz_dmn;idx++){
     tb->lst_dmn[idx].grp_nm_fll=NULL; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
-    tb->lst_dmn[idx].has_crd_var=-1; /* [flg] Does it have an associated variable? (coordinate variable) */
     tb->lst_dmn[idx].is_rec_dmn=-1; /* [flg] Is a record dimension? */
     tb->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     tb->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
