@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.225 2013-02-11 04:11:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.226 2013-02-13 04:33:42 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -606,7 +606,7 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
      
      1. When copying MM3 to MM3. Done in ncks, TBD in others.
      2. When copying MM4 to MM3. Done in ncks, TBD in others.
-     3. When copying MM3 to MM4. Not done anywhere.
+     3. When copying MM3 to MM4. Not done anywhere. 20130212: csz Almost done in ncks
      4. When reading MM3 and not writing anything. Not done anywhere.
      
      Currently ncks always uses the algorithm for cases 1 and 2 (i.e.,

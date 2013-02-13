@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.465 2013-02-12 01:36:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.466 2013-02-13 04:33:42 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1633,7 +1633,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
       xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
       xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
-      /* To deprecate: generate ID needed only to test netCDf3 library and netCDf3 only functions to deprecate */
+      /* To deprecate: generate ID needed only to test netCDF3 library and netCDf3 only functions to deprecate */
       int var_id;
       int grp_id;
       (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[uidx].grp_nm_fll,&grp_id);
