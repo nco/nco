@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.81 2013-02-11 00:44:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.82 2013-02-13 19:22:35 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -84,7 +84,6 @@ extern "C" {
   void
   nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */
   (const int in_id, /* I [id] netCDF input file ID */
-   const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
    CST_X_PTR_CST_PTR_CST_Y(nm_id_sct,var_lst), /* I [sct] Record variables to be extracted */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.467 2013-02-13 10:58:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.468 2013-02-13 19:22:35 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1595,6 +1595,13 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
       xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
       xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
+      /* 20130213: Necessary to allow MM3->MM4 and MM4->MM3 workarounds
+	 Store in/out group IDs as determined in nco_xtr_dfn() 
+	 In MM3/4 cases, either grp_in_id or grp_out_id are always root
+	 Other is always root unless GPE is used */
+      xtr_lst[nbr_tbl].grp_id_in=trv_tbl->lst[uidx].grp_id_in;
+      xtr_lst[nbr_tbl].grp_id_out=trv_tbl->lst[uidx].grp_id_out;
+
       /* To deprecate: variable ID valid only in a netCDF3 context */
       int var_id;
       int grp_id;
@@ -1741,11 +1748,11 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
     for(var_idx=0;var_idx<fix_nbr;var_idx++){
       if(dbg_lvl_get() >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",fix_lst[var_idx]->nm);
       if(dbg_lvl_get() >= nco_dbg_var) (void)fflush(stderr);
-      (void)nco_cpy_var_val(nc_in_id,nc_out_id,fp_bnr,MD5_DIGEST,fix_lst[var_idx]->nm);
+      (void)nco_cpy_var_val(fix_lst[var_idx]->grp_id_in,fix_lst[var_idx]->grp_id_out,fp_bnr,MD5_DIGEST,fix_lst[var_idx]->nm);
     } /* end loop over var_idx */
 
     /* Copy record data record-by-record */
-    (void)nco_cpy_rec_var_val(nc_in_id,nc_out_id,fp_bnr,MD5_DIGEST,rec_lst,rec_nbr);
+    (void)nco_cpy_rec_var_val(nc_in_id,fp_bnr,MD5_DIGEST,rec_lst,rec_nbr);
 
     /* Extraction lists no longer needed */
     if(fix_lst) fix_lst=(nm_id_sct **)nco_free(fix_lst);
@@ -3128,7 +3135,7 @@ nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output fi
     } /* end loop over var_idx */
 
     /* Copy record data record-by-record */
-    (void)nco_cpy_rec_var_val(nc_in_id,nc_out_id,fp_bnr,MD5_DIGEST,rec_lst,rec_nbr);
+    (void)nco_cpy_rec_var_val(nc_in_id,fp_bnr,MD5_DIGEST,rec_lst,rec_nbr);
 
     /* Extraction lists no longer needed */
     if(fix_lst) fix_lst=(nm_id_sct **)nco_free(fix_lst);

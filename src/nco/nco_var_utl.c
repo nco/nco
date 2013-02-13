@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.226 2013-02-13 04:33:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.227 2013-02-13 19:22:35 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -604,9 +604,9 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
      patch incurs incurs more of a penalty than reading MM3s.
      So this is how I prioritize implementing the MM3 patch:
      
-     1. When copying MM3 to MM3. Done in ncks, TBD in others.
-     2. When copying MM4 to MM3. Done in ncks, TBD in others.
-     3. When copying MM3 to MM4. Not done anywhere. 20130212: csz Almost done in ncks
+     1. When copying MM3 to MM3. Done in ncks 4.1.0, TBD in others.
+     2. When copying MM4 to MM3. Done in ncks 4.1.0, TBD in others.
+     3. When copying MM3 to MM4. Done in ncks 4.2.6, TBD in others.
      4. When reading MM3 and not writing anything. Not done anywhere.
      
      Currently ncks always uses the algorithm for cases 1 and 2 (i.e.,
@@ -707,7 +707,6 @@ nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable n
 void
 nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */
 (const int in_id, /* I [id] netCDF input file ID */
- const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
  CST_X_PTR_CST_PTR_CST_Y(nm_id_sct,var_lst), /* I [sct] Record variables to be extracted */
@@ -717,7 +716,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
      Routine does not account for user-specified limits, it just copies what it finds
      Routine copies record-by-record, for all variables, old-style, called only by ncks
      Used only by MM3 workaround and therefore routine assumes:
-     1. Output file is netCDF3 (fxm: need to)
+     1. Input file is netCDF3
      2. All variables in var_lst are record variables
      NB: Rationale for MM3 workaround is kept in header to routine nco_use_mm3_workaround() */
 
@@ -763,10 +762,10 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       if(dbg_lvl_get() >= nco_dbg_var && rec_idx == 0) (void)fflush(stderr);
 
       /* Get ID of requested variable from both files */
-      (void)nco_inq_varid(in_id,var_lst[var_idx]->nm,&var_in_id);
-      (void)nco_inq_varid(out_id,var_lst[var_idx]->nm,&var_out_id);
-      (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
-      (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+      (void)nco_inq_varid(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm,&var_in_id);
+      (void)nco_inq_varid(var_lst[var_idx]->grp_id_out,var_lst[var_idx]->nm,&var_out_id);
+      (void)nco_inq_var(var_lst[var_idx]->grp_id_out,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+      (void)nco_inq_var(var_lst[var_idx]->grp_id_in,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
       if(nbr_dmn_out != nbr_dmn_in){
         (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",prg_nm_get(),nbr_dmn_in,var_lst[var_idx]->nm,nbr_dmn_out,var_lst[var_idx]->nm,var_lst[var_idx]->nm,var_lst[var_idx]->nm);
         nco_exit(EXIT_FAILURE);
@@ -780,11 +779,11 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
 
       /* Get dimension IDs from input file */
-      (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
+      (void)nco_inq_vardimid(var_lst[var_idx]->grp_id_in,var_in_id,dmn_id);
 
       /* Get non-record dimension sizes from input file */
       for(dmn_idx=1;dmn_idx<dmn_nbr;dmn_idx++){
-        (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
+        (void)nco_inq_dimlen(var_lst[var_idx]->grp_id_in,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
         /* Initialize indicial offset and stride arrays */
         dmn_srt[dmn_idx]=0L;
         var_sz*=dmn_cnt[dmn_idx];
@@ -799,8 +798,8 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
 
       /* Get and put one record of variable */
       if(var_sz > 0){ /* Allow for zero-size record variables */
-        nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
-        nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+        nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+        nco_put_vara(var_lst[var_idx]->grp_id_out,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       } /* end if var_sz */
 
       /* 20111130 TODO nco1029 warn on ncks -A when dim(old_record) != dim(new_record)
@@ -812,10 +811,10 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       Since following code is purely diagnostic, assume that these failures are due to using --fix_rec_dmn 
       And therefore, well, ignore them :) */
       if(rec_idx == rec_sz-1){ 
-        rcd=nco_inq_unlimdim(out_id,&rec_dmn_out_id); 
+        rcd=nco_inq_unlimdim(var_lst[var_idx]->grp_id_out,&rec_dmn_out_id); 
         if(rec_dmn_out_id != NCO_REC_DMN_UNDEFINED){
           /* ... and if output file has record dimension ... */
-          (void)nco_inq_dimlen(out_id,rec_dmn_out_id,&rec_out_sz);
+          (void)nco_inq_dimlen(var_lst[var_idx]->grp_id_out,rec_dmn_out_id,&rec_out_sz);
           /* ... and record dimension size in output file is non-zero (meaning at least one record has been written) ... */
           if(rec_out_sz > 0){
             /* ... then check input vs. output record dimension sizes ... */
@@ -844,18 +843,18 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Re-initialize accumulated variables */
       var_sz=1L;
       /* Get ID of requested variable from both files */
-      (void)nco_inq_varid(in_id,var_lst[var_idx]->nm,&var_in_id);
-      (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
+      (void)nco_inq_varid(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm,&var_in_id);
+      (void)nco_inq_var(var_lst[var_idx]->grp_id_in,var_in_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,(int *)NULL);
       /* Allocate space to hold dimension IDs */
       dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
       dmn_id=(int *)nco_malloc(dmn_nbr*sizeof(int));
       dmn_sz=(long *)nco_malloc(dmn_nbr*sizeof(long));
       dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
       /* Get dimension IDs from input file */
-      (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
+      (void)nco_inq_vardimid(var_lst[var_idx]->grp_id_in,var_in_id,dmn_id);
       /* Get dimension sizes from input file */
       for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-        (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
+        (void)nco_inq_dimlen(var_lst[var_idx]->grp_id_in,dmn_id[dmn_idx],dmn_cnt+dmn_idx);
         /* Initialize indicial offset and stride arrays */
         dmn_srt[dmn_idx]=0L;
         var_sz*=dmn_cnt[dmn_idx];
@@ -863,9 +862,9 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Allocate enough space to hold this entire variable */
       void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_typ),"Unable to malloc() value buffer when doing MD5 or binary write on variable",fnc_nm);
       /* Get variable */
-      if(var_sz > 0) nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
+      if(var_sz > 0) nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       /* Perform MD5 digest of input and output data if requested */
-      if(MD5_DIGEST) (void)nco_md5_chk(var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
+      if(MD5_DIGEST) (void)nco_md5_chk(var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),var_lst[var_idx]->grp_id_out,dmn_srt,dmn_cnt,void_ptr);
       /* Write unformatted binary data */
       if(fp_bnr) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,var_sz,var_typ,void_ptr);
       /* Free space that held dimension IDs */
@@ -2354,7 +2353,7 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
         dmn_fll_sct *dmn_trv=nco_fnd_var_lmt_trv(dmn_idx,var_trv,trv_tbl);
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s defining [%d]:%s(%d): with size=%d\n",prg_nm_get(),fnc_nm,
+          (void)fprintf(stdout,"%s: INFO %s defining [%d]:%s(%li): with size=%li\n",prg_nm_get(),fnc_nm,
             dmn_idx,dmn_trv->nm_fll,dmn_trv->sz,dmn_trv->dmn_cnt);
         }
 

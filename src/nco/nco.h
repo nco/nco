@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.244 2013-02-13 09:55:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.245 2013-02-13 19:22:35 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -496,6 +496,8 @@ extern "C" {
     char *var_nm_fll; /* Fully qualified variable name */
     char *nm; /* Variable (stub name) */
     int id; /* [id] Variable ID */
+    int grp_id_in; /* [id] Group ID in input file */
+    int grp_id_out; /* [id] Group ID in output file */
   } nm_id_sct;
   
   /* Rename structure */

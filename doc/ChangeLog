@@ -1,3 +1,8 @@
+2013-02-13  Charlie Zender  <zender@uci.edu>
+
+	* Copy grp_id_in and grp_id_out elements of traversal table
+	variables into nm_id structure to enable MM3->MM4 and MM4->MM3.
+
 2013-02-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.6 release procedure:
