@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.243 2013-02-12 09:10:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.244 2013-02-13 09:55:12 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -598,7 +598,7 @@ extern "C" {
   /* Container holding all limit structures indexible by dimension */
   typedef struct { /* lmt_all_sct */
     char *dmn_nm; /* [sng] Dimension name */
-    char *dmn_nm_fll; /* [sng] Full dimension name */
+    char *dmn_nm_fll; /* [sng] Full dimension name (needed in MSA) */
     long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
     long dmn_sz_org; /* [nbr] Size of dimension in INPUT file */
     int lmt_dmn_nbr; /* [nbr] Number of lmt arguments */
@@ -608,10 +608,12 @@ extern "C" {
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
   } lmt_all_sct;
 
-  /* Structure containing definition groups of all dimensions */
+  /* Variable dimensions:
+     Structure containing, for a variable, information for all dimensions (size of array is trv_sct.nbr_dmn at most) */
   typedef struct{ 
-    int nbr_dmn; /* [nbr][CHK] Number of dimensions for variable */
-    char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions (size is nbr_dmn) */  
+    int nbr_dmn; /* [nbr][CHK] Number of dimensions of variable (same as trv_sct.nbr_dmn ) */
+    char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
+    nco_bool has_crd_var[NC_MAX_DIMS]; /* [flg] Does each dimension have an associated variable? (coordinate variable) */
   } var_dmn_sct; 
   
   /* Object structure 

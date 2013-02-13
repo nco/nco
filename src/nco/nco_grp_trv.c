@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.51 2013-02-12 01:36:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.52 2013-02-13 09:55:12 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -14,7 +14,7 @@
 
 void                          
 trv_tbl_init
-(trv_tbl_sct **tbl) /* I/O [sct] Traversal table */
+(trv_tbl_sct **tbl) /* I/O [sct] Traversal table fxm pvn move all this to a alloc by need case */
 {
   unsigned int idx;
   trv_tbl_sct *tb=(trv_tbl_sct *)nco_malloc(sizeof(trv_tbl_sct));
@@ -57,9 +57,12 @@ trv_tbl_init
     tb->lst[idx].nbr_rec=nco_obj_typ_err;
     tb->lst[idx].nbr_var=nco_obj_typ_err;
 
-    /* Full dimension names for each variable */
-    for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++) tb->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=NULL;
-    tb->lst[idx].var_dmn.nbr_dmn=-1;
+    /* Variable dimensions */
+    for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
+      tb->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=NULL;
+      tb->lst[idx].var_dmn.has_crd_var[dmn_idx_var]=nco_obj_typ_err;
+    }
+    tb->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
 
   } /* end loop over objects */
 
@@ -79,7 +82,7 @@ trv_tbl_init
     tb->lst_dmn[idx].lmt_dmn_nbr=0;  /* [nbr] Number of limit structures */
     tb->lst_dmn[idx].lmt_crr=0; /* [nbr] Index of current limit structure being initialized */
 
-    /* Limits: TO DO move all this to a alloc by need case */
+    /* Limits */
     tb->lst_dmn[idx].lmt_dmn=NULL;
     tb->lst_dmn[idx].lmt_crr=0;
     tb->lst_dmn[idx].WRP=False;
@@ -531,7 +534,11 @@ trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  
     for(idx=tbl->nbr_dmn;idx<tbl->sz_dmn;idx++){
 
       tbl->lst_dmn[idx].grp_nm_fll=NULL; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
+
+#if NOT_CRD_VAR_HERE
       tbl->lst_dmn[idx].has_crd_var=-1; /* [flg] Does it have an associated variable? (coordinate variable) */
+#endif
+
       tbl->lst_dmn[idx].is_rec_dmn=-1; /* [flg] Is a record dimension? */
       tbl->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
       tbl->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
@@ -555,7 +562,10 @@ trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  
   tbl->lst_dmn[idx].nm_fll=(char *)strdup(obj.nm_fll);
   tbl->lst_dmn[idx].grp_nm_fll=(char *)strdup(obj.grp_nm_fll);
   strcpy(tbl->lst_dmn[idx].nm,obj.nm);
+
+#if NOT_CRD_VAR_HERE
   tbl->lst_dmn[idx].has_crd_var=obj.has_crd_var;
+#endif
   tbl->lst_dmn[idx].is_rec_dmn=obj.is_rec_dmn;
   tbl->lst_dmn[idx].sz=obj.sz;
 
