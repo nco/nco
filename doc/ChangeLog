@@ -1,7 +1,14 @@
 2013-02-14  Pedro Vicente  <pvicente@uci.edu>
   
-  * ncks  --get_grp_info prints extended variable, coordinate variables and dimension information
-
+  * ncks  --get_grp_info prints extended variable, coordinate variables and dimension information;
+    associated functions: 
+    nco_blb_crd_var_trv() Build dimension information for all variables 
+    nco_var_dmn_scp() Is variable in dimension scope  
+    
+  * ncks parses limits from dimension object
+    associated functions: 
+    nco_bld_lmt_trv() Assign user specified dimension limits to traversal table dimensions  
+    
 2013-02-13  Charlie Zender  <zender@uci.edu>
 
 	* Copy grp_id_in and grp_id_out elements of traversal table

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.246 2013-02-14 00:10:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.247 2013-02-14 23:44:07 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -670,7 +670,6 @@ extern "C" {
     char *grp_nm_fll; /* [sng][CHK] Full group name where dimension was defined */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
-    nco_bool has_crd_var; /* [flg] Does it have an associated variable? (coordinate variable) */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
     size_t sz; /* [nbr] Size of dimension */
     int lmt_dmn_nbr; /* [nbr] Number of limit structures */

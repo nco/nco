@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.169 2013-02-13 04:49:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.170 2013-02-14 23:44:07 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1228,15 +1228,17 @@ no_data_ok: /* end goto */
 } /* end nco_lmt_evl() */
 
 void                      
-nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hyperslab specifications */
-(const int nc_id,              /* I [idx] netCDF file ID */
+nco_lmt_evl_dmn_trv            /* [fnc] Parse user-specified limits into hyperslab specifications (trv version) */
+(const int nc_id,              /* I [ID] netCDF file ID */
  lmt_sct *lmt_ptr,             /* I/O [sct] Structure from nco_lmt_prs()  */
  long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
- dmn_fll_sct *dmn_trv)         /* I/O [sct] Structure from traversal table dimension  */
+ dmn_fll_sct *dmn_trv)         /* I/O [sct] Structure from GTT (unique dimension in table list, defined in a *group*) */
 {
   /* Purpose: Take parsed list of dimension names, minima, and maxima strings and find appropriate indices into dimensions 
   for formulation of dimension start and count vectors, or fail trying. 
+
+  Based on original nco_lmt_evl(). Differrences are marked GTT
 
   Goal here is to take input from both "lmt_ptr" and "dmn_trv" and match them on output 
   Use case example:
@@ -1244,19 +1246,24 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   /g8/lon(2)
   ncks -d lon,0,3,1 -v lon -H ~/nco/data/in_grp.nc
   "-d lon,0,3,1" is valid for /lon(4) but not for /g8/lon(2)
-  NB: Coordinate values should be specified using real notation with a decimal point required in the value, 
+
+  Reminder:
+  Coordinate values should be specified using real notation with a decimal point required in the value, 
   whereas dimension indices are specified using integer notation without a decimal point.
 
-  Tests:
-     ncks -D 11 -d lon,0.,90.,1 -v lon -H ~/nco/data/in_grp.nc
-     ncks -D 11 -d lon,0,1,1 -v lon -H ~/nco/data/in_grp.nc
+  ncks -d lat,-90.,90.,1 -H -v area ~/nco/data/in_grp.nc  # limit type is defined as lmt_crd_val
+  ncks -d lat,0,1,1 -H -v area ~/nco/data/in_grp.nc  # limit type is defined as lmt_dmn_idx
 
-  NB: This should be a typedef instead
-  enum lmt_typ [enm] Limit type 
   lmt_crd_val,  0, Coordinate value limit 
   lmt_dmn_idx,  1, Dimension index limit 
-  lmt_udu_sng   2, UDUnits string
+  lmt_udu_sng   2, UDUnits string 
+
+  Tests:
+  ncks -D 11 -d lon,0.,90.,1 -v lon -H ~/nco/data/in_grp.nc
+  ncks -D 11 -d lon,0,1,1 -v lon -H ~/nco/data/in_grp.nc
   */
+
+  const char fnc_nm[]="nco_lmt_evl_dmn_trv()"; /* [sng] Function name */
 
   char *fl_udu_sng=NULL_CEWI;     /* [sng] Store units attribute of coordinate dimension */
   char *msg_sng=NULL_CEWI;        /* [sng] Error message */
@@ -1267,9 +1274,7 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   nco_bool rec_dmn_and_mfo=False; /* [flg] True if record dimension in multi-file operator */
   nco_bool NCO_SYNTAX_ERROR=False;/* [flg] Syntax error in hyperslab specification */
 
-#ifdef IDS_NOT_ALLOWED /* No need to inquire netCDF: "dmn_trv" already has the dimension size */
-  dmn_sct dim;  
-#endif /* IDS_NOT_ALLOWED */
+  dmn_sct dim;                     /* [sct] Dimension Structure  */
 
   lmt_sct lmt;                     /* [sct] Structure from nco_lmt_prs()  */
 
@@ -1290,6 +1295,8 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
 
   nc_type var_typ=NC_NAT;          /* [enm] Type of variable */
 
+  nco_bool is_crd_var;             /* [flg] Does the dimension have a coordinate variable ? */         
+
   lmt=*lmt_ptr;
 
   prg_id=prg_get(); 
@@ -1304,29 +1311,28 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   lmt.srd=1L;
   lmt.flg_input_complete=False;
 
-  /* Needed only to read variable, if dimension is a coordinate variable */
-  if (dmn_trv->has_crd_var){
+  /* Obtain group ID using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,dmn_trv->grp_nm_fll,&grp_id);
 
-    /* Obtain group ID using full group name */
-    (void)nco_inq_grp_full_ncid(nc_id,dmn_trv->grp_nm_fll,&grp_id);
+  /* Obtain variable ID using group ID */
+  rcd=nco_inq_varid_flg(grp_id,dmn_trv->nm,&var_id);
+  if(rcd != NC_NOERR) is_crd_var=False; else is_crd_var=False;
 
-    /* Obtain variable ID using group ID */
-    (void)nco_inq_varid(grp_id,dmn_trv->nm,&var_id);
-
-    /* Get coordinate type */
-    (void)nco_inq_vartype(grp_id,var_id,&var_typ);
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    if (is_crd_var == False )
+      (void)fprintf(stdout,"%s: INFO %s dimension <%s> does not have a coordinate variable:\n",prg_nm_get(),fnc_nm,
+      dmn_trv->nm_fll);
   }
 
-#ifdef IDS_NOT_ALLOWED
-  /* Get dimension ID */
-  rcd=nco_inq_dimid_flg(nc_id,lmt.nm,&lmt.id);
+  /* Get coordinate type */
+  if (is_crd_var == True ) (void)nco_inq_vartype(grp_id,var_id,&var_typ);
+
+  /* Get dimension ID. NOTE: using group ID */
+  rcd=nco_inq_dimid_flg(grp_id,lmt.nm,&lmt.id);
   if(rcd != NC_NOERR){
     (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",prg_nm_get(),lmt.nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-#else /* IDS_NOT_ALLOWED */
-  /* Nothing to do here: this function call is made only when relative names from both "lmt_ptr" and "dmn_trv" match */
-#endif /* IDS_NOT_ALLOWED */
 
   /* Logic on whether to allow skipping current file depends on whether limit
   is specified for record dimension in multi-file operators.
@@ -1338,26 +1344,25 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
-  /* Get dimension size */
-  (void)nco_inq_dimlen(nc_id,lmt.id,&dim.sz);
 #else /* IDS_NOT_ALLOWED */
 
   /* Hmm... Only used for ncks now, define this for now; "dmn_trv" has record dimension info already */
   assert(prg_id == ncks);
   if(prg_id == ncks) rec_dmn_and_mfo=False;
 
-  /* Hmm... Hmm... what to do here about "is_rec_dmn"? */
+  /* Use info from unique dimension */
   lmt.is_rec_dmn=dmn_trv->is_rec_dmn;
 
 #endif /* IDS_NOT_ALLOWED */
-  
-#ifdef IDS_NOT_ALLOWED 
+
+  /* Get dimension size. NOTE: using group ID */
+  (void)nco_inq_dimlen(grp_id,lmt.id,&dim.sz);
+
   /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
-#else 
-  /* No need to inquire netCDF: "dmn_trv" already has the dimension size */
-  dmn_sz=dmn_trv->sz;
-#endif /* IDS_NOT_ALLOWED */
+
+  /* No need to inquire netCDF: "dmn_trv" already has the dimension size, but do it for sanity check */
+  assert(dmn_sz == dmn_trv->sz);
 
   if(rec_dmn_and_mfo){
     lmt.rec_dmn_sz=dmn_sz;
@@ -1449,16 +1454,12 @@ nco_lmt_evl_dmn_tbl            /* [fnc] Parse user-specified limits into hypersl
   /* Coordinate re-basing code */
   lmt.origin=0.0;
 
-#ifdef IDS_NOT_ALLOWED
-  /* Get variable ID of coordinate */
-  rcd=nco_inq_varid_flg(nc_id,lmt.nm,&dim.cid);
+  /* Get variable ID of coordinate. NOTE: using group ID */
+  rcd=nco_inq_varid_flg(grp_id,lmt.nm,&dim.cid);
 
-  /* Not needed; we already have ID; avoid use of _flg versions; this should be in the form
-  if( we know it exists) then read, like below */
-#endif /* IDS_NOT_ALLOWED */
+  /* If there is a coordinate variable */
+  if(rcd == NC_NOERR){
 
-  /* Needed only to read variable, if dimension is a coordinate variable; NB using *group* ID */
-  if (dmn_trv->has_crd_var){
     char *cln_sng=NULL_CEWI;
 
     fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_id,"units"); /* Units attribute of coordinate variable */
@@ -1990,7 +1991,7 @@ no_data_ok: /* end goto */
 
   fl_udu_sng=(char *)nco_free(fl_udu_sng);
 
-} /* end nco_lmt_evl_dmn_tbl() */
+} /* end nco_lmt_evl_dmn_trv() */
 
 
 
