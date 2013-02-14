@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.54 2013-02-13 20:26:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.55 2013-02-14 00:10:20 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -46,6 +46,7 @@ trv_tbl_init
     tb->lst[idx].flg_vsg=False; /* [flg] Variable selected because group matches */
     tb->lst[idx].flg_xcl=False; /* [flg] Object matches exclusion criteria */
     tb->lst[idx].flg_xtr=False; /* [flg] Extract object */
+    tb->lst[idx].is_crd_var=False; /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
 
     tb->lst[idx].grp_dpt=nco_obj_typ_err; /* [nbr] Depth of group (root = 0) */
     tb->lst[idx].grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
@@ -173,6 +174,7 @@ trv_tbl_add
   tbl->lst[idx].flg_vsg=obj.flg_vsg; /* [flg] Variable selected because group matches */
   tbl->lst[idx].flg_xcl=obj.flg_xcl; /* [flg] Object matches exclusion criteria */
   tbl->lst[idx].flg_xtr=obj.flg_xtr; /* [flg] Extract object */
+  tbl->lst[idx].is_crd_var=False; /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
 
   tbl->lst[idx].grp_dpt=obj.grp_dpt; /* [nbr] Depth of group (root = 0) */
   tbl->lst[idx].grp_id_in=obj.grp_id_in; /* [id] Group ID in input file */
@@ -184,6 +186,55 @@ trv_tbl_add
   tbl->lst[idx].nbr_rec=obj.nbr_rec;
   tbl->lst[idx].nbr_var=obj.nbr_var;
 } /* end trv_tbl_add() */
+
+
+void 
+trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  */
+(dmn_fll_sct const obj,               /* I [sct] Object to store */
+ trv_tbl_sct * const tbl)             /* I/O [sct] Traversal table */
+{
+  unsigned int idx;
+
+  if(tbl->nbr_dmn == tbl->sz_dmn){
+    tbl->sz_dmn*=2;
+    tbl->lst_dmn=(dmn_fll_sct *)nco_realloc(tbl->lst_dmn,tbl->sz_dmn*sizeof(dmn_fll_sct));
+
+    for(idx=tbl->nbr_dmn;idx<tbl->sz_dmn;idx++){
+
+      tbl->lst_dmn[idx].grp_nm_fll=NULL; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
+      tbl->lst_dmn[idx].is_rec_dmn=-1; /* [flg] Is a record dimension? */
+      tbl->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
+      tbl->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
+      tbl->lst_dmn[idx].sz=0; /* [nbr] Size of dimension */
+      tbl->lst_dmn[idx].lmt_dmn_nbr=0;  /* [nbr] Number of limit structures */
+      tbl->lst_dmn[idx].lmt_crr=0; /* [nbr] Index of current limit structure being initialized */
+
+      /* Limits: TO DO move all this to a alloc by need case */
+      tbl->lst_dmn[idx].lmt_dmn=NULL;
+      tbl->lst_dmn[idx].lmt_crr=0;
+      tbl->lst_dmn[idx].WRP=False;
+      tbl->lst_dmn[idx].BASIC_DMN=True;
+      tbl->lst_dmn[idx].MSA_USR_RDR=False;  
+      tbl->lst_dmn[idx].dmn_cnt=0;
+
+    } /* idx */
+  } /* tbl->sz_dmn */
+
+  idx=tbl->nbr_dmn++;
+
+  tbl->lst_dmn[idx].nm_fll=(char *)strdup(obj.nm_fll);
+  tbl->lst_dmn[idx].grp_nm_fll=(char *)strdup(obj.grp_nm_fll);
+  strcpy(tbl->lst_dmn[idx].nm,obj.nm);
+  tbl->lst_dmn[idx].is_rec_dmn=obj.is_rec_dmn;
+  tbl->lst_dmn[idx].sz=obj.sz;
+
+  /* Limits are initialized in build limits function */
+
+} /* end trv_tbl_add_dmn() */
+
+
+
+
 
 void                       
 trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
@@ -519,46 +570,3 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
 
 } /* end trv_tbl_mch() */
 
-void 
-trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  */
-(dmn_fll_sct const obj,               /* I [sct] Object to store */
- trv_tbl_sct * const tbl)             /* I/O [sct] Traversal table */
-{
-  unsigned int idx;
-
-  if(tbl->nbr_dmn == tbl->sz_dmn){
-    tbl->sz_dmn*=2;
-    tbl->lst_dmn=(dmn_fll_sct *)nco_realloc(tbl->lst_dmn,tbl->sz_dmn*sizeof(dmn_fll_sct));
-
-    for(idx=tbl->nbr_dmn;idx<tbl->sz_dmn;idx++){
-
-      tbl->lst_dmn[idx].grp_nm_fll=NULL; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
-      tbl->lst_dmn[idx].is_rec_dmn=-1; /* [flg] Is a record dimension? */
-      tbl->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
-      tbl->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
-      tbl->lst_dmn[idx].sz=0; /* [nbr] Size of dimension */
-      tbl->lst_dmn[idx].lmt_dmn_nbr=0;  /* [nbr] Number of limit structures */
-      tbl->lst_dmn[idx].lmt_crr=0; /* [nbr] Index of current limit structure being initialized */
-
-      /* Limits: TO DO move all this to a alloc by need case */
-      tbl->lst_dmn[idx].lmt_dmn=NULL;
-      tbl->lst_dmn[idx].lmt_crr=0;
-      tbl->lst_dmn[idx].WRP=False;
-      tbl->lst_dmn[idx].BASIC_DMN=True;
-      tbl->lst_dmn[idx].MSA_USR_RDR=False;  
-      tbl->lst_dmn[idx].dmn_cnt=0;
-
-    } /* idx */
-  } /* tbl->sz_dmn */
-
-  idx=tbl->nbr_dmn++;
-
-  tbl->lst_dmn[idx].nm_fll=(char *)strdup(obj.nm_fll);
-  tbl->lst_dmn[idx].grp_nm_fll=(char *)strdup(obj.grp_nm_fll);
-  strcpy(tbl->lst_dmn[idx].nm,obj.nm);
-  tbl->lst_dmn[idx].is_rec_dmn=obj.is_rec_dmn;
-  tbl->lst_dmn[idx].sz=obj.sz;
-
-  /* Limits are initialized in build limits function */
-
-} /* end trv_tbl_add_dmn() */

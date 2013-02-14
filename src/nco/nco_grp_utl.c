@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.469 2013-02-13 20:26:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.470 2013-02-14 00:13:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2371,6 +2371,8 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 
   (void)fprintf(stdout,"%s: INFO reports group information\n",prg_nm_get());
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+
+    /* Filter groups only */
     if(trv_tbl->lst[uidx].typ == nco_obj_typ_grp){
       trv_sct trv=trv_tbl->lst[uidx];            
       (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d record dimensions, %d attributes, %d variables\n",
@@ -2398,6 +2400,8 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
   (void)fprintf(stdout,"\n");
   (void)fprintf(stdout,"%s: INFO reports variable information\n",prg_nm_get());
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+
+    /* Filter variables only */
     if(trv_tbl->lst[uidx].typ == nco_obj_typ_var){
       trv_sct trv=trv_tbl->lst[uidx];            
       (void)fprintf(stdout,"%s: %d dimensions: ",trv.nm_fll,trv.nbr_dmn); 
@@ -2405,6 +2409,9 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
       /* Full dimension names for each variable */
       for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++) 
         (void)fprintf(stdout,"%s : ",trv.var_dmn.dmn_nm_fll[dmn_idx_var]); 
+
+      /* Filter output */
+      if (trv.is_crd_var) (void)fprintf(stdout," (coordinate variable)");
 
       (void)fprintf(stdout,"\n");
 
@@ -2414,6 +2421,7 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
 
+  /* Separate unique dimension list */
 
   (void)fprintf(stdout,"\n");
   (void)fprintf(stdout,"%s: INFO reports dimension information: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
@@ -2597,6 +2605,11 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
       } /* End Loop over dimensions of variable */
     } /* End object is variable nco_obj_typ_var */
   } /* End Loop *object* traversal table  */
+
+
+  /* Not finished yet.. find coordinate variables */
+  (void)nco_blb_crd_var_trv(trv_tbl);
+
 
 } /* end nco_blb_dmn_trv() */
 
@@ -3201,12 +3214,12 @@ nco_blb_crd_var_trv                   /* [fnc] Build dimension information for a
 {
   /* Purpose: Build dimension information for all variables */
 
+  const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
+
   /* Loop unique dimensions list in groups */
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
     dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
-
-
-
+   
   } /* End  Loop unique dimensions list in groups  */
 } /* nco_blb_crd_var_trv() */
