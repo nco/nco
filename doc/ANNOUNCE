@@ -1,11 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.543 2013-02-09 03:46:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.544 2013-02-14 04:12:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release continues to improve support of netCDF4 files.
+This release continues to improve support of netCDF4 files, by
+adding new features and fixing some bugs from the last release.
+The many new netCDF4 features NCO supports leads to release churn.
 
 Work on NCO 4.2.7 is underway and focuses on better support for more
 complex netCDF4 files, and on netCDF4 support for ncrename and ncbo
@@ -36,6 +38,13 @@ A. ncks prints accurate netCDF4 metadata summaries (with -M) and
    breaks dimensions into fixed vs. record, and variables into
    atomic-types vs. non-atomic. Formerly, the number of netCDF4
    dimensions was ill-defined.
+
+A. ncks 4.2.4-4.2.5 failed when attempting to copy certain netCDF3 
+   files (known as MM3 files because they contain multiple record
+   variables that require a special copying algorithm) into netCDF4
+   files when group-path-editing (GPE) was invoked. This has been
+   fixed so commands like this work again: 
+   ncks -G g1 -4 in.nc out.nc
 
 KNOWN BUGS NOT YET FIXED:
 
