@@ -44,7 +44,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.60 2013-02-14 23:10:21 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.61 2013-02-14 23:15:56 pvicente Exp $";
   float ilev(lev,vrt_nbr);
  ilev:purpose = "Cell boundaries for lev coordinate";
   double lat_gds(gds_crd);
@@ -414,7 +414,7 @@ netcdf in_grp {
     
     group: g16g1 { 
      dimensions:
-     lat1=2; //dimension that has a variable /lat1 down in scope 
+     lat1=2; //dimension that has a variable /lat1 down in *illegal* scope 
      variables:
      float lon1(lon1);  //coordinate variable /g16/g16g1/lon1(lon1) that has dimension /lon1 in scope
      data:
