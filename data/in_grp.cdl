@@ -29,14 +29,22 @@
 // ncks --get_file_info  ~/nco/data/in_grp.nc
 
 netcdf in_grp {
+
  dimensions:
-  lat=2,lev=3,lon=4,gds_crd=8,time=unlimited,tm2=unlimited,tm3=unlimited,vrt_nbr=2;
+  lat=2;
+  lev=3;
+  lon=4;
+  gds_crd=8;
+  time=unlimited;
+  tm2=unlimited;
+  tm3=unlimited;
+  vrt_nbr=2;
+  
  variables:
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.59 2013-02-14 10:28:28 pvicente Exp $";
-  // Coordinate variables: lat, lev, lon, time, tm2, tm3, gds_crd (7 at root)
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.60 2013-02-14 23:10:21 pvicente Exp $";
   float ilev(lev,vrt_nbr);
  ilev:purpose = "Cell boundaries for lev coordinate";
   double lat_gds(gds_crd);
@@ -66,8 +74,6 @@ netcdf in_grp {
  gds_crd:units = "degree";
  gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
  gds_crd:coordinates = "lat_gds lon_gds";
-  
-  // Non-coordinate variables
   float scl;
   integer unique;
  unique:purpose = "the only variable of this name in this file, to test smallest possible access requests";    
@@ -78,6 +84,7 @@ netcdf in_grp {
   //tm2_tm3:purpose = "a variable containing mutiple record dimensions";
   //tm2_tm3:note = "ncdump prior to snapshot 20121116 and/or release netCDF 4.3 fails to print braces required to dis-ambiguate data sizes of mutiple record dimensions";
   //tm2_tm3:note2 = "ncgen from netCDF after ~201207 fails when ambiguous syntax (without braces) is used. Catch 22. Therefore remove tm2_tm3 from test file for now.";
+  
  data:
   area=10.,10.;
   gds_crd=0,1,2,3,4,5,6,7;
@@ -100,10 +107,8 @@ netcdf in_grp {
   //
  group: g1 { 
   variables:
-    // Coordinate variable (dim at root, same size)
     float lon(lon);
   lon:units = "g1 degrees_east";
-    //variables
     float scl;
     int g1v1;
     int v1;
@@ -127,7 +132,6 @@ netcdf in_grp {
   //
  group: g2 { 
   variables:
-    // Coordinate variable (dim at root, same size)
     double time(time);
     float scl;
   data:
@@ -140,14 +144,13 @@ netcdf in_grp {
   //
  group: g3 {
   dimensions:
-    rlev=3,time2=unlimited;
+    rlev=3;
+    time2=unlimited;
   variables:
     :g3_group_attribute = "g3_group_attribute";
-    // Coordinate variables (dim here )
     float rlev(rlev);
     rlev:purpose = "Monotonically decreasing coordinate pressure";
     double time2(time2);
-    //variables
     float rz(rlev);  
     float scl;
   data:
@@ -183,7 +186,6 @@ netcdf in_grp {
   dimensions:
     rlev=3;
   variables:
-    // Coordinate variables (dim here )
     float rlev(rlev);
   data:
     rlev=10.,5.,1.;
@@ -220,7 +222,6 @@ netcdf in_grp {
   dimensions:
     gds_crd=8;
   variables:
-    // Coordinate variables (dim here )
     float gds_crd(gds_crd);
   gds_crd:units = "degree";
   gds_crd:coordinates = "lat_gds lon_gds";
@@ -244,7 +245,6 @@ netcdf in_grp {
   dimensions:
     lon=2,lev=3,vrt_nbr=2;
   variables:
-   // Coordinate variables (dim here )
     float lev(lev);
     float lon(lon);
     lev:units = "hybrid_sigma_pressure";
@@ -387,7 +387,9 @@ netcdf in_grp {
   
   
   //
-  //g16 Test variables and dimensions in and out of scope
+  //g16 
+  //
+  // Test variables and dimensions in and out of scope
   // Use case of variable in scope of dimension:
   // dimension /lon 
   // variable /g1/lon(lon)
@@ -395,22 +397,26 @@ netcdf in_grp {
   // variable /lon
   // dimension /g1/lon
   //
+  // Test dimensions with no associated coordinate variable
   //
   group: g16 { 
     dimensions:
-    lon1=4;
+    lon1=4;  //dimension that has a coordinate variable down in scope at /g16/g16g1/lon1(lon1)
+    lon2=4;  //dimension that does NOT have a coordinate variable anywhere 
     variables:
     float lat1(lat);
     //NOTE: attempting to define float lat1(lat1); is not legal: ncgen: Undefined or forward referenced dimension: lat1
     //But we can try to define a dimension lat1 anyway down in the group path for NCO testing/sanity check
+    float lon2_var(lon2);
     data:
     lat1=1.,2.;
+    lon2_var=1.,2.,3.,4.;
     
     group: g16g1 { 
      dimensions:
-     lat1=2;
+     lat1=2; //dimension that has a variable /lat1 down in scope 
      variables:
-     float lon1(lon1);
+     float lon1(lon1);  //coordinate variable /g16/g16g1/lon1(lon1) that has dimension /lon1 in scope
      data:
      lon1=1.,2.,3.,4.;
       } // end g16g1 
