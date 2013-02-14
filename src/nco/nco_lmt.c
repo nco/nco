@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.171 2013-02-14 23:46:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.172 2013-02-14 23:54:23 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1316,7 +1316,7 @@ nco_lmt_evl_dmn_trv            /* [fnc] Parse user-specified limits into hypersl
 
   /* Obtain variable ID using group ID */
   rcd=nco_inq_varid_flg(grp_id,dmn_trv->nm,&var_id);
-  if(rcd != NC_NOERR) is_crd_var=False; else is_crd_var=False;
+  if(rcd != NC_NOERR) is_crd_var=False; else is_crd_var=True;
 
   if(dbg_lvl_get() == nco_dbg_old){
     if (is_crd_var == False )
