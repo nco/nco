@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.170 2013-02-14 23:44:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.171 2013-02-14 23:46:27 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1318,7 +1318,7 @@ nco_lmt_evl_dmn_trv            /* [fnc] Parse user-specified limits into hypersl
   rcd=nco_inq_varid_flg(grp_id,dmn_trv->nm,&var_id);
   if(rcd != NC_NOERR) is_crd_var=False; else is_crd_var=False;
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
+  if(dbg_lvl_get() == nco_dbg_old){
     if (is_crd_var == False )
       (void)fprintf(stdout,"%s: INFO %s dimension <%s> does not have a coordinate variable:\n",prg_nm_get(),fnc_nm,
       dmn_trv->nm_fll);
