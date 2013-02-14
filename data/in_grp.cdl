@@ -35,7 +35,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.58 2013-02-09 01:29:47 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.59 2013-02-14 10:28:28 pvicente Exp $";
   // Coordinate variables: lat, lev, lon, time, tm2, tm3, gds_crd (7 at root)
   float ilev(lev,vrt_nbr);
  ilev:purpose = "Cell boundaries for lev coordinate";
@@ -174,23 +174,6 @@ netcdf in_grp {
   one_dmn_rec_var:units = "second";
   data:
     one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;  
-  //
-  //g4g1
-  //
-  group: g4g1 { 
-    group: g4g1g1 {  
-      dimensions:
-      time3=unlimited;
-      time4=unlimited;
-      variables:
-      // Coordinate variables (dim here )
-      double time3(time3);
-      double time4(time4);
-      data:
-      time3=1.,2.,3.;
-      time4=1.,2.,3.,4.;
-      } // end g4g1g1
-    } // end g4g1
   } // end g4
   
   //
@@ -401,5 +384,38 @@ netcdf in_grp {
   data:
     compound_var={{3,4,5},Stratus};
   } // end g15
+  
+  
+  //
+  //g16 Test variables and dimensions in and out of scope
+  // Use case of variable in scope of dimension:
+  // dimension /lon 
+  // variable /g1/lon(lon)
+  // Use case of variable NOT in scope of dimension:
+  // variable /lon
+  // dimension /g1/lon
+  //
+  //
+  group: g16 { 
+    dimensions:
+    lon1=4;
+    variables:
+    float lat1(lat);
+    //NOTE: attempting to define float lat1(lat1); is not legal: ncgen: Undefined or forward referenced dimension: lat1
+    //But we can try to define a dimension lat1 anyway down in the group path for NCO testing/sanity check
+    data:
+    lat1=1.,2.;
+    
+    group: g16g1 { 
+     dimensions:
+     lat1=2;
+     variables:
+     float lon1(lon1);
+     data:
+     lon1=1.,2.,3.,4.;
+      } // end g16g1 
+  } // end g16
+  
+  
 
 } // end root group
