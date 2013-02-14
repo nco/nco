@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.215 2013-02-13 20:26:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.216 2013-02-14 21:39:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -348,7 +348,13 @@ nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variab
 
 void                      
 nco_blb_crd_var_trv                   /* [fnc] Build dimension information for all variables */
-(const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+(const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
+nco_bool                              /* O [flg] True if in scope */ 
+nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope */
+(trv_sct *var_trv,                    /* I [sct] GTT Object Variable */
+ dmn_fll_sct *dmn_trv);               /* I [sct] GTT unique dimension */
+
 
 
 #ifdef __cplusplus
