@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.58 2013-02-15 06:43:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.59 2013-02-15 10:34:58 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -89,7 +89,7 @@ trv_tbl_init
     tb->lst_dmn[idx].WRP=False;
     tb->lst_dmn[idx].BASIC_DMN=True;
     tb->lst_dmn[idx].MSA_USR_RDR=False;  
-    tb->lst_dmn[idx].dmn_cnt=0;
+    tb->lst_dmn[idx].dmn_cnt=nco_obj_typ_err;
   }
 
   *tbl=tb;
@@ -206,10 +206,10 @@ trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  
     for(idx=tbl->nbr_dmn;idx<tbl->sz_dmn;idx++){
 
       tbl->lst_dmn[idx].grp_nm_fll=NULL; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
-      tbl->lst_dmn[idx].is_rec_dmn=-1; /* [flg] Is a record dimension? */
+      tbl->lst_dmn[idx].is_rec_dmn=nco_obj_typ_err; /* [flg] Is a record dimension? */
       tbl->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
       tbl->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
-      tbl->lst_dmn[idx].sz=0; /* [nbr] Size of dimension */
+      tbl->lst_dmn[idx].sz=nco_obj_typ_err; /* [nbr] Size of dimension */
       tbl->lst_dmn[idx].lmt_dmn_nbr=0;  /* [nbr] Number of limit structures */
       tbl->lst_dmn[idx].lmt_crr=0; /* [nbr] Index of current limit structure being initialized */
 
@@ -219,7 +219,7 @@ trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  
       tbl->lst_dmn[idx].WRP=False;
       tbl->lst_dmn[idx].BASIC_DMN=True;
       tbl->lst_dmn[idx].MSA_USR_RDR=False;  
-      tbl->lst_dmn[idx].dmn_cnt=0;
+      tbl->lst_dmn[idx].dmn_cnt=nco_obj_typ_err;
 
     } /* idx */
   } /* tbl->sz_dmn */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.227 2013-02-13 19:22:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.228 2013-02-15 10:34:58 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2358,6 +2358,7 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
         }
 
         dmn_sz=dmn_trv->dmn_cnt;
+        assert(dmn_sz != nco_obj_typ_err);
 
 #endif /* REPLACE_WITH_GTT_INFORMATION */
 
