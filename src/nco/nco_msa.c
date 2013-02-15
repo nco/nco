@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.177 2013-02-15 08:48:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.178 2013-02-15 08:52:35 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1927,7 +1927,16 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
   ncks -D 11 -v unique -H ~/nco/data/in_grp.nc # scalar
   ncks -D 11 -C -d time,1,2,1 -v two_dmn_rec_var -H ~/nco/data/in_grp.nc # two_dmn_rec_var(time,lev);
-  ncks -D 11 -C -d time,1,2,1 -d lev,1,1,1 -v two_dmn_rec_var -H ~/nco/data/in_grp.nc # two_dmn_rec_var(time,lev);
+  ncks -D 11 -C -d time,1,2,1 -d lev,1,1,1 -v two_dmn_rec_var -H ~/nco/data/in_grp.nc # two_dmn_rec_var(time,lev);           
+
+  Tests for coordinate variables in ancestor groups:
+  ncks -D 11 -d lat,1,1,1 -H  -v area ~/nco/data/in_grp.nc
+  /area
+  lat[1]=90 area[1]=10
+  /g6/area
+  lat[1]=90 area[1]=30
+  /g6/g6g1/area
+  lat[1]=90 area[1]=50
   */
 
   const char fnc_nm[]="nco_msa_prn_var_val_trv()"; /* [sng] Function name  */
