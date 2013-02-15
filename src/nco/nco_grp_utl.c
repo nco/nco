@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.477 2013-02-15 10:04:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.478 2013-02-15 10:42:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2361,13 +2361,10 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 (const int nc_id, /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  int fl_fmt;  /* [enm] netCDF file format */
   int grp_id;  /* [ID]  Group ID */
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_dmn; /* [nbr] Number of dimensions */
   int nbr_var; /* [nbr] Number of variables */
-
-  (void)nco_inq_format(nc_id,&fl_fmt);
 
   (void)fprintf(stdout,"%s: INFO reports group information\n",prg_nm_get());
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -2377,9 +2374,6 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
       trv_sct trv=trv_tbl->lst[uidx];            
       (void)fprintf(stdout,"%s: %d subgroups, %d dimensions, %d record dimensions, %d attributes, %d variables\n",
         trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_rec,trv.nbr_att,trv.nbr_var); 
-
-      /* For classic files, the above is printed, and then return */
-      if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
 
       /* Print dimensions for group */
       (void)nco_prt_dmn(nc_id,trv.nm_fll);
@@ -2415,9 +2409,6 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 
       (void)fprintf(stdout,"\n");
 
-      /* For classic files, the above is printed, and then return */
-      if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
-
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
 
@@ -2437,9 +2428,6 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
 
     /* Terminate line */
     (void)fprintf(stdout,"\n");
-
-    /* For classic files, the above is printed, and then return */
-    if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT) return;
 
   } /* end uidx  */
 
