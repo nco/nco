@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.473 2013-02-15 03:59:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.474 2013-02-15 04:21:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2648,7 +2648,7 @@ nco_prn_var_val_trv                   /* [fnc] Print variable data (called with 
       if(!dlm_sng && trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
 
       /* Print variable values */
-      (void)nco_msa_prn_var_val_trv(grp_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&trv,trv_tbl);
+      (void)nco_msa_prn_var_val_trv(nc_id,grp_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&trv,trv_tbl);
 
     } /* End flg_xtr */
   } /* End Loop variables in table */
