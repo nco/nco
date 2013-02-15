@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.176 2013-02-15 04:21:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.177 2013-02-15 08:48:09 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1923,13 +1923,13 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   5) Pair Object/GTT is needed to do a GTT to MSA limits conversion 
   6) Besides 4) and 5), other differences from original nco_msa_prn_var_val() are marked "GTT" below.
 
-  Tests:
+  Limit Tests:
   ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
   ncks -D 11 -v unique -H ~/nco/data/in_grp.nc # scalar
   ncks -D 11 -C -d time,1,2,1 -v two_dmn_rec_var -H ~/nco/data/in_grp.nc # two_dmn_rec_var(time,lev);
   ncks -D 11 -C -d time,1,2,1 -d lev,1,1,1 -v two_dmn_rec_var -H ~/nco/data/in_grp.nc # two_dmn_rec_var(time,lev);
-
   */
+
   const char fnc_nm[]="nco_msa_prn_var_val_trv()"; /* [sng] Function name  */
 
   char *unit_sng;                            /* [sng] Units string */ 
@@ -2276,17 +2276,25 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
       for(int idx=0;idx<var_trv->nbr_dmn;idx++){
 
+        int grp_var_crd_id; /* [ID] Of group of possible coordinate variable for the dimension */
+        int var_crd_id;     /* [ID] Of possible coordinate variable for the dimension */
+
         assert(strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn.dmn_nm[idx]) == 0);
-
-
-        dim[idx].val.vp=NULL;
-        dim[idx].nm=lmt_msa[idx]->dmn_nm;
-        rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
 
         if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s <%s>: reading dimension[%d]:%s: ",prg_nm_get(),fnc_nm,
-            var_trv->nm_fll,idx,dim[idx].nm);
+            var_trv->nm_fll,idx,var_trv->var_dmn.dmn_nm_fll[idx]);
         }
+
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(nc_id,var_trv->var_dmn.grp_nm_fll[idx],&grp_var_crd_id);
+
+        /* Obtain possible variable ID using group ID */
+        rcd=nco_inq_varid_flg(grp_var_crd_id,var_trv->var_dmn.dmn_nm[idx],&var_crd_id);
+
+        dim[idx].val.vp=NULL;
+        dim[idx].nm=lmt_msa[idx]->dmn_nm;
+        rcd=nco_inq_varid_flg(grp_var_crd_id,dim[idx].nm,&dim[idx].cid);  
 
         /* If not a variable */
         if(rcd != NC_NOERR){
@@ -2294,19 +2302,19 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
           dim[idx].cid=-1;
 
           if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"not a variable\n");
+            (void)fprintf(stdout,"...<%s> is not a coordinate variable\n",var_trv->var_dmn.dmn_nm_fll[idx]);
           }
 
           continue;
         } /* end if */
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"variable found\n");
+          (void)fprintf(stdout,"coordinate variable <%s> found\n",var_trv->var_dmn.dmn_nm_fll[idx]);
         }
 
         dim[idx].is_crd_dmn=True;
-        (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
-        var_crd.nc_id=in_id;
+        (void)nco_inq_vartype(grp_var_crd_id,dim[idx].cid,&dim[idx].type);
+        var_crd.nc_id=grp_var_crd_id;
         var_crd.nm=dim[idx].nm;
         var_crd.type=dim[idx].type;
         var_crd.id=dim[idx].cid;
