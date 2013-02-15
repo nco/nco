@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.174 2013-02-13 10:16:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.175 2013-02-15 04:07:49 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -2090,7 +2090,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   /* Get type of variable (get also name and number of dimensions for validation against parameter object) */
   (void)nco_inq_var(in_id,var.id,var_nm,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
 
-  /* Just make sure we got the right variable */
+  /* "GTT" Just make sure we got the right variable */
   assert(var_trv->typ == nco_obj_typ_var);
   assert(var.nbr_dim == var_trv->nbr_dmn);
   assert(strcmp(var_nm,var_trv->nm) == 0);
@@ -2268,10 +2268,16 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
       }
     }
 
+    /* "GTT" Use Object parameter instead of "var_sct var" to get possible coordinate variables */
+
     /* Read coordinate dimensions if required */
     if(PRN_DMN_IDX_CRD_VAL){
 
-      for(int idx=0;idx<var.nbr_dim;idx++){
+      for(int idx=0;idx<var_trv->nbr_dmn;idx++){
+
+        assert(strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn.dmn_nm[idx]) == 0);
+
+
         dim[idx].val.vp=NULL;
         dim[idx].nm=lmt_msa[idx]->dmn_nm;
         rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
