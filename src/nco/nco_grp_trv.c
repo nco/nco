@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.57 2013-02-15 04:40:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.58 2013-02-15 06:43:31 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -63,7 +63,6 @@ trv_tbl_init
       tb->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=NULL;
       tb->lst[idx].var_dmn.dmn_nm[dmn_idx_var]=NULL;
       tb->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=NULL;
-      tb->lst[idx].var_dmn.has_crd_var[dmn_idx_var]=nco_obj_typ_err;
     }
     tb->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
 

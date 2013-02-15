@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.249 2013-02-15 04:40:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.250 2013-02-15 06:43:31 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -617,7 +617,6 @@ extern "C" {
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
     char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
     char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Group where dimension is located  */
-    nco_bool has_crd_var[NC_MAX_DIMS]; /* [flg] Does each dimension have an associated variable? (coordinate variable) */
   } var_dmn_sct; 
   
   /* Object structure 
