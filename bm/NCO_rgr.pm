@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.207 2013-02-15 06:57:47 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.208 2013-02-15 10:04:44 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1086,6 +1086,7 @@ print "\n";
 #ncks #33 Variable/Group extraction test 3 (netCDF4 file)
 #extract all variables in g6g1 (second level group) = area
 
+if(0){
     $dsc_sng="Variable/Group extraction test 3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6g1 $in_pth_arg in_grp.nc";
 	if($HAVE_NETCDF4_H == 1){
@@ -1096,7 +1097,8 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 
+    $#tst_cmd=0; # Reset array
+   }    
 	
 #ncks #34 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
@@ -1167,6 +1169,7 @@ print "\n";
 #ncks #38 Variable/Group extraction test 6 (netCDF4 file)
 #extract all variables "area" in g6g1 = g6/g6g1/area 
 
+if(0){
     $dsc_sng="Variable/Group extraction test 6 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6g1 $in_pth_arg in_grp.nc";
 	if($HAVE_NETCDF4_H == 1){
@@ -1177,7 +1180,8 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 						
+    $#tst_cmd=0; # Reset array
+    }
 	
 #ncks #39 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1 = g6/g6g1/area, g6/area
