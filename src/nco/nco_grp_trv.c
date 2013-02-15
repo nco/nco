@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.55 2013-02-14 00:10:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.56 2013-02-15 03:59:32 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -61,6 +61,7 @@ trv_tbl_init
     /* Variable dimensions */
     for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
       tb->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=NULL;
+      tb->lst[idx].var_dmn.dmn_nm[dmn_idx_var]=NULL;
       tb->lst[idx].var_dmn.has_crd_var[dmn_idx_var]=nco_obj_typ_err;
     }
     tb->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
@@ -107,9 +108,11 @@ trv_tbl_free
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
 
-    /* Full dimension names for each variable */
-    for(int dmn_idx_var=0;dmn_idx_var<tbl->lst[idx].var_dmn.nbr_dmn;dmn_idx_var++) 
+    /* Variable dimensions */
+    for(int dmn_idx_var=0;dmn_idx_var<tbl->lst[idx].var_dmn.nbr_dmn;dmn_idx_var++){
       tbl->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=(char *)nco_free(tbl->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]);
+      tbl->lst[idx].var_dmn.dmn_nm[dmn_idx_var]=(char *)nco_free(tbl->lst[idx].var_dmn.dmn_nm[dmn_idx_var]);
+    }
 
   } /* end loop */
   tbl->lst=(trv_sct *)nco_free(tbl->lst);

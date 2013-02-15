@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.472 2013-02-14 23:44:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.473 2013-02-15 03:59:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2563,8 +2563,11 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
                 /* Does the *possible* dimension full name match a *real* dimension full name ? */
                 if(strcmp(dmn_fll.nm_fll,dmn_nm_fll) == 0){
 
-                  /* Store full dimension name in "var_dmn_sct" member at index "dmn_idx_var" */
+                  /* Store full dimension name  */
                   trv_tbl->lst[uidx].var_dmn.dmn_nm_fll[dmn_idx_var]=strdup(dmn_nm_fll);
+
+                  /* Store dimension name  */
+                  trv_tbl->lst[uidx].var_dmn.dmn_nm[dmn_idx_var]=strdup(dmn_nm_var);
 
                   /* Increment the number of dimensions for *variable* in table */
                   trv_tbl->lst[uidx].var_dmn.nbr_dmn++;
