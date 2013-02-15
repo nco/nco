@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.474 2013-02-15 04:21:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.475 2013-02-15 04:40:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2568,6 +2568,9 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 
                   /* Store dimension name  */
                   trv_tbl->lst[uidx].var_dmn.dmn_nm[dmn_idx_var]=strdup(dmn_nm_var);
+
+                  /* Store full group name where dimension is located  */
+                  trv_tbl->lst[uidx].var_dmn.grp_nm_fll[dmn_idx_var]=strdup(trv.grp_nm_fll);
 
                   /* Increment the number of dimensions for *variable* in table */
                   trv_tbl->lst[uidx].var_dmn.nbr_dmn++;
