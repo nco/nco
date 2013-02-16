@@ -43,7 +43,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.64 2013-02-16 21:09:35 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.65 2013-02-16 22:07:15 pvicente Exp $";
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
   
@@ -232,15 +232,19 @@ netcdf in_grp {
     lon_gds:units="degree";
     lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
     
-    float gds_var(gds_crd);
-    gds_var:units = "meter";
-    gds_var:coordinates = "lat_gds lon_gds";
-    
   data:
     gds_crd=0,1,2,3,4,5,6,7;
     lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
     lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
-    gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
+    
+     group: g7g1 { // Level 2  
+     variables:     
+     float gds_var(gds_crd);
+     gds_var:units = "meter";
+     gds_var:coordinates = "lat_gds lon_gds";
+     data:
+     gds_var=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;  
+      } //g7g1
   } // end g7
   //
   //g8
