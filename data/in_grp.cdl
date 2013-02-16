@@ -34,7 +34,6 @@ netcdf in_grp {
   lat=2;
   lev=3;
   lon=4;
-  gds_crd=8;
   time=unlimited;
   tm2=unlimited;
   tm3=unlimited;
@@ -44,41 +43,35 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.63 2013-02-15 01:58:25 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.64 2013-02-16 21:09:35 pvicente Exp $";
   float ilev(lev,vrt_nbr);
- ilev:purpose = "Cell boundaries for lev coordinate";
-  double lat_gds(gds_crd);
- lat_gds:long_name = "Latitude";  
- lat_gds:standard_name = "latitude";
- lat_gds:units="degree";
- lat_gds:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
+  ilev:purpose = "Cell boundaries for lev coordinate";
+  
   float lat(lat);
- lat:units = "degrees_north";
+  lat:units = "degrees_north";
+  
   float lev(lev);
- lev:units = "hybrid_sigma_pressure";
- lev:bounds = "ilev";
+  lev:units = "hybrid_sigma_pressure";
+  lev:bounds = "ilev";
+  
   float lon(lon);
- lon:units = "degrees_east";
-  double lon_gds(gds_crd);
- lon_gds:long_name = "Longitude";
- lon_gds:standard_name = "longitude";
- lon_gds:units="degree";
- lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
+  lon:units = "degrees_east";
+  
   double time(time);
+  
   float tm2(tm2);
- tm2:purpose = "a short record coordinate for testing mutiple record dimensions";
+  tm2:purpose = "a short record coordinate for testing mutiple record dimensions";
+  
   float tm3(tm3);
- tm3:purpose = "another short record coordinate for testing mutiple record dimensions";
-  float gds_crd(gds_crd);
- gds_crd:long_name = "Geodesic coordinate";
- gds_crd:units = "degree";
- gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
- gds_crd:coordinates = "lat_gds lon_gds";
+  tm3:purpose = "another short record coordinate for testing mutiple record dimensions";
+  
   float scl;
   integer unique;
- unique:purpose = "the only variable of this name in this file, to test smallest possible access requests";    
+  unique:purpose = "the only variable of this name in this file, to test smallest possible access requests"; 
+  
   float area(lat);
- area:units = "meter2";
+  area:units = "meter2";
+  
   float lat_lon(lat,lon);
   //float tm2_tm3(tm2,tm3);
   //tm2_tm3:purpose = "a variable containing mutiple record dimensions";
@@ -87,9 +80,6 @@ netcdf in_grp {
   
  data:
   area=10.,10.;
-  gds_crd=0,1,2,3,4,5,6,7;
-  lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
-  lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
   lat=-90,90;
   lat_lon=1.,2.,3.,4.,5.,6.,7.,8;
   ilev=0,300,300,750,750,1013.25;
@@ -221,17 +211,31 @@ netcdf in_grp {
  group: g7 { 
   dimensions:
     gds_crd=8;
+    
   variables:
     float gds_crd(gds_crd);
-  gds_crd:units = "degree";
-  gds_crd:coordinates = "lat_gds lon_gds";
-    float gds_var(gds_crd);
-  gds_var:units = "meter";
-  gds_var:coordinates = "lat_gds lon_gds";
+    gds_crd:long_name = "Geodesic coordinate";
+    gds_crd:units = "degree";
+    gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
+    gds_crd:coordinates = "lat_gds lon_gds";
+  
     double lat_gds(gds_crd);
-  lat_gds:units="degree";
+    lat_gds:units="degree";
+    lat_gds:long_name = "Latitude";  
+    lat_gds:standard_name = "latitude";
+    lat_gds:units="degree";
+    lat_gds:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
+    
     double lon_gds(gds_crd);
-  lon_gds:units="degree";
+    lon_gds:long_name = "Longitude";
+    lon_gds:standard_name = "longitude";
+    lon_gds:units="degree";
+    lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
+    
+    float gds_var(gds_crd);
+    gds_var:units = "meter";
+    gds_var:coordinates = "lat_gds lon_gds";
+    
   data:
     gds_crd=0,1,2,3,4,5,6,7;
     lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;

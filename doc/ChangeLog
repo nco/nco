@@ -1,3 +1,12 @@
+2013-02-16  Pedro Vicente  <pvicente@uci.edu>
+  
+  * ncks  eliminate global array that kept a list of all dimensions and user specified limits, indexable by ID/name;
+    replaced with a GTT (Group Traversal Table) structure that stores full path names for dimensions and coordinate variables.
+    associated functions: 
+    nco_xtr_wrt_trv() Write extracted data to output file 
+    nco_xtr_dfn_trv() Define extracted groups, variables, and attributes in output file  
+    nco_prn_var_val_trv() Print variable data
+    
 2013-02-14  Pedro Vicente  <pvicente@uci.edu>
   
   * ncks  --get_grp_info prints extended variable, coordinate variables and dimension information;

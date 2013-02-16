@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.587 2013-02-12 00:37:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.588 2013-02-16 21:09:35 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -53,7 +53,7 @@
    ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -v time ~/in_grp.nc ~/foo.nc */
 
-#if 1
+#if 0
 #define USE_LMT_ALL
 /* Use lmt_all_sct **lmt_all_lst, List of *lmt_all structures; to remove once replaced by "trv" limit functions 
 functions to remove:
@@ -163,8 +163,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.587 2013-02-12 00:37:41 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.587 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.588 2013-02-16 21:09:35 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.588 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
