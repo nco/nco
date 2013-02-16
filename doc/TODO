@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1216 2013-01-28 02:44:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1217 2013-02-16 22:16:55 pvicente Exp $
 
 # Purpose: TODO items for NCO
 
@@ -713,6 +713,8 @@ nco1082. ncrename fails with global attributes?:
 nco1084. ncks feature: multiple specifications of mk_rec_dmn and fix_rec_dmn
 nco1085. 
 qrk
+nco1086. ncks: WARNING Variable lat_gds, specified in "coordinates" attribute of variable /g7/g7g1/gds_var, is not present in input file
+ncks -O -H   -v gds_var -d gds_crd,1,1 ~/nco/data/in_grp.nc
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
