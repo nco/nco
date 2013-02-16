@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.761 2013-02-11 04:02:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.762 2013-02-16 19:29:26 pvicente Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3497,7 +3497,7 @@ These @acronym{UNIX} commands also illustrate a property we call
 @emph{anchoring}. 
 The command @command{mv src dst} moves (recursively) the source
 directory @file{src} to the destination directory @file{dst}. 
-If @file{src} begins with the slash charcter then the specified path is
+If @file{src} begins with the slash character then the specified path is
 relative to the root directory, otherwise the path is relative to the
 current working directory. 
 In other words, an initial slash character anchors the subsequent path
