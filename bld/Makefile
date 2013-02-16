@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.626 2013-01-27 04:49:15 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.627 2013-02-16 00:02:03 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -84,6 +84,8 @@
 # cd ~/bin/AIX;/usr/local/bin/tar cvzf ~/nco-4.2.5.aix53.tar.gz nc*;scp ~/nco-4.2.5.aix53.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # netCDF4 on NCAR Linux cluster systems (mirage):
 # cd ~/nco/bld;make OPTS=D allinone;cd -
+# netCDF4 on NCAR Linux cluster systems (yellowstone):
+# cd ~/nco/bld;make GSL_INC='/glade/apps/opt/gsl/1.15/gnu/4.7.2/include' GSL_LIB='/glade/apps/opt/gsl/1.15/gnu/4.7.2/lib' NETCDF_ROOT='/glade/apps/opt/netcdf/4.2/gnu/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/gnu/default/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/gnu/default/lib' OPTS=D allinone;cd -
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
 # cd ~/bin/WIN32;tar cvzf ~/nco-4.2.5.win32.cygwin.tar.gz nc* ; scp ~/nco-4.2.5.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
@@ -193,10 +195,18 @@ ifndef NETCDF4_ROOT
  NETCDF4_ROOT := ${NETCDF_ROOT}
 endif
 ifndef NETCDF_INC
+ifdef INC_NCAR
+ NETCDF_INC := ${INC_NCAR} # NCAR module path
+else # endelse INC_NCAR
  NETCDF_INC := ${NETCDF_ROOT}/include # Directory containing netcdf.h
-endif
+endif # endif INC_NCAR
+endif # endif NETCDF_INC
 ifndef NETCDF_LIB
+ifdef LIB_NCAR
+ NETCDF_LIB := ${LIB_NCAR} # NCAR module path
+else # endelse LIB_NCAR
  NETCDF_LIB := ${NETCDF_ROOT}/lib # Directory containing libnetcdf.a
+endif # endif LIB_NCAR
 endif
 ifndef ${OMP} # OpenMP
  OMP := Y
@@ -431,7 +441,7 @@ else
  BNR_SFX := ${null}
 endif 
 
-ifeq (${GSL},)
+ifeq (${GSL},Y)
 # Build GSL-enabled NCO 
 # Place GSL block after DAP blocks for both to work together
 ifdef GSL_INC

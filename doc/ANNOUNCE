@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.544 2013-02-14 04:12:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.545 2013-02-16 00:02:03 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
@@ -20,7 +20,7 @@ Charlie
 
 NEW FEATURES:
 
-A. Regular expressions (rx's )now work on full paths, not just stubs. 
+A. Regular expressions (rx's) now work on full paths, not just stubs. 
    Previously, rx's only worked on last components of full names.
    Now rx's like ncks -v /cesm/temperature.+ can succeed.
    http://nco.sf.net/nco.html#rx

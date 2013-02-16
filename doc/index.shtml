@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.763 2013-02-01 05:56:36 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.764 2013-02-16 00:02:03 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -56,7 +56,8 @@ Try to disable Spammers' machines:
 <td align="right" valign="top">
 [<a href="http://www.antlr.org">ANTLR</a>] 
 [<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a>] 
-[<a href="http://www.gnu.org/software/gsl">GSL</a>] 
+[<a href="https://wiki.earthdata.nasa.gov/display/ESDSWG/HDF5+Conventions+Working+Group">ESDSWG</a>] 
+[<a href="http://www.gnu.org/software/gsl">GSL</a>]
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://swamp.googlecode.com">SWAMP</a>] 
@@ -580,19 +581,22 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO 4.2.7</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 Optimize diskless files?;</li>
-<li><b>NCO 4.2.6</b>: (<i>In Progress, features we are working on include</i>)
-<tt>ncra/ncrcat --rec_apn</tt>;
+<li><b>NCO 4.2.6</b>: (<i>In Progress, features completed or being worked on include</i>)
+Record appending with <tt>ncra/ncrcat --rec_apn</tt>;
+RX's in full paths;
+Correct dimension scopes;
+<tt>ncks</tt> MM3 bugfix;
 <tt>ncrename -g</tt>?;
 <tt>ncbo -g</tt>?;</li>
 <li><b>NCO 4.2.5</b>: (<i>Current Stable Release</i>)
-<tt>ncks</tt> <a href="#bug_ncks_mk_rec_dmn">bugfix</a></li>
-<tt>ncks</tt> <a href="#bug_ncks_sbs">bugfix</a></li>
-<li><b>NCO 4.2.4</b>: (<i>Current Stable Release</i>)
+<tt>ncks --mk_rec_dmn</tt> <a href="#bug_ncks_mk_rec_dmn">bugfix</a>;
+<tt>ncks</tt> subsetting <a href="#bug_ncks_sbs">bugfix</a></li>
+<li><b>NCO 4.2.4</b>:
 Group <a href="http://nco.sf.net/nco.html#rx">wildcards</a>;
 Group <a href="http://nco.sf.net/nco.html#anchoring">anchoring and recursion</a>;
 Intersection/union <a href="http://nco.sf.net/nco.html#unn">modes</a>;
 <tt>ncrename</tt> global att. handling;
-<tt>ncea</tt> <a href="#bug_ncea_rec_var">bugfix</a></li>
+<tt>ncea</tt> <a href="#bug_ncea_rec_var">bugfix</a>;
 <tt>ncra</tt> <a href="#bug_ncra_flg_bfr_nrm">bugfix</a></li>
 <li><b>NCO 4.2.3</b>:
 Group Path Editing (GPE);
@@ -1486,14 +1490,13 @@ These executables are <i>unsupported</i> and are almost
 <i>guaranteed</i> to hail from different NCO versions and thus to
 behave slightly differently.
 (They are built from the main trunk, not a tagged version).
-Users at NCAR should try the <i>supported</i> executables in
-<tt>/usr/local/bin</tt> first. 
+Users at NCAR should try the <i>supported</i> executables with 
+<tt>module load nco</tt> first. 
 <ul>
-<li>CGD network (Solaris 2.x): <tt>/home/zender/bin/SUNMP</tt></li>
-<li>ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUX</tt></li>
-<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.6.x): <tt>/home/zender/bin/LINUXAMD64</tt></li>
-<li>CISL <tt>bluefire.ucar.edu</tt> (AIX 5.3): <tt>~zender/bin/AIX</tt></li>
-<li>CISL <tt>mirage0.ucar.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUXAMD64</tt></li>
+<li>UCI ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUX</tt></li>
+<li>UCI ESS <tt>dust.ess.uci.edu</tt> (Linux 3.2.x): <tt>~zender/bin/LINUXAMD64</tt></li>
+<li>NCAR CISL <tt>yellowstone.ucar.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUXAMD64</tt></li>
+<li>NCAR CISL <tt>mirage0.ucar.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUXAMD64</tt></li>
 </ul>
 <hr></p>
 <!-- End http://nco.sf.net#NCAR -->
@@ -2065,6 +2068,7 @@ site.</li>
 <td align="right" valign="top">
 [<a href="http://www.antlr.org">ANTLR</a>] 
 [<a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a>] 
+[<a href="https://wiki.earthdata.nasa.gov/display/ESDSWG/HDF5+Conventions+Working+Group">ESDSWG</a>] 
 [<a href="http://www.gnu.org/software/gsl">GSL</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://opendap.org">OPeNDAP</a>] 
