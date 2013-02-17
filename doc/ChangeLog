@@ -2,10 +2,16 @@
   
   * ncks  eliminate global array that kept a list of all dimensions and user specified limits, indexable by ID/name;
     replaced with a GTT (Group Traversal Table) structure that stores full path names for dimensions and coordinate variables.
-    associated functions: 
+    Associated functions: 
     nco_xtr_wrt_trv() Write extracted data to output file 
     nco_xtr_dfn_trv() Define extracted groups, variables, and attributes in output file  
     nco_prn_var_val_trv() Print variable data
+    
+  * ncks limits are stored in the GTT dimension structure and MSA is applied;
+    when writing variables these limits are distributed to variables, in the priting function nco_msa_prn_var_val_trv()
+    Associated functions:     
+    nco_bld_lmt_trv() Assign user specified dimension limits to traversal table dimensions 
+        
     
 2013-02-14  Pedro Vicente  <pvicente@uci.edu>
   
