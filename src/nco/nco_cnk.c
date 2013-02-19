@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.40 2013-02-19 19:49:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.41 2013-02-19 21:15:21 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -652,8 +652,8 @@ cnk_xpl_override: /* end goto */
 } /* end nco_cnk_sz_set() */
 void
 
-nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters */
-(const int nc_id,                      /* I [id] netCDF file ID */
+nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_set() ) */
+(const int grp_id,                     /* I [id] netCDF group ID in output file */
  int * const cnk_map_ptr,              /* I/O [enm] Chunking map */
  int * const cnk_plc_ptr,              /* I/O [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
@@ -661,11 +661,60 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {
-  /* 20130209 pvn Copy-cat of nco_cnk_sz_set() without evil "lmt_all_lst" array: under construction;
-    Does all this chunk info needs to be put in table ...? */
-
   /* Purpose: Use chunking map and policy to determine chunksize list */
+
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
+
+  nco_bool flg_cnk=False; /* [flg] Chunking requested */
+
+  int cnk_map;            /* [enm] Chunking map */
+  int cnk_plc;            /* [enm] Chunking policy */
+  int fl_fmt;             /* [enm] Input file format */
+
+  /* Did user explicitly request chunking? */
+  if(cnk_nbr > 0 || cnk_sz_scl > 0UL || *cnk_map_ptr != nco_cnk_map_nil || *cnk_plc_ptr != nco_cnk_plc_nil){
+    flg_cnk=True;
+  }
+
+  if(!flg_cnk) return;
+
+  /* Set actual chunk policy and map to defaults as necessary
+  This rather arcane procedure saves a few lines of code in calling program
+  (because defaults not set there) while maintaining correctness of arguments */
+  if(*cnk_map_ptr == nco_cnk_map_nil) *cnk_map_ptr=nco_cnk_map_get((char *)NULL);
+  if(*cnk_plc_ptr == nco_cnk_plc_nil) *cnk_plc_ptr=nco_cnk_plc_get((char *)NULL);
+  cnk_map=*cnk_map_ptr;
+  cnk_plc=*cnk_plc_ptr;
+
+  /* Bail on unsupported options */
+  if(cnk_plc == nco_cnk_plc_xpl){
+    (void)fprintf(stderr,"%s: ERROR cnk_plc = %s not yet supported\n",prg_nm_get(),nco_cnk_plc_sng_get(cnk_plc));
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+
+  /* Does output file support chunking? */
+  (void)nco_inq_format(grp_id,&fl_fmt);
+  if(fl_fmt != NC_FORMAT_NETCDF4 && fl_fmt != NC_FORMAT_NETCDF4_CLASSIC){
+    (void)fprintf(stderr,"%s: WARNING Output file format is %s so chunking request will be ignored\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
+    return;
+  } /* endif dbg */
+
+  /* Vet input */
+  if(cnk_map == nco_cnk_map_scl && cnk_sz_scl <= 0){
+    (void)fprintf(stderr,"%s: ERROR cnk_sz_scl = %lu must be greater than 0\n",prg_nm_get(),(unsigned long)cnk_sz_scl);
+    nco_exit(EXIT_FAILURE);
+  } /* endif cnk_sz_scl */
+
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking or unchunking\n",prg_nm_get());
+  if(dbg_lvl_get() >= nco_dbg_scl){
+    (void)fprintf(stdout,"cnk_plc: %s\n",nco_cnk_plc_sng_get(cnk_plc));
+    (void)fprintf(stdout,"cnk_map: %s\n",nco_cnk_map_sng_get(cnk_map));
+    (void)fprintf(stdout,"cnk_sz_scl: %lu\n",(unsigned long)cnk_sz_scl);
+    if(cnk_nbr > 0){
+      (void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
+      for(int cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk[cnk_idx]->nm,(unsigned long)cnk[cnk_idx]->sz);
+    } /* cnk_nbr == 0 */
+  } /* endif dbg */
 
 
   return;
