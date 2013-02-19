@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.17 2013-02-10 09:37:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.18 2013-02-19 21:23:56 pvicente Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -119,14 +119,14 @@ nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
 
 
 void
-nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters */
-(const int nc_id,                      /* I [id] netCDF file ID */
+nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_set() ) */
+(const int grp_id,                     /* I [id] netCDF group ID in output file */
  int * const cnk_map_ptr,              /* I/O [enm] Chunking map */
  int * const cnk_plc_ptr,              /* I/O [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl);    /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */

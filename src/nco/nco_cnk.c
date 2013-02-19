@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.41 2013-02-19 21:15:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.42 2013-02-19 21:23:55 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -650,8 +650,8 @@ cnk_xpl_override: /* end goto */
 
   return;
 } /* end nco_cnk_sz_set() */
-void
 
+void
 nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_set() ) */
 (const int grp_id,                     /* I [id] netCDF group ID in output file */
  int * const cnk_map_ptr,              /* I/O [enm] Chunking map */
@@ -715,6 +715,9 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
       for(int cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk[cnk_idx]->nm,(unsigned long)cnk[cnk_idx]->sz);
     } /* cnk_nbr == 0 */
   } /* endif dbg */
+
+
+  
 
 
   return;
