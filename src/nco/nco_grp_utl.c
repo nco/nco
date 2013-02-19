@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.479 2013-02-19 21:34:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.480 2013-02-19 22:16:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3181,7 +3181,7 @@ nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variab
   /* Loop dimensions for object (variable)  */
   for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
 
-    if(dbg_lvl_get() >= nco_dbg_dev){
+    if(dbg_lvl_get() == nco_dbg_old){
       (void)fprintf(stdout,"%s: INFO %s <%s>:[%d]:%s: \n",prg_nm_get(),fnc_nm,
         var_trv->nm_fll,dmn_idx_var,var_trv->var_dmn.dmn_nm_fll[dmn_idx_var]);
     }

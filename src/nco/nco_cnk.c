@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.43 2013-02-19 21:34:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.44 2013-02-19 22:16:29 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -32,6 +32,7 @@
    http://hdfeos.org/workshops/ws13/presentations/day1/HDF5-EOSXIII-Advanced-Chunking.ppt */
 
 #include "nco_cnk.h" /* Chunking */
+#include "nco_grp_utl.h" /* Group utilities */
 
 const char * /* O [sng] Chunking map string */
 nco_cnk_map_sng_get /* [fnc] Convert chunking map enum to string */
@@ -671,6 +672,8 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   int cnk_map;            /* [enm] Chunking map */
   int cnk_plc;            /* [enm] Chunking policy */
   int fl_fmt;             /* [enm] Input file format */
+  int var_id;             /* [ID] Variable ID */
+  int nbr_dmn;            /* [nbr] Number of dimensions for variable */
 
   /* Did user explicitly request chunking? */
   if(cnk_nbr > 0 || cnk_sz_scl > 0UL || *cnk_map_ptr != nco_cnk_map_nil || *cnk_plc_ptr != nco_cnk_plc_nil){
@@ -678,6 +681,15 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   }
 
   if(!flg_cnk) return;
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: INFO %s defining chunk for <%s>\n",prg_nm_get(),fnc_nm,
+      var_trv->nm_fll);
+  }
+
+  /* This object must be a variable */
+  assert(var_trv->typ == nco_obj_typ_var);
+
 
   /* Set actual chunk policy and map to defaults as necessary
   This rather arcane procedure saves a few lines of code in calling program
@@ -716,6 +728,27 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
       for(int cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk[cnk_idx]->nm,(unsigned long)cnk[cnk_idx]->sz);
     } /* cnk_nbr == 0 */
   } /* endif dbg */
+
+
+  
+
+  /* Obtain variable ID using group ID */
+  (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
+
+  /* Get number of dimensions for variable */
+  (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn);
+
+  /* Get dimension structure */
+  for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
+
+    /* Find dimension of the object variable by searching in the list of unique dimensions */
+    dmn_fll_sct *dmn_trv=nco_fnd_var_lmt_trv(dmn_idx,var_trv,trv_tbl);
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: INFO %s dimension [%d]:%s(%li)\n",prg_nm_get(),fnc_nm,
+        dmn_idx,dmn_trv->nm_fll,dmn_trv->sz);
+    }
+  }
 
 
   
