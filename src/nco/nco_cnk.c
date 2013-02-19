@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.44 2013-02-19 22:16:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.45 2013-02-19 22:53:25 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -667,13 +667,25 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
 
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
 
-  nco_bool flg_cnk=False; /* [flg] Chunking requested */
+  char var_nm[NC_MAX_NAME]; /* [sng] Variable name */
 
-  int cnk_map;            /* [enm] Chunking map */
-  int cnk_plc;            /* [enm] Chunking policy */
-  int fl_fmt;             /* [enm] Input file format */
-  int var_id;             /* [ID] Variable ID */
-  int nbr_dmn;            /* [nbr] Number of dimensions for variable */
+  nc_type var_typ_dsk;      /* [nbr] Variable type */
+
+  nco_bool flg_cnk=False;   /* [flg] Chunking requested */
+  nco_bool is_rec_var;      /* [flg] Record variable */
+  nco_bool is_chk_var;      /* [flg] Checksummed variable */
+  nco_bool is_cmp_var;      /* [flg] Compressed variable */
+  nco_bool is_chunked;      /* [flg] Chunked variable */
+  nco_bool must_be_chunked; /* [flg] Variable must be chunked */
+
+  int cnk_map;              /* [enm] Chunking map */
+  int cnk_plc;              /* [enm] Chunking policy */
+  int fl_fmt;               /* [enm] Input file format */
+  int var_id;               /* [ID] Variable ID */
+  int nbr_dmn;              /* [nbr] Number of dimensions for variable */
+  int srg_typ;              /* [enm] Storage type */
+
+  size_t *cnk_sz;           /* [nbr] Chunksize list */
 
   /* Did user explicitly request chunking? */
   if(cnk_nbr > 0 || cnk_sz_scl > 0UL || *cnk_map_ptr != nco_cnk_map_nil || *cnk_plc_ptr != nco_cnk_plc_nil){
@@ -689,7 +701,6 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
 
   /* This object must be a variable */
   assert(var_trv->typ == nco_obj_typ_var);
-
 
   /* Set actual chunk policy and map to defaults as necessary
   This rather arcane procedure saves a few lines of code in calling program
@@ -730,15 +741,33 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   } /* endif dbg */
 
 
-  
+  /* Initialize storage type for this variable */
+  srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
+  cnk_sz=(size_t *)NULL; /* [nbr] Chunksize list */
+  is_rec_var=False; /* [flg] Record variable */
+  is_chk_var=False; /* [flg] Checksummed variable */
+  is_cmp_var=False; /* [flg] Compressed variable */
+  is_chunked=False; /* [flg] Chunked variable */
 
   /* Obtain variable ID using group ID */
   (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
 
+  /* Get type and number of dimensions for variable */
+  (void)nco_inq_var(grp_id,var_id,var_nm,&var_typ_dsk,&nbr_dmn,(int *)NULL,(int *)NULL);
+
+  assert(strcmp(var_nm,var_trv->nm) == 0);
+
+  if(nbr_dmn == 0) return; /* Skip chunking calls for scalars */
+
+
+
+
+
+
   /* Get number of dimensions for variable */
   (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn);
 
-  /* Get dimension structure */
+  /* Loop dimensions */
   for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
 
     /* Find dimension of the object variable by searching in the list of unique dimensions */
@@ -748,11 +777,10 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
       (void)fprintf(stdout,"%s: INFO %s dimension [%d]:%s(%li)\n",prg_nm_get(),fnc_nm,
         dmn_idx,dmn_trv->nm_fll,dmn_trv->sz);
     }
-  }
 
 
-  
 
+  }/* Loop dimensions */
 
   return;
 } /* nco_cnk_sz_set_trv() */
