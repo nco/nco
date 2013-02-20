@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.209 2013-02-20 19:39:15 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.210 2013-02-20 19:47:32 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1422,7 +1422,7 @@ print "\n";
 # Policy: Chunk All Variables [default]
 # Map:Chunksize Equals Dimension Size [default]
 
-    $dsc_sng="Check --fix_rec_dmn (netCDF4 file)";
+    $dsc_sng="Chunking --cnk_plc=all --v lat_lon";
     $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -m -v lat_lon %tmp_fl_00% | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'";
