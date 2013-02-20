@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.212 2013-02-20 22:25:50 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.213 2013-02-20 22:59:46 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1474,7 +1474,29 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
 
 
-    
+# 
+# MSA tests
+#
+
+#  ncks -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1   -v two_dmn_rec_var  ~/nco/data/in_grp.nc
+#/g10/two_dmn_rec_var
+#time[1]=2 lev[0]=100 two_dmn_rec_var[3]=1 
+#time[1]=2 lev[2]=1000 two_dmn_rec_var[5]=3 
+#time[3]=4 lev[0]=100 two_dmn_rec_var[9]=1 
+#time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3 
+
+#ncks #58:
+
+    $dsc_sng="MSA --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1";
+    $tst_cmd[0]="ncks $nco_D_flg  -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1 -v two_dmn_rec_var  $in_pth_arg in_grp.nc";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3";
+    $tst_cmd[2]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     # to do    
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			        
     
     
 
