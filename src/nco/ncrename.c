@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.152 2013-01-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.153 2013-02-20 01:03:03 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -30,7 +30,8 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncrename -O -g level_1_group_6,obama ~/nco/data/in_grp.nc ~/foo.nc
+   ncrename -O -g g1,obama ~/nco/data/in_grp.nc ~/foo.nc
+   ncrename -O -a Conventions,Geneva ~/nco/data/in.nc ~/foo.nc
    ncrename -O -d old_dim1,new_dim1 -v old_var1,new_var1 -v old_var2,new_var2 -a old_att1,new_att1 ~/nco/data/in.nc ~/foo.nc
    ncrename -O -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name ~/nco/data/in.nc ~/foo.nc */
 
@@ -96,8 +97,10 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.152 2013-01-16 22:01:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.152 $";
+  char var_nm[NC_MAX_NAME+1];
+
+  const char * const CVS_Id="$Id: ncrename.c,v 1.153 2013-02-20 01:03:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.153 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -395,7 +398,6 @@ main(int argc,char **argv)
       /* Rename attribute of single variable... */
       if(strchr(att_rnm_lst[idx].old_nm,dlm_chr)){
 	/* Extract variable name from old name */
-	char var_nm[NC_MAX_NAME+1];
 	rcd_att=nco_prs_att((att_rnm_lst+idx),var_nm,&IS_GLB_GRP_ATT);
 	if(!rcd_att){
 	  (void)fprintf(stderr,"%s: ERROR Could not parse var_nm@att_nm string \"%s\"\n",prg_nm,att_rnm_lst[idx].old_nm);
@@ -453,12 +455,10 @@ main(int argc,char **argv)
 	      nbr_rnm++;
 	      /* Inform user which variable had attribute renamed */
 	      if(var_id > NC_GLOBAL){
-		char var_nm[NC_MAX_NAME+1];
-		
 		(void)nco_inq_varname(nc_id,var_id,var_nm);
 		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm,var_nm);
 	      }else{
-		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm);
+		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm);
 	      } /* end else */
 	    }else{ /* end if attribute was found */
 	      /* Reset error code */
@@ -472,14 +472,17 @@ main(int argc,char **argv)
 	      nbr_rnm++;
 	      /* Inform user which variable had attribute renamed */
 	      if(var_id > NC_GLOBAL){
-		char var_nm[NC_MAX_NAME+1];
-		
 		(void)nco_inq_varname(nc_id,var_id,var_nm);
 		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,var_nm);
 	      }else{
-		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
+		IS_GLB_GRP_ATT=True; /* [flg] Attribute is Global or Group attribute */
+		if(IS_GLB_GRP_ATT) (void)fprintf(stderr,"%s: INFO found and renamed global or group attribute \'%s\' so not requiring its presence in every variable.\n",prg_nm_get(),att_rnm_lst[idx].old_nm); 
+		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
 	      } /* end else */
-	    } /* end if */
+	    }else{ /* !NC_NOERR */
+	      /* Reset error code or print informative message */
+	      if(IS_GLB_GRP_ATT) rcd=NC_NOERR; else (void)fprintf(stderr,"%s: ERROR Attribute \'%s\' is not global or group attribute, and so its presence is required in every variable. However, the variable %s does not contain it. HINT: If presence of the attribute is intended to be optional, then prefix attribute name with the character \'%c\'. With this syntax %s will succeed even if no variables or groups contain the attribute.\n",prg_nm_get(),att_rnm_lst[idx].old_nm,var_nm,dlm_chr,prg_nm_get()); 
+	    } /* !NC_NOERR */
 	  } /* end else */
 	} /* end loop over var_id */
       } /* end if renaming attribute for all variables */
