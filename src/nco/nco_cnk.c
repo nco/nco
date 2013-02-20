@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.46 2013-02-20 01:31:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.47 2013-02-20 03:30:08 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -663,7 +663,8 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
  const trv_sct * const var_trv,        /* I [sct] Variable Object */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Use chunking map and policy to determine chunksize list */
+  /* Purpose: Use chunking map and policy to determine chunksize list
+  Adapted from nco_cnk_sz_set(), instead of a loop for all varibales, this functions does one the object parameter variable */
 
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
 
@@ -742,7 +743,6 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
     } /* cnk_nbr == 0 */
   } /* endif dbg */
 
-
   /* Initialize storage type for this variable */
   srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
   cnk_sz=(size_t *)NULL; /* [nbr] Chunksize list */
@@ -759,7 +759,13 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
 
   assert(strcmp(var_nm,var_trv->nm) == 0);
 
-  if(nbr_dmn == 0) return; /* Skip chunking calls for scalars */
+  /* Skip chunking calls for scalars */
+  if(nbr_dmn == 0){
+
+    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s skipping scalar...\n",prg_nm_get(),fnc_nm);
+
+    return; 
+  }/* Skip chunking calls for scalars */
 
   /* Is this a record variable?..Handy object variable already knows this */
   is_rec_var=var_trv->is_rec_var; 
@@ -778,13 +784,37 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   /* Is variable currently chunked? */
   is_chunked=nco_cnk_dsk_inq(grp_id,var_id);
 
+  /* Explicitly turn off chunking for arrays that are... */
+  if((cnk_plc == nco_cnk_plc_g2d && nbr_dmn < 2) || /* ...much too small... */
+    (cnk_plc == nco_cnk_plc_g3d && nbr_dmn < 3) || /* ...too small... */
+    (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
+    False){
+      /* If variable is chunked */
+      if(is_chunked){
+        if(must_be_chunked){
+          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s %s must be chunked (record, compressed, or checksummed variable)\n",prg_nm_get(),fnc_nm,var_nm);
+        }else{
+          /* Turn off chunking for this variable */
+          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s unchunking %s\n",prg_nm_get(),fnc_nm,var_nm);
+          (void)nco_def_var_chunking(grp_id,var_id,srg_typ,cnk_sz);
+        } /* !must_be_chunked */
+      }else{ /* !chunked */
+        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s not unchunking %s because it is not chunked\n",prg_nm_get(),fnc_nm,var_nm);
+      } /* !chunked */
+
+      if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s skipping...\n",prg_nm_get(),fnc_nm);
+
+      /* Skip to next variable in loop. NOTE: loop in nco_cnk_sz_set(), here return */
+      return;
+  } /* Explicitly turn off chunking for arrays that are... */
 
 
 
 
 
-  /* Get number of dimensions for variable */
-  (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn);
+
+
+
 
   /* Loop dimensions */
   for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
