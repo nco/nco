@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.211 2013-02-20 21:53:27 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.212 2013-02-20 22:25:50 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1434,7 +1434,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
     
-#ncks #56: This test applies:
+#ncks #56: This test applies: time chunk is explicitely set to 2 instead of the default 1 for record dimension
 # Policy: Chunk Variables with at least Three Dimensions Definition: Chunk all variables possible with at least three dimensions
 # Alternate invocation: none cnk plc key values: ‘g3d’, ‘cnk_g3d’, ‘plc_g3d’
 # Definition: Chunksize defaults to dimension size. Explicitly specify chunksizes for particular dimensions with ‘--cnk_dmn’ option.
@@ -1451,6 +1451,29 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
+    
+# 
+# Limit tests
+#
+
+#ncks #57:
+# ncks -H -C --dmn time,1,3,2 --dmn lev,1,1,1  -v two_dmn_rec_var  ~/nco/data/in_grp.nc
+# /g10/two_dmn_rec_var
+# time[1]=2 lev[1]=500 two_dmn_rec_var[4]=2.1 
+# time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3 
+#
+    $dsc_sng="Limits --dmn time,1,3,2 --dmn lev,1,1,1";
+    $tst_cmd[0]="ncks $nco_D_flg  -H -C --dmn time,1,3,2 --dmn lev,1,1,1  -v two_dmn_rec_var  $in_pth_arg in_grp.nc";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3";
+    $tst_cmd[2]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     # to do    
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			    
+
+
     
     
     
