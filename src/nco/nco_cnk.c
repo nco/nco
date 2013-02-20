@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.45 2013-02-19 22:53:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.46 2013-02-20 01:31:36 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -684,6 +684,8 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   int var_id;               /* [ID] Variable ID */
   int nbr_dmn;              /* [nbr] Number of dimensions for variable */
   int srg_typ;              /* [enm] Storage type */
+  int deflate;              /* [enm] Deflate filter is on */
+  int chk_typ;              /* [enm] Checksum type */
 
   size_t *cnk_sz;           /* [nbr] Chunksize list */
 
@@ -758,6 +760,23 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   assert(strcmp(var_nm,var_trv->nm) == 0);
 
   if(nbr_dmn == 0) return; /* Skip chunking calls for scalars */
+
+  /* Is this a record variable?..Handy object variable already knows this */
+  is_rec_var=var_trv->is_rec_var; 
+
+  /* Is variable compressed? */
+  (void)nco_inq_var_deflate(grp_id,var_id,NULL,&deflate,NULL);
+  if(deflate) is_cmp_var=True; 
+
+  /* Is variable checksummed? */
+  (void)nco_inq_var_fletcher32(grp_id,var_id,&chk_typ);
+  if(chk_typ != NC_NOCHECKSUM) is_chk_var=True;
+
+  /* Must variable be chunked? */
+  if(is_rec_var || is_chk_var || is_cmp_var) must_be_chunked=True; else must_be_chunked=False;
+
+  /* Is variable currently chunked? */
+  is_chunked=nco_cnk_dsk_inq(grp_id,var_id);
 
 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.59 2013-02-15 10:34:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.60 2013-02-20 01:31:36 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -47,6 +47,7 @@ trv_tbl_init
     tb->lst[idx].flg_xcl=False; /* [flg] Object matches exclusion criteria */
     tb->lst[idx].flg_xtr=False; /* [flg] Extract object */
     tb->lst[idx].is_crd_var=False; /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
+    tb->lst[idx].is_rec_var=False;
 
     tb->lst[idx].grp_dpt=nco_obj_typ_err; /* [nbr] Depth of group (root = 0) */
     tb->lst[idx].grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
