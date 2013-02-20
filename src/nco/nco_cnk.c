@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.50 2013-02-20 06:41:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.51 2013-02-20 19:39:16 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -664,7 +664,10 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Use chunking map and policy to determine chunksize list
-  Adapted from nco_cnk_sz_set(), instead of a loop for all varibales, this functions does one the object parameter variable */
+  Adapted from nco_cnk_sz_set() to GTT:
+  1) Instead of a loop for all varibales, this functions does one variable, the object parameter variable
+  2) In the dimension loop, the dimension object is obtained from the list of unique dimensions...much simpler 
+  */
 
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
 
@@ -826,9 +829,6 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   } /* endif map_prd */
 
 
-
-
-
   /* Loop dimensions */
   for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
 
@@ -841,8 +841,95 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
     }
 
 
+    /* Is this the record dimension? */
+    if(dmn_trv->is_rec_dmn == True){
+      /* Does policy specify record dimension treatment? */
+      if(cnk_map == nco_cnk_map_rd1){
+        cnk_sz[dmn_idx]=1UL;
+        /* This may still be over-ridden by explicitly specified chunksize */
+        goto cnk_xpl_override;
+      } /* !nco_cnk_map_rd1 */
+      /* Record dimension size in output file is zero until first write
+      Obtain record dimension size from lmt_all structure (for nco_cnk_sz_set()).
+      NOTE: <GTT> Here using dimesion object... much simpler */
+      if(dmn_trv->BASIC_DMN){
+        /* When not hyperslabbed, use input record dimension size ... */
+        cnk_sz[dmn_idx]=dmn_trv->sz;
+      }else{ /* !BASIC_DMN */
+        /* ... and when hyperslabbed, use user-specified count */
+        cnk_sz[dmn_idx]=dmn_trv->dmn_cnt;
+      } /* !BASIC_DMN */
+    }else{ /* !record dimension */
+      /* Set non-record dimensions to default, possibly over-ride later */
+      cnk_sz[dmn_idx]=dmn_trv->sz;
+      if(dmn_trv->sz == 0L){
+        (void)fprintf(stdout,"%s: ERROR %s reports variable <%s> has dim_sz == 0L for non-record dimension <%s>. This should not occur and it will cause chunking to fail...\n",
+          prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_trv->nm_fll);
+      } /* endif err */
+    } /* !record dimension */
+
+
+    /* Propagate scalar chunksize, if specified */
+    if(cnk_sz_dfl > 0UL){
+      /* Is this the record dimension? */
+      if(dmn_trv->is_rec_dmn == True){
+        /* NOTE: <GTT> Here using dimesion object... much simpler */ 
+        if(dmn_trv->BASIC_DMN){
+          /* When not hyperslabbed, use input record dimension size ... */
+          cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_trv->sz) ? cnk_sz_dfl : (size_t)dmn_trv->sz;
+        }else{ /* !BASIC_DMN */
+          /* ... and when hyperslabbed, use user-specified count */
+          cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_trv->dmn_cnt) ? cnk_sz_dfl : (size_t)dmn_trv->dmn_cnt;
+        } /* !BASIC_DMN */
+      }else{ /* !rcd_dmn_id */
+        /* Non-record sizes default to cnk_sz_dfl or to dimension size */
+        cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_trv->sz) ? cnk_sz_dfl : (size_t)dmn_trv->sz;
+      } /* Is this the record dimension? */
+    } /* !cnk_sz_dfl */
+
+
+cnk_xpl_override: /* end goto */
+
+
+    /* Explicit chunk specifications override all else */
+    for(int cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
+      /* Match on name not ID */
+      if(!strcmp(cnk[cnk_idx]->nm,dmn_trv->nm)){
+        cnk_sz[dmn_idx]=cnk[cnk_idx]->sz;
+
+        /* Is this the record dimension? */
+        if(dmn_trv->is_rec_dmn == True){
+          if(dmn_trv->BASIC_DMN){
+            if(cnk_sz[dmn_idx] > (size_t)dmn_trv->sz){
+              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed record dimension size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",
+                prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_trv->nm,dmn_trv->sz);
+            } /* endif too big */
+          }else{ /* !BASIC_DMN */
+            if(cnk_sz[dmn_idx] > (size_t)dmn_trv->dmn_cnt){
+              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed user-specified record dimension hyperslab size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",
+                prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_trv->nm,dmn_trv->dmn_cnt);
+            } /* endif too big */
+          } /* !BASIC_DMN */
+        }else{ /* !rcd_dmn_id */
+          if(cnk_sz[dmn_idx] > (size_t)dmn_trv->sz){
+            /* dmn_sz of record dimension may (will) be zero in output file
+            Non-record dimensions, though, must have cnk_sz <= dmn_sz */
+            (void)fprintf(stderr,"%s: WARNING %s trimming user-specified chunksize = %lu to %s size = %lu\n",
+              prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_trv->nm,dmn_trv->sz);
+            /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
+            cnk_sz[dmn_idx]=(size_t)dmn_trv->sz;
+          } /* endif */
+        } /* !rcd_dmn_id */
+        break;
+      } /* cnk_nm != dmn_nm */
+    } /* end loop over cnk */
 
   }/* Loop dimensions */
+
+
+
+  /* Turn chunking on for this variable */
+  (void)nco_def_var_chunking(grp_id,var_id,srg_typ,cnk_sz);
 
   return;
 } /* nco_cnk_sz_set_trv() */

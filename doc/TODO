@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1222 2013-02-20 18:54:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1223 2013-02-20 19:39:16 pvicente Exp $
 
 # Purpose: TODO items for NCO
 
@@ -712,7 +712,6 @@ nco1084. ncks feature: allow multiple specifications of mk_rec_dmn and fix_rec_d
 nco1086. ncks: WARNING Variable lat_gds, specified in "coordinates" attribute of variable /g7/g7g1/gds_var, is not present in input file
 	 ncks -O -H -v gds_var -d gds_crd,1,1 ~/nco/data/in_grp.nc
 nco1087. autoconf detect UDunits2 in Mac OSX
-nco1088. nco_cnk_sz_set_trv() [fnc] Set chunksize parameters, and tests
 nco1089. ncap2: fails because defines _FillValue after initial define mode
 	 ncap2 -O --fl_fmt=netcdf4 -v -s 'new=fll_val' ~/nco/data/in.nc ~/foo.nc
 nco1090. 

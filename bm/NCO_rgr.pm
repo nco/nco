@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.208 2013-02-15 10:04:44 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.209 2013-02-20 19:39:15 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1086,11 +1086,11 @@ print "\n";
 #ncks #33 Variable/Group extraction test 3 (netCDF4 file)
 #extract all variables in g6g1 (second level group) = area
 
-if(0){
+
     $dsc_sng="Variable/Group extraction test 3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6g1 $in_pth_arg in_grp.nc";
 	if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="lat[1] area[1]=50";
+    $tst_cmd[1]="lat[1]=90 area[1]=50";
     $tst_cmd[2]="SS_OK";  
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
@@ -1098,7 +1098,7 @@ if(0){
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-   }    
+  
 	
 #ncks #34 Variable/Group extraction test 4 (netCDF4 file)
 #extract all variables "area" = /area /g6/area /g6/g6g1/area
@@ -1169,11 +1169,11 @@ if(0){
 #ncks #38 Variable/Group extraction test 6 (netCDF4 file)
 #extract all variables "area" in g6g1 = g6/g6g1/area 
 
-if(0){
+
     $dsc_sng="Variable/Group extraction test 6 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6g1 $in_pth_arg in_grp.nc";
 	if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="lat[1] area[1]=50";
+    $tst_cmd[1]="lat[1]=90 area[1]=50";
     $tst_cmd[2]="SS_OK";  
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
@@ -1181,7 +1181,7 @@ if(0){
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-    }
+
 	
 #ncks #39 Variable/Group extraction test 7 (netCDF4 file)
 #extract all variables "area" in g6 and g6g1 = g6/g6g1/area, g6/area
@@ -1394,6 +1394,48 @@ if(0){
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array 			
     } # endif false
+    
+    
+# NCO 4.2.6 tests
+# This version has a major change in the way dimensions are handled; the global array lmt_all was eliminated and replaced
+# with GTT (Group Traversal Table) structures that contain full dimension paths; it needs extensive testing, in special
+# 1) Limits
+# 2) MSA
+# 3) Chunking
+#
+# ncks eliminate lmt_all array and replace with GTT (Group Traversal Table)
+#structure that stores full path names for dimensions and coordinate variables.
+#	nco_xtr_wrt_trv() writes extracted data to output file
+#nco_xtr_dfn_trv() defines extracted groups, variables, and attributes in output file
+#	nco_prn_var_val_trv() prints variable data
+#
+#	* ncks limits are stored in the GTT dimension structure and MSA is applied.
+#	Distribute these to variables when writing with nco_msa_prn_var_val_trv().
+#	nco_bld_lmt_trv() assigns user specified dimension limits to traversal table dimensions.   
+
+# 
+# Chunking tests
+#
+ 
+#ncks #55: This test applies chunking all policy to -v lat_lon(lat,lon); lat(2) and lon(4) are by default chunked with a size == dimension
+# The test greps chunksize = 2 for lat
+# Policy: Chunk All Variables [default]
+# Map:Chunksize Equals Dimension Size [default]
+
+    $dsc_sng="Check --fix_rec_dmn (netCDF4 file)";
+    $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -C -m -v lat_lon %tmp_fl_00% | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'";
+    $tst_cmd[2]="lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     # to do    
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+    
+    
+    
 
 #####################
 #### ncpdq tests #### -OK !

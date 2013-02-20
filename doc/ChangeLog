@@ -1,3 +1,8 @@
+2013-02-20  Pedro Vicente  <pvicente@uci.edu>
+
+        * ncks eliminate lmt_all array and replace with GTT (Group Traversal Table)
+          nco_cnk_sz_set_trv() set chunksize parameters using object variable
+
 2013-02-20  Charlie Zender  <zender@uci.edu>
 
 	* Die with graceful hint on NC_EFILLVALUE/NC_ELATEFILL errors
