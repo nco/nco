@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1219 2013-02-16 22:58:16 pvicente Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1220 2013-02-20 01:03:03 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -710,13 +710,13 @@ nco1079. ncap2: add option to return index of max/min/etc. kevin raeder suggesti
 nco1080. ncrename: nc_rename_grp() library call for libnetcdf written with HDF API
 nco1082. ncrename fails with global attributes?:
 	 ncrename -O -h -a Conventions,Geneva ~/nco/data/in.nc ~/foo.nc
-nco1084. ncks feature: multiple specifications of mk_rec_dmn and fix_rec_dmn
-nco1085. 
-qrk
+nco1084. ncks feature: allow multiple specifications of mk_rec_dmn and fix_rec_dmn
 nco1086. ncks: WARNING Variable lat_gds, specified in "coordinates" attribute of variable /g7/g7g1/gds_var, is not present in input file
-ncks -O -H   -v gds_var -d gds_crd,1,1 ~/nco/data/in_grp.nc
+	 ncks -O -H -v gds_var -d gds_crd,1,1 ~/nco/data/in_grp.nc
 nco1087. autoconf detect UDunits2 in Mac OSX
 nco1088. nco_cnk_sz_set_trv() [fnc] Set chunksize parameters, and tests
+nco1089. 
+qrk
 ************************************************************************
 End ncoXXX TODOs
 ************************************************************************
