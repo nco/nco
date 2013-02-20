@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.48 2013-02-20 03:40:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.49 2013-02-20 05:58:43 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -733,7 +733,7 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
     nco_exit(EXIT_FAILURE);
   } /* endif cnk_sz_scl */
 
-  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Requested chunking or unchunking\n",prg_nm_get());
+  if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO Requested chunking or unchunking\n",prg_nm_get());
   if(dbg_lvl_get() >= nco_dbg_scl){
     (void)fprintf(stdout,"cnk_plc: %s\n",nco_cnk_plc_sng_get(cnk_plc));
     (void)fprintf(stdout,"cnk_map: %s\n",nco_cnk_map_sng_get(cnk_map));
@@ -792,14 +792,14 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
       /* If variable is chunked */
       if(is_chunked){
         if(must_be_chunked){
-          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s %s must be chunked (record, compressed, or checksummed variable)\n",prg_nm_get(),fnc_nm,var_nm);
+          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s %s must be chunked (record, compressed, or checksummed variable)\n",prg_nm_get(),fnc_nm,var_nm);
         }else{
           /* Turn off chunking for this variable */
-          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s unchunking %s\n",prg_nm_get(),fnc_nm,var_nm);
+          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s unchunking %s\n",prg_nm_get(),fnc_nm,var_nm);
           (void)nco_def_var_chunking(grp_id,var_id,srg_typ,cnk_sz);
         } /* !must_be_chunked */
       }else{ /* !chunked */
-        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s not unchunking %s because it is not chunked\n",prg_nm_get(),fnc_nm,var_nm);
+        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",prg_nm_get(),fnc_nm,var_nm);
       } /* !chunked */
 
       if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s skipping...\n",prg_nm_get(),fnc_nm);
@@ -811,7 +811,7 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
 
   /* Variable will definitely be chunked */
   srg_typ=NC_CHUNKED; /* [enm] Storage type */
-  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s %schunking %s\n",prg_nm_get(),fnc_nm,(is_chunked ? "re-" : "" ),var_nm);
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s %schunking %s\n",prg_nm_get(),fnc_nm,(is_chunked ? "re-" : "" ),var_nm);
 
   /* Default "equal" chunksize for each dimension */
   cnk_sz_dfl=cnk_sz_scl;

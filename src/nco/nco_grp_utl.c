@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.481 2013-02-20 01:08:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.482 2013-02-20 06:03:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1881,7 +1881,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
           nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
           if(dbg_lvl_get() >= nco_dbg_dev && nbr_dmn){
-            (void)fprintf(stdout,"%s: INFO Defining <%s> with %d dims\n",prg_nm_get(),trv.nm_fll,nbr_dmn);
+            (void)fprintf(stdout,"%s: INFO %s Defining <%s> with %d dims\n",prg_nm_get(),fnc_nm,trv.nm_fll,nbr_dmn);
             (void)nco_prt_dmn(nc_id,trv.nm_fll);
           } /* dbg_lvl_get() */
         } /* Create group */
@@ -1918,7 +1918,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
         nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
         if(dbg_lvl_get() >= nco_dbg_dev && nbr_dmn){
-          (void)fprintf(stdout,"%s: INFO Defining group <%s> with %d dims\n",prg_nm_get(),trv.nm_fll,nbr_dmn);
+          (void)fprintf(stdout,"%s: INFO %s Defining group <%s> with %d dims\n",prg_nm_get(),fnc_nm,trv.nm_fll,nbr_dmn);
           (void)nco_prt_dmn(nc_id,trv.nm_fll);
         } /* dbg_lvl_get() */
       } /* Create group */
@@ -2991,7 +2991,7 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
           nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
           if(dbg_lvl_get() >= nco_dbg_dev && nbr_dmn){
-            (void)fprintf(stdout,"%s: INFO Defining <%s> with %d dims\n",prg_nm_get(),trv.nm_fll,nbr_dmn);
+            (void)fprintf(stdout,"%s: INFO %s Defining <%s> with %d dims\n",prg_nm_get(),fnc_nm,trv.nm_fll,nbr_dmn);
             (void)nco_prt_dmn(nc_id,trv.nm_fll);
           } /* dbg_lvl_get() */
         } /* Create group */
@@ -3028,7 +3028,7 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
         nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
         if(dbg_lvl_get() >= nco_dbg_dev && nbr_dmn){
-          (void)fprintf(stdout,"%s: INFO Defining group <%s> with %d dims\n",prg_nm_get(),trv.nm_fll,nbr_dmn);
+          (void)fprintf(stdout,"%s: INFO %s Defining group <%s> with %d dims\n",prg_nm_get(),fnc_nm,trv.nm_fll,nbr_dmn);
           (void)nco_prt_dmn(nc_id,trv.nm_fll);
         } /* dbg_lvl_get() */
       } /* Create group */
