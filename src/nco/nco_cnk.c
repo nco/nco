@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.47 2013-02-20 03:30:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.48 2013-02-20 03:40:06 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -668,27 +668,28 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
 
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
 
-  char var_nm[NC_MAX_NAME]; /* [sng] Variable name */
+  char var_nm[NC_MAX_NAME];  /* [sng] Variable name */
 
-  nc_type var_typ_dsk;      /* [nbr] Variable type */
+  nc_type var_typ_dsk;       /* [nbr] Variable type */
 
-  nco_bool flg_cnk=False;   /* [flg] Chunking requested */
-  nco_bool is_rec_var;      /* [flg] Record variable */
-  nco_bool is_chk_var;      /* [flg] Checksummed variable */
-  nco_bool is_cmp_var;      /* [flg] Compressed variable */
-  nco_bool is_chunked;      /* [flg] Chunked variable */
-  nco_bool must_be_chunked; /* [flg] Variable must be chunked */
+  nco_bool flg_cnk=False;    /* [flg] Chunking requested */
+  nco_bool is_rec_var;       /* [flg] Record variable */
+  nco_bool is_chk_var;       /* [flg] Checksummed variable */
+  nco_bool is_cmp_var;       /* [flg] Compressed variable */
+  nco_bool is_chunked;       /* [flg] Chunked variable */
+  nco_bool must_be_chunked;  /* [flg] Variable must be chunked */
 
-  int cnk_map;              /* [enm] Chunking map */
-  int cnk_plc;              /* [enm] Chunking policy */
-  int fl_fmt;               /* [enm] Input file format */
-  int var_id;               /* [ID] Variable ID */
-  int nbr_dmn;              /* [nbr] Number of dimensions for variable */
-  int srg_typ;              /* [enm] Storage type */
-  int deflate;              /* [enm] Deflate filter is on */
-  int chk_typ;              /* [enm] Checksum type */
+  int cnk_map;               /* [enm] Chunking map */
+  int cnk_plc;               /* [enm] Chunking policy */
+  int fl_fmt;                /* [enm] Input file format */
+  int var_id;                /* [ID] Variable ID */
+  int nbr_dmn;               /* [nbr] Number of dimensions for variable */
+  int srg_typ;               /* [enm] Storage type */
+  int deflate;               /* [enm] Deflate filter is on */
+  int chk_typ;               /* [enm] Checksum type */
 
-  size_t *cnk_sz;           /* [nbr] Chunksize list */
+  size_t cnk_sz[NC_MAX_DIMS];/* [nbr] Chunksize list */
+  size_t cnk_sz_dfl;         /* [nbr] Chunksize default */
 
   /* Did user explicitly request chunking? */
   if(cnk_nbr > 0 || cnk_sz_scl > 0UL || *cnk_map_ptr != nco_cnk_map_nil || *cnk_plc_ptr != nco_cnk_plc_nil){
@@ -745,7 +746,6 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
 
   /* Initialize storage type for this variable */
   srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
-  cnk_sz=(size_t *)NULL; /* [nbr] Chunksize list */
   is_rec_var=False; /* [flg] Record variable */
   is_chk_var=False; /* [flg] Checksummed variable */
   is_cmp_var=False; /* [flg] Compressed variable */
@@ -809,8 +809,21 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   } /* Explicitly turn off chunking for arrays that are... */
 
 
+  /* Variable will definitely be chunked */
+  srg_typ=NC_CHUNKED; /* [enm] Storage type */
+  if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s %schunking %s\n",prg_nm_get(),fnc_nm,(is_chunked ? "re-" : "" ),var_nm);
 
-
+  /* Default "equal" chunksize for each dimension */
+  cnk_sz_dfl=cnk_sz_scl;
+  if(cnk_map == nco_cnk_map_prd){
+    double cnk_sz_prd_dbl; /* [nbr] Chunksize product, double precision */
+    double cnk_sz_eql_dbl; /* [nbr] Chunksize equal, double precision */
+    double cnk_sz_dfl_dbl; /* [nbr] Chunksize default, double precision */
+    cnk_sz_prd_dbl=cnk_sz_scl;
+    cnk_sz_eql_dbl=pow(cnk_sz_prd_dbl,1.0/nbr_dmn);
+    cnk_sz_dfl_dbl=ceil(cnk_sz_eql_dbl);
+    cnk_sz_dfl=(size_t)cnk_sz_dfl_dbl;
+  } /* endif map_prd */
 
 
 
