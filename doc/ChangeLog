@@ -1,6 +1,10 @@
+2013-02-20  Charlie Zender  <zender@uci.edu>
+
+	* Die with graceful hint on NC_EFILLVALUE/NC_ELATEFILL errors
+
 2013-02-19  Pedro Vicente  <pvicente@uci.edu>
-  
-  * ncks --get_grp_info now prints if a variable is a record variable 
+
+	* ncks --get_grp_info now prints if a variable is a record variable
 
 2013-02-19  Charlie Zender  <zender@uci.edu>
 

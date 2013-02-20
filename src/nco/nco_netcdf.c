@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.185 2013-02-09 02:27:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.186 2013-02-20 18:54:21 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -61,6 +61,19 @@
 # define NC_NOCHECKSUM 0
 #endif
 
+/* netcdf.h replaced NC_EFILLVALUE by case NC_ELATEFILL after about netCDF ~4.2.1 */
+#ifdef HAVE_NETCDF4_H
+# ifndef NC_EFILLVALUE
+#  define NC_EFILLVALUE NC_ELATEFILL
+# endif /* NC_EFILLVALUE */
+# ifndef NC_ELATEFILL
+#  define NC_ELATEFILL NC_EFILLVALUE
+# endif /* NC_ELATEFILL */
+#else /* !HAVE_NETCDF4_H */
+# define NC_ELATEFILL     (-122)    /**< Attempt to define fill value when data already exists. */
+# define NC_EFILLVALUE    (-122)    /**< Attempt to define fill value when data already exists. */
+#endif /* !HAVE_NETCDF4_H */
+
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
@@ -75,7 +88,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 
      msg variable allows wrapper to pass more descriptive information than
      is contained in the netCDF-defined error message.
-     Use msg to print, e.g., the name of variable or routine which caused error */
+     Use msg to print, e.g., name of variable or routine which caused error */
 
   const char fnc_nm[]="nco_err_exit()";
 #ifdef NCO_ABORT_ON_ERROR
@@ -86,6 +99,8 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 
   switch(rcd){
   case NC_EINVAL: (void)fprintf(stdout,"ERROR NC_EINVAL Invalid argument\nHINT: NC_EINVAL errors will occur when NCO operators attempt to open netCDF4 files using the diskless option, usually invoked with --diskless_all, --ram_all, or --open_ram.  Is your input file netCDF4 format?  (http://nco.sf.net/nco.html#fmt_inq shows how to tell.) If so then omitting the diskless option may solve this problem.\n"); break;
+  case NC_ELATEFILL: /* netcdf.h replaced NC_EFILLVALUE by NC_ELATEFILL after about netCDF ~4.2.1 */
+    (void)fprintf(stdout,"ERROR NC_ELATEFILL (formerly NC_EFILLVALUE) Attempt to define fill value when data already exists\nHINT: NC_ELATEFILL errors can occur when ncap2 attempts to define a variable with a _FillValue attribute in a netCDF4 file.  We believe this is an NCO bug (fxm TODO nco1089) and are working to fix it. Does your output file need to be netCDF4 or netCDF4_classic format? If so, then wait for us to fix the bug. If not, change the output format to netCDF3 (e.g., with -3 option) as a temporary workaround. This file can then successfully be converted to netCDF4 (e.g., with ncks -4 in.nc out.nc).\n"); break;
   case NC_ENOTNC: (void)fprintf(stdout,"ERROR NC_ENOTNC Not a netCDF file\nHINT: NC_ENOTNC errors will occur when NCO operators linked to the netCDF3 library attempt to read netCDF4 files.  Are your input files netCDF4 format?  (http://nco.sf.net/nco.html#fmt_inq shows how to tell.) If so then installing or re-building a netCDF4-compatible version of NCO should solve this problem. First upgrade netCDF to version 4.x, then install NCO using those netCDF 4.x libraries.\n"); break;
   case NC_ERANGE: (void)fprintf(stdout,"ERROR NC_ERANGE Result not representable in output file\nHINT: NC_ERANGE errors typically occur after an arithmetic operation results in a value not representible by the output variable type when NCO attempts to write those values to an output file.  Possible workaround: Promote the variable to higher precision before attempting arithmetic.  For example,\nncap2 -O -s \'foo=double(foo);\' in.nc in.nc\nFor more details, see http://nco.sf.net/nco.html#typ_cnv\n"); break;
   case NC_EVARSIZE: (void)fprintf(stdout,"ERROR NC_EVARSIZE One or more variable sizes violate format constraints\nHINT: NC_EVARSIZE errors can occur when attempting to aggregate netCDF3 classic files together into outputs that exceed the capacity of the netCDF3 classic file format, e.g., a variable with size in excess of 2^31 bytes. In this case, try altering the output file type to netCDF3 classic with 64-bit offsets (with --64) or to netCDF4 (with -4). For more details, see http://nco.sf.net/nco.html#fl_fmt\n"); break;

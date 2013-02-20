@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.141 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.142 2013-02-20 18:54:21 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -27,7 +27,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   const char fnc_nm[]="nco_aed_prc()"; /* [sng] Function name */
 
 #ifdef NCO_NETCDF4_AND_FILLVALUE
-  char att_nm_tmp[]="eulaVlliF_"; /* String of same length as "_FillValue" for name hack with netCDF4 */
+  char att_nm_tmp[]="eulaVlliF_"; /* String of same length as "_FillValue" for netCDF4 name hack */
   nco_bool flg_fmt_netCDF4=False; /* [flg] File format is netCDF4 */
   nco_bool flg_netCDF4_rename_trick=False; /* [flg] Re-name _FillValue in order to create/modify/overwrite it */
 #endif /* !NCO_NETCDF4_AND_FILLVALUE */

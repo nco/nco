@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.163 2013-01-21 00:40:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.164 2013-02-20 18:54:22 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -20,7 +20,7 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
    See the GNU General Public License for more details.
-   a\
+
    The original author of this software, Charlie Zender, seeks to improve
    it with your suggestions, contributions, bug-reports, and patches.
    Please contact the NCO project at http://nco.sf.net or write to
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.163 2013-01-21 00:40:37 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.163 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.164 2013-02-20 18:54:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.164 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   

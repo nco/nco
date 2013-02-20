@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.146 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.147 2013-02-20 18:54:22 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -843,7 +843,6 @@ nco_var_lst_add
   *xtr_nbr=xtr_nbr_crr;
   return xtr_new_lst;           
 } /* end nco_var_lst_add */
-
 
 nm_id_sct * /* O [sct] List of dimensions associated with input variable list */
 nco_dmn_lst /* [fnc] Create list of all dimensions in file  */
