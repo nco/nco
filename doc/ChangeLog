@@ -1,3 +1,7 @@
+2013-02-19  Pedro Vicente  <pvicente@uci.edu>
+  
+  * ncks --get_grp_info now prints if a variable is a record variable 
+
 2013-02-19  Charlie Zender  <zender@uci.edu>
 
 	* ncrename requires presence of attributes in all variables when attribute is not

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.250 2013-02-15 06:43:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.251 2013-02-20 01:08:20 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -635,7 +635,8 @@ extern "C" {
   typedef struct{ 
     char *nm_fll; /* [sng] Fully qualified name (path) */
     var_dmn_sct var_dmn; /* [sct] Array of dimension names for variable (nbr_dmn [CHK]) */
-    nco_bool is_crd_var; /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
+    nco_bool is_crd_var; /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
+    nco_bool is_rec_var; /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
     size_t nm_fll_lng; /* [sng] Length of full name */
     char *grp_nm_fll; /* [sng] Full group name (for groups, same as nm_fll) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */

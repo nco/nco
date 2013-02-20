@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.480 2013-02-19 22:16:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.481 2013-02-20 01:08:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2407,6 +2407,12 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
       /* Filter output */
       if (trv.is_crd_var) (void)fprintf(stdout," (coordinate variable)");
 
+      /* Filter output */
+      if (trv.is_rec_var) (void)fprintf(stdout," (record variable)");
+
+      /* If record variable must be coordinate variable */
+      if (trv.is_rec_var) assert(trv.is_crd_var == True);
+
       (void)fprintf(stdout,"\n");
 
     } /* end nco_obj_typ_grp */
@@ -3237,6 +3243,9 @@ nco_blb_crd_var_trv                   /* [fnc] Build dimension information for a
 
             /* Mark this variable as a coordinate variable */
             trv_tbl->lst[var_idx].is_crd_var=True;
+
+            /* If the group dimension is a record dimension then the variable is a record variable */
+            trv_tbl->lst[var_idx].is_rec_var=dmn_trv.is_rec_dmn;
 
             break;
 
