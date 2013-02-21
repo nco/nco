@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.489 2013-02-21 08:52:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.490 2013-02-21 10:26:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2332,22 +2332,81 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
     Associated and auxiliary coordinates may be in distant groups
     Hence no better place than nco_xtr_dfn() to finally identify ancestor groups */
 
-    /* Set extraction flag for groups iff ancestors of extracted variables */
+    /* Set extraction flag for groups if ancestors of extracted variables.*/
+#if 1
     for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
+#else
+    /* fxm pvn 20130221 NOTE: Start at index 1, index 0 is '/' */
+    for(unsigned grp_idx=1;grp_idx<trv_tbl->nbr;grp_idx++){  
+#endif
       /* For each group ... */
       if(trv_tbl->lst[grp_idx].typ == nco_obj_typ_grp){
-        /* Initialize extraction flag to False and overwrite later iff ... */
+        /* Initialize extraction flag to False and overwrite later if ... */
         trv_tbl->lst[grp_idx].flg_xtr=False;
         /* ... loop through ... */
         for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
           /* ... all variables to be extracted ... */
           if(trv_tbl->lst[var_idx].typ == nco_obj_typ_var && trv_tbl->lst[var_idx].flg_xtr){
             /* ... finds that full path to current group is contained in and extracted variable path ... */
+
+#if 1 
             if(strstr(trv_tbl->lst[var_idx].nm_fll,trv_tbl->lst[grp_idx].grp_nm_fll)){
               /* ... and mark _only_ those groups for extraction... */
               trv_tbl->lst[grp_idx].flg_xtr=True;
               continue;
             } /* endif */
+#else /* fxm pvn 20130221 */
+            const char sls_chr='/';         /* [chr] Slash character */
+            char *sbs_srt;                  /* [sng] Location of user-string match start in object path */
+            char *sbs_end;                  /* [sng] Location of user-string match end   in object path */
+
+            nco_bool flg_pth_srt_bnd=False; /* [flg] String begins at path component boundary */
+            nco_bool flg_pth_end_bnd=False; /* [flg] String ends   at path component boundary */
+
+            size_t grp_nm_fll_lng;          /* [nbr] Length of trv_tbl->lst[grp_idx].grp_nm_fll */
+            size_t var_nm_fll_lng;          /* [nbr] Length of trv_tbl->lst[var_idx].nm_fll */
+
+            var_nm_fll_lng=strlen(trv_tbl->lst[var_idx].nm_fll);
+            grp_nm_fll_lng=strlen(trv_tbl->lst[grp_idx].grp_nm_fll);
+
+            /* Look for partial match, not necessarily on path boundaries; locate (str2) in (str1) */
+            if((sbs_srt=strstr(trv_tbl->lst[var_idx].nm_fll,trv_tbl->lst[grp_idx].grp_nm_fll))){
+
+              /* Ensure match spans (begins and ends on) whole path-component boundaries */
+
+              /* Does match begin at path component boundary ... directly on a slash? */
+              if(*sbs_srt == sls_chr){
+                flg_pth_srt_bnd=True;
+              }
+
+              /* ...or one after a component boundary? */
+              if((sbs_srt > trv_tbl->lst[var_idx].nm_fll) && (*(sbs_srt-1L) == sls_chr)){
+                flg_pth_srt_bnd=True;
+              }
+
+              /* Does match end at path component boundary ... directly on a slash? */
+              sbs_end=sbs_srt+grp_nm_fll_lng-1L;
+
+              if(*sbs_end == sls_chr){
+                flg_pth_end_bnd=True;
+              }
+
+              /* ...or one before a component boundary? */
+              if(sbs_end <= trv_tbl->lst[var_idx].nm_fll+var_nm_fll_lng-1L){
+                if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0')){
+                  flg_pth_end_bnd=True;
+                }
+              }
+
+              /* If match is on both ends of '/' then it's a "real" name, not for example "lat_lon" as a variable looking for "lon" */
+              if (flg_pth_srt_bnd && flg_pth_end_bnd){
+
+                /* ... and mark _only_ those groups for extraction... */
+                trv_tbl->lst[grp_idx].flg_xtr=True;
+                continue;
+              }
+            }
+#endif /* fxm pvn 20130221 */
           } /* endif extracted variable */
         } /* end loop over var_idx */
       } /* endif group */
