@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.493 2013-02-21 18:24:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.494 2013-02-21 18:49:10 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2338,10 +2338,16 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
     for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
       /* For each group ... */
       if(trv_tbl->lst[grp_idx].typ == nco_obj_typ_grp){
-        /* Initialize extraction flag to False and overwrite later iff ... */
 	char *sbs_srt; /* [sng] Location of user-string match start in object path */
-	char *grp_fll_sls; /* [sng] Full group name with slash appended */
+	char *grp_fll_sls=NULL; /* [sng] Full group name with slash appended */
+        /* Initialize extraction flag to False and overwrite later iff ... */
         trv_tbl->lst[grp_idx].flg_xtr=False;
+	if(!strcmp(trv_tbl->lst[grp_idx].grp_nm_fll,sls_sng)){
+	  /* Manually mark root group as extracted because matching algorithm below fails for root group 
+	     (it looks for "//" in variable names) */
+	  trv_tbl->lst[grp_idx].flg_xtr=True;
+	  continue;
+	} /* endif root group */
 	grp_fll_sls=(char *)strdup(trv_tbl->lst[grp_idx].grp_nm_fll);
 	grp_fll_sls=(char *)nco_realloc(grp_fll_sls,(strlen(grp_fll_sls)+2L)*sizeof(char));
 	strcat(grp_fll_sls,sls_sng);
