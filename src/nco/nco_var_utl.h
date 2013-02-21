@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.82 2013-02-13 19:22:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.83 2013-02-21 08:39:41 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -47,16 +47,6 @@ extern "C" {
    const int out_id, /* I [id] netCDF output file ID */
    const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
    const char * const var_nm, /* I [sng] Input variable name */
-   const int dfl_lvl); /* I [enm] Deflate level [0..9] */
-
-  int /* O [id] Output file variable ID */
-  nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
-  (const int in_id, /* I [id] netCDF input file ID */
-   const int out_id, /* I [id] netCDF output file ID */
-   const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
-   const char * const var_nm, /* I [sng] Input variable name */
-   CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
-   const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
   void

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.487 2013-02-21 08:30:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.488 2013-02-21 08:39:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -980,39 +980,6 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
 } /* end nco_xtr_mk() */
 
-nco_bool                              /* O [flg] Dimension was found */
-nco_fnd_dmn                           /* [fnc] Find a dimension that matches dmn_nm in group grp_id and its parents */
-(const int grp_id,                    /* I [id] Group ID */
- const char * const dmn_nm)           /* I [sng] Dimension name to find */
-{
-  char nm[NC_MAX_NAME+1];       /* [sng] Dimension name */
-  int dmn_ids[NC_MAX_DIMS];     /* [nbr] Dimensions IDs array */
-  int dmn_ids_ult[NC_MAX_DIMS]; /* [nbr] Unlimited dimensions IDs array */
-  int nbr_dmn;                  /* [nbr] Number of dimensions */
-  int nbr_dmn_ult;              /* [nbr] Number of unlimited dimensions */
-  const int flg_prn=1;          /* [flg] All the dimensions in all parent groups will also be retrieved */   
-  long dmn_sz;                  /* [nbr] Dimension size */
-
-  /* Obtain dimensions IDs for group */
-  (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
-
-  /* Obtain unlimited dimensions for group */
-  (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
-
-  /* Iterate dimensions */
-  for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-
-    /* Get name */
-    (void)nco_inq_dim(grp_id,dmn_ids[dmn_idx],nm,&dmn_sz);
-
-    /* Matches input name, return */
-    if(!strcmp(dmn_nm,nm)){
-      return True;
-    } /* endif */
-  } /* end loop */
-
-  return False;
-} /* end nco_fnd_dmn() */ 
 
 void
 nco_xtr_xcl                           /* [fnc] Convert extraction list to exclusion list */

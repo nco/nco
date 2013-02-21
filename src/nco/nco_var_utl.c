@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.228 2013-02-15 10:34:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.229 2013-02-21 08:39:41 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -222,230 +222,7 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   return var_out_id;
 } /* end nco_cpy_var_dfn() */
 
-int /* O [id] Output file variable ID */
-nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
-(const int in_id, /* I [id] netCDF input file ID */
- const int out_id, /* I [id] netCDF output file ID */
- const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
- const char * const var_nm, /* I [sng] Input variable name */
- CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
- const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
- const int dfl_lvl) /* I [enm] Deflate level [0..9] */
-{
-  /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
-     Routine is based on nco_cpy_dfn_lmt(), and differs trivially from it
-     Should perhaps be merged into one call that always takes lmt_all_lst information?
-     Routine truncates dimensions in variable definition in output file according to user-specified limits
-     Routine copies_variable by variable, old-style, used only by ncks
-     20130126: Behavior until today required rec_dmn_nm even if not changing it
-     As of today, rec_dmn_nm passed only when user-specified
-     Otherwise, re-use old record dimension name */
 
-  const char fnc_nm[]="nco_cpy_var_dfn_lmt()"; /* [sng] Function name */
-
-  char *rec_dmn_nm=NULL; /* [sng] User-specified record dimension name */
-  char *rec_dmn_nm_mlc=NULL; /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
-
-  int *dmn_in_id;
-  int *dmn_out_id;
-
-  int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
-
-  int dmn_idx;
-  int fl_fmt; /* [enm] Output file format */
-  int nbr_dim;
-  int nbr_rec; /* [nbr] Number of unlimited dimensions */
-  int rec_idx;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
-  int var_in_id;
-  int var_out_id;
-
-  nc_type var_typ;
-
-  nco_bool FIX_REC_DMN=False; /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
-  nco_bool CRR_DMN_IS_REC_IN_INPUT; /* [flg] Current dimension of variable is record dimension of variable in input file/group */
-  nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
-
-  /* Recall:
-  1. Dimensions must be defined before variables
-  2. Variables must be defined before attributes */
-
-  /* Is requested variable already in output file? */
-  rcd=nco_inq_varid_flg(out_id,var_nm,&var_out_id);
-  if(rcd == NC_NOERR) return var_out_id;
-
-  /* Is requested variable in input file? */
-  rcd=nco_inq_varid_flg(in_id,var_nm,&var_in_id);
-  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",prg_nm_get(),fnc_nm,var_nm);
-
-  /* Get type of variable and number of dimensions */
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,(int *)NULL);
-
-  /* Allocate space to hold dimension IDs */
-  dmn_in_id=(int *)nco_malloc(nbr_dim*sizeof(int));
-  dmn_out_id=(int *)nco_malloc(nbr_dim*sizeof(int));
-
-  /* Get dimension IDs */
-  (void)nco_inq_vardimid(in_id,var_in_id,dmn_in_id);
-
-  /* Get unlimited dimension information from input file/group */
-  rcd=nco_inq_unlimdims(in_id,&nbr_rec,dmn_ids_rec);
-
-  /* Get unlimited dimension information from output file/group */
-  (void)nco_inq(out_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_out_id);
-
-  /* Does user want a record dimension to receive special handling? */
-  if(rec_dmn_nm_cst){
-    /* Create (and later free()) local copy to preserve const-ness of passed value
-    For simplicity, work with canonical name rec_dmn_nm */
-    rec_dmn_nm_mlc=strdup(rec_dmn_nm_cst);
-    /* Parse rec_dmn_nm argument */
-    if(!strncmp("fix_",rec_dmn_nm_mlc,(size_t)4)){
-      FIX_REC_DMN=True; /* [flg] Fix record dimension */
-      rec_dmn_nm=rec_dmn_nm_mlc+4;
-    }else{
-      FIX_REC_DMN=False; /* [flg] Fix record dimension */
-      rec_dmn_nm=rec_dmn_nm_mlc;
-    } /* strncmp() */    
-  } /* !rec_dmn_nm_cst */
-
-  /* Is requested record dimension in input file? */
-  if(rec_dmn_nm){
-    /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
-    rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,(int *)NULL); */
-    int rec_dmn_id_dmy;
-    rcd=nco_inq_dimid_flg(in_id,rec_dmn_nm,&rec_dmn_id_dmy);
-    if(rcd != NC_NOERR){
-      (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
-      nco_exit(EXIT_FAILURE);
-    } /* endif */
-
-    /* Does variable contain requested record dimension? */
-    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
-      if(dmn_in_id[dmn_idx] == rec_dmn_id_dmy){
-        if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
-        break;
-      } /* endif */
-    } /* end loop over dmn_idx */
-  } /* !rec_dmn_nm */
-
-  /* File format needed for decision tree and to enable netCDF4 features */
-  rcd=nco_inq_format(out_id,&fl_fmt);
-
-  /* Get input and set output dimension sizes and names */
-  for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
-    char dmn_nm[NC_MAX_NAME];
-    long dmn_sz;
-    int rcd_lcl; /* [rcd] Return code */
-
-    (void)nco_inq_dim(in_id,dmn_in_id[dmn_idx],dmn_nm,&dmn_sz);
-
-    /* Has dimension been defined in output file? */
-    rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+dmn_idx);
-
-    /* Define dimension in output file if necessary */
-    if(rcd_lcl != NC_NOERR){
-
-      /* Here begins a complex tree to decide a simple, binary output:
-      Will current input dimension be defined as an output record dimension or as a fixed dimension?
-      Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
-      Otherwise would repeat netCDF action code too many times */
-
-      /* Is dimension unlimited in input file? */
-      for(rec_idx=0;rec_idx<nbr_rec;rec_idx++)
-        if(dmn_in_id[dmn_idx] == dmn_ids_rec[rec_idx]) break;
-      if(rec_idx < nbr_rec) CRR_DMN_IS_REC_IN_INPUT=True; else CRR_DMN_IS_REC_IN_INPUT=False;
-
-      /* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
-      if(rec_dmn_nm){
-        /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
-        if(!strcmp(dmn_nm,rec_dmn_nm)){
-          /* ... then honor user's request to define it as a fixed or record dimension ... */
-          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
-          if(FIX_REC_DMN) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=True;
-        }else{ /* strcmp() */
-          if(FIX_REC_DMN){
-            /* ... fix_rec_dmn case is straightforward: output dimension has same format as input dimension */
-            if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-          }else{ /* !FIX_REC_DMN */
-            /* ... otherwise we are in the --mk_rec_dmn case where things get complicated ... 
-            This dimension can be a record dimension only if it would not conflict with the requested 
-            record dimension being defined a record dimension, and that depends on file format. Uggh.
-            1. netCDF3 API allows only one record-dimension so conflicts are possible
-            2. netCDF4 API permits any number of unlimited dimensions so conflicts are impossible */
-            if(fl_fmt == NC_FORMAT_NETCDF4){
-              /* ... no conflicts possible so define dimension in output same as in input ... */
-              if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-            }else{ /* !netCDF4 */
-              /* ... output file adheres to netCDF3 API so there can be only one record dimension.
-              In other words, define all other dimensions as fixed, non-record dimensions, even
-              if they are a record dimension in the input file ... */
-              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
-              DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-            } /* !netCDF4 */
-          } /* !FIX_REC_DMN */
-        } /* strcmp() */
-      }else{ /* !rec_dmn_nm */
-        /* ... no user-specified record dimension so define dimension in output same as in input ... */
-        if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-      } /* !rec_dmn_nm */ 
-
-      /* At long last ... */
-      if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
-        (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+dmn_idx);
-        rec_dmn_out_id=dmn_out_id[dmn_idx];
-      }else{ /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
-        /* Does dimension have user-specified limits?
-        Following block is only difference between nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt() */
-        for(int lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
-          /* fxm: Why lmt_dmn[0] in following line? */
-          if(!strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->nm) && nco_fnd_dmn(in_id,dmn_nm)){
-            dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
-            break;
-          } /* end if */
-        } /* end loop over lmt_all_idx */
-        (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
-      } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
-
-    } /* end if dimension is not yet defined */
-
-    /* Die informatively if record dimension is not first dimension */
-    if(dmn_idx > 0 && dmn_out_id[dmn_idx] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4){
-      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",prg_nm_get(),rec_dmn_nm,var_nm,dmn_idx+1);  
-      nco_exit(EXIT_FAILURE);
-    } /* end if err */
-
-  } /* end loop over dimensions */
-
-  /* Define variable in output file */
-  (void)nco_def_var(out_id,var_nm,var_typ,nbr_dim,dmn_out_id,&var_out_id);
-
-  /* Duplicate netCDF4 settings when possible */
-  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-    /* Deflation */
-    if(nbr_dim > 0){
-      int deflate; /* [flg] Turn on deflate filter */
-      int dfl_lvl_in; /* [enm] Deflate level [0..9] */
-      int shuffle; /* [flg] Turn on shuffle filter */
-      rcd=nco_inq_var_deflate(in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
-      /* Copy original deflation settings */
-      if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
-      /* Overwrite HDF Lempel-Ziv compression level, if requested */
-      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var_out_id,(int)True,(int)True,dfl_lvl);
-    } /* endif */
-
-    /* NB: Copy/set chunking information in nco_cnk_sz_set(), not here! */
-
-  } /* !NC_FORMAT_NETCDF4 */ 
-
-  /* Free locally allocated space */
-  if(rec_dmn_nm_mlc) rec_dmn_nm_mlc=(char *)nco_free(rec_dmn_nm_mlc);
-  if(dmn_in_id) dmn_in_id=(int *)nco_free(dmn_in_id);
-  if(dmn_out_id) dmn_out_id=(int *)nco_free(dmn_out_id);
-
-  return var_out_id;
-} /* end nco_cpy_var_dfn_lmt() */
 
 void
 nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
@@ -2169,7 +1946,7 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
   As of today, rec_dmn_nm passed only when user-specified
   Otherwise, re-use old record dimension name */
 
-  const char fnc_nm[]="nco_cpy_var_dfn_lmt()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_cpy_var_dfn_lmt_trv()"; /* [sng] Function name */
 
   char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 
 
@@ -2337,18 +2114,6 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
         /* Does dimension have user-specified limits?
         Following block is only difference between nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt() */
 
-        /* A unified function neded here ...*/ 
-
-#ifdef REPLACE_WITH_GTT_INFORMATION
-        for(int lmt_all_idx=0;lmt_all_idx<lmt_all_lst_nbr;lmt_all_idx++){
-          /* fxm: Why lmt_dmn[0] in following line? */
-          if(!strcmp(dmn_nm,lmt_all_lst[lmt_all_idx]->lmt_dmn[0]->nm) && nco_fnd_dmn(in_id,dmn_nm)){
-            dmn_sz=lmt_all_lst[lmt_all_idx]->dmn_cnt;
-            break;
-          } /* end if */
-        } /* end loop over lmt_all_idx */
-#else /* REPLACE_WITH_GTT_INFORMATION */
-
         /* Find dimension of the object variable by searching in the list of unique dimensions */
         dmn_fll_sct *dmn_trv=nco_fnd_var_lmt_trv(dmn_idx,var_trv,trv_tbl);
 
@@ -2359,8 +2124,6 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
 
         dmn_sz=dmn_trv->dmn_cnt;
         assert(dmn_sz != nco_obj_typ_err);
-
-#endif /* REPLACE_WITH_GTT_INFORMATION */
 
         (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */

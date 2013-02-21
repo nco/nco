@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.218 2013-02-21 08:20:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.219 2013-02-21 08:39:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -183,11 +183,6 @@ int                                   /* O [id] Group ID */
 nco_aux_grp_id                        /* [fnc] Return the group ID from the variable full name */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const char * const var_nm_fll);      /* I [sng] Full variable name to find */
-
-nco_bool                              /* O [flg] Dimension was found */
-nco_fnd_dmn                           /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
-(const int grp_id,                    /* I [id] Group ID */
- const char * const dmn_nm);          /* I [sng] Dimension name to find */
 
 void
 nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordinates associated with extracted variables */
