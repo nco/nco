@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.545 2013-02-16 00:02:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.546 2013-02-21 18:23:36 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
@@ -31,6 +31,9 @@ A. ncks now counts and then ignores non-atomic type netCDF4 variables.
    Now ncks prints the variable name and then ignores it and processes
    all the atomic-type (float, double, int, string...) variables as
    usual. 
+
+A. ncrename allows "mandatory attributes" to be present in
+   groups/global instead of in variables.
 
 BUG FIXES:
 
