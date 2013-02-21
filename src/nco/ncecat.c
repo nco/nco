@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.259 2013-02-21 07:36:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.260 2013-02-21 08:06:30 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -86,6 +86,7 @@ main(int argc,char **argv)
   nco_bool GROUP_AGGREGATE=False; /* Option G */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
@@ -123,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.259 2013-02-21 07:36:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.259 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.260 2013-02-21 08:06:30 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.260 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -394,6 +395,7 @@ main(int argc,char **argv)
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
+       HAVE_LIMITS=True;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
@@ -814,7 +816,18 @@ main(int argc,char **argv)
 
       /* Construct traversal table */
       trv_tbl_init(&trv_tbl);
+
+      /* Construct traversal table objects (groups,variables) */
       rcd+=nco_grp_itr(in_id,trv_pth,trv_tbl);
+
+      /* Construct traversal table dimensions */
+      (void)nco_bld_dmn_trv(in_id,trv_tbl);
+
+      /* Add dimension limits to traversal table */
+      if(lmt_nbr){
+        (void)nco_bld_lmt_trv(in_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
+        HAVE_LIMITS=True;
+      }
 
       /* Get number of variables, dimensions, and global attributes in file, file format */
       (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -865,13 +878,13 @@ main(int argc,char **argv)
       (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
       /* Define extracted groups, variables, and attributes in output file */
-      nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,CPY_GLB_METADATA,(nco_bool)True,rec_dmn_nm,trv_tbl);
+      (void)nco_xtr_dfn_trv(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CPY_GLB_METADATA,(nco_bool)True,rec_dmn_nm,HAVE_LIMITS,trv_tbl);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Write extracted data to output file */
-      nco_xtr_wrt(in_id,out_id,lmt_nbr,lmt_all_lst,nbr_dmn_fl,fp_bnr,MD5_DIGEST,trv_tbl);
+      (void)nco_xtr_wrt_trv(in_id,out_id,fp_bnr,MD5_DIGEST,HAVE_LIMITS,trv_tbl);
 
       /* Close input netCDF file */
       (void)nco_close(in_id);

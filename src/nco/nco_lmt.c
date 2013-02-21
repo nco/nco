@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.172 2013-02-14 23:54:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.173 2013-02-21 08:06:30 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1346,12 +1346,12 @@ nco_lmt_evl_dmn_trv            /* [fnc] Parse user-specified limits into hypersl
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
 #else /* IDS_NOT_ALLOWED */
 
-  /* Hmm... Only used for ncks now, define this for now; "dmn_trv" has record dimension info already */
-  assert(prg_id == ncks);
   if(prg_id == ncks) rec_dmn_and_mfo=False;
 
   /* Use info from unique dimension */
   lmt.is_rec_dmn=dmn_trv->is_rec_dmn;
+
+  if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
 
 #endif /* IDS_NOT_ALLOWED */
 
