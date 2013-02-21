@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.83 2013-02-21 20:42:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.84 2013-02-21 20:53:33 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -296,6 +296,11 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
       (void)fprintf(stdout,"%s: INFO %s dimension [%d]:%s(%li)\n",prg_nm_get(),fnc_nm,
         dmn_idx,dmn_trv->nm_fll,dmn_trv->sz);
     }
+
+    /* Is dimension unlimited in input group/file? */
+    CRR_DMN_IS_REC_IN_INPUT=dmn_trv->is_rec_dmn; 
+
+
 
   } /* Loop dimensions */
 
