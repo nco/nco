@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.219 2013-02-21 08:39:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.220 2013-02-21 08:52:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -161,13 +161,6 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-void
-nco_lmt_evl_trv                       /* [fnc] Parse user-specified limits into hyperslab specifications */
-(int nc_id,                           /* I [id] netCDF file ID */
- int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void                          
 nco_prt_grp_trv                       /* [fnc] Print groups from object list and dimensions with --get_grp_info  */
@@ -245,7 +238,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
-nco_prn_var_val_trv                   /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
  char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
@@ -258,7 +251,7 @@ nco_prn_var_val_trv                   /* [fnc] Print variable data (called with 
 
 
 void
-nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables, and attributes in output file */
+nco_xtr_dfn                          /* [fnc] Define extracted groups, variables, and attributes in output file */
 (const int nc_id,                    /* I [ID] netCDF input file ID */
  const int nc_out_id,                /* I [ID] netCDF output file ID */
  int * const cnk_map_ptr,            /* I [enm] Chunking map */
@@ -275,7 +268,7 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
  trv_tbl_sct * const trv_tbl);       /* I/O [sct] Traversal table */
 
 void
-nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output file */
+nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int nc_out_id,                 /* I [ID] netCDF output file ID */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */

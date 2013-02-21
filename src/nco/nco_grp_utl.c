@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.488 2013-02-21 08:39:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.489 2013-02-21 08:52:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -571,67 +571,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   return rcd;
 } /* end nco_grp_itr() */
 
-void
-nco_lmt_evl_trv                       /* [fnc] Parse user-specified limits into hyperslab specifications */
-(int nc_id,                           /* I [idx] netCDF file ID */
- int lmt_nbr,                         /* [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
-{
-  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
 
-  int *dmn_ids;                /* [ID]  Dimension IDs */ 
-
-  const int flg_prn=0;         /* [flg] All the dimensions in all parent groups will also be retrieved */  
-
-  int fl_fmt;                  /* [enm] netCDF file format */
-  int grp_id;                  /* [ID]  Group ID */
-  int nbr_att;                 /* [nbr] Number of attributes */
-  int nbr_dmn;                 /* [nbr] Number of dimensions */
-  int nbr_var;                 /* [nbr] Number of variables */
-  
-  long dmn_sz;                 /* [nbr] Dimension size */ 
-
-  (void)nco_inq_format(nc_id,&fl_fmt);
-
-  if(lmt_nbr){
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      if(trv_tbl->lst[uidx].typ == nco_obj_typ_grp){
-        trv_sct trv=trv_tbl->lst[uidx];           
-
-        /* Obtain group ID from netCDF API using full group name */
-        (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
-
-        /* Obtain number of dimensions in group */
-        (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-#ifdef NCO_SANITY_CHECK
-        assert(nbr_dmn == trv.nbr_dmn && nbr_var == trv.nbr_var && nbr_att == trv.nbr_att);
-#endif
-        dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
-        (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
-
-        /* List dimensions using obtained group ID */
-        for(int idx=0;idx<trv.nbr_dmn;idx++){
-          (void)nco_inq_dim(grp_id,dmn_ids[idx],dmn_nm,&dmn_sz);
-
-          /* NOTE: using obtained group ID */
-          for(int kdx=0;kdx<lmt_nbr;kdx++) {
-            if(strcmp(lmt[kdx]->nm,dmn_nm) == 0 ){
-              (void)nco_lmt_evl(grp_id,lmt[kdx],0L,FORTRAN_IDX_CNV);
-             
-#ifdef NCO_SANITY_CHECK
-              assert(lmt[kdx]->id == dmn_ids[idx]);
-#endif
-            } /* end if */
-          } /* end kdx */
-        } /* end idx dimensions */
-
-        (void)nco_free(dmn_ids);
-      } /* end nco_obj_typ_grp */
-    } /* end uidx  */
-  } /* end lmt_nbr */
-} /* end nco_lmt_evl_trv() */
 
 void 
 nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes */
@@ -2066,7 +2006,7 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 } /* end nco_blb_dmn_trv() */
 
 void
-nco_prn_var_val_trv                   /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
  char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
@@ -2077,11 +2017,7 @@ nco_prn_var_val_trv                   /* [fnc] Print variable data (called with 
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Print variable data (called with PRN_VAR_DATA) 
-
-  20130209 pvn Copy-cat of nco_prn_var_val() without evil "lmt_all_lst" array
-  nco_prn_var_val_trv() passes passes the Variable Object instead of variable name only and limits array
-  */
+  /* Purpose: Print variable data (called with PRN_VAR_DATA) */
 
   int grp_id; /* [ID] Group ID */
 
@@ -2103,7 +2039,7 @@ nco_prn_var_val_trv                   /* [fnc] Print variable data (called with 
   } /* End Loop variables in table */
 
   return;
-} /* end nco_prn_var_val_trv() */
+} /* end nco_prn_var_val() */
 
 
 void
@@ -2339,7 +2275,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
 
 void
-nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables, and attributes in output file */
+nco_xtr_dfn                          /* [fnc] Define extracted groups, variables, and attributes in output file */
 (const int nc_id,                    /* I [ID] netCDF input file ID */
  const int nc_out_id,                /* I [ID] netCDF output file ID */
  int * const cnk_map_ptr,            /* I [enm] Chunking map */
@@ -2357,13 +2293,9 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
 {
   /* Purpose: Define groups, variables, and attributes in output file
   rec_dmn_nm, if any, is name requested for (netCDF3) sole record dimension 
-
-  20130209 pvn Copy-cat of nco_xtr_dfn() without evil "lmt_all_lst" array
-  1) nco_cpy_var_dfn_lmt_trv() passes passes the Variable Object instead of variable name only and limits array
-  2) Improvemnents: nco_cpy_var_dfn_lmt_trv() should be always used (eliminate HAVE_LIMITS)
   */
 
-  const char fnc_nm[]="nco_xtr_dfn_trv()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_xtr_dfn()"; /* [sng] Function name */
   const char sls_sng[]="/"; /* [sng] Slash string */
 
   char *grp_out_fll; /* [sng] Group name */
@@ -2552,11 +2484,11 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
   /* Print extraction list in verbose mode */
   if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
-} /* end nco_xtr_dfn_trv() */
+} /* end nco_xtr_dfn() */
 
 
 void
-nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output file */
+nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
 (const int nc_in_id,                  /* I [ID] netCDF input file ID */
  const int nc_out_id,                 /* I [ID] netCDF output file ID */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
@@ -2564,14 +2496,9 @@ nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output fi
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist ( For convenience, ideally... not needed ) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Write extracted variables to output file 
+  /* Purpose: Write extracted variables to output file */
 
-  20130209 pvn Copy-cat of nco_xtr_wrt() without evil "lmt_all_lst" array
-  1) nco_cpy_var_val_mlt_lmt_trv() passes passes the Variable Object instead of variable name only and limits array
-  2) Improvemnents: nco_cpy_var_val_mlt_lmt_trv() should be always used (eliminate HAVE_LIMITS) 
-  */
-
-  const char fnc_nm[]="nco_xtr_wrt_trv()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_xtr_wrt()"; /* [sng] Function name */
 
   int fl_out_fmt; /* [enm] File format */
 
@@ -2635,7 +2562,7 @@ nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output fi
   /* Print extraction list in verbose mode */
   if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
-} /* end nco_xtr_wrt_trv() */
+} /* end nco_xtr_wrt() */
 
 dmn_fll_sct *                         /* O [sct] Dimension */
 nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variable in group object */
