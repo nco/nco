@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.81 2013-02-10 00:08:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.82 2013-02-21 20:33:56 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -184,7 +184,7 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
 (int in_id, /* I [id] netCDF input file ID */
- char *var_nm) /* I [sng] Variable to print */
+ const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata. This routine does not take into 
      account any user-specified limits, it just prints what it finds. */
@@ -207,6 +207,10 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   int shuffle; /* [flg] Shuffling is on */
   int srg_typ; /* [enm] Storage type */
   int var_id;
+
+  char var_nm[NC_MAX_NAME+1];/* [sng] Variable name (used for validation only) */ 
+
+  strcpy(var_nm,var_trv->nm);
   
   nc_type var_typ;
   
