@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.82 2013-02-21 20:33:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.83 2013-02-21 20:42:48 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -7,6 +7,7 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_prn.h" /* Printing variables, attributes, metadata */
+#include "nco_grp_utl.h" /* Group utilities */
 
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
@@ -184,10 +185,14 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
 (int in_id, /* I [id] netCDF input file ID */
- const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
+ const trv_sct * const var_trv, /* I [sct] Object to print (variable) */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Print variable metadata. This routine does not take into 
      account any user-specified limits, it just prints what it finds. */
+
+  const char fnc_nm[]="nco_prn_var_dfn()"; /* [sng] Function name */
+
   dmn_sct *dmn=NULL_CEWI;
 
   int *dmn_id=NULL_CEWI;
@@ -279,6 +284,23 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
     (void)fprintf(stdout,"%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",var_nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   } /* end if variable is scalar */
+
+
+  /* Loop dimensions */
+  for(int dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+
+    /* Find dimension of the object variable by searching in the list of unique dimensions */
+    dmn_fll_sct *dmn_trv=nco_fnd_var_lmt_trv(dmn_idx,var_trv,trv_tbl);
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: INFO %s dimension [%d]:%s(%li)\n",prg_nm_get(),fnc_nm,
+        dmn_idx,dmn_trv->nm_fll,dmn_trv->sz);
+    }
+
+  } /* Loop dimensions */
+
+
+
 
   /* Print dimension sizes and names */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){

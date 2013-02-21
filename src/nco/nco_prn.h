@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.33 2013-02-21 20:33:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.34 2013-02-21 20:42:48 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -52,7 +52,8 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
 (int in_id, /* I [id] netCDF input file ID */
- const trv_sct * const var_trv); /* I [sct] Object to print (variable) */
+ const trv_sct * const var_trv, /* I [sct] Object to print (variable) */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
 void
 nco_prn_var_val_lmt /* [fnc] Print variable data */
