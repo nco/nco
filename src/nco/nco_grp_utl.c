@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.486 2013-02-21 08:20:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.487 2013-02-21 08:30:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2614,7 +2614,7 @@ nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output fi
 
   /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
   USE_MM3_WORKAROUND=nco_use_mm3_workaround(nc_in_id,fl_out_fmt);
-  if(HAVE_LIMITS) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
+  if(HAVE_LIMITS) USE_MM3_WORKAROUND=False; 
 
   if(USE_MM3_WORKAROUND){  
 

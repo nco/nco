@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.593 2013-02-21 08:20:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.594 2013-02-21 08:30:52 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -53,14 +53,6 @@
    ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -v time ~/in_grp.nc ~/foo.nc */
 
-#if 0
-#define USE_LMT_ALL
-/* Use lmt_all_sct **lmt_all_lst, List of *lmt_all structures; to remove once replaced by "trv" limit functions 
-functions to remove:
-4) nco_prn_var_val [fnc] Print variable data
--> use nco_prn_var_val_trv that has GTT->MSA
-*/
-#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -157,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.593 2013-02-21 08:20:20 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.593 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.594 2013-02-21 08:30:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.594 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -210,10 +202,6 @@ main(int argc,char **argv)
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
-
-#ifdef USE_LMT_ALL
-  lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
-#endif
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -627,12 +615,10 @@ main(int argc,char **argv)
   (void)nco_bld_dmn_trv(in_id,trv_tbl);
 
   /* Add dimension limits to traversal table */
-#ifndef USE_LMT_ALL
   if(lmt_nbr){
     (void)nco_bld_lmt_trv(in_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
     HAVE_LIMITS=True;
   }
-#endif
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&att_glb_nbr,&att_grp_nbr,&att_var_nbr,&dmn_nbr_fl,&dmn_rec_fl,&grp_dpt_fl,&grp_nbr_fl,&var_ntm_fl,&var_nbr_fl,trv_tbl);
@@ -845,21 +831,7 @@ main(int argc,char **argv)
    /* ncks-specific memory */
    if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
-
-
-   /* free lmt[] NB: is now referenced within lmt_all_lst[idx] */
-#ifdef USE_LMT_ALL
-   for(idx=0;idx<dmn_nbr_fl;idx++)
-     for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-       lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-#endif
-
    lmt=(lmt_sct **)nco_free(lmt); 
-
-#ifdef USE_LMT_ALL
-   if(dmn_nbr_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,dmn_nbr_fl);
-#endif
-
    /* NCO-generic clean-up */
    /* Free individual strings/arrays */
    if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);

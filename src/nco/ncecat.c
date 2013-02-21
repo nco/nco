@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.260 2013-02-21 08:06:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.261 2013-02-21 08:30:52 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.260 2013-02-21 08:06:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.260 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.261 2013-02-21 08:30:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.261 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -904,7 +904,7 @@ main(int argc,char **argv)
 
       /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
       USE_MM3_WORKAROUND=nco_use_mm3_workaround(in_id_arr[0],fl_out_fmt);
-      if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; /* fxm: until workaround implemented in nco_cpy_var_val_mlt_lmt() */
+      if(lmt_nbr > 0) USE_MM3_WORKAROUND=False; 
       if(!USE_MM3_WORKAROUND){  
         /* Copy all data variable-by-variable */
         ;
