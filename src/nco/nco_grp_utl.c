@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.491 2013-02-21 12:22:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.492 2013-02-21 12:53:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -124,7 +124,9 @@ nco_def_grp_full                      /* [fnc] Ensure all components of group pa
     grp_id_prn=*grp_out_id;
     
     /* If current group is not defined, define it */
-    if(nco_inq_ncid_flg(grp_id_prn,grp_pth,grp_out_id)) nco_def_grp(grp_id_prn,grp_pth,grp_out_id);
+    if(nco_inq_ncid_flg(grp_id_prn,grp_pth,grp_out_id)){
+      nco_def_grp(grp_id_prn,grp_pth,grp_out_id);
+    }
 
     /* Point to next group, if any */
     if(sls_ptr) grp_pth=sls_ptr+1; else break;
