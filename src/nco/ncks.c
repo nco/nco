@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.592 2013-02-21 07:36:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.593 2013-02-21 08:20:20 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -57,10 +57,6 @@
 #define USE_LMT_ALL
 /* Use lmt_all_sct **lmt_all_lst, List of *lmt_all structures; to remove once replaced by "trv" limit functions 
 functions to remove:
-2) nco_xtr_wrt [fnc] Write extracted data to output file 
-->use nco_xtr_wrt_trv() that has GTT->MSA 
-3) nco_xtr_dfn [fnc] Define extracted groups, variables, and attributes in output file
--> use nco_xtr_dfn_trv() that has GTT 
 4) nco_prn_var_val [fnc] Print variable data
 -> use nco_prn_var_val_trv that has GTT->MSA
 */
@@ -161,8 +157,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.592 2013-02-21 07:36:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.592 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.593 2013-02-21 08:20:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.593 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -775,11 +771,7 @@ main(int argc,char **argv)
     } /* !gpe */
 
     /* Define extracted groups, variables, and attributes in output file */
-#ifdef USE_LMT_ALL
-    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,dmn_nbr_fl,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,trv_tbl);
-#else
     (void)nco_xtr_dfn_trv(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,PRN_GLB_METADATA,PRN_VAR_METADATA,rec_dmn_nm,HAVE_LIMITS,trv_tbl);
-#endif
 
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -804,11 +796,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
     /* Write extracted data to output file */
-#ifdef USE_LMT_ALL
-    (void)nco_xtr_wrt(in_id,out_id,lmt_nbr,lmt_all_lst,dmn_nbr_fl,fp_bnr,MD5_DIGEST,trv_tbl);
-#else
     (void)nco_xtr_wrt_trv(in_id,out_id,fp_bnr,MD5_DIGEST,HAVE_LIMITS,trv_tbl);
-#endif
 
     /* [fnc] Close unformatted binary data file */
     if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
@@ -840,11 +828,7 @@ main(int argc,char **argv)
     
     if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,trv_tbl);
 
-#ifdef USE_LMT_ALL
-    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,lmt_all_lst,dmn_nbr_fl,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);    
-#else
     if(PRN_VAR_DATA) (void)nco_prn_var_val_trv(in_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
-#endif
 
   } /* !fl_out */
   

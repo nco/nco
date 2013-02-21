@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.217 2013-02-21 07:36:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.218 2013-02-21 08:20:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -133,35 +133,6 @@ void
 nco_xtr_xcl                          /* [fnc] Convert extraction list to exclusion list */
 (trv_tbl_sct * const trv_tbl);       /* I/O [sct] Traversal table */
 
-void
-nco_xtr_dfn                          /* [fnc] Define extracted groups, variables, and attributes in output file */
-(const int nc_id,                    /* I [ID] netCDF input file ID */
- const int nc_out_id,                /* I [ID] netCDF output file ID */
- int * const cnk_map_ptr,            /* I [enm] Chunking map */
- int * const cnk_plc_ptr,            /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,            /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,                  /* I [nbr] Number of dimensions with user-specified chunking */
- const int dfl_lvl,                  /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,          /* I [sng] GPE structure */
- const int lmt_nbr,                  /* I [nbr] Number of dimensions with limits */
- lmt_all_sct * const * lmt_all_lst,  /* I [sct] Multi-hyperslab limits */
- const int lmt_all_lst_nbr,          /* I [nbr] Number of hyperslab limits */
- const nco_bool CPY_GRP_METADATA,    /* I [flg] Copy group metadata (attributes) */
- const nco_bool CPY_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
- const char * const rec_dmn_nm,      /* I [sng] Record dimension name */
- trv_tbl_sct * const trv_tbl);       /* I/O [sct] Traversal table */
-
-void
-nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
-(const int nc_id,                     /* I [ID] netCDF input file ID */
- const int nc_out_id,                 /* I [ID] netCDF output file ID */
- const int lmt_nbr,                   /* I [nbr] Number of dimensions with limits */
- lmt_all_sct * const * lmt_all_lst,   /* I [sct] Multi-hyperslab limits */
- const int lmt_all_lst_nbr,           /* I [nbr] Number of hyperslab limits */
- FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void                               
 nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
@@ -231,19 +202,6 @@ nco_prn_xtr_dfn                       /* [fnc] Print variable metadata (called w
 (const int nc_id,                     /* I netCDF file ID */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
-void
-nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
-(const int nc_id,                     /* I netCDF file ID */
- lmt_all_sct *  const * lmt_lst,      /* I [sct] Dimension limits */
- const int lmt_nbr,                   /* I [nbr] Number of dimensions with user-specified limits */
- char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
- const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
- const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
- const nco_bool PRN_DMN_UNITS,        /* I [flg] Print units attribute, if any */
- const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
- const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
- const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void 
 xtr_lst_prn                            /* [fnc] Print name-ID structure list */
