@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.258 2013-02-10 00:08:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.259 2013-02-21 07:36:52 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -123,8 +123,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.258 2013-02-10 00:08:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.258 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.259 2013-02-21 07:36:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.259 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -856,14 +856,13 @@ main(int argc,char **argv)
       /* We now have final list of variables to extract. Phew. */
 
       /* Find coordinate/dimension values associated with user-specified limits
-	 NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-      if(lmt_nbr) (void)nco_lmt_evl_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);    
+      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+      for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
 
       /* Place all dimensions in lmt_all_lst */
       lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
-
       /* Initialize lmt_all_sct's */ 
-      (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr,trv_tbl);
+      (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
       /* Define extracted groups, variables, and attributes in output file */
       nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,lmt_nbr,lmt_all_lst,nbr_dmn_fl,CPY_GLB_METADATA,(nco_bool)True,rec_dmn_nm,trv_tbl);

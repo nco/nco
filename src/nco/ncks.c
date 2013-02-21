@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.591 2013-02-21 06:47:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.592 2013-02-21 07:36:52 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -57,8 +57,6 @@
 #define USE_LMT_ALL
 /* Use lmt_all_sct **lmt_all_lst, List of *lmt_all structures; to remove once replaced by "trv" limit functions 
 functions to remove:
-1) nco_msa_lmt_all_int_trv [fnc] Initilaize lmt_all_sct's; recursive version 
-->use original nco_msa_lmt_all_int() for other operators
 2) nco_xtr_wrt [fnc] Write extracted data to output file 
 ->use nco_xtr_wrt_trv() that has GTT->MSA 
 3) nco_xtr_dfn [fnc] Define extracted groups, variables, and attributes in output file
@@ -163,8 +161,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.591 2013-02-21 06:47:55 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.591 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.592 2013-02-21 07:36:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.592 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -713,18 +711,6 @@ main(int argc,char **argv)
 
   /* Print extraction list in verbose mode */
   if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,"ncks()");
-
-#ifdef USE_LMT_ALL
-  /* Find coordinate/dimension values associated with user-specified limits
-  NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-  if(lmt_nbr) (void)nco_lmt_evl_trv(in_id,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);    
-
-  /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_all_sct **)nco_malloc(dmn_nbr_fl*sizeof(lmt_all_sct *));
-
-  /* Initialize lmt_all_sct's */ 
-  (void)nco_msa_lmt_all_int_trv(in_id,MSA_USR_RDR,lmt_all_lst,dmn_nbr_fl,lmt,lmt_nbr,trv_tbl);
-#endif
   
   if(fl_out){
     /* Copy everything (all data and metadata) to output file by default */

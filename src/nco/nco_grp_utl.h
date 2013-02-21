@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.216 2013-02-14 21:39:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.217 2013-02-21 07:36:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -212,16 +212,6 @@ int                                   /* O [id] Group ID */
 nco_aux_grp_id                        /* [fnc] Return the group ID from the variable full name */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const char * const var_nm_fll);      /* I [sng] Full variable name to find */
-
-void 
-nco_msa_lmt_all_int_trv               /* [fnc] Initilaize lmt_all_sct's; recursive version */ 
-(int in_id,                           /* [ID]  netCDF file ID */
- nco_bool MSA_USR_RDR,                /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- lmt_all_sct **lmt_all_lst,           /* [sct] List of *lmt_all_sct structures */
- int nbr_dmn_fl,                      /* I [nbr] Number of dimensions in file */
- lmt_sct **lmt,                       /* [sct] Limits of the current hyperslab */
- int lmt_nbr,                         /* I [nbr] Number of limit structures in list */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 nco_bool                              /* O [flg] Dimension was found */
 nco_fnd_dmn                           /* [fnc] Find a dimension that matches dm_nm in group grp_id and its parents */
