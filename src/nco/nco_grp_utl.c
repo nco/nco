@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.483 2013-02-21 06:10:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.484 2013-02-21 06:47:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1831,7 +1831,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
 
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)xtr_lst_prn(xtr_lst,xtr_nbr);
-    (void)trv_tbl_prn_xtr(trv_tbl);
+    (void)trv_tbl_prn_xtr(trv_tbl,"nco_trv_tbl_chk()");
   }
   xtr_lst_chk=nco_trv_tbl_nm_id(nc_id,&xtr_nbr_chk,trv_tbl);
   (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
@@ -3020,6 +3020,9 @@ nco_xtr_dfn_trv                      /* [fnc] Define extracted groups, variables
   /* Memory management for GPE names */
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
+  /* Print extraction list in verbose mode */
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+
 } /* end nco_xtr_dfn_trv() */
 
 void
@@ -3114,6 +3117,8 @@ nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output fi
   2) Improvemnents: nco_cpy_var_val_mlt_lmt_trv() should be always used (eliminate HAVE_LIMITS) 
   */
 
+  const char fnc_nm[]="nco_xtr_wrt_trv()"; /* [sng] Function name */
+
   int fl_out_fmt; /* [enm] File format */
 
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
@@ -3171,6 +3176,10 @@ nco_xtr_wrt_trv                       /* [fnc] Write extracted data to output fi
 
     } /* end loop over uidx */
   } /* !USE_MM3_WORKAROUND */
+
+
+  /* Print extraction list in verbose mode */
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
 } /* end nco_xtr_wrt_trv() */
 

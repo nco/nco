@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.590 2013-02-21 06:10:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.591 2013-02-21 06:47:55 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -163,8 +163,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.590 2013-02-21 06:10:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.590 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.591 2013-02-21 06:47:55 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.591 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -712,7 +712,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
 
   /* Print extraction list in verbose mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl);
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,"ncks()");
 
 #ifdef USE_LMT_ALL
   /* Find coordinate/dimension values associated with user-specified limits
