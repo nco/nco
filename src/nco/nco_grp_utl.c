@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.490 2013-02-21 10:26:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.491 2013-02-21 12:22:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2372,6 +2372,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
             /* Look for partial match, not necessarily on path boundaries; locate (str2) in (str1) */
             if((sbs_srt=strstr(trv_tbl->lst[var_idx].nm_fll,trv_tbl->lst[grp_idx].grp_nm_fll))){
 
+
+#ifdef NO
               /* Ensure match spans (begins and ends on) whole path-component boundaries */
 
               /* Does match begin at path component boundary ... directly on a slash? */
@@ -2397,9 +2399,13 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
                   flg_pth_end_bnd=True;
                 }
               }
-
               /* If match is on both ends of '/' then it's a "real" name, not for example "lat_lon" as a variable looking for "lon" */
               if (flg_pth_srt_bnd && flg_pth_end_bnd){
+#endif /* NO */
+
+              /* Use case is "g10", avoid inserting "g1" */  
+              if (strcmp(trv_tbl->lst[var_idx].grp_nm_fll,trv_tbl->lst[grp_idx].grp_nm_fll) == 0 )
+              {
 
                 /* ... and mark _only_ those groups for extraction... */
                 trv_tbl->lst[grp_idx].flg_xtr=True;
