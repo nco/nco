@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.254 2013-02-22 07:47:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.255 2013-02-22 08:37:47 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -610,7 +610,7 @@ extern "C" {
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
   } lmt_all_sct;
 
-  /* Variable dimensions:
+  /* GTT Variable dimensions:
      Structure containing, for a variable, information for all dimensions (size of array is trv_sct.nbr_dmn at most) */
   typedef struct{ 
     int nbr_dmn; /* [nbr][CHK] Number of dimensions of variable (same as trv_sct.nbr_dmn ) */
@@ -620,7 +620,7 @@ extern "C" {
     
   } var_dmn_sct; 
   
-  /* Object structure 
+  /* GTT Object structure 
      Information for each object/node in traversal tree
      Contains basic information about this object/node needed by traversal algorithm
      Node/object is either group or variable like in HDF5
@@ -666,9 +666,27 @@ extern "C" {
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
 
+  /* GTT coordinate variable structure (stored in *groups*); it contains NCO limit (-d) fields 
+     */
+
+  typedef struct{ 
+    char *crd_nm_fll; /* [sng] Full coordinate name */
+    char *dmn_nm_fll; /* [sng] Dimension fully qualified name (path) */
+    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension and coordinate */
+    nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
+    size_t sz; /* [nbr] Size of dimension */
+    int lmt_nbr; /* [nbr] Number of limit structures (one per -d switch for this dimension) */
+    lmt_sct **lmt; /* [sct] Limit structures associated with *this* coordinate (one per -d switch) */
+    int lmt_crr; /* [nbr] Index of current limit structure being initialized */
+    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
+    nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
+    nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
+    nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
+  } crd_sct; 
+
   /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and NCO limit (-d) fields 
-     When writing variables the limits need to be distributed to variables 
-     Need a way to do this after table is built */
+     */
   typedef struct{ 
     char *grp_nm_fll; /* [sng][CHK] Full group name where dimension was defined */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
@@ -689,31 +707,15 @@ extern "C" {
     // nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
   } dmn_fll_sct; 
 
-  typedef struct{ 
-    char *crd_nm_fll; /* [sng] Full coordinate name */
-    char *dmn_nm_fll; /* [sng] Dimension fully qualified name (path) */
-    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension and coordinate */
-    nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
-    size_t sz; /* [nbr] Size of dimension */
-    int lmt_nbr; /* [nbr] Number of limit structures (one per -d switch for this dimension) */
-    lmt_sct **lmt; /* [sct] Limit structures associated with *this* coordinate (one per -d switch) */
-    int lmt_crr; /* [nbr] Index of current limit structure being initialized */
-    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
-    nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
-    nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
-    nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
-  } crd_sct; 
  
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
      2) lst_dmn: All unique dimensions (in groups) in file tree (netCDF addition to HDF5) */
   typedef struct{
     trv_sct *lst;           /* [sct] Array of trv_sct */
-    unsigned int nbr;       /* [nbr] Number of current trv_sct elements */   
+    unsigned int nbr;       /* [nbr] Number of trv_sct elements */   
     dmn_fll_sct *lst_dmn;   /* [sct] Array of dmn_fll_sct */
-    //unsigned int sz_dmn;    /* [nbr] Allocated size of dmn_fll_sct */
-    unsigned int nbr_dmn;   /* [nbr] Number of current dmn_fll_sct elements */
+    unsigned int nbr_dmn;   /* [nbr] Number of dmn_fll_sct elements */
   } trv_tbl_sct;
 
   /* Chunking structure */
