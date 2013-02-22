@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.496 2013-02-21 20:42:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.497 2013-02-22 02:07:34 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -580,13 +580,10 @@ nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes 
 (const int nc_id, /* I [id] netCDF file ID */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  int fl_fmt;                 /* [enm] netCDF file format */
   int grp_id;                 /* [ID] Group ID */
   int nbr_att;                /* [nbr] Number of attributes */
   int nbr_dmn;                /* [nbr] Number of dimensions */
   int nbr_var;                /* [nbr] Number of variables */
-
-  (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
@@ -955,7 +952,6 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 
   int dmn_ids[NC_MAX_DIMS];      /* [nbr] Dimensions IDs array */
   int dmn_ids_ult[NC_MAX_DIMS];  /* [ID]  Unlimited dimensions IDs array */
-  int fl_fmt;                    /* [enm] netCDF file format */
   int grp_id;                    /* [ID]  Group ID in input file */
   int nbr_att;                   /* [nbr] Number of attributes for group */
   int nbr_dmn;                   /* [nbr] Number of dimensions for group */
@@ -964,8 +960,6 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
   int nbr_var;                   /* [nbr] Number of variables for group */
 
   long dmn_sz;                   /* [nbr] Dimension size */ 
-
-  (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
@@ -1291,12 +1285,8 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
 {
   /* Purpose: Create extraction list of nm_id_sct from traversal table */
 
-  int fl_fmt; /* [enm] netCDF file format */
-
   nm_id_sct *xtr_lst; /* [sct] Extraction list */
   
-  (void)nco_inq_format(nc_id,&fl_fmt);
-
   int nbr_tbl=0; 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr){
@@ -1374,7 +1364,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
 
-        if(fl_fmt == NC_FORMAT_NETCDF4){
+        if(fl_fmt == NC_FORMAT_NETCDF4){ // fxm: Deprecate fl_fmt check and always use same function
           /* Add associated coordinate variables to traversal table extraction list
           Be sure not to extract non-associated coordinates
           Distinct dimensions with same name dmn_nm can occur in multiple groups
@@ -1669,7 +1659,7 @@ nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions ass
             } /* end strcmp() */
           } /* end loop over dmn_idx */
 
-        }else{ /* netCDF3 */
+        }else{ /* netCDF3 */ /* fxm: Deprecate? csz test above on netCDF3 then talk to me before deprecating */
 
           /* Construct full name */
           char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
@@ -2314,7 +2304,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   int var_out_id; /* [ID] Variable ID in output file */
 
   nbr_gpe_nm=0;
-  (void)nco_inq_format(nc_id,&fl_fmt);
+  (void)nco_inq_format(nc_out_id,&fl_fmt);
 
   /* Isolate extra complexity of copying group metadata */
   if(CPY_GRP_METADATA){
@@ -2475,7 +2465,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       else var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,rec_dmn_nm,trv.nm,dfl_lvl);
 
       /* Set chunksize parameters */
-      if(fl_fmt == NC_FORMAT_NETCDF4) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&trv,trv_tbl);
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&trv,trv_tbl);
 
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){

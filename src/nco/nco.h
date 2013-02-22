@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.251 2013-02-20 01:08:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.252 2013-02-22 02:07:34 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -617,6 +617,7 @@ extern "C" {
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
     char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
     char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Group where dimension is located  */
+    
   } var_dmn_sct; 
   
   /* Object structure 
@@ -674,14 +675,35 @@ extern "C" {
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
     size_t sz; /* [nbr] Size of dimension */
-    int lmt_dmn_nbr; /* [nbr] Number of limit structures */
     int lmt_crr; /* [nbr] Index of current limit structure being initialized */
-    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with *this* dimension */
+    int lmt_dmn_nbr; /* [nbr] Number of limit structures */ // Deprecate
+    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with *this* dimension */ // Deprecate
+    // int lmt_non_crd_nbr; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
+    //    lmt_sct **lmt_non_crd; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
+    //    int lmt_crd_nbr; /* [nbr] Number of coordinate structures */
+    //    crd_sct **crd; /* [sct] List of coordinate structures associated with *this* dimension */
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
+    nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
   } dmn_fll_sct; 
+
+  typedef struct{ 
+    char *crd_nm_fll; /* [sng] Full coordinate name */
+    char *dmn_nm_fll; /* [sng] Dimension fully qualified name (path) */
+    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension and coordinate */
+    nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
+    size_t sz; /* [nbr] Size of dimension */
+    int lmt_nbr; /* [nbr] Number of limit structures (one per -d switch for this dimension) */
+    lmt_sct **lmt; /* [sct] Limit structures associated with *this* coordinate (one per -d switch) */
+    int lmt_crr; /* [nbr] Index of current limit structure being initialized */
+    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
+    nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
+    nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
+    nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
+  } crd_sct; 
  
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)

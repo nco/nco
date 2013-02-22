@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.229 2013-02-21 08:39:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.230 2013-02-22 02:07:34 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2055,6 +2055,7 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
     (void)nco_inq_dim(in_id,dmn_in_id[dmn_idx],dmn_nm,&dmn_sz);
 
     /* Has dimension been defined in output file? */
+    // fxm: rcd_lcl=nco_is_dmn_vsb_flg(out_id,dmn_nm,dmn_out_id+dmn_idx,dmn_grp_out_id);
     rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+dmn_idx);
 
     /* Define dimension in output file if necessary */
@@ -2105,7 +2106,10 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
       } /* !rec_dmn_nm */ 
 
       /* At long last ... */
-      if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
+ 	// if(trv_tbl.gpe) grp_nm_fll_gpe=nco_gpe_evl(gpe,dmn.grp_nm_fll); else grp_nm_fll_gpe=(char *)strdup(dmn.grp_nm_fll);
+	//if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_nm_fll_gpe,&dmn_grp_out_id)) nco_def_grp_full(nc_out_id,grp_nm_fll_gpe,&dmn_grp_out_id);
+     if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
+	//        (void)nco_def_dim(dmn_grp_out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+dmn_idx);
         (void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+dmn_idx);
         rec_dmn_out_id=dmn_out_id[dmn_idx];
       }else{ /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
@@ -2125,6 +2129,7 @@ nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input t
         dmn_sz=dmn_trv->dmn_cnt;
         assert(dmn_sz != nco_obj_typ_err);
 
+	// (void)nco_def_dim(dmn_grp_out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
         (void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 

@@ -43,7 +43,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.66 2013-02-20 01:03:00 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.67 2013-02-22 02:07:34 zender Exp $";
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
   
@@ -426,14 +426,23 @@ netcdf in_grp {
      dimensions:
      lat1=2; //dimension that has a variable /lat1 down in *illegal* scope 
      variables:
+     // MSA test -v lon1_var -d lon1,3.0, result is 3.
      float lon1(lon1);  //coordinate variable /g16/g16g1/lon1(lon1) that has dimension /lon1 in scope
      float lon1_var(lon1); //variable with  associated coordinate variable down in scope at /lon1
      data:
      lon1=0.,1.,2.,3.;
      lon1_var=0.,1.,2.,3.;  
       } // end g16g1 
+
+    group: g16g2 { 
+     dimensions:
+     variables:
+     float lon1(lon1); // MSA test -v lon1_var -d lon1,3.0, result is 0.,1.,2.,3.
+     float lon1_var(lon1); //
+     data:
+     lon1=3.,4.,5.,6.;
+     lon1_var=0.,1.,2.,3.;  
+    } // end g16g2 
   } // end g16
-  
-  
 
 } // end root group
