@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.507 2013-02-22 10:23:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.508 2013-02-22 10:38:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2832,7 +2832,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
 
 
-}
+} /* nco_bld_trv_tbl() */
 
 
 void                      
@@ -2841,7 +2841,12 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 {
   /* Purpose: Build GTT "crd_sct" coordinate variable structure */
 
-}
+  const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
+
+ 
+
+
+} /* nco_blb_crd_var_trv() */
 
 
 
