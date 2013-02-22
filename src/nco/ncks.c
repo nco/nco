@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.595 2013-02-21 08:52:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.596 2013-02-22 03:49:57 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.595 2013-02-21 08:52:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.595 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.596 2013-02-22 03:49:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.596 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -190,7 +190,6 @@ main(int argc,char **argv)
   int grp_nbr_fl;
   int idx;
   int in_id;  
-  int jdx;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
@@ -479,6 +478,7 @@ main(int argc,char **argv)
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
+      HAVE_LIMITS=True;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
@@ -608,17 +608,8 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
-  /* Construct traversal table objects (groups,variables) */
-  rcd+=nco_grp_itr(in_id,trv_pth,trv_tbl);
-
-  /* Construct traversal table dimensions */
-  (void)nco_bld_dmn_trv(in_id,trv_tbl);
-
-  /* Add dimension limits to traversal table */
-  if(lmt_nbr){
-    (void)nco_bld_lmt_trv(in_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
-    HAVE_LIMITS=True;
-  }
+  /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+  (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&att_glb_nbr,&att_grp_nbr,&att_var_nbr,&dmn_nbr_fl,&dmn_rec_fl,&grp_dpt_fl,&grp_nbr_fl,&var_ntm_fl,&var_nbr_fl,trv_tbl);
@@ -850,8 +841,6 @@ main(int argc,char **argv)
    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
    /* Free limits */
    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-   /* NB: lmt[idx] was free()'d earlier
-   if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr); */
    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
    /* Free chunking information */

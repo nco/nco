@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.220 2013-02-21 08:52:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.221 2013-02-22 03:49:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -291,7 +291,15 @@ nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope */
 (trv_sct *var_trv,                    /* I [sct] GTT Object Variable */
  dmn_fll_sct *dmn_trv);               /* I [sct] GTT unique dimension */
 
-
+void
+nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ char * const grp_pth,                /* I [sng] Absolute group path where to start buil (root typically) */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I/O [sct] Structure comming from nco_lmt_prs() */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
