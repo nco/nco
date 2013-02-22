@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.256 2013-02-22 09:33:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.257 2013-02-22 10:23:13 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -665,7 +665,7 @@ extern "C" {
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
 
-  /* GTT coordinate variable structure (stored in *groups*); it contains NCO limit (-d) fields 
+  /* GTT coordinate variable structure; it contains NCO limit (-d) fields 
      */
 
   typedef struct{ 

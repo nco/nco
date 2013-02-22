@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.506 2013-02-22 10:05:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.507 2013-02-22 10:23:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2826,7 +2826,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(lmt_nbr)(void)nco_bld_lmt_trv(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
   /* Build GTT "crd_sct" coordinate variable structure */
-  (void)nco_blb_crd_rec_var_trv(trv_tbl);
+  (void)nco_blb_crd_var_trv(trv_tbl);
 
   /* Build Limits */
 
