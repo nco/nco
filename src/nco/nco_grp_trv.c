@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.65 2013-02-22 09:33:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.66 2013-02-22 10:59:59 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -87,7 +87,7 @@ trv_tbl_free
     /* Limits for non-coordinate dimensions */
 
     /* Coordinate structures */
-    for(int crd_idx=0;crd_idx<tbl->lst_dmn[dmn_idx].lmt_crd_nbr;crd_idx++){
+    for(int crd_idx=0;crd_idx<tbl->lst_dmn[dmn_idx].crd_nbr;crd_idx++){
       if(dbg_lvl_get() >= nco_dbg_dev){
         dmn_fll_sct dmn_trv=tbl->lst_dmn[dmn_idx];
         (void)fprintf(stdout,"INFO coordinate [%d]%s done:\n",crd_idx,dmn_trv.crd[crd_idx]->crd_nm_fll);

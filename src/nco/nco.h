@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.257 2013-02-22 10:23:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.258 2013-02-22 10:59:59 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -696,7 +696,7 @@ extern "C" {
     int lmt_non_crd_nbr; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
     lmt_sct **lmt_non_crd; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
 
-    int lmt_crd_nbr; /* [nbr] Number of coordinate structures */
+    int crd_nbr; /* [nbr] Number of coordinate structures */
     crd_sct **crd; /* [sct] List of coordinate structures associated with *this* dimension */
 
     nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */

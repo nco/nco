@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.508 2013-02-22 10:38:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.509 2013-02-22 10:59:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2709,7 +2709,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
     trv_tbl->lst_dmn[idx].lmt_non_crd_nbr=0; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
     trv_tbl->lst_dmn[idx].lmt_non_crd=NULL ; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
-    trv_tbl->lst_dmn[idx].lmt_crd_nbr=0;     /* [nbr] Number of coordinate structures */
+    trv_tbl->lst_dmn[idx].crd_nbr=0;         /* [nbr] Number of coordinate structures */
     trv_tbl->lst_dmn[idx].crd=NULL;          /* [sct] List of coordinate structures associated with *this* dimension */
     trv_tbl->lst_dmn[idx].is_crd_dmn=False;  /* [flg] Is there a variable with same name in dimension's scope? */
 
@@ -2775,8 +2775,8 @@ nco_blb_crd_rec_var_trv               /* [fnc] Build dimension information for a
         /* Is there a variable with this dimension name anywhere? (relative name)  */
         if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
 
-          if(dbg_lvl_get() == nco_dbg_old){
-            (void)fprintf(stdout,"%s: INFO %s looking for variable <%s>:\n",prg_nm_get(),fnc_nm,
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: INFO %s looking for possible coordinate variable <%s>:\n",prg_nm_get(),fnc_nm,
               var_trv.nm);
           }
 
@@ -2843,8 +2843,7 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 
   const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
 
- 
-
+  
 
 } /* nco_blb_crd_var_trv() */
 
