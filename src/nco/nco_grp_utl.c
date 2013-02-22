@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.503 2013-02-22 07:47:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.504 2013-02-22 09:33:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2689,14 +2689,12 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   /* Iterate dimensions (for group; dimensions are defined *for* groups) */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
 
-
     /* Keep the old table dimension size for insertion */
     idx=trv_tbl->nbr_dmn;
 
     /* Add one more element to dimension list of GTT (nco_realloc nicely handles first time/not first time insertions) */
     trv_tbl->nbr_dmn++;
     trv_tbl->lst_dmn=(dmn_fll_sct *)nco_realloc(trv_tbl->lst_dmn,trv_tbl->nbr_dmn*sizeof(dmn_fll_sct));
-
 
     /* Initialize dimension as a non-record dimension */
     trv_tbl->lst_dmn[idx].is_rec_dmn=False;
@@ -2738,11 +2736,12 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     strcpy(trv_tbl->lst_dmn[idx].nm,dmn_nm);            /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     trv_tbl->lst_dmn[idx].grp_nm_fll=strdup(grp_nm_fll);/* [sng] Full group name where dimension was defined (there is one and only one group)*/   
     trv_tbl->lst_dmn[idx].nm_fll=strdup(dmn_nm_fll);    /* [sng] Dimension fully qualified name (path) */
-
     trv_tbl->lst_dmn[idx].sz=dmn_sz;                    /* [nbr] Size of dimension */
    
     /* Limits */
     /* Limits are initialized in build limits function */
+
+    /* Deprecate */
     trv_tbl->lst_dmn[idx].lmt_dmn_nbr=0;               
     trv_tbl->lst_dmn[idx].lmt_crr=0;                   
     trv_tbl->lst_dmn[idx].lmt_dmn=NULL;
@@ -2751,6 +2750,13 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst_dmn[idx].BASIC_DMN=True;
     trv_tbl->lst_dmn[idx].MSA_USR_RDR=False;  
     trv_tbl->lst_dmn[idx].dmn_cnt=nco_obj_typ_err;
+    /* End Deprecate */
+
+    trv_tbl->lst_dmn[idx].lmt_non_crd_nbr=0; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
+    trv_tbl->lst_dmn[idx].lmt_non_crd=NULL ; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
+    trv_tbl->lst_dmn[idx].lmt_crd_nbr=0;     /* [nbr] Number of coordinate structures */
+    trv_tbl->lst_dmn[idx].crd=NULL;          /* [sct] List of coordinate structures associated with *this* dimension */
+    trv_tbl->lst_dmn[idx].is_crd_dmn=False;  /* [flg] Is there a variable with same name in dimension's scope? */
 
 
     /* Free constructed name */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.255 2013-02-22 08:37:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.256 2013-02-22 09:33:04 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -616,8 +616,7 @@ extern "C" {
     int nbr_dmn; /* [nbr][CHK] Number of dimensions of variable (same as trv_sct.nbr_dmn ) */
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
     char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
-    char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Group where dimension is located  */
-    
+    char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Group where dimension is located  */    
   } var_dmn_sct; 
   
   /* GTT Object structure 
@@ -681,7 +680,7 @@ extern "C" {
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
+    long dmn_cnt; /* [nbr] Hyperslabbed size */
     nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
   } crd_sct; 
 
@@ -693,18 +692,23 @@ extern "C" {
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
     size_t sz; /* [nbr] Size of dimension */
-    int lmt_crr; /* [nbr] Index of current limit structure being initialized */
+    
+    int lmt_non_crd_nbr; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
+    lmt_sct **lmt_non_crd; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
+
+    int lmt_crd_nbr; /* [nbr] Number of coordinate structures */
+    crd_sct **crd; /* [sct] List of coordinate structures associated with *this* dimension */
+
+    nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
+
     int lmt_dmn_nbr; /* [nbr] Number of limit structures */ // Deprecate
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with *this* dimension */ // Deprecate
-    // int lmt_non_crd_nbr; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
-    // lmt_sct **lmt_non_crd; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
-    // int lmt_crd_nbr; /* [nbr] Number of coordinate structures */
-    // crd_sct **crd; /* [sct] List of coordinate structures associated with *this* dimension */
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
-    // nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
+    long dmn_cnt; /* [nbr] Hyperslabbed size */
+    int lmt_crr; /* [nbr] Index of current limit structure being initialized */
+
   } dmn_fll_sct; 
 
  
