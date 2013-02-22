@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.510 2013-02-22 11:31:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.511 2013-02-22 20:00:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1890,12 +1890,12 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
 
-  /* Separate unique dimension list */
+  /* Unique dimension list */
 
   (void)fprintf(stdout,"\n");
   (void)fprintf(stdout,"%s: INFO reports dimension information: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
-  for(unsigned uidx=0;uidx<trv_tbl->nbr_dmn;uidx++){
-    dmn_fll_sct trv=trv_tbl->lst_dmn[uidx]; 
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct trv=trv_tbl->lst_dmn[dmn_idx]; 
 
     /* Dimension name first */
     (void)fprintf(stdout,"%s: ",trv.nm_fll);
@@ -1907,7 +1907,33 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
     /* Terminate line */
     (void)fprintf(stdout,"\n");
 
-  } /* end uidx  */
+  } /* Unique dimension list */
+
+
+  /* Coordinate variables stored in unique dimension list */
+
+  (void)fprintf(stdout,"\n");
+  (void)fprintf(stdout,"%s: INFO reports coordinate variables:\n",prg_nm_get());
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+    /* Loop coordinates */
+    for(int crd_idx=0;crd_idx<trv.crd_nbr;crd_idx++){
+      crd_sct *crd=trv.crd[crd_idx];
+
+      /* Coordinate full name */
+      (void)fprintf(stdout,"%s: ",crd->crd_nm_fll);
+
+      /* Dimension full name and size*/
+      (void)fprintf(stdout,"(%s:%li): ",crd->dmn_nm_fll,crd->sz);
+
+
+    }/* Loop coordinates */
+
+    /* Terminate line */
+    (void)fprintf(stdout,"\n");
+
+  } /* Coordinate variables stored in unique dimension list */
 
 
 #ifdef NCO_SANITY_CHECK
@@ -2192,7 +2218,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
       /* Variable in scope of dimension */
       if (var_nm_fll_lng>dmn_nm_fll_lng){
 
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -2202,7 +2228,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
         /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
       }else if (var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
 
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -2212,7 +2238,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
         /* Variable out of scope of dimension */
       }else if (var_nm_fll_lng < dmn_nm_fll_lng){
 
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -2322,8 +2348,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   trv_tbl->lst[idx].flg_vsg=False;                /* [flg] Variable selected because group matches */
   trv_tbl->lst[idx].flg_xcl=False;                /* [flg] Object matches exclusion criteria */
   trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
-  trv_tbl->lst[idx].is_crd_var=False;             /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
-  trv_tbl->lst[idx].is_rec_var=False;             /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
 
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
   trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err;    /* [id] Group ID in input file */
@@ -2334,6 +2358,9 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   trv_tbl->lst[idx].nbr_grp=nbr_grp;              /* [nbr] Number of sub-groups (for group) */
   trv_tbl->lst[idx].nbr_rec=nbr_rec;              /* [nbr] Number of record dimensions */
   trv_tbl->lst[idx].nbr_var=nbr_var;              /* [nbr] Number of variables (for group) */
+
+  trv_tbl->lst[idx].is_crd_var=False;             /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
+  trv_tbl->lst[idx].is_rec_var=False;             /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
 
   /* Variable dimensions */
   for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
@@ -2410,6 +2437,18 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst[idx].nbr_grp=nco_obj_typ_err;
     trv_tbl->lst[idx].nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
     trv_tbl->lst[idx].nbr_var=nco_obj_typ_err;
+
+    trv_tbl->lst[idx].is_crd_var=False;             
+    trv_tbl->lst[idx].is_rec_var=False;             
+
+    /* Variable dimensions */
+    for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
+      trv_tbl->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=NULL;
+      trv_tbl->lst[idx].var_dmn.dmn_nm[dmn_idx_var]=NULL;
+      trv_tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=NULL;
+    }
+    trv_tbl->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
+
 
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
@@ -2681,7 +2720,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     trv_tbl->lst_dmn[dmn_idx].BASIC_DMN=True;
     trv_tbl->lst_dmn[dmn_idx].MSA_USR_RDR=False;  
 
-    /* Initialize Total number of hyperslabs to extract with the dimension size; this value is modified by MSA only 
+    /* Initialize hyperslabed size with the dimension size; this value is modified by MSA only 
     if there are limits for this dimension */ 
     trv_tbl->lst_dmn[dmn_idx].dmn_cnt=dmn_trv.sz;
   } /* End Loop table dimensions  */
@@ -2851,39 +2890,8 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 
   const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
 
-  /* Loop unique dimensions list in groups */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  
 
-    /* Loop all objects */
-    for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-      trv_sct var_trv=trv_tbl->lst[var_idx];
-
-      /* Interested in variables only */
-      if(var_trv.typ == nco_obj_typ_var){
-
-        /* Is there a variable with this dimension name anywhere? (relative name)  */
-        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
-
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: INFO %s looking for possible coordinate variable <%s>:\n",prg_nm_get(),fnc_nm,
-              var_trv.nm);
-          }
-
-          /* Is variable in scope of dimension ? */
-          if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
-
-
-
-
-
-            break;
-
-          }/* Is variable in scope of dimension ? */
-        } /* Is there a variable with this dimension name anywhere? (relative name)  */
-      } /* Interested in variables only */
-    } /* Loop all objects */
-  } /* Loop unique dimensions list in groups */
 } /* nco_blb_crd_var_trv() */
 
 
