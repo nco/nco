@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.253 2013-02-22 06:15:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.254 2013-02-22 07:47:49 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -686,7 +686,7 @@ extern "C" {
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
-    nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
+    // nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
   } dmn_fll_sct; 
 
   typedef struct{ 
@@ -712,7 +712,7 @@ extern "C" {
     trv_sct *lst;           /* [sct] Array of trv_sct */
     unsigned int nbr;       /* [nbr] Number of current trv_sct elements */   
     dmn_fll_sct *lst_dmn;   /* [sct] Array of dmn_fll_sct */
-    unsigned int sz_dmn;    /* [nbr] Allocated size of dmn_fll_sct */
+    //unsigned int sz_dmn;    /* [nbr] Allocated size of dmn_fll_sct */
     unsigned int nbr_dmn;   /* [nbr] Number of current dmn_fll_sct elements */
   } trv_tbl_sct;
 

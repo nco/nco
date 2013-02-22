@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.262 2013-02-21 08:52:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.263 2013-02-22 07:47:49 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.262 2013-02-21 08:52:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.262 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.263 2013-02-22 07:47:49 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.263 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -170,6 +170,7 @@ main(int argc,char **argv)
   int jdx;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int lmt_nbr_org=0; /* Option d. keep the original command line for GTT init */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
   int nbr_dmn_xtr;
@@ -395,7 +396,8 @@ main(int argc,char **argv)
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
-       HAVE_LIMITS=True;
+      lmt_nbr_org=lmt_nbr;
+      HAVE_LIMITS=True;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
@@ -817,17 +819,8 @@ main(int argc,char **argv)
       /* Construct traversal table */
       trv_tbl_init(&trv_tbl);
 
-      /* Construct traversal table objects (groups,variables) */
-      rcd+=nco_grp_itr(in_id,trv_pth,trv_tbl);
-
-      /* Construct traversal table dimensions */
-      (void)nco_bld_dmn_trv(in_id,trv_tbl);
-
-      /* Add dimension limits to traversal table */
-      if(lmt_nbr){
-        (void)nco_bld_lmt_trv(in_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
-        HAVE_LIMITS=True;
-      }
+      /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+      (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_org,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
       /* Get number of variables, dimensions, and global attributes in file, file format */
       (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);

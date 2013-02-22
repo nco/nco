@@ -1,3 +1,8 @@
+2013-02-21  Pedro Vicente  <pvicente@uci.edu>
+
+        * ncks, ncbo, ncecat: aggregate building of GTT (Group Traversal Table) into a function
+          nco_bld_trv_tbl(); allocate elements as needed
+
 2013-02-21  Charlie Zender  <zender@uci.edu>
 
 	* Tighten and complete algorithm to identify ancestor groups in nco_xtr_dfn()

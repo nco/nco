@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.205 2013-02-10 00:08:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.206 2013-02-22 07:47:49 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.205 2013-02-10 00:08:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.205 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.206 2013-02-22 07:47:49 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.206 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -544,9 +544,10 @@ main(int argc,char **argv)
      } /* endif aux */
   } /* endif aux_nbr */
 
-  /* Construct traversal tables */
-  (void)nco_grp_itr(in_id_1,trv_pth,trv_tbl_1);
-  (void)nco_grp_itr(in_id_2,trv_pth,trv_tbl_2);
+
+  /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+  (void)nco_bld_trv_tbl(in_id_1,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_1);
+  (void)nco_bld_trv_tbl(in_id_2,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_2);
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 

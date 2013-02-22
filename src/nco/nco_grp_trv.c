@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.63 2013-02-22 06:15:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.64 2013-02-22 07:47:49 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -25,28 +25,8 @@ trv_tbl_init
 
   /* Dimension list */
 
-  tb->sz_dmn=100;
   tb->nbr_dmn=0;
-  tb->lst_dmn=(dmn_fll_sct *)nco_malloc(tb->sz_dmn*sizeof(dmn_fll_sct));
-
-  for(unsigned int idx=0;idx<tb->sz_dmn;idx++){
-    tb->lst_dmn[idx].grp_nm_fll=NULL; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
-    tb->lst_dmn[idx].is_rec_dmn=-1; /* [flg] Is a record dimension? */
-    tb->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
-    tb->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
-    tb->lst_dmn[idx].sz=0; /* [nbr] Size of dimension */
-    tb->lst_dmn[idx].lmt_dmn_nbr=0;  /* [nbr] Number of limit structures */
-    tb->lst_dmn[idx].lmt_crr=0; /* [nbr] Index of current limit structure being initialized */
-
-    /* Limits */
-    tb->lst_dmn[idx].lmt_dmn=NULL;
-    tb->lst_dmn[idx].lmt_crr=0;
-    tb->lst_dmn[idx].WRP=False;
-    tb->lst_dmn[idx].BASIC_DMN=True;
-    tb->lst_dmn[idx].MSA_USR_RDR=False;  
-    tb->lst_dmn[idx].dmn_cnt=nco_obj_typ_err;
-  }
-
+  tb->lst_dmn=NULL;
 
   *tbl=tb;
 } /* trv_tbl_init() */
@@ -79,7 +59,7 @@ trv_tbl_free
 
   /* Dimension list */
 
-  for(unsigned int dmn_idx=0;dmn_idx<tbl->sz_dmn;dmn_idx++){
+  for(unsigned int dmn_idx=0;dmn_idx<tbl->nbr_dmn;dmn_idx++){
     tbl->lst_dmn[dmn_idx].nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].nm_fll);
     tbl->lst_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].grp_nm_fll);
 
@@ -98,50 +78,6 @@ trv_tbl_free
   tbl=(trv_tbl_sct *)nco_free(tbl);
 } /* end trv_tbl_free() */
 
-
-void 
-trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  */
-(dmn_fll_sct const obj,               /* I [sct] Object to store */
- trv_tbl_sct * const tbl)             /* I/O [sct] Traversal table */
-{
-  unsigned int idx;
-
-  if(tbl->nbr_dmn == tbl->sz_dmn){
-    tbl->sz_dmn*=2;
-    tbl->lst_dmn=(dmn_fll_sct *)nco_realloc(tbl->lst_dmn,tbl->sz_dmn*sizeof(dmn_fll_sct));
-
-    for(idx=tbl->nbr_dmn;idx<tbl->sz_dmn;idx++){
-
-      tbl->lst_dmn[idx].grp_nm_fll=NULL; /* [sng] Full group name where dimension was defined (there is one and only one group)*/
-      tbl->lst_dmn[idx].is_rec_dmn=nco_obj_typ_err; /* [flg] Is a record dimension? */
-      tbl->lst_dmn[idx].nm[0]='\0';  /* [sng] Name of dimension (if coordinate variable, also name of variable) */
-      tbl->lst_dmn[idx].nm_fll=NULL; /* [sng] Dimension fully qualified name (path) */
-      tbl->lst_dmn[idx].sz=nco_obj_typ_err; /* [nbr] Size of dimension */
-      tbl->lst_dmn[idx].lmt_dmn_nbr=0;  /* [nbr] Number of limit structures */
-      tbl->lst_dmn[idx].lmt_crr=0; /* [nbr] Index of current limit structure being initialized */
-
-      /* Limits: TO DO move all this to a alloc by need case */
-      tbl->lst_dmn[idx].lmt_dmn=NULL;
-      tbl->lst_dmn[idx].lmt_crr=0;
-      tbl->lst_dmn[idx].WRP=False;
-      tbl->lst_dmn[idx].BASIC_DMN=True;
-      tbl->lst_dmn[idx].MSA_USR_RDR=False;  
-      tbl->lst_dmn[idx].dmn_cnt=nco_obj_typ_err;
-
-    } /* idx */
-  } /* tbl->sz_dmn */
-
-  idx=tbl->nbr_dmn++;
-
-  tbl->lst_dmn[idx].nm_fll=(char *)strdup(obj.nm_fll);
-  tbl->lst_dmn[idx].grp_nm_fll=(char *)strdup(obj.grp_nm_fll);
-  strcpy(tbl->lst_dmn[idx].nm,obj.nm);
-  tbl->lst_dmn[idx].is_rec_dmn=obj.is_rec_dmn;
-  tbl->lst_dmn[idx].sz=obj.sz;
-
-  /* Limits are initialized in build limits function */
-
-} /* end trv_tbl_add_dmn() */
 
 
 void                       

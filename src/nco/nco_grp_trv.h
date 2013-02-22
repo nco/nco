@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.33 2013-02-22 06:15:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.34 2013-02-22 07:47:49 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -93,9 +93,5 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
 (trv_tbl_sct * const trv_tbl_1,       /* I/O [sct] Traversal table 1 */  
  trv_tbl_sct * const trv_tbl_2);      /* I/O [sct] Traversal table 2 */  
 
-void 
-trv_tbl_add_dmn                       /* [fnc] Add a dimension object to table  */
-(dmn_fll_sct const obj,               /* I [sct] Object to store */
- trv_tbl_sct * const tbl);            /* I/O [sct] Traversal table */
 
 #endif /* NCO_GRP_TRV_H */

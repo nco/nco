@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.502 2013-02-22 06:15:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.503 2013-02-22 07:47:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2560,7 +2560,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
   if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",prg_nm_get(),grp_nm_fll,grp_dpt);
 
-  /* Keep the old table size for insertion */
+  /* Keep the old table objects size for insertion */
   unsigned int idx;
   idx=trv_tbl->nbr;
 
@@ -2639,7 +2639,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     } /* > NC_MAX_ATOMIC_TYPE */
 
 
-    /* Keep the old table size for insertion */
+    /* Keep the old table objects size for insertion */
     idx=trv_tbl->nbr;
 
     /* Add one more element to GTT (nco_realloc nicely handles first time/not first time insertions) */
@@ -2689,10 +2689,17 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   /* Iterate dimensions (for group; dimensions are defined *for* groups) */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
 
-    dmn_fll_sct obj_dmn;  /* [sct] NCO netCDF4 Dimension object */
+
+    /* Keep the old table dimension size for insertion */
+    idx=trv_tbl->nbr_dmn;
+
+    /* Add one more element to dimension list of GTT (nco_realloc nicely handles first time/not first time insertions) */
+    trv_tbl->nbr_dmn++;
+    trv_tbl->lst_dmn=(dmn_fll_sct *)nco_realloc(trv_tbl->lst_dmn,trv_tbl->nbr_dmn*sizeof(dmn_fll_sct));
+
 
     /* Initialize dimension as a non-record dimension */
-    obj_dmn.is_rec_dmn=False;
+    trv_tbl->lst_dmn[idx].is_rec_dmn=False;
 
     /* Get dimension name */
     rcd+=nco_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_nm,&dmn_sz);
@@ -2707,7 +2714,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       if(strcmp(rec_nm,dmn_nm) == 0 ){
 
         /* Dimension is a record dimension */
-        obj_dmn.is_rec_dmn=True;
+        trv_tbl->lst_dmn[idx].is_rec_dmn=True;
 
         /* Exit record dimension loop; we found it */
         break;
@@ -2727,13 +2734,24 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     strcat(dmn_nm_fll,dmn_nm);
 
     /* Store object */
-    strcpy(obj_dmn.nm,dmn_nm);
-    obj_dmn.nm_fll=dmn_nm_fll;
-    obj_dmn.sz=dmn_sz;
-    obj_dmn.grp_nm_fll=grp_nm_fll;
 
-    /* Call dimension object add function */
-    (void)trv_tbl_add_dmn(obj_dmn,trv_tbl);
+    strcpy(trv_tbl->lst_dmn[idx].nm,dmn_nm);            /* [sng] Name of dimension (if coordinate variable, also name of variable) */
+    trv_tbl->lst_dmn[idx].grp_nm_fll=strdup(grp_nm_fll);/* [sng] Full group name where dimension was defined (there is one and only one group)*/   
+    trv_tbl->lst_dmn[idx].nm_fll=strdup(dmn_nm_fll);    /* [sng] Dimension fully qualified name (path) */
+
+    trv_tbl->lst_dmn[idx].sz=dmn_sz;                    /* [nbr] Size of dimension */
+   
+    /* Limits */
+    /* Limits are initialized in build limits function */
+    trv_tbl->lst_dmn[idx].lmt_dmn_nbr=0;               
+    trv_tbl->lst_dmn[idx].lmt_crr=0;                   
+    trv_tbl->lst_dmn[idx].lmt_dmn=NULL;
+    trv_tbl->lst_dmn[idx].lmt_crr=0;
+    trv_tbl->lst_dmn[idx].WRP=False;
+    trv_tbl->lst_dmn[idx].BASIC_DMN=True;
+    trv_tbl->lst_dmn[idx].MSA_USR_RDR=False;  
+    trv_tbl->lst_dmn[idx].dmn_cnt=nco_obj_typ_err;
+
 
     /* Free constructed name */
     dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
