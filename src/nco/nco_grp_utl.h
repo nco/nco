@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.222 2013-02-22 03:56:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.223 2013-02-22 10:02:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -282,10 +282,6 @@ nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variab
  const trv_sct * const var_trv,       /* I [sct] Variable Object */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
-void                      
-nco_blb_crd_var_trv                   /* [fnc] Build dimension information for all variables */
-(const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
 nco_bool                              /* O [flg] True if in scope */ 
 nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope */
 (trv_sct *var_trv,                    /* I [sct] GTT Object Variable */
@@ -300,6 +296,14 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void                      
+nco_blb_crd_rec_var_trv               /* [fnc] Build dimension information for all variables */
+(const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
+void                      
+nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
+(trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */

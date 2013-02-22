@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.504 2013-02-22 09:33:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.505 2013-02-22 10:02:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2348,51 +2348,6 @@ nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variab
   return NULL;
 } /* end nco_fnd_var_lmt_trv() */
 
-void                      
-nco_blb_crd_var_trv                   /* [fnc] Build dimension information for all variables */
-(const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
-{
-  /* Purpose: Build dimension information for all variables */
-
-  const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
-
-  /* Loop all objects */
-  for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-    trv_sct var_trv=trv_tbl->lst[var_idx];
-
-    /* Interested in variables only */
-    if(var_trv.typ == nco_obj_typ_var){
-
-      /* Loop unique dimensions list in groups */
-      for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-        dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-
-        /* Is there a variable with this dimension name anywhere? (relative name)  */
-        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
-
-          if(dbg_lvl_get() == nco_dbg_old){
-            (void)fprintf(stdout,"%s: INFO %s looking for variable <%s>:\n",prg_nm_get(),fnc_nm,
-              var_trv.nm);
-          }
-
-          /* Is variable in scope of dimension ? */
-          if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
-
-            /* Mark this variable as a coordinate variable */
-            trv_tbl->lst[var_idx].is_crd_var=True;
-
-            /* If the group dimension is a record dimension then the variable is a record variable */
-            trv_tbl->lst[var_idx].is_rec_var=dmn_trv.is_rec_dmn;
-
-            break;
-
-          }/* Is variable in scope of dimension ? */
-        } /* Is there a variable with this dimension name anywhere? (relative name)  */
-      } /* Loop unique dimensions list in groups */
-    } /* Interested in variables only */
-  } /* Loop all variables */
-
-} /* nco_blb_crd_var_trv() */
 
 nco_bool                               /* O [flg] True if variable is in scope of dimension */
 nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope */
@@ -2798,7 +2753,51 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   return rcd;
 } /* end nco_grp_itr() */
 
+void                      
+nco_blb_crd_rec_var_trv               /* [fnc] Build dimension information for all variables */
+(const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Build "is_crd_var" and "is_rec_var" members for all variables */
 
+  const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
+
+  /* Loop all objects */
+  for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+    trv_sct var_trv=trv_tbl->lst[var_idx];
+
+    /* Interested in variables only */
+    if(var_trv.typ == nco_obj_typ_var){
+
+      /* Loop unique dimensions list in groups */
+      for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+        dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+        /* Is there a variable with this dimension name anywhere? (relative name)  */
+        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
+
+          if(dbg_lvl_get() == nco_dbg_old){
+            (void)fprintf(stdout,"%s: INFO %s looking for variable <%s>:\n",prg_nm_get(),fnc_nm,
+              var_trv.nm);
+          }
+
+          /* Is variable in scope of dimension ? */
+          if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
+
+            /* Mark this variable as a coordinate variable */
+            trv_tbl->lst[var_idx].is_crd_var=True;
+
+            /* If the group dimension is a record dimension then the variable is a record variable */
+            trv_tbl->lst[var_idx].is_rec_var=dmn_trv.is_rec_dmn;
+
+            break;
+
+          }/* Is variable in scope of dimension ? */
+        } /* Is there a variable with this dimension name anywhere? (relative name)  */
+      } /* Loop unique dimensions list in groups */
+    } /* Interested in variables only */
+  } /* Loop all variables */
+
+} /* nco_blb_crd_var_trv() */
 
 
 void
@@ -2819,11 +2818,21 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Construct traversal table dimensions */
   (void)nco_bld_dmn_trv(nc_id,trv_tbl);
 
-  /* Construct coordinate variables structures */
-  (void)nco_blb_crd_var_trv(trv_tbl);
+  /* Build "is_crd_var" and "is_rec_var" members for all variables */
+  (void)nco_blb_crd_rec_var_trv(trv_tbl);
 
   /* Add dimension limits to traversal table */
+  /* Deprecate */
   if(lmt_nbr)(void)nco_bld_lmt_trv(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
+
+}
+
+
+void                      
+nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
+(trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Build GTT "crd_sct" coordinate variable structure */
 
 }
 
