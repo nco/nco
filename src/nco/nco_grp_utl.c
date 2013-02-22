@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.500 2013-02-22 04:02:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.501 2013-02-22 04:58:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -316,262 +316,6 @@ nco_def_grp_rcr                       /* [fnc] Define groups */
   return rcd;
 } /* end nco_grp_dfn_rcr() */
 
-
-int /* [rcd] Return code */
-nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */
-(const int grp_id, /* I [ID] Group ID */
- char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
- trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
-{
-  /* Purpose: Populate traversal table by examining, recursively, subgroups of parent */
-
-  const char sls_sng[]="/"; /* [sng] Slash string */
-
-  char grp_nm[NC_MAX_NAME+1]; /* [sng] Group name */
-  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name */ 
-  char dmn_nm[NC_MAX_NAME+1]; /* [sng] Dimension name */ 
-  char rec_nm[NC_MAX_NAME+1]; /* [sng] Record dimension name */ 
-
-  char *var_nm_fll;           /* [sng] Full path for variable */
-  char *dmn_nm_fll;           /* [sng] Full path for dimension */
-  char *sls_psn; /* [sng] Current position of group path search */
-
-  const int flg_prn=0; /* [flg] All the dimensions in all parent groups will also be retrieved */    
-
-  int dmn_ids[NC_MAX_DIMS]; /* [ID]  Dimension IDs array */ 
-  int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited (record) dimensions IDs array */
-
-  int *grp_ids; /* [ID] Sub-group IDs array */  
-
-  int grp_dpt=0; /* [nbr] Depth of group (root = 0) */
-  int nbr_att; /* [nbr] Number of attributes */
-  int nbr_dmn_grp; /* [nbr] Number of dimensions for group */
-  int nbr_dmn_var; /* [nbr] Number of dimensions for variable */
-  int nbr_grp; /* [nbr] Number of sub-groups in this group */
-  int nbr_rec; /* [nbr] Number of record dimensions in this group */
-  int nbr_var; /* [nbr] Number of variables */
-  int rcd=NC_NOERR; /* [rcd] Return code */
-
-  long dmn_sz;                /* [nbr] Dimension size */ 
-  long rec_sz;                /* [nbr] Record dimension size */ 
-
-  nc_type var_typ; /* O [enm] Variable type */
-
-  nco_obj_typ obj_typ; /* [enm] Object type (group or variable) */
-
-  trv_sct obj; /* [sct] netCDF4 Object (group/variable) */
-
-  /* Get all information for this group */
-
-  /* Get group name */
-  rcd+=nco_inq_grpname(grp_id,grp_nm);
-
-  /* Get number of sub-groups */
-  rcd+=nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
-
-  /* Obtain number of dimensions/variable/attributes for group; NB: ignore record dimension ID */
-  rcd+=nco_inq(grp_id,&nbr_dmn_grp,&nbr_var,&nbr_att,(int *)NULL);
-
-  /* Obtain dimensions IDs for group */
-  rcd+=nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_ids,flg_prn);
-
-  /* Obtain unlimited dimensions for group */
-  rcd+=nco_inq_unlimdims(grp_id,&nbr_rec,dmn_ids_ult);
-
-  /* Compute group depth */
-  sls_psn=grp_nm_fll;
-  if(!strcmp(grp_nm_fll,sls_sng)) grp_dpt=0; else grp_dpt=1;
-  while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
-  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",prg_nm_get(),grp_nm_fll,grp_dpt);
-
-  /* Add group to table */
-  strcpy(obj.nm,grp_nm);
-  obj.nm_lng=strlen(grp_nm);
-  obj.grp_nm_fll=grp_nm_fll;
-  obj.nm_fll=grp_nm_fll;
-  obj.nm_fll_lng=strlen(obj.nm_fll);
-  obj.typ=nco_obj_typ_grp;
-
-  obj.flg_cf=False; /* [flg] Object matches CF-metadata extraction criteria */
-  obj.flg_crd=False; /* [flg] Object matches coordinate extraction criteria */
-  obj.flg_dfl=False; /* [flg] Object meets default subsetting criteria */
-  obj.flg_gcv=False; /* [flg] Group contains matched variable */
-  obj.flg_mch=False; /* [flg] Object matches user-specified strings */
-  obj.flg_ncs=False; /* [flg] Group is ancestor of specified group or variable */
-  obj.flg_nsx=False; /* [flg] Object matches intersection criteria */
-  obj.flg_rcr=False; /* [flg] Extract group recursively */
-  obj.flg_unn=False; /* [flg] Object matches union criteria */
-  obj.flg_vfp=False; /* [flg] Variable matches full path specification */
-  obj.flg_vsg=False; /* [flg] Variable selected because group matches */
-  obj.flg_xcl=False; /* [flg] Object matches exclusion criteria */
-  obj.flg_xtr=False; /* [flg] Extract object */
-
-  obj.grp_dpt=grp_dpt; /* [nbr] Depth of group (root = 0) */
-  obj.grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
-  obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
-
-  obj.nbr_att=nbr_att;
-  obj.nbr_dmn=nbr_dmn_grp;
-  obj.nbr_grp=nbr_grp;
-  obj.nbr_rec=nbr_rec;
-  obj.nbr_var=nbr_var;
-
-  /* Add object to table (this is a group object) */
-  (void)trv_tbl_add(obj,trv_tbl);
-
-  /* Iterate variables for this group */
-  for(int var_idx=0;var_idx<nbr_var;var_idx++){
-
-    /* Get type of variable and number of dimensions */
-    rcd+=nco_inq_var(grp_id,var_idx,var_nm,&var_typ,&nbr_dmn_var,(int *)NULL,&nbr_att);
-
-    /* Allocate path buffer and include space for trailing NUL */ 
-    var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2L);
-
-    /* Initialize path with current absolute group path */
-    strcpy(var_nm_fll,grp_nm_fll);
-
-    /* If not root group, concatenate separator */
-    if(strcmp(grp_nm_fll,sls_sng)) strcat(var_nm_fll,sls_sng);
-
-    /* Concatenate variable to absolute group path */
-    strcat(var_nm_fll,var_nm);
-
-    if(var_typ <= NC_MAX_ATOMIC_TYPE){
-      obj_typ=nco_obj_typ_var;
-    }else{ /* > NC_MAX_ATOMIC_TYPE */
-      obj_typ=nco_obj_typ_nonatomic_var;
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
-    } /* > NC_MAX_ATOMIC_TYPE */
-
-    /* Add variable to table NB: nbr_var, nbr_grp, flg_rcr not valid here */
-    strcpy(obj.nm,var_nm);
-    obj.nm_lng=strlen(var_nm);
-    obj.grp_nm_fll=grp_nm_fll;
-    obj.nm_fll=var_nm_fll;
-    obj.nm_fll_lng=strlen(var_nm_fll);
-    obj.typ=obj_typ;
-
-    obj.flg_cf=False; /* [flg] Object matches CF-metadata extraction criteria */
-    obj.flg_crd=False; /* [flg] Object matches coordinate extraction criteria */
-    obj.flg_dfl=False; /* [flg] Object meets default subsetting criteria */
-    obj.flg_gcv=False; /* [flg] Group contains matched variable */
-    obj.flg_mch=False; /* [flg] Object matches user-specified strings */
-    obj.flg_ncs=False; /* [flg] Group is ancestor of specified group or variable */
-    obj.flg_nsx=False; /* [flg] Object matches intersection criteria */
-    obj.flg_rcr=False; /* [flg] Extract group recursively */
-    obj.flg_unn=False; /* [flg] Object matches union criteria */
-    obj.flg_vfp=False; /* [flg] Variable matches full path specification */
-    obj.flg_vsg=False; /* [flg] Variable selected because group matches */
-    obj.flg_xcl=False; /* [flg] Object matches exclusion criteria */
-    obj.flg_xtr=False; /* [flg] Extract object */
-
-    obj.grp_dpt=grp_dpt; /* [nbr] Depth of group (root = 0) */
-    obj.grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
-    obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
-
-    obj.nbr_att=nbr_att;
-    obj.nbr_dmn=nbr_dmn_var;
-    obj.nbr_grp=-1;
-    obj.nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
-    obj.nbr_var=-1;
-
-    /* Add object (this is a variable object) */
-    (void)trv_tbl_add(obj,trv_tbl);
-
-    /* Free constructed name */
-    var_nm_fll=(char *)nco_free(var_nm_fll);
-  } /* end loop over variables */
-
-  /* Add dimension objects */ 
-
-  /* Iterate dimensions (for group; dimensions are defined *for* groups) */
-  for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
-
-    dmn_fll_sct obj_dmn;  /* [sct] NCO netCDF4 Dimension object */
-
-    /* Initialize dimension as a non-record dimension */
-    obj_dmn.is_rec_dmn=False;
-
-    /* Get dimension name */
-    rcd+=nco_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_nm,&dmn_sz);
-
-    /* Iterate unlimited dimensions to detect if dimension is record */
-    for(int rec_idx=0;rec_idx<nbr_rec;rec_idx++){
-
-      /* Get record dimension name */
-      (void)nco_inq_dim(grp_id,dmn_ids_ult[rec_idx],rec_nm,&rec_sz);
-
-      /* Current dimension name matches current record dimension name ? */
-      if(strcmp(rec_nm,dmn_nm) == 0 ){
-
-        /* Dimension is a record dimension */
-        obj_dmn.is_rec_dmn=True;
-
-        /* Exit record dimension loop; we found it */
-        break;
-      } /* end match record dimension name */
-    } /* end record dimension loop */
-
-    /* Allocate path buffer and include space for trailing NUL */ 
-    dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
-
-    /* Initialize path with current absolute group path */
-    strcpy(dmn_nm_fll,grp_nm_fll);
-
-    /* If not root group, concatenate separator */
-    if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
-
-    /* Concatenate dimension name to absolute group path */
-    strcat(dmn_nm_fll,dmn_nm);
-
-    /* Store object */
-    strcpy(obj_dmn.nm,dmn_nm);
-    obj_dmn.nm_fll=dmn_nm_fll;
-    obj_dmn.sz=dmn_sz;
-    obj_dmn.grp_nm_fll=grp_nm_fll;
-
-    /* Call dimension object add function */
-    (void)trv_tbl_add_dmn(obj_dmn,trv_tbl);
-
-    /* Free constructed name */
-    dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-  } /* end dimension loop */
-
-  /* Go to sub-groups */ 
-  grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
-  rcd+=nco_inq_grps(grp_id,&nbr_grp,grp_ids);
-
-  /* Heart of traversal construction: construct a new sub-group path and call function recursively with this new name; Voila */
-  for(int grp_idx=0;grp_idx<nbr_grp;grp_idx++){
-    char *sub_grp_nm_fll=NULL;  /* [sng] Sub group path */
-    int gid=grp_ids[grp_idx];   /* [id] Current group ID */  
-
-    /* Get sub-group name */
-    rcd+=nco_inq_grpname(gid,grp_nm);
-
-    /* Allocate path buffer including space for trailing NUL */ 
-    sub_grp_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(grp_nm)+2L);
-
-    /* Initialize path with current absolute group path */
-    strcpy(sub_grp_nm_fll,grp_nm_fll);
-
-    /* If not root group, concatenate separator */
-    if(strcmp(grp_nm_fll,sls_sng)) strcat(sub_grp_nm_fll,sls_sng);
-
-    /* Concatenate current group to absolute group path */
-    strcat(sub_grp_nm_fll,grp_nm); 
-
-    /* Recursively process subgroups; NB: pass new absolute group name */
-    rcd+=nco_grp_itr(gid,sub_grp_nm_fll,trv_tbl);
-
-    /* Free constructed name */
-    sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
-  } /* end loop over groups */
-
-  (void)nco_free(grp_ids); 
-  return rcd;
-} /* end nco_grp_itr() */
 
 
 
@@ -2750,6 +2494,263 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
   return False;
 } /* nco_var_dmn_scp() */
+
+int /* [rcd] Return code */
+nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */
+(const int grp_id, /* I [ID] Group ID */
+ char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Populate traversal table by examining, recursively, subgroups of parent */
+
+  const char sls_sng[]="/"; /* [sng] Slash string */
+
+  char grp_nm[NC_MAX_NAME+1]; /* [sng] Group name */
+  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name */ 
+  char dmn_nm[NC_MAX_NAME+1]; /* [sng] Dimension name */ 
+  char rec_nm[NC_MAX_NAME+1]; /* [sng] Record dimension name */ 
+
+  char *var_nm_fll;           /* [sng] Full path for variable */
+  char *dmn_nm_fll;           /* [sng] Full path for dimension */
+  char *sls_psn; /* [sng] Current position of group path search */
+
+  const int flg_prn=0; /* [flg] All the dimensions in all parent groups will also be retrieved */    
+
+  int dmn_ids[NC_MAX_DIMS]; /* [ID]  Dimension IDs array */ 
+  int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited (record) dimensions IDs array */
+
+  int *grp_ids; /* [ID] Sub-group IDs array */  
+
+  int grp_dpt=0; /* [nbr] Depth of group (root = 0) */
+  int nbr_att; /* [nbr] Number of attributes */
+  int nbr_dmn_grp; /* [nbr] Number of dimensions for group */
+  int nbr_dmn_var; /* [nbr] Number of dimensions for variable */
+  int nbr_grp; /* [nbr] Number of sub-groups in this group */
+  int nbr_rec; /* [nbr] Number of record dimensions in this group */
+  int nbr_var; /* [nbr] Number of variables */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  long dmn_sz;                /* [nbr] Dimension size */ 
+  long rec_sz;                /* [nbr] Record dimension size */ 
+
+  nc_type var_typ; /* O [enm] Variable type */
+
+  nco_obj_typ obj_typ; /* [enm] Object type (group or variable) */
+
+  trv_sct obj; /* [sct] netCDF4 Object (group/variable) */
+
+  /* Get all information for this group */
+
+  /* Get group name */
+  rcd+=nco_inq_grpname(grp_id,grp_nm);
+
+  /* Get number of sub-groups */
+  rcd+=nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
+
+  /* Obtain number of dimensions/variable/attributes for group; NB: ignore record dimension ID */
+  rcd+=nco_inq(grp_id,&nbr_dmn_grp,&nbr_var,&nbr_att,(int *)NULL);
+
+  /* Obtain dimensions IDs for group */
+  rcd+=nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_ids,flg_prn);
+
+  /* Obtain unlimited dimensions for group */
+  rcd+=nco_inq_unlimdims(grp_id,&nbr_rec,dmn_ids_ult);
+
+  /* Compute group depth */
+  sls_psn=grp_nm_fll;
+  if(!strcmp(grp_nm_fll,sls_sng)) grp_dpt=0; else grp_dpt=1;
+  while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
+  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",prg_nm_get(),grp_nm_fll,grp_dpt);
+
+  /* Add group to table */
+  strcpy(obj.nm,grp_nm);
+  obj.nm_lng=strlen(grp_nm);
+  obj.grp_nm_fll=grp_nm_fll;
+  obj.nm_fll=grp_nm_fll;
+  obj.nm_fll_lng=strlen(obj.nm_fll);
+  obj.typ=nco_obj_typ_grp;
+
+  obj.flg_cf=False; /* [flg] Object matches CF-metadata extraction criteria */
+  obj.flg_crd=False; /* [flg] Object matches coordinate extraction criteria */
+  obj.flg_dfl=False; /* [flg] Object meets default subsetting criteria */
+  obj.flg_gcv=False; /* [flg] Group contains matched variable */
+  obj.flg_mch=False; /* [flg] Object matches user-specified strings */
+  obj.flg_ncs=False; /* [flg] Group is ancestor of specified group or variable */
+  obj.flg_nsx=False; /* [flg] Object matches intersection criteria */
+  obj.flg_rcr=False; /* [flg] Extract group recursively */
+  obj.flg_unn=False; /* [flg] Object matches union criteria */
+  obj.flg_vfp=False; /* [flg] Variable matches full path specification */
+  obj.flg_vsg=False; /* [flg] Variable selected because group matches */
+  obj.flg_xcl=False; /* [flg] Object matches exclusion criteria */
+  obj.flg_xtr=False; /* [flg] Extract object */
+
+  obj.grp_dpt=grp_dpt; /* [nbr] Depth of group (root = 0) */
+  obj.grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
+  obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
+
+  obj.nbr_att=nbr_att;
+  obj.nbr_dmn=nbr_dmn_grp;
+  obj.nbr_grp=nbr_grp;
+  obj.nbr_rec=nbr_rec;
+  obj.nbr_var=nbr_var;
+
+  /* Add object to table (this is a group object) */
+  (void)trv_tbl_add(obj,trv_tbl);
+
+  /* Iterate variables for this group */
+  for(int var_idx=0;var_idx<nbr_var;var_idx++){
+
+    /* Get type of variable and number of dimensions */
+    rcd+=nco_inq_var(grp_id,var_idx,var_nm,&var_typ,&nbr_dmn_var,(int *)NULL,&nbr_att);
+
+    /* Allocate path buffer and include space for trailing NUL */ 
+    var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2L);
+
+    /* Initialize path with current absolute group path */
+    strcpy(var_nm_fll,grp_nm_fll);
+
+    /* If not root group, concatenate separator */
+    if(strcmp(grp_nm_fll,sls_sng)) strcat(var_nm_fll,sls_sng);
+
+    /* Concatenate variable to absolute group path */
+    strcat(var_nm_fll,var_nm);
+
+    if(var_typ <= NC_MAX_ATOMIC_TYPE){
+      obj_typ=nco_obj_typ_var;
+    }else{ /* > NC_MAX_ATOMIC_TYPE */
+      obj_typ=nco_obj_typ_nonatomic_var;
+      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
+    } /* > NC_MAX_ATOMIC_TYPE */
+
+    /* Add variable to table NB: nbr_var, nbr_grp, flg_rcr not valid here */
+    strcpy(obj.nm,var_nm);
+    obj.nm_lng=strlen(var_nm);
+    obj.grp_nm_fll=grp_nm_fll;
+    obj.nm_fll=var_nm_fll;
+    obj.nm_fll_lng=strlen(var_nm_fll);
+    obj.typ=obj_typ;
+
+    obj.flg_cf=False; /* [flg] Object matches CF-metadata extraction criteria */
+    obj.flg_crd=False; /* [flg] Object matches coordinate extraction criteria */
+    obj.flg_dfl=False; /* [flg] Object meets default subsetting criteria */
+    obj.flg_gcv=False; /* [flg] Group contains matched variable */
+    obj.flg_mch=False; /* [flg] Object matches user-specified strings */
+    obj.flg_ncs=False; /* [flg] Group is ancestor of specified group or variable */
+    obj.flg_nsx=False; /* [flg] Object matches intersection criteria */
+    obj.flg_rcr=False; /* [flg] Extract group recursively */
+    obj.flg_unn=False; /* [flg] Object matches union criteria */
+    obj.flg_vfp=False; /* [flg] Variable matches full path specification */
+    obj.flg_vsg=False; /* [flg] Variable selected because group matches */
+    obj.flg_xcl=False; /* [flg] Object matches exclusion criteria */
+    obj.flg_xtr=False; /* [flg] Extract object */
+
+    obj.grp_dpt=grp_dpt; /* [nbr] Depth of group (root = 0) */
+    obj.grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
+    obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
+
+    obj.nbr_att=nbr_att;
+    obj.nbr_dmn=nbr_dmn_var;
+    obj.nbr_grp=-1;
+    obj.nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
+    obj.nbr_var=-1;
+
+    /* Add object (this is a variable object) */
+    (void)trv_tbl_add(obj,trv_tbl);
+
+    /* Free constructed name */
+    var_nm_fll=(char *)nco_free(var_nm_fll);
+  } /* end loop over variables */
+
+  /* Add dimension objects */ 
+
+  /* Iterate dimensions (for group; dimensions are defined *for* groups) */
+  for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
+
+    dmn_fll_sct obj_dmn;  /* [sct] NCO netCDF4 Dimension object */
+
+    /* Initialize dimension as a non-record dimension */
+    obj_dmn.is_rec_dmn=False;
+
+    /* Get dimension name */
+    rcd+=nco_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_nm,&dmn_sz);
+
+    /* Iterate unlimited dimensions to detect if dimension is record */
+    for(int rec_idx=0;rec_idx<nbr_rec;rec_idx++){
+
+      /* Get record dimension name */
+      (void)nco_inq_dim(grp_id,dmn_ids_ult[rec_idx],rec_nm,&rec_sz);
+
+      /* Current dimension name matches current record dimension name ? */
+      if(strcmp(rec_nm,dmn_nm) == 0 ){
+
+        /* Dimension is a record dimension */
+        obj_dmn.is_rec_dmn=True;
+
+        /* Exit record dimension loop; we found it */
+        break;
+      } /* end match record dimension name */
+    } /* end record dimension loop */
+
+    /* Allocate path buffer and include space for trailing NUL */ 
+    dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
+
+    /* Initialize path with current absolute group path */
+    strcpy(dmn_nm_fll,grp_nm_fll);
+
+    /* If not root group, concatenate separator */
+    if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
+
+    /* Concatenate dimension name to absolute group path */
+    strcat(dmn_nm_fll,dmn_nm);
+
+    /* Store object */
+    strcpy(obj_dmn.nm,dmn_nm);
+    obj_dmn.nm_fll=dmn_nm_fll;
+    obj_dmn.sz=dmn_sz;
+    obj_dmn.grp_nm_fll=grp_nm_fll;
+
+    /* Call dimension object add function */
+    (void)trv_tbl_add_dmn(obj_dmn,trv_tbl);
+
+    /* Free constructed name */
+    dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+  } /* end dimension loop */
+
+  /* Go to sub-groups */ 
+  grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
+  rcd+=nco_inq_grps(grp_id,&nbr_grp,grp_ids);
+
+  /* Heart of traversal construction: construct a new sub-group path and call function recursively with this new name; Voila */
+  for(int grp_idx=0;grp_idx<nbr_grp;grp_idx++){
+    char *sub_grp_nm_fll=NULL;  /* [sng] Sub group path */
+    int gid=grp_ids[grp_idx];   /* [id] Current group ID */  
+
+    /* Get sub-group name */
+    rcd+=nco_inq_grpname(gid,grp_nm);
+
+    /* Allocate path buffer including space for trailing NUL */ 
+    sub_grp_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(grp_nm)+2L);
+
+    /* Initialize path with current absolute group path */
+    strcpy(sub_grp_nm_fll,grp_nm_fll);
+
+    /* If not root group, concatenate separator */
+    if(strcmp(grp_nm_fll,sls_sng)) strcat(sub_grp_nm_fll,sls_sng);
+
+    /* Concatenate current group to absolute group path */
+    strcat(sub_grp_nm_fll,grp_nm); 
+
+    /* Recursively process subgroups; NB: pass new absolute group name */
+    rcd+=nco_grp_itr(gid,sub_grp_nm_fll,trv_tbl);
+
+    /* Free constructed name */
+    sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
+  } /* end loop over groups */
+
+  (void)nco_free(grp_ids); 
+  return rcd;
+} /* end nco_grp_itr() */
+
 
 
 void
