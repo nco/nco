@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.499 2013-02-22 03:56:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.500 2013-02-22 04:02:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1991,10 +1991,6 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
   } /* End Loop *object* traversal table  */
 
 
-  /* Not finished yet.. find coordinate variables */
-  (void)nco_blb_crd_var_trv(trv_tbl);
-
-
 } /* end nco_blb_dmn_trv() */
 
 void
@@ -2773,6 +2769,9 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Construct traversal table dimensions */
   (void)nco_bld_dmn_trv(nc_id,trv_tbl);
+
+  /* Construct coordinate variables structures */
+  (void)nco_blb_crd_var_trv(trv_tbl);
 
   /* Add dimension limits to traversal table */
   if(lmt_nbr)(void)nco_bld_lmt_trv(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
