@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.512 2013-02-22 22:59:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.513 2013-02-22 23:48:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2218,7 +2218,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
       /* Variable in scope of dimension */
       if (var_nm_fll_lng>dmn_nm_fll_lng){
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -2228,7 +2228,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
         /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
       }else if (var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -2238,7 +2238,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
         /* Variable out of scope of dimension */
       }else if (var_nm_fll_lng < dmn_nm_fll_lng){
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -2590,9 +2590,9 @@ nco_blb_crd_rec_var_trv               /* [fnc] Build dimension information for a
         /* Is there a variable with this dimension name anywhere? (relative name)  */
         if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
 
-          if(dbg_lvl_get() >= nco_dbg_dev){
+          if(dbg_lvl_get() == nco_dbg_old){
             (void)fprintf(stdout,"%s: INFO %s looking for possible coordinate variable <%s>:\n",prg_nm_get(),fnc_nm,
-              var_trv.nm);
+              var_trv.nm_fll);
           }
 
           /* Is variable in scope of dimension ? */
@@ -2912,7 +2912,6 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             /* Increment the number of coordinate variables for this dimension */
             trv_tbl->lst_dmn[dmn_idx].crd_nbr++;
 
-            break;
           }/* Is variable in scope of dimension ? */
         } /* Is there a variable with this dimension name anywhere? (relative name)  */
       } /* Interested in variables only */
@@ -2945,8 +2944,6 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             /* Alloc coordinate array if there are any coordinates */
             if (crd_nbr) trv_tbl->lst_dmn[dmn_idx].crd=(crd_sct **)nco_malloc(crd_nbr*sizeof(crd_sct *));
 
-            break;
-
           }/* Is variable in scope of dimension ? */
         } /* Is there a variable with this dimension name anywhere? (relative name)  */
       } /* Interested in variables only */
@@ -2975,7 +2972,7 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: INFO %s looking for possible coordinate variable <%s>:\n",prg_nm_get(),fnc_nm,
-              var_trv.nm);
+              var_trv.nm_fll);
           }
 
           /* Is variable in scope of dimension ? */
@@ -3012,8 +3009,6 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 
             /* Incrementr coordinate index for current dimension */
             crd_idx++;
-
-            break;
 
           }/* Is variable in scope of dimension ? */
         } /* Is there a variable with this dimension name anywhere? (relative name)  */
