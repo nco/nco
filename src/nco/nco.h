@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.252 2013-02-22 02:07:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.253 2013-02-22 06:15:05 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -626,7 +626,7 @@ extern "C" {
      Node/object is either group or variable like in HDF5
      Initialize trv_sct structure to defaults in trv_tbl_init()
      Populate trv_sct structure with correct values in nco_grp_itr()
-     Deep-copy each pointer member of trv_sct structure in trv_tbl_add()
+     Deep-copy each pointer member of trv_sct structure in nco_grp_itr()
      free() each pointer member of trv_sct structure in trv_tbl_free() 
 
      Some fields in "trv_sct", "dmn_fll_sct", "var_dmn_sct" are redundant;
@@ -679,9 +679,9 @@ extern "C" {
     int lmt_dmn_nbr; /* [nbr] Number of limit structures */ // Deprecate
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with *this* dimension */ // Deprecate
     // int lmt_non_crd_nbr; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
-    //    lmt_sct **lmt_non_crd; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
-    //    int lmt_crd_nbr; /* [nbr] Number of coordinate structures */
-    //    crd_sct **crd; /* [sct] List of coordinate structures associated with *this* dimension */
+    // lmt_sct **lmt_non_crd; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
+    // int lmt_crd_nbr; /* [nbr] Number of coordinate structures */
+    // crd_sct **crd; /* [sct] List of coordinate structures associated with *this* dimension */
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -710,7 +710,6 @@ extern "C" {
      2) lst_dmn: All unique dimensions (in groups) in file tree (netCDF addition to HDF5) */
   typedef struct{
     trv_sct *lst;           /* [sct] Array of trv_sct */
-    unsigned int sz;        /* [nbr] Allocated size of trv_sct array */
     unsigned int nbr;       /* [nbr] Number of current trv_sct elements */   
     dmn_fll_sct *lst_dmn;   /* [sct] Array of dmn_fll_sct */
     unsigned int sz_dmn;    /* [nbr] Allocated size of dmn_fll_sct */

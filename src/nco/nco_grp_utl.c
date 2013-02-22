@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.501 2013-02-22 04:58:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.502 2013-02-22 06:15:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2537,8 +2537,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   nco_obj_typ obj_typ; /* [enm] Object type (group or variable) */
 
-  trv_sct obj; /* [sct] netCDF4 Object (group/variable) */
-
   /* Get all information for this group */
 
   /* Get group name */
@@ -2562,40 +2560,58 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
   if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",prg_nm_get(),grp_nm_fll,grp_dpt);
 
-  /* Add group to table */
-  strcpy(obj.nm,grp_nm);
-  obj.nm_lng=strlen(grp_nm);
-  obj.grp_nm_fll=grp_nm_fll;
-  obj.nm_fll=grp_nm_fll;
-  obj.nm_fll_lng=strlen(obj.nm_fll);
-  obj.typ=nco_obj_typ_grp;
+  /* Keep the old table size for insertion */
+  unsigned int idx;
+  idx=trv_tbl->nbr;
 
-  obj.flg_cf=False; /* [flg] Object matches CF-metadata extraction criteria */
-  obj.flg_crd=False; /* [flg] Object matches coordinate extraction criteria */
-  obj.flg_dfl=False; /* [flg] Object meets default subsetting criteria */
-  obj.flg_gcv=False; /* [flg] Group contains matched variable */
-  obj.flg_mch=False; /* [flg] Object matches user-specified strings */
-  obj.flg_ncs=False; /* [flg] Group is ancestor of specified group or variable */
-  obj.flg_nsx=False; /* [flg] Object matches intersection criteria */
-  obj.flg_rcr=False; /* [flg] Extract group recursively */
-  obj.flg_unn=False; /* [flg] Object matches union criteria */
-  obj.flg_vfp=False; /* [flg] Variable matches full path specification */
-  obj.flg_vsg=False; /* [flg] Variable selected because group matches */
-  obj.flg_xcl=False; /* [flg] Object matches exclusion criteria */
-  obj.flg_xtr=False; /* [flg] Extract object */
+  /* Add one more element to GTT (nco_realloc nicely handles first time/not first time insertions) */
+  trv_tbl->nbr++;
+  trv_tbl->lst=(trv_sct *)nco_realloc(trv_tbl->lst,trv_tbl->nbr*sizeof(trv_sct));
 
-  obj.grp_dpt=grp_dpt; /* [nbr] Depth of group (root = 0) */
-  obj.grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
-  obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
+  /* Add this element (a group) to table */
 
-  obj.nbr_att=nbr_att;
-  obj.nbr_dmn=nbr_dmn_grp;
-  obj.nbr_grp=nbr_grp;
-  obj.nbr_rec=nbr_rec;
-  obj.nbr_var=nbr_var;
+  trv_tbl->lst[idx].typ=nco_obj_typ_grp;          /* [enm] netCDF4 object type: group or variable */
 
-  /* Add object to table (this is a group object) */
-  (void)trv_tbl_add(obj,trv_tbl);
+  strcpy(trv_tbl->lst[idx].nm,grp_nm);            /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
+  trv_tbl->lst[idx].nm_lng=strlen(grp_nm);        /* [sng] Length of short name */
+  trv_tbl->lst[idx].grp_nm_fll=strdup(grp_nm_fll);/* [sng] Full group name (for groups, same as nm_fll) */
+  trv_tbl->lst[idx].nm_fll=strdup(grp_nm_fll);    /* [sng] Fully qualified name (path) */
+  trv_tbl->lst[idx].nm_fll_lng=strlen(grp_nm_fll);/* [sng] Length of full name */
+
+  trv_tbl->lst[idx].flg_cf=False;                 /* [flg] Object matches CF-metadata extraction criteria */
+  trv_tbl->lst[idx].flg_crd=False;                /* [flg] Object matches coordinate extraction criteria */
+  trv_tbl->lst[idx].flg_dfl=False;                /* [flg] Object meets default subsetting criteria */
+  trv_tbl->lst[idx].flg_gcv=False;                /* [flg] Group contains matched variable */
+  trv_tbl->lst[idx].flg_mch=False;                /* [flg] Object matches user-specified strings */
+  trv_tbl->lst[idx].flg_ncs=False;                /* [flg] Group is ancestor of specified group or variable */
+  trv_tbl->lst[idx].flg_nsx=False;                /* [flg] Object matches intersection criteria */
+  trv_tbl->lst[idx].flg_rcr=False;                /* [flg] Extract group recursively */
+  trv_tbl->lst[idx].flg_unn=False;                /* [flg] Object matches union criteria */
+  trv_tbl->lst[idx].flg_vfp=False;                /* [flg] Variable matches full path specification */
+  trv_tbl->lst[idx].flg_vsg=False;                /* [flg] Variable selected because group matches */
+  trv_tbl->lst[idx].flg_xcl=False;                /* [flg] Object matches exclusion criteria */
+  trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
+  trv_tbl->lst[idx].is_crd_var=False;             /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
+  trv_tbl->lst[idx].is_rec_var=False;             /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
+
+  trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
+  trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err;    /* [id] Group ID in input file */
+  trv_tbl->lst[idx].grp_id_out=nco_obj_typ_err;   /* [id] Group ID in output file */
+
+  trv_tbl->lst[idx].nbr_att=nbr_att;              /* [nbr] Number of attributes */
+  trv_tbl->lst[idx].nbr_dmn=nbr_dmn_grp;          /* [nbr] Number of dimensions */
+  trv_tbl->lst[idx].nbr_grp=nbr_grp;              /* [nbr] Number of sub-groups (for group) */
+  trv_tbl->lst[idx].nbr_rec=nbr_rec;              /* [nbr] Number of record dimensions */
+  trv_tbl->lst[idx].nbr_var=nbr_var;              /* [nbr] Number of variables (for group) */
+
+  /* Variable dimensions */
+  for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
+    trv_tbl->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=NULL;
+    trv_tbl->lst[idx].var_dmn.dmn_nm[dmn_idx_var]=NULL;
+    trv_tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=NULL;
+  }
+  trv_tbl->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
+
 
   /* Iterate variables for this group */
   for(int var_idx=0;var_idx<nbr_var;var_idx++){
@@ -2622,40 +2638,47 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
     } /* > NC_MAX_ATOMIC_TYPE */
 
-    /* Add variable to table NB: nbr_var, nbr_grp, flg_rcr not valid here */
-    strcpy(obj.nm,var_nm);
-    obj.nm_lng=strlen(var_nm);
-    obj.grp_nm_fll=grp_nm_fll;
-    obj.nm_fll=var_nm_fll;
-    obj.nm_fll_lng=strlen(var_nm_fll);
-    obj.typ=obj_typ;
 
-    obj.flg_cf=False; /* [flg] Object matches CF-metadata extraction criteria */
-    obj.flg_crd=False; /* [flg] Object matches coordinate extraction criteria */
-    obj.flg_dfl=False; /* [flg] Object meets default subsetting criteria */
-    obj.flg_gcv=False; /* [flg] Group contains matched variable */
-    obj.flg_mch=False; /* [flg] Object matches user-specified strings */
-    obj.flg_ncs=False; /* [flg] Group is ancestor of specified group or variable */
-    obj.flg_nsx=False; /* [flg] Object matches intersection criteria */
-    obj.flg_rcr=False; /* [flg] Extract group recursively */
-    obj.flg_unn=False; /* [flg] Object matches union criteria */
-    obj.flg_vfp=False; /* [flg] Variable matches full path specification */
-    obj.flg_vsg=False; /* [flg] Variable selected because group matches */
-    obj.flg_xcl=False; /* [flg] Object matches exclusion criteria */
-    obj.flg_xtr=False; /* [flg] Extract object */
+    /* Keep the old table size for insertion */
+    idx=trv_tbl->nbr;
 
-    obj.grp_dpt=grp_dpt; /* [nbr] Depth of group (root = 0) */
-    obj.grp_id_in=nco_obj_typ_err; /* [id] Group ID in input file */
-    obj.grp_id_out=nco_obj_typ_err; /* [id] Group ID in output file */
+    /* Add one more element to GTT (nco_realloc nicely handles first time/not first time insertions) */
+    trv_tbl->nbr++;
+    trv_tbl->lst=(trv_sct *)nco_realloc(trv_tbl->lst,trv_tbl->nbr*sizeof(trv_sct));
 
-    obj.nbr_att=nbr_att;
-    obj.nbr_dmn=nbr_dmn_var;
-    obj.nbr_grp=-1;
-    obj.nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
-    obj.nbr_var=-1;
+    /* Add this element, a variable to table. NOTE: nbr_var, nbr_grp, flg_rcr not valid here */
 
-    /* Add object (this is a variable object) */
-    (void)trv_tbl_add(obj,trv_tbl);
+    trv_tbl->lst[idx].typ=obj_typ;
+
+    strcpy(trv_tbl->lst[idx].nm,var_nm);
+    trv_tbl->lst[idx].nm_lng=strlen(var_nm);
+    trv_tbl->lst[idx].grp_nm_fll=strdup(grp_nm_fll);
+    trv_tbl->lst[idx].nm_fll=strdup(var_nm_fll);
+    trv_tbl->lst[idx].nm_fll_lng=strlen(var_nm_fll);  
+
+    trv_tbl->lst[idx].flg_cf=False; 
+    trv_tbl->lst[idx].flg_crd=False; 
+    trv_tbl->lst[idx].flg_dfl=False; 
+    trv_tbl->lst[idx].flg_gcv=False; 
+    trv_tbl->lst[idx].flg_mch=False; 
+    trv_tbl->lst[idx].flg_ncs=False; 
+    trv_tbl->lst[idx].flg_nsx=False; 
+    trv_tbl->lst[idx].flg_rcr=False; 
+    trv_tbl->lst[idx].flg_unn=False; 
+    trv_tbl->lst[idx].flg_vfp=False; 
+    trv_tbl->lst[idx].flg_vsg=False; 
+    trv_tbl->lst[idx].flg_xcl=False; 
+    trv_tbl->lst[idx].flg_xtr=False; 
+
+    trv_tbl->lst[idx].grp_dpt=grp_dpt; 
+    trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err; 
+    trv_tbl->lst[idx].grp_id_out=nco_obj_typ_err; 
+
+    trv_tbl->lst[idx].nbr_att=nbr_att;
+    trv_tbl->lst[idx].nbr_dmn=nbr_dmn_var;
+    trv_tbl->lst[idx].nbr_grp=nco_obj_typ_err;
+    trv_tbl->lst[idx].nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
+    trv_tbl->lst[idx].nbr_var=nco_obj_typ_err;
 
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
@@ -2750,6 +2773,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   (void)nco_free(grp_ids); 
   return rcd;
 } /* end nco_grp_itr() */
+
 
 
 

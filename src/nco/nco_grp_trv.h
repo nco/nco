@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.32 2013-02-21 06:47:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.33 2013-02-22 06:15:05 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -36,11 +36,6 @@ trv_tbl_free
 (trv_tbl_sct *tbl);                  /* I/O [sct] Traversal table */
 /* end trv_tbl_free */
 
-void 
-trv_tbl_add
-(trv_sct const obj, /* I [sct] Object to store */
- trv_tbl_sct * const tbl); /* I/O [sct] Traversal table */
-/* end trv_tbl_add */
 
 void                       
 trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
