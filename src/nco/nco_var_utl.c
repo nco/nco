@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.231 2013-02-23 02:02:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.232 2013-02-23 22:23:19 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1894,7 +1894,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
       /* Does dimension have user-specified limits?
 	 Following line is only difference between defining a variable with and without limits */
-      if(dmn_trv->dmn_cnt != nco_obj_typ_err) dmn_sz=dmn_trv->dmn_cnt;
+      if(dmn_trv->lmt_msa.dmn_cnt != nco_obj_typ_err) dmn_sz=dmn_trv->lmt_msa.dmn_cnt;
       assert(dmn_sz != nco_obj_typ_err);
 
       if(dbg_lvl_get() == nco_dbg_crr){

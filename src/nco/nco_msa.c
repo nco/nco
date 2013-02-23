@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.182 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.183 2013-02-23 22:23:19 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -854,7 +854,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 
   int idx;
   int jdx;
-  int size=dmn_trv->lmt_dmn_nbr;  /* [nbr] Number of limit structures */
+  int size=dmn_trv->lmt_msa.lmt_dmn_nbr;  /* [nbr] Number of limit structures */
   long dmn_sz_org=dmn_trv->sz;    /* [nbr] Size of dimension */
   long srt;
   long cnt;
@@ -864,11 +864,11 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 
   for(idx=0;idx<size;idx++){
 
-    if(dmn_trv->lmt_dmn[idx]->srt > dmn_trv->lmt_dmn[idx]->end){
+    if(dmn_trv->lmt_msa.lmt_dmn[idx]->srt > dmn_trv->lmt_msa.lmt_dmn[idx]->end){
 
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%li->%li):\n",
-          prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_dmn[idx]->srt,dmn_trv->lmt_dmn[idx]->end);
+          prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end);
       }
 
       lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
@@ -877,9 +877,9 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
       (void)nco_lmt_init(&lmt_wrp[0]);
       (void)nco_lmt_init(&lmt_wrp[1]);
 
-      srt=dmn_trv->lmt_dmn[idx]->srt;
-      cnt=dmn_trv->lmt_dmn[idx]->cnt;
-      srd=dmn_trv->lmt_dmn[idx]->srd;
+      srt=dmn_trv->lmt_msa.lmt_dmn[idx]->srt;
+      cnt=dmn_trv->lmt_msa.lmt_dmn[idx]->cnt;
+      srd=dmn_trv->lmt_msa.lmt_dmn[idx]->srd;
 
       for(jdx=0;jdx<cnt;jdx++){
         kdx=(srt+srd*jdx)%dmn_sz_org;
@@ -887,8 +887,8 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
       } /* end loop over jdx */
 
       /* "trv": Instead of shallow copy in nco_msa_wrp_splt(), make a deep copy to the 2 new limits lmt_wrp */ 
-      (void)nco_lmt_cpy(dmn_trv->lmt_dmn[idx],&lmt_wrp[0]);
-      (void)nco_lmt_cpy(dmn_trv->lmt_dmn[idx],&lmt_wrp[1]);
+      (void)nco_lmt_cpy(dmn_trv->lmt_msa.lmt_dmn[idx],&lmt_wrp[0]);
+      (void)nco_lmt_cpy(dmn_trv->lmt_msa.lmt_dmn[idx],&lmt_wrp[1]);
 
       lmt_wrp[0].srt=srt;
 
@@ -914,49 +914,49 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",prg_nm_get(),fnc_nm,dmn_trv->nm_fll);
-        (void)fprintf(stdout,"%d:\n",dmn_trv->lmt_dmn_nbr);
+        (void)fprintf(stdout,"%d:\n",dmn_trv->lmt_msa.lmt_dmn_nbr);
       }
 
 
       /* "trv": Insert 2 non-wrapped limits */ 
 
       /* Current number of dimension limits for this table dimension  */
-      int lmt_dmn_nbr=dmn_trv->lmt_dmn_nbr;
+      int lmt_dmn_nbr=dmn_trv->lmt_msa.lmt_dmn_nbr;
 
       /* Index of new limit  */
       int lmt_new_idx=idx+1;
 
       /* Make space for 1 more limit  */
-      dmn_trv->lmt_dmn=(lmt_sct **)nco_realloc(dmn_trv->lmt_dmn,(lmt_dmn_nbr+1)*sizeof(lmt_sct *));
+      dmn_trv->lmt_msa.lmt_dmn=(lmt_sct **)nco_realloc(dmn_trv->lmt_msa.lmt_dmn,(lmt_dmn_nbr+1)*sizeof(lmt_sct *));
 
       /* Alloc the extra limit  */
-      dmn_trv->lmt_dmn[lmt_new_idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+      dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 
       /* Initialize the extra limit */
-      (void)nco_lmt_init(dmn_trv->lmt_dmn[lmt_new_idx]);
+      (void)nco_lmt_init(dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]);
 
       /* Insert the limits to table (allocated; idx was already there; lmt_new_idx was alloced here)   */
-      (void)nco_lmt_cpy(&lmt_wrp[0],dmn_trv->lmt_dmn[idx]);
-      (void)nco_lmt_cpy(&lmt_wrp[1],dmn_trv->lmt_dmn[lmt_new_idx]);
+      (void)nco_lmt_cpy(&lmt_wrp[0],dmn_trv->lmt_msa.lmt_dmn[idx]);
+      (void)nco_lmt_cpy(&lmt_wrp[1],dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]);
 
       /* Update number of dimension limits for this table dimension  */
-      dmn_trv->lmt_dmn_nbr++;
+      dmn_trv->lmt_msa.lmt_dmn_nbr++;
 
       /* Update current index of dimension limits for this table dimension  */
-      dmn_trv->lmt_crr++;
+      dmn_trv->lmt_msa.lmt_crr++;
 
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",
-          prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_dmn[idx]->srt,dmn_trv->lmt_dmn[idx]->end,
-          dmn_trv->lmt_dmn[lmt_new_idx]->srt,dmn_trv->lmt_dmn[lmt_new_idx]->end);
+          prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end,
+          dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->srt,dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->end);
       }
 
     } /* endif srt > end */
   } /* end loop over size */
 
   /* Check if genuine wrapped co-ordinate */
-  if(size==1 && dmn_trv->lmt_dmn_nbr==2){
-    dmn_trv->WRP=True;
+  if(size==1 && dmn_trv->lmt_msa.lmt_dmn_nbr==2){
+    dmn_trv->lmt_msa.WRP=True;
   }
 
 } /* End nco_msa_wrp_splt_trv() */
@@ -970,37 +970,37 @@ nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (GTT vers
 
   int idx;
   long cnt=0;
-  int size=dmn_trv->lmt_dmn_nbr;   /* [nbr] Number of limit structures */
+  int size=dmn_trv->lmt_msa.lmt_dmn_nbr;   /* [nbr] Number of limit structures */
   long *indices;
   nco_bool *mnm;
 
   /* Degenerate case */
   if(size == 1){
-    dmn_trv->dmn_cnt=dmn_trv->lmt_dmn[0]->cnt;
+    dmn_trv->lmt_msa.dmn_cnt=dmn_trv->lmt_msa.lmt_dmn[0]->cnt;
     return;
   } /* end if */
 
   /* If slabs remain in user-specified order */
-  if(dmn_trv->MSA_USR_RDR){
-    for(idx=0;idx<size;idx++) cnt+=dmn_trv->lmt_dmn[idx]->cnt;
-    dmn_trv->dmn_cnt=cnt;
+  if(dmn_trv->lmt_msa.MSA_USR_RDR){
+    for(idx=0;idx<size;idx++) cnt+=dmn_trv->lmt_msa.lmt_dmn[idx]->cnt;
+    dmn_trv->lmt_msa.dmn_cnt=cnt;
   }else{
     indices=(long *)nco_malloc(size*sizeof(long));
     mnm=(nco_bool *)nco_malloc(size*sizeof(nco_bool));
 
     /* Initialize indices with srt */
-    for(idx=0;idx<size;idx++) indices[idx]=dmn_trv->lmt_dmn[idx]->srt;
+    for(idx=0;idx<size;idx++) indices[idx]=dmn_trv->lmt_msa.lmt_dmn[idx]->srt;
 
     while(nco_msa_min_idx(indices,mnm,size) != LONG_MAX){
       for(idx=0;idx<size;idx++){
         if(mnm[idx]){
-          indices[idx]+=dmn_trv->lmt_dmn[idx]->srd;
-          if(indices[idx] > dmn_trv->lmt_dmn[idx]->end) indices[idx]=-1;
+          indices[idx]+=dmn_trv->lmt_msa.lmt_dmn[idx]->srd;
+          if(indices[idx] > dmn_trv->lmt_msa.lmt_dmn[idx]->end) indices[idx]=-1;
         } /* end if */
       } /* end loop over idx */
       cnt++;
     } /* end while */
-    dmn_trv->dmn_cnt=cnt;
+    dmn_trv->lmt_msa.dmn_cnt=cnt;
 
     indices=(long *)nco_free(indices);
     mnm=(nco_bool  *)nco_free(mnm);
@@ -1019,8 +1019,8 @@ nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (GTT version) */
   lmt_sct **lmt;
   long sz;           /* [nbr] Number of limit structures */
 
-  sz=dmn_trv->lmt_dmn_nbr;
-  lmt=dmn_trv->lmt_dmn;
+  sz=dmn_trv->lmt_msa.lmt_dmn_nbr;
+  lmt=dmn_trv->lmt_msa.lmt_dmn;
 
   if(sz <= 1) return;
 
@@ -1039,11 +1039,11 @@ nco_msa_ovl_trv         /* [fnc] See if limits overlap */
 
   long idx;
   long jdx;
-  long sz=dmn_trv->lmt_dmn_nbr; /* [nbr] Number of limit structures */
+  long sz=dmn_trv->lmt_msa.lmt_dmn_nbr; /* [nbr] Number of limit structures */
 
   lmt_sct **lmt;
   /* defererence */
-  lmt=dmn_trv->lmt_dmn;
+  lmt=dmn_trv->lmt_msa.lmt_dmn;
 
   for(idx=0; idx<sz; idx++)
     for(jdx=idx+1; jdx<sz ;jdx++)
@@ -1169,7 +1169,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
       if(strcmp(var_trv->var_dmn.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout," %d limits: ",dmn_trv.lmt_dmn_nbr);
+          (void)fprintf(stdout," %d limits: ",dmn_trv.lmt_msa.lmt_dmn_nbr);
         }
 
         lmt_msa[lmt_msa_idx]=(lmt_msa_sct *)nco_malloc(sizeof(lmt_msa_sct));
@@ -1181,22 +1181,22 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         lmt[lmt_msa_idx]=NULL;
 
         /* If limits, make space for them */
-        if (dmn_trv.lmt_dmn_nbr) lmt_msa[lmt_msa_idx]->lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_dmn_nbr*sizeof(lmt_sct *));
+        if (dmn_trv.lmt_msa.lmt_dmn_nbr) lmt_msa[lmt_msa_idx]->lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
 
         /* And deep-copy the structure made while building limits  */
-        lmt_msa[lmt_msa_idx]->BASIC_DMN=dmn_trv.BASIC_DMN;
-        lmt_msa[lmt_msa_idx]->dmn_cnt=dmn_trv.dmn_cnt;
+        lmt_msa[lmt_msa_idx]->BASIC_DMN=dmn_trv.lmt_msa.BASIC_DMN;
+        lmt_msa[lmt_msa_idx]->dmn_cnt=dmn_trv.lmt_msa.dmn_cnt;
         lmt_msa[lmt_msa_idx]->dmn_nm=strdup(dmn_trv.nm);
         lmt_msa[lmt_msa_idx]->dmn_sz_org=dmn_trv.sz;
-        lmt_msa[lmt_msa_idx]->lmt_dmn_nbr=dmn_trv.lmt_dmn_nbr;
-        lmt_msa[lmt_msa_idx]->MSA_USR_RDR=dmn_trv.MSA_USR_RDR;
-        lmt_msa[lmt_msa_idx]->WRP=dmn_trv.WRP;
+        lmt_msa[lmt_msa_idx]->lmt_dmn_nbr=dmn_trv.lmt_msa.lmt_dmn_nbr;
+        lmt_msa[lmt_msa_idx]->MSA_USR_RDR=dmn_trv.lmt_msa.MSA_USR_RDR;
+        lmt_msa[lmt_msa_idx]->WRP=dmn_trv.lmt_msa.WRP;
 
         /* Loop needed limits */
-        for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_dmn_nbr;lmt_idx++){
+        for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
 
           if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"[%d]:%s->",lmt_idx,trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_idx]->nm);
+            (void)fprintf(stdout,"[%d]:%s->",lmt_idx,trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]->nm);
           }
 
           /* Alloc new limit */
@@ -1206,7 +1206,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
           (void)nco_lmt_init(lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]);
 
           /* Deep copy from table to local array */ 
-          (void)nco_lmt_cpy(trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_idx],lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]);
+          (void)nco_lmt_cpy(trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx],lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]);
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"<-[%d]:%s: ",lmt_idx,lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]->nm);
@@ -1222,7 +1222,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         */
 
         /* Go for Option 1); this translates to a "nameless" limit, with all members NULL/invalid..except the ones below */
-        if (dmn_trv.lmt_dmn_nbr == 0)
+        if (dmn_trv.lmt_msa.lmt_dmn_nbr == 0)
         {
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Warning...no limit zone "); 
 
@@ -1844,7 +1844,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
       if(strcmp(var_trv->var_dmn.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout," %d limits: ",dmn_trv.lmt_dmn_nbr);
+          (void)fprintf(stdout," %d limits: ",dmn_trv.lmt_msa.lmt_dmn_nbr);
         }
 
         lmt_msa[lmt_msa_idx]=(lmt_msa_sct *)nco_malloc(sizeof(lmt_msa_sct));
@@ -1856,22 +1856,22 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
         lmt[lmt_msa_idx]=NULL;
 
         /* If limits, make space for them */
-        if (dmn_trv.lmt_dmn_nbr) lmt_msa[lmt_msa_idx]->lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_dmn_nbr*sizeof(lmt_sct *));
+        if (dmn_trv.lmt_msa.lmt_dmn_nbr) lmt_msa[lmt_msa_idx]->lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
 
         /* And deep-copy the structure made while building limits  */
-        lmt_msa[lmt_msa_idx]->BASIC_DMN=dmn_trv.BASIC_DMN;
-        lmt_msa[lmt_msa_idx]->dmn_cnt=dmn_trv.dmn_cnt;
+        lmt_msa[lmt_msa_idx]->BASIC_DMN=dmn_trv.lmt_msa.BASIC_DMN;
+        lmt_msa[lmt_msa_idx]->dmn_cnt=dmn_trv.lmt_msa.dmn_cnt;
         lmt_msa[lmt_msa_idx]->dmn_nm=strdup(dmn_trv.nm);
         lmt_msa[lmt_msa_idx]->dmn_sz_org=dmn_trv.sz;
-        lmt_msa[lmt_msa_idx]->lmt_dmn_nbr=dmn_trv.lmt_dmn_nbr;
-        lmt_msa[lmt_msa_idx]->MSA_USR_RDR=dmn_trv.MSA_USR_RDR;
-        lmt_msa[lmt_msa_idx]->WRP=dmn_trv.WRP;
+        lmt_msa[lmt_msa_idx]->lmt_dmn_nbr=dmn_trv.lmt_msa.lmt_dmn_nbr;
+        lmt_msa[lmt_msa_idx]->MSA_USR_RDR=dmn_trv.lmt_msa.MSA_USR_RDR;
+        lmt_msa[lmt_msa_idx]->WRP=dmn_trv.lmt_msa.WRP;
 
         /* Loop needed limits */
-        for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_dmn_nbr;lmt_idx++){
+        for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
 
           if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"[%d]:%s->",lmt_idx,trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_idx]->nm);
+            (void)fprintf(stdout,"[%d]:%s->",lmt_idx,trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]->nm);
           }
 
           /* Alloc new limit */
@@ -1881,7 +1881,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
           (void)nco_lmt_init(lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]);
 
           /* Deep copy from table to local array */ 
-          (void)nco_lmt_cpy(trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_idx],lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]);
+          (void)nco_lmt_cpy(trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx],lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]);
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"<-[%d]:%s: ",lmt_idx,lmt_msa[lmt_msa_idx]->lmt_dmn[lmt_idx]->nm);
@@ -1897,7 +1897,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
         */
 
         /* Go for Option 1); this translates to a "nameless" limit, with all members NULL/invalid..except the ones below */
-        if (dmn_trv.lmt_dmn_nbr == 0)
+        if (dmn_trv.lmt_msa.lmt_dmn_nbr == 0)
         {
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Warning...no limit zone "); 
 

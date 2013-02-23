@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.70 2013-02-23 11:35:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.71 2013-02-23 22:23:19 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -63,27 +63,15 @@ trv_tbl_free
     tbl->lst_dmn[dmn_idx].nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].nm_fll);
     tbl->lst_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].grp_nm_fll);
 
-
     /* Limits */
-    /* Deprecate */
-    for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].lmt_dmn_nbr;lmt_idx++){
+    for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn_nbr;lmt_idx++){
       if(dbg_lvl_get() == nco_dbg_old){
         dmn_fll_sct dmn_trv=tbl->lst_dmn[dmn_idx];
-        (void)fprintf(stdout,"INFO limit [%d]%s done:\n",lmt_idx,dmn_trv.lmt_dmn[lmt_idx]->nm);
+        (void)fprintf(stdout,"INFO limit [%d]%s done:\n",lmt_idx,dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->nm);
       }
-      tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_idx]);
+      tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]);
     }
-    /* End Deprecate */
-
-    /* Limits for non-coordinate dimensions */
-    for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].lmt_non_crd_nbr;lmt_idx++){
-      if(dbg_lvl_get() == nco_dbg_old){
-        dmn_fll_sct dmn_trv=tbl->lst_dmn[dmn_idx];
-        (void)fprintf(stdout,"INFO limit non-coordinate [%d]%s done:\n",lmt_idx,dmn_trv.lmt_non_crd[lmt_idx]->nm);
-      }
-      tbl->lst_dmn[dmn_idx].lmt_non_crd[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].lmt_non_crd[lmt_idx]);
-    } /* Limits for non-coordinate dimensions */
-    
+    /* Limits */
 
     /* Coordinate structures */
     for(int crd_idx=0;crd_idx<tbl->lst_dmn[dmn_idx].crd_nbr;crd_idx++){
@@ -99,13 +87,13 @@ trv_tbl_free
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll);
 
       /* Limits for Coordinate structures */
-      int lmt_nbr=tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_nbr;
+      int lmt_nbr=tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;
       for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
         if(dbg_lvl_get() == nco_dbg_old){
           dmn_fll_sct dmn_trv=tbl->lst_dmn[dmn_idx];
           (void)fprintf(stdout,"INFO limit coordinates [%d]%s done:\n",lmt_idx,dmn_trv.crd[crd_idx]->nm);
         }
-        tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt[lmt_idx]);
+        tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]);
       }  /* Limits for Coordinate structures */
     } /*  Coordinate structures */
   } /* End Dimension list loop */

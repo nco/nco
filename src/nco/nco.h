@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.267 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.268 2013-02-23 22:23:19 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -609,12 +609,13 @@ extern "C" {
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     int lmt_dmn_nbr;      /* [nbr] Number of lmt arguments */
     lmt_sct **lmt_dmn;    /* [sct] List of limit structures associated with each dimension */
+    int lmt_crr;          /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
   } lmt_msa_sct;
 
   /* GTT Variable dimensions:
      Structure containing, for a variable, information for all dimensions (size of array is trv_sct.nbr_dmn at most) */
   typedef struct{ 
-    int nbr_dmn; /* [nbr][CHK] Number of dimensions of variable (same as trv_sct.nbr_dmn ) */
+    int nbr_dmn; /* [nbr] Number of dimensions of variable  */
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
     char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
     char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Full group where dimension is located  */    
@@ -628,13 +629,10 @@ extern "C" {
      Populate trv_sct structure with correct values in nco_grp_itr()
      Deep-copy each pointer member of trv_sct structure in nco_grp_itr()
      free() each pointer member of trv_sct structure in trv_tbl_free() 
-
-     Some fields in "trv_sct", "dmn_fll_sct", "var_dmn_sct" are redundant;
-     They are used either for convenience or for model validation (sanity check), or used in development stage;
-     These are marked [CHK] */
+     */
   typedef struct{ 
     char *nm_fll; /* [sng] Fully qualified name (path) */
-    var_dmn_sct var_dmn; /* [sct] Array of dimension names for variable (nbr_dmn [CHK]) */
+    var_dmn_sct var_dmn; /* [sct] Array of dimension names for variable */
     nco_bool is_crd_var; /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
     nco_bool is_rec_var; /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
     size_t nm_fll_lng; /* [sng] Length of full name */
@@ -665,51 +663,30 @@ extern "C" {
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
 
-  /* GTT coordinate variable structure; it contains NCO limit (-d) fields */
+  /* GTT coordinate variable structure; it contains NetCDF model fields and a MSA field  */
   typedef struct{ 
-    char *crd_nm_fll; /* [sng] Full coordinate name */
-    char *dmn_nm_fll; /* [sng] Full name of dimension for *this* coordinate  */
-    
-    char *crd_grp_nm_fll; /* [sng] Full group name where coordinate is located */
-    char *dmn_grp_nm_fll; /* [sng] Full group name where dimension of *this* coordinate is located */
-
-    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension and coordinate */
-    nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
-    size_t sz; /* [nbr] Size of coordinate */
-    int lmt_nbr; /* [nbr] Number of limit structures (one per -d switch for this dimension) */
-    lmt_sct **lmt; /* [sct] Limit structures associated with *this* coordinate (one per -d switch) */
-    int lmt_crr; /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
-    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
-    nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
-    nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-    long dmn_cnt; /* [nbr] Hyperslabbed size */
-    nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
+    char *crd_nm_fll;       /* [sng] Full coordinate name */
+    char *dmn_nm_fll;       /* [sng] Full name of dimension for *this* coordinate  */  
+    char *crd_grp_nm_fll;   /* [sng] Full group name where coordinate is located */
+    char *dmn_grp_nm_fll;   /* [sng] Full group name where dimension of *this* coordinate is located */
+    char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension and coordinate */
+    nco_bool is_rec_dmn;    /* [flg] Is a record dimension? */
+    size_t sz;              /* [nbr] Size of coordinate */
+    nco_bool is_crd_dmn;    /* [flg] Is there a variable with same name in dimension's scope? */
+    lmt_msa_sct lmt_msa;    /* [sct] MSA Limits structure for every coordinate */
   } crd_sct; 
 
-  /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and NCO limit (-d) fields */
+  /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and a MSA field */
   typedef struct{ 
-    char *grp_nm_fll; /* [sng] Full group name where dimension was defined */
-    char *nm_fll; /* [sng] Dimension fully qualified name (path) */
+    char *grp_nm_fll;        /* [sng] Full group name where dimension was defined */
+    char *nm_fll;            /* [sng] Dimension fully qualified name (path) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
-    nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
-    size_t sz; /* [nbr] Size of dimension */
-    
-    int crd_nbr; /* [nbr] Number of coordinate structures */
-    crd_sct **crd; /* [sct] List of coordinate structures associated with *this* dimension */
-    nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
-
-#if 1
-    int lmt_dmn_nbr; /* [nbr] Number of limit structures */ // Deprecate
-    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with *this* dimension */ // Deprecate
-#endif
-
-    int lmt_non_crd_nbr; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
-    lmt_sct **lmt_non_crd; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
-    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
-    nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
-    nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-    long dmn_cnt; /* [nbr] Hyperslabbed size */
-    int lmt_crr; /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
+    nco_bool is_rec_dmn;     /* [flg] Is a record dimension? */
+    size_t sz;               /* [nbr] Size of dimension */   
+    int crd_nbr;             /* [nbr] Number of coordinate structures */
+    crd_sct **crd;           /* [sct] List of coordinate structures associated with *this* dimension */
+    nco_bool is_crd_dmn;     /* [flg] Is there a variable with same name in dimension's scope? */
+    lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
   } dmn_fll_sct; 
  
   /* GTT (Group Traversal Table) structure contains two lists
