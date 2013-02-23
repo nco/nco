@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.265 2013-02-23 19:07:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.266 2013-02-23 19:15:58 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -597,16 +597,17 @@ extern "C" {
     size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
   } gpe_sct;
 
-  /* Container holding all limit structures indexible by dimension */
+  /* MSA Limits structure:
+     GTT has a member for every unique dimension and for every coordinate variable */
   typedef struct { /* lmt_all_sct */
-    char *dmn_nm; /* [sng] Dimension name */
-    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
-    long dmn_sz_org; /* [nbr] Size of dimension in INPUT file */
-    int lmt_dmn_nbr; /* [nbr] Number of lmt arguments */
-    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
-    nco_bool WRP; /* [flg] Limit is wrapped (true if wrapping, lmt_dmn_nbr==2) */ 
+    char *dmn_nm;         /* [sng] Dimension name */
+    long dmn_sz_org;      /* [nbr] Original size of dimension */
+    long dmn_cnt;         /* [nbr] Hyperslabbed size of dimension */  
+    nco_bool BASIC_DMN;   /* [flg] Limit is same as dimension in input file */
+    nco_bool WRP;         /* [flg] Limit is wrapped (true if wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */
+    int lmt_dmn_nbr;      /* [nbr] Number of lmt arguments */
+    lmt_sct **lmt_dmn;    /* [sct] List of limit structures associated with each dimension */
   } lmt_all_sct;
 
   /* GTT Variable dimensions:
