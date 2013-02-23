@@ -43,25 +43,31 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.67 2013-02-22 02:07:34 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.68 2013-02-23 00:52:03 pvicente Exp $";
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
   
+  //coordinate variable (/lat)
   float lat(lat);
   lat:units = "degrees_north";
   
+  //coordinate variable (/lev)
   float lev(lev);
   lev:units = "hybrid_sigma_pressure";
   lev:bounds = "ilev";
   
+  //coordinate variable (/lon)
   float lon(lon);
   lon:units = "degrees_east";
   
+  //coordinate variable (/time)
   double time(time);
   
+  //coordinate variable (/tm2)
   float tm2(tm2);
   tm2:purpose = "a short record coordinate for testing mutiple record dimensions";
   
+  //coordinate variable (/tm3)
   float tm3(tm3);
   tm3:purpose = "another short record coordinate for testing mutiple record dimensions";
   
@@ -97,8 +103,10 @@ netcdf in_grp {
   //
  group: g1 { 
   variables:
+  
+    //coordinate variable (/lon)
     float lon(lon);
-  lon:units = "g1 degrees_east";
+    lon:units = "g1 degrees_east";
     float scl;
     int g1v1;
     int v1;
@@ -122,6 +130,7 @@ netcdf in_grp {
   //
  group: g2 { 
   variables:
+    //coordinate variable (/time)
     double time(time);
     float scl;
   data:
@@ -138,8 +147,12 @@ netcdf in_grp {
     time2=unlimited;
   variables:
     :g3_group_attribute = "g3_group_attribute";
+    
+    //coordinate variable (/g3/rlev)
     float rlev(rlev);
     rlev:purpose = "Monotonically decreasing coordinate pressure";
+    
+    //coordinate variable (/g3/time2)
     double time2(time2);
     float rz(rlev);  
     float scl;
@@ -176,6 +189,8 @@ netcdf in_grp {
   dimensions:
     rlev=3;
   variables:
+  
+    //coordinate variable (/g5/rlev)
     float rlev(rlev);
   data:
     rlev=10.,5.,1.;
@@ -213,6 +228,8 @@ netcdf in_grp {
     gds_crd=8;
     
   variables:
+  
+    //coordinate variable (/g7/gds_crd)
     float gds_crd(gds_crd);
     gds_crd:long_name = "Geodesic coordinate";
     gds_crd:units = "degree";
@@ -238,7 +255,9 @@ netcdf in_grp {
     lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
     
      group: g7g1 { // Level 2  
-     variables:     
+     variables:    
+
+     //coordinate variable (/g7/gds_crd)   
      float gds_var(gds_crd);
      gds_var:units = "meter";
      gds_var:coordinates = "lat_gds lon_gds";
@@ -253,11 +272,18 @@ netcdf in_grp {
   dimensions:
     lon=2,lev=3,vrt_nbr=2;
   variables:
-    float lev(lev);
+  
+    //coordinate variable (/g8/lon)
     float lon(lon);
+    
+    //coordinate variable (/g8/lev)
+    float lev(lev); 
     lev:units = "hybrid_sigma_pressure";
     lev:bounds = "ilev";
+    
+    //coordinate variable (/g8/vrt_nbr)
     float vrt_nbr(vrt_nbr);
+    
     float ilev(lev,vrt_nbr);
   data:
     lon=-180,0; 
@@ -412,6 +438,8 @@ netcdf in_grp {
     lon1=4;  //dimension that has a coordinate variable down in scope at /g16/g16g1/lon1(lon1)
     lon2=4;  //dimension that does NOT have a coordinate variable anywhere 
     variables:
+    
+    //coordinate variable (/lat)
     float lat1(lat);
     //NOTE: attempting to define float lat1(lat1); is not legal: ncgen: Undefined or forward referenced dimension: lat1
     //But we can try to define a dimension lat1 anyway down in the group path for NCO testing/sanity check
@@ -427,7 +455,7 @@ netcdf in_grp {
      lat1=2; //dimension that has a variable /lat1 down in *illegal* scope 
      variables:
      // MSA test -v lon1_var -d lon1,3.0, result is 3.
-     float lon1(lon1);  //coordinate variable /g16/g16g1/lon1(lon1) that has dimension /lon1 in scope
+     float lon1(lon1);  //coordinate variable /g16/g16g1/lon1 that has dimension (/g16/lon1) in scope
      float lon1_var(lon1); //variable with  associated coordinate variable down in scope at /lon1
      data:
      lon1=0.,1.,2.,3.;
@@ -437,6 +465,7 @@ netcdf in_grp {
     group: g16g2 { 
      dimensions:
      variables:
+     //coordinate variable (/g16/lon1)
      float lon1(lon1); // MSA test -v lon1_var -d lon1,3.0, result is 0.,1.,2.,3.
      float lon1_var(lon1); //
      data:
