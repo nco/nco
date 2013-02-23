@@ -1,3 +1,9 @@
+2013-02-22  Charlie Zender  <zender@uci.edu>
+
+	* Implement new nco_cpy_var_dfn() API which uses GPE and nco_inq_dmn_grp_id()
+	New routines only called when dbg_lvl=5. Still buggy.
+	Old routines, invoked when dbg_lvl != 5, work fine.
+
 2013-02-21  Pedro Vicente  <pvicente@uci.edu>
 
         * ncks, ncbo, ncecat: aggregate building of GTT (Group Traversal Table) into a function

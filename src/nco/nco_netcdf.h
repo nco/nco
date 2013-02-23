@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.93 2013-01-18 19:18:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.94 2013-02-23 02:02:42 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -133,6 +133,7 @@ int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int 
 int nco_inq_grp_ncid(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_inq_grp_parent(const int nc_id,int * const prn_id);
+int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id);
 int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids);
 /* End Group routines */
 

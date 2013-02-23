@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.83 2013-02-21 08:39:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.84 2013-02-23 02:02:42 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -32,6 +32,7 @@
 #include "nco_att_utl.h" /* Attribute utilities */
 #include "nco_bnr.h" /* Binary write utilities */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_dmn_utl.h" /* Dimension utilities */
 #include "nco_md5.h" /* MD5 digests */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mss_val.h" /* Missing value utilities */
@@ -40,14 +41,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
-  int /* O [id] Output file variable ID */
-  nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
-  (const int in_id, /* I [id] netCDF input file ID */
-   const int out_id, /* I [id] netCDF output file ID */
-   const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
-   const char * const var_nm, /* I [sng] Input variable name */
-   const int dfl_lvl); /* I [enm] Deflate level [0..9] */
 
   void
   nco_cpy_var_val /* [fnc] Copy variable data from input to output file, no limits */
@@ -170,15 +163,16 @@ extern "C" {
   (var_sct * const var_1, /* I/O [sct] Variable */
    var_sct * const var_2); /* I/O [sct] Related variable */
 
-int                                 /* O [id] Output file variable ID */
-nco_cpy_var_dfn_lmt_trv             /* [fnc] Copy variable metadata from input to output file */
-(const int in_id,                   /* I [id] netCDF input file ID */
- const int out_id,                  /* I [id] netCDF output file ID */
- const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
- const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
- const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
- const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
-
+  int                                 /* O [id] Output file variable ID */
+  nco_cpy_var_dfn                     /* [fnc] Define specified variable in output file */
+  (const int in_id,                   /* I [id] netCDF input file ID */
+   const int out_id,                  /* I [id] netCDF output file ID */
+   const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
+   const gpe_sct * const gpe,         /* I [sct] GPE structure */
+   const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
+   const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
+   const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

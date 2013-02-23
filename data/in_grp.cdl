@@ -43,7 +43,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.69 2013-02-23 01:01:55 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.70 2013-02-23 02:02:41 zender Exp $";
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
   
@@ -437,8 +437,6 @@ netcdf in_grp {
     lon2=4;  //dimension that does NOT have a coordinate variable anywhere 
     variables:
     float lat1(lat);
-    //NOTE: attempting to define float lat1(lat1); is not legal: ncgen: Undefined or forward referenced dimension: lat1
-    //But we can try to define a dimension lat1 anyway down in the group path for NCO testing/sanity check
     float lon2_var(lon2); //variable with no associated coordinate variable
     data:
     lat1=0.,1.;

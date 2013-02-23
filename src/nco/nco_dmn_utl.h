@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.37 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.38 2013-02-23 02:02:42 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -107,17 +107,21 @@ nco_dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
 (dmn_sct * const dmn_1, /* I/O [sct] Dimension structure */
  dmn_sct * const dmn_2); /* I/O [sct] Dimension structure */
 
-
 void 
-nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
-(dmn_sct ** const dim_1, /* I [sct] Dimension list 1 */
- const int nbr_dmn_1,  /* I [nbr] Number of dimension structures in structure list */
- dmn_sct **const dim_2,  /* I [sct] Dimension list 1 */
- const int nbr_dmn_2,  /* I [nbr] Number of dimension structures in structure list */
+nco_dmn_sct_cmp /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
+(dmn_sct ** const dim_1n, /* I [sct] Dimension list 1 */
+ const int nbr_dmn_1, /* I [nbr] Number of dimension structures in structure list */
+ dmn_sct **const dim_2, /* I [sct] Dimension list 1 */
+ const int nbr_dmn_2, /* I [nbr] Number of dimension structures in structure list */
  const char *const fl_sng_1, /* I [sng] Name of first file */
- const char *fl_sng_2);     /* I [sng] Name of second file */
+ const char *fl_sng_2); /* I [sng] Name of second file */
 
-
+int /* O [flg] Dimension exists in scope of group (if rcd != NC_NOERR) */
+nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specified group */
+(const int nc_id, /* I [id] netCDF group ID */
+ const char * const dmn_nm, /* I [sng] Dimension name */
+ int * const dmn_id, /* O [id] Dimension ID in specified group */
+ int * const grp_id_dmn); /* O [id] Group ID where dimension visible to specified group is defined */
 
 #ifdef __cplusplus
 } /* end extern "C" */

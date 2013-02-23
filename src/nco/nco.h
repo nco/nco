@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.259 2013-02-23 01:26:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.260 2013-02-23 02:02:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -630,8 +630,7 @@ extern "C" {
 
      Some fields in "trv_sct", "dmn_fll_sct", "var_dmn_sct" are redundant;
      They are used either for convenience or for model validation (sanity check), or used in development stage;
-     These are marked [CHK]   
-     */
+     These are marked [CHK] */
   typedef struct{ 
     char *nm_fll; /* [sng] Fully qualified name (path) */
     var_dmn_sct var_dmn; /* [sct] Array of dimension names for variable (nbr_dmn [CHK]) */
@@ -665,9 +664,7 @@ extern "C" {
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
 
-  /* GTT coordinate variable structure; it contains NCO limit (-d) fields 
-     */
-
+  /* GTT coordinate variable structure; it contains NCO limit (-d) fields */
   typedef struct{ 
     char *crd_nm_fll; /* [sng] Full coordinate name */
     char *dmn_nm_fll; /* [sng] Full name of dimension for *this* coordinate  */
@@ -688,8 +685,7 @@ extern "C" {
     nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
   } crd_sct; 
 
-  /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and NCO limit (-d) fields 
-     */
+  /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and NCO limit (-d) fields */
   typedef struct{ 
     char *grp_nm_fll; /* [sng] Full group name where dimension was defined */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
@@ -712,9 +708,7 @@ extern "C" {
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     long dmn_cnt; /* [nbr] Hyperslabbed size */
     int lmt_crr; /* [nbr] Index of current limit structure being initialized */
-
   } dmn_fll_sct; 
-
  
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
