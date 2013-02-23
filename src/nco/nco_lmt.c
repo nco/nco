@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.173 2013-02-21 08:06:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.174 2013-02-23 08:50:19 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1227,13 +1227,15 @@ no_data_ok: /* end goto */
 
 } /* end nco_lmt_evl() */
 
+
+/* Deprecate */
 void                      
 nco_lmt_evl_dmn_trv            /* [fnc] Parse user-specified limits into hyperslab specifications (trv version) */
 (const int nc_id,              /* I [ID] netCDF file ID */
  lmt_sct *lmt_ptr,             /* I/O [sct] Structure from nco_lmt_prs()  */
  long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
- dmn_fll_sct *dmn_trv)         /* I/O [sct] Structure from GTT (unique dimension in table list, defined in a *group*) */
+ dmn_fll_sct *dmn_trv)         /* I [sct] Structure from GTT (unique dimension in table list, defined in a *group*) */
 {
   /* Purpose: Take parsed list of dimension names, minima, and maxima strings and find appropriate indices into dimensions 
   for formulation of dimension start and count vectors, or fail trying. 
@@ -1996,7 +1998,52 @@ no_data_ok: /* end goto */
 
 
 
+void                      
+nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hyperslab specifications */
+(const int nc_id,              /* I [ID] netCDF file ID */
+ long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
+ nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
+ const char * const grp_nm_fll,/* I [sng] Full group name (dimension or coordinate) */
+ const char * const nm,        /* I [sng] Name (dimension or coordinate) */
+ const size_t sz,              /* I [nbr] Size (dimension or coordinate) */
+ const nco_bool is_crd,        /* I [flg] Is a coordinate variable ? */
+ lmt_sct *lmt_ptr)             /* I/O [sct] Structure from nco_lmt_prs() in input, filled on output  */
+{
 
+  /* Purpose: Take parsed list of dimension names, minima, and maxima strings and find appropriate indices into dimensions 
+  for formulation of dimension start and count vectors, or fail trying. 
+
+  Based on original nco_lmt_evl(). Differrences are marked GTT
+
+  1) Used for both dimensions and coordinate variables
+
+  Use case example:
+  /lon(4)
+  /g8/lon(2)
+  ncks -d lon,0,3,1 -v lon -H ~/nco/data/in_grp.nc
+  "-d lon,0,3,1" is valid for /lon(4) but not for /g8/lon(2)
+
+  Reminder:
+  Coordinate values should be specified using real notation with a decimal point required in the value, 
+  whereas dimension indices are specified using integer notation without a decimal point.
+
+  ncks -d lat,-90.,90.,1 -H -v area ~/nco/data/in_grp.nc  # limit type is defined as lmt_crd_val
+  ncks -d lat,0,1,1 -H -v area ~/nco/data/in_grp.nc  # limit type is defined as lmt_dmn_idx
+
+  lmt_crd_val,  0, Coordinate value limit 
+  lmt_dmn_idx,  1, Dimension index limit 
+  lmt_udu_sng   2, UDUnits string 
+
+  Tests:
+  ncks -D 11 -d lon,0.,90.,1 -v lon -H ~/nco/data/in_grp.nc
+  ncks -D 11 -d lon,0,1,1 -v lon -H ~/nco/data/in_grp.nc
+  */
+
+  const char fnc_nm[]="nco_lmt_evl_dmn_trv()"; /* [sng] Function name */
+
+
+
+}
 
 
 
