@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.223 2013-02-22 10:02:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.224 2013-02-23 04:05:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -229,15 +229,6 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
-nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I/O [sct] Structure comming from nco_lmt_prs() */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-void
 nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
  char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
@@ -304,6 +295,26 @@ nco_blb_crd_rec_var_trv               /* [fnc] Build dimension information for a
 void                      
 nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
+
+
+void
+nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

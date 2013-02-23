@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.515 2013-02-23 02:02:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.516 2013-02-23 04:05:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2639,11 +2639,161 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Build GTT "crd_sct" coordinate variable structure */
   (void)nco_blb_crd_var_trv(trv_tbl);
 
-  /* Build Limits */
-
-
+  /* Add dimension limits to traversal table */
+  if(lmt_nbr)(void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
 } /* nco_bld_trv_tbl() */
+
+
+void                      
+nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
+(trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Build GTT "crd_sct" coordinate variable structure */
+
+  const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
+
+  /* Step 1) Find the total number of coordinate variables for every dimension */
+
+  /* Loop unique dimensions list in groups */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+    /* Loop all objects */
+    for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+      trv_sct var_trv=trv_tbl->lst[var_idx];
+
+      /* Interested in variables only */
+      if(var_trv.typ == nco_obj_typ_var){
+
+        /* Is there a variable with this dimension name anywhere? (relative name)  */
+        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
+
+          /* Is variable in scope of dimension ? */
+          if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
+
+            /* Increment the number of coordinate variables for this dimension */
+            trv_tbl->lst_dmn[dmn_idx].crd_nbr++;
+
+          }/* Is variable in scope of dimension ? */
+        } /* Is there a variable with this dimension name anywhere? (relative name)  */
+      } /* Interested in variables only */
+    } /* Loop all objects */
+  } /* Loop unique dimensions list in groups */
+
+
+  /* Step 2) Allocate coordinate variables array (crd_sct **) for every dimension */
+
+  /* Loop unique dimensions list in groups */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+    /* Loop all objects */
+    for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+      trv_sct var_trv=trv_tbl->lst[var_idx];
+
+      /* Interested in variables only */
+      if(var_trv.typ == nco_obj_typ_var){
+
+        /* Is there a variable with this dimension name anywhere? (relative name)  */
+        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
+
+          /* Is variable in scope of dimension ? */
+          if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
+
+            /* Total number of coordinate variables for this dimension */
+            int crd_nbr=trv_tbl->lst_dmn[dmn_idx].crd_nbr;
+
+            /* Alloc coordinate array if there are any coordinates */
+            if (crd_nbr) trv_tbl->lst_dmn[dmn_idx].crd=(crd_sct **)nco_malloc(crd_nbr*sizeof(crd_sct *));
+
+          }/* Is variable in scope of dimension ? */
+        } /* Is there a variable with this dimension name anywhere? (relative name)  */
+      } /* Interested in variables only */
+    } /* Loop all objects */
+  } /* Loop unique dimensions list in groups */
+
+
+
+  /* Step 3) Allocate/Initialize every coordinate variable array for every dimension */
+
+  /* Loop unique dimensions list in groups */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+    int crd_idx=0; /* [nbr] Coordinate index for current dimension */
+
+    /* Loop all objects */
+    for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+      trv_sct var_trv=trv_tbl->lst[var_idx];
+
+      /* Interested in variables only */
+      if(var_trv.typ == nco_obj_typ_var){
+
+        /* Is there a variable with this dimension name anywhere? (relative name)  */
+        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: INFO %s looking for possible coordinate variable <%s>:\n",prg_nm_get(),fnc_nm,
+              var_trv.nm_fll);
+          }
+
+          /* Is variable in scope of dimension ? */
+          if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
+
+
+            /* Total number of coordinate variables for this dimension */
+            int crd_nbr=trv_tbl->lst_dmn[dmn_idx].crd_nbr;
+
+            /* Alloc this coordinate */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]=(crd_sct *)nco_malloc(sizeof(crd_sct));
+
+            /* Initialize this coordinate:           
+            "crd_sct" has 4 full names:
+            crd_nm_fll;      [sng] Full coordinate name 
+            dmn_nm_fll;      [sng] Full name of dimension for *this* coordinate  
+            crd_grp_nm_fll;  [sng] Full group name where coordinate is located 
+            dmn_grp_nm_fll;  [sng] Full group name where dimension of *this* coordinate is located 
+            */
+
+            /* The coordinate full name is the variable full name found in scope */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll=strdup(var_trv.nm_fll);
+
+            /* The dimension full name is the dimension full name */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=strdup(dmn_trv.nm_fll);
+
+            /* Full group name where coordinate is located is the variable full group name  */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll=strdup(var_trv.grp_nm_fll);
+
+            /* Full group name where dimension of *this* coordinate is located is the full group name of the dimension  */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
+
+
+            /* Store relative name (same for dimension and variable) */
+            strcpy(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm,var_trv.nm);
+
+            /* Is a record dimension(variable) if the dimennsion is a record dimension */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->is_rec_dmn=dmn_trv.is_crd_dmn;
+
+            /* Size is size */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->sz=dmn_trv.sz;
+
+            /* Limits */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_nbr=0;
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_crr=0;
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt=NULL;
+
+
+            /* Incrementr coordinate index for current dimension */
+            crd_idx++;
+
+          }/* Is variable in scope of dimension ? */
+        } /* Is there a variable with this dimension name anywhere? (relative name)  */
+      } /* Interested in variables only */
+    } /* Loop all objects */
+  } /* Loop unique dimensions list in groups */
+
+} /* nco_blb_crd_var_trv() */
 
 
 /* Deprecate */
@@ -2877,156 +3027,15 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
 } /* End nco_bld_lmt_trv() */
 
-
-void                      
-nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
-(trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+void
+nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
-  /* Purpose: Build GTT "crd_sct" coordinate variable structure */
 
-  const char fnc_nm[]="nco_blb_crd_var_trv()"; /* [sng] Function name */
-
-  /* Step 1) Find the total number of coordinate variables for every dimension */
-
-  /* Loop unique dimensions list in groups */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-
-    /* Loop all objects */
-    for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-      trv_sct var_trv=trv_tbl->lst[var_idx];
-
-      /* Interested in variables only */
-      if(var_trv.typ == nco_obj_typ_var){
-
-        /* Is there a variable with this dimension name anywhere? (relative name)  */
-        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
-
-          /* Is variable in scope of dimension ? */
-          if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
-
-            /* Increment the number of coordinate variables for this dimension */
-            trv_tbl->lst_dmn[dmn_idx].crd_nbr++;
-
-          }/* Is variable in scope of dimension ? */
-        } /* Is there a variable with this dimension name anywhere? (relative name)  */
-      } /* Interested in variables only */
-    } /* Loop all objects */
-  } /* Loop unique dimensions list in groups */
-
-
-  /* Step 2) Allocate coordinate variables array (crd_sct **) for every dimension */
-
-  /* Loop unique dimensions list in groups */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-
-    /* Loop all objects */
-    for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-      trv_sct var_trv=trv_tbl->lst[var_idx];
-
-      /* Interested in variables only */
-      if(var_trv.typ == nco_obj_typ_var){
-
-        /* Is there a variable with this dimension name anywhere? (relative name)  */
-        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
-
-          /* Is variable in scope of dimension ? */
-          if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
-
-            /* Total number of coordinate variables for this dimension */
-            int crd_nbr=trv_tbl->lst_dmn[dmn_idx].crd_nbr;
-
-            /* Alloc coordinate array if there are any coordinates */
-            if (crd_nbr) trv_tbl->lst_dmn[dmn_idx].crd=(crd_sct **)nco_malloc(crd_nbr*sizeof(crd_sct *));
-
-          }/* Is variable in scope of dimension ? */
-        } /* Is there a variable with this dimension name anywhere? (relative name)  */
-      } /* Interested in variables only */
-    } /* Loop all objects */
-  } /* Loop unique dimensions list in groups */
-
-
-
-  /* Step 3) Allocate/Initialize every coordinate variable array for every dimension */
-
-  /* Loop unique dimensions list in groups */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-
-    int crd_idx=0; /* [nbr] Coordinate index for current dimension */
-
-    /* Loop all objects */
-    for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-      trv_sct var_trv=trv_tbl->lst[var_idx];
-
-      /* Interested in variables only */
-      if(var_trv.typ == nco_obj_typ_var){
-
-        /* Is there a variable with this dimension name anywhere? (relative name)  */
-        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
-
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: INFO %s looking for possible coordinate variable <%s>:\n",prg_nm_get(),fnc_nm,
-              var_trv.nm_fll);
-          }
-
-          /* Is variable in scope of dimension ? */
-          if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
-
-
-            /* Total number of coordinate variables for this dimension */
-            int crd_nbr=trv_tbl->lst_dmn[dmn_idx].crd_nbr;
-
-            /* Alloc this coordinate */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]=(crd_sct *)nco_malloc(sizeof(crd_sct));
-
-            /* Initialize this coordinate:           
-            "crd_sct" has 4 full names:
-            crd_nm_fll;      [sng] Full coordinate name 
-            dmn_nm_fll;      [sng] Full name of dimension for *this* coordinate  
-            crd_grp_nm_fll;  [sng] Full group name where coordinate is located 
-            dmn_grp_nm_fll;  [sng] Full group name where dimension of *this* coordinate is located 
-            */
-
-            /* The coordinate full name is the variable full name found in scope */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll=strdup(var_trv.nm_fll);
-
-            /* The dimension full name is the dimension full name */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=strdup(dmn_trv.nm_fll);
-
-            /* Full group name where coordinate is located is the variable full group name  */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll=strdup(var_trv.grp_nm_fll);
-
-            /* Full group name where dimension of *this* coordinate is located is the full group name of the dimension  */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
-
-
-            /* Store relative name (same for dimension and variable) */
-            strcpy(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm,var_trv.nm);
-
-            /* Is a record dimension(variable) if the dimennsion is a record dimension */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->is_rec_dmn=dmn_trv.is_crd_dmn;
-
-            /* Size is size */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->sz=dmn_trv.sz;
-
-            /* Limits */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_nbr=0;
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_crr=0;
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt=NULL;
-
-
-            /* Incrementr coordinate index for current dimension */
-            crd_idx++;
-
-          }/* Is variable in scope of dimension ? */
-        } /* Is there a variable with this dimension name anywhere? (relative name)  */
-      } /* Interested in variables only */
-    } /* Loop all objects */
-  } /* Loop unique dimensions list in groups */
-
-} /* nco_blb_crd_var_trv() */
-
-
+}
 
