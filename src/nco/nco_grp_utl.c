@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.524 2013-02-23 08:50:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.525 2013-02-23 09:38:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3197,7 +3197,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
           if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
 
           /* Parse user-specified limits into hyperslab specifications. NOTE: Use False parameter */
-          (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,dmn_trv.grp_nm_fll,dmn_trv.nm,dmn_trv.sz,False,lmt[lmt_idx]);
+          (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,dmn_trv.grp_nm_fll,dmn_trv.nm,dmn_trv.sz,dmn_trv.is_rec_dmn,False,lmt[lmt_idx]);
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
