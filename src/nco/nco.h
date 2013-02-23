@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.262 2013-02-23 05:01:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.263 2013-02-23 07:36:57 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -677,7 +677,7 @@ extern "C" {
     size_t sz; /* [nbr] Size of dimension */
     int lmt_nbr; /* [nbr] Number of limit structures (one per -d switch for this dimension) */
     lmt_sct **lmt; /* [sct] Limit structures associated with *this* coordinate (one per -d switch) */
-    int lmt_crr; /* [nbr] Index of current limit structure being initialized */
+    int lmt_crr; /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -708,7 +708,7 @@ extern "C" {
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     long dmn_cnt; /* [nbr] Hyperslabbed size */
-    int lmt_crr; /* [nbr] Index of current limit structure being initialized */
+    int lmt_crr; /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
   } dmn_fll_sct; 
  
   /* GTT (Group Traversal Table) structure contains two lists

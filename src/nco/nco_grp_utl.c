@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.520 2013-02-23 07:06:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.521 2013-02-23 07:36:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3103,6 +3103,55 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       } /* b) case of dimension only (there is no coordinate variable for this dimension */
     } /* Loop dimensions  */
   } /* Loop input name list (can have duplicate names)  */
+
+
+  /* Step 2) Allocate lmt_sct ** and initialize counter index for number of limits to zero  */
+
+  /* Loop dimensions, that now have already distributed limits and initialize limit information */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx];
+
+    /*  The limits are now separated to */
+
+    /* a) case where the dimension has coordinate variables */
+    if (dmn_trv.crd_nbr){
+
+      /* Loop coordinates */
+      for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
+        crd_sct *crd=dmn_trv.crd[crd_idx];
+
+        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt=NULL;
+
+        /* Alloc limits if there are any */
+        if (crd->lmt_nbr) trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt=(lmt_sct **)nco_malloc(crd->lmt_nbr*sizeof(lmt_sct *));
+        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_crr=0;
+        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->WRP=False;
+        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->BASIC_DMN=True;
+        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->MSA_USR_RDR=False;
+
+      }/* Loop coordinates */
+    }else{
+      /* b) case of dimension only (there is no coordinate variable for this dimension */
+
+      trv_tbl->lst_dmn[dmn_idx].lmt_non_crd=NULL;
+
+      /* Alloc limits if there are any */
+      if (dmn_trv.lmt_non_crd_nbr) trv_tbl->lst_dmn[dmn_idx].lmt_non_crd=(lmt_sct **)nco_malloc(dmn_trv.lmt_non_crd_nbr*sizeof(lmt_sct *));
+      trv_tbl->lst_dmn[dmn_idx].lmt_crr=0;
+      trv_tbl->lst_dmn[dmn_idx].WRP=False;
+      trv_tbl->lst_dmn[dmn_idx].BASIC_DMN=True;
+      trv_tbl->lst_dmn[dmn_idx].MSA_USR_RDR=False;  
+
+      /* Initialize hyperslabed size with the dimension size; this value is modified by MSA only 
+      if there are limits for this dimension */ 
+      trv_tbl->lst_dmn[dmn_idx].dmn_cnt=dmn_trv.sz;
+
+    } /* b) case of dimension only (there is no coordinate variable for this dimension */
+  } /* Loop dimensions, that now have already distributed limits and initialize limit information */
+
+
+
+
 
 } /* nco_bld_lmt() */
 
