@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.518 2013-02-23 04:32:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.519 2013-02-23 05:01:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2829,12 +2829,6 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
   const char fnc_nm[]="nco_bld_lmt_trv()"; /* [sng] Function name  */
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits: ",prg_nm_get(),fnc_nm,lmt_nbr);
-    for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++)(void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
-    (void)fprintf(stdout,"\n");      
-  } /* endif dbg */
-
   /* Step 1) Find the total numbers of matches for a dimension */
 
   /* Loop input name list (can have duplicate names)  */
@@ -3035,6 +3029,55 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
+  /* Purpose: Assign user-specified dimension limits to traversal table  
+  At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known 
+  Steps:
+
+  Step 1) Find the total numbers of matches for a dimension
+  ncks -d lon,0,0,1  ~/nco/data/in_grp.nc
+  Here "lmt_nbr" is 1 and there is 1 match at most
+  ncks -d lon,0,0,1 -d lon,0,0,1 -d lat,0,0,1  ~/nco/data/in_grp.nc
+  Here "lmt_nbr" is 3 and there are 2 matches at most for "lon" and 1 match at most for "lat"
+  The limits have to be separated to 
+  a) case of coordinate variables
+  b) case of dimension only (there is no coordinate variable for that dimension)
+
+  Step 2) Allocate and initialize counter index for number of limits to zero for a dimension;  
+  "lmt_dmn_nbr" needed from Step 1; initialize dimension structure limit information
+
+  Step 3) Deep copy matches to table, match at the current index, increment current index
+  [ID] Dimension ID is set to -1 (Traversal code should be ID free)
+
+  Step 4) Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) ) 
+  At this point lmt_sct is no longer needed;  
+
+  Tests:
+  ncks -D 11 -d lon,0,0,1 -d lon,1,1,1 -d lat,0,0,1 -d time,1,2,1 -d time,6,7,1 -v lon,lat,time -H ~/nco/data/in_grp.nc
+  ncks -D 11 -d time,8,9 -d time,0,2  -v time -H ~/nco/data/in_grp.nc
+  ncks -D 11 -d time,8,2 -v time -H ~/nco/data/in_grp.nc # wrapped limit
+  */
+
+  const char fnc_nm[]="nco_bld_lmt()"; /* [sng] Function name  */
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits: ",prg_nm_get(),fnc_nm,lmt_nbr);
+    for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++)(void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
+    (void)fprintf(stdout,"\n");      
+  } /* endif dbg */
+
+  /* Step 1) Find the total numbers of matches for a dimension */
+
+  /* Loop input name list (can have duplicate names)  */
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+    /* Loop dimensions  */
+    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+
+
+
+    } /* Loop dimensions  */
+  } /* Loop input name list (can have duplicate names)  */
 
 }
 

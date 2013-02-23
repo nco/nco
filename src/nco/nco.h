@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.261 2013-02-23 04:32:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.262 2013-02-23 05:01:52 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -693,23 +693,22 @@ extern "C" {
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
     size_t sz; /* [nbr] Size of dimension */
     
-    int lmt_non_crd_nbr; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
-    lmt_sct **lmt_non_crd; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
-
     int crd_nbr; /* [nbr] Number of coordinate structures */
     crd_sct **crd; /* [sct] List of coordinate structures associated with *this* dimension */
-
     nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
 
 #if 1
     int lmt_dmn_nbr; /* [nbr] Number of limit structures */ // Deprecate
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with *this* dimension */ // Deprecate
+#endif
+
+    int lmt_non_crd_nbr; /* [nbr] Number of limit structures for non-coordinate dimensions (one per -d switch) */
+    lmt_sct **lmt_non_crd; /* [sct] Limit structure (valid only for non-coordinate dimensions (one per -d switch) */
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP; /* [flg] Limit is wrapped (true iff wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     long dmn_cnt; /* [nbr] Hyperslabbed size */
     int lmt_crr; /* [nbr] Index of current limit structure being initialized */
-#endif
   } dmn_fll_sct; 
  
   /* GTT (Group Traversal Table) structure contains two lists
