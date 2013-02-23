@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.268 2013-02-23 22:23:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.269 2013-02-23 22:39:24 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -672,7 +672,6 @@ extern "C" {
     char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension and coordinate */
     nco_bool is_rec_dmn;    /* [flg] Is a record dimension? */
     size_t sz;              /* [nbr] Size of coordinate */
-    nco_bool is_crd_dmn;    /* [flg] Is there a variable with same name in dimension's scope? */
     lmt_msa_sct lmt_msa;    /* [sct] MSA Limits structure for every coordinate */
   } crd_sct; 
 
@@ -685,8 +684,9 @@ extern "C" {
     size_t sz;               /* [nbr] Size of dimension */   
     int crd_nbr;             /* [nbr] Number of coordinate structures */
     crd_sct **crd;           /* [sct] List of coordinate structures associated with *this* dimension */
-    nco_bool is_crd_dmn;     /* [flg] Is there a variable with same name in dimension's scope? */
     lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
+
+    //nco_bool is_crd_dmn;   /* [flg] Is there a variable with same name in dimension's scope? */
   } dmn_fll_sct; 
  
   /* GTT (Group Traversal Table) structure contains two lists

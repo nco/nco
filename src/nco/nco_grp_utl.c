@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.529 2013-02-23 22:23:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.530 2013-02-23 22:39:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2388,7 +2388,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
     trv_tbl->lst_dmn[idx].crd_nbr=0;         /* [nbr] Number of coordinate structures */
     trv_tbl->lst_dmn[idx].crd=NULL;          /* [sct] List of coordinate structures associated with *this* dimension */
-    trv_tbl->lst_dmn[idx].is_crd_dmn=False;  /* [flg] Is there a variable with same name in dimension's scope? */
+    //trv_tbl->lst_dmn[idx].is_crd_dmn=False;  /* [flg] Is there a variable with same name in dimension's scope? */
 
     /* Free constructed name */
     dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
@@ -2754,7 +2754,7 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             strcpy(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm,var_trv.nm);
 
             /* Is a record dimension(variable) if the dimennsion is a record dimension */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->is_rec_dmn=dmn_trv.is_crd_dmn;
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->is_rec_dmn=dmn_trv.is_rec_dmn;
 
             /* Size is size */
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->sz=dmn_trv.sz;
