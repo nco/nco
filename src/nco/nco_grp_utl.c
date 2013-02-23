@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.525 2013-02-23 09:38:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.526 2013-02-23 11:35:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3176,17 +3176,42 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
           /* Match input *relative* name to coordinate relative name */ 
           if(strcmp(lmt[lmt_idx]->nm,crd->nm) == 0){
 
+            /* Limit is same as dimension in input file ? */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->BASIC_DMN=False;
+
+            /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
+            (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,lmt[lmt_idx]);
+
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
+                prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
+            }
 
 
-           
+            /* Current index (lmt_crr) of dimension limits for this (dmn_idx) table dimension  */
+            int lmt_crr=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_crr;
 
+            /* Increment current index being initialized  */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_crr++;
 
+            /* Alloc this limit */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 
+            /* Initialize this entry */
+            (void)nco_lmt_init(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt[lmt_crr]);
+
+            /* Store this valid input; deep-copy to table */ 
+            (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt[lmt_crr]);
+
+            /* Print copy in table */ 
+            if(dbg_lvl_get() == nco_dbg_old){
+              (void)nco_lmt_prt(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt[lmt_crr]);
+            }
 
           } /* End Match input name to table name */ 
         }/* Loop coordinates */
       }else{
-        /* b) case of dimension only (there is no coordinate variable for this dimension */
+        /* b) case of dimension only (there is no coordinate variable for this dimension) */
 
         /* Match input *relative* name to dimension relative name */ 
         if(strcmp(lmt[lmt_idx]->nm,dmn_trv.nm) == 0){
@@ -3196,7 +3221,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
           if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
 
-          /* Parse user-specified limits into hyperslab specifications. NOTE: Use False parameter */
+          /* Parse user-specified limits into hyperslab specifications. NOTE: Use False parameter and "dmn" */
           (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,dmn_trv.grp_nm_fll,dmn_trv.nm,dmn_trv.sz,dmn_trv.is_rec_dmn,False,lmt[lmt_idx]);
 
           if(dbg_lvl_get() >= nco_dbg_dev){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.176 2013-02-23 10:30:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.177 2013-02-23 11:35:46 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -2049,6 +2049,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   nco_bool rec_dmn_and_mfo=False; /* [flg] True if record dimension in multi-file operator */
   nco_bool NCO_SYNTAX_ERROR=False;/* [flg] Syntax error in hyperslab specification */
 
+  dmn_sct dim;                     /* [sct] Dimension Structure  */
+
   lmt_sct lmt;                     /* [sct] Structure from nco_lmt_prs()  */
 
   int min_lmt_typ=int_CEWI;
@@ -2075,17 +2077,14 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   prg_id=prg_get(); 
 
   /* Initialize limit structure */
+  /* TODO: fxm pvn Initialize all members of "lmt" */
+
   lmt.flg_mro=False;
   lmt.max_val=0.0;
   lmt.min_val=0.0;
   lmt.drn=1L;
   lmt.srd=1L;
   lmt.flg_input_complete=False;
-
-  is_crd_var=False;
-
-  /* Limit name and dimension/or coordinate name must be the same */
-  assert(strcmp(lmt.nm,nm) == 0);
 
   /* Obtain group ID using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
@@ -2094,9 +2093,21 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   rcd=nco_inq_varid_flg(grp_id,nm,&var_id);
   if(rcd != NC_NOERR) is_crd_var=False; else is_crd_var=True;
 
+  if(dbg_lvl_get() == nco_dbg_old){
+    if (is_crd_var == False )
+      (void)fprintf(stdout,"%s: INFO %s dimension <%s> does not have a coordinate variable:\n",prg_nm_get(),fnc_nm,
+      nm);
+  }
+
   /* Get coordinate type */
   if (is_crd_var == True ) (void)nco_inq_vartype(grp_id,var_id,&var_typ);
 
+  /* Get dimension ID. NOTE: using group ID */
+  rcd=nco_inq_dimid_flg(grp_id,lmt.nm,&lmt.id);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",prg_nm_get(),lmt.nm);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
 
   /* Logic on whether to allow skipping current file depends on whether limit
   is specified for record dimension in multi-file operators.
@@ -2104,13 +2115,29 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   the limit is a record limit may be tested.
   Program defensively and define this flag in all cases. */
 
+#ifdef IDS_NOT_ALLOWED
+  (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
+  if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
+  if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
+#else /* IDS_NOT_ALLOWED */
+
+  if(prg_id == ncks) rec_dmn_and_mfo=False;
+
   /* Use info from parameter */
   lmt.is_rec_dmn=is_rec;
 
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
 
-  /* No need to inquire netCDF: parameter  already has the dimension size  */
-  dmn_sz=sz;
+#endif /* IDS_NOT_ALLOWED */
+
+  /* Get dimension size. NOTE: using group ID */
+  (void)nco_inq_dimlen(grp_id,lmt.id,&dim.sz);
+
+  /* Shortcut to avoid indirection */
+  dmn_sz=dim.sz;
+
+  /* No need to inquire netCDF: "sz" already has the dimension size, but do it for sanity check */
+  assert(dmn_sz == sz);
 
   if(rec_dmn_and_mfo){
     lmt.rec_dmn_sz=dmn_sz;
@@ -2202,8 +2229,11 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   /* Coordinate re-basing code */
   lmt.origin=0.0;
 
+  /* Get variable ID of coordinate. NOTE: using group ID */
+  rcd=nco_inq_varid_flg(grp_id,lmt.nm,&dim.cid);
+
   /* If there is a coordinate variable */
-  if(is_crd){
+  if(rcd == NC_NOERR){
 
     char *cln_sng=NULL_CEWI;
 
@@ -2243,7 +2273,6 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     /* Allocate enough space to hold coordinate */
     dmn_val_dp=(double *)nco_malloc(dmn_sz*nco_typ_lng(NC_DOUBLE));
 
-
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
@@ -2253,10 +2282,11 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       /* 20110221: replace nco_get_vara() with nc_get_vara_double() */
       /* Retrieve this coordinate */
       rcd=nc_get_vara_double(grp_id,var_id,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
-    } /* end OpenMP critical */
 
-    /* Exit if read error */
-    if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_get_vara_double()");
+      /* Exit if read error */
+      if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_get_vara_double()");
+
+    } /* end OpenMP critical */
 
     /* Officially change type */
     var_typ=NC_DOUBLE;

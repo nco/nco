@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.69 2013-02-23 07:06:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.70 2013-02-23 11:35:46 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -75,7 +75,6 @@ trv_tbl_free
     }
     /* End Deprecate */
 
-#if 0
     /* Limits for non-coordinate dimensions */
     for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].lmt_non_crd_nbr;lmt_idx++){
       if(dbg_lvl_get() == nco_dbg_old){
@@ -84,7 +83,6 @@ trv_tbl_free
       }
       tbl->lst_dmn[dmn_idx].lmt_non_crd[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].lmt_non_crd[lmt_idx]);
     } /* Limits for non-coordinate dimensions */
-#endif
     
 
     /* Coordinate structures */
@@ -100,7 +98,6 @@ trv_tbl_free
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll);
 
-#if 0
       /* Limits for Coordinate structures */
       int lmt_nbr=tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_nbr;
       for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
@@ -110,7 +107,6 @@ trv_tbl_free
         }
         tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt[lmt_idx]);
       }  /* Limits for Coordinate structures */
-#endif
     } /*  Coordinate structures */
   } /* End Dimension list loop */
 
