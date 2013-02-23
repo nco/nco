@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.181 2013-02-23 19:07:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.182 2013-02-23 19:35:03 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -19,7 +19,7 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 (int dpt_crr, /* [nbr] Current depth, we start at 0 */
  int dpt_crr_max, /* [nbr] Maximium depth (i.e., number of dimensions in variable (does not change) */
  lmt_sct **lmt, /* [sct] Limits of current hyperslabs (these change as we recurse) */
- lmt_all_sct **lmt_lst, /* [sct] List of limits in each dimension (this remains STATIC as we recurse) */
+ lmt_msa_sct **lmt_lst, /* [sct] List of limits in each dimension (this remains STATIC as we recurse) */
  var_sct *vara) /* [sct] Information for routine to read variable information and pass information between calls */
 {
   /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
@@ -170,7 +170,7 @@ read_lbl:
 } /* end nco_msa_rcr_clc() */
 
 void 
-nco_msa_prn_idx(lmt_all_sct *lmt_i)
+nco_msa_prn_idx(lmt_msa_sct *lmt_i)
 {
   int slb_nbr;
   int idx;
@@ -190,7 +190,7 @@ nco_msa_prn_idx(lmt_all_sct *lmt_i)
 nco_bool /* [flg] There are more limits to process in the slab */
 nco_msa_clc_idx
 (nco_bool NORMALIZE,
- lmt_all_sct *lmt_a, /* I list of lmts for each dimension  */
+ lmt_msa_sct *lmt_a, /* I list of lmts for each dimension  */
  long *indices, /* I/O so routine can keep track of where its at */
  lmt_sct *lmt, /* O Output hyperslab */
  int *slb) /* slab which above limit refers to */ 
@@ -282,7 +282,7 @@ cln_and_xit:
 void
 nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices relative to disk */
 (long *dmn_sbs_ram,   
- lmt_all_sct **lmt_msa, 
+ lmt_msa_sct **lmt_msa, 
  int nbr_dim,
  long *dmn_sbs_dsk,
  nco_bool flg_free)
@@ -359,7 +359,7 @@ nco_msa_ram_2_dsk /* Convert hyperslab indices (in RAM) to hyperlsab indices rel
 
 void 
 nco_msa_clc_cnt
-(lmt_all_sct *lmt_lst)
+(lmt_msa_sct *lmt_lst)
 {
   int idx;
   long cnt=0;
@@ -404,7 +404,7 @@ nco_msa_clc_cnt
 
 nco_bool
 nco_msa_ovl
-(lmt_all_sct *lmt_lst)
+(lmt_msa_sct *lmt_lst)
 {
   /* Purpose: Return true if limits overlap
   NB: Assumes that limits have been sorted */
@@ -439,7 +439,7 @@ nco_cmp_lmt_srt /* [fnc] Compare two lmt_sct's by srt member */
 } /* end nco_cmp_lmt_srt() */
 
 void nco_msa_qsort_srt
-(lmt_all_sct *lmt_lst)
+(lmt_msa_sct *lmt_lst)
 {
   lmt_sct **lmt;
   long sz;
@@ -454,7 +454,7 @@ void nco_msa_qsort_srt
 
 void
 nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
-(lmt_all_sct *lmt_lst)
+(lmt_msa_sct *lmt_lst)
 {
   int idx;
   int jdx;
@@ -537,7 +537,7 @@ void
 nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multihyperslabs */
 (const int in_id,  /* I [id] netCDF input file ID */
  var_sct *var_in,
- lmt_all_sct * const * lmt_lst, /* I [sct] multi-hyperslab limits */
+ lmt_msa_sct * const * lmt_lst, /* I [sct] multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
 {
   int idx;
@@ -545,7 +545,7 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   int nbr_dim;
   nc_type typ_tmp;
   void *void_ptr;
-  lmt_all_sct **lmt_msa;
+  lmt_msa_sct **lmt_msa;
   lmt_sct **lmt;
 
   nbr_dim=var_in->nbr_dim;	
@@ -562,7 +562,7 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
     goto do_upk;
   } /* end if scalar */
 
-  lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
+  lmt_msa=(lmt_msa_sct **)nco_malloc(nbr_dim*sizeof(lmt_msa_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
 
   /* Initialize lmt_msa with multi-limits from lmt_lst limits */
@@ -627,11 +627,11 @@ nco_msa_c_2_f /* [fnc] Replace brackets with parentheses in a string */
 
 
 
-void /* Initilaize lmt_all_sct's */ 
+void /* Initilaize lmt_msa_sct's */ 
 nco_msa_lmt_all_int
 (int in_id,
  nco_bool MSA_USR_RDR,
- lmt_all_sct **lmt_all_lst,
+ lmt_msa_sct **lmt_all_lst,
  int nbr_dmn_fl,
  lmt_sct** lmt,
  int lmt_nbr)
@@ -643,13 +643,13 @@ nco_msa_lmt_all_int
   char dmn_nm[NC_MAX_NAME];
 
   lmt_sct *lmt_rgl;
-  lmt_all_sct * lmt_all_crr;
+  lmt_msa_sct * lmt_all_crr;
 
   (void)nco_inq(in_id,(int*)NULL,(int*)NULL,(int *)NULL,&rec_dmn_id);
 
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_all_crr=lmt_all_lst[idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
+    lmt_all_crr=lmt_all_lst[idx]=(lmt_msa_sct *)nco_malloc(sizeof(lmt_msa_sct));
     lmt_all_crr->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
     lmt_all_crr->dmn_nm=strdup(dmn_nm);
     lmt_all_crr->lmt_dmn_nbr=1;
@@ -765,7 +765,7 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
  const int out_id, /* I [enm] netCDF output file ID */
  var_sct ** const var, /* I/O [sct] Variables to copy to output file */
  const int nbr_var,  /* I [nbr] Number of variables */
- lmt_all_sct * const * lmt_lst, /* I multi-hyperslab limits */
+ lmt_msa_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
 {
   /* NB: nco_msa_var_val_cpy() contains OpenMP critical region */
@@ -788,10 +788,10 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
       var[idx]->val.vp=nco_malloc(nco_typ_lng(var[idx]->type));
       (void)nco_get_var1(in_id,var[idx]->id,0L,var[idx]->val.vp,var[idx]->type);
     }else{
-      lmt_all_sct **lmt_msa;
+      lmt_msa_sct **lmt_msa;
       lmt_sct **lmt;
 
-      lmt_msa=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
+      lmt_msa=(lmt_msa_sct **)nco_malloc(nbr_dim*sizeof(lmt_msa_sct *));
       lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
 
       /* Initialize lmt_msa with multi-limits from lmt_lst limits */
@@ -1135,19 +1135,19 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
   dmn_sct dim[NC_MAX_DIMS];                  /* [sct] Dimension structure (make life easier with static arrays) */
 
-  lmt_all_sct **lmt_msa=NULL_CEWI;           /* [sct] MSA Limits for only for variable dimensions  */          
+  lmt_msa_sct **lmt_msa=NULL_CEWI;           /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI;                   /* [sct] Auxiliary Limit used in MSA */
 
   int rcd;                                   /* [nbr] Return value */
 
-  /* Make a conversion from GTT limits to MSA used local lmt_all_sct limits...MSA uses lmt_all_sct(variable dimensions) 
+  /* Make a conversion from GTT limits to MSA used local lmt_msa_sct limits...MSA uses lmt_msa_sct(variable dimensions) 
   Goal here is to distribute limits stored in unique dimensions to variable dimensions;
   A special index match counter must be used, not a regular 2 loop array of variable dimensions and group dimensions...
   Or do double 2 loop sequences to find what we need first...
   */ 
 
   /* Allocate; we don't know how many limits needed at this point, if any */
-  lmt_msa=(lmt_all_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_all_sct *));
+  lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
   lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
 
   /* Special index match counter for MSA limits */
@@ -1172,7 +1172,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
           (void)fprintf(stdout," %d limits: ",dmn_trv.lmt_dmn_nbr);
         }
 
-        lmt_msa[lmt_msa_idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
+        lmt_msa[lmt_msa_idx]=(lmt_msa_sct *)nco_malloc(sizeof(lmt_msa_sct));
 
         /* Initialize to NULL the limit array */
         lmt_msa[lmt_msa_idx]->lmt_dmn=NULL;
@@ -1217,7 +1217,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         /* But... wait... MSA super-dooper recursive function needs an allocated limit always; 2 options here:
         1) Allocate a dummy limit to read all data
         2) Modify MSA to allow for the simplest case of no limits; MSA passes "var_sct var" while recursing;
-        the variable for number of elemnts (.sz) is being incremented...but we can use the member of "lmt_all_sct"
+        the variable for number of elemnts (.sz) is being incremented...but we can use the member of "lmt_msa_sct"
         that stores the *original* size "dmn_sz_org".     
         */
 
@@ -1771,7 +1771,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   void *void_ptr;                  /* [nbr] Pointer to data */
 
-  lmt_all_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
+  lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI;         /* [sct] Auxiliary Limit used in MSA */
 
   assert(nco_obj_typ_var == var_trv->typ);
@@ -1815,14 +1815,14 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   } /* End Deal with scalar variables */
 
 
-  /* Make a conversion from GTT limits to MSA used local lmt_all_sct limits...MSA uses lmt_all_sct(variable dimensions) 
+  /* Make a conversion from GTT limits to MSA used local lmt_msa_sct limits...MSA uses lmt_msa_sct(variable dimensions) 
   Goal here is to distribute limits stored in unique dimensions to variable dimensions;
   A special index match counter must be used, not a regular 2 loop array of variable dimensions and group dimensions...
   Or do double 2 loop sequences to find what we need first...
   */ 
 
   /* Allocate; we don't know how many limits needed at this point, if any */
-  lmt_msa=(lmt_all_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_all_sct *));
+  lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
   lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
 
   /* Special index match counter for MSA limits */
@@ -1847,7 +1847,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
           (void)fprintf(stdout," %d limits: ",dmn_trv.lmt_dmn_nbr);
         }
 
-        lmt_msa[lmt_msa_idx]=(lmt_all_sct *)nco_malloc(sizeof(lmt_all_sct));
+        lmt_msa[lmt_msa_idx]=(lmt_msa_sct *)nco_malloc(sizeof(lmt_msa_sct));
 
         /* Initialize to NULL the limit array */
         lmt_msa[lmt_msa_idx]->lmt_dmn=NULL;
@@ -1892,7 +1892,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
         /* But... wait... MSA super-dooper recursive function needs an allocated limit always; 2 options here:
         1) Allocate a dummy limit to read all data
         2) Modify MSA to allow for the simplest case of no limits; MSA passes "var_sct var" while recursing;
-        the variable for number of elemnts (.sz) is being incremented...but we can use the member of "lmt_all_sct"
+        the variable for number of elemnts (.sz) is being incremented...but we can use the member of "lmt_msa_sct"
         that stores the *original* size "dmn_sz_org".     
         */
 

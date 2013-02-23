@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.206 2013-02-22 07:47:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.207 2013-02-23 19:35:03 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.206 2013-02-22 07:47:49 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.206 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.207 2013-02-23 19:35:03 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.207 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -210,7 +210,7 @@ main(int argc,char **argv)
   
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
-  lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
+  lmt_msa_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
   
   nm_id_sct *dmn_lst_1;
   nm_id_sct *dmn_lst_2;
@@ -653,8 +653,8 @@ main(int argc,char **argv)
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id_1,lmt[idx],0L,FORTRAN_IDX_CNV);
 
   /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl_1*sizeof(lmt_all_sct *));
-  /* Initialize lmt_all_sct's */ 
+  lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl_1*sizeof(lmt_msa_sct *));
+  /* Initialize lmt_msa_sct's */ 
   (void)nco_msa_lmt_all_int(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl_1,lmt,lmt_nbr);
 #endif /* USE_TRV_API */
 
@@ -664,9 +664,9 @@ main(int argc,char **argv)
   if(lmt_nbr) (void)nco_lmt_evl_trv(in_id_1,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_1);    
 
   /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl_1*sizeof(lmt_all_sct *));
+  lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl_1*sizeof(lmt_msa_sct *));
 
-  /* Initialize lmt_all_sct's */ 
+  /* Initialize lmt_msa_sct's */ 
   (void)nco_msa_lmt_all_int_trv(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl_1,lmt,lmt_nbr,trv_tbl_1);
 #endif /* USE_TRV_API */
 

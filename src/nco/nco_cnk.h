@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.19 2013-02-19 21:34:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.20 2013-02-23 19:35:03 pvicente Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -80,7 +80,7 @@ nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
 void
 nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 (const int nc_id, /* I [id] netCDF file ID */
- CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_msa_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
  int * const cnk_map_ptr, /* I/O [enm] Chunking map */
  int * const cnk_plc_ptr, /* I/O [enm] Chunking policy */

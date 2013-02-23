@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.51 2013-02-20 19:39:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.52 2013-02-23 19:35:03 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -364,7 +364,7 @@ nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
 void
 nco_cnk_sz_set /* [fnc] Set chunksize parameters */
 (const int nc_id, /* I [id] netCDF file ID */
- CST_X_PTR_CST_PTR_CST_Y(lmt_all_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_msa_sct,lmt_all_lst), /* I [sct] Hyperslab limits */
  const int lmt_all_lst_nbr, /* I [nbr] Number of hyperslab limits */
  int * const cnk_map_ptr, /* I/O [enm] Chunking map */
  int * const cnk_plc_ptr, /* I/O [enm] Chunking policy */

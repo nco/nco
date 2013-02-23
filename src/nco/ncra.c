@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.318 2013-02-01 20:40:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.319 2013-02-23 19:35:03 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -157,8 +157,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.318 2013-02-01 20:40:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.318 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.319 2013-02-23 19:35:03 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.319 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -218,8 +218,8 @@ main(int argc,char **argv)
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
   lmt_sct *lmt_rec=NULL_CEWI;
-  lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
-  lmt_all_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
+  lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
+  lmt_msa_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
   
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
@@ -596,8 +596,8 @@ main(int argc,char **argv)
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
 
   /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
-  /* Initialize lmt_all_sct's */ 
+  lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
+  /* Initialize lmt_msa_sct's */ 
   (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
   /* Find dimensions associated with variables to be extracted */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.264 2013-02-23 04:32:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.265 2013-02-23 19:35:03 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.264 2013-02-23 04:32:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.264 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.265 2013-02-23 19:35:03 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.265 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -188,7 +188,7 @@ main(int argc,char **argv)
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
-  lmt_all_sct **lmt_all_lst; /* List of *lmt_all structures */
+  lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
 
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
   
@@ -572,8 +572,8 @@ main(int argc,char **argv)
     for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
 
     /* Place all dimensions in lmt_all_lst */
-    lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
-    /* Initialize lmt_all_sct's */ 
+    lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
+    /* Initialize lmt_msa_sct's */ 
     (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
     /* Find dimensions associated with variables to be extracted */
@@ -866,8 +866,8 @@ main(int argc,char **argv)
       for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
 
       /* Place all dimensions in lmt_all_lst */
-      lmt_all_lst=(lmt_all_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct *));
-      /* Initialize lmt_all_sct's */ 
+      lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
+      /* Initialize lmt_msa_sct's */ 
       (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
       /* Define extracted groups, variables, and attributes in output file */

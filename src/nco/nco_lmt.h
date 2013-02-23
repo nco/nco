@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.61 2013-02-23 09:38:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.62 2013-02-23 19:35:03 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -85,13 +85,13 @@ nco_lmt_lst_free /* [fnc] Free memory associated with limit structure list */
 (lmt_sct **lmt_lst, /* I/O [sct] Limit structure list to free */
  const int lmt_nbr); /* I [nbr] Number of limit structures in list */
 
-lmt_all_sct * /* O [sct] Pointer to free'd structure */
+lmt_msa_sct * /* O [sct] Pointer to free'd structure */
 nco_lmt_all_free /* [fnc] Free memory associated with lmt_all structure */
-(lmt_all_sct *lmt_all); /* I/O [sct] Limit structure to free */
+(lmt_msa_sct *lmt_all); /* I/O [sct] Limit structure to free */
 
-lmt_all_sct ** /* O [sct] Pointer to free'd structure list */
+lmt_msa_sct ** /* O [sct] Pointer to free'd structure list */
 nco_lmt_all_lst_free /* [fnc] Free memory associated with lmt_all structure list */
-(lmt_all_sct **lmt_all_lst, /* I/O [sct] Limit structure list to free */
+(lmt_msa_sct **lmt_all_lst, /* I/O [sct] Limit structure list to free */
  const int lmt_all_nbr); /* I [nbr] Number of limit structures in list */
 
 lmt_sct ** /* O [sct] Structure list with user-specified strings for min and max limits */
