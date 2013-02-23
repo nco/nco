@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.180 2013-02-21 08:30:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.181 2013-02-23 19:07:10 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1187,7 +1187,6 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         lmt_msa[lmt_msa_idx]->BASIC_DMN=dmn_trv.BASIC_DMN;
         lmt_msa[lmt_msa_idx]->dmn_cnt=dmn_trv.dmn_cnt;
         lmt_msa[lmt_msa_idx]->dmn_nm=strdup(dmn_trv.nm);
-        lmt_msa[lmt_msa_idx]->dmn_nm_fll=strdup(dmn_trv.nm_fll);
         lmt_msa[lmt_msa_idx]->dmn_sz_org=dmn_trv.sz;
         lmt_msa[lmt_msa_idx]->lmt_dmn_nbr=dmn_trv.lmt_dmn_nbr;
         lmt_msa[lmt_msa_idx]->MSA_USR_RDR=dmn_trv.MSA_USR_RDR;
