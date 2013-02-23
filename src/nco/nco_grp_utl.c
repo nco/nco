@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.527 2013-02-23 11:54:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.528 2013-02-23 12:09:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2581,6 +2581,13 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
     if (trv.is_rec_dmn) (void)fprintf(stdout," record dimension (%li)",trv.sz);
     else (void)fprintf(stdout," dimension (%li)",trv.sz);
 
+    /* Limits */
+    if (trv.lmt_non_crd_nbr){
+      for(int lmt_idx=0;lmt_idx<trv.lmt_non_crd_nbr;lmt_idx++){ 
+        (void)fprintf(stdout," ::[%d]%s ",lmt_idx,trv.lmt_non_crd[lmt_idx]->nm);
+      }
+    }/* Limits */
+
     /* Terminate line */
     (void)fprintf(stdout,"\n");
 
@@ -2603,6 +2610,13 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
       /* Dimension full name and size*/
       (void)fprintf(stdout,"(%s:%li) <%s>: ",crd->dmn_nm_fll,crd->sz, crd->dmn_grp_nm_fll);
+
+      /* Limits */
+      if (crd->lmt_nbr){
+        for(int lmt_idx=0;lmt_idx<crd->lmt_nbr;lmt_idx++){ 
+          (void)fprintf(stdout," ::[%d]%s ",lmt_idx,crd->lmt[lmt_idx]->nm);
+        }
+      }/* Limits */
 
 
     }/* Loop coordinates */
