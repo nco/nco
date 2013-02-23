@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.59 2013-02-14 23:44:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.60 2013-02-23 08:52:47 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -131,7 +131,22 @@ nco_lmt_evl_dmn_trv            /* [fnc] Parse user-specified limits into hypersl
  lmt_sct *lmt_ptr,             /* I/O [sct] Structure from nco_lmt_prs()  */
  long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
- dmn_fll_sct *dmn_trv);        /* I/O [sct] Structure from traversal table dimension  */
+ dmn_fll_sct *dmn_trv);        /* I [sct] Structure from traversal table dimension  */
+
+
+void                      
+nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hyperslab specifications */
+(const int nc_id,              /* I [ID] netCDF file ID */
+ long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
+ nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
+ const char * const grp_nm_fll,/* I [sng] Full group name (dimension or coordinate) */
+ const char * const nm,        /* I [sng] Name (dimension or coordinate) */
+ const size_t sz,              /* I [nbr] Size (dimension or coordinate) */
+ const nco_bool is_crd,        /* I [flg] Is a coordinate variable ? */
+ lmt_sct *lmt_ptr);            /* I/O [sct] Structure from nco_lmt_prs() in input, filled on output  */
+ 
+
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
