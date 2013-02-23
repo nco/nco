@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.516 2013-02-23 04:05:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.517 2013-02-23 04:14:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -437,7 +437,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   trv_sct trv_obj; /* [sct] Traversal table object */
   trv_sct var_obj; /* [sct] Traversal table object assumed to be variable */
 
-  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s Extraction list will be formed as %s of group and variable specifications if both are given\n",prg_nm_get(),fnc_nm,(flg_unn) ? "union" : "intersection");
+  if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s Extraction list will be formed as %s of group and variable specifications if both are given\n",prg_nm_get(),fnc_nm,(flg_unn) ? "union" : "intersection");
 
   /* Specifying no groups or variables is equivalent to requesting all */
   if(!grp_xtr_nbr && !var_xtr_nbr && !EXTRACT_ALL_COORDINATES)
@@ -2912,7 +2912,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
         (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_crr]);
       
         /* Print copy in table */ 
-        if(dbg_lvl_get() == nco_dbg_crr){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)nco_lmt_prt(trv_tbl->lst_dmn[dmn_idx].lmt_dmn[lmt_crr]);
         }
 
