@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.258 2013-02-22 10:59:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.259 2013-02-23 01:26:18 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -616,7 +616,7 @@ extern "C" {
     int nbr_dmn; /* [nbr][CHK] Number of dimensions of variable (same as trv_sct.nbr_dmn ) */
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
     char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
-    char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Group where dimension is located  */    
+    char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Full group where dimension is located  */    
   } var_dmn_sct; 
   
   /* GTT Object structure 
@@ -670,7 +670,11 @@ extern "C" {
 
   typedef struct{ 
     char *crd_nm_fll; /* [sng] Full coordinate name */
-    char *dmn_nm_fll; /* [sng] Dimension fully qualified name (path) */
+    char *dmn_nm_fll; /* [sng] Full name of dimension for *this* coordinate  */
+    
+    char *crd_grp_nm_fll; /* [sng] Full group name where coordinate is located */
+    char *dmn_grp_nm_fll; /* [sng] Full group name where dimension of *this* coordinate is located */
+
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension and coordinate */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
     size_t sz; /* [nbr] Size of dimension */
@@ -687,7 +691,7 @@ extern "C" {
   /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and NCO limit (-d) fields 
      */
   typedef struct{ 
-    char *grp_nm_fll; /* [sng][CHK] Full group name where dimension was defined */
+    char *grp_nm_fll; /* [sng] Full group name where dimension was defined */
     char *nm_fll; /* [sng] Dimension fully qualified name (path) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
