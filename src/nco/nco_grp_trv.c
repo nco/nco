@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.67 2013-02-22 23:48:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.68 2013-02-23 01:47:10 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -93,8 +93,11 @@ trv_tbl_free
         (void)fprintf(stdout,"INFO coordinate [%d]%s done:\n",crd_idx,dmn_trv.crd[crd_idx]->crd_nm_fll);
       }
 
+      /* 4 full name strings here */
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll);
+      tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll);
+      tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll);
 
       /* Limits for Coordinate structures */
       int lmt_nbr=tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_nbr;

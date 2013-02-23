@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.513 2013-02-22 23:48:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.514 2013-02-23 01:47:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1913,7 +1913,7 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
   /* Coordinate variables stored in unique dimension list */
 
   (void)fprintf(stdout,"\n");
-  (void)fprintf(stdout,"%s: INFO reports coordinate variables:\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO reports coordinate variables listed by dimension:\n",prg_nm_get());
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
     dmn_fll_sct trv=trv_tbl->lst_dmn[dmn_idx]; 
 
@@ -1921,11 +1921,19 @@ nco_prt_grp_trv /* [fnc] Print groups from object list and dimensions with --get
     for(int crd_idx=0;crd_idx<trv.crd_nbr;crd_idx++){
       crd_sct *crd=trv.crd[crd_idx];
 
+      /*          
+      "crd_sct" has 4 full names:
+      crd_nm_fll;      [sng] Full coordinate name 
+      dmn_nm_fll;      [sng] Full name of dimension for *this* coordinate  
+      crd_grp_nm_fll;  [sng] Full group name where coordinate is located 
+      dmn_grp_nm_fll;  [sng] Full group name where dimension of *this* coordinate is located 
+      */
+
       /* Coordinate full name */
-      (void)fprintf(stdout,"%s: ",crd->crd_nm_fll);
+      (void)fprintf(stdout,"%s <%s>: ",crd->crd_nm_fll, crd->crd_grp_nm_fll);
 
       /* Dimension full name and size*/
-      (void)fprintf(stdout,"(%s:%li): ",crd->dmn_nm_fll,crd->sz);
+      (void)fprintf(stdout,"(%s:%li) <%s>: ",crd->dmn_nm_fll,crd->sz, crd->dmn_grp_nm_fll);
 
 
     }/* Loop coordinates */
@@ -2978,19 +2986,33 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
           /* Is variable in scope of dimension ? */
           if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
 
+
             /* Total number of coordinate variables for this dimension */
             int crd_nbr=trv_tbl->lst_dmn[dmn_idx].crd_nbr;
 
             /* Alloc this coordinate */
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]=(crd_sct *)nco_malloc(sizeof(crd_sct));
 
-            /* Initialize this coordinate */
+            /* Initialize this coordinate:           
+            "crd_sct" has 4 full names:
+            crd_nm_fll;      [sng] Full coordinate name 
+            dmn_nm_fll;      [sng] Full name of dimension for *this* coordinate  
+            crd_grp_nm_fll;  [sng] Full group name where coordinate is located 
+            dmn_grp_nm_fll;  [sng] Full group name where dimension of *this* coordinate is located 
+            */
 
             /* The coordinate full name is the variable full name found in scope */
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll=strdup(var_trv.nm_fll);
 
             /* The dimension full name is the dimension full name */
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=strdup(dmn_trv.nm_fll);
+
+            /* Full group name where coordinate is located is the variable full group name  */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll=strdup(var_trv.grp_nm_fll);
+
+            /* Full group name where dimension of *this* coordinate is located is the full group name of the dimension  */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
+
 
             /* Store relative name (same for dimension and variable) */
             strcpy(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm,var_trv.nm);
