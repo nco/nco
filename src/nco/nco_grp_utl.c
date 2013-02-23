@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.517 2013-02-23 04:14:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.518 2013-02-23 04:32:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1478,7 +1478,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
  const nco_bool CPY_GRP_METADATA,    /* I [flg] Copy group metadata (attributes) */
  const nco_bool CPY_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
  const char * const rec_dmn_nm,      /* I [sng] Record dimension name */
- const nco_bool HAVE_LIMITS,         /* I [flg] Dimension limits exist ( For convenience, ideally... not needed ) */
  trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Define groups, variables, and attributes in output file

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.260 2013-02-23 02:02:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.261 2013-02-23 04:32:13 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -701,6 +701,7 @@ extern "C" {
 
     nco_bool is_crd_dmn; /* [flg] Is there a variable with same name in dimension's scope? */
 
+#if 1
     int lmt_dmn_nbr; /* [nbr] Number of limit structures */ // Deprecate
     lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with *this* dimension */ // Deprecate
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
@@ -708,6 +709,7 @@ extern "C" {
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     long dmn_cnt; /* [nbr] Hyperslabbed size */
     int lmt_crr; /* [nbr] Index of current limit structure being initialized */
+#endif
   } dmn_fll_sct; 
  
   /* GTT (Group Traversal Table) structure contains two lists
