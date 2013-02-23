@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.225 2013-02-23 04:32:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.226 2013-02-23 11:54:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -162,11 +162,6 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 
-void                          
-nco_prt_grp_trv                       /* [fnc] Print groups from object list and dimensions with --get_grp_info  */
-(const int nc_id,                     /* I [ID] File ID */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
-
 void 
 nco_prn_att_trv                       /* [fnc] Print all attributes of single variable */
 (const int in_id,                     /* I [id] netCDF input file ID */
@@ -295,6 +290,10 @@ void
 nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
+void                          
+nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
+(const int nc_id,                    /* I [ID] File ID */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
 void
 nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
