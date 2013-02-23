@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.519 2013-02-23 05:01:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.520 2013-02-23 07:06:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3065,7 +3065,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     (void)fprintf(stdout,"\n");      
   } /* endif dbg */
 
-  /* Step 1) Find the total numbers of matches for a dimension */
+  /* Step 1) Find the total numbers of limit matches for a dimension and/or a coordinate variable */
 
   /* Loop input name list (can have duplicate names)  */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
@@ -3073,11 +3073,36 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
       dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
+      /*  The limits have to be separated to */
 
+      /* a) case where the dimension has coordinate variables */
+      if (dmn_trv.crd_nbr){
 
+        /* Loop coordinates */
+        for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
+          crd_sct *crd=dmn_trv.crd[crd_idx];
 
+          /* Match input *relative* name to coordinate relative name */ 
+          if(strcmp(lmt[lmt_idx]->nm,crd->nm) == 0){
+
+            /* Increment number of dimension limits this coordinate */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_nbr++;
+
+          } /* End Match input name to table name */ 
+        }/* Loop coordinates */
+      }else{
+        /* b) case of dimension only (there is no coordinate variable for this dimension */
+
+        /* Match input *relative* name to dimension relative name */ 
+        if(strcmp(lmt[lmt_idx]->nm,dmn_trv.nm) == 0){
+
+          /* Increment number of dimension limits for this dimension */
+          trv_tbl->lst_dmn[dmn_idx].lmt_non_crd_nbr++;
+
+        } /* Match input *relative* name to dimension relative name */ 
+      } /* b) case of dimension only (there is no coordinate variable for this dimension */
     } /* Loop dimensions  */
   } /* Loop input name list (can have duplicate names)  */
 
-}
+} /* nco_bld_lmt() */
 
