@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.521 2013-02-23 07:36:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.522 2013-02-23 07:49:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3128,6 +3128,12 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->WRP=False;
         trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->BASIC_DMN=True;
         trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->MSA_USR_RDR=False;
+
+        /* Initialize hyperslabed size with the coordinate size; this value is modified by MSA only 
+        if there are limits for this coordinate */ 
+        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_cnt=crd->sz;
+
+
 
       }/* Loop coordinates */
     }else{

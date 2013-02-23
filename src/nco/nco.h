@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.263 2013-02-23 07:36:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.264 2013-02-23 07:49:42 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -674,7 +674,7 @@ extern "C" {
 
     char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension and coordinate */
     nco_bool is_rec_dmn; /* [flg] Is a record dimension? */
-    size_t sz; /* [nbr] Size of dimension */
+    size_t sz; /* [nbr] Size of coordinate */
     int lmt_nbr; /* [nbr] Number of limit structures (one per -d switch for this dimension) */
     lmt_sct **lmt; /* [sct] Limit structures associated with *this* coordinate (one per -d switch) */
     int lmt_crr; /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
