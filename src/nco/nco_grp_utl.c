@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.522 2013-02-23 07:49:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.523 2013-02-23 08:15:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3069,6 +3069,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
   /* Loop input name list (can have duplicate names)  */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+
     /* Loop dimensions  */
     for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
       dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
@@ -3133,8 +3134,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         if there are limits for this coordinate */ 
         trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_cnt=crd->sz;
 
-
-
       }/* Loop coordinates */
     }else{
       /* b) case of dimension only (there is no coordinate variable for this dimension */
@@ -3154,6 +3153,81 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
     } /* b) case of dimension only (there is no coordinate variable for this dimension */
   } /* Loop dimensions, that now have already distributed limits and initialize limit information */
+
+
+  /* Step 3) Store matches in table, match at the current index, increment current index  */
+
+  /* Loop input name list (can have duplicate names)  */
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+
+    /* Loop dimensions  */
+    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+      /*  The limits have to be separated to */
+
+      /* a) case where the dimension has coordinate variables */
+      if (dmn_trv.crd_nbr){
+
+        /* Loop coordinates */
+        for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
+          crd_sct *crd=dmn_trv.crd[crd_idx];
+
+          /* Match input *relative* name to coordinate relative name */ 
+          if(strcmp(lmt[lmt_idx]->nm,crd->nm) == 0){
+
+
+
+           
+
+
+
+
+          } /* End Match input name to table name */ 
+        }/* Loop coordinates */
+      }else{
+        /* b) case of dimension only (there is no coordinate variable for this dimension */
+
+        /* Match input *relative* name to dimension relative name */ 
+        if(strcmp(lmt[lmt_idx]->nm,dmn_trv.nm) == 0){
+
+          /* Limit is same as dimension in input file ? */
+          trv_tbl->lst_dmn[dmn_idx].BASIC_DMN=False;
+
+          if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
+
+          /* Parse user-specified limits into hyperslab specifications */
+          (void)nco_lmt_evl_dmn_trv(nc_id,lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
+              prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
+          }
+
+          /* Current index (lmt_crr) of dimension limits for this (dmn_idx) table dimension  */
+          int lmt_crr=trv_tbl->lst_dmn[dmn_idx].lmt_crr;
+
+          /* Increment current index being initialized  */
+          trv_tbl->lst_dmn[dmn_idx].lmt_crr++;
+
+          /* Alloc this limit */
+          trv_tbl->lst_dmn[dmn_idx].lmt_non_crd[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+
+          /* Initialize this entry */
+          (void)nco_lmt_init(trv_tbl->lst_dmn[dmn_idx].lmt_non_crd[lmt_crr]);
+
+          /* Store this valid input; deep-copy to table */ 
+          (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[dmn_idx].lmt_non_crd[lmt_crr]);
+
+          /* Print copy in table */ 
+          if(dbg_lvl_get() == nco_dbg_old){
+            (void)nco_lmt_prt(trv_tbl->lst_dmn[dmn_idx].lmt_non_crd[lmt_crr]);
+          }
+
+        } /* Match input *relative* name to dimension relative name */ 
+      } /* b) case of dimension only (there is no coordinate variable for this dimension */
+    } /* Loop dimensions  */
+  } /* Loop input name list (can have duplicate names)  */
 
 
 
