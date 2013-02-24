@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.534 2013-02-24 03:32:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.535 2013-02-24 03:55:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3391,7 +3391,28 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
         crd_sct *crd=dmn_trv.crd[crd_idx];
 
+        if(dbg_lvl_get() >= nco_dbg_dev && crd->lmt_msa.lmt_dmn_nbr){
+          (void)fprintf(stdout,"%s: INFO %s checking limits for coordinate <%s>:\n",prg_nm_get(),fnc_nm,crd->crd_nm_fll);
+        }
 
+        /* lmt_dmn_nbr can be incremented for wrapped limits; always sync   */
+        assert(crd->lmt_msa.lmt_crr == crd->lmt_msa.lmt_dmn_nbr);
+
+        /* Loop limits for each coordinate */
+        for(int lmt_idx=0;lmt_idx<crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
+              lmt_idx,
+              crd->lmt_msa.lmt_dmn[lmt_idx]->nm,
+              crd->lmt_msa.lmt_dmn[lmt_idx]->srt,
+              crd->lmt_msa.lmt_dmn[lmt_idx]->end,
+              crd->lmt_msa.lmt_dmn[lmt_idx]->srd);
+          }
+
+          /* Need more MRA sanity checks here; checking srt <= end now */
+          assert(crd->lmt_msa.lmt_dmn[lmt_idx]->srt <= crd->lmt_msa.lmt_dmn[lmt_idx]->end);
+          assert(crd->lmt_msa.lmt_dmn[lmt_idx]->srd >= 1);
+        }/* End Loop limits for each dimension */
 
       }/* Loop coordinates */
     }else{
@@ -3412,7 +3433,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       /* Loop limits for each dimension */
       for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li->%li->%li)\n",prg_nm_get(),fnc_nm,
+          (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
             lmt_idx,
             dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->nm,
             dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->srt,
