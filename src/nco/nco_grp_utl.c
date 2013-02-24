@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.536 2013-02-24 06:34:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.537 2013-02-24 13:11:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1442,21 +1442,16 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
 {
   /* Purpose: Print variable data (called with PRN_VAR_DATA) */
 
-  int grp_id; /* [ID] Group ID */
-
   /* Loop variables in table */
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
     trv_sct trv=trv_tbl->lst[var_idx];
     if(trv.flg_xtr && trv.typ == nco_obj_typ_var){
 
-      /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-
       /* Print full name of variable */
       if(!dlm_sng && trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
 
       /* Print variable values */
-      (void)nco_msa_prn_var_val_trv(nc_id,grp_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&trv,trv_tbl);
+      (void)nco_msa_prn_var_val_trv(nc_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&trv,trv_tbl);
 
     } /* End flg_xtr */
   } /* End Loop variables in table */

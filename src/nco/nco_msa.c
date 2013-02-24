@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.183 2013-02-23 22:23:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.184 2013-02-24 13:11:06 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1058,7 +1058,6 @@ nco_msa_ovl_trv         /* [fnc] See if limits overlap */
 void
 nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 (const int nc_id,                   /* I [ID] netCDF file ID */
- const int in_id,                   /* I [ID] Group ID */
  char * const dlm_sng,              /* I [sng] User-specified delimiter string, if any */
  const nco_bool FORTRAN_IDX_CNV,    /* I [flg] Hyperslab indices obey Fortran convention */
  const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
@@ -1139,6 +1138,8 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   lmt_sct **lmt=NULL_CEWI;                   /* [sct] Auxiliary Limit used in MSA */
 
   int rcd;                                   /* [nbr] Return value */
+
+  int in_id;                                 /* [ID] *Group* ID were variable resides (passed to MSA)*/
 
   /* Make a conversion from GTT limits to MSA used local lmt_msa_sct limits...MSA uses lmt_msa_sct(variable dimensions) 
   Goal here is to distribute limits stored in unique dimensions to variable dimensions;
@@ -1254,6 +1255,9 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
       } /* Match full dimension name */ 
     } /* End  Loop unique dimensions (these contain limits)  */
   } /* Loop dimensions for object (variable) */
+
+  /* Obtain group ID where variable is located using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&in_id);
 
   /* Set defaults */
   (void)var_dfl_set(&var); 
