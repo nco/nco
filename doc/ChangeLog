@@ -1,4 +1,4 @@
-2013-02-22  Pedro Vicente  <pvicente@uci.edu>
+2013-02-23  Pedro Vicente  <pvicente@uci.edu>
 
   * nco_blb_crd_var_trv() Detect coordinate variables into GTT (Group Traversal Table)
   
@@ -6,6 +6,8 @@
   Can be used for dimensions or coordinate variables
   
   * nco_bld_lmt() Assign user specified dimension limits to GTT (Group Traversal Table)
+  
+  * ncks: regression test for limits with dimension/non coordinate case
   
 2013-02-22  Charlie Zender  <zender@uci.edu>
 

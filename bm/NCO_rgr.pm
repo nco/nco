@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.213 2013-02-20 22:59:46 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.214 2013-02-24 07:44:11 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1453,7 +1453,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			    
     
 # 
-# Limit tests
+# Limit/MSA tests
 #
 
 #ncks #57:
@@ -1462,7 +1462,7 @@ print "\n";
 # time[1]=2 lev[1]=500 two_dmn_rec_var[4]=2.1 
 # time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3 
 #
-    $dsc_sng="Limits --dmn time,1,3,2 --dmn lev,1,1,1";
+    $dsc_sng="MSA --dmn time,1,3,2 --dmn lev,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg  -H -C --dmn time,1,3,2 --dmn lev,1,1,1  -v two_dmn_rec_var  $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3";
@@ -1473,10 +1473,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
 
-
-# 
-# MSA tests
-#
 
 #  ncks -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1   -v two_dmn_rec_var  ~/nco/data/in_grp.nc
 #/g10/two_dmn_rec_var
@@ -1496,7 +1492,28 @@ print "\n";
      # to do    
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			        
+    $#tst_cmd=0; # Reset array 			  
+
+#ncks #59 This test uses limits to print a dimension "lon2(4)" that does NOT have a coordinate variable
+#  ncks -H -d lon2,1,3,2  -v lon2_var  in_grp.nc
+#/g16/lon2_var
+#lon2[1] lon2_var[1]=1 
+#lon2[3] lon2_var[3]=3 
+
+
+    $dsc_sng="MSA -d lon2,1,3,2 -v lon2_var";
+    $tst_cmd[0]="ncks $nco_D_flg  -H -d lon2,1,3,2 -v lon2_var  $in_pth_arg in_grp.nc";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="lon2[3] lon2_var[3]=3";
+    $tst_cmd[2]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     # to do    
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			  
+
+
+    
     
     
 

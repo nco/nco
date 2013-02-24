@@ -43,7 +43,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.70 2013-02-23 02:02:41 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.71 2013-02-24 07:44:11 pvicente Exp $";
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
   
@@ -441,8 +441,6 @@ netcdf in_grp {
     data:
     lat1=0.,1.;
     lon2_var=0.,1.,2.,3.; 
-    lat1=0.,1.;
-    lon2_var=1.,2.,3.,4.; 
     
     group: g16g1 { 
      dimensions:
