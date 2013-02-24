@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.532 2013-02-24 00:33:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.533 2013-02-24 01:53:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3104,9 +3104,11 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.BASIC_DMN=True;
         trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.MSA_USR_RDR=False;
 
-        /* Initialize hyperslabed size with the coordinate size; this value is modified by MSA only 
-        if there are limits for this coordinate */ 
+        /* Initialize hyperslabed size, original MSA size with the dimension size, copy name; 
+        this value is modified by MSA only if there are limits for this dimension */ 
         trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_cnt=crd->sz;
+        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_sz_org=crd->sz;
+        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm=strdup(crd->nm);
 
       }/* Loop coordinates */
     }else{
@@ -3121,9 +3123,11 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       trv_tbl->lst_dmn[dmn_idx].lmt_msa.BASIC_DMN=True;
       trv_tbl->lst_dmn[dmn_idx].lmt_msa.MSA_USR_RDR=False;  
 
-      /* Initialize hyperslabed size with the dimension size; this value is modified by MSA only 
-      if there are limits for this dimension */ 
+      /* Initialize hyperslabed size, original MSA size with the dimension size, copy name; 
+      this value is modified by MSA only if there are limits for this dimension */ 
       trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt=dmn_trv.sz;
+      trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_sz_org=dmn_trv.sz;
+      trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm=strdup(dmn_trv.nm);
 
     } /* b) case of dimension only (there is no coordinate variable for this dimension */
   } /* Loop dimensions, that now have already distributed limits and initialize limit information */
@@ -3160,7 +3164,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
                 prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
             }
-
 
             /* Current index (lmt_crr) of dimension limits for this (dmn_idx) table dimension  */
             int lmt_crr=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_crr;
@@ -3244,6 +3247,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
         crd_sct *crd=dmn_trv.crd[crd_idx];
 
+       
+
 
 
 
@@ -3252,12 +3257,11 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     }else{
       /* b) case of dimension only (there is no coordinate variable for this dimension) */
 
-
-      /* Adapted from the original MSA loop in nco_msa_lmt_all_int(); differences are marked "trv" specific */
+      /* Adapted from the original MSA loop in nco_msa_lmt_all_int(); differences are marked GTT specific */
 
       nco_bool flg_ovl; /* [flg] Limits overlap */
 
-      /* "trv": If this dimension has no limits, continue */
+      /* GTT: If this dimension has no limits, continue */
       if (trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn_nbr == 0) continue;
 
       /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
