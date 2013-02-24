@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.62 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.63 2013-02-24 06:34:15 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -142,8 +142,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
  const char * const grp_nm_fll,/* I [sng] Full group name (dimension or coordinate) */
  const char * const nm,        /* I [sng] Name (dimension or coordinate) */
  const size_t sz,              /* I [nbr] Size (dimension or coordinate) */
- const nco_bool is_crd,        /* I [flg] Is a coordinate variable ? */
  const nco_bool is_rec,        /* I [flg] Is a record (dimension or coordinate) ? */
+ const nco_bool is_crd,        /* I [flg] Is a coordinate variable ? */
  lmt_sct *lmt_ptr);            /* I/O [sct] Structure from nco_lmt_prs() in input, filled on output  */
  
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.178 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.179 2013-02-24 06:34:15 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -2006,8 +2006,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
  const char * const grp_nm_fll,/* I [sng] Full group name (dimension or coordinate) */
  const char * const nm,        /* I [sng] Name (dimension or coordinate) */
  const size_t sz,              /* I [nbr] Size (dimension or coordinate) */
- const nco_bool is_crd,        /* I [flg] Is a coordinate variable ? */
  const nco_bool is_rec,        /* I [flg] Is a record (dimension or coordinate) ? */
+ const nco_bool is_crd,        /* I [flg] Is a coordinate variable ? */
  lmt_sct *lmt_ptr)             /* I/O [sct] Structure from nco_lmt_prs() in input, filled on output  */
 {
 
@@ -2070,15 +2070,13 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
   nc_type var_typ=NC_NAT;          /* [enm] Type of variable */
 
-  nco_bool is_crd_var;             /* [flg] Does the dimension have a coordinate variable ? */         
+  nco_bool is_crd_var;             /* [flg] Does the dimension have a coordinate variable ? */  
 
   lmt=*lmt_ptr;
 
   prg_id=prg_get(); 
 
   /* Initialize limit structure */
-  /* TODO: fxm pvn Initialize all members of "lmt" */
-
   lmt.flg_mro=False;
   lmt.max_val=0.0;
   lmt.min_val=0.0;
@@ -2089,25 +2087,36 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   /* Obtain group ID using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
-  /* Obtain variable ID using group ID */
+  /* Obtain possible coordinate variable ID using group ID */
   rcd=nco_inq_varid_flg(grp_id,nm,&var_id);
-  if(rcd != NC_NOERR) is_crd_var=False; else is_crd_var=True;
+  if(rcd != NC_NOERR){
+    is_crd_var=False; 
 
-  if(dbg_lvl_get() == nco_dbg_old){
-    if (is_crd_var == False )
-      (void)fprintf(stdout,"%s: INFO %s dimension <%s> does not have a coordinate variable:\n",prg_nm_get(),fnc_nm,
-      nm);
+    /* Just make sure we get the right thing */
+    assert(is_crd == False);
+
+  }else{ 
+    is_crd_var=True;
+
+    assert(is_crd == True);
+
+    /* Get coordinate type */
+    (void)nco_inq_vartype(grp_id,var_id,&var_typ);
   }
 
-  /* Get coordinate type */
-  if (is_crd_var == True ) (void)nco_inq_vartype(grp_id,var_id,&var_typ);
+  if(dbg_lvl_get() == nco_dbg_old){
+    (void)fprintf(stdout,"%s: INFO %s dimension <%s/%s(%li)>:",prg_nm_get(),fnc_nm,grp_nm_fll,nm,sz);
+    if (is_crd_var == False )
+      (void)fprintf(stdout,"NOT a coordinate variable\n");
+    else 
+      (void)fprintf(stdout,"HAS a coordinate variable\n");    
+  }
 
-  /* Get dimension ID. NOTE: using group ID */
-  rcd=nco_inq_dimid_flg(grp_id,lmt.nm,&lmt.id);
-  if(rcd != NC_NOERR){
-    (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",prg_nm_get(),lmt.nm);
-    nco_exit(EXIT_FAILURE);
-  } /* endif */
+  /* Use info from parameter to assign locally used size */
+  dmn_sz=sz;
+
+  /* Use info from parameter to assign record/not record to limit */
+  lmt.is_rec_dmn=is_rec;
 
   /* Logic on whether to allow skipping current file depends on whether limit
   is specified for record dimension in multi-file operators.
@@ -2115,29 +2124,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   the limit is a record limit may be tested.
   Program defensively and define this flag in all cases. */
 
-#ifdef IDS_NOT_ALLOWED
-  (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
-  if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
-#else /* IDS_NOT_ALLOWED */
-
-  if(prg_id == ncks) rec_dmn_and_mfo=False;
-
-  /* Use info from parameter */
-  lmt.is_rec_dmn=is_rec;
-
-  if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
-
-#endif /* IDS_NOT_ALLOWED */
-
-  /* Get dimension size. NOTE: using group ID */
-  (void)nco_inq_dimlen(grp_id,lmt.id,&dim.sz);
-
-  /* Shortcut to avoid indirection */
-  dmn_sz=dim.sz;
-
-  /* No need to inquire netCDF: "sz" already has the dimension size, but do it for sanity check */
-  assert(dmn_sz == sz);
 
   if(rec_dmn_and_mfo){
     lmt.rec_dmn_sz=dmn_sz;
