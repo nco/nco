@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.531 2013-02-24 00:08:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.532 2013-02-24 00:33:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -574,7 +574,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
               /* Set function return condition */
               if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
 
-              if(dbg_lvl_get() >= nco_dbg_io){
+              if(dbg_lvl_get() == nco_dbg_old){
                 (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
@@ -640,7 +640,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       trv_tbl->lst[obj_idx].flg_xtr=True;
   } /* end loop over obj_idx */
 
-  if(dbg_lvl_get() >= nco_dbg_sbr){
+  if(dbg_lvl_get() == nco_dbg_old){
     for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
       /* Create shallow copy to avoid indirection */
       trv_obj=trv_tbl->lst[obj_idx];
@@ -1684,7 +1684,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
   /* Print extraction list in verbose mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
 } /* end nco_xtr_dfn() */
 
@@ -1761,7 +1761,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
 
   /* Print extraction list in verbose mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
 } /* end nco_xtr_wrt() */
 
@@ -2670,7 +2670,7 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
         /* Is there a variable with this dimension name anywhere? (relative name)  */
         if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
 
-          if(dbg_lvl_get() >= nco_dbg_dev){
+          if(dbg_lvl_get() == nco_dbg_old){
             (void)fprintf(stdout,"%s: INFO %s looking for possible coordinate variable <%s>:\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll);
           }
@@ -2853,12 +2853,12 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
         /* Limit is same as dimension in input file ? */
         trv_tbl->lst_dmn[dmn_idx].lmt_msa.BASIC_DMN=False;
 
-        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
+        if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
 
         /* Parse user-specified limits into hyperslab specifications */
         (void)nco_lmt_evl_dmn_trv(nc_id,lmt[lmt_idx],0L,FORTRAN_IDX_CNV,&dmn_trv);
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
             prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
         }
@@ -2967,7 +2967,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
     /* Current index of dimension limits for table dimension  */
     int lmt_crr=dmn_trv.lmt_msa.lmt_crr;
 
-    if(dbg_lvl_get() >= nco_dbg_dev && lmt_dmn_nbr){
+    if(dbg_lvl_get() == nco_dbg_old && lmt_dmn_nbr){
       (void)fprintf(stdout,"%s: INFO %s checking limits for dimension <%s>:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
     }
 
@@ -2976,7 +2976,7 @@ nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension l
 
     /* Loop limits for each dimension */
     for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li->%li->%li)\n",prg_nm_get(),fnc_nm,
           lmt_idx,
           dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->nm,
