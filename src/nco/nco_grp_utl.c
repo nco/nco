@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.530 2013-02-23 22:39:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.531 2013-02-24 00:08:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2476,40 +2476,6 @@ nco_blb_crd_rec_var_trv               /* [fnc] Build dimension information for a
 } /* nco_blb_crd_var_trv() */
 
 
-void
-nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- char * const grp_pth,                /* I [sng] Absolute group path where to start build (root typically) */
- nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
-{
-  /* Purpose: Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-
-  /* Construct traversal table objects (groups,variables) */
-  (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
-
-  /* Construct traversal table dimensions */
-  (void)nco_bld_dmn_trv(nc_id,trv_tbl);
-
-  /* Build "is_crd_var" and "is_rec_var" members for all variables */
-  (void)nco_blb_crd_rec_var_trv(trv_tbl);
-
-  /* Add dimension limits to traversal table */
-  /* Deprecate */
-  if(lmt_nbr)(void)nco_bld_lmt_trv(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
-
-  /* Build GTT "crd_sct" coordinate variable structure */
-  (void)nco_blb_crd_var_trv(trv_tbl);
-
-  /* Add dimension limits to traversal table */
- // if(lmt_nbr)(void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
-
-} /* nco_bld_trv_tbl() */
-
-
 void                          
 nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
 (const int nc_id,                    /* I [ID] File ID */
@@ -2531,7 +2497,6 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
     } /* Filter groups */
   } /* Loop groups */
-
 
   /* Variables */
 
@@ -2588,7 +2553,6 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
   } /* Unique dimension list */
 
-
   /* Coordinate variables stored in unique dimension list */
 
   (void)fprintf(stdout,"\n");
@@ -2612,8 +2576,6 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
           (void)fprintf(stdout," ::[%d]%s ",lmt_idx,crd->lmt_msa.lmt_dmn[lmt_idx]->nm);
         }
       }/* Limits */
-
-
     }/* Loop coordinates */
 
     /* Terminate line */
@@ -2621,10 +2583,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
   } /* Coordinate variables stored in unique dimension list */
 
-
 } /* nco_prt_trv_tbl() */
-
-
 
 void                      
 nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
@@ -2662,7 +2621,6 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
     } /* Loop all objects */
   } /* Loop unique dimensions list in groups */
 
-
   /* Step 2) Allocate coordinate variables array (crd_sct **) for every dimension */
 
   /* Loop unique dimensions list in groups */
@@ -2694,8 +2652,6 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
     } /* Loop all objects */
   } /* Loop unique dimensions list in groups */
 
-
-
   /* Step 3) Allocate/Initialize every coordinate variable array for every dimension */
 
   /* Loop unique dimensions list in groups */
@@ -2722,7 +2678,6 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
           /* Is variable in scope of dimension ? */
           if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
 
-
             /* Total number of coordinate variables for this dimension */
             int crd_nbr=trv_tbl->lst_dmn[dmn_idx].crd_nbr;
 
@@ -2748,7 +2703,6 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 
             /* Full group name where dimension of *this* coordinate is located is the full group name of the dimension  */
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
-
 
             /* Store relative name (same for dimension and variable) */
             strcpy(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm,var_trv.nm);
@@ -2780,6 +2734,39 @@ nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
   } /* Loop unique dimensions list in groups */
 
 } /* nco_blb_crd_var_trv() */
+
+void
+nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ char * const grp_pth,                /* I [sng] Absolute group path where to start build (root typically) */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+{
+  /* Purpose: Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+
+  /* Construct traversal table objects (groups,variables) */
+  (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
+
+  /* Construct traversal table dimensions */
+  (void)nco_bld_dmn_trv(nc_id,trv_tbl);
+
+  /* Build "is_crd_var" and "is_rec_var" members for all variables */
+  (void)nco_blb_crd_rec_var_trv(trv_tbl);
+
+  /* Build GTT "crd_sct" coordinate variable structure */
+  (void)nco_blb_crd_var_trv(trv_tbl);
+
+ /* Add dimension limits to traversal table */
+#if 1  
+  if(lmt_nbr)(void)nco_bld_lmt_trv(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl); /* To Deprecate */ 
+#else
+  if(lmt_nbr)(void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
+#endif
+
+} /* nco_bld_trv_tbl() */
 
 
 /* Deprecate */
@@ -3326,6 +3313,63 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
     } /* b) case of dimension only (there is no coordinate variable for this dimension */
   } /* Loop dimensions  */
+
+
+  /* Step 4) Validate...need more here */
+
+#ifdef NCO_SANITY_CHECK
+  /* Loop table dimensions */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+    /*  The limits have to be separated to */
+
+    /* a) case where the dimension has coordinate variables */
+    if (dmn_trv.crd_nbr){
+
+      /* Loop coordinates */
+      for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
+        crd_sct *crd=dmn_trv.crd[crd_idx];
+
+
+
+      }/* Loop coordinates */
+    }else{
+
+      /* Number of dimension limits for table dimension  */
+      int lmt_dmn_nbr=dmn_trv.lmt_msa.lmt_dmn_nbr;
+
+      /* Current index of dimension limits for table dimension  */
+      int lmt_crr=dmn_trv.lmt_msa.lmt_crr;
+
+      if(dbg_lvl_get() >= nco_dbg_dev && lmt_dmn_nbr){
+        (void)fprintf(stdout,"%s: INFO %s checking limits for dimension <%s>:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
+      }
+
+      /* lmt_dmn_nbr can be incremented for wrapped limits; always sync   */
+      assert(lmt_crr == lmt_dmn_nbr);
+
+      /* Loop limits for each dimension */
+      for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li->%li->%li)\n",prg_nm_get(),fnc_nm,
+            lmt_idx,
+            dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->nm,
+            dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->srt,
+            dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->end,
+            dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->srd);
+        }
+
+        /* Need more MRA sanity checks here; checking srt <= end now */
+        assert(dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->srt <= dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->end);
+        assert(dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->srd >= 1);
+      }/* End Loop limits for each dimension */
+
+
+    } /* b) case of dimension only (there is no coordinate variable for this dimension */
+  } /* Loop dimensions  */
+
+#endif /* NCO_SANITY_CHECK */
 
 
 } /* nco_bld_lmt() */
