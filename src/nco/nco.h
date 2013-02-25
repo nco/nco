@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.270 2013-02-25 00:15:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.271 2013-02-25 05:09:29 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -613,12 +613,14 @@ extern "C" {
   } lmt_msa_sct;
 
   /* GTT Variable dimensions:
-     Structure containing, for a variable, information for all dimensions (size of array is trv_sct.nbr_dmn at most) */
+     Structure containing, for a variable, information for all dimensions
+     A dimension has a name and a size, but it can have an associated variable (coordinate variable) */
   typedef struct{ 
-    int nbr_dmn; /* [nbr] Number of dimensions of variable  */
+    int nbr_dmn; /* [nbr] Number of dimensions of variable [chk] */
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
     char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
-    char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Full group where dimension is located  */    
+    char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Full group where dimension is located  */   
+    nco_bool is_crd_var[NC_MAX_DIMS]; /* [flg] Is this *name* a coordinate variable or just a dimension? */
   } var_dmn_sct; 
   
   /* GTT Object structure 

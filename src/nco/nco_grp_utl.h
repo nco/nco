@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.226 2013-02-23 11:54:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.227 2013-02-25 05:09:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -289,6 +289,11 @@ nco_blb_crd_rec_var_trv               /* [fnc] Build dimension information for a
 void                      
 nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
+
+void
+nco_bld_var_dmn                       /* [fnc] Build variables dimensions information (coordinate variables) */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void                          
 nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
