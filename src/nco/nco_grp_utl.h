@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.228 2013-02-25 09:02:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.229 2013-02-25 11:33:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -321,6 +321,12 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_msa_bld                          /* [fnc] Initialize a MSA struct with values from a dimension */
+(const char * const nm,              /* I [sng] Name (dimension or coordinate) */
+ const size_t sz,                    /* I [nbr] Size (dimension or coordinate) */
+ lmt_msa_sct *lmt_msa);              /* I/O [sct] MSA  */
 
 
 #ifdef __cplusplus

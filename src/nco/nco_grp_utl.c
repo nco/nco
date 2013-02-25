@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.541 2013-02-25 09:02:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.542 2013-02-25 11:33:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3083,18 +3083,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
     dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx];
 
-    /* Limits */
-    trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn=NULL;
-    trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_crr=0;
-    trv_tbl->lst_dmn[dmn_idx].lmt_msa.WRP=False;
-    trv_tbl->lst_dmn[dmn_idx].lmt_msa.BASIC_DMN=True;
-    trv_tbl->lst_dmn[dmn_idx].lmt_msa.MSA_USR_RDR=False;  
-
-    /* Initialize hyperslabed size, original MSA size with the dimension size, copy name; 
-    this value is modified by MSA only if there are limits for this dimension */ 
-    trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt=dmn_trv.sz;
-    trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_sz_org=dmn_trv.sz;
-    trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm=strdup(dmn_trv.nm);
+    /* Initialize hyperslabed size, name, set defaults */
+    (void)nco_msa_bld(dmn_trv.nm,dmn_trv.sz,&trv_tbl->lst_dmn[dmn_idx].lmt_msa);
 
     /*  The limits are now separated to */
 
@@ -3105,20 +3095,11 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
         crd_sct *crd=dmn_trv.crd[crd_idx];
 
-        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn=NULL;
+        /* Initialize hyperslabed size, name, set defaults */
+        (void)nco_msa_bld(crd->nm,crd->sz,&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa);
 
         /* Alloc limits if there are any */
         if (crd->lmt_msa.lmt_dmn_nbr) trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(crd->lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
-        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_crr=0;
-        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.WRP=False;
-        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.BASIC_DMN=True;
-        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.MSA_USR_RDR=False;
-
-        /* Initialize hyperslabed size, original MSA size with the dimension size, copy name; 
-        this value is modified by MSA only if there are limits for this dimension */ 
-        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_cnt=crd->sz;
-        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_sz_org=crd->sz;
-        trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm=strdup(crd->nm);
 
       }/* Loop coordinates */
     }else{
@@ -3561,6 +3542,26 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
   } /* Loop table */
 #endif /* NCO_SANITY_CHECK */
 
-
 } /* nco_bld_var_dmn() */
+
+
+void
+nco_msa_bld                          /* [fnc] Initialize a MSA struct with values from a dimension */
+(const char * const nm,              /* I [sng] Name (dimension or coordinate) */
+ const size_t sz,                    /* I [nbr] Size (dimension or coordinate) */
+ lmt_msa_sct *lmt_msa)               /* I/O [sct] MSA  */
+{
+  /* Purpose: Initialize hyperslabed size, original MSA size with the dimension size, copy name; 
+     hyperslabed size is modified by MSA only if there are limits for this dimension 
+     */ 
+
+  lmt_msa->lmt_dmn=NULL;
+  lmt_msa->lmt_crr=0;
+  lmt_msa->WRP=False;
+  lmt_msa->BASIC_DMN=True;
+  lmt_msa->MSA_USR_RDR=False;  
+  lmt_msa->dmn_cnt=sz;
+  lmt_msa->dmn_sz_org=sz;
+  lmt_msa->dmn_nm=strdup(nm);
+} /* nco_msa_bld() */
 
