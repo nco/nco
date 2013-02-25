@@ -1,0 +1,30 @@
+# Purpose: Project description for 2013 UCI Calit2 Surf-IT program 
+# (Summer Undergraduate Research Fellowships in Information Technologies)
+
+Next Generation Parser for Structured Data Analysis
+
+PI: Prof. Charlie Zender
+    Departments of Earth System Science and Computer Science
+
+Description:
+Climate simulations prepared for the Fifth Assessment Report (AR5) of 
+the Intergovernmental Panel on Climate Change (IPCC) are stored in a 
+self-describing data format called netCDF. Our NetCDF Operators (NCO)
+are a widely used, opensource toolkit for manipulating and analyzing
+(statistics, trends, comparison with observations) these datasets.
+This project will utilize ANTLR (ANother Tool for Language
+Recognition) to generate the NCO language parser in C++. Our goals are 
+two-fold: 1. To create and efficient, extensible parser for structured
+data analysis. 2. To enhance parallelism in geophysical data analysis
+involving structured data with storage constraints.
+
+Prerequisites: Familiarity with C/C++ and language tools (Yacc/Lex/ANTLR...)
+
+Outcomes: Skills and understanding of language construction, data
+analysis, open source software development and climate change. 
+
+Recommended Web sites and publications:
+1. ANother Tool for Language Recognition http://www.antlr.org
+2. netCDF Operators http://nco.sf.net
+3. Zender, C. S., and H. J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, Int. J. High Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
+4. Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10), 1338-1342, doi:10.1016/j.envsoft.2008.03.004.
