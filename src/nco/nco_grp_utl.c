@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.537 2013-02-24 13:11:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.538 2013-02-25 00:15:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2651,21 +2651,25 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
     /* Filter variables  */
     if(trv_tbl->lst[var_idx].typ == nco_obj_typ_var){
-      trv_sct trv=trv_tbl->lst[var_idx];            
-      (void)fprintf(stdout,"%s: %d dimensions: ",trv.nm_fll,trv.nbr_dmn); 
+      trv_sct trv=trv_tbl->lst[var_idx];   
 
-      /* Full dimension names for each variable */
-      for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++) 
-        (void)fprintf(stdout,"%s : ",trv.var_dmn.dmn_nm_fll[dmn_idx_var]); 
+      (void)fprintf(stdout,"%s:",trv.nm_fll); 
 
       /* Filter output */
-      if (trv.is_crd_var) (void)fprintf(stdout," (coordinate variable)");
+      if (trv.is_crd_var) (void)fprintf(stdout," (coordinate)");
 
       /* Filter output */
-      if (trv.is_rec_var) (void)fprintf(stdout," (record variable)");
+      if (trv.is_rec_var) (void)fprintf(stdout," (record)");
 
       /* If record variable must be coordinate variable */
       if (trv.is_rec_var) assert(trv.is_crd_var == True);
+
+      (void)fprintf(stdout," %d dimensions: ",trv.nbr_dmn); 
+
+      /* Full dimension names for each variable */
+      for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++){
+        (void)fprintf(stdout,"%s : ",trv.var_dmn.dmn_nm_fll[dmn_idx_var]); 
+      }
 
       (void)fprintf(stdout,"\n");
 
