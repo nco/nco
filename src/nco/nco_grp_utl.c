@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.540 2013-02-25 08:08:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.541 2013-02-25 09:02:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2752,15 +2752,16 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Build GTT "crd_sct" coordinate variable structure */
   (void)nco_blb_crd_var_trv(trv_tbl);
 
-  /* Build variables dimensions information (coordinate variables); must be done after nco_blb_crd_var_trv() */
-  (void)nco_bld_var_dmn(nc_id,trv_tbl);
-
-  /* Add dimension limits to traversal table */
-#if 1
+  /* Add dimension limits to traversal table. NOTE: must be done before nco_bld_var_dmn() */
+#ifdef REMOVE
   if(lmt_nbr)(void)nco_bld_lmt_trv(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl); /* To Deprecate */ 
 #else
   if(lmt_nbr)(void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 #endif
+
+  /* Build variables dimensions information (coordinate variables); must be done after nco_blb_crd_var_trv() */
+  (void)nco_bld_var_dmn(nc_id,trv_tbl);
+
 
 } /* nco_bld_trv_tbl() */
 
@@ -3076,11 +3077,24 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   } /* Loop input name list (can have duplicate names)  */
 
 
-  /* Step 2) Allocate lmt_sct ** and initialize counter index for number of limits to zero  */
+  /* Step 2) Initialize MSA for all dimensions, allocate lmt_sct ** */
 
   /* Loop dimensions, that now have already distributed limits and initialize limit information */
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
     dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx];
+
+    /* Limits */
+    trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn=NULL;
+    trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_crr=0;
+    trv_tbl->lst_dmn[dmn_idx].lmt_msa.WRP=False;
+    trv_tbl->lst_dmn[dmn_idx].lmt_msa.BASIC_DMN=True;
+    trv_tbl->lst_dmn[dmn_idx].lmt_msa.MSA_USR_RDR=False;  
+
+    /* Initialize hyperslabed size, original MSA size with the dimension size, copy name; 
+    this value is modified by MSA only if there are limits for this dimension */ 
+    trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt=dmn_trv.sz;
+    trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_sz_org=dmn_trv.sz;
+    trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm=strdup(dmn_trv.nm);
 
     /*  The limits are now separated to */
 
@@ -3108,22 +3122,12 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
       }/* Loop coordinates */
     }else{
-      /* b) case of dimension only (there is no coordinate variable for this dimension */
-
-      trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn=NULL;
+      /* b) case of dimension only (there is no coordinate variable for this dimension */  
 
       /* Alloc limits if there are any */
-      if (dmn_trv.lmt_msa.lmt_dmn_nbr) trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
-      trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_crr=0;
-      trv_tbl->lst_dmn[dmn_idx].lmt_msa.WRP=False;
-      trv_tbl->lst_dmn[dmn_idx].lmt_msa.BASIC_DMN=True;
-      trv_tbl->lst_dmn[dmn_idx].lmt_msa.MSA_USR_RDR=False;  
-
-      /* Initialize hyperslabed size, original MSA size with the dimension size, copy name; 
-      this value is modified by MSA only if there are limits for this dimension */ 
-      trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt=dmn_trv.sz;
-      trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_sz_org=dmn_trv.sz;
-      trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm=strdup(dmn_trv.nm);
+      if (dmn_trv.lmt_msa.lmt_dmn_nbr){
+        trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
+      }
 
     } /* b) case of dimension only (there is no coordinate variable for this dimension */
   } /* Loop dimensions, that now have already distributed limits and initialize limit information */
@@ -3451,7 +3455,11 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
 (const int nc_id,                     /* I [ID] netCDF file ID [chk] */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
+  /* Purpose: Fill variable dimensions with pointers to either a coordinate variable or dimension structs with MSA */
+
   const char fnc_nm[]="nco_bld_var_dmn()"; /* [sng] Function name  */
+
+  /* Fill coordinates first */
 
   /* Loop table */
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
@@ -3463,7 +3471,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
       /* Loop dimensions for object (variable)  */
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
 
-        /* Loop unique dimensions list */
+        /* Loop unique dimensions list where the coordinates are stored */
         for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
           dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
@@ -3491,6 +3499,68 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
   } /* Loop table */
+
+
+  /* Fill dimensions second; check the bool array with either coordinate or dimension flag */
+
+  /* Loop table */
+  for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+
+    /* Filter variables  */
+    if(trv_tbl->lst[var_idx].typ == nco_obj_typ_var){
+      trv_sct var_trv=trv_tbl->lst[var_idx];   
+
+      /* Loop dimensions for object (variable)  */
+      for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
+
+        /* Initialized to -1 and not set to True */ 
+        if (var_trv.var_dmn.is_crd_var[dmn_idx_var] == nco_obj_typ_err)
+        {
+
+          /* Loop unique dimensions list where MSA for non coordinates is stored */
+          for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+            dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+            /* Match dimension full name with dimension full name of the *variable* */ 
+            if(strcmp(dmn_trv.nm_fll, var_trv.var_dmn.dmn_nm_fll[dmn_idx_var] ) == 0){
+
+              if(dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension [%d]%s\n",prg_nm_get(),fnc_nm,
+                  var_trv.nm_fll,dmn_idx,dmn_trv.nm_fll);        
+              } /* endif dbg */
+
+              /* Mark as False the position of the bool array coordinate/non coordinate */
+              trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var]=False;
+
+              /* Store the pointer needed for MSA to get limits */
+              trv_tbl->lst[var_idx].var_dmn.dmn_fll[dmn_idx_var]=&dmn_trv;
+
+            } /* Match possible coordinate variable name with dimension name */
+          } /* Loop unique dimensions list where MSA for non coordinates is stored */
+        } /* Initialized to -1 and not set to True */ 
+      } /* Loop dimensions for object (variable)  */
+    } /* Filter variables  */
+  } /* Loop table */
+
+
+#ifdef NCO_SANITY_CHECK
+  /* Loop table */
+  for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+
+    /* Filter variables  */
+    if(trv_tbl->lst[var_idx].typ == nco_obj_typ_var){
+      trv_sct var_trv=trv_tbl->lst[var_idx];   
+
+      /* Loop dimensions for object (variable)  */
+      for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
+
+        assert(trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var] != nco_obj_typ_err);
+
+      } /* Loop dimensions for object (variable)  */
+    } /* Filter variables  */
+  } /* Loop table */
+#endif /* NCO_SANITY_CHECK */
+
 
 } /* nco_bld_var_dmn() */
 

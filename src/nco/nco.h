@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.272 2013-02-25 08:08:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.273 2013-02-25 09:02:48 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -624,6 +624,19 @@ extern "C" {
     lmt_msa_sct lmt_msa;    /* [sct] MSA Limits structure for every coordinate */
   } crd_sct; 
 
+   /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and a MSA field */
+  typedef struct{ 
+    char *grp_nm_fll;        /* [sng] Full group name where dimension was defined */
+    char *nm_fll;            /* [sng] Dimension fully qualified name (path) */
+    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
+    nco_bool is_rec_dmn;     /* [flg] Is a record dimension? */
+    size_t sz;               /* [nbr] Size of dimension */   
+    int crd_nbr;             /* [nbr] Number of coordinate structures */
+    crd_sct **crd;           /* [sct] List of coordinate structures associated with *this* dimension */
+    lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
+    //nco_bool is_crd_dmn;   /* [flg] Is there a variable with same name in dimension's scope? */
+  } dmn_fll_sct; 
+
 
   /* GTT Variable dimensions:
      Structure containing, for a variable, information for all dimensions
@@ -634,7 +647,8 @@ extern "C" {
     char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
     char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Full group where dimension is located  */   
     nco_bool is_crd_var[NC_MAX_DIMS]; /* [flg] Is this *name* a coordinate variable or just a dimension? */
-    crd_sct *crd[NC_MAX_DIMS]; /* [sct] Pointer to the coordinate variable if coordinate variable */
+    crd_sct *crd[NC_MAX_DIMS]; /* [sct] Pointers to each coordinate variable if coordinate variable */
+    dmn_fll_sct *dmn_fll[NC_MAX_DIMS]; /* [sct] Pointers to each dimension if dimension */
   } var_dmn_sct; 
   
   /* GTT Object structure 
@@ -678,21 +692,6 @@ extern "C" {
     nco_bool flg_xcl; /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr; /* [flg] Extract object */
    } trv_sct;
-
- 
-  /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and a MSA field */
-  typedef struct{ 
-    char *grp_nm_fll;        /* [sng] Full group name where dimension was defined */
-    char *nm_fll;            /* [sng] Dimension fully qualified name (path) */
-    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
-    nco_bool is_rec_dmn;     /* [flg] Is a record dimension? */
-    size_t sz;               /* [nbr] Size of dimension */   
-    int crd_nbr;             /* [nbr] Number of coordinate structures */
-    crd_sct **crd;           /* [sct] List of coordinate structures associated with *this* dimension */
-    lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
-
-    //nco_bool is_crd_dmn;   /* [flg] Is there a variable with same name in dimension's scope? */
-  } dmn_fll_sct; 
  
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
