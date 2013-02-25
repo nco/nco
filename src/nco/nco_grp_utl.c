@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.543 2013-02-25 12:04:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.544 2013-02-25 12:50:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2359,27 +2359,21 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     strcat(dmn_nm_fll,dmn_nm);
 
     /* Store object */
-
-    strcpy(trv_tbl->lst_dmn[idx].nm,dmn_nm);            /* [sng] Name of dimension (if coordinate variable, also name of variable) */
-    trv_tbl->lst_dmn[idx].grp_nm_fll=strdup(grp_nm_fll);/* [sng] Full group name where dimension was defined (there is one and only one group)*/   
-    trv_tbl->lst_dmn[idx].nm_fll=strdup(dmn_nm_fll);    /* [sng] Dimension fully qualified name (path) */
-    trv_tbl->lst_dmn[idx].sz=dmn_sz;                    /* [nbr] Size of dimension */
-   
-    /* Limits */
-    /* Limits are initialized in build limits function */
-
-    trv_tbl->lst_dmn[idx].lmt_msa.lmt_dmn_nbr=0;               
-    trv_tbl->lst_dmn[idx].lmt_msa.lmt_crr=0;                   
-    trv_tbl->lst_dmn[idx].lmt_msa.lmt_dmn=NULL;
-    trv_tbl->lst_dmn[idx].lmt_msa.lmt_crr=0;
+    strcpy(trv_tbl->lst_dmn[idx].nm,dmn_nm);            
+    trv_tbl->lst_dmn[idx].grp_nm_fll=strdup(grp_nm_fll); 
+    trv_tbl->lst_dmn[idx].nm_fll=strdup(dmn_nm_fll);    
+    trv_tbl->lst_dmn[idx].sz=dmn_sz;                            
+    trv_tbl->lst_dmn[idx].lmt_msa.dmn_nm=strdup(dmn_nm); 
+    trv_tbl->lst_dmn[idx].lmt_msa.dmn_sz_org=dmn_sz;
+    trv_tbl->lst_dmn[idx].lmt_msa.dmn_cnt=dmn_sz;
     trv_tbl->lst_dmn[idx].lmt_msa.WRP=False;
     trv_tbl->lst_dmn[idx].lmt_msa.BASIC_DMN=True;
-    trv_tbl->lst_dmn[idx].lmt_msa.MSA_USR_RDR=False;  
-    trv_tbl->lst_dmn[idx].lmt_msa.dmn_cnt=nco_obj_typ_err;
-
-    trv_tbl->lst_dmn[idx].crd_nbr=0;         /* [nbr] Number of coordinate structures */
-    trv_tbl->lst_dmn[idx].crd=NULL;          /* [sct] List of coordinate structures associated with *this* dimension */
-    //trv_tbl->lst_dmn[idx].is_crd_dmn=False;  /* [flg] Is there a variable with same name in dimension's scope? */
+    trv_tbl->lst_dmn[idx].lmt_msa.MSA_USR_RDR=False; 
+    trv_tbl->lst_dmn[idx].lmt_msa.lmt_dmn_nbr=0;
+    trv_tbl->lst_dmn[idx].lmt_msa.lmt_crr=0;
+    trv_tbl->lst_dmn[idx].lmt_msa.lmt_dmn=NULL;
+    trv_tbl->lst_dmn[idx].crd_nbr=0;         
+    trv_tbl->lst_dmn[idx].crd=NULL;          
 
     /* Free constructed name */
     dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
@@ -3083,9 +3077,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
     dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx];
 
-    /* Initialize hyperslabed size, name, set defaults */
-    (void)nco_msa_bld(dmn_trv.nm,dmn_trv.sz,&trv_tbl->lst_dmn[dmn_idx].lmt_msa);
-
     /*  The limits are now separated to */
 
     /* a) case where the dimension has coordinate variables */
@@ -3094,9 +3085,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       /* Loop coordinates */
       for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
         crd_sct *crd=dmn_trv.crd[crd_idx];
-
-        /* Initialize hyperslabed size, name, set defaults */
-        (void)nco_msa_bld(crd->nm,crd->sz,&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa);
 
         /* Alloc limits if there are any */
         if (crd->lmt_msa.lmt_dmn_nbr) trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(crd->lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
@@ -3543,25 +3531,4 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
 #endif /* NCO_SANITY_CHECK */
 
 } /* nco_bld_var_dmn() */
-
-
-void
-nco_msa_bld                          /* [fnc] Initialize a MSA struct with values from a dimension */
-(const char * const nm,              /* I [sng] Name (dimension or coordinate) */
- const size_t sz,                    /* I [nbr] Size (dimension or coordinate) */
- lmt_msa_sct *lmt_msa)               /* I/O [sct] MSA  */
-{
-  /* Purpose: Initialize hyperslabed size, original MSA size with the dimension size, copy name; 
-     hyperslabed size is modified by MSA only if there are limits for this dimension 
-     */ 
-
-  lmt_msa->lmt_dmn=NULL;
-  lmt_msa->lmt_crr=0;
-  lmt_msa->WRP=False;
-  lmt_msa->BASIC_DMN=True;
-  lmt_msa->MSA_USR_RDR=False;  
-  lmt_msa->dmn_cnt=sz;
-  lmt_msa->dmn_sz_org=sz;
-  lmt_msa->dmn_nm=strdup(nm);
-} /* nco_msa_bld() */
 

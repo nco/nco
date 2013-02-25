@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.71 2013-02-23 22:23:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.72 2013-02-25 12:50:24 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -44,7 +44,6 @@ trv_tbl_free
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
 
-    /* Variable dimensions */
     if (tbl->lst[idx].typ == nco_obj_typ_var){
       int nbr_dmn=tbl->lst[idx].nbr_dmn;
       for(int dmn_idx_var=0;dmn_idx_var<nbr_dmn;dmn_idx_var++){
@@ -53,7 +52,7 @@ trv_tbl_free
         tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=(char *)nco_free(tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]);
       }
     }
-  } /* end loop */
+  } 
 
   tbl->lst=(trv_sct *)nco_free(tbl->lst);
 
@@ -62,41 +61,23 @@ trv_tbl_free
   for(unsigned int dmn_idx=0;dmn_idx<tbl->nbr_dmn;dmn_idx++){
     tbl->lst_dmn[dmn_idx].nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].nm_fll);
     tbl->lst_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].grp_nm_fll);
+    tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm);
 
-    /* Limits */
     for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn_nbr;lmt_idx++){
-      if(dbg_lvl_get() == nco_dbg_old){
-        dmn_fll_sct dmn_trv=tbl->lst_dmn[dmn_idx];
-        (void)fprintf(stdout,"INFO limit [%d]%s done:\n",lmt_idx,dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->nm);
-      }
       tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]);
     }
-    /* Limits */
 
-    /* Coordinate structures */
     for(int crd_idx=0;crd_idx<tbl->lst_dmn[dmn_idx].crd_nbr;crd_idx++){
-      if(dbg_lvl_get() == nco_dbg_old){
-        dmn_fll_sct dmn_trv=tbl->lst_dmn[dmn_idx];
-        (void)fprintf(stdout,"INFO coordinate [%d]%s done:\n",crd_idx,dmn_trv.crd[crd_idx]->crd_nm_fll);
-      }
-
-      /* 4 full name strings here */
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll);
 
-      /* Limits for Coordinate structures */
-      int lmt_nbr=tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;
-      for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
-        if(dbg_lvl_get() == nco_dbg_old){
-          dmn_fll_sct dmn_trv=tbl->lst_dmn[dmn_idx];
-          (void)fprintf(stdout,"INFO limit coordinates [%d]%s done:\n",lmt_idx,dmn_trv.crd[crd_idx]->nm);
-        }
+      for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;lmt_idx++){
         tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]);
-      }  /* Limits for Coordinate structures */
-    } /*  Coordinate structures */
-  } /* End Dimension list loop */
+      }  
+    } 
+  } 
 
   tbl->lst_dmn=(dmn_fll_sct *)nco_free(tbl->lst_dmn);
 
