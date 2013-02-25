@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.215 2013-02-24 07:50:15 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.216 2013-02-25 08:08:17 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1417,7 +1417,7 @@ print "\n";
 # Chunking tests
 #
  
-#ncks #55: This test applies chunking all policy to -v lat_lon(lat,lon); lat(2) and lon(4) are by default chunked with a size == dimension
+#ncks #54: This test applies chunking all policy to -v lat_lon(lat,lon); lat(2) and lon(4) are by default chunked with a size == dimension
 # The test greps chunksize = 2 for lat
 # Policy: Chunk All Variables [default]
 # Map:Chunksize Equals Dimension Size [default]
@@ -1434,7 +1434,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
     
-#ncks #56: This test applies: time chunk is explicitely set to 2 instead of the default 1 for record dimension
+#ncks #55: This test applies: time chunk is explicitely set to 2 instead of the default 1 for record dimension
 # Policy: Chunk Variables with at least Three Dimensions Definition: Chunk all variables possible with at least three dimensions
 # Alternate invocation: none cnk plc key values: ‘g3d’, ‘cnk_g3d’, ‘plc_g3d’
 # Definition: Chunksize defaults to dimension size. Explicitly specify chunksizes for particular dimensions with ‘--cnk_dmn’ option.
@@ -1456,7 +1456,7 @@ print "\n";
 # Limit/MSA tests
 #
 
-#ncks #57:
+#ncks #56:
 # ncks -H -C --dmn time,1,3,2 --dmn lev,1,1,1  -v two_dmn_rec_var  ~/nco/data/in_grp.nc
 # /g10/two_dmn_rec_var
 # time[1]=2 lev[1]=500 two_dmn_rec_var[4]=2.1 
@@ -1473,15 +1473,13 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
 
-
+#ncks #57:
 #  ncks -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1   -v two_dmn_rec_var  ~/nco/data/in_grp.nc
 #/g10/two_dmn_rec_var
 #time[1]=2 lev[0]=100 two_dmn_rec_var[3]=1 
 #time[1]=2 lev[2]=1000 two_dmn_rec_var[5]=3 
 #time[3]=4 lev[0]=100 two_dmn_rec_var[9]=1 
 #time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3 
-
-#ncks #58:
 
     $dsc_sng="MSA --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1";
     $tst_cmd[0]="ncks $nco_D_flg  -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1 -v two_dmn_rec_var  $in_pth_arg in_grp.nc";
@@ -1494,7 +1492,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
 
-#ncks #59 This test uses limits to print a dimension "lon2(4)" that does NOT have a coordinate variable
+#ncks #58 This test uses limits to print a dimension "lon2(4)" that does NOT have a coordinate variable
 #  ncks -H -d lon2,1,3,2  -v lon2_var  in_grp.nc
 #/g16/lon2_var
 #lon2[1] lon2_var[1]=1 
@@ -1511,7 +1509,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
-#ncks #60 same as #59 but with 2 limits with the same result
+#ncks #59 same as #58 but with 2 limits with the same result
 # ncks -H -d lon2,1,1,1 -d lon2,3,3,1  -v lon2_var  in_grp.nc 
 #/g16/lon2_var
 #lon2[1] lon2_var[1]=1 

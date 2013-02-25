@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.539 2013-02-25 05:09:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.540 2013-02-25 08:08:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3479,7 +3479,11 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
                   var_trv.nm_fll,crd_idx,dmn_trv.crd[crd_idx]->crd_nm_fll);        
               } /* endif dbg */
 
+              /* Mark as True */
               trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var]=True;
+
+              /* Store the pointer needed for MSA to get limits */
+              trv_tbl->lst[var_idx].var_dmn.crd[dmn_idx_var]=crd;
 
             } /* Match possible coordinate variable name with dimension name */ 
           } /* Loop possible coordinate variables for this dimension  */
