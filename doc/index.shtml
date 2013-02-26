@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.764 2013-02-16 00:02:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.765 2013-02-26 22:19:06 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -367,6 +367,19 @@ more CF conventions.
 Need I say more? 
 If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
 </ul>
+
+ <a href="cesm-eg.html">Pre-ACCESS CMIP5/MODIS analysis scripts</a>
+ 
+<!-- Copy files from http://glace.ess.uci.edu
+/usr/bin/scp /home/pvicente/nco/doc/cesm-eg.html pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
+/usr/bin/scp /home/pvicente/nco/doc/cesm-eg.fig1.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
+/usr/bin/scp /home/pvicente/nco/doc/cesm-eg.fig2.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
+/usr/bin/scp /home/pvicente/nco/doc/cesm-eg.fig3.png pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
+/usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
+--> 
+ 
+ 
+
 <hr></p>
 
 <a name="nsf"></a> <!-- http://nco.sf.net#nsf -->
