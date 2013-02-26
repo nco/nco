@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.186 2013-02-26 04:11:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.187 2013-02-26 22:31:10 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1409,7 +1409,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
 
        if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s Assigning MSA with [%d]:%s\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: INFO %s Assigning MSA with coordinate variable [%d]:%s\n",prg_nm_get(),fnc_nm,
           dmn_idx_var,var_trv->var_dmn.crd[dmn_idx_var]->crd_nm_fll);
         for(int lmt_idx=0;lmt_idx<lmt_msa[dmn_idx_var]->lmt_dmn_nbr;lmt_idx++){
           (void)fprintf(stdout,"%s: INFO %s limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
@@ -1451,7 +1451,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s Assigning MSA with [%d]:%s\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: INFO %s Assigning MSA with unique dimension [%d]:%s\n",prg_nm_get(),fnc_nm,
           dmn_idx_var,var_trv->var_dmn.dmn_fll[dmn_idx_var]->nm_fll);
         for(int lmt_idx=0;lmt_idx<lmt_msa[dmn_idx_var]->lmt_dmn_nbr;lmt_idx++){
           (void)fprintf(stdout,"%s: INFO %s limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
@@ -2196,7 +2196,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
 
        if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s Assigning MSA with [%d]:%s\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: INFO %s Assigning MSA with coordinate variable [%d]:%s\n",prg_nm_get(),fnc_nm,
           dmn_idx_var,var_trv->var_dmn.crd[dmn_idx_var]->crd_nm_fll);
         for(int lmt_idx=0;lmt_idx<lmt_msa[dmn_idx_var]->lmt_dmn_nbr;lmt_idx++){
           (void)fprintf(stdout,"%s: INFO %s limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
@@ -2238,7 +2238,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s Assigning MSA with [%d]:%s\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: INFO %s Assigning MSA with unique dimension [%d]:%s\n",prg_nm_get(),fnc_nm,
           dmn_idx_var,var_trv->var_dmn.dmn_fll[dmn_idx_var]->nm_fll);
         for(int lmt_idx=0;lmt_idx<lmt_msa[dmn_idx_var]->lmt_dmn_nbr;lmt_idx++){
           (void)fprintf(stdout,"%s: INFO %s limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
