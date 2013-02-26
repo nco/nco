@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.231 2013-02-26 08:58:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.232 2013-02-26 12:01:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -117,11 +117,9 @@ nco_def_grp_rcr                      /* [fnc] Define groups */
  const char * const prn_nm,          /* I [sng] Parent group name */
  const int rcr_lvl);                 /* I [nbr] Recursion level */
 
-int                                  /* O [rcd] Return code */
-nco_grp_itr                          /* [fnc] Populate traversal table by examining, recursively, subgroups of parent  */
-(const int grp_id,                   /* I [id] Group ID */
- char * const grp_pth,               /* I [sng] Absolute group path */
- trv_tbl_sct *trv_tbl);              /* I/O [sct] Group traversal table  */
+void
+nco_prt_grp_nm_fll                   /* [fnc] Debug function to print group full name from ID */
+(const int grp_id);                  /* I [ID] Group ID */
 
 nco_bool                             /* O [flg] All user-specified names are in file */
 nco_xtr_mk                           /* [fnc] Check -v and -g input names and create extraction list */
@@ -216,11 +214,6 @@ nco_prt_dmn                           /* [fnc] Print dimensions for a group  */
 (const int nc_id,                     /* I [ID] File ID */
  const char * const grp_nm_fll);      /* I [sng] Full name of group */
 
-void                          
-nco_bld_dmn_trv                       /* [fnc] Build dimension info for all variables */
-(const int nc_id,                     /* I [ID] File ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
 void
 nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
@@ -235,20 +228,20 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
 
 
 void
-nco_xtr_dfn                          /* [fnc] Define extracted groups, variables, and attributes in output file */
-(const int nc_id,                    /* I [ID] netCDF input file ID */
- const int nc_out_id,                /* I [ID] netCDF output file ID */
- int * const cnk_map_ptr,            /* I [enm] Chunking map */
- int * const cnk_plc_ptr,            /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,            /* I [nbr] Chunk size scalar */
+nco_xtr_dfn                           /* [fnc] Define extracted groups, variables, and attributes in output file */
+(const int nc_id,                     /* I [ID] netCDF input file ID */
+ const int nc_out_id,                 /* I [ID] netCDF output file ID */
+ int * const cnk_map_ptr,             /* I [enm] Chunking map */
+ int * const cnk_plc_ptr,             /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,             /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,                  /* I [nbr] Number of dimensions with user-specified chunking */
- const int dfl_lvl,                  /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,          /* I [sng] GPE structure */
- const nco_bool CPY_GRP_METADATA,    /* I [flg] Copy group metadata (attributes) */
- const nco_bool CPY_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
- const char * const rec_dmn_nm,      /* I [sng] Record dimension name */
- trv_tbl_sct * const trv_tbl);       /* I/O [sct] Traversal table */
+ const int cnk_nbr,                   /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                   /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,           /* I [sng] GPE structure */
+ const nco_bool CPY_GRP_METADATA,     /* I [flg] Copy group metadata (attributes) */
+ const nco_bool CPY_VAR_METADATA,     /* I [flg] Copy variable metadata (attributes) */
+ const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
 nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
@@ -269,6 +262,18 @@ nco_bool                              /* O [flg] True if in scope */
 nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope */
 (trv_sct *var_trv,                    /* I [sct] GTT Object Variable */
  dmn_fll_sct *dmn_trv);               /* I [sct] GTT unique dimension */
+
+
+int                                   /* O [rcd] Return code */
+nco_grp_itr                           /* [fnc] Populate traversal table by examining, recursively, subgroups of parent  */
+(const int grp_id,                    /* I [id] Group ID */
+ char * const grp_pth,                /* I [sng] Absolute group path */
+ trv_tbl_sct *trv_tbl);               /* I/O [sct] Group traversal table  */
+
+void                          
+nco_bld_dmn_trv                       /* [fnc] Build dimension info for all variables */
+(const int nc_id,                     /* I [ID] File ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */

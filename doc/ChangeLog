@@ -3,6 +3,8 @@
 	* rewrote nco_xtr_cf_prv_add() Add specified CF-compliant coordinates of specified variable to extraction list 
     this fixes nco1086, deprecated functions used nco_aux_grp_id(), trv_tbl_fnd_var_nm() 
     add regression test ncks#60
+    
+	* nco_prt_grp_nm_fll() Debug function to print group full name from ID 
 
 2013-02-25  Pedro Vicente  <pvicente@uci.edu>
 

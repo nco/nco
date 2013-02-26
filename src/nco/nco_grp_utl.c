@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.549 2013-02-26 11:12:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.550 2013-02-26 12:01:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -257,6 +257,21 @@ nco_grp_stk_free                      /* [fnc] Free group stack */
   /* Purpose: Free dynamic array implementation of stack */
   grp_stk->grp_id=(int *)nco_free(grp_stk->grp_id);
 } /* end nco_grp_stk_free() */
+
+void
+nco_prt_grp_nm_fll                    /* [fnc] Debug function to print group full name from ID */
+(const int grp_id)                    /* I [ID] Group ID */
+{
+  size_t grp_nm_lng;
+  char *grp_nm_fll;
+
+  (void)nco_inq_grpname_full(grp_id, &grp_nm_lng, NULL);
+  grp_nm_fll=(char*)nco_malloc(grp_nm_lng+1L);
+  (void)nco_inq_grpname_full(grp_id, &grp_nm_lng, grp_nm_fll);
+  (void)fprintf(stdout,"<%s>",grp_nm_fll);
+  grp_nm_fll=(char*)nco_free(grp_nm_fll);
+
+} /* nco_inq_prt_nm_fll() */
 
 int                                  /* [rcd] Return code */
 nco_grp_dfn                          /* [fnc] Define groups in output file */
@@ -1696,6 +1711,16 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
       /* If object is an extracted variable... */ 
       if(trv.typ == nco_obj_typ_var && trv.flg_xtr){
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s writing variable <%s> from ",prg_nm_get(),fnc_nm,trv.nm_fll);        
+          (void)nco_prt_grp_nm_fll(trv.grp_id_in);
+          (void)fprintf(stdout," to ");   
+          (void)nco_prt_grp_nm_fll(trv.grp_id_out);
+          (void)fprintf(stdout,"\n");
+        } /* endif dbg */
+
+
         if(HAVE_LIMITS) (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,&trv,trv_tbl); 
         else (void)nco_cpy_var_val(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm);
       } /* endif */
@@ -3405,7 +3430,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
             /* Match possible coordinate variable name with dimension full name of the *variable* */ 
             if(strcmp(crd->crd_nm_fll, var_trv.var_dmn.dmn_nm_fll[dmn_idx_var] ) == 0){
 
-              if(dbg_lvl_get() >= nco_dbg_dev){
+              if(dbg_lvl_get() == nco_dbg_old){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,crd_idx,dmn_trv.crd[crd_idx]->crd_nm_fll);        
               } /* endif dbg */
@@ -3446,7 +3471,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
             /* Initialized to -1 and not set to True in the first coordinates check  */ 
             if (var_trv.var_dmn.is_crd_var[dmn_idx_var] == nco_obj_typ_err){
 
-              if(dbg_lvl_get() >= nco_dbg_dev){
+              if(dbg_lvl_get() == nco_dbg_old){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,dmn_idx,dmn_trv.nm_fll);        
               } /* endif dbg */
@@ -3487,4 +3512,10 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
 #endif /* NCO_SANITY_CHECK */
 
 } /* nco_bld_var_dmn() */
+
+
+
+
+
+
 
