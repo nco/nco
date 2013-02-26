@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.232 2013-02-23 22:23:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.233 2013-02-26 13:46:36 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1893,8 +1893,32 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       char *grp_out_fll; /* [sng] Group name */
 
       /* Does dimension have user-specified limits?
-	 Following line is only difference between defining a variable with and without limits */
+      Following line is only difference between defining a variable with and without limits */
+
+#ifdef REMOVE 
+      /* This should not be the test for "dmn_cnt", it is always  != nco_obj_typ_err */ 
       if(dmn_trv->lmt_msa.dmn_cnt != nco_obj_typ_err) dmn_sz=dmn_trv->lmt_msa.dmn_cnt;
+#else
+
+      /* This dimension has a coordinate variable */
+      if (var_trv->var_dmn.is_crd_var[dmn_idx] == True){
+
+        /* Get hyperslabbed MSA size from table */
+        dmn_sz=var_trv->var_dmn.crd[dmn_idx]->lmt_msa.dmn_cnt;
+
+        /* This dimension does not has a coordinate variable, it must have a unique dimension pointer */
+      }else if (var_trv->var_dmn.is_crd_var[dmn_idx] == False){
+
+        /* Get hyperslabbed MSA size from table */
+        dmn_sz=var_trv->var_dmn.dmn_fll[dmn_idx]->lmt_msa.dmn_cnt;
+
+        /* This dimension must have either a coordinate or a dimension pointer */
+      }else{
+        assert(0);
+      }
+
+#endif /* REMOVE */
+
       assert(dmn_sz != nco_obj_typ_err);
 
       if(dbg_lvl_get() == nco_dbg_crr){

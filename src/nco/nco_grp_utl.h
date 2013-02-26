@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.232 2013-02-26 12:01:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.233 2013-02-26 13:46:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -12,7 +12,7 @@
 #ifndef NCO_GRP_UTL_H
 #define NCO_GRP_UTL_H
 
-#if 1
+#if 0 
 #define REMOVE /* After MSA print done */
 #endif
 
