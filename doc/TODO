@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1226 2013-02-21 18:24:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1227 2013-02-26 11:15:40 pvicente Exp $
 
 # Purpose: TODO items for NCO
 
@@ -709,8 +709,6 @@ nco1077. wnd: utilize netCDF CMake for linking so DAP/UDUNITS support is automat
 nco1079. ncap2: add option to return index of max/min/etc. kevin raeder suggestion
 nco1080. ncrename: nc_rename_grp() library call for libnetcdf written with HDF API
 nco1084. ncks feature: allow multiple specifications of mk_rec_dmn and fix_rec_dmn
-nco1086. ncks: WARNING Variable lat_gds, specified in "coordinates" attribute of variable /g7/g7g1/gds_var, is not present in input file
-	 ncks -O -H -v gds_var -d gds_crd,1,1 ~/nco/data/in_grp.nc
 nco1087. autoconf detect UDunits2 in Mac OSX
 nco1088. ncks -O -v two_dmn_rec_var ~/nco/data/in_grp.nc out.nc
          /g10/two_dmn_rec_var

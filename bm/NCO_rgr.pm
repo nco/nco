@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.217 2013-02-26 11:12:12 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.218 2013-02-26 11:14:37 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1528,8 +1528,9 @@ print "\n";
     
 
 #ncks #60
-# This test tests both limits annd extraction of associated CF variables
-# ncks -H  -v gds_var -d gds_crd,1,1,1  in_grp.nc  /g7/g7g1/gds_var
+# This test tests both limits and extraction of associated CF variables
+# ncks -H  -v gds_var -d gds_crd,1,1,1  in_grp.nc  
+#/g7/g7g1/gds_var
 #gds_var[1]=273.2 
 #/g7/gds_crd
 #gds_crd[1]=1 
