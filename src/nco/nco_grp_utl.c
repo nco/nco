@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.548 2013-02-26 08:58:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.549 2013-02-26 11:12:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -771,13 +771,9 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
 
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
 
-  char *ptr_chr; /* [sng] Pointer to character '/' in full name */
-  int psn_chr; /* [nbr] Position of character '/' in in full name */
-
   int grp_id; /* [id] Group ID */
   int nbr_att; /* [nbr] Number of attributes */
   int nbr_cf; /* [nbr] Number of coordinates specified in "bounds" or "coordinates" attribute */
-  int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id; /* [id] Variable ID */
 
   assert(var_trv->typ == nco_obj_typ_var);
@@ -785,18 +781,23 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
   /* Obtain group ID from netCDF API using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
-  /* Obtain variable ID. NB: use relative variable name */
+  /* Obtain variable ID */
   (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
 
   /* Find number of attributes */
   (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
+
+  assert(nbr_att == var_trv->nbr_att);
+
+  /* Loop attributes */
   for(int idx_att=0;idx_att<nbr_att;idx_att++){
+
+    /* Get attribute name */
     (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
 
     /* Is attribute part of CF convention? */
     if(!strcmp(att_nm,cf_nm)){
       char *att_val;
-      int cf_id;
       long att_sz;
       nc_type att_typ;
 
@@ -820,50 +821,25 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;
 
-        /* Verify "bounds" exists in input file. NB: use group ID */
-        rcd=nco_inq_varid_flg(grp_id,cf_lst_var,&cf_id);
-        /* NB: Coordinates of rank N have bounds of rank N+1 */
-        if(rcd == NC_NOERR){
-          /* Does CF-variable actually exist in input file, at least by its short name?
-          fxm: Should we just pass grp_nm_fll into function rather than search twice? */
-          if(trv_tbl_fnd_var_nm(cf_lst_var,trv_tbl)){
-            char *cf_nm_fll;
-            char *grp_nm_fll; /* Fully qualified group where variable resides */
-            int var_nm_lng; /* Length of fully qualified group where variable resides */
+        nco_bool flg_cf_fnd=False; /* [flg] Used to print an error message that CF variable was not found */
 
-            var_nm_lng=strlen(var_trv->nm_fll);
-            grp_nm_fll=(char *)nco_malloc((var_nm_lng+1L)*sizeof(char));
-            strcpy(grp_nm_fll,var_trv->nm_fll);
-            ptr_chr=strrchr(grp_nm_fll,'/');
-            psn_chr=ptr_chr-grp_nm_fll;
-            grp_nm_fll[psn_chr]='\0';
-
-            /* Construct full variable name */
-            cf_nm_fll=(char*)nco_malloc(strlen(grp_nm_fll)+strlen(cf_lst_var)+2L);
-            strcpy(cf_nm_fll,grp_nm_fll);
-            if(strcmp(grp_nm_fll,"/")) strcat(cf_nm_fll,"/");
-            strcat(cf_nm_fll,cf_lst_var); 
-
-            /* Free allocated memory */
-            grp_nm_fll=(char *)nco_free(grp_nm_fll);
+        /* Does CF-variable actually exist in input file, at least by its short name?. Find them all... */
+        for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+          trv_sct trv=trv_tbl->lst[uidx];
+          if(trv.typ == nco_obj_typ_var && !strcmp(trv.nm,cf_lst_var)){
 
             /* Mark variable for extraction */
-            for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-              if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && !strcmp(trv_tbl->lst[uidx].nm_fll,cf_nm_fll)){
-                trv_tbl->lst[uidx].flg_cf=True;
-                trv_tbl->lst[uidx].flg_xtr=True;
-              } /* endif */
-            } /* end loop over uidx */
+            trv_tbl->lst[uidx].flg_cf=True;
+            trv_tbl->lst[uidx].flg_xtr=True;
+            flg_cf_fnd=True;
+          }
+        } /* end loop over uidx */
 
-          } /* end nco_fnd_var_trv() */   
-
-          /* Continue to next coordinate in loop */
-          continue;
-
-        }else{ /* end if CF coordinate was found in input file */
+        /* CF not found ? */
+        if(flg_cf_fnd == False){     
           (void)fprintf(stderr,"%s: WARNING Variable %s, specified in \"%s\" attribute of variable %s, is not present in input file\n",
             prg_nm_get(),cf_lst[idx_cf],cf_nm,var_trv->nm_fll);
-        } /* end else CF coordinate was found in input file */
+        } /* CF not found ? */
       } /* end loop over idx_cf */
 
       /* Free allocated memory */

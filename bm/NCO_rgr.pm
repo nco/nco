@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.216 2013-02-25 08:08:17 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.217 2013-02-26 11:12:12 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1527,8 +1527,29 @@ print "\n";
     $#tst_cmd=0; # Reset array 			  
     
 
+#ncks #60
+# This test tests both limits annd extraction of associated CF variables
+# ncks -H  -v gds_var -d gds_crd,1,1,1  in_grp.nc  /g7/g7g1/gds_var
+#gds_var[1]=273.2 
+#/g7/gds_crd
+#gds_crd[1]=1 
+#/g7/lat_gds
+#gds_crd[1]=1 lat_gds[1]=-30 
+#/g7/lon_gds
+#gds_crd[1]=1 lon_gds[1]=0 
 
-    
+    $dsc_sng="CF MSA -v gds_var -d gds_crd,1,1,1";
+    $tst_cmd[0]="ncks $nco_D_flg -H -v gds_var -d gds_crd,1,1,1 $in_pth_arg in_grp.nc";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="gds_crd[1]=1 lon_gds[1]=0";
+    $tst_cmd[2]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     # to do    
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			  
+  
+     
     
     
 

@@ -1,3 +1,9 @@
+2013-02-26  Pedro Vicente  <pvicente@uci.edu>
+
+	* rewrote nco_xtr_cf_prv_add() Add specified CF-compliant coordinates of specified variable to extraction list 
+    this fixes nco1086, deprecated functions used nco_aux_grp_id(), trv_tbl_fnd_var_nm() 
+    add regression test ncks#60
+
 2013-02-25  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_msa_wrp_splt_cpy() Split wrapped dimensions (make deep copy of new wrapped limits) 
