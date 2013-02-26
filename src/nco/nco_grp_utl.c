@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.551 2013-02-26 12:17:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.552 2013-02-26 21:41:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3439,7 +3439,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
             /* Match possible coordinate variable name with dimension full name of the *variable* */ 
             if(strcmp(crd->crd_nm_fll, var_trv.var_dmn.dmn_nm_fll[dmn_idx_var] ) == 0){
 
-              if(dbg_lvl_get() == nco_dbg_old){
+              if(dbg_lvl_get() >= nco_dbg_dev){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,crd_idx,dmn_trv.crd[crd_idx]->crd_nm_fll);        
               } /* endif dbg */
@@ -3480,7 +3480,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
             /* Initialized to -1 and not set to True in the first coordinates check  */ 
             if (var_trv.var_dmn.is_crd_var[dmn_idx_var] == nco_obj_typ_err){
 
-              if(dbg_lvl_get() == nco_dbg_old){
+              if(dbg_lvl_get() >= nco_dbg_dev){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,dmn_idx,dmn_trv.nm_fll);        
               } /* endif dbg */
