@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.552 2013-02-26 21:41:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.553 2013-02-26 22:49:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3481,7 +3481,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
             if (var_trv.var_dmn.is_crd_var[dmn_idx_var] == nco_obj_typ_err){
 
               if(dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension [%d]%s\n",prg_nm_get(),fnc_nm,
+                (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with unique dimension [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,dmn_idx,dmn_trv.nm_fll);        
               } /* endif dbg */
 
