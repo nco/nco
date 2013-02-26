@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.550 2013-02-26 12:01:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.551 2013-02-26 12:17:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1614,6 +1614,15 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* Free full path name */
         if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
       } /* !GPE */
+
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s defining variable <%s> from ",prg_nm_get(),fnc_nm,trv.nm_fll);        
+        (void)nco_prt_grp_nm_fll(grp_id);
+        (void)fprintf(stdout," to ");   
+        (void)nco_prt_grp_nm_fll(grp_out_id);
+        (void)fprintf(stdout,"\n");
+      } /* endif dbg */
 
       /* Define variable in output file */
       var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,&trv,trv_tbl);
