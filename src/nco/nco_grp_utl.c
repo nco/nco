@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.546 2013-02-26 01:09:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.547 2013-02-26 03:01:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3231,8 +3231,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
         if(crd->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
 
-        /* Split-up wrapped limits */   
-        (void)nco_msa_wrp_splt(&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa);
+        /* Split-up wrapped limits. NOTE: using deep copy version nco_msa_wrp_splt_cpy() */   
+        (void)nco_msa_wrp_splt_cpy(&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa);
 
         /* Wrapped hyperslabs are dimensions broken into the "wrong" order,e.g. from
         -d time,8,2 broken into -d time,8,9 -d time,0,2 
@@ -3456,7 +3456,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
             /* Match possible coordinate variable name with dimension full name of the *variable* */ 
             if(strcmp(crd->crd_nm_fll, var_trv.var_dmn.dmn_nm_fll[dmn_idx_var] ) == 0){
 
-              if(dbg_lvl_get() >= nco_dbg_dev){
+              if(dbg_lvl_get() == nco_dbg_old){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,crd_idx,dmn_trv.crd[crd_idx]->crd_nm_fll);        
               } /* endif dbg */
@@ -3497,7 +3497,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
             /* Initialized to -1 and not set to True in the first coordinates check  */ 
             if (var_trv.var_dmn.is_crd_var[dmn_idx_var] == nco_obj_typ_err){
 
-              if(dbg_lvl_get() >= nco_dbg_dev){
+              if(dbg_lvl_get() == nco_dbg_old){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,dmn_idx,dmn_trv.nm_fll);        
               } /* endif dbg */
@@ -3515,6 +3515,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
   } /* Loop table */
+
 
   /* Check if bool array is all filled  */
 
