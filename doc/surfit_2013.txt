@@ -7,13 +7,14 @@ PI: Prof. Charlie Zender
     Departments of Earth System Science and Computer Science
 
 Description:
-Climate simulations prepared for the Fifth Assessment Report (AR5) of 
-the Intergovernmental Panel on Climate Change (IPCC) are stored in a 
+Many if not most geophysical datasets including climate simulations
+prepared for the Fifth Assessment Report (AR5) of the
+Intergovernmental Panel on Climate Change (IPCC) are stored in a  
 self-describing data format called netCDF. Our NetCDF Operators (NCO)
 are a widely used, opensource toolkit for manipulating and analyzing
-(statistics, trends, comparison with observations) these datasets.
+(statistics, trends, comparison with observations) netCDF data.
 This project will utilize ANTLR (ANother Tool for Language
-Recognition) to generate the NCO language parser in C++. Our goals are 
+Recognition) to generate the NCO language parser in C++. Our goals are  
 two-fold: 1. To create and efficient, extensible parser for structured
 data analysis. 2. To enhance parallelism in geophysical data analysis
 involving structured data with storage constraints.
