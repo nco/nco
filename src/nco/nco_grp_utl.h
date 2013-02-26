@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.230 2013-02-26 00:19:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.231 2013-02-26 08:58:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -160,8 +160,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variable a
 void
 nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordinates of specified variable to extraction list */
 (const int nc_id,                     /* I [ID] netCDF file ID */
- const char * const var_nm_fll,       /* I [sng] Full variable name */
- const char * const var_nm,           /* I [sng] Variable relative name */
+ const trv_sct * const var_trv,       /* I [sct] Variable (object) */
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
@@ -170,11 +169,6 @@ void
 nco_prn_att_trv                       /* [fnc] Print all attributes of single variable */
 (const int in_id,                     /* I [id] netCDF input file ID */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
-
-int                                   /* O [id] Group ID */
-nco_aux_grp_id                        /* [fnc] Return the group ID from the variable full name */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const char * const var_nm_fll);      /* I [sng] Full variable name to find */
 
 void
 nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordinates associated with extracted variables */

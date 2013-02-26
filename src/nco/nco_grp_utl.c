@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.547 2013-02-26 03:01:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.548 2013-02-26 08:58:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -345,36 +345,6 @@ nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes 
   } /* end uidx */
 } /* end nco_prn_att_trv() */
 
-int                                   /* O [id] Group ID */
-nco_aux_grp_id                        /* [fnc] Return group ID from variable full name */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const char * const var_nm_fll)       /* I [sng] Full variable name to find */
-{
-  char *grp_nm_fll; /* Group path */
-  int grp_id; /* Group ID */
-  int lng_fll; /* Length of fully qualified group where variable resides */
-
-  char *ptr_chr; /* [sng] Pointer to character '/' in full name */
-  int psn_chr; /* [nbr] Position of character '/' in in full name */
-
-  /* Get group full name */
-  lng_fll=strlen(var_nm_fll);
-  grp_nm_fll=(char *)nco_malloc((lng_fll+1L)*sizeof(char));
-  strcpy(grp_nm_fll,var_nm_fll);
-  /* Find last occurence of '/' */
-  ptr_chr=strrchr(grp_nm_fll,'/');
-  /* Trim variable name */
-  psn_chr=ptr_chr-grp_nm_fll;
-  grp_nm_fll[psn_chr]='\0';
-
-  /* Obtain group ID from netCDF API using full group name */
-  (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
-
-  /* Free allocated memory */
-  grp_nm_fll=(char *)nco_free(grp_nm_fll);
-
-  return grp_id;
-} /* end nco_aux_grp_id() */
 
 nco_bool                              /* O [flg] All names are in file */
 nco_xtr_mk                            /* [fnc] Check -v and -g input names and create extraction list */
@@ -778,7 +748,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
   /* Search for and add CF-compliant bounds and coordinates to extraction list */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.typ == nco_obj_typ_var && trv.flg_xtr) (void)nco_xtr_cf_prv_add(nc_id,trv.nm_fll,trv.nm,cf_nm,trv_tbl);
+    if(trv.typ == nco_obj_typ_var && trv.flg_xtr) (void)nco_xtr_cf_prv_add(nc_id,&trv,cf_nm,trv_tbl);
   } /* end loop over table */
 
   return;
@@ -787,8 +757,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
 void
 nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordinates of specified variable to extraction list */
 (const int nc_id,                     /* I [ID] netCDF file ID */
- const char * const var_nm_fll,       /* I [sng] Full variable name */
- const char * const var_nm,           /* I [sng] Variable relative name */
+ const trv_sct * const var_trv,       /* I [sct] Variable (object) */
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
@@ -811,11 +780,13 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
   int rcd=NC_NOERR; /* [rcd] Return code */
   int var_id; /* [id] Variable ID */
 
-  /* Obtain group ID using nco_aux_grp_id (get ID from full variable name) */
-  grp_id=nco_aux_grp_id(nc_id,var_nm_fll);
+  assert(var_trv->typ == nco_obj_typ_var);
+
+  /* Obtain group ID from netCDF API using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
   /* Obtain variable ID. NB: use relative variable name */
-  (void)nco_inq_varid(grp_id,var_nm,&var_id);
+  (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
 
   /* Find number of attributes */
   (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
@@ -832,7 +803,8 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates CF convention for specifying additional attributes. Therefore will skip this attribute.\n",prg_nm_get(),att_nm,var_nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates CF convention for specifying additional attributes. Therefore will skip this attribute.\n",
+          prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
         return;
       } /* end if */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -859,9 +831,9 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
             char *grp_nm_fll; /* Fully qualified group where variable resides */
             int var_nm_lng; /* Length of fully qualified group where variable resides */
 
-            var_nm_lng=strlen(var_nm_fll);
+            var_nm_lng=strlen(var_trv->nm_fll);
             grp_nm_fll=(char *)nco_malloc((var_nm_lng+1L)*sizeof(char));
-            strcpy(grp_nm_fll,var_nm_fll);
+            strcpy(grp_nm_fll,var_trv->nm_fll);
             ptr_chr=strrchr(grp_nm_fll,'/');
             psn_chr=ptr_chr-grp_nm_fll;
             grp_nm_fll[psn_chr]='\0';
@@ -889,7 +861,8 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
           continue;
 
         }else{ /* end if CF coordinate was found in input file */
-          (void)fprintf(stderr,"%s: WARNING Variable %s, specified in \"%s\" attribute of variable %s, is not present in input file\n",prg_nm_get(),cf_lst[idx_cf],cf_nm,var_nm_fll);
+          (void)fprintf(stderr,"%s: WARNING Variable %s, specified in \"%s\" attribute of variable %s, is not present in input file\n",
+            prg_nm_get(),cf_lst[idx_cf],cf_nm,var_trv->nm_fll);
         } /* end else CF coordinate was found in input file */
       } /* end loop over idx_cf */
 
@@ -3456,7 +3429,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
             /* Match possible coordinate variable name with dimension full name of the *variable* */ 
             if(strcmp(crd->crd_nm_fll, var_trv.var_dmn.dmn_nm_fll[dmn_idx_var] ) == 0){
 
-              if(dbg_lvl_get() == nco_dbg_old){
+              if(dbg_lvl_get() >= nco_dbg_dev){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,crd_idx,dmn_trv.crd[crd_idx]->crd_nm_fll);        
               } /* endif dbg */
@@ -3497,7 +3470,7 @@ nco_bld_var_dmn                       /* [fnc] Build variables dimensions inform
             /* Initialized to -1 and not set to True in the first coordinates check  */ 
             if (var_trv.var_dmn.is_crd_var[dmn_idx_var] == nco_obj_typ_err){
 
-              if(dbg_lvl_get() == nco_dbg_old){
+              if(dbg_lvl_get() >= nco_dbg_dev){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,dmn_idx,dmn_trv.nm_fll);        
               } /* endif dbg */
