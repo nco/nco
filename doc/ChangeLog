@@ -1,18 +1,22 @@
+2013-02-25  Charlie Zender  <zender@uci.edu>
+
+	* #define NCO_USE_FILL_VALUE before not after #ifdef NCO_USE_FILL_VALUE
+
 2013-02-24  Pedro Vicente  <pvicente@uci.edu>
 
-  * nco_bld_var_dmn() Build variables dimensions information (coordinate variables)
+	* nco_bld_var_dmn() Build variables dimensions information (coordinate variables)
 
 2013-02-23  Pedro Vicente  <pvicente@uci.edu>
 
-  * nco_blb_crd_var_trv() Detect coordinate variables into GTT (Group Traversal Table)
-  
-  * nco_lmt_evl_dmn_crd() Parse user-specified limits into hyperslab specifications 
-  Can be used for dimensions or coordinate variables
-  
-  * nco_bld_lmt() Assign user specified dimension limits to GTT (Group Traversal Table)
-  
-  * ncks: regression test for limits with dimension/non coordinate case
-  
+	* nco_blb_crd_var_trv() Detect coordinate variables into GTT
+
+	* nco_lmt_evl_dmn_crd() Parse user-specified limits into hyperslab specifications
+	Can be used for dimensions or coordinate variables
+
+	* nco_bld_lmt() Assign user specified dimension limits to GTT (Group Traversal Table)
+
+	* ncks: regression test for limits with dimension/non coordinate case
+
 2013-02-22  Charlie Zender  <zender@uci.edu>
 
 	* Implement new nco_cpy_var_dfn() API which uses GPE and nco_inq_dmn_grp_id()

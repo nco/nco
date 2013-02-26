@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.273 2013-02-25 09:02:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.274 2013-02-26 00:20:05 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -138,6 +138,7 @@ extern "C" {
   /*# define NCO_MSS_VAL_SNG _FillValue*/
   /*char nco_mss_val_sng[]=TKN2SNG(NCO_MSS_VAL_SNG);*/ /* [sng] Missing value attribute name */
   /* Arcane workaround using NCO_USE_FILL_VALUE necessary because TKN2SNG() macro above is broken. TODO nco905 */
+# define NCO_USE_FILL_VALUE
 # ifdef NCO_USE_FILL_VALUE
   /* NCO_NETCDF4_AND_FILLVALUE tells whether netCDF4 restrictions on 
      _FillValue operations (must be defined before variable written,
@@ -146,7 +147,6 @@ extern "C" {
 #   define NCO_NETCDF4_AND_FILLVALUE
 #  endif /* !ENABLE_NETCDF4 */
 # endif /* !NCO_USE_FILL_VALUE */
-#define NCO_USE_FILL_VALUE
 #endif /* NCO_MSS_VAL_SNG */
 
   /* Call assert() in form assert(expected==) */
