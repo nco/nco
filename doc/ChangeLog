@@ -1,5 +1,7 @@
 2013-02-26  Charlie Zender  <zender@uci.edu>
 
+	* Improve epitaph from NC_ENOTNC to include diskless/RAM errors
+
 	* ncrename dies more gracefully when required attributes do not exist
 
 2013-02-26  Pedro Vicente  <pvicente@uci.edu>
