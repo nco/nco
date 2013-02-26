@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.184 2013-02-24 13:11:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.185 2013-02-26 03:29:31 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -452,68 +452,7 @@ void nco_msa_qsort_srt
   (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct *),nco_cmp_lmt_srt);
 } /* end nco_msa_qsort_srt() */
 
-void
-nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
-(lmt_msa_sct *lmt_lst)
-{
-  int idx;
-  int jdx;
-  int size=lmt_lst->lmt_dmn_nbr;
-  long dmn_sz_org=lmt_lst->dmn_sz_org;
-  long srt;
-  long cnt;
-  long srd;
-  long kdx=0; /*  */
-  lmt_sct *lmt_wrp;
 
-  for(idx=0;idx<size;idx++){
-
-    if(lmt_lst->lmt_dmn[idx]->srt > lmt_lst->lmt_dmn[idx]->end){
-
-      lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
-      srt=lmt_lst->lmt_dmn[idx]->srt;
-      cnt=lmt_lst->lmt_dmn[idx]->cnt;
-      srd=lmt_lst->lmt_dmn[idx]->srd;
-
-      for(jdx=0;jdx<cnt;jdx++){
-        kdx=(srt+srd*jdx)%dmn_sz_org;
-        if(kdx<srt) break;
-      } /* end loop over jdx */
-
-      lmt_wrp[0]=*(lmt_lst->lmt_dmn[idx]);
-      lmt_wrp[1]=*(lmt_lst->lmt_dmn[idx]);
-      lmt_wrp[0].srt=srt;
-
-      if(jdx == 1){
-        lmt_wrp[0].end=srt;
-        lmt_wrp[0].cnt=1L;
-        lmt_wrp[0].srd=1L;
-      }else{
-        lmt_wrp[0].end=srt+srd*(jdx-1);
-        lmt_wrp[0].cnt=jdx;
-        lmt_wrp[0].srd=srd;
-      } /* end else */
-
-      lmt_wrp[1].srt=kdx;
-      lmt_wrp[1].cnt=cnt-lmt_wrp[0].cnt;
-      if(lmt_wrp[1].cnt == 1L){
-        lmt_wrp[1].end=kdx;
-        lmt_wrp[1].srd=1L;
-      }else{
-        lmt_wrp[1].end=kdx+(lmt_wrp[1].cnt-1)*srd;
-        lmt_wrp[1].srd=srd;
-      } /* end else */
-
-      /* Insert new limits into array */
-      lmt_lst->lmt_dmn[idx]=lmt_wrp;
-      lmt_lst->lmt_dmn=(lmt_sct **)nco_realloc(lmt_lst->lmt_dmn,((lmt_lst->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
-      lmt_lst->lmt_dmn[(lmt_lst->lmt_dmn_nbr)++]=++lmt_wrp;
-    } /* endif srt > end */
-  } /* end loop over size */
-
-  /* Check if genuine wrapped co-ordinate */
-  if(size==1 && lmt_lst->lmt_dmn_nbr==2) lmt_lst->WRP=True;
-} /* end nco_msa_wrp_splt() */
 
 long /* O [idx] Minimum value */
 nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value */
@@ -1053,6 +992,197 @@ nco_msa_ovl_trv         /* [fnc] See if limits overlap */
 
 } /* End nco_msa_ovl_trv() */
 
+void
+nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
+(lmt_msa_sct *lmt_lst)
+{
+  int idx;
+  int jdx;
+  int size=lmt_lst->lmt_dmn_nbr;
+  long dmn_sz_org=lmt_lst->dmn_sz_org;
+  long srt;
+  long cnt;
+  long srd;
+  long kdx=0; /*  */
+  lmt_sct *lmt_wrp;
+
+  for(idx=0;idx<size;idx++){
+
+    if(lmt_lst->lmt_dmn[idx]->srt > lmt_lst->lmt_dmn[idx]->end){
+
+      lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
+      srt=lmt_lst->lmt_dmn[idx]->srt;
+      cnt=lmt_lst->lmt_dmn[idx]->cnt;
+      srd=lmt_lst->lmt_dmn[idx]->srd;
+
+      for(jdx=0;jdx<cnt;jdx++){
+        kdx=(srt+srd*jdx)%dmn_sz_org;
+        if(kdx<srt) break;
+      } /* end loop over jdx */
+
+      lmt_wrp[0]=*(lmt_lst->lmt_dmn[idx]);
+      lmt_wrp[1]=*(lmt_lst->lmt_dmn[idx]);
+      lmt_wrp[0].srt=srt;
+
+      if(jdx == 1){
+        lmt_wrp[0].end=srt;
+        lmt_wrp[0].cnt=1L;
+        lmt_wrp[0].srd=1L;
+      }else{
+        lmt_wrp[0].end=srt+srd*(jdx-1);
+        lmt_wrp[0].cnt=jdx;
+        lmt_wrp[0].srd=srd;
+      } /* end else */
+
+      lmt_wrp[1].srt=kdx;
+      lmt_wrp[1].cnt=cnt-lmt_wrp[0].cnt;
+      if(lmt_wrp[1].cnt == 1L){
+        lmt_wrp[1].end=kdx;
+        lmt_wrp[1].srd=1L;
+      }else{
+        lmt_wrp[1].end=kdx+(lmt_wrp[1].cnt-1)*srd;
+        lmt_wrp[1].srd=srd;
+      } /* end else */
+
+      /* Insert new limits into array */
+      lmt_lst->lmt_dmn[idx]=lmt_wrp;
+      lmt_lst->lmt_dmn=(lmt_sct **)nco_realloc(lmt_lst->lmt_dmn,((lmt_lst->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
+      lmt_lst->lmt_dmn[(lmt_lst->lmt_dmn_nbr)++]=++lmt_wrp;
+    } /* endif srt > end */
+  } /* end loop over size */
+
+  /* Check if genuine wrapped co-ordinate */
+  if(size==1 && lmt_lst->lmt_dmn_nbr==2) lmt_lst->WRP=True;
+} /* end nco_msa_wrp_splt() */
+
+
+void
+nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new wrapped limits) */
+(lmt_msa_sct *lmt_lst)  /* [sct] MSA */
+{
+  /* Purpose: Same as nco_msa_wrp_splt() but makes a deep copy of new wrapped limits
+  Differences from nco_msa_wrp_splt() are marked "trv" 
+  Goal here is to replace a wrapped limit by 2 non-wrapped limits 
+  Wrapped hyperslabs are dimensions broken into the "wrong" order,e.g. from
+  -d time,8,2 broken into -d time,8,9 -d time,0,2 
+  WRP flag set only when list contains dimensions split as above
+
+  Tests:
+  ncks -d time,8,2 -v time -H ~/nco/data/in_grp.nc
+  */
+
+  const char fnc_nm[]="nco_msa_wrp_splt_trv()"; /* [sng] Function name  */
+
+  int idx;
+  int jdx;
+  int size=lmt_lst->lmt_dmn_nbr;         /* [nbr] Number of limit structures */
+  long dmn_sz_org=lmt_lst->dmn_sz_org;   /* [nbr] Size of dimension */
+  long srt;
+  long cnt;
+  long srd;
+  long kdx=0; 
+  lmt_sct *lmt_wrp;
+
+  for(idx=0;idx<size;idx++){
+
+    if(lmt_lst->lmt_dmn[idx]->srt > lmt_lst->lmt_dmn[idx]->end){
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%li->%li):\n",
+          prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end);
+      }
+
+      lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
+
+      /* "trv": Initialize  */
+      (void)nco_lmt_init(&lmt_wrp[0]);
+      (void)nco_lmt_init(&lmt_wrp[1]);
+
+      srt=lmt_lst->lmt_dmn[idx]->srt;
+      cnt=lmt_lst->lmt_dmn[idx]->cnt;
+      srd=lmt_lst->lmt_dmn[idx]->srd;
+
+      for(jdx=0;jdx<cnt;jdx++){
+        kdx=(srt+srd*jdx)%dmn_sz_org;
+        if(kdx<srt) break;
+      } /* end loop over jdx */
+
+      /* "trv": Instead of shallow copy in nco_msa_wrp_splt(), make a deep copy to the 2 new limits lmt_wrp */ 
+      (void)nco_lmt_cpy(lmt_lst->lmt_dmn[idx],&lmt_wrp[0]);
+      (void)nco_lmt_cpy(lmt_lst->lmt_dmn[idx],&lmt_wrp[1]);
+
+      lmt_wrp[0].srt=srt;
+
+      if(jdx == 1){
+        lmt_wrp[0].end=srt;
+        lmt_wrp[0].cnt=1L;
+        lmt_wrp[0].srd=1L;
+      }else{
+        lmt_wrp[0].end=srt+srd*(jdx-1);
+        lmt_wrp[0].cnt=jdx;
+        lmt_wrp[0].srd=srd;
+      } /* end else */
+
+      lmt_wrp[1].srt=kdx;
+      lmt_wrp[1].cnt=cnt-lmt_wrp[0].cnt;
+      if(lmt_wrp[1].cnt == 1L){
+        lmt_wrp[1].end=kdx;
+        lmt_wrp[1].srd=1L;
+      }else{
+        lmt_wrp[1].end=kdx+(lmt_wrp[1].cnt-1)*srd;
+        lmt_wrp[1].srd=srd;
+      } /* end else */
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",prg_nm_get(),fnc_nm,lmt_lst->dmn_nm);
+        (void)fprintf(stdout,"current limits=%d:\n",lmt_lst->lmt_dmn_nbr);
+      }
+
+
+      /* "trv": Insert 2 non-wrapped limits */ 
+
+      /* Current number of dimension limits for this table dimension  */
+      int lmt_dmn_nbr=lmt_lst->lmt_dmn_nbr;
+
+      /* Index of new limit  */
+      int lmt_new_idx=idx+1;
+
+      /* Make space for 1 more limit  */
+      lmt_lst->lmt_dmn=(lmt_sct **)nco_realloc(lmt_lst->lmt_dmn,(lmt_dmn_nbr+1)*sizeof(lmt_sct *));
+
+      /* Alloc the extra limit  */
+      lmt_lst->lmt_dmn[lmt_new_idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+
+      /* Initialize the extra limit */
+      (void)nco_lmt_init(lmt_lst->lmt_dmn[lmt_new_idx]);
+
+      /* Insert the limits to table (allocated; idx was already there; lmt_new_idx was alloced here)   */
+      (void)nco_lmt_cpy(&lmt_wrp[0],lmt_lst->lmt_dmn[idx]);
+      (void)nco_lmt_cpy(&lmt_wrp[1],lmt_lst->lmt_dmn[lmt_new_idx]);
+
+      /* Update number of dimension limits for this table dimension  */
+      lmt_lst->lmt_dmn_nbr++;
+
+      /* Update current index of dimension limits for this table dimension  */
+      lmt_lst->lmt_crr++;
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",
+          prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end,
+          lmt_lst->lmt_dmn[lmt_new_idx]->srt,lmt_lst->lmt_dmn[lmt_new_idx]->end);
+      }
+
+    } /* endif srt > end */
+  } /* end loop over size */
+
+  /* Check if genuine wrapped co-ordinate */
+  if(size==1 && lmt_lst->lmt_dmn_nbr==2){
+    lmt_lst->WRP=True;
+  }
+
+} /* End nco_msa_wrp_splt_trv() */
+
+
 
 
 void
@@ -1140,6 +1270,9 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   int rcd;                                   /* [nbr] Return value */
 
   int in_id;                                 /* [ID] *Group* ID were variable resides (passed to MSA)*/
+
+
+#ifdef REMOVE
 
   /* Make a conversion from GTT limits to MSA used local lmt_msa_sct limits...MSA uses lmt_msa_sct(variable dimensions) 
   Goal here is to distribute limits stored in unique dimensions to variable dimensions;
@@ -1255,6 +1388,20 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
       } /* Match full dimension name */ 
     } /* End  Loop unique dimensions (these contain limits)  */
   } /* Loop dimensions for object (variable) */
+
+#else /* REMOVE */
+
+  
+
+
+
+
+
+
+
+
+
+#endif /* REMOVE */
 
   /* Obtain group ID where variable is located using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&in_id);
@@ -1713,6 +1860,7 @@ lbl_chr_prn:
     for(int idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=nco_free(dim[idx].val.vp);
   } /* end if */
 
+#ifdef REMOVE
   /* Free MSA, Loop limits */
   for(int lmt_idx_var=0;lmt_idx_var<lmt_msa_idx;lmt_idx_var++) {
     /* Allocated number of limits */
@@ -1725,8 +1873,9 @@ lbl_chr_prn:
 
     lmt_msa[lmt_idx_var]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[lmt_idx_var]->lmt_dmn);
   }/* End Loop limits */
+#endif
 
-  /* Finally...Phew... */
+  /* Finally... */
   if(var.nbr_dim > 0){
     (void)nco_free(lmt_msa);
     (void)nco_free(lmt);
@@ -1818,6 +1967,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     return;
   } /* End Deal with scalar variables */
 
+
+#ifdef REMOVE
 
   /* Make a conversion from GTT limits to MSA used local lmt_msa_sct limits...MSA uses lmt_msa_sct(variable dimensions) 
   Goal here is to distribute limits stored in unique dimensions to variable dimensions;
@@ -1934,6 +2085,18 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     } /* End  Loop unique dimensions (these contain limits)  */
   } /* Loop dimensions for object (variable) */
 
+#else /* REMOVE */
+
+  
+
+
+
+
+
+
+#endif /* REMOVE */
+
+
 
   /* Dimension vectors */
   dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
@@ -1974,6 +2137,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   (void)nco_free(dmn_map_cnt);
   (void)nco_free(dmn_map_srt);
 
+
+#ifdef REMOVE
   /* Free MSA, Loop limits */
   for(int lmt_idx_var=0;lmt_idx_var<lmt_msa_idx;lmt_idx_var++) {
     /* Allocated number of limits */
@@ -1986,6 +2151,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
     lmt_msa[lmt_idx_var]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[lmt_idx_var]->lmt_dmn);
   }/* End Loop limits */
+#endif
 
 
   (void)nco_free(lmt_msa);
