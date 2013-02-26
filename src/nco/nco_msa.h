@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.67 2013-02-24 13:11:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.68 2013-02-26 04:11:24 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -141,6 +141,11 @@ nco_msa_ovl_trv         /* [fnc] See if limits overlap */
 void             
 nco_msa_qsort_srt_trv   /* [fnc] Sort limits by srt values (traversal table version) */
 (dmn_fll_sct *dmn_trv); /* [sct] Dimension structure from traversal table */
+
+void
+nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new wrapped limits) */
+(lmt_msa_sct *lmt_lst); /* [sct] MSA */
+
 
 void
 nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
