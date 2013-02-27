@@ -1,0 +1,753 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
+  "http://www.w3.org/TR/html4/loose.dtd">  
+<html > 
+<head><title></title> 
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"> 
+<meta name="generator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<meta name="originator" content="TeX4ht (http://www.cse.ohio-state.edu/~gurari/TeX4ht/)"> 
+<!-- html --> 
+<meta name="src" content="cesm-eg.tex"> 
+<meta name="date" content="2013-02-19 15:02:00"> 
+<link rel="stylesheet" type="text/css" href="cesm-eg.css"> 
+</head><body 
+>
+<div class="flushleft" 
+>
+<!--l. 196--><p class="noindent" >
+ <span 
+class="cmbx-12x-x-144">Pre-ACCESS CMIP5/MODIS analysis scripts</span><br />
+</div>
+<!--l. 206--><p class="noindent" >The fifth phase of the Coupled Model Intercomparison Project (CMIP5) provides a multi-model
+framework for comparing the mechanisms and responses of climate models from around the world.
+However, the workload of retrieving a centain feature from all these models, each of which includes
+several ensemble members, is tremendous. NCO is designed to simplify and accelerate this process,
+with easy-learning shell-command style and powerful operators.
+<br 
+class="newline" />
+   <h3 class="likesectionHead"><a 
+ id="x1-1000"></a>Sample Scripts</h3>
+<!--l. 214--><p class="noindent" >
+      <ol  class="enumerate1" >
+      <li 
+  class="enumerate" id="x1-1002x1"><a 
+href="#x1-20001">Combine Files</a> <br 
+class="newline" />Sometimes, the data of one ensemble member will be stored in several files to
+      reduce single file size. This script illustrates how to concatenate these files into one,
+      including:
+           <ol  class="enumerate2" >
+           <li 
+  class="enumerate" id="x1-1004x1">Obtain the number and names (or partial names) of files in directory;
+           </li>
+           <li 
+           class="enumerate" id="x1-1006x2">Concatenate files along record dimension (the left-most dimension) using <a href="http://nco.sourceforge.net/nco.html#ncrcat-netCDF-Record-Concatenator">ncrcat</a>.</li></ol>
+      </li>
+      <li 
+  class="enumerate" id="x1-1008x2"><a 
+href="#x1-30002">Global Distribution of Long-term Average</a> (see <a 
+href="#x1-10511">Fig. 1</a>) <br 
+class="newline" />
+           <ol  class="enumerate2" >
+           <li 
+           class="enumerate" id="x1-1010x1">Average the ensemble members of each model using <a href="http://nco.sourceforge.net/nco.html#ncea-netCDF-Ensemble-Averager">ncea</a>;
+           </li>
+           <li 
+           class="enumerate" id="x1-1012x2">Average along the record dimension (the left-most) using <a href="http://nco.sourceforge.net/nco.html#ncra-netCDF-Record-Averager">ncra</a>;
+           </li>
+           <li 
+           class="enumerate" id="x1-1014x3">Store the results of one model as a group in the output file using <a href="http://nco.sourceforge.net/nco.html#ncecat-netCDF-Ensemble-Concatenator">ncecat</a> with the
+           option of &#8211;gag;</li></ol>
+      </li>
+      <li 
+  class="enumerate" id="x1-1016x3"><a 
+href="#x1-40003">Annual Average over Regions</a> (see <a 
+href="#x1-10522">Fig. 2</a>) <br 
+class="newline" />
+                                                                                         
+                                                                                         
+           <ol  class="enumerate2" >
+           <li 
+           class="enumerate" id="x1-1018x1">Spatial average using <a href="http://nco.sourceforge.net/nco.html#ncap2-netCDF-Arithmetic-Processor">ncap2</a> and <a href="http://nco.sourceforge.net/nco.html#ncwa-netCDF-Weighted-Averager">ncwa</a>;
+           </li>
+           <li 
+  class="enumerate" id="x1-1020x2">Change the order of dimensions using <a href="http://nco.sourceforge.net/nco.html#ncpdq-netCDF-Permute-Dimensions-Quickly">ncpdq</a>;
+           </li>
+           <li 
+  class="enumerate" id="x1-1022x3">Annual average using <a href="http://nco.sourceforge.net/nco.html#ncra-netCDF-Record-Averager">ncra</a>;
+           </li>
+           <li 
+  class="enumerate" id="x1-1024x4">Anomaly from long-term average using <a href="http://nco.sourceforge.net/nco.html#ncbo-netCDF-Binary-Operator">ncbo</a>;
+           </li>
+           <li 
+  class="enumerate" id="x1-1026x5">Standard deviation using ncbo and <a href="http://nco.sourceforge.net/nco.html#ncea-netCDF-Ensemble-Averager">ncea</a>;
+           </li>
+           <li 
+  class="enumerate" id="x1-1028x6">Rename variables using <a href="http://nco.sourceforge.net/nco.html#ncrename-netCDF-Renamer">ncrename</a>;
+           </li>
+           <li 
+  class="enumerate" id="x1-1030x7">Edit attributions using <a href="http://nco.sourceforge.net/nco.html#ncatted-netCDF-Attribute-Editor">ncatted</a>;
+           </li>
+           <li 
+  class="enumerate" id="x1-1032x8">Linear regression using <a href="http://nco.sourceforge.net/nco.html#ncap2-netCDF-Arithmetic-Processor">ncap2</a>;
+           </li>
+           <li 
+  class="enumerate" id="x1-1034x9">Use <a href="http://nco.sourceforge.net/nco.html#ncap2-netCDF-Arithmetic-Processor">ncap2</a> with commands file (i.e., .nco file);
+           </li>
+           <li 
+  class="enumerate" id="x1-1036x10">Move variables around using <a href="http://nco.sourceforge.net/nco.html#ncks-netCDF-Kitchen-Sink">ncks</a>.</li></ol>
+      </li>
+      <li 
+  class="enumerate" id="x1-1038x4"><a 
+href="#x1-50004">Monthly Cycle</a> (see <a 
+href="#x1-10533">Fig. 3</a>) <br 
+class="newline" />
+           <ol  class="enumerate2" >
+           <li 
+  class="enumerate" id="x1-1040x1">Anomaly from annual-average</li></ol>
+      </li>
+      <li 
+  class="enumerate" id="x1-1042x5"><a 
+href="#x1-60005">Regrid MODIS Data</a> <br 
+class="newline" />
+           <ol  class="enumerate2" >
+           <li 
+  class="enumerate" id="x1-1044x1">Regrid using <a href="http://nco.sourceforge.net/nco.html#Bilinear-interpolation">bilinear interpolation</a>;
+           </li>
+           <li 
+  class="enumerate" id="x1-1046x2">Rename variables, dimensions and attributions using <a href="http://nco.sourceforge.net/nco.html#ncrename-netCDF-Renamer">ncrename</a>.</li></ol>
+      </li>
+      <li 
+  class="enumerate" id="x1-1048x6"><a 
+href="#x1-70006">Add Coordinates to MODIS Data</a> <br 
+class="newline" />
+      </li>
+      <li 
+  class="enumerate" id="x1-1050x7"><a 
+href="#x1-80007">Permute MODIS Coordinates</a> <br 
+class="newline" />The latitude of MODIS data is from 90<sup><span 
+class="cmmi-8">o</span></sup>N to <span 
+class="cmsy-10x-x-120">-</span>90<sup><span 
+class="cmmi-8">o</span></sup>N, and the longitude is from <span 
+class="cmsy-10x-x-120">-</span>180<sup><span 
+class="cmmi-8">o</span></sup>E to
+      180<sup><span 
+class="cmmi-8">o</span></sup>E. However, CMIP5 is from <span 
+class="cmsy-10x-x-120">-</span>90<sup><span 
+class="cmmi-8">o</span></sup>N to 90<sup><span 
+class="cmmi-8">o</span></sup>N, and from 0<sup><span 
+class="cmmi-8">o</span></sup>E to 360<sup><span 
+class="cmmi-8">o</span></sup>E. So this script
+      illustrates how to change MODIS coordinate to that of CMIP5.</li></ol>
+
+<HR>
+<table class="image">
+<tr>
+  <td valign="bottom"><a href="#x1-30002"><IMG SRC="cesm-eg.fig1.png" ALT="PIC" align=MIDDLE width="500"><a id="x1-10511"></a></a></td>
+  <td valign="bottom"><a href="#x1-40003"><IMG SRC="cesm-eg.fig2.png" ALT="PIC" align=MIDDLE width="500"><a id="x1-10522"></a></a><br>&nbsp;<br><br>&nbsp;<br></td>
+  <td valign="bottom"><a href="#x1-50004"><IMG SRC="cesm-eg.fig3.png" ALT="PIC" align=MIDDLE width="500"><a id="x1-10533"></a></a><br>&nbsp;<br><br>&nbsp;<br><br>&nbsp;<br></td>
+</tr></br>
+<tr>
+  <td class="caption" align="center"><b>Fig. 1</b> Global Distribution of Long-term Average.</td>
+  <td class="caption" align="center"><b>Fig. 2</b> Annual Average over Regions.</td>
+  <td class="caption" align="center"><b>Fig. 3</b> Monthly Cycle.</td>
+</tr>
+</table>
+<br>&nbsp;<br>
+<hr>
+                                                                                         
+
+   <h3 class="sectionHead" align="left"><span class="titlemark">1   </span> <a 
+ id="x1-20001"></a>Combine Files</h3>
+                                                                                         
+                                                                                         
+   <div class="verbatim" id="verbatim-1">
+#!/bin/bash&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;shell&#x00A0;type
+&#x00A0;<br />shopt&#x00A0;-s&#x00A0;extglob ##&#x00A0;enable&#x00A0;extended&#x00A0;globbing
+&#x00A0;<br />
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />##&#x00A0;Some&#x00A0;of&#x00A0;the&#x00A0;models&#x00A0;cut&#x00A0;one&#x00A0;ensemble&#x00A0;member&#x00A0;into&#x00A0;several&#x00A0;files,&#x00A0;which&#x00A0;include&#x00A0;data&#x00A0;of&#x00A0;different&#x00A0;time&#x00A0;periods.
+&#x00A0;<br />##&#x00A0;We&#8217;d&#x00A0;better&#x00A0;concatenate&#x00A0;them&#x00A0;into&#x00A0;one&#x00A0;at&#x00A0;the&#x00A0;beginning&#x00A0;so&#x00A0;that&#x00A0;we&#x00A0;won&#8217;t&#x00A0;have&#x00A0;to&#x00A0;think&#x00A0;about&#x00A0;which&#x00A0;files&#x00A0;we&#x00A0;need&#x00A0;if&#x00A0;we&#x00A0;want&#x00A0;to&#x00A0;retrieve&#x00A0;a&#x00A0;specific&#x00A0;time&#x00A0;period&#x00A0;later.
+&#x00A0;<br />##
+&#x00A0;<br />##&#x00A0;Method:
+&#x00A0;<br />## -&#x00A0;Make&#x00A0;sure&#x00A0;&#8217;time&#8217;&#x00A0;is&#x00A0;the&#x00A0;record&#x00A0;dimension&#x00A0;(i.e.,&#x00A0;left-most)
+&#x00A0;<br />## -&#x00A0;ncrcat
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />
+&#x00A0;<br />drc_in=&#8217;/home/wenshanw/data/cmip5/&#8217;##&#x00A0;directory&#x00A0;of&#x00A0;input&#x00A0;files
+&#x00A0;<br />
+&#x00A0;<br />var=(&#x00A0;&#8217;snc&#8217;&#x00A0;&#8217;snd&#8217;&#x00A0;) ##&#x00A0;variables
+&#x00A0;<br />rlm=&#8217;LImon&#8217;##&#x00A0;realm
+&#x00A0;<br />xpt=(&#x00A0;&#8217;historical&#8217;&#x00A0;) ##&#x00A0;experiment&#x00A0;(&#x00A0;could&#x00A0;be&#x00A0;more&#x00A0;)
+&#x00A0;<br />
+&#x00A0;<br />for&#x00A0;var_id&#x00A0;in&#x00A0;{0..1};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;two&#x00A0;variables
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;names&#x00A0;of&#x00A0;all&#x00A0;the&#x00A0;models&#x00A0;(ls&#x00A0;[get&#x00A0;file&#x00A0;names];&#x00A0;cut&#x00A0;[get&#x00A0;the&#x00A0;part&#x00A0;for&#x00A0;model&#x00A0;names];&#x00A0;sort;&#x00A0;uniq&#x00A0;[remove&#x00A0;duplicates];&#x00A0;awk&#x00A0;[print])
+&#x00A0;<br />&#x00A0;&#x00A0;mdl_set=$(&#x00A0;ls&#x00A0;${drc_in}${var[var_id]}_${rlm}_*_${xpt[0]}_*.nc&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;_&#8217;&#x00A0;-f&#x00A0;3&#x00A0;|&#x00A0;sort&#x00A0;|&#x00A0;uniq&#x00A0;-c&#x00A0;|&#x00A0;awk&#x00A0;&#8217;{print&#x00A0;$2}&#8217;&#x00A0;)
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;number&#x00A0;of&#x00A0;models&#x00A0;(echo&#x00A0;[print&#x00A0;contents];&#x00A0;wc&#x00A0;[count])
+&#x00A0;<br />&#x00A0;&#x00A0;mdl_nbr=$(&#x00A0;echo&#x00A0;${mdl_set}&#x00A0;|&#x00A0;wc&#x00A0;-w&#x00A0;)
+&#x00A0;<br />&#x00A0;&#x00A0;echo&#x00A0;"=============================="
+&#x00A0;<br />&#x00A0;&#x00A0;echo&#x00A0;"There&#x00A0;are"&#x00A0;${mdl_nbr}&#x00A0;"models&#x00A0;for"&#x00A0;${var[var_id]}.
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;for&#x00A0;mdl&#x00A0;in&#x00A0;${mdl_set};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;models
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;names&#x00A0;of&#x00A0;all&#x00A0;the&#x00A0;ensemble&#x00A0;members
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;nsm_set=$(&#x00A0;ls&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*.nc&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;_&#8217;&#x00A0;-f&#x00A0;5&#x00A0;|&#x00A0;sort&#x00A0;|&#x00A0;uniq&#x00A0;-c&#x00A0;|&#x00A0;awk&#x00A0;&#8217;{print&#x00A0;$2}&#8217;&#x00A0;)
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;nsm_nbr=$(&#x00A0;echo&#x00A0;${nsm_set}&#x00A0;|&#x00A0;wc&#x00A0;-w&#x00A0;)
+##&#x00A0;number&#x00A0;of&#x00A0;ensemble&#x00A0;members&#x00A0;in&#x00A0;each&#x00A0;model
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;echo&#x00A0;"------------------------------"
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;echo&#x00A0;"Model"&#x00A0;${mdl}&#x00A0;"includes"&#x00A0;${nsm_nbr}&#x00A0;"ensemble&#x00A0;member(s):"
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;echo&#x00A0;${nsm_set}"."
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;for&#x00A0;nsm&#x00A0;in&#x00A0;${nsm_set};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;ensemble&#x00A0;members
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;fl_nbr=$(&#x00A0;ls&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_${nsm}_*.nc&#x00A0;|&#x00A0;wc&#x00A0;-w&#x00A0;)&#x00A0;##&#x00A0;number&#x00A0;of&#x00A0;files&#x00A0;in&#x00A0;this&#x00A0;ensemble&#x00A0;member
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;if&#x00A0;[&#x00A0;${fl_nbr}&#x00A0;-le&#x00A0;1&#x00A0;]
+##&#x00A0;if&#x00A0;there&#x00A0;is&#x00A0;only&#x00A0;1&#x00A0;file,&#x00A0;continue&#x00A0;to&#x00A0;next&#x00A0;loop
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;then
+                                                                                         
+                                                                                         
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0; echo&#x00A0;"There&#x00A0;is&#x00A0;only&#x00A0;1&#x00A0;file&#x00A0;in"&#x00A0;${nsm}.
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0; continue
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;fi
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;echo&#x00A0;"There&#x00A0;are"&#x00A0;${fl_nbr}&#x00A0;"files&#x00A0;in"&#x00A0;${nsm}.
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;starting&#x00A0;date&#x00A0;of&#x00A0;data&#x00A0;(sed&#x00A0;[the&#x00A0;name&#x00A0;of&#x00A0;the&#x00A0;first&#x00A0;file&#x00A0;includes&#x00A0;the&#x00A0;starting&#x00A0;date])
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;yyyymm_str=$(&#x00A0;ls&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_${nsm}_*.nc&#x00A0;|&#x00A0;sed&#x00A0;-n&#x00A0;&#8217;1p&#8217;&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;_&#8217;&#x00A0;-f&#x00A0;6&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;-&#8217;&#x00A0;-f&#x00A0;1&#x00A0;)
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;ending&#x00A0;date&#x00A0;of&#x00A0;data&#x00A0;(sed&#x00A0;[the&#x00A0;name&#x00A0;of&#x00A0;the&#x00A0;last&#x00A0;file&#x00A0;includes&#x00A0;the&#x00A0;ending&#x00A0;date])
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;yyyymm_end=$(&#x00A0;ls&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_${nsm}_*.nc&#x00A0;|&#x00A0;sed&#x00A0;-n&#x00A0;"${fl_nbr}p"&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;_&#8217;&#x00A0;-f&#x00A0;6&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;-&#8217;&#x00A0;-f&#x00A0;2&#x00A0;)
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;concatenate&#x00A0;the&#x00A0;files&#x00A0;of&#x00A0;one&#x00A0;ensemble&#x00A0;member&#x00A0;into&#x00A0;one&#x00A0;along&#x00A0;the&#x00A0;record&#x00A0;dimension&#x00A0;(now&#x00A0;is&#x00A0;time)
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncrcat&#x00A0;-O&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_${nsm}_*.nc&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_${nsm}_${yyyymm_str}-${yyyymm_end}
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;remove&#x00A0;useless&#x00A0;files
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;rm&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_${nsm}_!(${yyyymm_str}-${yyyymm_end})
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;done
+&#x00A0;<br />&#x00A0;&#x00A0;done
+&#x00A0;<br />done
+</div>
+
+<hr>
+<div><p><a href="#x1-1000">Back to Top</a></p></div>
+
+<!--l. 345--><p class="nopar" >
+<!--l. 347--><p class="noindent" >
+   <h3 class="sectionHead" align="left"><span class="titlemark">2   </span> <a 
+ id="x1-30002"></a>Global Distribution of Long-term Average</h3>
+                                                                                         
+                                                                                         
+   <div class="verbatim" id="verbatim-2">
+#!/bin/bash
+&#x00A0;<br />
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />##&#x00A0;After&#x00A0;one-ensemble-one-file.sh
+&#x00A0;<br />##&#x00A0;Example:&#x00A0;Long-term&#x00A0;average&#x00A0;of&#x00A0;each&#x00A0;model&#x00A0;globally
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />
+&#x00A0;<br />##---------------------------------------------------------------------------
+&#x00A0;<br />##&#x00A0;parameters
+&#x00A0;<br />drc_in=&#8217;/home/wenshanw/data/cmip5/&#8217;##&#x00A0;directory&#x00A0;of&#x00A0;input&#x00A0;files
+&#x00A0;<br />drc_out=&#8217;/home/wenshanw/data/cmip5/output/&#8217;##&#x00A0;directory&#x00A0;of&#x00A0;output&#x00A0;files
+&#x00A0;<br />
+&#x00A0;<br />var=(&#x00A0;&#8217;snc&#8217;&#x00A0;&#8217;snd&#8217;&#x00A0;) ##&#x00A0;variables
+&#x00A0;<br />rlm=&#8217;LImon&#8217;##&#x00A0;realm
+&#x00A0;<br />xpt=(&#x00A0;&#8217;historical&#8217;&#x00A0;) ##&#x00A0;experiment&#x00A0;(&#x00A0;could&#x00A0;be&#x00A0;more&#x00A0;)
+&#x00A0;<br />
+&#x00A0;<br />fld_out=(&#x00A0;&#8217;snc/&#8217;&#x00A0;&#8217;snd/&#8217;&#x00A0;) ##&#x00A0;folders&#x00A0;of&#x00A0;output&#x00A0;files
+&#x00A0;<br />##---------------------------------------------------------------------------
+&#x00A0;<br />
+&#x00A0;<br />for&#x00A0;var_id&#x00A0;in&#x00A0;{0..1};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;two&#x00A0;variables
+&#x00A0;<br />##&#x00A0;names&#x00A0;of&#x00A0;all&#x00A0;models&#x00A0;(ls&#x00A0;[get&#x00A0;file&#x00A0;names];&#x00A0;cut&#x00A0;[get&#x00A0;the&#x00A0;part&#x00A0;for&#x00A0;model&#x00A0;names];&#x00A0;sort;&#x00A0;uniq&#x00A0;[remove&#x00A0;duplicates];&#x00A0;awk&#x00A0;[print])
+&#x00A0;<br />&#x00A0;&#x00A0;mdl_set=$(&#x00A0;ls&#x00A0;${drc_in}${var[var_id]}_${rlm}_*_${xpt[0]}_*.nc&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;_&#8217;&#x00A0;-f&#x00A0;3&#x00A0;|&#x00A0;sort&#x00A0;|&#x00A0;uniq&#x00A0;-c&#x00A0;|&#x00A0;awk&#x00A0;&#8217;{print&#x00A0;$2}&#8217;&#x00A0;)
+&#x00A0;<br />&#x00A0;&#x00A0;mdl_num=$(&#x00A0;echo&#x00A0;${mdl_set}&#x00A0;|&#x00A0;wc&#x00A0;-w&#x00A0;)
+##&#x00A0;number&#x00A0;of&#x00A0;models&#x00A0;(echo&#x00A0;[print&#x00A0;contents];&#x00A0;wc&#x00A0;[count])
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;for&#x00A0;mdl&#x00A0;in&#x00A0;${mdl_set};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;models
+&#x00A0;<br />&#x00A0;&#x00A0; ##&#x00A0;average&#x00A0;all&#x00A0;the&#x00A0;ensemble&#x00A0;members&#x00A0;of&#x00A0;each&#x00A0;model
+&#x00A0;<br />&#x00A0;&#x00A0; ncea&#x00A0;-O&#x00A0;-4&#x00A0;-d&#x00A0;time,"1956-01-01&#x00A0;00:00:0.0","2005-12-31&#x00A0;23:59:9.9"&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_195601-200512.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0; ##&#x00A0;average&#x00A0;along&#x00A0;time
+&#x00A0;<br />&#x00A0;&#x00A0; ncra&#x00A0;-O&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_195601-200512.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${mdl}.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0; echo&#x00A0;Model&#x00A0;${mdl}&#x00A0;done!
+&#x00A0;<br />&#x00A0;&#x00A0;done
+&#x00A0;<br />
+&#x00A0;<br />##&#x00A0;Remove&#x00A0;temporary&#x00A0;files&#x00A0;to&#x00A0;avoid&#x00A0;file&#x00A0;name&#x00A0;confliction
+&#x00A0;<br />rm&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}*historical*.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;Store&#x00A0;models&#x00A0;as&#x00A0;groups&#x00A0;in&#x00A0;the&#x00A0;output&#x00A0;file
+&#x00A0;<br />&#x00A0;&#x00A0;ncecat&#x00A0;-O&#x00A0;--gag&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_*.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_all-mdl_${xpt[0]}_all-nsm_clm.nc
+&#x00A0;<br />
+                                                                                         
+                                                                                         
+&#x00A0;<br />echo&#x00A0;Var&#x00A0;${var[var_id]}&#x00A0;done!
+&#x00A0;<br />done
+</div>
+
+<hr>
+<div><p><a href="#x1-1000">Back to Top</a></p></div>
+
+<!--l. 391--><p class="nopar" >
+<!--l. 393--><p class="noindent" >
+   <h3 class="sectionHead" align="left"><span class="titlemark">3   </span> <a 
+ id="x1-40003"></a>Annual Average over Regions</h3>
+<div class="flushleft" 
+>
+<!--l. 394--><p class="noindent" >
+ <span 
+class="cmbx-12">Main Script</span></div>
+                                                                                         
+                                                                                         
+<div class="verbatim" id="verbatim-3">
+#!/bin/bash
+&#x00A0;<br />#&#x00A0;includes&#x00A0;gsl_rgr.nco
+&#x00A0;<br />
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />##&#x00A0;After&#x00A0;one-ensemble-one-file.sh
+&#x00A0;<br />##&#x00A0;Example:&#x00A0;Annual&#x00A0;trend&#x00A0;of&#x00A0;each&#x00A0;model&#x00A0;over&#x00A0;Greenland&#x00A0;and&#x00A0;Tibet&#x00A0;(&#x00A0;time-&#x00A0;and&#x00A0;spatial-average,&#x00A0;standard&#x00A0;deviation,&#x00A0;anomaly&#x00A0;and&#x00A0;linear&#x00A0;regression)
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />
+&#x00A0;<br />##---------------------------------------------------------------------------
+&#x00A0;<br />##&#x00A0;parameters
+&#x00A0;<br />drc_in=&#8217;/home/wenshanw/data/cmip5/&#8217;##&#x00A0;directory&#x00A0;of&#x00A0;input&#x00A0;files
+&#x00A0;<br />drc_out=&#8217;/home/wenshanw/data/cmip5/output/&#8217;##&#x00A0;directory&#x00A0;of&#x00A0;output&#x00A0;files
+&#x00A0;<br />
+&#x00A0;<br />var=(&#x00A0;&#8217;snc&#8217;&#x00A0;&#8217;snd&#8217;&#x00A0;) ##&#x00A0;variables
+&#x00A0;<br />rlm=&#8217;LImon&#8217;##&#x00A0;realm
+&#x00A0;<br />xpt=(&#x00A0;&#8217;historical&#8217;&#x00A0;) ##&#x00A0;experiment&#x00A0;(&#x00A0;could&#x00A0;be&#x00A0;more&#x00A0;)
+&#x00A0;<br />
+&#x00A0;<br />fld_out=(&#x00A0;&#8217;snc/&#8217;&#x00A0;&#8217;snd/&#8217;&#x00A0;) ##&#x00A0;folders&#x00A0;of&#x00A0;output&#x00A0;files
+&#x00A0;<br />##------------------------------------------------------------
+&#x00A0;<br />
+&#x00A0;<br />for&#x00A0;var_id&#x00A0;in&#x00A0;{0..1};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;two&#x00A0;variables
+&#x00A0;<br />##&#x00A0;names&#x00A0;of&#x00A0;all&#x00A0;models&#x00A0;(ls&#x00A0;[get&#x00A0;file&#x00A0;names];&#x00A0;cut&#x00A0;[get&#x00A0;the&#x00A0;part&#x00A0;for&#x00A0;model&#x00A0;names];&#x00A0;sort;&#x00A0;uniq&#x00A0;[remove&#x00A0;duplicates];&#x00A0;awk&#x00A0;[print])
+&#x00A0;<br />&#x00A0;&#x00A0;mdl_set=$(&#x00A0;ls&#x00A0;${drc_in}${var[var_id]}_${rlm}_*_${xpt[0]}_*.nc&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;_&#8217;&#x00A0;-f&#x00A0;3&#x00A0;|&#x00A0;sort&#x00A0;|&#x00A0;uniq&#x00A0;-c&#x00A0;|&#x00A0;awk&#x00A0;&#8217;{print&#x00A0;$2}&#8217;&#x00A0;)
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;for&#x00A0;mdl&#x00A0;in&#x00A0;${mdl_set};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;models
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;for&#x00A0;fn&#x00A0;in&#x00A0;$(&#x00A0;ls&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*.nc&#x00A0;);&#x00A0;do
+##&#x00A0;loop&#x00A0;over&#x00A0;ensemble&#x00A0;members
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;pfx=$(&#x00A0;echo&#x00A0;${fn}&#x00A0;|&#x00A0;cut&#x00A0;-d&#8217;/&#8217;&#x00A0;-f6&#x00A0;|&#x00A0;cut&#x00A0;-d&#8217;_&#8217;&#x00A0;-f1-5&#x00A0;)
+##&#x00A0;part&#x00A0;of&#x00A0;the&#x00A0;file&#x00A0;name
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;retrieve&#x00A0;the&#x00A0;2&#x00A0;zones
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;calculate&#x00A0;the&#x00A0;geographical&#x00A0;weight&#x00A0;first
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncap2&#x00A0;-O&#x00A0;-s&#x00A0;&#8217;gw&#x00A0;=&#x00A0;cos(lat*3.1415926/180.);&#x00A0;gw@long_name="geographical&#x00A0;weight";gw@units="ratio"&#8217;&#x00A0;${fn}&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;Greenland
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncwa&#x00A0;-O&#x00A0;-w&#x00A0;gw&#x00A0;-d&#x00A0;lat,60.0,75.0&#x00A0;-d&#x00A0;lon,300.0,340.0&#x00A0;-a&#x00A0;lat,lon&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw_1.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;Tibet
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncwa&#x00A0;-O&#x00A0;-w&#x00A0;gw&#x00A0;-d&#x00A0;lat,30.0,40.0&#x00A0;-d&#x00A0;lon,80.0,100.0&#x00A0;-a&#x00A0;lat,lon&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw_2.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;concatenate&#x00A0;2&#x00A0;zones&#x00A0;together
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncecat&#x00A0;-O&#x00A0;-u&#x00A0;zone&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw_?.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw_zone4.nc
+&#x00A0;<br />
+                                                                                         
+                                                                                         
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;change&#x00A0;the&#x00A0;order&#x00A0;of&#x00A0;the&#x00A0;dimension&#x00A0;so&#x00A0;that&#x00A0;the&#x00A0;record&#x00A0;dimension&#x00A0;is&#x00A0;&#8217;time&#8217;
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncpdq&#x00A0;-O&#x00A0;-a&#x00A0;time,zone&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw_zone4.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw_zone4.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;remove&#x00A0;the&#x00A0;temporary&#x00A0;files&#x00A0;(optional)
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;rm&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw_?.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;annual&#x00A0;average&#x00A0;(use&#x00A0;the&#x00A0;feature&#x00A0;of&#x00A0;&#8217;Duration&#8217;)
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncra&#x00A0;-O&#x00A0;--mro&#x00A0;-d&#x00A0;time,"1956-01-01&#x00A0;00:00:0.0","2005-12-31&#x00A0;23:59:9.9",12,12&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_gw_zone4.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_yrly.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;anomaly
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;long-term&#x00A0;average
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncwa&#x00A0;-O&#x00A0;-a&#x00A0;time&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_yrly.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_clm.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;subtract&#x00A0;long-term&#x00A0;average
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncbo&#x00A0;-O&#x00A0;--op_typ=-&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_yrly.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_clm.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_anm.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;done
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;rm&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*_yrly.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;average&#x00A0;over&#x00A0;all&#x00A0;the&#x00A0;ensemble&#x00A0;members
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncea&#x00A0;-O&#x00A0;-4&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*_anm.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_anm.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;standard&#x00A0;deviation&#x00A0;------------------------------
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;for&#x00A0;fn&#x00A0;in&#x00A0;$(&#x00A0;ls&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*_anm.nc&#x00A0;);&#x00A0;do
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;pfx=$(&#x00A0;echo&#x00A0;${fn}&#x00A0;|&#x00A0;cut&#x00A0;-d&#8217;/&#8217;&#x00A0;-f8&#x00A0;|&#x00A0;cut&#x00A0;-d&#8217;_&#8217;&#x00A0;-f1-5&#x00A0;)
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;difference&#x00A0;between&#x00A0;each&#x00A0;ensemble&#x00A0;member&#x00A0;and&#x00A0;the&#x00A0;average&#x00A0;of&#x00A0;all&#x00A0;members
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncbo&#x00A0;-O&#x00A0;--op_typ=-&#x00A0;${fn}&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_anm.nc&#x00A0;${drc_out}${fld_out[var_id]}${pfx}_dlt.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;done
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;RMS
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncea&#x00A0;-O&#x00A0;-y&#x00A0;rmssdn&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*_dlt.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_sdv.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;rename&#x00A0;variables
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncrename&#x00A0;-v&#x00A0;${var[var_id]},sdv&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_sdv.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;edit&#x00A0;attributions
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncatted&#x00A0;-a&#x00A0;standard_name,sdv,a,c,"_standard_deviation_over_ensemble"&#x00A0;-a&#x00A0;long_name,sdv,a,c,"&#x00A0;Standard&#x00A0;Deviation&#x00A0;over&#x00A0;Ensemble"&#x00A0;-a&#x00A0;original_name,sdv,a,c,"&#x00A0;sdv"&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_sdv.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##------------------------------------------------------------
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;linear&#x00A0;regression&#x00A0;-----------------------------------------
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;have&#x00A0;to&#x00A0;change&#x00A0;the&#x00A0;name&#x00A0;of&#x00A0;variable&#x00A0;in&#x00A0;the&#x00A0;commands&#x00A0;file&#x00A0;of&#x00A0;gsl_rgr.nco&#x00A0;manually&#x00A0;(gsl_rgr.nco&#x00A0;is&#x00A0;listed&#x00A0;below)
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncap2&#x00A0;-O&#x00A0;-S&#x00A0;gsl_rgr.nco&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_anm.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_anm_rgr.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;get&#x00A0;rid&#x00A0;of&#x00A0;temporary&#x00A0;variables
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncks&#x00A0;-O&#x00A0;-v&#x00A0;c0,c1,pval,${var[var_id]},gw&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_anm_rgr.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${mdl}.nc
+                                                                                         
+                                                                                         
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##------------------------------------------------------------
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;move&#x00A0;the&#x00A0;variable&#x00A0;&#8217;sdv&#8217;&#x00A0;into&#x00A0;the&#x00A0;anomaly&#x00A0;files&#x00A0;(i.e.,&#x00A0;*anm.nc&#x00A0;files)
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncks&#x00A0;-A&#x00A0;-v&#x00A0;sdv&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_sdv.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${mdl}.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;rm&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_*historical*
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;echo&#x00A0;Model&#x00A0;${mdl}&#x00A0;done!
+&#x00A0;<br />&#x00A0;&#x00A0;done
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;Store&#x00A0;models&#x00A0;as&#x00A0;groups&#x00A0;in&#x00A0;the&#x00A0;output&#x00A0;file
+&#x00A0;<br />&#x00A0;&#x00A0;ncecat&#x00A0;-O&#x00A0;--gag&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_*.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_all-mdl_${xpt[0]}_all-nsm_annual.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;echo&#x00A0;Var&#x00A0;${var[var_id]}&#x00A0;done!
+&#x00A0;<br />done
+</div>
+
+<hr>
+<div><p><a href="#x1-1000">Back to Top</a></p></div>
+
+<!--l. 496--><p class="nopar" >
+<div class="flushleft" 
+>
+<!--l. 498--><p class="noindent" >
+ <span 
+class="cmbx-12">gsl</span><span 
+class="cmbx-12">_rgr.nco</span></div>
+                                                                                         
+                                                                                         
+<div class="verbatim" id="verbatim-4">
+//linear&#x00A0;regression
+&#x00A0;<br />//Caution:&#x00A0;make&#x00A0;sure&#x00A0;the&#x00A0;variable&#x00A0;name&#x00A0;is&#x00A0;in&#x00A0;agreement&#x00A0;with&#x00A0;the&#x00A0;main&#x00A0;script&#x00A0;(now&#x00A0;is&#x00A0;&#8217;snd&#8217;)
+&#x00A0;<br />
+&#x00A0;<br />//declare&#x00A0;variables
+&#x00A0;<br />*c0[$zone]=0.;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;//intercept
+&#x00A0;<br />*c1[$zone]=0.;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;//slope
+&#x00A0;<br />*sdv[$zone]=0.;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;//standard&#x00A0;deviation
+&#x00A0;<br />*covxy[$zone]=0.;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;//covariance
+&#x00A0;<br />*x&#x00A0;=&#x00A0;double(time);
+&#x00A0;<br />
+&#x00A0;<br />for&#x00A0;(*zone_id=0;zone_id&#x003C;$zone.size;zone_id++)&#x00A0;&#x00A0;&#x00A0;//loop&#x00A0;over&#x00A0;zones
+&#x00A0;<br />{
+&#x00A0;<br />gsl_fit_linear(time,1,snd(:,zone_id),1,$time.size,&#x00A0;&amp;tc0,&#x00A0;&amp;tc1,&#x00A0;&amp;cov00,&#x00A0;&amp;cov01,&amp;cov11,&amp;sumsq);&#x00A0;//linear&#x00A0;regression&#x00A0;function
+&#x00A0;<br />c0(zone_id)&#x00A0;=&#x00A0;tc0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;//store&#x00A0;the&#x00A0;results
+&#x00A0;<br />c1(zone_id)&#x00A0;=&#x00A0;tc1;
+&#x00A0;<br />covxy(zone_id)&#x00A0;=&#x00A0;gsl_stats_covariance(time,1,$time.size,double(snd(:,zone_id)),1,$time.size);&#x00A0;//covariance&#x00A0;function
+&#x00A0;<br />sdv(zone_id)&#x00A0;=&#x00A0;gsl_stats_sd(snd(:,zone_id),&#x00A0;1,&#x00A0;$time.size);&#x00A0;&#x00A0;&#x00A0;//standard&#x00A0;deviation&#x00A0;function
+&#x00A0;<br />}
+&#x00A0;<br />
+&#x00A0;<br />//pval------------------------------------------------------------
+&#x00A0;<br />*time_sdv&#x00A0;=&#x00A0;gsl_stats_sd(time,&#x00A0;1,&#x00A0;$time.size);
+&#x00A0;<br />*r_value&#x00A0;=&#x00A0;covxy/(time_sdv*sdv);
+&#x00A0;<br />*t_value&#x00A0;=&#x00A0;r_value/sqrt((1-r_value^2)/($time.size-2));
+&#x00A0;<br />pval&#x00A0;=&#x00A0;abs(gsl_cdf_tdist_P(t_value,&#x00A0;$time.size-2)&#x00A0;-&#x00A0;gsl_cdf_tdist_P(-t_value,&#x00A0;$time.size-2));
+&#x00A0;<br />//----------------------------------------------------------------
+&#x00A0;<br />
+&#x00A0;<br />//write&#x00A0;RAM&#x00A0;variables&#x00A0;to&#x00A0;disk
+&#x00A0;<br />//------------------------------------------------------------
+&#x00A0;<br />//usually&#x00A0;NCO&#x00A0;writes&#x00A0;the&#x00A0;outputs&#x00A0;directly&#x00A0;to&#x00A0;disk
+&#x00A0;<br />//inside&#x00A0;.nco&#x00A0;files,&#x00A0;using&#x00A0;RAM&#x00A0;variables,&#x00A0;declared&#x00A0;by&#x00A0;*,&#x00A0;will&#x00A0;shorten&#x00A0;running&#x00A0;time
+&#x00A0;<br />//write&#x00A0;the&#x00A0;final&#x00A0;outputs&#x00A0;using&#x00A0;ram_write()
+&#x00A0;<br />//------------------------------------------------------------
+&#x00A0;<br />ram_write(c0);
+&#x00A0;<br />ram_write(c1);
+</div>
+
+<hr>
+<div><p><a href="#x1-1000">Back to Top</a></p></div>
+
+<!--l. 536--><p class="nopar" >
+<!--l. 538--><p class="noindent" >
+   <h3 class="sectionHead" align="left"><span class="titlemark">4   </span> <a 
+ id="x1-50004"></a>Monthly Cycle</h3>
+                                                                                         
+                                                                                         
+   <div class="verbatim" id="verbatim-5">
+#!/bin/bash
+&#x00A0;<br />
+&#x00A0;<br />##============================================================
+&#x00A0;<br />##&#x00A0;After&#x00A0;one-ensemble-one-file.sh
+&#x00A0;<br />##&#x00A0;Example:&#x00A0;Monthly&#x00A0;cycle&#x00A0;of&#x00A0;each&#x00A0;model&#x00A0;in&#x00A0;Greenland
+&#x00A0;<br />##============================================================
+&#x00A0;<br />
+&#x00A0;<br />##------------------------------------------------------------
+&#x00A0;<br />##&#x00A0;parameters
+&#x00A0;<br />drc_in=&#8217;/home/wenshanw/data/cmip5/&#8217;##&#x00A0;directory&#x00A0;of&#x00A0;input&#x00A0;files
+&#x00A0;<br />drc_out=&#8217;/home/wenshanw/data/cmip5/output/&#8217;##&#x00A0;directory&#x00A0;of&#x00A0;output&#x00A0;files
+&#x00A0;<br />
+&#x00A0;<br />var=(&#x00A0;&#8217;snc&#8217;&#x00A0;&#8217;snd&#8217;&#x00A0;) ##&#x00A0;variables
+&#x00A0;<br />rlm=&#8217;LImon&#8217;##&#x00A0;realm
+&#x00A0;<br />xpt=(&#x00A0;&#8217;historical&#8217;&#x00A0;) ##&#x00A0;experiment&#x00A0;(&#x00A0;could&#x00A0;be&#x00A0;more&#x00A0;)
+&#x00A0;<br />
+&#x00A0;<br />fld_out=(&#x00A0;&#8217;snc/&#8217;&#x00A0;&#8217;snd/&#8217;&#x00A0;) ##&#x00A0;folders&#x00A0;of&#x00A0;output&#x00A0;files
+&#x00A0;<br />##------------------------------------------------------------
+&#x00A0;<br />
+&#x00A0;<br />for&#x00A0;var_id&#x00A0;in&#x00A0;{0..1};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;two&#x00A0;variables
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;names&#x00A0;of&#x00A0;all&#x00A0;models&#x00A0;(ls&#x00A0;[get&#x00A0;file&#x00A0;names];&#x00A0;cut&#x00A0;[get&#x00A0;the&#x00A0;part&#x00A0;for&#x00A0;model&#x00A0;names];&#x00A0;sort;&#x00A0;uniq&#x00A0;[remove&#x00A0;duplicates];&#x00A0;awk&#x00A0;[print])
+&#x00A0;<br />&#x00A0;&#x00A0;mdl_set=$(&#x00A0;ls&#x00A0;${drc_in}${var[var_id]}_${rlm}_*_${xpt[0]}_*.nc&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;_&#8217;&#x00A0;-f&#x00A0;3&#x00A0;|&#x00A0;sort&#x00A0;|&#x00A0;uniq&#x00A0;-c&#x00A0;|&#x00A0;awk&#x00A0;&#8217;{print&#x00A0;$2}&#8217;&#x00A0;)
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;for&#x00A0;mdl&#x00A0;in&#x00A0;${mdl_set};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;models
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;average&#x00A0;all&#x00A0;the&#x00A0;ensemble&#x00A0;members&#x00A0;in&#x00A0;each&#x00A0;model
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncea&#x00A0;-O&#x00A0;-4&#x00A0;-d&#x00A0;time,"1956-01-01&#x00A0;00:00:0.0","2005-12-31&#x00A0;23:59:9.9"&#x00A0;${drc_in}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_*.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;retrieve&#x00A0;Greenland
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;calculate&#x00A0;the&#x00A0;geographical&#x00A0;weight&#x00A0;first
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncap2&#x00A0;-O&#x00A0;-s&#x00A0;&#8217;gw&#x00A0;=&#x00A0;cos(lat*3.1415926/180.);&#x00A0;gw@long_name="geographical&#x00A0;weight";gw@units="ratio"&#8217;&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;Greenland
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncwa&#x00A0;-O&#x00A0;-w&#x00A0;gw&#x00A0;-d&#x00A0;lat,60.0,75.0&#x00A0;-d&#x00A0;lon,300.0,340.0&#x00A0;-a&#x00A0;lat,lon&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;anomaly----------------------------------------
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;for&#x00A0;moy&#x00A0;in&#x00A0;{1..12};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;months
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;mm=$(&#x00A0;printf&#x00A0;"%02d"&#x00A0;${moy}&#x00A0;)
+##&#x00A0;change&#x00A0;the&#x00A0;format&#x00A0;of&#x00A0;month&#x00A0;into&#x00A0;2-digit
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;for&#x00A0;yr&#x00A0;in&#x00A0;{1956..2005};&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;years
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;if&#x00A0;[&#x00A0;${moy}&#x00A0;-eq&#x00A0;1&#x00A0;];&#x00A0;then
+##&#x00A0;if&#x00A0;January,&#x00A0;calculate&#x00A0;the&#x00A0;annual&#x00A0;average&#x00A0;of&#x00A0;this&#x00A0;year
+                                                                                         
+                                                                                         
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0; ncra&#x00A0;-O&#x00A0;-d&#x00A0;time,"${yr}-01-01&#x00A0;00:00:0.0","${yr}-12-31&#x00A0;23:59:9.9"&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN_${yr}.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;fi
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;retrieve&#x00A0;this&#x00A0;month
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncks&#x00A0;-O&#x00A0;-d&#x00A0;time,"${yr}-${mm}-01&#x00A0;00:00:0.0","${yr}-${mm}-31&#x00A0;23:59:9.9"&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN_${yr}${mm}.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;subtract&#x00A0;the&#x00A0;annual&#x00A0;average&#x00A0;from&#x00A0;the&#x00A0;month&#x00A0;data
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncbo&#x00A0;-O&#x00A0;--op_typ=-&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN_${yr}${mm}.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN_${yr}.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN_${yr}${mm}_anm.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;done
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;average&#x00A0;over&#x00A0;years
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncra&#x00A0;-O&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN_????${mm}_anm.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN_${mm}_anm.nc
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;done
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##--------------------------------------------------
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;##&#x00A0;concatenate&#x00A0;the&#x00A0;months&#x00A0;data&#x00A0;together
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;ncrcat&#x00A0;-O&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_${mdl}_${xpt[0]}_all-nsm_GN_??_anm.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${mdl}.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;&#x00A0;&#x00A0;echo&#x00A0;Model&#x00A0;${mdl}&#x00A0;done!
+&#x00A0;<br />&#x00A0;&#x00A0;done
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;rm&#x00A0;-f&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}*historical*
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;Store&#x00A0;models&#x00A0;as&#x00A0;groups&#x00A0;in&#x00A0;the&#x00A0;output&#x00A0;file
+&#x00A0;<br />&#x00A0;&#x00A0;ncecat&#x00A0;-O&#x00A0;--gag&#x00A0;-v&#x00A0;${var[var_id]}&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_*.nc&#x00A0;${drc_out}${fld_out[var_id]}${var[var_id]}_${rlm}_all-mdl_${xpt[0]}_all-nsm_GN_mthly-anm.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;echo&#x00A0;Var&#x00A0;${var[var_id]}&#x00A0;done!
+&#x00A0;<br />done
+</div>
+
+<hr>
+<div><p><a href="#x1-1000">Back to Top</a></p></div>
+
+<!--l. 606--><p class="nopar" >
+<!--l. 608--><p class="noindent" >
+   <h3 class="sectionHead" align="left"> <span class="titlemark">5   </span> <a 
+ id="x1-60005"></a>Regrid MODIS Data</h3>
+<div class="flushleft" 
+>
+<!--l. 609--><p class="noindent" >
+ <span 
+class="cmbx-12">Main Script</span></div>
+                                                                                         
+                                                                                         
+<div class="verbatim" id="verbatim-6">
+#!/bin/bash
+&#x00A0;<br />##&#x00A0;include&#x00A0;bi_interp.nco
+&#x00A0;<br />
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />##&#x00A0;Example&#x00A0;for
+&#x00A0;<br />## -&#x00A0;regrid&#x00A0;(using&#x00A0;bi_interp.nco):&#x00A0;the&#x00A0;spatial&#x00A0;resolution&#x00A0;of&#x00A0;MODIS&#x00A0;data
+&#x00A0;<br />## is&#x00A0;much&#x00A0;finer&#x00A0;than&#x00A0;those&#x00A0;of&#x00A0;CMIP5&#x00A0;models.&#x00A0;In&#x00A0;order&#x00A0;to&#x00A0;compare
+&#x00A0;<br />## the&#x00A0;two,&#x00A0;we&#x00A0;can&#x00A0;regrid&#x00A0;MODIS&#x00A0;data&#x00A0;to&#x00A0;comform&#x00A0;to&#x00A0;CMIP5.
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />
+&#x00A0;<br />var=(&#x00A0;&#8217;MCD43C3&#8217;&#x00A0;) ##&#x00A0;variable
+&#x00A0;<br />fld_in=(&#x00A0;&#8217;monthly/&#8217;&#x00A0;) ##&#x00A0;folder&#x00A0;of&#x00A0;input&#x00A0;files
+&#x00A0;<br />fld_out=(&#x00A0;&#8217;cesm-grid/&#8217;&#x00A0;) ##&#x00A0;folder&#x00A0;of&#x00A0;output&#x00A0;files
+&#x00A0;<br />drc_in=&#8217;/media/grele_data/wenshan/modis/mcd43c3/&#8217;##&#x00A0;directory&#x00A0;of&#x00A0;input&#x00A0;files
+&#x00A0;<br />
+&#x00A0;<br />for&#x00A0;fn&#x00A0;in&#x00A0;$(&#x00A0;ls&#x00A0;${drc_in}${fld_in}${var}.*.nc&#x00A0;);&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;files
+&#x00A0;<br />&#x00A0;&#x00A0;sfx=$(&#x00A0;echo&#x00A0;$fn&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;/&#8217;&#x00A0;-f&#x00A0;8&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;.&#8217;&#x00A0;-f&#x00A0;2&#x00A0;)
+##&#x00A0;part&#x00A0;of&#x00A0;file&#x00A0;names
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;regrid
+&#x00A0;<br />&#x00A0;&#x00A0;ncap2&#x00A0;-O&#x00A0;-S&#x00A0;bi_interp.nco&#x00A0;${fn}&#x00A0;${drc_in}${fld_out}${var}.${sfx}.regrid.nc
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;retrieve&#x00A0;only&#x00A0;the&#x00A0;new&#x00A0;variables
+&#x00A0;<br />&#x00A0;&#x00A0;ncks&#x00A0;-O&#x00A0;-v&#x00A0;wsa_sw_less,bsa_sw_less&#x00A0;${drc_in}${fld_out}${var}.${sfx}.regrid.nc&#x00A0;${drc_in}${fld_out}${var}.${sfx}.regrid.nc
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;rename&#x00A0;the&#x00A0;new&#x00A0;variables,&#x00A0;dimensions&#x00A0;and&#x00A0;attributions
+&#x00A0;<br />&#x00A0;&#x00A0;ncrename&#x00A0;-O&#x00A0;-d&#x00A0;latn,lat&#x00A0;-d&#x00A0;lonn,lon&#x00A0;-v&#x00A0;latn,lat&#x00A0;-v&#x00A0;lonn,lon&#x00A0;-v&#x00A0;wsa_sw_less,wsa_sw&#x00A0;-v&#x00A0;bsa_sw_less,bsa_sw&#x00A0;-a&#x00A0;missing_value,_FillValue&#x00A0;${drc_in}${fld_out}${var}.${sfx}.regrid.nc
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;echo&#x00A0;$sfx&#x00A0;done.
+&#x00A0;<br />done
+</div>
+<!--l. 640--><p class="nopar" >
+<div class="flushleft" 
+>
+<!--l. 641--><p class="noindent" >
+ <span 
+class="cmbx-12">bi</span><span 
+class="cmbx-12">_interp.nco</span></div>
+                                                                                         
+                                                                                         
+<div class="verbatim" id="verbatim-7">
+//&#x00A0;bilinear&#x00A0;interpolation
+&#x00A0;<br />
+&#x00A0;<br />defdim("latn",192); //&#x00A0;define&#x00A0;new&#x00A0;dimension:&#x00A0;latitude
+&#x00A0;<br />defdim("lonn",288); //&#x00A0;define&#x00A0;new&#x00A0;dimension:&#x00A0;longitude
+&#x00A0;<br />latn[$latn]&#x00A0;=&#x00A0;{90,89.0576&#x00A0;,88.1152&#x00A0;,87.1728&#x00A0;,86.2304&#x00A0;,85.288&#x00A0;&#x00A0;,84.3456&#x00A0;,83.4031&#x00A0;,82.4607&#x00A0;,81.5183&#x00A0;,80.5759&#x00A0;,79.6335&#x00A0;,78.6911&#x00A0;,77.7487&#x00A0;,76.8063&#x00A0;,75.8639&#x00A0;,74.9215&#x00A0;,73.9791&#x00A0;,73.0367&#x00A0;,72.0942&#x00A0;,71.1518&#x00A0;,70.2094&#x00A0;,69.267&#x00A0;&#x00A0;,68.3246&#x00A0;,67.3822&#x00A0;,66.4398&#x00A0;,65.4974&#x00A0;,64.555&#x00A0;&#x00A0;,63.6126&#x00A0;,62.6702&#x00A0;,61.7277&#x00A0;,60.7853&#x00A0;,59.8429&#x00A0;,58.9005&#x00A0;,57.9581&#x00A0;,57.0157&#x00A0;,56.0733&#x00A0;,55.1309&#x00A0;,54.1885&#x00A0;,53.2461&#x00A0;,52.3037&#x00A0;,51.3613&#x00A0;,50.4188&#x00A0;,49.4764&#x00A0;,48.534&#x00A0;&#x00A0;,47.5916&#x00A0;,46.6492&#x00A0;,45.7068&#x00A0;,44.7644&#x00A0;,43.822&#x00A0;&#x00A0;,42.8796&#x00A0;,41.9372&#x00A0;,40.9948&#x00A0;,40.0524&#x00A0;,39.11&#x00A0;&#x00A0;&#x00A0;,38.1675&#x00A0;,37.2251&#x00A0;,36.2827&#x00A0;,35.3403&#x00A0;,34.3979&#x00A0;,33.4555&#x00A0;,32.5131&#x00A0;,31.5707&#x00A0;,30.6283&#x00A0;,29.6859&#x00A0;,28.7435&#x00A0;,27.8011&#x00A0;,26.8586&#x00A0;,25.9162&#x00A0;,24.9738&#x00A0;,24.0314&#x00A0;,23.089&#x00A0;&#x00A0;,22.1466&#x00A0;,21.2042&#x00A0;,20.2618&#x00A0;,19.3194&#x00A0;,18.377&#x00A0;&#x00A0;,17.4346&#x00A0;,16.4921&#x00A0;,15.5497&#x00A0;,14.6073&#x00A0;,13.6649&#x00A0;,12.7225&#x00A0;,11.7801&#x00A0;,10.8377&#x00A0;,9.89529&#x00A0;,8.95288&#x00A0;,8.01047&#x00A0;,7.06806&#x00A0;,6.12565&#x00A0;,5.18325&#x00A0;,4.24084&#x00A0;,3.29843&#x00A0;,2.35602&#x00A0;,1.41361&#x00A0;,0.471204,-0.471204,-1.41361,-2.35602,-3.29843,-4.24084,-5.18325,-6.12565,-7.06806,-8.01047,-8.95288,-9.89529,-10.8377,-11.7801,-12.7225,-13.6649,-14.6073,-15.5497,-16.4921,-17.4346,-18.377&#x00A0;,-19.3194,-20.2618,-21.2042,-22.1466,-23.089&#x00A0;,-24.0314,-24.9738,-25.9162,-26.8586,-27.8011,-28.7435,-29.6859,-30.6283,-31.5707,-32.5131,-33.4555,-34.3979,-35.3403,-36.2827,-37.2251,-38.1675,-39.11&#x00A0;&#x00A0;,-40.0524,-40.9948,-41.9372,-42.8796,-43.822&#x00A0;,-44.7644,-45.7068,-46.6492,-47.5916,-48.534&#x00A0;,-49.4764,-50.4188,-51.3613,-52.3037,-53.2461,-54.1885,-55.1309,-56.0733,-57.0157,-57.9581,-58.9005,-59.8429,-60.7853,-61.7277,-62.6702,-63.6126,-64.555&#x00A0;,-65.4974,-66.4398,-67.3822,-68.3246,-69.267&#x00A0;,-70.2094,-71.1518,-72.0942,-73.0367,-73.9791,-74.9215,-75.8639,-76.8063,-77.7487,-78.6911,-79.6335,-80.5759,-81.5183,-82.4607,-83.4031,-84.3456,-85.288,-86.2304,-87.1728,-88.1152,-89.0576,-90};
+//&#x00A0;the&#x00A0;copy&#x00A0;of&#x00A0;CCSM4&#x00A0;latitude
+&#x00A0;<br />lonn[$lonn]&#x00A0;=&#x00A0;{-178.75,-177.5,-176.25,-175,-173.75,-172.5,-171.25,-170,-168.75,-167.5,-166.25,-165,-163.75,-162.5,-161.25,-160,-158.75,-157.5,-156.25,-155,-153.75,-152.5,-151.25,-150,-148.75,-147.5,-146.25,-145,-143.75,-142.5,-141.25,-140,-138.75,-137.5,-136.25,-135,-133.75,-132.5,-131.25,-130,-128.75,-127.5,-126.25,-125,-123.75,-122.5,-121.25,-120,-118.75,-117.5,-116.25,-115,-113.75,-112.5,-111.25,-110,-108.75,-107.5,-106.25,-105,-103.75,-102.5,-101.25,-100,-98.75,-97.5,-96.25,-95,-93.75,-92.5,-91.25,-90,-88.75,-87.5,-86.25,-85,-83.75,-82.5,-81.25,-80,-78.75,-77.5,-76.25,-75,-73.75,-72.5,-71.25,-70,-68.75,-67.5,-66.25,-65,-63.75,-62.5,-61.25,-60,-58.75,-57.5,-56.25,-55,-53.75,-52.5,-51.25,-50,-48.75,-47.5,-46.25,-45,-43.75,-42.5,-41.25,-40,-38.75,-37.5,-36.25,-35,-33.75,-32.5,-31.25,-30,-28.75,-27.5,-26.25,-25,-23.75,-22.5,-21.25,-20,-18.75,-17.5,-16.25,-15,-13.75,-12.5,-11.25,-10,-8.75,-7.5,-6.25,-5,-3.75,-2.5,-1.25,0,1.25,2.5,3.75,5,6.25,7.5,8.75,10,11.25,12.5,13.75,15,16.25,17.5,18.75,20,21.25,22.5,23.75,25,26.25,27.5,28.75,30,31.25,32.5,33.75,35,36.25,37.5,38.75,40,41.25,42.5,43.75,45,46.25,47.5,48.75,50,51.25,52.5,53.75,55,56.25,57.5,58.75,60,61.25,62.5,63.75,65,66.25,67.5,68.75,70,71.25,72.5,73.75,75,76.25,77.5,78.75,80,81.25,82.5,83.75,85,86.25,87.5,88.75,90,91.25,92.5,93.75,95,96.25,97.5,98.75,100,101.25,102.5,103.75,105,106.25,107.5,108.75,110,111.25,112.5,113.75,115,116.25,117.5,118.75,120,121.25,122.5,123.75,125,126.25,127.5,128.75,130,131.25,132.5,133.75,135,136.25,137.5,138.75,140,141.25,142.5,143.75,145,146.25,147.5,148.75,150,151.25,152.5,153.75,155,156.25,157.5,158.75,160,161.25,162.5,163.75,165,166.25,167.5,168.75,170,171.25,172.5,173.75,175,176.25,177.5,178.75,180};
+//&#x00A0;the&#x00A0;copy&#x00A0;of&#x00A0;CCSM4&#x00A0;longitude
+&#x00A0;<br />
+&#x00A0;<br />*out[$time,$latn,$lonn]=0.0; //&#x00A0;output&#x00A0;structure
+&#x00A0;<br />
+&#x00A0;<br />//&#x00A0;bi-linear&#x00A0;interpolation
+&#x00A0;<br />bsa_sw_less=bilinear_interp_wrap(bsa_sw,out,latn,lonn,lat,lon);
+&#x00A0;<br />wsa_sw_less=bilinear_interp_wrap(wsa_sw,out,latn,lonn,lat,lon);
+&#x00A0;<br />
+&#x00A0;<br />//&#x00A0;add&#x00A0;attributions
+&#x00A0;<br />latn@units&#x00A0;=&#x00A0;"degree_north";
+&#x00A0;<br />lonn@units&#x00A0;=&#x00A0;"degree_east";
+&#x00A0;<br />latn@long_name&#x00A0;=&#x00A0;"latitude";
+&#x00A0;<br />lonn@long_name&#x00A0;=&#x00A0;"longitude";
+&#x00A0;<br />bsa_sw_less@hdf_name&#x00A0;=&#x00A0;"Albedo_BSA_shortwave";
+&#x00A0;<br />bsa_sw_less@calibrated_nt&#x00A0;=&#x00A0;5;
+&#x00A0;<br />bsa_sw_less@missing_value&#x00A0;=&#x00A0;32767.0;
+&#x00A0;<br />bsa_sw_less@units&#x00A0;=&#x00A0;"albedo,&#x00A0;no&#x00A0;units";
+&#x00A0;<br />bsa_sw_less@long_name&#x00A0;=&#x00A0;"Global_Albedo_BSA_shortwave";
+&#x00A0;<br />wsa_sw_less@hdf_name&#x00A0;=&#x00A0;"Albedo_WSA_shortwave";
+&#x00A0;<br />wsa_sw_less@calibrated_nt&#x00A0;=&#x00A0;5;
+&#x00A0;<br />wsa_sw_less@missing_value&#x00A0;=&#x00A0;32767.0;
+&#x00A0;<br />wsa_sw_less@units&#x00A0;=&#x00A0;"albedo,&#x00A0;no&#x00A0;units";
+&#x00A0;<br />wsa_sw_less@long_name&#x00A0;=&#x00A0;"Global_Albedo_WSA_shortwave";
+</div>
+
+<hr>
+<div><p><a href="#x1-1000">Back to Top</a></p></div>
+
+<!--l. 673--><p class="nopar" >
+<!--l. 675--><p class="noindent" >
+   <h3 class="sectionHead" align="left"><span class="titlemark">6   </span> <a 
+ id="x1-70006"></a>Add Coordinates to MODIS Data</h3>
+<div class="flushleft" 
+>
+<!--l. 676--><p class="noindent" >
+ <span 
+class="cmbx-12">Main Script</span></div>
+                                                                                         
+                                                                                         
+<div class="verbatim" id="verbatim-8">
+#!/bin/bash
+&#x00A0;<br />
+&#x00A0;<br />##============================================================
+&#x00A0;<br />##&#x00A0;Example&#x00A0;for
+&#x00A0;<br />## -&#x00A0;regrid&#x00A0;(using&#x00A0;bi_interp.nco):&#x00A0;the&#x00A0;spatial&#x00A0;resolution&#x00A0;of&#x00A0;MODIS&#x00A0;data
+&#x00A0;<br />## is&#x00A0;much&#x00A0;finer&#x00A0;than&#x00A0;those&#x00A0;of&#x00A0;CMIP5&#x00A0;models.&#x00A0;In&#x00A0;order&#x00A0;to&#x00A0;compare
+&#x00A0;<br />## the&#x00A0;two,&#x00A0;we&#x00A0;can&#x00A0;regrid&#x00A0;MODIS&#x00A0;data&#x00A0;to&#x00A0;comform&#x00A0;to&#x00A0;CMIP5.
+&#x00A0;<br />## -&#x00A0;add&#x00A0;coordinates&#x00A0;(using&#x00A0;coor.nco):&#x00A0;there&#x00A0;is&#x00A0;no&#x00A0;coordinate&#x00A0;information
+&#x00A0;<br />## in&#x00A0;MODIS&#x00A0;data.&#x00A0;We&#x00A0;have&#x00A0;to&#x00A0;add&#x00A0;it&#x00A0;manually&#x00A0;now.
+&#x00A0;<br />##============================================================
+&#x00A0;<br />
+&#x00A0;<br />var=(&#x00A0;&#8217;MOD10CM&#8217;&#x00A0;) ##&#x00A0;variable
+&#x00A0;<br />fld_in=(&#x00A0;&#8217;snc/nc/&#8217;&#x00A0;) ##&#x00A0;folder&#x00A0;of&#x00A0;input&#x00A0;files
+&#x00A0;<br />drc_in=&#8217;/media/grele_data/wenshan/modis/&#8217;##&#x00A0;directory&#x00A0;of&#x00A0;input&#x00A0;files
+&#x00A0;<br />
+&#x00A0;<br />for&#x00A0;fn&#x00A0;in&#x00A0;$(&#x00A0;ls&#x00A0;${drc_in}${fld_in}${var}*.nc&#x00A0;);&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;files
+&#x00A0;<br />&#x00A0;&#x00A0;sfx=$(&#x00A0;echo&#x00A0;${fn}&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;/&#8217;&#x00A0;-f&#x00A0;8&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;.&#8217;&#x00A0;-f&#x00A0;2-4&#x00A0;)
+##&#x00A0;part&#x00A0;of&#x00A0;file&#x00A0;names
+&#x00A0;<br />&#x00A0;&#x00A0;echo&#x00A0;${sfx}
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;rename&#x00A0;dimension&#x00A0;names&#x00A0;since&#x00A0;they&#x00A0;are&#x00A0;too&#x00A0;long
+&#x00A0;<br />&#x00A0;&#x00A0;ncrename&#x00A0;-d&#x00A0;YDim_MOD_CMG_Snow_5km,lat&#x00A0;-d&#x00A0;XDim_MOD_CMG_Snow_5km,lon&#x00A0;-O&#x00A0;${drc_in}${fld_in}${var}.${sfx}.nc&#x00A0;${drc_in}${fld_in}${var}.${sfx}.nc
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;add&#x00A0;coordinates
+&#x00A0;<br />&#x00A0;&#x00A0;ncap2&#x00A0;-O&#x00A0;-S&#x00A0;coor.nco&#x00A0;${drc_in}${fld_in}${var}.${sfx}.nc&#x00A0;${drc_in}${fld_in}${var}.${sfx}.nc
+&#x00A0;<br />done
+</div>
+<!--l. 704--><p class="nopar" >
+<div class="flushleft" 
+>
+<!--l. 705--><p class="noindent" >
+ <span 
+class="cmbx-12">coor.nco</span></div>
+                                                                                         
+                                                                                         
+<div class="verbatim" id="verbatim-9">
+//&#x00A0;add&#x00A0;coordinate&#x00A0;to&#x00A0;MODIS&#x00A0;HDF&#x00A0;data
+&#x00A0;<br />lon&#x00A0;=&#x00A0;array(0.f,&#x00A0;0.05,&#x00A0;$lon)&#x00A0;-&#x00A0;180;
+&#x00A0;<br />lat&#x00A0;=&#x00A0;90.f-&#x00A0;array(0.f,&#x00A0;0.05,&#x00A0;$lat);
+</div>
+
+<hr>
+<div><p><a href="#x1-1000">Back to Top</a></p></div>
+
+<!--l. 712--><p class="nopar" >
+<!--l. 714--><p class="noindent" >
+   <h3 class="sectionHead" align="left"><span class="titlemark">7   </span> <a 
+ id="x1-80007"></a>Permute MODIS Coordinates</h3>
+<div class="flushleft" 
+>
+<!--l. 715--><p class="noindent" >
+ <span 
+class="cmbx-12">Main Script</span></div>
+                                                                                         
+                                                                                         
+<div class="verbatim" id="verbatim-10">
+#!/bin/bash
+&#x00A0;<br />
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />##&#x00A0;Example&#x00A0;for
+&#x00A0;<br />## -&#x00A0;permute&#x00A0;coordinates&#x00A0;(using&#x00A0;inverse-lat.nco):&#x00A0;the&#x00A0;grid&#x00A0;of&#x00A0;MODIS&#x00A0;is
+&#x00A0;<br />## from&#x00A0;(-180&#x00A0;degE,&#x00A0;90&#x00A0;degN),&#x00A0;the&#x00A0;left-up&#x00A0;corner,&#x00A0;to
+&#x00A0;<br />## (180&#x00A0;degE,&#x00A0;-90&#x00A0;degN),&#x00A0;the&#x00A0;right-low&#x00A0;corner.&#x00A0;However,&#x00A0;CMIP5&#x00A0;is
+&#x00A0;<br />## from&#x00A0;(0&#x00A0;degE,&#x00A0;-90&#x00A0;degN)&#x00A0;to&#x00A0;(360&#x00A0;degE,&#x00A0;90&#x00A0;degN).&#x00A0;The&#x00A0;script
+&#x00A0;<br />## here&#x00A0;changes&#x00A0;the&#x00A0;MODIS&#x00A0;grid&#x00A0;to&#x00A0;CMIP5&#x00A0;grid.
+&#x00A0;<br />##===========================================================================
+&#x00A0;<br />
+&#x00A0;<br />##---------------------------------------------------------------------------
+&#x00A0;<br />##&#x00A0;permute&#x00A0;coordinates
+&#x00A0;<br />## -&#x00A0;inverse&#x00A0;lat&#x00A0;from&#x00A0;(90,-90)&#x00A0;to&#x00A0;(-90,90)
+&#x00A0;<br />## -&#x00A0;permute&#x00A0;lon&#x00A0;from&#x00A0;(-180,180)&#x00A0;to&#x00A0;(0,360)
+&#x00A0;<br />for&#x00A0;fn&#x00A0;in&#x00A0;$(&#x00A0;ls&#x00A0;MCD43C3.*.nc&#x00A0;);&#x00A0;do ##&#x00A0;loop&#x00A0;over&#x00A0;files
+&#x00A0;<br />&#x00A0;&#x00A0;sfx=$(&#x00A0;echo&#x00A0;${fn}&#x00A0;|&#x00A0;cut&#x00A0;-d&#x00A0;&#8217;.&#8217;&#x00A0;-f&#x00A0;1-3&#x00A0;) ##&#x00A0;part&#x00A0;of&#x00A0;file&#x00A0;names
+&#x00A0;<br />&#x00A0;&#x00A0;echo&#x00A0;${sfx}
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;lat
+&#x00A0;<br />&#x00A0;&#x00A0;ncap2&#x00A0;-O&#x00A0;-S&#x00A0;inverse-lat.nco&#x00A0;${fn}&#x00A0;${fn} ##&#x00A0;inverse&#x00A0;latitude
+&#x00A0;<br />
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;lon
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;break&#x00A0;into&#x00A0;east&#x00A0;and&#x00A0;west&#x00A0;hemispheres&#x00A0;in&#x00A0;order&#x00A0;to&#x00A0;switch&#x00A0;the&#x00A0;two
+&#x00A0;<br />&#x00A0;&#x00A0;ncks&#x00A0;-O&#x00A0;-d&#x00A0;lon,0.0,180.0&#x00A0;${fn}&#x00A0;${sfx}.part1.nc
+&#x00A0;<br />&#x00A0;&#x00A0;ncks&#x00A0;-O&#x00A0;-d&#x00A0;lon,-180.0,-1.25&#x00A0;${fn}&#x00A0;${sfx}.part2.nc
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;make&#x00A0;longitude&#x00A0;the&#x00A0;record&#x00A0;dimension
+&#x00A0;<br />&#x00A0;&#x00A0;ncpdq&#x00A0;-O&#x00A0;-a&#x00A0;lon,lat,time&#x00A0;${sfx}.part1.nc&#x00A0;${sfx}.part1.nc
+&#x00A0;<br />&#x00A0;&#x00A0;ncpdq&#x00A0;-O&#x00A0;-a&#x00A0;lon,lat,time&#x00A0;${sfx}.part2.nc&#x00A0;${sfx}.part2.nc
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;concatenate&#x00A0;the&#x00A0;two&#x00A0;hemispheres&#x00A0;along&#x00A0;longitude
+&#x00A0;<br />&#x00A0;&#x00A0;ncrcat&#x00A0;-O&#x00A0;${sfx}.part?.nc&#x00A0;${fn}
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;reorder&#x00A0;dimensions
+&#x00A0;<br />&#x00A0;&#x00A0;ncpdq&#x00A0;-O&#x00A0;-a&#x00A0;time,lat,lon&#x00A0;${fn}&#x00A0;${fn}
+&#x00A0;<br />&#x00A0;&#x00A0;##&#x00A0;add&#x00A0;new&#x00A0;longitude&#x00A0;coordinates
+&#x00A0;<br />&#x00A0;&#x00A0;ncap2&#x00A0;-O&#x00A0;-s&#x00A0;&#8217;lon=array(0.0,1.25,$lon)&#8217;&#x00A0;${fn}&#x00A0;${fn}
+&#x00A0;<br />done
+</div>
+<!--l. 755--><p class="nopar" >
+<div class="flushleft" 
+>
+<!--l. 756--><p class="noindent" >
+ <span 
+class="cmbx-12">inverse-lat.nco</span></div>
+                                                                                         
+                                                                                         
+<div class="verbatim" id="verbatim-11">
+//&#x00A0;inverse&#x00A0;lat&#x00A0;from&#x00A0;(90,-90)&#x00A0;to&#x00A0;(-90,90)
+&#x00A0;<br />bsa_sw=bsa_sw.reverse($lat);
+&#x00A0;<br />wsa_sw=wsa_sw.reverse($lat);
+&#x00A0;<br />lat=lat.reverse($lat);
+</div>
+
+<hr>
+<div><p><a href="#x1-1000">Back to Top</a></p></div>
+
+<!--l. 764--><p class="nopar" >
+    
+</body></html> 
+
+                                                                                         
+
+
