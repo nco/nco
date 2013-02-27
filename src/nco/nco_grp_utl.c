@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.556 2013-02-27 05:43:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.557 2013-02-27 06:44:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1997,6 +1997,11 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
   Use case not in scope:
   variable /lon
   dimension /g1/lon
+
+  NOTE: deal with cases like
+  dimension: /lon
+  variable:  /g8/lon 
+  dimension: /g8/lon
   */
 
   const char fnc_nm[]="nco_var_dmn_scp()"; /* [sng] Function name */
@@ -2012,6 +2017,17 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
   size_t usr_sng_lng;     /* [nbr] Length of variable name */
   size_t var_nm_fll_lng;  /* [nbr] Length of full variable name */
   size_t dmn_nm_fll_lng;  /* [nbr] Length of of full dimension name */
+
+  /* Most common case is for the unique dimension full name to match the full variable name   */
+  if (strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
+        var_trv->nm_fll,dmn_trv->nm_fll);
+    }
+    return True;
+  }
+
+  /* Deal with in scope cases */
 
   var_nm_fll_lng=strlen(var_trv->nm_fll);
   dmn_nm_fll_lng=strlen(dmn_trv->nm_fll);
@@ -2051,15 +2067,26 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
       /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
       if (var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
+
+
+        /* NOTE: deal with cases like
+        dimension: /lon
+        variable:  /g8/lon 
+        dimension: /g8/lon
+        */
+
+
+
+
         return True;
 
         /* Variable in scope of dimension */
       }else if (var_nm_fll_lng>dmn_nm_fll_lng){
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -2067,7 +2094,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
         /* Variable out of scope of dimension */
       }else if (var_nm_fll_lng < dmn_nm_fll_lng){
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
