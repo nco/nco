@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.553 2013-02-26 22:49:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.554 2013-02-27 03:48:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1997,8 +1997,8 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 
 nco_bool                               /* O [flg] True if variable is in scope of dimension */
 nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope */
-(trv_sct *var_trv,                     /* I [sct] GTT Object Variable */
- dmn_fll_sct *dmn_trv)                 /* I [sct] GTT unique dimension */
+(const trv_sct * const var_trv,        /* I [sct] GTT Object Variable */
+ const dmn_fll_sct * const dmn_trv)    /* I [sct] GTT unique dimension */
 {
   /* Purpose: Find if variable is in scope of the dimension: 
   Use case in scope:

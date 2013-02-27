@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.187 2013-02-26 22:31:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.188 2013-02-27 03:48:33 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1196,7 +1196,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
  const nco_bool PRN_DMN_VAR_NM,     /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
  const trv_sct * const var_trv,     /* I [sct] Object to print (variable) */
- const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) parameter to deprecate */
 {
   /* Purpose:
   Get variable with limits from input file
@@ -1208,19 +1208,17 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   if PRN.. = True print var taking account of FORTRAN (Use dims to calculate var indices 
 
   Similar to nco_msa_prn_var_val() but uses limit information contained in GTT 
-  Differences are marked "trv"
+  Differences are marked "GTT"
   1) It is not needed to retrieve dimension IDs for variable, these were used in nco_msa_prn_var_val()
   to match limits; Group Traversal Table (GTT)should be "ID free".
-  2) GTT contains 2 separate lists: it is needed to traverse both and match by absolute name
+  2) Object to print (variable) is passed as parameter
   3) MSA: Modulo arrays: Changing the subscript of the first (least rapidly varying) dimension by one moves very quickly through 
   address space. Changing the subscript of the last (most rapidly varying) dimension by one moves exactly one location 
   (e.g., 8 bytes for a double) in address space. Each dimension has its own "stride" or length of RAM space between
   consecutive entries. mod_map_in and mod_map_cnt keep track of these distances. They are mappings between index-based 
   access and RAM-based access. The location of an N-dimensional array element in RAM is the sum of the products of 
   each index (dimensional subscript) times the stride (mod_map) of the corresponding dimension.
-  4) Object and GTT are passed as parameter instead of variable name only  
-  5) Pair Object/GTT is needed to do a GTT to MSA limits conversion 
-  6) Besides 4) and 5), other differences from original nco_msa_prn_var_val() are marked "GTT" below.
+
 
   Limit Tests:
   ncks -D 11 -d lat,1,1,1  -v area -H ~/nco/data/in_grp.nc # area(lat)
@@ -1982,16 +1980,14 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
  FILE * const fp_bnr,               /* I [flg] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
  const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
- const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) parameter to deprecate */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
   Routine truncates dimensions in variable definition in output file according to user-specified limits.
   Routine copies variable-by-variable, old-style, used only by ncks 
 
-  "trv" changes from the original nco_cpy_var_val_mlt_lmt():
-  1) Object and GTT are passed as parameter instead of variable name only and limits array 
-  2) Pair Object/GTT is needed to do a GTT to MSA limits conversion 
-  3) Other than 2) and 3), function is identical to original nco_cpy_var_val_mlt_lmt(), regarding MSA call and writing variable
+  "GTT" changes from the original nco_cpy_var_val_mlt_lmt():
+  1) Object to write (variable) is passed as parameter
   */
 
   const char fnc_nm[]="nco_cpy_var_val_mlt_lmt_trv()"; /* [sng] Function name  */
