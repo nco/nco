@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.554 2013-02-27 03:48:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.555 2013-02-27 05:07:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1537,11 +1537,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* If output group does not exist, create it */
         if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) {
           nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
-
-          if(dbg_lvl_get() >= nco_dbg_dev && nbr_dmn){
-            (void)fprintf(stdout,"%s: INFO %s Defining <%s> with %d dims\n",prg_nm_get(),fnc_nm,trv.nm_fll,nbr_dmn);
-            (void)nco_prt_dmn(nc_id,trv.nm_fll);
-          } /* dbg_lvl_get() */
         } /* Create group */
 
         /* Copy group attributes */
@@ -1574,11 +1569,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* If output group does not exist, create it */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)){
         nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
-
-        if(dbg_lvl_get() >= nco_dbg_dev && nbr_dmn){
-          (void)fprintf(stdout,"%s: INFO %s Defining group <%s> with %d dims\n",prg_nm_get(),fnc_nm,trv.nm_fll,nbr_dmn);
-          (void)nco_prt_dmn(nc_id,trv.nm_fll);
-        } /* dbg_lvl_get() */
       } /* Create group */
 
       /* Detect duplicate GPE names in advance, then exit with helpful error */
