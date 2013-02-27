@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.559 2013-02-27 08:13:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.560 2013-02-27 08:27:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2793,15 +2793,15 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Build GTT "crd_sct" coordinate variable structure */
   (void)nco_blb_crd_var_trv(trv_tbl);
 
-  /* Add dimension limits to traversal table; must be done before nco_bld_var_dmn() */
+  /* Add dimension limits to traversal table; must be done before nco_bld_var_dmn_msa() */
 #ifdef REMOVE
   if(lmt_nbr)(void)nco_bld_lmt_trv(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl); /* To Deprecate */ 
 #else
   if(lmt_nbr)(void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 #endif
 
-  /* Build variables dimensions information (coordinate variables); must be done after nco_blb_crd_var_trv() */
-  (void)nco_bld_var_dmn(nc_id,trv_tbl);
+  /* Assign variables dimensions with MSA structs; must be done after nco_blb_crd_var_trv() and nco_bld_lmt() */
+  (void)nco_bld_var_dmn_msa(nc_id,trv_tbl);
 
 
 } /* nco_bld_trv_tbl() */
@@ -3467,7 +3467,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 
 void
-nco_bld_var_dmn                       /* [fnc] Build variables dimensions information (coordinate variables) */
+nco_bld_var_dmn_msa                   /* [fnc] Assign variables dimensions with MSA structs */
 (const int nc_id,                     /* I [ID] netCDF file ID [chk] */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
