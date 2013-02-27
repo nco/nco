@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.73 2013-02-26 11:12:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.74 2013-02-27 05:43:36 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -44,7 +44,7 @@ trv_tbl_free
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
 
-    if (tbl->lst[idx].typ == nco_obj_typ_var){
+    if (tbl->lst[idx].nco_typ == nco_obj_typ_var){
       int nbr_dmn=tbl->lst[idx].nbr_dmn;
       for(int dmn_idx_var=0;dmn_idx_var<nbr_dmn;dmn_idx_var++){
         tbl->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=(char *)nco_free(tbl->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]);
@@ -122,9 +122,9 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx]; 
-    if(trv.typ == nco_obj_typ_var) att_var_lcl+=trv.nbr_att;
-    if(trv.typ == nco_obj_typ_nonatomic_var) var_ntm_lcl++;
-    if(trv.typ == nco_obj_typ_grp){ 
+    if(trv.nco_typ == nco_obj_typ_var) att_var_lcl+=trv.nbr_att;
+    if(trv.nco_typ == nco_obj_typ_nonatomic_var) var_ntm_lcl++;
+    if(trv.nco_typ == nco_obj_typ_grp){ 
       grp_nbr_lcl+=trv.nbr_grp;
       var_tmc_lcl+=trv.nbr_var;
       if(grp_dpt_lcl < trv.grp_dpt) grp_dpt_lcl=trv.grp_dpt;
@@ -157,7 +157,7 @@ trv_tbl_prn_flg_mch                  /* [fnc] Print table items that have .flg_m
   trv_sct trv_obj;
   for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     trv_obj=trv_tbl->lst[tbl_idx];
-    if((trv_obj.typ == obj_typ) && trv_obj.flg_mch) (void)fprintf(stdout,"nm_fll=%s\n",trv_obj.nm_fll);
+    if((trv_obj.nco_typ == obj_typ) && trv_obj.flg_mch) (void)fprintf(stdout,"nm_fll=%s\n",trv_obj.nm_fll);
   } /* end loop over trv_tbl */
 }/* end trv_tbl_prn_flg_mch() */
 
@@ -167,7 +167,7 @@ trv_tbl_prn                          /* [fnc] Print table with -z */
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.typ == nco_obj_typ_grp) (void)fprintf(stdout,"grp: "); else (void)fprintf(stdout,"var: ");
+    if(trv.nco_typ == nco_obj_typ_grp) (void)fprintf(stdout,"grp: "); else (void)fprintf(stdout,"var: ");
     (void)fprintf(stdout,"%s\n",trv_tbl->lst[uidx].nm_fll); 
   } /* end uidx */
 } /* end trv_tbl_prn() */
@@ -178,7 +178,7 @@ trv_tbl_fnd_var_nm_fll                /* [fnc] Check if "var_nm_fll" is in table
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->lst[uidx].typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll))
+    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll))
       return True;
 
   return False;

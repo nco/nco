@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.274 2013-02-26 00:20:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.275 2013-02-27 05:43:36 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -621,6 +621,7 @@ extern "C" {
     char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension and coordinate */
     nco_bool is_rec_dmn;    /* [flg] Is a record dimension? */
     size_t sz;              /* [nbr] Size of coordinate */
+    nc_type var_typ;        /* [enm] NetCDF type  */  
     lmt_msa_sct lmt_msa;    /* [sct] MSA Limits structure for every coordinate */
   } crd_sct; 
 
@@ -665,11 +666,12 @@ extern "C" {
     var_dmn_sct var_dmn; /* [sct] Dimensions for this variable for variable */
     nco_bool is_crd_var; /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
     nco_bool is_rec_var; /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
+    nc_type var_typ;     /* [enm] (For variables only) NetCDF type  */  
     size_t nm_fll_lng; /* [sng] Length of full name */
     char *grp_nm_fll; /* [sng] Full group name (for groups, same as nm_fll) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
     size_t nm_lng; /* [sng] Length of short name */
-    nco_obj_typ typ; /* [enm] netCDF4 object type: group or variable */
+    nco_obj_typ nco_typ; /* [enm] netCDF4 object type: group or variable */
     int grp_dpt; /* [nbr] Depth of group (root = 0) */
     int grp_id_in; /* [id] Group ID in input file */
     int grp_id_out; /* [id] Group ID in output file */

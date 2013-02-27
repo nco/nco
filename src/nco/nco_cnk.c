@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.53 2013-02-23 22:23:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.54 2013-02-27 05:43:36 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -707,7 +707,7 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   }
 
   /* This object must be a variable */
-  assert(var_trv->typ == nco_obj_typ_var);
+  assert(var_trv->nco_typ == nco_obj_typ_var);
 
   /* Set actual chunk policy and map to defaults as necessary
   This rather arcane procedure saves a few lines of code in calling program

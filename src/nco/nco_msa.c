@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.188 2013-02-27 03:48:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.189 2013-02-27 05:43:37 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1510,7 +1510,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   (void)nco_inq_var(in_id,var.id,var_nm,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
 
   /* "GTT" Just make sure we got the right variable */
-  assert(var_trv->typ == nco_obj_typ_var);
+  assert(var_trv->nco_typ == nco_obj_typ_var);
   assert(var.nbr_dim == var_trv->nbr_dmn);
   assert(strcmp(var_nm,var_trv->nm) == 0);
 
@@ -2014,7 +2014,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI;         /* [sct] Auxiliary Limit used in MSA */
 
-  assert(nco_obj_typ_var == var_trv->typ);
+  assert(nco_obj_typ_var == var_trv->nco_typ);
 
   /* Local copy of object name */ 
   strcpy(var_nm,var_trv->nm);                

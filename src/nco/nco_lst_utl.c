@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.78 2013-02-09 02:27:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.79 2013-02-27 05:43:36 pvicente Exp $ */
 
 /* Purpose: List utilities */
 
@@ -248,7 +248,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
   /* Check each object string for match to rx */
   for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){  
     /* Check apples against apples and oranges against oranges */
-    if(trv_tbl->lst[obj_idx].typ == obj_typ){
+    if(trv_tbl->lst[obj_idx].nco_typ == obj_typ){
       /* NB: Here is where match flag would be set to False if input were stateless */
       /* Regular expressions embedded in simple strings (without forward slashes) apply to stubs
 	 Presence of slash indicates that regular expression applies to full pathname */
