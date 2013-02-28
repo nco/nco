@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.85 2013-02-28 11:49:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.86 2013-02-28 23:25:51 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -181,8 +181,6 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_typ_fmt_sng() */
-
-
 
 void
 nco_prn_var_val_lmt /* [fnc] Print variable data */

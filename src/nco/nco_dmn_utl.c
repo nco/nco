@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.48 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.49 2013-02-28 23:25:51 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -393,7 +393,7 @@ nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specifi
 
   const char fnc_nm[]="nco_inq_dmn_grp_id()"; /* [sng] Function name */
 
-  const int flg_prn=0; /* [flg] Retrieve all dimensions in all parent groups */        
+  const int flg_prn=1; /* [flg] Retrieve all dimensions in all parent groups */        
 
   int dmn_ids[NC_MAX_DIMS]; /* [nbr] Dimensions IDs array */
 
@@ -407,26 +407,30 @@ nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specifi
   *grp_id_dmn=nc_id;
 
   rcd=nco_inq_dimid_flg(*grp_id_dmn,dmn_nm,dmn_id);
-
+  
   if(dbg_lvl_get() >= nco_dbg_std){
     char *grp_nm_fll; /* [sng] Group name */
+    char dmn_nm_lcl[NC_MAX_NAME]; /* [sng] Dimension name */
     size_t grp_nm_fll_lng; /* [nbr] Length of group name */
     (void)nco_inq_grpname_full(*grp_id_dmn,&grp_nm_fll_lng,(char *)NULL);
     grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
     (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
-    (void)fprintf(stdout,"%s: %s reports dimension %s is%s visible to group %s\n",prg_nm_get(),fnc_nm,dmn_nm,(rcd == NC_NOERR) ? "" : " not",grp_nm_fll);
+    (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,flg_prn);
+    (void)fprintf(stdout,"%s: %s reports group %s returns following dimensions/IDs:\n",prg_nm_get(),fnc_nm,grp_nm_fll);
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      (void)nco_inq_dimname(*grp_id_dmn,dmn_ids[dmn_idx],dmn_nm_lcl);
+      (void)fprintf(stdout,"%s/%d,%s",dmn_nm_lcl,dmn_ids[dmn_idx],(dmn_idx == dmn_nbr-1) ? "\n" : ", ");
+    } /* end loop over dmn */
+    if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s reports group %s found dimension %s with ID = %d:\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s did not find dimension %s\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
     if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
   } /* endif dbg */
 
   /* If dimension exists in output group, find exactly where it is defined */
-  if(rcd != NC_NOERR){
-    /* Reset rcd, use as flag for reaching top level group */
-    rcd=NC_NOERR;
-
+  if(rcd == NC_NOERR){
     /* Until group of definition is found ... */
     while(!grp_dfn_fnd && (rcd == NC_NOERR)){
       /* ... obtain all dimension IDs in current group ... */
-      (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,flg_prn);
+      (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,0);
       /* ... and check each against ID of target dimension */
       for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
 	if(dmn_ids[dmn_idx] == *dmn_id) break;

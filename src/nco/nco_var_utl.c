@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.236 2013-02-28 12:57:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.237 2013-02-28 23:25:51 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1817,7 +1817,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Does variable contain requested record dimension? */
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       if(dmn_in_id[dmn_idx] == rec_dmn_id_dmy){
-        if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+	if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
         break;
       } /* endif */
     } /* end loop over dmn_idx */
@@ -1825,6 +1825,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* File format needed for decision tree and to enable netCDF4 features */
   rcd=nco_inq_format(out_id,&fl_fmt);
+
+  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports starting to define dimensions for variable %s\n",prg_nm_get(),fnc_nm,var_trv->nm_fll);
 
   /* Get input and set output dimension sizes and names */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
@@ -1887,51 +1889,18 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
       } /* !rec_dmn_nm */ 
 
-      dmn_fll_sct *dmn_trv=NULL; /* [sct] Unique dimension */
-      crd_sct *crd=NULL; /* [sct] Coordinate dimension */
+      dmn_fll_sct *dmn_trv=var_trv->var_dmn.dmn_fll[dmn_idx]; /* [sct] Unique dimension */
       char *grp_out_fll; /* [sng] Group name */
 
       /* Does dimension have user-specified limits?
-      Following is only difference between defining a variable with and without limits */
-
-      /* This dimension has a coordinate variable */
-      if (var_trv->var_dmn.is_crd_var[dmn_idx] == True){
-
-        /* Get coordinate from table */
-        crd=var_trv->var_dmn.crd[dmn_idx];
-        dmn_sz=crd->lmt_msa.dmn_cnt;
-
-        /* This dimension does not has a coordinate variable, it must have a unique dimension */
-      }else if (var_trv->var_dmn.is_crd_var[dmn_idx] == False){
-
-        /* Get unique dimesion from table */
-        dmn_trv=var_trv->var_dmn.dmn_fll[dmn_idx];
-        dmn_sz=dmn_trv->lmt_msa.dmn_cnt;
-
-        /* This dimension must have either a coordinate or a dimension */
-      }else{
-        assert(0);
-      }
+	 Following line is only difference between defining a variable with and without limits */
+      if(var_trv->var_dmn.is_crd_var[dmn_idx]) dmn_sz=var_trv->var_dmn.crd[dmn_idx]->lmt_msa.dmn_cnt; else dmn_sz=var_trv->var_dmn.dmn_fll[dmn_idx]->lmt_msa.dmn_cnt;
 
       if(dbg_lvl_get() == nco_dbg_crr){
-        /* Determine where to place new dimension in output file; decide either unique dimension or coordinate */
-        if(gpe) {
-          if (dmn_trv) 
-            grp_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll);
-          else if (crd)
-            grp_out_fll=nco_gpe_evl(gpe,crd->dmn_grp_nm_fll);
-          else assert(0);
-
-        }else {
-          if (dmn_trv) 
-            grp_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
-          else if (crd)
-            grp_out_fll=(char *)strdup(crd->dmn_grp_nm_fll);
-          else assert(0);
-        }
-
-        if(nco_inq_grp_full_ncid_flg(out_id,grp_out_fll,&grp_dmn_out_id)) nco_def_grp_full(out_id,grp_out_fll,&grp_dmn_out_id);
-        if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s defining variable %s output dimension #%d: %s/%s with size=%li\n",prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_idx,grp_out_fll,dmn_trv->nm,dmn_sz);
+	/* Determine where to place new dimension in output file */
+	if(gpe) grp_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
+	if(nco_inq_grp_full_ncid_flg(out_id,grp_out_fll,&grp_dmn_out_id)) nco_def_grp_full(out_id,grp_out_fll,&grp_dmn_out_id);
+	if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s defining variable %s output dimension #%d: %s/%s with size=%li\n",prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_idx,grp_out_fll,dmn_trv->nm,dmn_sz);
 
         /* Memory management after defining current output dimension */
         if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);

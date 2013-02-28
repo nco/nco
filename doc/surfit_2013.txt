@@ -1,5 +1,55 @@
 # Purpose: Project description for 2013 UCI Calit2 Surf-IT program 
 # (Summer Undergraduate Research Fellowships in Information Technologies)
+# Submitted to Stu Ross 20130228
+
+Optimized Storage Shapes for Multi-dimensional Gridded Datasets
+
+PI: Prof. Charlie Zender
+    Departments of Earth System Science and Computer Science
+
+Description:
+Many if not most geophysical datasets such as climate simulations
+are stored in a self-describing data format called netCDF. 
+Data access speeds vary by factors of thousands, and depends primarily
+upon how well their storage layout matches the hyperslab request.  
+This project will improve understanding and parameterization of the
+optimal layout (i.e., the "chunking") to maximize fast access and
+minimize slow access to netCDF datasets.
+
+Our netCDF Operators (NCO) are a widely used, opensource toolkit for
+manipulating and analyzing (statistics, trends, comparison with
+observations) netCDF data. NCO supports a range of chunking policies,
+but has no heuristic for guiding the user on optimal chunking.
+The student will first conduct sensitivity tests to benchmark access
+times for common hyperslab requests. Then the student will construct
+and implement new, optimal chunking policies. 
+
+The first few weeks would be devoted to literature review and to
+scripting benchmark tests to assess the dependence of wallclock time
+on data layout. The next few weeks would be analysis and hypothesis
+testing of generic chunking policies motivated by the benchmarking
+results. The last few weeks would be implementation and analysis of
+optimized chunking policies in NCO.
+
+Prerequisites: Proficiency with C and multi-dimensional data
+
+Outcomes: Skills and understanding of scientific data analysis,
+benchmarking, interpretation of results.
+
+Recommended Web sites and publications:
+1. Chunking Data: Why it Matters
+   http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_why_it_matters 
+2. Efficient Organization of Large Multidimensional Arrays
+   http://cs.brown.edu/courses/cs227/archives/2008/Papers/FileSystems/sarawagi94efficient.pdf
+3. Optimal Chunking of Large Multidimensional Arrays for Data Warehousing
+   http://www.escholarship.org/uc/item/35201092
+4. netCDF Operators http://nco.sf.net
+5. Zender, C. S., and H. J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, Int. J. High Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
+6. Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10), 1338-1342, doi:10.1016/j.envsoft.2008.03.004.
+
+************************************************************************
+NB: Following project not "researchy" enough, maybe next year
+************************************************************************
 
 Next Generation Parser for Structured Data Analysis
 
@@ -19,9 +69,9 @@ two-fold: 1. To create and efficient, extensible parser for structured
 data analysis. 2. To enhance parallelism in geophysical data analysis
 involving structured data with storage constraints.
 
-Prerequisites: Familiarity with C/C++ and language tools (Yacc/Lex/ANTLR...)
+Prerequisites: Familiarity with C/C++ and data
 
-Outcomes: Skills and understanding of language construction, data
+Outcomes: Skills and understanding of scientific language construction, data
 analysis, open source software development and climate change. 
 
 Recommended Web sites and publications:
@@ -29,3 +79,4 @@ Recommended Web sites and publications:
 2. netCDF Operators http://nco.sf.net
 3. Zender, C. S., and H. J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, Int. J. High Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
 4. Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10), 1338-1342, doi:10.1016/j.envsoft.2008.03.004.
+

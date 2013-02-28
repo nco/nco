@@ -1,12 +1,14 @@
 2013-02-27  Pedro Vicente  <pvicente@uci.edu>
 
-	* nco_cpy_msa_lmt() Copy MSA structs for every dimension, if existent, from table to local function (print or write)
-  
-	* nco_prn_var_dfn() Print variable metadata (re-written for GTT object)
-  
-	* nco_cnk_sz_set_trv() Set chunksize parameters (re-written for GTT object)  
+	* nco_cpy_msa_lmt() Copy MSA structs GTT to local function (print or write)
+
+	* nco_prn_var_dfn() re-written for GTT
+
+	* nco_cnk_sz_set_trv() re-written for GTT
 
 2013-02-26  Charlie Zender  <zender@uci.edu>
+
+	* Add nco_dbg_grp between nco_dbg_scl and nco_dbg_var
 
 	* Improve epitaph from NC_ENOTNC to include diskless/RAM errors
 
