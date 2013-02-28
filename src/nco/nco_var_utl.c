@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.234 2013-02-28 08:36:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.235 2013-02-28 12:13:24 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1888,8 +1888,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
       } /* !rec_dmn_nm */ 
 
-      /* Find dimension in list of unique dimensions */
-      dmn_fll_sct *dmn_trv=nco_fnd_var_lmt_trv(dmn_idx,var_trv,trv_tbl);
+      dmn_fll_sct *dmn_trv=NULL; /* [sct] Unique dimension */
+      crd_sct *crd=NULL; /* [sct] Coordinate dimension */
       char *grp_out_fll; /* [sng] Group name */
 
       /* Does dimension have user-specified limits?
@@ -1898,26 +1898,41 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* This dimension has a coordinate variable */
       if (var_trv->var_dmn.is_crd_var[dmn_idx] == True){
 
-        /* Get hyperslabbed MSA size from table */
-        dmn_sz=var_trv->var_dmn.crd[dmn_idx]->lmt_msa.dmn_cnt;
+        /* Get coordinate from table */
+        crd=var_trv->var_dmn.crd[dmn_idx];
+        dmn_sz=crd->lmt_msa.dmn_cnt;
 
-        /* This dimension does not has a coordinate variable, it must have a unique dimension pointer */
+        /* This dimension does not has a coordinate variable, it must have a unique dimension */
       }else if (var_trv->var_dmn.is_crd_var[dmn_idx] == False){
 
-        /* Get hyperslabbed MSA size from table */
-        dmn_sz=var_trv->var_dmn.dmn_fll[dmn_idx]->lmt_msa.dmn_cnt;
+        /* Get unique dimesion from table */
+        dmn_trv=var_trv->var_dmn.dmn_fll[dmn_idx];
+        dmn_sz=dmn_trv->lmt_msa.dmn_cnt;
 
-        /* This dimension must have either a coordinate or a dimension pointer */
+        /* This dimension must have either a coordinate or a dimension */
       }else{
         assert(0);
       }
 
-
       if(dbg_lvl_get() == nco_dbg_crr){
-	/* Determine where to place new dimension in output file */
-	if(gpe) grp_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
-	if(nco_inq_grp_full_ncid_flg(out_id,grp_out_fll,&grp_dmn_out_id)) nco_def_grp_full(out_id,grp_out_fll,&grp_dmn_out_id);
-	if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s defining variable %s output dimension #%d: %s/%s with size=%li\n",prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_idx,grp_out_fll,dmn_trv->nm,dmn_sz);
+        /* Determine where to place new dimension in output file; decide either unique dimension or coordinate */
+        if(gpe) {
+          if (dmn_trv) 
+            grp_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll);
+          else if (crd)
+            grp_out_fll=nco_gpe_evl(gpe,crd->dmn_grp_nm_fll);
+          else assert(0);
+
+        }else {
+          if (dmn_trv) 
+            grp_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
+          else if (crd)
+            grp_out_fll=(char *)strdup(crd->dmn_grp_nm_fll);
+          else assert(0);
+        }
+
+        if(nco_inq_grp_full_ncid_flg(out_id,grp_out_fll,&grp_dmn_out_id)) nco_def_grp_full(out_id,grp_out_fll,&grp_dmn_out_id);
+        if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s defining variable %s output dimension #%d: %s/%s with size=%li\n",prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_idx,grp_out_fll,dmn_trv->nm,dmn_sz);
 
         /* Memory management after defining current output dimension */
         if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
