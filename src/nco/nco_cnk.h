@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.20 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.21 2013-02-28 12:57:00 pvicente Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -126,8 +126,8 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- const trv_sct * const var_trv,        /* I [sct] Variable Object */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+ const trv_sct * const var_trv);        /* I [sct] Variable Object */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

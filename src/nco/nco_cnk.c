@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.54 2013-02-27 05:43:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.55 2013-02-28 12:57:00 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -660,13 +660,12 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- const trv_sct * const var_trv,        /* I [sct] Variable Object */
- const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
+ const trv_sct * const var_trv)        /* I [sct] Variable Object */
 {
   /* Purpose: Use chunking map and policy to determine chunksize list
   Adapted from nco_cnk_sz_set() to GTT:
   1) Instead of a loop for all varibales, this functions does one variable, the object parameter variable
-  2) In the dimension loop, the dimension object is obtained from the list of unique dimensions...much simpler 
+  2) In the dimension loop, the dimension object is obtained from variable object...much simpler 
   */
 
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
@@ -829,20 +828,61 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   } /* endif map_prd */
 
 
+  /* A utility struct to share common fields */
+  typedef struct{ 
+    char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension/coordinate */
+    nco_bool is_rec_dmn;    /* [flg] Is a record dimension/coordinate? */
+    size_t sz;              /* [nbr] Size of dimension/coordinate */
+    nco_bool BASIC_DMN;     /* [flg] Limit is same as dimension in input file */
+    long dmn_cnt;           /* [nbr] Hyperslabbed size of dimension */  
+  } dmn_cmn_sct; 
+
+  dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];
+
+
   /* Loop dimensions */
   for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
 
-    /* Find dimension of the object variable by searching in the list of unique dimensions */
-    dmn_fll_sct *dmn_trv=nco_fnd_var_lmt_trv(dmn_idx,var_trv,trv_tbl);
+    dmn_fll_sct *dmn_trv=NULL; /* [sct] Unique dimension */
+    crd_sct *crd=NULL; /* [sct] Coordinate dimension */
 
+    /* This dimension has a coordinate variable */
+    if (var_trv->var_dmn.is_crd_var[dmn_idx] == True){
+
+      /* Get coordinate from table */
+      crd=var_trv->var_dmn.crd[dmn_idx];
+      dmn_cmn[dmn_idx].sz=crd->sz;
+      dmn_cmn[dmn_idx].is_rec_dmn=crd->is_rec_dmn;
+      dmn_cmn[dmn_idx].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
+      dmn_cmn[dmn_idx].dmn_cnt=crd->lmt_msa.dmn_cnt;
+      strcpy(dmn_cmn[dmn_idx].nm,crd->nm);
+
+      /* This dimension does not has a coordinate variable, it must have a unique dimension */
+    }else if (var_trv->var_dmn.is_crd_var[dmn_idx] == False){
+
+      /* Get unique dimesion from table */
+      dmn_trv=var_trv->var_dmn.dmn_fll[dmn_idx];
+      dmn_cmn[dmn_idx].sz=dmn_trv->sz;
+      dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
+      dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
+      strcpy(dmn_cmn[dmn_idx].nm,dmn_trv->nm);
+
+      /* This dimension must have either a coordinate or a dimension */
+    }else{
+      assert(0);
+    }
+  }
+
+  /* Loop dimensions */
+  for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
+   
     if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s dimension [%d]:%s(%li)\n",prg_nm_get(),fnc_nm,
-        dmn_idx,dmn_trv->nm_fll,dmn_trv->sz);
+        dmn_idx,dmn_cmn[dmn_idx].nm,dmn_cmn[dmn_idx].sz);
     }
 
-
     /* Is this the record dimension? */
-    if(dmn_trv->is_rec_dmn == True){
+    if(dmn_cmn[dmn_idx].is_rec_dmn == True){
       /* Does policy specify record dimension treatment? */
       if(cnk_map == nco_cnk_map_rd1){
         cnk_sz[dmn_idx]=1UL;
@@ -852,19 +892,19 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
       /* Record dimension size in output file is zero until first write
       Obtain record dimension size from lmt_all structure (for nco_cnk_sz_set()).
       NOTE: <GTT> Here using dimesion object... much simpler */
-      if(dmn_trv->lmt_msa.BASIC_DMN){
+      if(dmn_cmn[dmn_idx].BASIC_DMN){
         /* When not hyperslabbed, use input record dimension size ... */
-        cnk_sz[dmn_idx]=dmn_trv->sz;
+        cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
       }else{ /* !BASIC_DMN */
         /* ... and when hyperslabbed, use user-specified count */
-        cnk_sz[dmn_idx]=dmn_trv->lmt_msa.dmn_cnt;
+        cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].dmn_cnt;
       } /* !BASIC_DMN */
     }else{ /* !record dimension */
       /* Set non-record dimensions to default, possibly over-ride later */
-      cnk_sz[dmn_idx]=dmn_trv->sz;
-      if(dmn_trv->sz == 0L){
+      cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
+      if(dmn_cmn[dmn_idx].sz == 0L){
         (void)fprintf(stdout,"%s: ERROR %s reports variable <%s> has dim_sz == 0L for non-record dimension <%s>. This should not occur and it will cause chunking to fail...\n",
-          prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_trv->nm_fll);
+          prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_cmn[dmn_idx].nm);
       } /* endif err */
     } /* !record dimension */
 
@@ -872,18 +912,18 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
     /* Propagate scalar chunksize, if specified */
     if(cnk_sz_dfl > 0UL){
       /* Is this the record dimension? */
-      if(dmn_trv->is_rec_dmn == True){
+      if(dmn_cmn[dmn_idx].is_rec_dmn == True){
         /* NOTE: <GTT> Here using dimesion object... much simpler */ 
-        if(dmn_trv->lmt_msa.BASIC_DMN){
+        if(dmn_cmn[dmn_idx].BASIC_DMN){
           /* When not hyperslabbed, use input record dimension size ... */
-          cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_trv->sz) ? cnk_sz_dfl : (size_t)dmn_trv->sz;
+          cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_cmn[dmn_idx].sz) ? cnk_sz_dfl : (size_t)dmn_cmn[dmn_idx].sz;
         }else{ /* !BASIC_DMN */
           /* ... and when hyperslabbed, use user-specified count */
-          cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_trv->lmt_msa.dmn_cnt) ? cnk_sz_dfl : (size_t)dmn_trv->lmt_msa.dmn_cnt;
+          cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_cmn[dmn_idx].dmn_cnt) ? cnk_sz_dfl : (size_t)dmn_cmn[dmn_idx].dmn_cnt;
         } /* !BASIC_DMN */
       }else{ /* !rcd_dmn_id */
         /* Non-record sizes default to cnk_sz_dfl or to dimension size */
-        cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_trv->sz) ? cnk_sz_dfl : (size_t)dmn_trv->sz;
+        cnk_sz[dmn_idx]=(cnk_sz_dfl <= (size_t)dmn_cmn[dmn_idx].sz) ? cnk_sz_dfl : (size_t)dmn_cmn[dmn_idx].sz;
       } /* Is this the record dimension? */
     } /* !cnk_sz_dfl */
 
@@ -893,31 +933,33 @@ cnk_xpl_override: /* end goto */
 
     /* Explicit chunk specifications override all else */
     for(int cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
+
       /* Match on name not ID */
-      if(!strcmp(cnk[cnk_idx]->nm,dmn_trv->nm)){
+      /* fxm pvn check origin of chunk names */
+      if(!strcmp(cnk[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)){
         cnk_sz[dmn_idx]=cnk[cnk_idx]->sz;
 
         /* Is this the record dimension? */
-        if(dmn_trv->is_rec_dmn == True){
-          if(dmn_trv->lmt_msa.BASIC_DMN){
-            if(cnk_sz[dmn_idx] > (size_t)dmn_trv->sz){
+        if(dmn_cmn[dmn_idx].is_rec_dmn == True){
+          if(dmn_cmn[dmn_idx].BASIC_DMN){
+            if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
               (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed record dimension size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",
-                prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_trv->nm,dmn_trv->sz);
+                prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,dmn_cmn[dmn_idx].sz);
             } /* endif too big */
           }else{ /* !BASIC_DMN */
-            if(cnk_sz[dmn_idx] > (size_t)dmn_trv->lmt_msa.dmn_cnt){
+            if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].dmn_cnt){
               (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed user-specified record dimension hyperslab size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",
-                prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_trv->nm,dmn_trv->lmt_msa.dmn_cnt);
+                prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,dmn_cmn[dmn_idx].dmn_cnt);
             } /* endif too big */
           } /* !BASIC_DMN */
         }else{ /* !rcd_dmn_id */
-          if(cnk_sz[dmn_idx] > (size_t)dmn_trv->sz){
+          if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
             /* dmn_sz of record dimension may (will) be zero in output file
             Non-record dimensions, though, must have cnk_sz <= dmn_sz */
             (void)fprintf(stderr,"%s: WARNING %s trimming user-specified chunksize = %lu to %s size = %lu\n",
-              prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_trv->nm,dmn_trv->sz);
+              prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,dmn_cmn[dmn_idx].sz);
             /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
-            cnk_sz[dmn_idx]=(size_t)dmn_trv->sz;
+            cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
           } /* endif */
         } /* !rcd_dmn_id */
         break;

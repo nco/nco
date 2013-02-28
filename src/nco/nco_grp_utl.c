@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.565 2013-02-28 11:49:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.566 2013-02-28 12:57:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1436,10 +1436,10 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       } /* endif dbg */
 
       /* Define variable in output file */
-      var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,&trv,trv_tbl);
+      var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,&trv);
 
       /* Set chunksize parameters */
-      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&trv,trv_tbl);
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&trv);
 
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
@@ -1606,42 +1606,7 @@ nco_prt_dmn /* [fnc] Print dimensions for a group  */
 
 
 
-dmn_fll_sct *                         /* O [sct] Dimension */
-nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variable in group object */
-(const int var_dmn_idx,               /* I [sct] Dimension index of Variable Object */
- const trv_sct * const var_trv,       /* I [sct] Variable Object */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
-{
-  /* Purpose: Find dimension of the object variable by searching in the list of unique dimensions */
 
-  const char fnc_nm[]="nco_fnd_var_lmt_trv()"; /* [sng] Function name */
-
-  /* Loop dimensions for object (variable)  */
-  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
-
-    if(dbg_lvl_get() == nco_dbg_old){
-      (void)fprintf(stdout,"%s: INFO %s <%s>:[%d]:%s: \n",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,dmn_idx_var,var_trv->var_dmn.dmn_nm_fll[dmn_idx_var]);
-    }
-
-    if (var_dmn_idx != dmn_idx_var) continue; 
-
-    /* Loop unique dimensions list in groups */
-    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-      dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-
-      /* Match full dimension name */ 
-      if(strcmp(var_trv->var_dmn.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll) == 0){
-
-        return &trv_tbl->lst_dmn[dmn_idx]; 
-
-      } /* Match full dimension name */ 
-    } /* End  Loop unique dimensions list in groups  */
-  } /* Loop dimensions for object (variable) */
-
-  assert(0);
-  return NULL;
-} /* end nco_fnd_var_lmt_trv() */
 
 
 void                          

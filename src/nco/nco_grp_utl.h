@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.238 2013-02-28 08:36:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.239 2013-02-28 12:57:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -242,11 +242,6 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
-dmn_fll_sct *                         /* O [sct] Dimension */
-nco_fnd_var_lmt_trv                   /* [fnc] Find dimension of a object variable in group object */
-(const int var_dmn_idx,               /* I [sct] Dimension index of Variable Object */
- const trv_sct * const var_trv,       /* I [sct] Variable Object */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 nco_bool                              /* O [flg] True if in scope */ 
 nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope */
