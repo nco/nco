@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.236 2013-02-27 08:27:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.237 2013-02-28 01:21:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -202,12 +202,6 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
  const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
  const nco_bool NM_ID_SAME_ORDER);    /* I [flg] Both nm_id_sct have the same order */
-
-nm_id_sct *                           /* O [sct] List of dimensions associated with input variable list */
-nco_dmn_lst_ass_var_trv               /* [fnc] Create list of all dimensions associated with input variable list */
-(const int nc_id,                     /* I [id] netCDF input-file ID */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] Traversal table */
- int * const nbr_dmn);                /* O [nbr] Number of dimensions associated with input variable list */
 
 void                          
 nco_prt_dmn                           /* [fnc] Print dimensions for a group  */
