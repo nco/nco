@@ -1,6 +1,8 @@
 2013-02-27  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_cpy_msa_lmt() Copy MSA structs for every dimension, if existent, from table to local function (print or write)
+  
+	* nco_prn_var_dfn() Print variable metadata (re-written for GTT object)
 
 2013-02-26  Charlie Zender  <zender@uci.edu>
 

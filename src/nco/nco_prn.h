@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.34 2013-02-21 20:42:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.35 2013-02-28 11:49:01 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -50,12 +50,6 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type typ); /* I [enm] netCDF type to provide format string for */
 
 void
-nco_prn_var_dfn /* [fnc] Print variable metadata */
-(int in_id, /* I [id] netCDF input file ID */
- const trv_sct * const var_trv, /* I [sct] Object to print (variable) */
- const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
-
-void
 nco_prn_var_val_lmt /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm, /* I [sng] Variable name */
@@ -65,6 +59,13 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
  const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const nco_bool PRN_DMN_IDX_CRD_VAL); /* I [flg] Print dimension/coordinate indices/values */
+
+void
+nco_prn_var_dfn /* [fnc] Print variable metadata */
+(int nc_id, /* I [id] netCDF file ID */
+ const trv_sct * const var_trv); /* I [sct] Object to print (variable) */
+
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

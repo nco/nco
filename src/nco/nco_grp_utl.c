@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.564 2013-02-28 08:36:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.565 2013-02-28 11:49:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1115,26 +1115,27 @@ nco_prn_xtr_dfn /* [fnc] Print variable metadata */
 (const int nc_id, /* I [id] netCDF file ID */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 { 
-  int grp_id; /* [id] Group ID */
-  int var_id; /* [id] Variable ID */
-
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
     if(trv.flg_xtr && trv.nco_typ == nco_obj_typ_var){
 
-      /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-
-      /* Obtain variable ID from netCDF API using group ID */
-      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-
       /* Print full name of variable */
       if(trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
 
-      /* Print variable metadata */
-      (void)nco_prn_var_dfn(grp_id,&trv_tbl->lst[uidx],trv_tbl); 
+      /* Print variable metadata. NOTE: using file ID and object...all that is needed */ 
+      (void)nco_prn_var_dfn(nc_id,&trv_tbl->lst[uidx]); 
+
+      int grp_id; /* [id] Group ID */
+      int var_id; /* [id] Variable ID */
+
+      /* Obtain group ID using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+
+      /* Obtain variable ID using group ID */
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
       /* Print variable attributes */
+      /* fxm pvn: rewrite with NC_ID and OBJ */
       (void)nco_prn_att(nc_id,grp_id,var_id);
     } /* end flg_xtr */
   } /* end uidx */
