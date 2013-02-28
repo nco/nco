@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.233 2013-02-26 13:46:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.234 2013-02-28 08:36:03 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1893,12 +1893,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       char *grp_out_fll; /* [sng] Group name */
 
       /* Does dimension have user-specified limits?
-      Following line is only difference between defining a variable with and without limits */
-
-#ifdef REMOVE 
-      /* This should not be the test for "dmn_cnt", it is always  != nco_obj_typ_err */ 
-      if(dmn_trv->lmt_msa.dmn_cnt != nco_obj_typ_err) dmn_sz=dmn_trv->lmt_msa.dmn_cnt;
-#else
+      Following is only difference between defining a variable with and without limits */
 
       /* This dimension has a coordinate variable */
       if (var_trv->var_dmn.is_crd_var[dmn_idx] == True){
@@ -1917,9 +1912,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         assert(0);
       }
 
-#endif /* REMOVE */
-
-      assert(dmn_sz != nco_obj_typ_err);
 
       if(dbg_lvl_get() == nco_dbg_crr){
 	/* Determine where to place new dimension in output file */

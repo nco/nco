@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.563 2013-02-28 01:21:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.564 2013-02-28 08:36:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1235,7 +1235,7 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
       if(!dlm_sng && trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
 
       /* Print variable values */
-      (void)nco_msa_prn_var_val_trv(nc_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&trv,trv_tbl);
+      (void)nco_msa_prn_var_val_trv(nc_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&trv);
 
     } /* End flg_xtr */
   } /* End Loop variables in table */
@@ -1540,7 +1540,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
         } /* endif dbg */
 
 
-        if(HAVE_LIMITS) (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,&trv,trv_tbl); 
+        if(HAVE_LIMITS) (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,&trv); 
         else (void)nco_cpy_var_val(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm);
       } /* endif */
 
@@ -2614,11 +2614,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_blb_crd_var_trv(trv_tbl);
 
   /* Add dimension limits to traversal table; must be done before nco_bld_var_dmn_msa() */
-#ifdef REMOVE
-  if(lmt_nbr)(void)nco_bld_lmt_trv(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl); /* To Deprecate */ 
-#else
   if(lmt_nbr)(void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
-#endif
 
   /* Assign variables dimensions with MSA structs; must be done after nco_blb_crd_var_trv() and nco_bld_lmt() */
   (void)nco_bld_var_dmn_msa(nc_id,trv_tbl);

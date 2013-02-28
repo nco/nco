@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.237 2013-02-28 01:21:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.238 2013-02-28 08:36:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -11,10 +11,6 @@
 
 #ifndef NCO_GRP_UTL_H
 #define NCO_GRP_UTL_H
-
-#if 0 
-#define REMOVE /* After MSA print done */
-#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */

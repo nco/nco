@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.68 2013-02-26 04:11:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.69 2013-02-28 08:36:03 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -157,8 +157,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
  const nco_bool PRN_DMN_IDX_CRD_VAL,/* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM,     /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
- const trv_sct * const trv,         /* I [sct] Object to print */
- const trv_tbl_sct * const trv_tbl);/* I [sct] Traversal table */
+ const trv_sct * const var_trv);    /* I [sct] Object to print (variable) */
 
 
 void
@@ -167,8 +166,13 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
  const int out_id,                  /* I [id] netCDF output file ID */
  FILE * const fp_bnr,               /* I [flg] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
- const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
- const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+ const trv_sct * const var_trv);    /* I [sct] Object to write (variable) */
+
+void
+nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local function (print or write) */
+(const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
+ lmt_msa_sct ***lmt_msa);           /* O [sct] MSA array for dimensions */
+
 
 
 #ifdef __cplusplus

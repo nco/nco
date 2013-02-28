@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.208 2013-02-28 01:21:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.209 2013-02-28 08:36:03 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.208 2013-02-28 01:21:06 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.208 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.209 2013-02-28 08:36:03 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.209 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -226,9 +226,6 @@ main(int argc,char **argv)
   var_sct **var_prc_1;
   var_sct **var_prc_2;
   var_sct **var_prc_out;
-
-  trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table */
-  trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table */
 
   char **grp_lst_in=NULL; /* [sng] User-specified list of groups */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
@@ -484,9 +481,7 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
-  /* Initialize traversal tables */
-  (void)trv_tbl_init(&trv_tbl_1);
-  (void)trv_tbl_init(&trv_tbl_2);
+  
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -540,18 +535,6 @@ main(int argc,char **argv)
      } /* endif aux */
   } /* endif aux_nbr */
 
-
-  /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id_1,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_1);
-  (void)nco_bld_trv_tbl(in_id_2,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_2);
-
-  /* Process -z option if requested */ 
-  if(GET_LIST){ 
-    (void)trv_tbl_prn(trv_tbl_1);
-    (void)trv_tbl_prn(trv_tbl_2);
-    (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2);
-    goto close_and_free; 
-  } /* end GET_LIST */ 
   
 
   /* Get number of variables and dimensions in file */
@@ -954,9 +937,6 @@ close_and_free: /* goto close_and_free (used for -z, print file list and exit) *
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
 
-  /* Free traversal tables */
-  (void)trv_tbl_free(trv_tbl_1);
-  (void)trv_tbl_free(trv_tbl_2);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
