@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.86 2013-02-28 23:25:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.87 2013-02-28 23:52:36 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -742,6 +742,8 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
 
       /* Which storage type is the coordinate? */
       (void)nco_inq_vartype(grp_crd_id,var_crd_id,&crd_typ);
+
+      assert(crd_typ == crd->var_typ);
 
       if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu (",
         var_trv->nm,dmn_idx,crd->nm,crd->sz,nco_typ_sng(crd_typ),cnk_sz[dmn_idx]); 
