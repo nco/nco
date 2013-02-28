@@ -3,6 +3,8 @@
 	* nco_cpy_msa_lmt() Copy MSA structs for every dimension, if existent, from table to local function (print or write)
   
 	* nco_prn_var_dfn() Print variable metadata (re-written for GTT object)
+  
+	* nco_cnk_sz_set_trv() Set chunksize parameters (re-written for GTT object)  
 
 2013-02-26  Charlie Zender  <zender@uci.edu>
 
