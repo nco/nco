@@ -26,7 +26,8 @@
 
 	* nco_msa_wrp_splt_cpy() Split wrapped dimensions (make deep copy of new wrapped limits)
 
-	* nco_msa_prn_var_val_trv() Print variable data (GTT version)
+	* nco_msa_prn_var_val_trv() Print variable data; use GTT to get coordinates;
+     this fixes nco1088
 
 	* nco_cpy_var_val_mlt_lmt_trv() Copy variable data from input to output file
 

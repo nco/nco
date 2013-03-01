@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1227 2013-02-26 11:15:40 pvicente Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1228 2013-03-01 05:00:09 pvicente Exp $
 
 # Purpose: TODO items for NCO
 
@@ -710,9 +710,6 @@ nco1079. ncap2: add option to return index of max/min/etc. kevin raeder suggesti
 nco1080. ncrename: nc_rename_grp() library call for libnetcdf written with HDF API
 nco1084. ncks feature: allow multiple specifications of mk_rec_dmn and fix_rec_dmn
 nco1087. autoconf detect UDunits2 in Mac OSX
-nco1088. ncks -O -v two_dmn_rec_var ~/nco/data/in_grp.nc out.nc
-         /g10/two_dmn_rec_var
-         time[0] lev[0] two_dmn_rec_var[0]=1 
 nco1089. ncap2: fails because defines _FillValue after initial define mode
 	 ncap2 -O --fl_fmt=netcdf4 -v -s 'new=fll_val' ~/nco/data/in.nc ~/foo.nc
 nco1090. 
