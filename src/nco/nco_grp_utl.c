@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.569 2013-03-01 06:17:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.570 2013-03-01 06:39:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -885,118 +885,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
   return;
 } /* nco_xtr_cf_prv_add() */
 
-void                               
-nco_xtr_crd_ass_add_trv               /* [fnc] Add a coordinate variable that matches parameter "dmn_var_nm" */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const char * const dmn_var_nm,       /* I [sng] Coordinate variable name to find */
- const char * const var_nm,           /* I [sng] Variable name  */
- const char * const grp_nm_fll,       /* I [sng] Full group name for "var_nm" */
- trv_tbl_sct *trv_tbl)                /* I/O [sct] Traversal table */
-{
-  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
 
-  const char sls_chr='/'; /* [chr] Slash character */
-  const char sls_sng[]="/"; /* [sng] Slash string */
-
-  char *ptr_chr; /* [sng] Pointer to character '/' in full name */
-  int psn_chr; /* [nbr] Position of character '/' in in full name */
-
-  const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
-
-  int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array */
-  int dmn_id_var[NC_MAX_DIMS]; /* [id] Dimensions IDs array */
-
-  int nbr_dmn_grp;             /* [nbr] Number of dimensions */
-  int nbr_dmn_var;             /* [nbr] Number of dimensions */
-  int var_id;                  /* [id] ID of var_nm */
-  int grp_id;                  /* [id] ID of group */
-
-  long dmn_sz;                 /* [nbr] Dimension size */ 
-
-  /* Obtain group ID using full group name */
-  (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
-
-  /* Obtain variable ID using group ID */
-  (void)nco_inq_varid(grp_id,var_nm,&var_id);
-
-  /* Get number of dimensions for variable */
-  (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
-
-  /* Get dimension IDs for variable */
-  (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
-
-  /* Obtain number of dimensions visible to group */
-  (void)nco_inq(grp_id,&nbr_dmn_grp,NULL,NULL,NULL);
-
-  /* Obtain dimension IDs */
-  (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
-
-  /* List dimensions */
-  for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
-
-    /* Get dimension info */
-    (void)nco_inq_dim(grp_id,dmn_id_grp[dmn_idx],dmn_nm,&dmn_sz);
-
-    /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
-    if(!strcmp(dmn_nm,dmn_var_nm)){
-      char *dmn_nm_fll;
-
-      /* Construct full (dimension/variable) name */
-      dmn_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(dmn_nm)+2L);
-      strcpy(dmn_nm_fll,grp_nm_fll);
-      if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
-      strcat(dmn_nm_fll,dmn_nm);
-
-      /* Brute-force approach to find valid "dmn_nm_fll":
-      Start at grp_nm_fll/var_nm and build all possible paths with var_nm. 
-      Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
-
-      /* Find last occurence of '/' */
-      ptr_chr=strrchr(dmn_nm_fll,sls_chr);
-      psn_chr=ptr_chr-dmn_nm_fll;
-      while(ptr_chr){
-        /* If variable is on list, mark it for extraction */
-        if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
-
-          (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
-
-          /*From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
-          Subject: Re: [netcdfgroup] defining dimensions in groups
-          1. The inner dimension is used. The rule is to look up the group tree
-          from innermost to root and choose the first one that is found
-          with a matching name.
-          2. The fact that it is a dimension for a coordinate variable is not relevant for the
-          choice.
-          However, note that this rule is only used by ncgen when disambiguating a reference
-          in the CDL.  The issue does not come up in the netcdf API because
-          you have to specifically supply the dimension id when defining the dimension
-          for a variable.*/
-
-          /* So... exit from here if the innermost coordinate variable was found: there is one and only 
-           one valid coordinate variable in the path scope */
-          dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-          break;
-
-        } /* endif */
-        dmn_nm_fll[psn_chr]='\0';
-        ptr_chr=strrchr(dmn_nm_fll,sls_chr);
-        if(ptr_chr){
-          psn_chr=ptr_chr-dmn_nm_fll;
-          dmn_nm_fll[psn_chr]='\0';
-          /* Re-add variable name to shortened path */
-          if(strcmp(grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
-          strcat(dmn_nm_fll,dmn_nm);
-          ptr_chr=strrchr(dmn_nm_fll,sls_chr);
-          psn_chr=ptr_chr-dmn_nm_fll;
-        } /* !ptr_chr */
-      } /* end while */
-
-      /* Free allocated */
-      if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-
-    } /* end strcmp() */
-  } /* end loop over dmn_idx */
-} /* end nco_xtr_crd_ass_add_trv() */ 
 
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_sct from traversal table */
@@ -1051,7 +940,8 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Add to extraction list all coordinates associated with extracted variables */
-  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
+
+  char dmn_nm_var[NC_MAX_NAME];    /* [sng] Dimension name for *variable* */ 
 
   int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
   int grp_id;                  /* [ID] Group ID */
@@ -1070,8 +960,10 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
       /* Obtain variable ID using group ID */
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
 
-      /* Get number of dimensions for variable */
+      /* Get number of dimensions for *variable* */
       (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
+
+      assert(nbr_dmn_var == trv.nbr_dmn);
 
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
@@ -1080,11 +972,91 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
       for(int idx_var_dim=0;idx_var_dim<nbr_dmn_var;idx_var_dim++){
 
         /* Get dimension name */
-        (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
+        (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm_var,&dmn_sz);
 
-        /* Add a coordinate variable that matches parameter "dmn_var_nm" */
-        (void)nco_xtr_crd_ass_add_trv(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
+        char dmn_nm_grp[NC_MAX_NAME];    /* [sng] Dimension name for *group*  */ 
+        const char sls_chr='/'; /* [chr] Slash character */
+        const char sls_sng[]="/"; /* [sng] Slash string */
+        char *ptr_chr; /* [sng] Pointer to character '/' in full name */
+        int psn_chr; /* [nbr] Position of character '/' in in full name */
 
+        const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
+
+        int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array */
+        int nbr_dmn_grp;             /* [nbr] Number of dimensions for *group* */
+
+
+        /* Obtain number of dimensions visible to group */
+        (void)nco_inq(grp_id,&nbr_dmn_grp,NULL,NULL,NULL);
+
+        /* Obtain dimension IDs */
+        (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
+
+        /* List dimensions */
+        for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
+
+          /* Get dimension info */
+          (void)nco_inq_dim(grp_id,dmn_id_grp[dmn_idx],dmn_nm_grp,&dmn_sz);
+
+          /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
+          if(!strcmp(dmn_nm_grp,dmn_nm_var)){
+            char *dmn_nm_fll;
+
+            /* Construct full (dimension/coordinate) name using the full group name where original variable resides */
+            dmn_nm_fll=(char *)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm_grp)+2L);
+            strcpy(dmn_nm_fll,trv.grp_nm_fll);
+            if(strcmp(trv.grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
+            strcat(dmn_nm_fll,dmn_nm_grp);
+
+            /* Brute-force approach to find valid "dmn_nm_fll":
+            Start at grp_nm_fll/var_nm and build all possible paths with var_nm. 
+            Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
+
+            /* Find last occurence of '/' */
+            ptr_chr=strrchr(dmn_nm_fll,sls_chr);
+            psn_chr=ptr_chr-dmn_nm_fll;
+            while(ptr_chr){
+              /* If variable is on list, mark it for extraction */
+              if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
+
+                (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
+
+                /*From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
+                Subject: Re: [netcdfgroup] defining dimensions in groups
+                1. The inner dimension is used. The rule is to look up the group tree
+                from innermost to root and choose the first one that is found
+                with a matching name.
+                2. The fact that it is a dimension for a coordinate variable is not relevant for the
+                choice.
+                However, note that this rule is only used by ncgen when disambiguating a reference
+                in the CDL.  The issue does not come up in the netcdf API because
+                you have to specifically supply the dimension id when defining the dimension
+                for a variable.*/
+
+                /* So... exit from here if the innermost coordinate variable was found: there is one and only 
+                one valid coordinate variable in the path scope */
+                dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+                break;
+
+              } /* endif */
+              dmn_nm_fll[psn_chr]='\0';
+              ptr_chr=strrchr(dmn_nm_fll,sls_chr);
+              if(ptr_chr){
+                psn_chr=ptr_chr-dmn_nm_fll;
+                dmn_nm_fll[psn_chr]='\0';
+                /* Re-add variable name to shortened path */
+                if(strcmp(trv.grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
+                strcat(dmn_nm_fll,dmn_nm_grp);
+                ptr_chr=strrchr(dmn_nm_fll,sls_chr);
+                psn_chr=ptr_chr-dmn_nm_fll;
+              } /* !ptr_chr */
+            } /* end while */
+
+            /* Free allocated */
+            if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+
+          } /* end strcmp() */
+        } /* end loop over dmn_idx */
 
 
       } /* End loop over idx_var_dim: list dimensions for variable */
