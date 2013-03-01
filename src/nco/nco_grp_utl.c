@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.572 2013-03-01 07:34:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.573 2013-03-01 07:41:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1020,19 +1020,6 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
                 (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
 
-                /*From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
-                Subject: Re: [netcdfgroup] defining dimensions in groups
-                1. The inner dimension is used. The rule is to look up the group tree
-                from innermost to root and choose the first one that is found
-                with a matching name.
-                2. The fact that it is a dimension for a coordinate variable is not relevant for the
-                choice.
-                However, note that this rule is only used by ncgen when disambiguating a reference
-                in the CDL.  The issue does not come up in the netcdf API because
-                you have to specifically supply the dimension id when defining the dimension
-                for a variable.*/
-
-
               } /* endif */
               dmn_nm_fll[psn_chr]='\0';
               ptr_chr=strrchr(dmn_nm_fll,sls_chr);
@@ -1634,10 +1621,19 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
         1) Dimensions are defined in *groups*: find group where variable resides
         2) Most common case is for the dimension to be defined in the same group where variable is
         3) If not, we have to traverse the group back until the dimension name is found
+
         From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
         Subject: Re: [netcdfgroup] defining dimensions in groups
-        The inner dimension is used. The rule is to look up the group tree from innermost to root and choose the 
-        first one that is found with a matching name.
+        1. The inner dimension is used. The rule is to look up the group tree
+        from innermost to root and choose the first one that is found
+        with a matching name.
+        2. The fact that it is a dimension for a coordinate variable is not relevant for the
+        choice.
+        However, note that this rule is only used by ncgen when disambiguating a reference
+        in the CDL.  The issue does not come up in the netcdf API because
+        you have to specifically supply the dimension id when defining the dimension
+        for a variable.
+
         4) Use case example: /g5/g5g1/rz variable and rz(rlev), where dimension "rlev" resides in /g5/rlev 
         */
 
