@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.568 2013-03-01 05:15:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.569 2013-03-01 06:17:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1054,15 +1054,11 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
   char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name */ 
 
   int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
-  int fl_fmt;                  /* [nbr] File format */
   int grp_id;                  /* [ID] Group ID */
   int nbr_dmn_var;             /* [nbr] Number of dimensions associated with current matched variable */
   int var_id;                  /* [ID] Variable ID */
 
   long dmn_sz;                 /* [nbr] Dimension size */  
-
-  /* Get file format */
-  (void)nco_inq_format(nc_id,&fl_fmt);
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
@@ -1082,32 +1078,18 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
       /* Loop over dimensions of variable */
       for(int idx_var_dim=0;idx_var_dim<nbr_dmn_var;idx_var_dim++){
+
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm,&dmn_sz);
 
-        if(fl_fmt == NC_FORMAT_NETCDF4){ // fxm: Deprecate fl_fmt check and always use same function
-          /* Add associated coordinate variables to traversal table extraction list
-          Be sure not to extract non-associated coordinates
-          Distinct dimensions with same name dmn_nm can occur in multiple groups
-          And those definitions may not share namespace, e.g., dmn_nm can be defined distinctly in sibling groups
-          Hence nco_xtr_crd_ass_add_trv() must know location of dmn_nm and search only variables visible from there */
-          (void)nco_xtr_crd_ass_add_trv(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
-        }else{
-          /* Construct full (dimension/variable) name */
-          char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm)+2L);
-          strcpy(dmn_nm_fll,trv.grp_nm_fll);
-          if(strcmp(trv.grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
-          strcat(dmn_nm_fll,dmn_nm);
-          (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
-          /* Free allocated */
-          dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-        } /* endif netCDF3 */
+        /* Add a coordinate variable that matches parameter "dmn_var_nm" */
+        (void)nco_xtr_crd_ass_add_trv(nc_id,dmn_nm,trv.nm,trv.grp_nm_fll,trv_tbl);
+
+
+
       } /* End loop over idx_var_dim: list dimensions for variable */
     } /* end nco_obj_typ_var */
   } /* end uidx  */
-
-
-
   return;
 } /* end nco_xtr_crd_ass_add */
 
