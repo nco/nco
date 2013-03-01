@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.571 2013-03-01 06:55:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.572 2013-03-01 07:34:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -951,19 +951,19 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
   long dmn_sz;                 /* [nbr] Dimension size */  
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+    trv_sct var_trv=trv_tbl->lst[uidx];
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
       /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
       /* Obtain variable ID using group ID */
-      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
       /* Get number of dimensions for *variable* */
       (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
 
-      assert(nbr_dmn_var == trv.nbr_dmn);
+      assert(nbr_dmn_var == var_trv.nbr_dmn);
 
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
@@ -985,7 +985,6 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array */
         int nbr_dmn_grp;             /* [nbr] Number of dimensions for *group* */
 
-
         /* Obtain number of dimensions visible to group */
         (void)nco_inq(grp_id,&nbr_dmn_grp,NULL,NULL,NULL);
 
@@ -1003,14 +1002,14 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
             char *dmn_nm_fll;
 
             /* Construct full (dimension/coordinate) name using the full group name where original variable resides */
-            dmn_nm_fll=(char *)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm_grp)+2L);
-            strcpy(dmn_nm_fll,trv.grp_nm_fll);
-            if(strcmp(trv.grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
+            dmn_nm_fll=(char *)nco_malloc(strlen(var_trv.grp_nm_fll)+strlen(dmn_nm_grp)+2L);
+            strcpy(dmn_nm_fll,var_trv.grp_nm_fll);
+            if(strcmp(var_trv.grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
             strcat(dmn_nm_fll,dmn_nm_grp);
 
             /* Brute-force approach to find valid "dmn_nm_fll":
             Start at grp_nm_fll/var_nm and build all possible paths with var_nm. 
-            Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. Phew. */
+            Use case is /g5/g5g1/rz variable with /g5/rlev coordinate var. */
 
             /* Find last occurence of '/' */
             ptr_chr=strrchr(dmn_nm_fll,sls_chr);
@@ -1033,10 +1032,6 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
                 you have to specifically supply the dimension id when defining the dimension
                 for a variable.*/
 
-                /* So... exit from here if the innermost coordinate variable was found: there is one and only 
-                one valid coordinate variable in the path scope */
-                dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-                break;
 
               } /* endif */
               dmn_nm_fll[psn_chr]='\0';
@@ -1045,7 +1040,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
                 psn_chr=ptr_chr-dmn_nm_fll;
                 dmn_nm_fll[psn_chr]='\0';
                 /* Re-add variable name to shortened path */
-                if(strcmp(trv.grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
+                if(strcmp(var_trv.grp_nm_fll,sls_sng)) strcat(dmn_nm_fll,sls_sng);
                 strcat(dmn_nm_fll,dmn_nm_grp);
                 ptr_chr=strrchr(dmn_nm_fll,sls_chr);
                 psn_chr=ptr_chr-dmn_nm_fll;
@@ -1090,23 +1085,23 @@ nco_prn_xtr_dfn /* [fnc] Print variable metadata */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 { 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.flg_xtr && trv.nco_typ == nco_obj_typ_var){
+    trv_sct var_trv=trv_tbl->lst[uidx];
+    if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
 
       /* Print full name of variable */
-      if(trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
+      if(var_trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",var_trv.nm_fll);
 
       /* Print variable metadata. NOTE: using file ID and object...all that is needed */ 
-      (void)nco_prn_var_dfn(nc_id,&trv); 
+      (void)nco_prn_var_dfn(nc_id,&var_trv); 
 
       int grp_id; /* [id] Group ID */
       int var_id; /* [id] Variable ID */
 
       /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
       /* Obtain variable ID using group ID */
-      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
       /* Print variable attributes */
       /* fxm pvn: rewrite with NC_ID and OBJ */
@@ -1203,14 +1198,14 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
 
   /* Loop variables in table */
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-    trv_sct trv=trv_tbl->lst[var_idx];
-    if(trv.flg_xtr && trv.nco_typ == nco_obj_typ_var){
+    trv_sct var_trv=trv_tbl->lst[var_idx];
+    if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
 
       /* Print full name of variable */
-      if(!dlm_sng && trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
+      if(!dlm_sng && var_trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",var_trv.nm_fll);
 
       /* Print variable values */
-      (void)nco_msa_prn_var_val_trv(nc_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&trv);
+      (void)nco_msa_prn_var_val_trv(nc_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&var_trv);
 
     } /* End flg_xtr */
   } /* End Loop variables in table */
@@ -3387,3 +3382,5 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 #endif /* NCO_SANITY_CHECK */
 
 } /* nco_bld_var_dmn() */
+
+
