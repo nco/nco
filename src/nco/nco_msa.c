@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.191 2013-02-28 08:36:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.192 2013-03-01 05:15:50 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1576,13 +1576,18 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         char dmn_sng[NCO_MAX_LEN_FMT_SNG];
 
         /* Loop over dimensions whose coordinates are to be printed */
-        for(int idx=0;idx<var.nbr_dim;idx++){
+        for(int idx=0;idx<var_trv->nbr_dmn;idx++){
 
           /* Reverse dimension ordering for Fortran convention */
           if(FORTRAN_IDX_CNV) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
 
           /* Format and print dimension part of output string for non-coordinate variables */
-          if(dim[dmn_idx].cid == var.id) continue; /* If variable is a coordinate then skip printing until later */
+
+          /* If variable is a coordinate then skip printing until later */
+          if(var_trv->is_crd_var){
+            continue;
+          }
+
           if(!dim[dmn_idx].is_crd_dmn){ /* If dimension is not a coordinate... */
             if(PRN_DMN_VAR_NM){
               if(FORTRAN_IDX_CNV) (void)fprintf(stdout,"%s(%ld) ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);

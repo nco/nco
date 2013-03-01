@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.567 2013-03-01 00:45:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.568 2013-03-01 05:15:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1143,7 +1143,7 @@ nco_prn_xtr_dfn /* [fnc] Print variable metadata */
       if(trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",trv.nm_fll);
 
       /* Print variable metadata. NOTE: using file ID and object...all that is needed */ 
-      (void)nco_prn_var_dfn(nc_id,&trv_tbl->lst[uidx]); 
+      (void)nco_prn_var_dfn(nc_id,&trv); 
 
       int grp_id; /* [id] Group ID */
       int var_id; /* [id] Variable ID */
