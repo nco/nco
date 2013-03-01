@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.87 2013-02-28 23:52:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.88 2013-03-01 00:14:57 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -729,26 +729,10 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
       /* Get coordinate from table */
       crd_sct *crd=var_trv->var_dmn.crd[dmn_idx];
 
-      int grp_crd_id; /* [ID] Of group of where coordinate variable is located */
-      int var_crd_id; /* [ID] Of coordinate variable */
-
-      /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,crd->crd_grp_nm_fll,&grp_crd_id);
-
-      /* Obtain variable ID using group ID and name */
-      (void)nco_inq_varid(grp_crd_id,crd->nm,&var_crd_id);
-
-      nc_type crd_typ;
-
-      /* Which storage type is the coordinate? */
-      (void)nco_inq_vartype(grp_crd_id,var_crd_id,&crd_typ);
-
-      assert(crd_typ == crd->var_typ);
-
       if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu (",
-        var_trv->nm,dmn_idx,crd->nm,crd->sz,nco_typ_sng(crd_typ),cnk_sz[dmn_idx]); 
+        var_trv->nm,dmn_idx,crd->nm,crd->sz,nco_typ_sng(crd->var_typ),cnk_sz[dmn_idx]); 
       else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s (",
-        var_trv->nm,dmn_idx,crd->nm,crd->sz,nco_typ_sng(crd_typ));
+        var_trv->nm,dmn_idx,crd->nm,crd->sz,nco_typ_sng(crd->var_typ));
       (void)fprintf(stdout,"%soordinate dimension)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record c" : "C");
 
     }
