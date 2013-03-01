@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.598 2013-02-23 11:54:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.599 2013-03-01 00:45:08 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.598 2013-02-23 11:54:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.598 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.599 2013-03-01 00:45:08 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.599 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -682,9 +682,6 @@ main(int argc,char **argv)
 
   /* We now have final list of variables to extract. Phew. */
 
-  /* Print extraction list in verbose mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,"ncks()");
-  
   if(fl_out){
     /* Copy everything (all data and metadata) to output file by default */
     if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=False; else PRN_VAR_DATA=True;

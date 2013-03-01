@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.566 2013-02-28 12:57:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.567 2013-03-01 00:45:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -642,6 +642,9 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
     } /* end loop over obj_idx */
   } /* endif dbg */
 
+  /* Print extraction list in debug mode */
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+
   return (nco_bool)True;
 
 } /* end nco_xtr_mk() */
@@ -652,9 +655,15 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
 (trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Convert extraction list to exclusion list */
+
+  const char fnc_nm[]="nco_xtr_xcl()"; /* [sng] Function name */
+
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var) 
       trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr;
+
+  /* Print extraction list in debug mode */
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* end nco_xtr_xcl() */
@@ -746,6 +755,10 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
     } /* end nco_obj_typ_grp */
   } /* end uidx  */
 
+  /* Print extraction list in debug mode */
+  const char fnc_nm[]="nco_xtr_crd_add()"; /* [sng] Function name */
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+
   return;
 } /* end nco_xtr_crd_add() */
 
@@ -765,6 +778,11 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
     trv_sct trv=trv_tbl->lst[uidx];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)nco_xtr_cf_prv_add(nc_id,&trv,cf_nm,trv_tbl);
   } /* end loop over table */
+
+
+  /* Print extraction list in debug mode */
+  const char fnc_nm[]="nco_xtr_cf_add()"; /* [sng] Function name */
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* nco_xtr_cf_add() */
@@ -1087,6 +1105,8 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
       } /* End loop over idx_var_dim: list dimensions for variable */
     } /* end nco_obj_typ_var */
   } /* end uidx  */
+
+
 
   return;
 } /* end nco_xtr_crd_ass_add */
