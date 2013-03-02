@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.56 2013-03-02 02:02:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.57 2013-03-02 03:03:59 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -861,7 +861,7 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
     }else if (var_trv->var_dmn.is_crd_var[dmn_idx] == False){
 
       /* Get unique dimesion from table */
-      dmn_trv=var_trv->var_dmn.ncr[dmn_idx];
+      dmn_trv=var_trv->var_dmn.ncd[dmn_idx];
       dmn_cmn[dmn_idx].sz=dmn_trv->sz;
       dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
       dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;

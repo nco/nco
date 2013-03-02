@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.578 2013-03-02 02:02:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.579 2013-03-02 03:03:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1994,7 +1994,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=NULL;
     trv_tbl->lst[idx].var_dmn.is_crd_var[dmn_idx_var]=nco_obj_typ_err;
     trv_tbl->lst[idx].var_dmn.crd[dmn_idx_var]=NULL;
-    trv_tbl->lst[idx].var_dmn.ncr[dmn_idx_var]=NULL;
+    trv_tbl->lst[idx].var_dmn.ncd[dmn_idx_var]=NULL;
   }
   trv_tbl->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
   
@@ -2077,7 +2077,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       trv_tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=NULL;
       trv_tbl->lst[idx].var_dmn.is_crd_var[dmn_idx_var]=nco_obj_typ_err;
       trv_tbl->lst[idx].var_dmn.crd[dmn_idx_var]=NULL;
-      trv_tbl->lst[idx].var_dmn.ncr[dmn_idx_var]=NULL;
+      trv_tbl->lst[idx].var_dmn.ncd[dmn_idx_var]=NULL;
     }
     trv_tbl->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
 
@@ -3349,7 +3349,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
               trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var]=False;
 
               /* Store the pointer needed for MSA to get limits */
-              trv_tbl->lst[var_idx].var_dmn.ncr[dmn_idx_var]=&trv_tbl->lst_dmn[dmn_idx];
+              trv_tbl->lst[var_idx].var_dmn.ncd[dmn_idx_var]=&trv_tbl->lst_dmn[dmn_idx];
 
 
             }/* Match dimension name full to be found with with nm_fll of the unique dimension */ 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.238 2013-03-02 02:02:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.239 2013-03-02 03:03:59 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1889,12 +1889,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
       } /* !rec_dmn_nm */ 
 
-      dmn_fll_sct *dmn_trv=var_trv->var_dmn.ncr[dmn_idx]; /* [sct] Unique dimension */
+      dmn_fll_sct *dmn_trv=var_trv->var_dmn.ncd[dmn_idx]; /* [sct] Unique dimension */
       char *grp_out_fll; /* [sng] Group name */
 
       /* Does dimension have user-specified limits?
 	 Following line is only difference between defining a variable with and without limits */
-      if(var_trv->var_dmn.is_crd_var[dmn_idx]) dmn_sz=var_trv->var_dmn.crd[dmn_idx]->lmt_msa.dmn_cnt; else dmn_sz=var_trv->var_dmn.ncr[dmn_idx]->lmt_msa.dmn_cnt;
+      if(var_trv->var_dmn.is_crd_var[dmn_idx]) dmn_sz=var_trv->var_dmn.crd[dmn_idx]->lmt_msa.dmn_cnt; else dmn_sz=var_trv->var_dmn.ncd[dmn_idx]->lmt_msa.dmn_cnt;
 
       if(dbg_lvl_get() == nco_dbg_crr){
 	/* Determine where to place new dimension in output file */
