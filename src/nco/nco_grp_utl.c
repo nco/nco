@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.588 2013-03-02 11:32:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.589 2013-03-02 21:41:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1691,9 +1691,6 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
                   /* Store full group name where dimension is located. NOTE: using member "grp_nm_fll" of dimension  */
                   trv_tbl->lst[uidx].var_dmn.grp_nm_fll[dmn_idx_var]=strdup(dmn_fll.grp_nm_fll);
 
-                  /* Increment the number of dimensions for *variable* in table */
-                  trv_tbl->lst[uidx].var_dmn.nbr_dmn++;
-
                   /* Free allocated */
                   dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
@@ -1996,7 +1993,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst[idx].var_dmn.crd[dmn_idx_var]=NULL;
     trv_tbl->lst[idx].var_dmn.ncd[dmn_idx_var]=NULL;
   }
-  trv_tbl->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
   
 
   /* Iterate variables for this group */
@@ -2079,8 +2075,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       trv_tbl->lst[idx].var_dmn.crd[dmn_idx_var]=NULL;
       trv_tbl->lst[idx].var_dmn.ncd[dmn_idx_var]=NULL;
     }
-    trv_tbl->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
-
+ 
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
   } /* end loop over variables */
@@ -2456,19 +2451,19 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
   (void)fprintf(stdout,"\n");
   (void)fprintf(stdout,"%s: INFO reports dimension information with limits: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_fll_sct trv=trv_tbl->lst_dmn[dmn_idx]; 
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
     /* Dimension name first */
-    (void)fprintf(stdout,"%s: ",trv.nm_fll);
+    (void)fprintf(stdout,"%s: ",dmn_trv.nm_fll);
 
     /* Filter output */
-    if (trv.is_rec_dmn == True) (void)fprintf(stdout," record dimension (%li)",trv.sz);
-    else if (trv.is_rec_dmn == False) (void)fprintf(stdout," dimension (%li)",trv.sz);
+    if (dmn_trv.is_rec_dmn == True) (void)fprintf(stdout," record dimension (%li)",dmn_trv.sz);
+    else if (dmn_trv.is_rec_dmn == False) (void)fprintf(stdout," dimension (%li)",dmn_trv.sz);
 
     /* Limits */
-    if (trv.lmt_msa.lmt_dmn_nbr){
-      for(int lmt_idx=0;lmt_idx<trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
-        lmt_sct *lmt_dmn=trv.lmt_msa.lmt_dmn[lmt_idx];
+    if (dmn_trv.lmt_msa.lmt_dmn_nbr){
+      for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
+        lmt_sct *lmt_dmn=dmn_trv.lmt_msa.lmt_dmn[lmt_idx];
         (void)fprintf(stdout," [%d]%s(%li,%li,%li) ",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
       }
     }/* Limits */
@@ -2484,13 +2479,13 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
   (void)fprintf(stdout,"\n");
   (void)fprintf(stdout,"%s: INFO reports coordinate variables and limits listed by dimension:\n",prg_nm_get());
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_fll_sct trv=trv_tbl->lst_dmn[dmn_idx]; 
+    dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
-    nbr_crd_var+=trv.crd_nbr;
+    nbr_crd_var+=dmn_trv.crd_nbr;
 
     /* Loop coordinates */
-    for(int crd_idx=0;crd_idx<trv.crd_nbr;crd_idx++){
-      crd_sct *crd=trv.crd[crd_idx];
+    for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
+      crd_sct *crd=dmn_trv.crd[crd_idx];
 
       /* Coordinate full name */
       (void)fprintf(stdout,"%s ",crd->crd_nm_fll);
@@ -2507,7 +2502,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
       }/* Limits */
 
       /* Terminate this coordinate with "::" */
-      if (trv.crd_nbr>1) (void)fprintf(stdout,":: ");
+      if (dmn_trv.crd_nbr>1) (void)fprintf(stdout,":: ");
 
     }/* Loop coordinates */
 
@@ -3378,7 +3373,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           if(dmn_trv.crd_nbr == 0) {
 
             /* Match dimension name full to be found with with nm_fll of the unique dimension */ 
-            if(strcmp(var_trv.var_dmn.dmn_nm_fll[dmn_idx_var], trv_tbl->lst_dmn[dmn_idx].nm_fll ) == 0){
+            if(strcmp(var_trv.var_dmn.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll ) == 0){
 
               /* Mark as False the position of the bool array coordinate/non coordinate */
               trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var]=False;
