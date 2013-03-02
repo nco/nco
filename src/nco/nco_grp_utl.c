@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.581 2013-03-02 08:10:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.582 2013-03-02 08:52:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1844,7 +1844,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
             if(var.nco_typ == nco_obj_typ_var){
               /* Is there a *full* match already for the *input* dimension ?  */
               if(strcmp(var_trv->nm_fll,dmn.nm_fll) == 0 ){
-                if(dbg_lvl_get() >= nco_dbg_dev){
+                if(dbg_lvl_get() == nco_dbg_old){
                   (void)fprintf(stdout,"%s: INFO %s variable <%s> has another dimension full match <%s>:\n",prg_nm_get(),fnc_nm,
                     var_trv->nm_fll,dmn.nm_fll);
                 }
@@ -1855,7 +1855,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
         } /* Loop unique dimensions list in groups */
 
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -3327,6 +3327,54 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
   */
 
   const char fnc_nm[]="nco_bld_var_dmn()"; /* [sng] Function name  */
+
+
+  /* Fill non-coordinates first */
+
+  /* Loop table */
+  for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+
+    /* Filter variables  */
+    if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
+      trv_sct var_trv=trv_tbl->lst[var_idx];   
+
+      /* Loop dimensions for object (variable)  */
+      for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
+
+        /* Loop unique dimensions list where the dimensions are stored */
+        for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+
+          dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+          /* No coordinates */
+          if(dmn_trv.crd_nbr == 0) {
+
+            /* Match dimension name full to be found with with nm_fll of the unique dimension */ 
+            if(strcmp(var_trv.var_dmn.dmn_nm_fll[dmn_idx_var], trv_tbl->lst_dmn[dmn_idx].nm_fll ) == 0){
+
+              /* Mark as False the position of the bool array coordinate/non coordinate */
+              trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var]=False;
+
+              /* Store the pointer needed for MSA to get limits */
+              trv_tbl->lst[var_idx].var_dmn.ncd[dmn_idx_var]=&trv_tbl->lst_dmn[dmn_idx];
+
+
+              if(dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
+                  var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn.dmn_nm_fll[dmn_idx_var]);        
+              } /* endif dbg */
+
+            } /* No coordinates */
+
+
+          }/* Match dimension name full to be found with with nm_fll of the unique dimension */ 
+        } /* Loop unique dimensions list where the dimensions are stored */
+
+      } /* Loop dimensions for object (variable)  */
+    } /* Filter variables  */
+  } /* Loop table */
+
+
 
   /* Fill coordinates first */
 
