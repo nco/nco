@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.580 2013-03-02 06:42:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.581 2013-03-02 08:10:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3213,14 +3213,16 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 } /* nco_bld_lmt() */
 
 
-nco_bool
-nco_fnd_crd_var_dmn                   /* [fnc] Find coordinate object from dimension full name of a variable */
-(const char * const dmn_nm_fll_var,   /* I [sng] Dimension full name of the *variable* */
- const char * const crd_nm_fll,       /* I [sng] Coordinate variable full name */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+static nco_bool
+nco_fnd_crd_var_dmn                   /* [fnc] Is coordinate object in scope of dimension ?  */
+(char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
+ char * dmn_nm,                       /* I [sng] Dimension name of the *variable* */
+ char * crd_nm_fll)                   /* I [sng] Coordinate variable full name */
 {
   /* Purpose: Auxiliary function for nco_bld_var_dmn(): assign variables dimensions to either coordinates or dimension structs
  
+  Match  with dimension full name of the *variable* with coordinate full name from the unique dimension list
+
   Use case:
   variable /g16/g16g1/lon1_var with dimension (/g16/lon1) 
   coordinate variable /g16/g16g1/lon1 in scope of previous variable with dimension (/g16/lon1) 
@@ -3231,15 +3233,81 @@ nco_fnd_crd_var_dmn                   /* [fnc] Find coordinate object from dimen
 
   const char fnc_nm[]="nco_fnd_crd_var_dmn()"; /* [sng] Function name  */
 
-  /* Match  with dimension full name of the *variable* with coordinate full name from the unique dimension list */ 
-  if(strcmp(dmn_nm_fll_var,crd_nm_fll) == 0){
+  const char sls_chr='/'; /* [chr] Slash character */
 
-    return True;
-  }
+  char *sbs_srt; /* [sng] Location of user-string match start in object path */
+  char *sbs_end; /* [sng] Location of user-string match end   in object path */
+
+  nco_bool flg_pth_srt_bnd=False; /* [flg] String begins at path component boundary */
+  nco_bool flg_pth_end_bnd=False; /* [flg] String ends   at path component boundary */
+
+  size_t dmn_nm_lng;      /* [nbr] Length of variable name */
+  size_t dmn_nm_fll_var_lng;  /* [nbr] Length of full variable name */
+  size_t crd_nm_fll_lng;  /* [nbr] Length of of full dimension name */
+
+  dmn_nm_fll_var_lng=strlen(dmn_nm_fll_var);
+  dmn_nm_lng=strlen(dmn_nm);
+  crd_nm_fll_lng=strlen(crd_nm_fll);
+
+  /* Deal with in scope cases */
+  
+  /* Look for partial match, not necessarily on path boundaries; locate variable (str2) in full dimension name (str1) */
+  if((sbs_srt=strstr(crd_nm_fll,dmn_nm))){
+
+    /* Ensure match spans (begins and ends on) whole path-component boundaries */
+
+    /* Does match begin at path component boundary ... directly on a slash? */
+    if(*sbs_srt == sls_chr){
+      flg_pth_srt_bnd=True;
+    }
+
+    /* ...or one after a component boundary? */
+    if((sbs_srt > crd_nm_fll) && (*(sbs_srt-1L) == sls_chr)){
+      flg_pth_srt_bnd=True;
+    }
+
+    /* Does match end at path component boundary ... directly on a slash? */
+    sbs_end=sbs_srt+dmn_nm_lng-1L;
+
+    if(*sbs_end == sls_chr){
+      flg_pth_end_bnd=True;
+    }
+
+    /* ...or one before a component boundary? */
+    if(sbs_end <= crd_nm_fll+crd_nm_fll_lng-1L){
+      if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0')){
+        flg_pth_end_bnd=True;
+      }
+    }
+
+    /* If match is on both ends of '/' then it's a "real" name */
+    if (flg_pth_srt_bnd && flg_pth_end_bnd){
+
+      /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev */
+      if (dmn_nm_fll_var_lng == crd_nm_fll_lng && strcmp(dmn_nm_fll_var,crd_nm_fll) == 0){
+        if(dbg_lvl_get() == nco_dbg_old){
+          (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
+            dmn_nm_fll_var,crd_nm_fll);
+        }
+        return True;
+
+        /* Coordinate in scope of dimension name */
+      }else if (crd_nm_fll_lng>dmn_nm_fll_var_lng){
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: INFO %s found coordinate <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
+            dmn_nm_fll_var,crd_nm_fll);
+        }
+        return True;
+      }
+
+    } /* If match is on both ends of '/' then it's a "real" name */
+  }/* Look for partial match, not necessarily on path boundaries */
 
   return False;
 
-} /* nco_bld_var_dmn() */
+
+} /* nco_fnd_crd_var_dmn() */
 
 
 
