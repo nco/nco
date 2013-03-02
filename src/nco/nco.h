@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.278 2013-03-02 03:03:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.279 2013-03-02 21:49:26 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -644,7 +644,6 @@ extern "C" {
      Structure containing, for a variable, information for all dimensions
      A dimension has a name and a size, but it can have an associated variable (coordinate variable) */
   typedef struct{ 
-    int nbr_dmn; /* [nbr] Number of dimensions of variable [chk] */
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
     char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
     char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Full group where dimension is located  */   
