@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.586 2013-03-02 10:31:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.587 2013-03-02 11:12:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3412,8 +3412,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       /* Loop dimensions for object (variable)  */
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
 
-        /* If False (non-coordinate in sweep 1) or error (initial vale) */
-        if (trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var] != True ){ 
+        /* If non-initialized */
+        if (trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var] == nco_obj_typ_err ){ 
 
           /* Loop unique dimensions list where the coordinates are stored */
           for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
