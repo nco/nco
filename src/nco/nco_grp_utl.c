@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.577 2013-03-02 01:48:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.578 2013-03-02 02:02:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1994,7 +1994,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=NULL;
     trv_tbl->lst[idx].var_dmn.is_crd_var[dmn_idx_var]=nco_obj_typ_err;
     trv_tbl->lst[idx].var_dmn.crd[dmn_idx_var]=NULL;
-    trv_tbl->lst[idx].var_dmn.dmn_fll[dmn_idx_var]=NULL;
+    trv_tbl->lst[idx].var_dmn.ncr[dmn_idx_var]=NULL;
   }
   trv_tbl->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
   
@@ -2077,7 +2077,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       trv_tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=NULL;
       trv_tbl->lst[idx].var_dmn.is_crd_var[dmn_idx_var]=nco_obj_typ_err;
       trv_tbl->lst[idx].var_dmn.crd[dmn_idx_var]=NULL;
-      trv_tbl->lst[idx].var_dmn.dmn_fll[dmn_idx_var]=NULL;
+      trv_tbl->lst[idx].var_dmn.ncr[dmn_idx_var]=NULL;
     }
     trv_tbl->lst[idx].var_dmn.nbr_dmn=nco_obj_typ_err;
 
@@ -2189,7 +2189,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 } /* end nco_grp_itr() */
 
 void                      
-nco_blb_crd_rec_var_trv               /* [fnc] Build dimension information for all variables */
+nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for all variables */
 (const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Build "is_crd_var" and "is_rec_var" members for all variables */
@@ -2236,7 +2236,7 @@ nco_blb_crd_rec_var_trv               /* [fnc] Build dimension information for a
 
 
 void                      
-nco_blb_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
+nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
 (trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Build GTT "crd_sct" coordinate variable structure */
@@ -2539,10 +2539,10 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_bld_dmn_trv(nc_id,trv_tbl);
 
   /* Build "is_crd_var" and "is_rec_var" members for all variables */
-  (void)nco_blb_crd_rec_var_trv(trv_tbl);
+  (void)nco_bld_crd_rec_var_trv(trv_tbl);
 
   /* Build GTT "crd_sct" coordinate variable structure */
-  (void)nco_blb_crd_var_trv(trv_tbl);
+  (void)nco_bld_crd_var_trv(trv_tbl);
 
   /* Add dimension limits to traversal table; must be done before nco_bld_var_dmn() */
   if(lmt_nbr)(void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
@@ -3349,7 +3349,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
               trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var]=False;
 
               /* Store the pointer needed for MSA to get limits */
-              trv_tbl->lst[var_idx].var_dmn.dmn_fll[dmn_idx_var]=&trv_tbl->lst_dmn[dmn_idx];
+              trv_tbl->lst[var_idx].var_dmn.ncr[dmn_idx_var]=&trv_tbl->lst_dmn[dmn_idx];
 
 
             }/* Match dimension name full to be found with with nm_fll of the unique dimension */ 

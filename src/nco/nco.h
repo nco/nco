@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.276 2013-02-28 23:25:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.277 2013-03-02 02:02:33 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -648,9 +648,9 @@ extern "C" {
     char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
     char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
     char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Full group where dimension is located  */   
-    nco_bool is_crd_var[NC_MAX_DIMS]; /* [flg] Is this *name* a coordinate variable or just a dimension? */
-    crd_sct *crd[NC_MAX_DIMS]; /* [sct] Pointers to each coordinate variable if coordinate variable */
-    dmn_fll_sct *dmn_fll[NC_MAX_DIMS]; /* [sct] Pointers to each dimension if dimension */
+    nco_bool is_crd_var[NC_MAX_DIMS]; /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
+    crd_sct *crd[NC_MAX_DIMS]; /* [sct] Array of pointers to *coordinate variable* if coordinate variable (some array positions emtpy)*/
+    dmn_fll_sct *ncr[NC_MAX_DIMS]; /* [sct] Array of pointers to *non coordinate* dimensions (some emtpy) */
   } var_dmn_sct; 
   
   /* GTT Object structure 

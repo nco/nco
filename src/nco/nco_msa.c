@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.192 2013-03-01 05:15:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.193 2013-03-02 02:02:33 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1263,8 +1263,6 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   lmt_msa_sct **lmt_msa=NULL_CEWI;           /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI;                   /* [sct] Auxiliary Limit used in MSA */
 
-  int rcd;                                   /* [nbr] Return value */
-
   int in_id;                                 /* [ID] *Group* ID were variable resides (passed to MSA)*/
 
   /* Allocate local MSA */
@@ -2004,19 +2002,19 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
     else if (var_trv->var_dmn.is_crd_var[dmn_idx_var] == False){
 
       /* Get number of limits */
-      int lmt_dmn_nbr=var_trv->var_dmn.dmn_fll[dmn_idx_var]->lmt_msa.lmt_dmn_nbr;
+      int lmt_dmn_nbr=var_trv->var_dmn.ncr[dmn_idx_var]->lmt_msa.lmt_dmn_nbr;
 
       /* If limits, make space for them */
       if (lmt_dmn_nbr) (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
 
       /* And deep-copy the structure made while building limits  */
-      (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn.dmn_fll[dmn_idx_var]->lmt_msa.BASIC_DMN;
-      (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn.dmn_fll[dmn_idx_var]->lmt_msa.dmn_cnt;
-      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn.dmn_fll[dmn_idx_var]->nm);
-      (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn.dmn_fll[dmn_idx_var]->sz;
-      (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn.dmn_fll[dmn_idx_var]->lmt_msa.lmt_dmn_nbr;
-      (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn.dmn_fll[dmn_idx_var]->lmt_msa.MSA_USR_RDR;
-      (*lmt_msa)[dmn_idx_var]->WRP=var_trv->var_dmn.dmn_fll[dmn_idx_var]->lmt_msa.WRP;
+      (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn.ncr[dmn_idx_var]->lmt_msa.BASIC_DMN;
+      (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn.ncr[dmn_idx_var]->lmt_msa.dmn_cnt;
+      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn.ncr[dmn_idx_var]->nm);
+      (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn.ncr[dmn_idx_var]->sz;
+      (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn.ncr[dmn_idx_var]->lmt_msa.lmt_dmn_nbr;
+      (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn.ncr[dmn_idx_var]->lmt_msa.MSA_USR_RDR;
+      (*lmt_msa)[dmn_idx_var]->WRP=var_trv->var_dmn.ncr[dmn_idx_var]->lmt_msa.WRP;
 
       /* Loop needed limits */
       for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
@@ -2028,7 +2026,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
         (void)nco_lmt_init((*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
 
         /* Deep copy from table to local array */ 
-        (void)nco_lmt_cpy(var_trv->var_dmn.dmn_fll[dmn_idx_var]->lmt_msa.lmt_dmn[lmt_idx],(*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
+        (void)nco_lmt_cpy(var_trv->var_dmn.ncr[dmn_idx_var]->lmt_msa.lmt_dmn[lmt_idx],(*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
 
       } /* End Loop needed limits */
 
