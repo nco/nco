@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.585 2013-03-02 10:27:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.586 2013-03-02 10:31:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3423,8 +3423,11 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
               crd_sct *crd=dmn_trv.crd[crd_idx];
 
+              char *dmn_nm_fll_var=var_trv.var_dmn.dmn_nm_fll[dmn_idx_var]; /* [sng] Dimension full name of the *variable* */
+              char *dmn_nm=var_trv.var_dmn.dmn_nm[dmn_idx_var]; /* [sng] Dimension name of the *variable* */
+
               /* Match  with dimension full name of the *variable* with coordinate full name from the unique dimension list */ 
-              if(strcmp(var_trv.var_dmn.dmn_nm_fll[dmn_idx_var],crd->crd_nm_fll) == 0){
+              if(strcmp(dmn_nm_fll_var,crd->crd_nm_fll) == 0){
 
                 if(dbg_lvl_get() >= nco_dbg_dev){
                   (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
