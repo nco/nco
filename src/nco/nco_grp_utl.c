@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.584 2013-03-02 09:10:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.585 2013-03-02 10:27:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3213,11 +3213,35 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 } /* nco_bld_lmt() */
 
 
+
+static int                  /* [nbr] Group depth */
+nco_grp_dpt                 /* [fnc] Return group depth of full group name */
+(char * const grp_nm_fll)   /* I [sng] Absolute group name  */
+{
+  /* Purpose: Return group depth of full group name */
+
+  const char sls_sng[]="/"; /* [sng] Slash string */
+
+  char *sls_psn; /* [sng] Current position of group path search */
+
+  int grp_dpt=0; /* [nbr] Depth of group (root = 0) */
+
+  /* Compute group depth */
+  sls_psn=grp_nm_fll;
+  if(!strcmp(grp_nm_fll,sls_sng)) grp_dpt=0; else grp_dpt=1;
+  while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
+
+  return grp_dpt;
+
+} /* nco_grp_dpt() */
+ 
+
 static nco_bool
-nco_fnd_crd_var_dmn                   /* [fnc] Is coordinate object in scope of dimension ?  */
+nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of dimension ?  */
 (char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
  char * dmn_nm,                       /* I [sng] Dimension name of the *variable* */
- char * crd_nm_fll)                   /* I [sng] Coordinate variable full name */
+ char * crd_nm_fll,                   /* I [sng] Coordinate variable full name */
+ char * crd_nm)                       /* I [sng] Coordinate variable name */
 {
   /* Purpose: Auxiliary function for nco_bld_var_dmn(): assign variables dimensions to either coordinates or dimension structs
  
@@ -3244,6 +3268,11 @@ nco_fnd_crd_var_dmn                   /* [fnc] Is coordinate object in scope of 
   size_t dmn_nm_lng;      /* [nbr] Length of variable name */
   size_t dmn_nm_fll_var_lng;  /* [nbr] Length of full variable name */
   size_t crd_nm_fll_lng;  /* [nbr] Length of of full dimension name */
+
+  /* Don't even bother... */
+  if (strcmp(dmn_nm,crd_nm) != 0){
+    return False;
+  }
 
   dmn_nm_fll_var_lng=strlen(dmn_nm_fll_var);
   dmn_nm_lng=strlen(dmn_nm);
@@ -3294,7 +3323,7 @@ nco_fnd_crd_var_dmn                   /* [fnc] Is coordinate object in scope of 
         /* Coordinate in scope of dimension name */
       }else if (crd_nm_fll_lng>dmn_nm_fll_var_lng){
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found coordinate <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             dmn_nm_fll_var,crd_nm_fll);
         }
@@ -3306,8 +3335,7 @@ nco_fnd_crd_var_dmn                   /* [fnc] Is coordinate object in scope of 
 
   return False;
 
-
-} /* nco_fnd_crd_var_dmn() */
+} /* nco_scp_crd_dmn() */
 
 
 
