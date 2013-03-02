@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.576 2013-03-02 00:20:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.577 2013-03-02 01:48:59 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3258,6 +3258,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
             } /* Match possible coordinate variable name with dimension name */ 
           } /* Loop possible coordinate variables for this dimension  */
+	  
         } /* Loop unique dimensions list */
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
