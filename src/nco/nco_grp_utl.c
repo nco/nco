@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.575 2013-03-02 00:10:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.576 2013-03-02 00:20:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3256,17 +3256,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
               /* Store the pointer needed for MSA to get limits */
               trv_tbl->lst[var_idx].var_dmn.crd[dmn_idx_var]=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx];
 
-	      break;
-
             } /* Match possible coordinate variable name with dimension name */ 
-
-
           } /* Loop possible coordinate variables for this dimension  */
-	  
-	  if(crd_idx == dmn_trv.crd_nbr){
-	    trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var]=False;
-	  } /* endif */
-
         } /* Loop unique dimensions list */
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
