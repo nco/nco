@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.279 2013-03-02 21:49:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.280 2013-03-02 22:37:30 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -641,17 +641,16 @@ extern "C" {
 
 
   /* GTT Variable dimensions:
-     Structure containing, for a variable, information for all dimensions
      A dimension has a name and a size, but it can have an associated variable (coordinate variable) */
   typedef struct{ 
-    char *dmn_nm_fll[NC_MAX_DIMS]; /* [sng] Array with full dimension name for all dimensions  */
-    char *dmn_nm[NC_MAX_DIMS]; /* [sng] Dimension name */
-    char *grp_nm_fll[NC_MAX_DIMS]; /* [sng] Full group where dimension is located  */   
-    nco_bool is_crd_var[NC_MAX_DIMS]; /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
-    crd_sct *crd[NC_MAX_DIMS]; /* [sct] Array of pointers to *coordinate variable* if coordinate variable (some array positions emtpy)*/
-    dmn_fll_sct *ncd[NC_MAX_DIMS]; /* [sct] Array of pointers to "non-coordinate dimension"  (some emtpy) */
+    char *dmn_nm_fll; /* [sng] Full dimension name  */
+    char *dmn_nm; /* [sng] Dimension name */
+    char *grp_nm_fll; /* [sng] Full group where dimension is located  */   
+    nco_bool is_crd_var; /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
+    crd_sct *crd; /* [sct] Pointer to *coordinate variable* if coordinate variable */
+    dmn_fll_sct *ncd; /* [sct] Pointer to "non-coordinate dimension" (mutaally exclusive from "crd" )*/
   } var_dmn_sct; 
-  
+ 
   /* GTT Object structure 
      Information for each object/node in traversal tree
      Contains basic information about this object/node needed by traversal algorithm
@@ -663,7 +662,7 @@ extern "C" {
      */
   typedef struct{ 
     char *nm_fll; /* [sng] Fully qualified name (path) */
-    var_dmn_sct var_dmn; /* [sct] Dimensions for this variable for variable */
+    var_dmn_sct var_dmn[NC_MAX_DIMS]; /* [sct] (For variables only) Dimensions for variable object */
     nco_bool is_crd_var; /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
     nco_bool is_rec_var; /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
     nc_type var_typ;     /* [enm] (For variables only) NetCDF type  */  

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.90 2013-03-02 03:03:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.91 2013-03-02 22:37:30 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -660,20 +660,20 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
 
     /* This dimension has a coordinate variable */
-    if (var_trv->var_dmn.is_crd_var[dmn_idx] == True){
+    if (var_trv->var_dmn[dmn_idx].is_crd_var == True){
 
       /* Get coordinate from table */
-      crd_sct *crd=var_trv->var_dmn.crd[dmn_idx];
+      crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
 
       dmn_sz[dmn_idx]=crd->sz;
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=crd->is_rec_dmn;
     }
 
     /* This dimension does not has a coordinate variable, it must have a unique dimension */
-    else if (var_trv->var_dmn.is_crd_var[dmn_idx] == False){
+    else if (var_trv->var_dmn[dmn_idx].is_crd_var == False){
 
       /* Get unique dimension */
-      dmn_fll_sct *dmn_fll=var_trv->var_dmn.ncd[dmn_idx];
+      dmn_fll_sct *dmn_fll=var_trv->var_dmn[dmn_idx].ncd;
 
       dmn_sz[dmn_idx]=dmn_fll->sz;
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=dmn_fll->is_rec_dmn;
@@ -724,10 +724,10 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
   for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++) {
 
     /* This dimension has a coordinate variable */
-    if (var_trv->var_dmn.is_crd_var[dmn_idx] == True){
+    if (var_trv->var_dmn[dmn_idx].is_crd_var == True){
 
       /* Get coordinate from table */
-      crd_sct *crd=var_trv->var_dmn.crd[dmn_idx];
+      crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
 
       if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu (",
         var_trv->nm,dmn_idx,crd->nm,crd->sz,nco_typ_sng(crd->var_typ),cnk_sz[dmn_idx]); 
@@ -738,10 +738,10 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
     }
 
     /* This dimension does not has a coordinate variable, it must have a unique dimension pointer */
-    else if (var_trv->var_dmn.is_crd_var[dmn_idx] == False){
+    else if (var_trv->var_dmn[dmn_idx].is_crd_var == False){
 
       /* Get unique dimension */
-      dmn_fll_sct *dmn_fll=var_trv->var_dmn.ncd[dmn_idx];
+      dmn_fll_sct *dmn_fll=var_trv->var_dmn[dmn_idx].ncd;
 
       /* Dimension is not a coordinate */
       if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %zu (",

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.57 2013-03-02 03:03:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.58 2013-03-02 22:37:30 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -847,10 +847,10 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
     crd_sct *crd=NULL; /* [sct] Coordinate dimension */
 
     /* This dimension has a coordinate variable */
-    if (var_trv->var_dmn.is_crd_var[dmn_idx] == True){
+    if (var_trv->var_dmn[dmn_idx].is_crd_var == True){
 
       /* Get coordinate from table */
-      crd=var_trv->var_dmn.crd[dmn_idx];
+      crd=var_trv->var_dmn[dmn_idx].crd;
       dmn_cmn[dmn_idx].sz=crd->sz;
       dmn_cmn[dmn_idx].is_rec_dmn=crd->is_rec_dmn;
       dmn_cmn[dmn_idx].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
@@ -858,10 +858,10 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
       strcpy(dmn_cmn[dmn_idx].nm,crd->nm);
 
       /* This dimension does not has a coordinate variable, it must have a unique dimension */
-    }else if (var_trv->var_dmn.is_crd_var[dmn_idx] == False){
+    }else if (var_trv->var_dmn[dmn_idx].is_crd_var == False){
 
       /* Get unique dimesion from table */
-      dmn_trv=var_trv->var_dmn.ncd[dmn_idx];
+      dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
       dmn_cmn[dmn_idx].sz=dmn_trv->sz;
       dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
       dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;

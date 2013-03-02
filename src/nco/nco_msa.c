@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.194 2013-03-02 03:03:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.195 2013-03-02 22:37:30 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1475,11 +1475,11 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
       for(int idx=0;idx<var_trv->nbr_dmn;idx++){
 
-        assert(strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn.dmn_nm[idx]) == 0);
+        assert(strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn[idx].dmn_nm) == 0);
 
         if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s <%s>: reading dimension[%d]:%s: ",prg_nm_get(),fnc_nm,
-            var_trv->nm_fll,idx,var_trv->var_dmn.dmn_nm_fll[idx]);
+            var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
         }
 
 
@@ -1487,10 +1487,10 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         dim[idx].nm=lmt_msa[idx]->dmn_nm;
 
         /* This dimension is not a coordinate variable, do not read... */
-        if (var_trv->var_dmn.is_crd_var[idx] == False){
+        if (var_trv->var_dmn[idx].is_crd_var == False){
 
           if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"...<%s> is not a coordinate variable\n",var_trv->var_dmn.dmn_nm_fll[idx]);
+            (void)fprintf(stdout,"...<%s> is not a coordinate variable\n",var_trv->var_dmn[idx].dmn_nm_fll);
           }
 
           dim[idx].is_crd_dmn=False;
@@ -1498,14 +1498,14 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
           continue;
 
           /* This dimension is a coordinate variable, read it... */
-        }else if (var_trv->var_dmn.is_crd_var[idx] == True){
+        }else if (var_trv->var_dmn[idx].is_crd_var == True){
 
           if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"coordinate variable <%s> found\n",var_trv->var_dmn.dmn_nm_fll[idx]);
+            (void)fprintf(stdout,"coordinate variable <%s> found\n",var_trv->var_dmn[idx].dmn_nm_fll);
           }
 
           /* Get coordinate from table */
-          crd_sct *crd=var_trv->var_dmn.crd[idx];
+          crd_sct *crd=var_trv->var_dmn[idx].crd;
 
           /* MSA "var_sct" members needed to read coordinate read are only: group ID, variable ID, variable type */
 
@@ -1942,10 +1942,10 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
     (*lmt_msa)[dmn_idx_var]=(lmt_msa_sct *)nco_malloc(sizeof(lmt_msa_sct));
 
     /* This dimension has a coordinate variable */
-    if (var_trv->var_dmn.is_crd_var[dmn_idx_var] == True){
+    if (var_trv->var_dmn[dmn_idx_var].is_crd_var == True){
 
       /* Get number of limits */
-      int lmt_dmn_nbr=var_trv->var_dmn.crd[dmn_idx_var]->lmt_msa.lmt_dmn_nbr;
+      int lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.lmt_dmn_nbr;
 
       /* Initialize to NULL the limit array */
       (*lmt_msa)[dmn_idx_var]->lmt_dmn=NULL;
@@ -1954,13 +1954,13 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       if (lmt_dmn_nbr) (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
 
       /* And deep-copy the structure made while building limits  */
-      (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn.crd[dmn_idx_var]->lmt_msa.BASIC_DMN;
-      (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn.crd[dmn_idx_var]->lmt_msa.dmn_cnt;
-      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn.crd[dmn_idx_var]->nm);
-      (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn.crd[dmn_idx_var]->sz;
-      (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn.crd[dmn_idx_var]->lmt_msa.lmt_dmn_nbr;
-      (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn.crd[dmn_idx_var]->lmt_msa.MSA_USR_RDR;
-      (*lmt_msa)[dmn_idx_var]->WRP=var_trv->var_dmn.crd[dmn_idx_var]->lmt_msa.WRP;
+      (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.BASIC_DMN;
+      (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.dmn_cnt;
+      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].crd->nm);
+      (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn[dmn_idx_var].crd->sz;
+      (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.lmt_dmn_nbr;
+      (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.MSA_USR_RDR;
+      (*lmt_msa)[dmn_idx_var]->WRP=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.WRP;
 
       /* Loop needed limits */
       for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
@@ -1972,7 +1972,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
         (void)nco_lmt_init((*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
 
         /* Deep copy from table to local array */ 
-        (void)nco_lmt_cpy(var_trv->var_dmn.crd[dmn_idx_var]->lmt_msa.lmt_dmn[lmt_idx],(*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
+        (void)nco_lmt_cpy(var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.lmt_dmn[lmt_idx],(*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
 
       } /* End Loop needed limits */
 
@@ -1999,22 +1999,22 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
     } /* If there are limits for this variable dimension, get MSA from table */
 
     /* This dimension does not has a coordinate variable, it must have a unique dimension pointer */
-    else if (var_trv->var_dmn.is_crd_var[dmn_idx_var] == False){
+    else if (var_trv->var_dmn[dmn_idx_var].is_crd_var == False){
 
       /* Get number of limits */
-      int lmt_dmn_nbr=var_trv->var_dmn.ncd[dmn_idx_var]->lmt_msa.lmt_dmn_nbr;
+      int lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.lmt_dmn_nbr;
 
       /* If limits, make space for them */
       if (lmt_dmn_nbr) (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
 
       /* And deep-copy the structure made while building limits  */
-      (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn.ncd[dmn_idx_var]->lmt_msa.BASIC_DMN;
-      (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn.ncd[dmn_idx_var]->lmt_msa.dmn_cnt;
-      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn.ncd[dmn_idx_var]->nm);
-      (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn.ncd[dmn_idx_var]->sz;
-      (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn.ncd[dmn_idx_var]->lmt_msa.lmt_dmn_nbr;
-      (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn.ncd[dmn_idx_var]->lmt_msa.MSA_USR_RDR;
-      (*lmt_msa)[dmn_idx_var]->WRP=var_trv->var_dmn.ncd[dmn_idx_var]->lmt_msa.WRP;
+      (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.BASIC_DMN;
+      (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.dmn_cnt;
+      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].ncd->nm);
+      (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn[dmn_idx_var].ncd->sz;
+      (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.lmt_dmn_nbr;
+      (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.MSA_USR_RDR;
+      (*lmt_msa)[dmn_idx_var]->WRP=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.WRP;
 
       /* Loop needed limits */
       for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
@@ -2026,7 +2026,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
         (void)nco_lmt_init((*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
 
         /* Deep copy from table to local array */ 
-        (void)nco_lmt_cpy(var_trv->var_dmn.ncd[dmn_idx_var]->lmt_msa.lmt_dmn[lmt_idx],(*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
+        (void)nco_lmt_cpy(var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.lmt_dmn[lmt_idx],(*lmt_msa)[dmn_idx_var]->lmt_dmn[lmt_idx]);
 
       } /* End Loop needed limits */
 

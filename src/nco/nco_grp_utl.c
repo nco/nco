@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.589 2013-03-02 21:41:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.590 2013-03-02 22:37:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1683,13 +1683,13 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
                 if(strcmp(dmn_fll.nm_fll,dmn_nm_fll) == 0){
 
                   /* Store full dimension name  */
-                  trv_tbl->lst[uidx].var_dmn.dmn_nm_fll[dmn_idx_var]=strdup(dmn_nm_fll);
+                  trv_tbl->lst[uidx].var_dmn[dmn_idx_var].dmn_nm_fll=strdup(dmn_nm_fll);
 
                   /* Store dimension name  */
-                  trv_tbl->lst[uidx].var_dmn.dmn_nm[dmn_idx_var]=strdup(dmn_nm_var);
+                  trv_tbl->lst[uidx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
 
                   /* Store full group name where dimension is located. NOTE: using member "grp_nm_fll" of dimension  */
-                  trv_tbl->lst[uidx].var_dmn.grp_nm_fll[dmn_idx_var]=strdup(dmn_fll.grp_nm_fll);
+                  trv_tbl->lst[uidx].var_dmn[dmn_idx_var].grp_nm_fll=strdup(dmn_fll.grp_nm_fll);
 
                   /* Free allocated */
                   dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
@@ -1986,12 +1986,12 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   /* Variable dimensions */
   for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
-    trv_tbl->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=NULL;
-    trv_tbl->lst[idx].var_dmn.dmn_nm[dmn_idx_var]=NULL;
-    trv_tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=NULL;
-    trv_tbl->lst[idx].var_dmn.is_crd_var[dmn_idx_var]=nco_obj_typ_err;
-    trv_tbl->lst[idx].var_dmn.crd[dmn_idx_var]=NULL;
-    trv_tbl->lst[idx].var_dmn.ncd[dmn_idx_var]=NULL;
+    trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm_fll=NULL;
+    trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=NULL;
+    trv_tbl->lst[idx].var_dmn[dmn_idx_var].grp_nm_fll=NULL;
+    trv_tbl->lst[idx].var_dmn[dmn_idx_var].is_crd_var=nco_obj_typ_err;
+    trv_tbl->lst[idx].var_dmn[dmn_idx_var].crd=NULL;
+    trv_tbl->lst[idx].var_dmn[dmn_idx_var].ncd=NULL;
   }
   
 
@@ -2068,12 +2068,12 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
     /* Variable dimensions */
     for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
-      trv_tbl->lst[idx].var_dmn.dmn_nm_fll[dmn_idx_var]=NULL;
-      trv_tbl->lst[idx].var_dmn.dmn_nm[dmn_idx_var]=NULL;
-      trv_tbl->lst[idx].var_dmn.grp_nm_fll[dmn_idx_var]=NULL;
-      trv_tbl->lst[idx].var_dmn.is_crd_var[dmn_idx_var]=nco_obj_typ_err;
-      trv_tbl->lst[idx].var_dmn.crd[dmn_idx_var]=NULL;
-      trv_tbl->lst[idx].var_dmn.ncd[dmn_idx_var]=NULL;
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm_fll=NULL;
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=NULL;
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].grp_nm_fll=NULL;
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].is_crd_var=nco_obj_typ_err;
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].crd=NULL;
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].ncd=NULL;
     }
  
     /* Free constructed name */
@@ -2435,10 +2435,10 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
       /* Full dimension names for each variable */
       for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++){
-        (void)fprintf(stdout,"[%d]%s",dmn_idx_var,trv.var_dmn.dmn_nm_fll[dmn_idx_var]); 
+        (void)fprintf(stdout,"[%d]%s",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm_fll); 
 
         /* Filter output */
-        if (trv.var_dmn.is_crd_var[dmn_idx_var] == True) (void)fprintf(stdout," (coordinate) : ");
+        if (trv.var_dmn[dmn_idx_var].is_crd_var == True) (void)fprintf(stdout," (coordinate) : ");
       }
 
       (void)fprintf(stdout,"\n");
@@ -3373,17 +3373,17 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           if(dmn_trv.crd_nbr == 0) {
 
             /* Match dimension name full to be found with with nm_fll of the unique dimension */ 
-            if(strcmp(var_trv.var_dmn.dmn_nm_fll[dmn_idx_var],dmn_trv.nm_fll ) == 0){
+            if(strcmp(var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,dmn_trv.nm_fll ) == 0){
 
               /* Mark as False the position of the bool array coordinate/non coordinate */
-              trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var]=False;
+              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=False;
 
               /* Store unique dimension (non coordinate ) */
-              trv_tbl->lst[var_idx].var_dmn.ncd[dmn_idx_var]=&trv_tbl->lst_dmn[dmn_idx];
+              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].ncd=&trv_tbl->lst_dmn[dmn_idx];
 
               if(dbg_lvl_get() >= nco_dbg_dev){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
-                  var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn.dmn_nm_fll[dmn_idx_var]);        
+                  var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
               } /* endif dbg */
 
             } /* No coordinates */
@@ -3408,7 +3408,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
 
         /* If non-initialized */
-        if (trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var] == nco_obj_typ_err ){ 
+        if (trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var == nco_obj_typ_err ){ 
 
           nco_bool fnd_crd=False;
 
@@ -3420,8 +3420,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
               crd_sct *crd=dmn_trv.crd[crd_idx];
 
-              char *dmn_nm_fll_var=var_trv.var_dmn.dmn_nm_fll[dmn_idx_var]; /* [sng] Dimension full name of the *variable* */
-              char *dmn_nm=var_trv.var_dmn.dmn_nm[dmn_idx_var]; /* [sng] Dimension name of the *variable* */
+              char *dmn_nm_fll_var=var_trv.var_dmn[dmn_idx_var].dmn_nm_fll; /* [sng] Dimension full name of the *variable* */
+              char *dmn_nm=var_trv.var_dmn[dmn_idx_var].dmn_nm; /* [sng] Dimension name of the *variable* */
       
               /* The coordinate variable must be in scope of the dimension */
               if(nco_scp_crd_dmn(dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll,crd->nm) == True){
@@ -3432,10 +3432,10 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
                 } /* endif dbg */
 
                 /* Mark as True */
-                trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var]=True;
+                trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
 
                 /* Store coordinate */
-                trv_tbl->lst[var_idx].var_dmn.crd[dmn_idx_var]=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx];
+                trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx];
 
                 fnd_crd=True;
 
@@ -3471,11 +3471,11 @@ loop_dmn_var:
       trv_sct var_trv=trv_tbl->lst[var_idx];   
       /* Loop dimensions for object (variable)  */
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
-        if(trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var] == nco_obj_typ_err) {
+        if(trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var == nco_obj_typ_err) {
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: OOPSY %s reports variable <%s> with NOT filled dimension [%d]%s\n",prg_nm_get(),fnc_nm,
-              var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn.dmn_nm_fll[dmn_idx_var]);        
+              var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
           } /* endif dbg */
         }
       } /* Loop dimensions for object (variable)  */
@@ -3497,7 +3497,7 @@ loop_dmn_var:
       trv_sct var_trv=trv_tbl->lst[var_idx];   
       /* Loop dimensions for object (variable)  */
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
-        assert(trv_tbl->lst[var_idx].var_dmn.is_crd_var[dmn_idx_var] != nco_obj_typ_err);
+        assert(trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var != nco_obj_typ_err);
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
   } /* Loop table */
