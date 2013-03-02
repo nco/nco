@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.219 2013-03-01 05:24:25 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.220 2013-03-02 12:04:31 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1569,6 +1569,46 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
+    
+    
+#ncks #62
+# Test "parallel" scope 
+#ncks: INFO nco_bld_var_dmn() reports variable </g16/g16g1/lon1> with dimension coordinate [0]/g16/g16g1/lon1
+# ncks -H -g g16g1 -v lon1 -d lon1,3,3,1  in_grp.nc
+#/g16/g16g1/lon1
+#lon1[3]=3 
+
+    $dsc_sng="Parallel scope MSA -g g16g1 -v lon1 -d lon1,3,3,1";
+    $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1 -d lon1,3,3,1  $in_pth_arg in_grp.nc";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="lon1[3]=3";
+    $tst_cmd[2]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     # to do    
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			 
+
+#ncks #63
+# Test "parallel" scope 
+#ncks: INFO nco_bld_var_dmn() reports variable </g16/g16g1/lon1_var> with dimension coordinate [0]/g16/g16g1/lon1
+# ncks -H -g g16g1 -v lon1 -d lon1,3,3,1  in_grp.nc
+#/g16/g16g1/lon1
+#lon1[1]=1 
+#/g16/g16g1/lon1_var
+#lon1[1]=1 lon1_var[1]=1 
+
+    $dsc_sng="Parallel scope MSA -g g16g1 -v lon1_var -d lon1,1,1,1";
+    $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp.nc";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="lon1[1]=1 lon1_var[1]=1";
+    $tst_cmd[2]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     # to do    
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			  
+         
      
      
      
