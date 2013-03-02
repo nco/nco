@@ -43,7 +43,8 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.71 2013-02-24 07:44:11 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.72 2013-03-02 06:42:14 pvicente Exp $";
+  
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
   
@@ -448,7 +449,7 @@ netcdf in_grp {
      variables:
      // MSA test -v lon1_var -d lon1,3.0, result is 3.
      float lon1(lon1);  //coordinate variable /g16/g16g1/lon1 that has dimension (/g16/lon1) in scope
-     float lon1_var(lon1); //variable with  associated coordinate variable down in scope at /lon1
+     float lon1_var(lon1); // variable /g16/g16g1/lon1_var that has dimension (/g16/lon1) in scope *and* coordinate (/g16/g16g1/lon1) in scope
      data:
      lon1=0.,1.,2.,3.;
      lon1_var=0.,1.,2.,3.;  

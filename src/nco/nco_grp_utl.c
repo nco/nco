@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.579 2013-03-02 03:03:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.580 2013-03-02 06:42:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3213,12 +3213,50 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 } /* nco_bld_lmt() */
 
 
+nco_bool
+nco_fnd_crd_var_dmn                   /* [fnc] Find coordinate object from dimension full name of a variable */
+(const char * const dmn_nm_fll_var,   /* I [sng] Dimension full name of the *variable* */
+ const char * const crd_nm_fll,       /* I [sng] Coordinate variable full name */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+{
+  /* Purpose: Auxiliary function for nco_bld_var_dmn(): assign variables dimensions to either coordinates or dimension structs
+ 
+  Use case:
+  variable /g16/g16g1/lon1_var with dimension (/g16/lon1) 
+  coordinate variable /g16/g16g1/lon1 in scope of previous variable with dimension (/g16/lon1) 
+  
+  Match dimension full name (/g16/lon1) of the variable /g16/g16g1/lon1_var,  
+  with coordinate /g16/g16g1/lon1 from the unique dimension (/g16/lon1)  
+  */
+
+  const char fnc_nm[]="nco_fnd_crd_var_dmn()"; /* [sng] Function name  */
+
+  /* Match  with dimension full name of the *variable* with coordinate full name from the unique dimension list */ 
+  if(strcmp(dmn_nm_fll_var,crd_nm_fll) == 0){
+
+    return True;
+  }
+
+  return False;
+
+} /* nco_bld_var_dmn() */
+
+
+
 void
 nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to either coordinates or dimension structs */
 (const int nc_id,                     /* I [ID] netCDF file ID [chk] */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
-  /* Purpose: Fill variable dimensions with pointers to either a coordinate variable or dimension structs with MSA */
+  /* Purpose: Fill variable dimensions with pointers to either a coordinate variable or dimension structs with MSA;
+  
+  Use case:
+  variable /g16/g16g1/lon1_var with dimension (/g16/lon1) 
+  coordinate variable /g16/g16g1/lon1 in scope of previous variable with dimension (/g16/lon1) 
+  
+  Match dimension full name (/g16/lon1) of the variable /g16/g16g1/lon1_var,  
+  with coordinate /g16/g16g1/lon1 from the unique dimension (/g16/lon1)  
+  */
 
   const char fnc_nm[]="nco_bld_var_dmn()"; /* [sng] Function name  */
 
@@ -3242,8 +3280,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
             crd_sct *crd=dmn_trv.crd[crd_idx];
 
-            /* Match possible coordinate variable name with dimension full name of the *variable* */ 
-            if(strcmp(crd->crd_nm_fll, var_trv.var_dmn.dmn_nm_fll[dmn_idx_var] ) == 0){
+            /* Match  with dimension full name of the *variable* with coordinate full name from the unique dimension list */ 
+            if(strcmp(var_trv.var_dmn.dmn_nm_fll[dmn_idx_var],crd->crd_nm_fll) == 0){
 
               if(dbg_lvl_get() >= nco_dbg_dev){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
@@ -3256,9 +3294,9 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
               /* Store the pointer needed for MSA to get limits */
               trv_tbl->lst[var_idx].var_dmn.crd[dmn_idx_var]=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx];
 
+              
             } /* Match possible coordinate variable name with dimension name */ 
           } /* Loop possible coordinate variables for this dimension  */
-	  
         } /* Loop unique dimensions list */
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
