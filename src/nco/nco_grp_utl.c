@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.598 2013-03-03 10:03:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.599 2013-03-03 10:25:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1670,145 +1670,7 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
 
 
 
-nco_bool                               /* O [flg] True if variable is in scope of dimension */
-nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope */
-(const trv_sct * const var_trv,        /* I [sct] GTT Object Variable */
- const dmn_fll_sct * const dmn_trv,    /* I [sct] GTT unique dimension */
- const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
-{
-  /* Purpose: Find if variable is in scope of the dimension: 
-  Use case in scope:
-  dimension /lon 
-  variable /g1/lon
-  Use case not in scope:
-  variable /lon
-  dimension /g1/lon
 
-  NOTE: deal with cases like
-  dimension: /lon
-  variable:  /g8/lon 
-  dimension: /g8/lon
-  */
-
-  const char fnc_nm[]="nco_var_dmn_scp()"; /* [sng] Function name */
-
-  const char sls_chr='/'; /* [chr] Slash character */
-
-  char *sbs_srt; /* [sng] Location of user-string match start in object path */
-  char *sbs_end; /* [sng] Location of user-string match end   in object path */
-
-  nco_bool flg_pth_srt_bnd=False; /* [flg] String begins at path component boundary */
-  nco_bool flg_pth_end_bnd=False; /* [flg] String ends   at path component boundary */
-
-  size_t usr_sng_lng;     /* [nbr] Length of variable name */
-  size_t var_nm_fll_lng;  /* [nbr] Length of full variable name */
-  size_t dmn_nm_fll_lng;  /* [nbr] Length of of full dimension name */
-
-  /* Most common case is for the unique dimension full name to match the full variable name   */
-  if (strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-    if(dbg_lvl_get() == nco_dbg_old){
-      (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,dmn_trv->nm_fll);
-    }
-    return True;
-  }
-
-  /* Deal with in scope cases */
-
-  var_nm_fll_lng=strlen(var_trv->nm_fll);
-  dmn_nm_fll_lng=strlen(dmn_trv->nm_fll);
-  usr_sng_lng=strlen(var_trv->nm);
-
-  /* Look for partial match, not necessarily on path boundaries; locate variable (str2) in full dimension name (str1) */
-  if((sbs_srt=strstr(dmn_trv->nm_fll,var_trv->nm))){
-
-    /* Ensure match spans (begins and ends on) whole path-component boundaries */
-
-    /* Does match begin at path component boundary ... directly on a slash? */
-    if(*sbs_srt == sls_chr){
-      flg_pth_srt_bnd=True;
-    }
-
-    /* ...or one after a component boundary? */
-    if((sbs_srt > dmn_trv->nm_fll) && (*(sbs_srt-1L) == sls_chr)){
-      flg_pth_srt_bnd=True;
-    }
-
-    /* Does match end at path component boundary ... directly on a slash? */
-    sbs_end=sbs_srt+usr_sng_lng-1L;
-
-    if(*sbs_end == sls_chr){
-      flg_pth_end_bnd=True;
-    }
-
-    /* ...or one before a component boundary? */
-    if(sbs_end <= dmn_trv->nm_fll+dmn_nm_fll_lng-1L){
-      if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0')){
-        flg_pth_end_bnd=True;
-      }
-    }
-
-    /* If match is on both ends of '/' then it's a "real" name, not for example "lat_lon" as a variable looking for "lon" */
-    if (flg_pth_srt_bnd && flg_pth_end_bnd){
-
-      /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
-      if (var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
-            var_trv->nm_fll,dmn_trv->nm_fll);
-        }
-        return True;
-
-        /* Variable in scope of dimension */
-      }else if (var_nm_fll_lng>dmn_nm_fll_lng){
-
-        /* NOTE: deal with cases like
-        dimension: /lon
-        variable:  /g8/lon 
-        dimension: /g8/lon
-        */
-
-        /* Loop unique dimensions list in groups */
-        for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-          dmn_fll_sct dmn=trv_tbl->lst_dmn[dmn_idx]; 
-          /* Loop all objects */
-          for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-            trv_sct var=trv_tbl->lst[var_idx];
-            /* Interested in variables only */
-            if(var.nco_typ == nco_obj_typ_var){
-              /* Is there a *full* match already for the *input* dimension ?  */
-              if(strcmp(var_trv->nm_fll,dmn.nm_fll) == 0 ){
-                if(dbg_lvl_get() == nco_dbg_old){
-                  (void)fprintf(stdout,"%s: INFO %s variable <%s> has another dimension full match <%s>:\n",prg_nm_get(),fnc_nm,
-                    var_trv->nm_fll,dmn.nm_fll);
-                }
-                return False;
-              } /* Is there a *full* match already?  */
-            } /* Interested in variables only */
-          } /* Loop all objects */
-        } /* Loop unique dimensions list in groups */
-
-
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
-            var_trv->nm_fll,dmn_trv->nm_fll);
-        }
-        return True;
-
-        /* Variable out of scope of dimension */
-      }else if (var_nm_fll_lng < dmn_nm_fll_lng){
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
-            var_trv->nm_fll,dmn_trv->nm_fll);
-        }
-        return False;
-
-      } /* Absolute match  */
-    } /* If match is on both ends of '/' then it's a "real" name, not for example "lat_lon" as a variable looking for "lon" */
-  }/* Look for partial match, not necessarily on path boundaries */
-
-  return False;
-} /* nco_var_dmn_scp() */
 
 int /* [rcd] Return code */
 nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */
@@ -2924,31 +2786,151 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 
 
-static int                  /* [nbr] Group depth */
-nco_grp_dpt                 /* [fnc] Return group depth of full group name */
-(char * const grp_nm_fll)   /* I [sng] Absolute group name  */
+nco_bool                               /* O [flg] True if variable is in scope of dimension */
+nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope */
+(const trv_sct * const var_trv,        /* I [sct] GTT Object Variable */
+ const dmn_fll_sct * const dmn_trv,    /* I [sct] GTT unique dimension */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Return group depth of full group name */
+  /* Purpose: Find if variable is in scope of the dimension: 
+  Use case in scope:
+  dimension /lon 
+  variable /g1/lon
+  Use case not in scope:
+  variable /lon
+  dimension /g1/lon
 
-  const char sls_sng[]="/"; /* [sng] Slash string */
+  NOTE: deal with cases like
+  dimension: /lon
+  variable:  /g8/lon 
+  dimension: /g8/lon
+  */
 
-  char *sls_psn; /* [sng] Current position of group path search */
+  const char fnc_nm[]="nco_var_dmn_scp()"; /* [sng] Function name */
 
-  int grp_dpt=0; /* [nbr] Depth of group (root = 0) */
+  const char sls_chr='/'; /* [chr] Slash character */
 
-  /* Compute group depth */
-  sls_psn=grp_nm_fll;
-  if(!strcmp(grp_nm_fll,sls_sng)) grp_dpt=0; else grp_dpt=1;
-  while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
+  char *sbs_srt; /* [sng] Location of user-string match start in object path */
+  char *sbs_end; /* [sng] Location of user-string match end   in object path */
 
-  return grp_dpt;
+  nco_bool flg_pth_srt_bnd=False; /* [flg] String begins at path component boundary */
+  nco_bool flg_pth_end_bnd=False; /* [flg] String ends   at path component boundary */
 
-} /* nco_grp_dpt() */
+  size_t usr_sng_lng;     /* [nbr] Length of variable name */
+  size_t var_nm_fll_lng;  /* [nbr] Length of full variable name */
+  size_t dmn_nm_fll_lng;  /* [nbr] Length of of full dimension name */
+
+  /* Most common case is for the unique dimension full name to match the full variable name   */
+  if (strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
+    if(dbg_lvl_get() == nco_dbg_old){
+      (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
+        var_trv->nm_fll,dmn_trv->nm_fll);
+    }
+    return True;
+  }
+
+  /* Deal with in scope cases */
+
+  var_nm_fll_lng=strlen(var_trv->nm_fll);
+  dmn_nm_fll_lng=strlen(dmn_trv->nm_fll);
+  usr_sng_lng=strlen(var_trv->nm);
+
+  /* Look for partial match, not necessarily on path boundaries; locate variable (str2) in full dimension name (str1) */
+  if((sbs_srt=strstr(dmn_trv->nm_fll,var_trv->nm))){
+
+    /* Ensure match spans (begins and ends on) whole path-component boundaries */
+
+    /* Does match begin at path component boundary ... directly on a slash? */
+    if(*sbs_srt == sls_chr){
+      flg_pth_srt_bnd=True;
+    }
+
+    /* ...or one after a component boundary? */
+    if((sbs_srt > dmn_trv->nm_fll) && (*(sbs_srt-1L) == sls_chr)){
+      flg_pth_srt_bnd=True;
+    }
+
+    /* Does match end at path component boundary ... directly on a slash? */
+    sbs_end=sbs_srt+usr_sng_lng-1L;
+
+    if(*sbs_end == sls_chr){
+      flg_pth_end_bnd=True;
+    }
+
+    /* ...or one before a component boundary? */
+    if(sbs_end <= dmn_trv->nm_fll+dmn_nm_fll_lng-1L){
+      if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0')){
+        flg_pth_end_bnd=True;
+      }
+    }
+
+    /* If match is on both ends of '/' then it's a "real" name, not for example "lat_lon" as a variable looking for "lon" */
+    if (flg_pth_srt_bnd && flg_pth_end_bnd){
+
+      /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
+      if (var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
+        if(dbg_lvl_get() == nco_dbg_old){
+          (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
+            var_trv->nm_fll,dmn_trv->nm_fll);
+        }
+        return True;
+
+        /* Variable in scope of dimension */
+      }else if (var_nm_fll_lng>dmn_nm_fll_lng){
+
+        /* NOTE: deal with cases like
+        dimension: /lon
+        variable:  /g8/lon 
+        dimension: /g8/lon
+        */
+
+        /* Loop unique dimensions list in groups */
+        for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+          dmn_fll_sct dmn=trv_tbl->lst_dmn[dmn_idx]; 
+          /* Loop all objects */
+          for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+            trv_sct var=trv_tbl->lst[var_idx];
+            /* Interested in variables only */
+            if(var.nco_typ == nco_obj_typ_var){
+              /* Is there a *full* match already for the *input* dimension ?  */
+              if(strcmp(var_trv->nm_fll,dmn.nm_fll) == 0 ){
+                if(dbg_lvl_get() == nco_dbg_old){
+                  (void)fprintf(stdout,"%s: INFO %s variable <%s> has another dimension full match <%s>:\n",prg_nm_get(),fnc_nm,
+                    var_trv->nm_fll,dmn.nm_fll);
+                }
+                return False;
+              } /* Is there a *full* match already?  */
+            } /* Interested in variables only */
+          } /* Loop all objects */
+        } /* Loop unique dimensions list in groups */
+
+
+        if(dbg_lvl_get() == nco_dbg_old){
+          (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
+            var_trv->nm_fll,dmn_trv->nm_fll);
+        }
+        return True;
+
+        /* Variable out of scope of dimension */
+      }else if (var_nm_fll_lng < dmn_nm_fll_lng){
+        if(dbg_lvl_get() == nco_dbg_old){
+          (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
+            var_trv->nm_fll,dmn_trv->nm_fll);
+        }
+        return False;
+
+      } /* Absolute match  */
+    } /* If match is on both ends of '/' then it's a "real" name, not for example "lat_lon" as a variable looking for "lon" */
+  }/* Look for partial match, not necessarily on path boundaries */
+
+  return False;
+} /* nco_var_dmn_scp() */
  
 
-static nco_bool
+nco_bool
 nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of dimension ?  */
-(char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
+(trv_sct *var_trv,                    /* I [sct] Variable object */
+ char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
  char * dmn_nm,                       /* I [sng] Dimension name of the *variable* */
  char * crd_nm_fll,                   /* I [sng] Coordinate variable full name */
  char * crd_nm)                       /* I [sng] Coordinate variable name */
@@ -2988,7 +2970,6 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
   dmn_nm_lng=strlen(dmn_nm);
   crd_nm_fll_lng=strlen(crd_nm_fll);
 
-  /* Deal with in scope cases */
   
   /* Look for partial match, not necessarily on path boundaries; locate variable (str2) in full dimension name (str1) */
   if((sbs_srt=strstr(crd_nm_fll,dmn_nm))){
@@ -3025,7 +3006,7 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
       /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev */
       if (dmn_nm_fll_var_lng == crd_nm_fll_lng && strcmp(dmn_nm_fll_var,crd_nm_fll) == 0){
         if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
+          (void)fprintf(stdout,"%s: INFO %s found absolute match of dimension <%s> and coordinate <%s>:\n",prg_nm_get(),fnc_nm,
             dmn_nm_fll_var,crd_nm_fll);
         }
         return True;
@@ -3139,8 +3120,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
               /* Is there a variable with this dimension name anywhere? (relative name)  */
               if(strcmp(dmn_nm,crd->nm) == 0){
 
-                /* The coordinate variable must be in scope of the dimension */
-                if(nco_scp_crd_dmn(dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll,crd->nm) == True){
+                /* The coordinate variable must be in scope of *both* the dimension and the variable itself */
+                if(nco_scp_crd_dmn(&var_trv,dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll,crd->nm) == True){
 
                   if(dbg_lvl_get() >= nco_dbg_dev){
                     (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
