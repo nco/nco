@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.601 2013-03-03 11:42:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.602 2013-03-03 22:21:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1622,8 +1622,8 @@ nco_bld_dmn_trv                       /* [fnc] Build dimension info for all vari
                   /* Store full dimension name  */
                   trv_tbl->lst[uidx].var_dmn[dmn_idx_var].dmn_nm_fll=strdup(dmn_nm_fll);
 
-                  /* Store dimension name  */
-                  trv_tbl->lst[uidx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
+                  /* The relative dimension name was already stored   */
+                  assert(strcmp(trv_tbl->lst[uidx].var_dmn[dmn_idx_var].dmn_nm,dmn_nm_var) == 0);
 
                   /* Store full group name where dimension is located. NOTE: using member "grp_nm_fll" of dimension  */
                   trv_tbl->lst[uidx].var_dmn[dmn_idx_var].grp_nm_fll=strdup(dmn_fll.grp_nm_fll);
@@ -1695,6 +1695,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   int dmn_ids[NC_MAX_DIMS]; /* [ID]  Dimension IDs array */ 
   int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited (record) dimensions IDs array */
+  int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
 
   int *grp_ids; /* [ID] Sub-group IDs array */  
 
@@ -1800,6 +1801,9 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     /* Get type of variable and number of dimensions */
     rcd+=nco_inq_var(grp_id,var_idx,var_nm,&var_typ,&nbr_dmn_var,(int *)NULL,&nbr_att);
 
+    /* Get dimension IDs for variable */
+    (void)nco_inq_vardimid(grp_id,var_idx,dmn_id_var);
+
     /* Allocate path buffer and include space for trailing NUL */ 
     var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2L);
 
@@ -1867,12 +1871,27 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
     /* Variable dimensions */
     for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
-      trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm_fll=NULL;
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=NULL;
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm_fll=NULL;
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].grp_nm_fll=NULL;
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].is_crd_var=nco_obj_typ_err;
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].crd=NULL;
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].ncd=NULL;
+    }
+
+     /* Variable dimensions */
+    for(int dmn_idx_var=0;dmn_idx_var<nbr_dmn_var;dmn_idx_var++){
+
+      char dmn_nm_var[NC_MAX_NAME+1]; /* [sng] Dimension name */
+      long dmn_sz_var;                /* [nbr] Dimension size */ 
+
+      /* Get dimension name 
+      nc_inq_dimname() currently returns only a simple dimension
+      name, without a prefix identifying the group it came from.
+      */
+      (void)nco_inq_dim(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var,&dmn_sz_var);
+
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
     }
  
     /* Free constructed name */
