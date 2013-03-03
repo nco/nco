@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.594 2013-03-03 05:50:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.595 2013-03-03 07:39:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2142,11 +2142,6 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
         /* Is there a variable with this dimension name anywhere? (relative name)  */
         if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
 
-          if(dbg_lvl_get() == nco_dbg_old){
-            (void)fprintf(stdout,"%s: INFO %s looking for possible coordinate variable <%s>:\n",prg_nm_get(),fnc_nm,
-              var_trv.nm_fll);
-          }
-
           /* Is variable in scope of dimension ? */
           if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
@@ -2156,6 +2151,13 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
             /* If the group dimension is a record dimension then the variable is a record variable */
             trv_tbl->lst[var_idx].is_rec_var=dmn_trv.is_rec_dmn;
 
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: INFO %s <%s> is ",prg_nm_get(),fnc_nm,var_trv.nm_fll);
+              if (dmn_trv.is_rec_dmn) (void)fprintf(stdout,"(record) ");
+              (void)fprintf(stdout,"coordinate\n");
+            }
+
+            /* Go to next variable */
             break;
 
           }/* Is variable in scope of dimension ? */
