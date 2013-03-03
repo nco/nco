@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.599 2013-03-03 10:25:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.600 2013-03-03 10:39:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2806,19 +2806,18 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
   dimension: /g8/lon
   */
 
-  const char fnc_nm[]="nco_var_dmn_scp()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_var_dmn_scp()";   /* [sng] Function name */
 
-  const char sls_chr='/'; /* [chr] Slash character */
+  const char sls_chr='/';                    /* [chr] Slash character */
+  char *sbs_srt;                             /* [sng] Location of user-string match start in object path */
+  char *sbs_end;                             /* [sng] Location of user-string match end   in object path */
 
-  char *sbs_srt; /* [sng] Location of user-string match start in object path */
-  char *sbs_end; /* [sng] Location of user-string match end   in object path */
+  nco_bool flg_pth_srt_bnd=False;            /* [flg] String begins at path component boundary */
+  nco_bool flg_pth_end_bnd=False;            /* [flg] String ends   at path component boundary */
 
-  nco_bool flg_pth_srt_bnd=False; /* [flg] String begins at path component boundary */
-  nco_bool flg_pth_end_bnd=False; /* [flg] String ends   at path component boundary */
-
-  size_t usr_sng_lng;     /* [nbr] Length of variable name */
-  size_t var_nm_fll_lng;  /* [nbr] Length of full variable name */
-  size_t dmn_nm_fll_lng;  /* [nbr] Length of of full dimension name */
+  size_t var_sng_lng;                        /* [nbr] Length of variable name */
+  size_t var_nm_fll_lng;                     /* [nbr] Length of full variable name */
+  size_t dmn_nm_fll_lng;                     /* [nbr] Length of of full dimension name */
 
   /* Most common case is for the unique dimension full name to match the full variable name   */
   if (strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
@@ -2833,7 +2832,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
   var_nm_fll_lng=strlen(var_trv->nm_fll);
   dmn_nm_fll_lng=strlen(dmn_trv->nm_fll);
-  usr_sng_lng=strlen(var_trv->nm);
+  var_sng_lng=strlen(var_trv->nm);
 
   /* Look for partial match, not necessarily on path boundaries; locate variable (str2) in full dimension name (str1) */
   if((sbs_srt=strstr(dmn_trv->nm_fll,var_trv->nm))){
@@ -2851,7 +2850,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
     }
 
     /* Does match end at path component boundary ... directly on a slash? */
-    sbs_end=sbs_srt+usr_sng_lng-1L;
+    sbs_end=sbs_srt+var_sng_lng-1L;
 
     if(*sbs_end == sls_chr){
       flg_pth_end_bnd=True;
@@ -2947,19 +2946,22 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
   with coordinate /g16/g16g1/lon1 from the unique dimension (/g16/lon1)  
   */
 
-  const char fnc_nm[]="nco_fnd_crd_var_dmn()"; /* [sng] Function name  */
+  const char fnc_nm[]="nco_fnd_crd_var_dmn()";  /* [sng] Function name  */
 
-  const char sls_chr='/'; /* [chr] Slash character */
+  const char sls_chr='/';                       /* [chr] Slash character */
+  char *sbs_srt;                                /* [sng] Location of user-string match start in object path */
+  char *sbs_end;                                /* [sng] Location of user-string match end   in object path */
 
-  char *sbs_srt; /* [sng] Location of user-string match start in object path */
-  char *sbs_end; /* [sng] Location of user-string match end   in object path */
+  nco_bool flg_pth_srt_bnd=False;               /* [flg] String begins at path component boundary */
+  nco_bool flg_pth_end_bnd=False;               /* [flg] String ends   at path component boundary */
+  nco_bool scp_dmn=False;                       /* [flg] Coordinate is in dimension scope */              
+  nco_bool scp_var=False;                       /* [flg] Coordinate is in variable scope */          
 
-  nco_bool flg_pth_srt_bnd=False; /* [flg] String begins at path component boundary */
-  nco_bool flg_pth_end_bnd=False; /* [flg] String ends   at path component boundary */
-
-  size_t dmn_nm_lng;      /* [nbr] Length of variable name */
-  size_t dmn_nm_fll_var_lng;  /* [nbr] Length of full variable name */
-  size_t crd_nm_fll_lng;  /* [nbr] Length of of full dimension name */
+  size_t dmn_nm_lng;                            /* [nbr] Length of coordinate name */
+  size_t dmn_nm_fll_var_lng;                    /* [nbr] Length of full coordinate name */
+  size_t crd_nm_fll_lng;                        /* [nbr] Length of of full dimension name */
+  size_t var_nm_fll_lng;                        /* [nbr] Length of full variable name */ 
+  size_t dmn_nm_fll_lng;                        /* [nbr] Length of of full dimension name */
 
   /* Don't even bother... */
   if (strcmp(dmn_nm,crd_nm) != 0){
@@ -3009,7 +3011,7 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
           (void)fprintf(stdout,"%s: INFO %s found absolute match of dimension <%s> and coordinate <%s>:\n",prg_nm_get(),fnc_nm,
             dmn_nm_fll_var,crd_nm_fll);
         }
-        return True;
+        scp_dmn=True;
 
         /* Coordinate in scope of dimension name */
       }else if (crd_nm_fll_lng>dmn_nm_fll_var_lng){
@@ -3018,13 +3020,15 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
           (void)fprintf(stdout,"%s: INFO %s found coordinate <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             dmn_nm_fll_var,crd_nm_fll);
         }
-        return True;
+        scp_dmn=True;
       }
 
     } /* If match is on both ends of '/' then it's a "real" name */
   }/* Look for partial match, not necessarily on path boundaries */
 
-  return False;
+
+
+  return scp_dmn;
 
 } /* nco_scp_crd_dmn() */
 
