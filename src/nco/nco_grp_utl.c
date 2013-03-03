@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.595 2013-03-03 07:39:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.596 2013-03-03 08:11:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -643,7 +643,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   } /* endif dbg */
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,False,fnc_nm);
 
   return (nco_bool)True;
 
@@ -663,7 +663,7 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
       trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr;
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,True,fnc_nm);
 
   return;
 } /* end nco_xtr_xcl() */
@@ -694,7 +694,7 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 
   /* Print extraction list in debug mode */
   const char fnc_nm[]="nco_xtr_crd_add()"; /* [sng] Function name */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,True,fnc_nm);
 
   return;
 } /* end nco_xtr_crd_add() */
@@ -719,7 +719,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
 
   /* Print extraction list in debug mode */
   const char fnc_nm[]="nco_xtr_cf_add()"; /* [sng] Function name */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,True,fnc_nm);
 
   return;
 } /* nco_xtr_cf_add() */
@@ -1096,7 +1096,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
 
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)xtr_lst_prn(xtr_lst,xtr_nbr);
-    (void)trv_tbl_prn_xtr(trv_tbl,"nco_trv_tbl_chk()");
+    (void)trv_tbl_prn_xtr(trv_tbl,False,"nco_trv_tbl_chk()");
   }
   xtr_lst_chk=nco_trv_tbl_nm_id(nc_id,&xtr_nbr_chk,trv_tbl);
   (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
@@ -1356,7 +1356,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
   /* Print extraction list in developer mode */
-  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,True,fnc_nm);
 
 } /* end nco_xtr_dfn() */
 
@@ -1443,7 +1443,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
 
   /* Print extraction list in developer mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,True,fnc_nm);
 
 } /* end nco_xtr_wrt() */
 
