@@ -1,3 +1,8 @@
+2013-03-02  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_xtr_crd_add() Add all coordinates to extraction list
+  re-written for GTT instead of using netCDF API calls
+
 2013-02-27  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_cpy_msa_lmt() Copy MSA structs GTT to local function (print or write)
