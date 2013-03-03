@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.591 2013-03-03 01:08:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.592 2013-03-03 01:56:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -677,83 +677,20 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
      Find all coordinates (variables with same names and sizes as dimensions) and
      ensure they are marked for extraction */
 
-  const int flg_prn=0;           /* [flg] All the dimensions in all parent groups will also be retrieved */        
+  /* Loop table */
+  for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
 
-  char *var_nm_fll;              /* [sng] Full path of variable */
+    /* Filter variables  */
+    if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
+      trv_sct var_trv=trv_tbl->lst[var_idx]; 
 
-  char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name */ 
-  char var_nm[NC_MAX_NAME+1];    /* [sng] Variable name */ 
+      /* If variable is coordinate variable then mark it for extraction ...simple */
+      if (var_trv.is_crd_var){
+        trv_tbl->lst[var_idx].flg_xtr=True;
+      }
 
-  int *var_ids;                  /* [ID]  Variable IDs array */
-
-  int dmn_ids[NC_MAX_DIMS];      /* [nbr] Dimensions IDs array */
-  int dmn_ids_ult[NC_MAX_DIMS];  /* [ID]  Unlimited dimensions IDs array */
-  int grp_id;                    /* [ID]  Group ID in input file */
-  int nbr_att;                   /* [nbr] Number of attributes for group */
-  int nbr_dmn;                   /* [nbr] Number of dimensions for group */
-  int nbr_dmn_ult;               /* [nbr] Number of unlimited dimensions */
-  int nbr_grp;                   /* [nbr] Number of groups for group */
-  int nbr_var;                   /* [nbr] Number of variables for group */
-
-  long dmn_sz;                   /* [nbr] Dimension size */ 
-
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.nco_typ == nco_obj_typ_grp){
-
-      /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
-
-      /* Obtain info for group */
-      (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-      (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
-
-      /* Get dimension IDs for group */
-      (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
-
-      /* Allocate space for and obtain variable IDs in current group */
-      var_ids=(int *)nco_malloc(nbr_var*sizeof(int));
-      (void)nco_inq_varids(grp_id,&nbr_var,var_ids);
-
-      /* Get number of unlimited dimensions */
-      (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
-
-      /* Get variables for this group */
-      for(int idx_var=0;idx_var<nbr_var;idx_var++){
-        var_nm_fll=NULL;
-
-        /* Get name of current variable in current group NOTE: using obtained IDs array */
-        (void)nco_inq_varname(grp_id,var_ids[idx_var],var_nm);
-
-        /* Allocate path buffer; add space for trailing NUL */ 
-        var_nm_fll=(char*)nco_malloc(strlen(trv.nm_fll)+strlen(var_nm)+2L);
-
-        /* Initialize path with the current absolute group path */
-        strcpy(var_nm_fll,trv.nm_fll);
-        /* If not root group, concatenate separator */
-        if(!strcmp(trv.nm_fll,"/")) strcat(var_nm_fll,"/");
-        /* Concatenate variable to absolute group path */
-        strcat(var_nm_fll,var_nm);
-
-        /* Search all dimensions in group */
-        for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-          /* Get dimension info */
-          (void)nco_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_nm,&dmn_sz);
-
-          /* Compare variable name with dimension name */
-          if(!strcmp(dmn_nm,var_nm)) (void)trv_tbl_mrk_xtr(var_nm_fll,trv_tbl);
-        } /* end loop over dimensions */
-
-        /* Memory management after current variable */
-        var_nm_fll=(char *)nco_free(var_nm_fll);
-
-      } /* end get variables for this group */  
-
-      /* Memory management after current group */
-      var_ids=(int *)nco_free(var_ids);
-
-    } /* end nco_obj_typ_grp */
-  } /* end uidx  */
+    } /* Filter variables  */
+  } /* Loop table */
 
   /* Print extraction list in debug mode */
   const char fnc_nm[]="nco_xtr_crd_add()"; /* [sng] Function name */
