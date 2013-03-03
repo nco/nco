@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.242 2013-03-02 02:02:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.243 2013-03-03 02:56:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -159,7 +159,7 @@ nco_prn_att_trv                       /* [fnc] Print all attributes of single va
 void
 nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id,                     /* I netCDF file ID */
- trv_tbl_sct *trv_tbl);               /* I/O [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
 nco_get_prg_info(void);               /* [fnc] Get program info */
