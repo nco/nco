@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.596 2013-03-03 08:11:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.597 2013-03-03 09:16:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2254,11 +2254,6 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
         /* Is there a variable with this dimension name anywhere? (relative name)  */
         if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
 
-          if(dbg_lvl_get() == nco_dbg_old){
-            (void)fprintf(stdout,"%s: INFO %s looking for possible coordinate variable <%s>:\n",prg_nm_get(),fnc_nm,
-              var_trv.nm_fll);
-          }
-
           /* Is variable in scope of dimension ? */
           if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
@@ -2300,8 +2295,14 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_crr=0;
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn=NULL;
 
-            /* Limits are initialized in build limits function */
+            crd_sct *crd=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx];
+            if(dbg_lvl_get() >= nco_dbg_dev){           
+              (void)fprintf(stdout,"%s: INFO %s variable <%s> has coordinate <%s> from dimension <%s>\n",prg_nm_get(),fnc_nm,
+                var_trv.nm_fll,crd->crd_nm_fll,crd->dmn_nm_fll);
+            }
 
+            /* Limits are initialized in build limits function */
+        
             /* Incrementr coordinate index for current dimension */
             crd_idx++;
 
