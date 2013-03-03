@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.600 2013-03-03 10:39:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.601 2013-03-03 11:42:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2954,14 +2954,11 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
 
   nco_bool flg_pth_srt_bnd=False;               /* [flg] String begins at path component boundary */
   nco_bool flg_pth_end_bnd=False;               /* [flg] String ends   at path component boundary */
-  nco_bool scp_dmn=False;                       /* [flg] Coordinate is in dimension scope */              
-  nco_bool scp_var=False;                       /* [flg] Coordinate is in variable scope */          
+  nco_bool scp_dmn=False;                       /* [flg] Coordinate is in dimension scope */                      
 
   size_t dmn_nm_lng;                            /* [nbr] Length of coordinate name */
   size_t dmn_nm_fll_var_lng;                    /* [nbr] Length of full coordinate name */
   size_t crd_nm_fll_lng;                        /* [nbr] Length of of full dimension name */
-  size_t var_nm_fll_lng;                        /* [nbr] Length of full variable name */ 
-  size_t dmn_nm_fll_lng;                        /* [nbr] Length of of full dimension name */
 
   /* Don't even bother... */
   if (strcmp(dmn_nm,crd_nm) != 0){
@@ -3025,7 +3022,6 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
 
     } /* If match is on both ends of '/' then it's a "real" name */
   }/* Look for partial match, not necessarily on path boundaries */
-
 
 
   return scp_dmn;
@@ -3124,7 +3120,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
               /* Is there a variable with this dimension name anywhere? (relative name)  */
               if(strcmp(dmn_nm,crd->nm) == 0){
 
-                /* The coordinate variable must be in scope of *both* the dimension and the variable itself */
+                /* The coordinate variable must be in scope of the dimension */
                 if(nco_scp_crd_dmn(&var_trv,dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll,crd->nm) == True){
 
                   if(dbg_lvl_get() >= nco_dbg_dev){
