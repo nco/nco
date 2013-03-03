@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.590 2013-03-02 22:37:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.591 2013-03-03 01:08:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3410,8 +3410,6 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
         /* If non-initialized */
         if (trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var == nco_obj_typ_err ){ 
 
-          nco_bool fnd_crd=False;
-
           /* Loop unique dimensions list where the coordinates are stored */
           for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
             dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
@@ -3427,8 +3425,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
               if(nco_scp_crd_dmn(dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll,crd->nm) == True){
 
                 if(dbg_lvl_get() >= nco_dbg_dev){
-                  (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
-                    var_trv.nm_fll,crd_idx,dmn_trv.crd[crd_idx]->crd_nm_fll);        
+                  (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
+                    var_trv.nm_fll,dmn_idx_var,dmn_trv.crd[crd_idx]->crd_nm_fll);        
                 } /* endif dbg */
 
                 /* Mark as True */
@@ -3437,8 +3435,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
                 /* Store coordinate */
                 trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx];
 
-                fnd_crd=True;
-
+                /* Exit the unique dimension list loop */
                 goto loop_dmn_var;
 
               } /* Match possible coordinate variable name with dimension name */ 
@@ -3450,7 +3447,7 @@ loop_dmn_var:
         ;
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s Please proceed...\n",prg_nm_get(),fnc_nm);        
+          (void)fprintf(stdout,"%s: INFO %s Please proceed...[%d]\n",prg_nm_get(),fnc_nm,dmn_idx_var);        
         } /* endif dbg */
 
 

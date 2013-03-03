@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.280 2013-03-02 22:37:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.281 2013-03-03 01:08:59 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -648,7 +648,7 @@ extern "C" {
     char *grp_nm_fll; /* [sng] Full group where dimension is located  */   
     nco_bool is_crd_var; /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
     crd_sct *crd; /* [sct] Pointer to *coordinate variable* if coordinate variable */
-    dmn_fll_sct *ncd; /* [sct] Pointer to "non-coordinate dimension" (mutaally exclusive from "crd" )*/
+    dmn_fll_sct *ncd; /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
   } var_dmn_sct; 
  
   /* GTT Object structure 
