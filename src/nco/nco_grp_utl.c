@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.605 2013-03-04 09:51:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.606 2013-03-04 10:48:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1879,7 +1879,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].ncd=NULL;
     }
 
-     /* Variable dimensions */
+     /* Variable dimensions; store what we know at this time: relative name and ID */
     for(int dmn_idx_var=0;dmn_idx_var<nbr_dmn_var;dmn_idx_var++){
 
       char dmn_nm_var[NC_MAX_NAME+1]; /* [sng] Dimension name */
@@ -1892,6 +1892,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       (void)nco_inq_dim(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var,&dmn_sz_var);
 
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].ID=dmn_id_var[dmn_idx_var];
     }
  
     /* Free constructed name */
@@ -3226,6 +3227,7 @@ loop_dmn_var:
 } /* nco_bld_var_dmn() */
 
 
+
 void                          
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */
 (const int nc_id,                     /* I [ID] File ID */
@@ -3238,19 +3240,6 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
   */
 
   const char fnc_nm[]="nco_bld_dmn_ids_trv()"; /* [sng] Function name  */
-
-  char dmn_nm_var[NC_MAX_NAME];/* [sng] Dimension name for variable */ 
-  char dmn_nm_grp[NC_MAX_NAME];/* [sng] Dimension name for group */ 
-
-  const int flg_prn=1;         /* [flg] Dimensions in all parent groups will not be retrieved */ 
-
-  int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array for group */
-  int dmn_id_var[NC_MAX_DIMS]; /* [id] Dimensions IDs array for variable */
-
-  int nbr_dmn_grp;             /* [nbr] Number of dimensions for group  */
-  int nbr_dmn_var;             /* [nbr] Number of dimensions for variable */
-  int var_id;                  /* [id] ID of variable  */
-  int grp_id;                  /* [id] ID of group */
 
   /* Loop *object* traversal table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -3265,46 +3254,27 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
       } /* endif dbg */
 
 
-      /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      /* Loop dimensions for object (variable)  */
+      for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
 
-      /* Obtain variable ID using group ID */
-      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
-
-      /* Get number of dimensions for variable */
-      (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
-
-      /* Get dimension IDs for variable */
-      (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
-
-      /* Obtain dimension IDs for group */
-      (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
-
-      /* Loop over dimensions of variable */
-      for(int dmn_idx_var=0;dmn_idx_var<nbr_dmn_var;dmn_idx_var++){
-
-        /* Get relative dimension name for variable */
-        (void)nco_inq_dimname(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var);
-
-        /* Loop over dimensions of group  */
-        for(int dmn_idx_grp=0;dmn_idx_grp<nbr_dmn_grp;dmn_idx_grp++){
-
-          /* Get relative dimension name for group */
-          (void)nco_inq_dimname(grp_id,dmn_id_grp[dmn_idx_grp],dmn_nm_grp);
+        /* Search table dimension list */
+        for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
+          dmn_fll_sct dmn_fll=trv_tbl->lst_dmn[dmn_lst_idx];
 
           /* Compare IDs */
-          if (dmn_id_var[dmn_idx_var] == dmn_id_grp[dmn_idx_grp]){
+          if (var_trv.var_dmn->ID == dmn_fll.ID){
 
             if(dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"match <%d> for var dim <%s> and group dim <%s>\n",
-                dmn_id_var[dmn_idx_var],dmn_nm_var,dmn_nm_grp);        
+                dmn_fll.ID,var_trv.var_dmn->dmn_nm_fll,dmn_fll.nm_fll);        
             } /* endif dbg */
-          }
+          } /* Compare IDs */
 
-    
-        } /* End Loop over dimensions of group *and* parents */
-      } /* End Loop over dimensions of variable */
-    } /* End object is variable nco_obj_typ_var */
-  } /* End Loop *object* traversal table  */
+        } /* Search table dimension list */
+      } /* Loop dimensions for object (variable)  */
+    } /* Filter variables */
+  }  /* Loop *object* traversal table */
 
 } /* end nco_blb_dmn_ids_trv() */
+
+
