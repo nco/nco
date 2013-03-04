@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.281 2013-03-03 01:08:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.282 2013-03-04 09:51:10 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -636,7 +636,7 @@ extern "C" {
     int crd_nbr;             /* [nbr] Number of coordinate structures */
     crd_sct **crd;           /* [sct] List of coordinate structures associated with *this* dimension */
     lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
-    //nco_bool is_crd_dmn;   /* [flg] Is there a variable with same name in dimension's scope? */
+    int ID;                  /* [ID] */
   } dmn_fll_sct; 
 
 

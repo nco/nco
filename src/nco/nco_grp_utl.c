@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.604 2013-03-04 08:59:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.605 2013-03-04 09:51:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1693,8 +1693,8 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   const int flg_prn=0; /* [flg] All the dimensions in all parent groups will also be retrieved */    
 
-  int dmn_ids[NC_MAX_DIMS]; /* [ID]  Dimension IDs array */ 
-  int dmn_ids_ult[NC_MAX_DIMS];/* [ID] Unlimited (record) dimensions IDs array */
+  int dmn_ids_grp[NC_MAX_DIMS]; /* [ID]  Dimension IDs array for group */ 
+  int dmn_ids_grp_ult[NC_MAX_DIMS];/* [ID] Unlimited (record) dimensions IDs array for group */
   int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
 
   int *grp_ids; /* [ID] Sub-group IDs array */  
@@ -1727,10 +1727,10 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   rcd+=nco_inq(grp_id,&nbr_dmn_grp,&nbr_var,&nbr_att,(int *)NULL);
 
   /* Obtain dimensions IDs for group */
-  rcd+=nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_ids,flg_prn);
+  rcd+=nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_ids_grp,flg_prn);
 
   /* Obtain unlimited dimensions for group */
-  rcd+=nco_inq_unlimdims(grp_id,&nbr_rec,dmn_ids_ult);
+  rcd+=nco_inq_unlimdims(grp_id,&nbr_rec,dmn_ids_grp_ult);
 
   /* Compute group depth */
   sls_psn=grp_nm_fll;
@@ -1914,13 +1914,13 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst_dmn[idx].is_rec_dmn=False;
 
     /* Get dimension name */
-    rcd+=nco_inq_dim(grp_id,dmn_ids[dmn_idx],dmn_nm,&dmn_sz);
+    rcd+=nco_inq_dim(grp_id,dmn_ids_grp[dmn_idx],dmn_nm,&dmn_sz);
 
     /* Iterate unlimited dimensions to detect if dimension is record */
     for(int rec_idx=0;rec_idx<nbr_rec;rec_idx++){
 
       /* Get record dimension name */
-      (void)nco_inq_dim(grp_id,dmn_ids_ult[rec_idx],rec_nm,&rec_sz);
+      (void)nco_inq_dim(grp_id,dmn_ids_grp_ult[rec_idx],rec_nm,&rec_sz);
 
       /* Current dimension name matches current record dimension name ? */
       if(strcmp(rec_nm,dmn_nm) == 0 ){
@@ -1960,7 +1960,8 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst_dmn[idx].lmt_msa.lmt_crr=0;
     trv_tbl->lst_dmn[idx].lmt_msa.lmt_dmn=NULL;
     trv_tbl->lst_dmn[idx].crd_nbr=0;         
-    trv_tbl->lst_dmn[idx].crd=NULL;          
+    trv_tbl->lst_dmn[idx].crd=NULL; 
+    trv_tbl->lst_dmn[idx].ID=dmn_ids_grp[dmn_idx];
 
     /* Free constructed name */
     dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
@@ -2275,7 +2276,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
     dmn_fll_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
     /* Dimension name first */
-    (void)fprintf(stdout,"%s: ",dmn_trv.nm_fll);
+    (void)fprintf(stdout,"#%d%s: ",dmn_trv.ID,dmn_trv.nm_fll);
 
     /* Filter output */
     if (dmn_trv.is_rec_dmn == True) (void)fprintf(stdout," record dimension (%li)",dmn_trv.sz);
