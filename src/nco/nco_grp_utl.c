@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.603 2013-03-04 08:12:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.604 2013-03-04 08:59:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3285,25 +3285,18 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         /* Get relative dimension name for variable */
         (void)nco_inq_dimname(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var);
 
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"dimension <%s>\n",dmn_nm_var);        
-        } /* endif dbg */
-
         /* Loop over dimensions of group  */
         for(int dmn_idx_grp=0;dmn_idx_grp<nbr_dmn_grp;dmn_idx_grp++){
 
           /* Get relative dimension name for group */
           (void)nco_inq_dimname(grp_id,dmn_id_grp[dmn_idx_grp],dmn_nm_grp);
 
-          if(dbg_lvl_get() == nco_dbg_old){
-            (void)fprintf(stdout,"group dimension <%s> ",dmn_nm_grp);        
-          } /* endif dbg */
-
           /* Compare IDs */
           if (dmn_id_var[dmn_idx_var] == dmn_id_grp[dmn_idx_grp]){
 
             if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"*match ID* for var dim <%s> and group dim <%s>\n",dmn_nm_var,dmn_nm_grp);        
+              (void)fprintf(stdout,"match <%d> for var dim <%s> and group dim <%s>\n",
+                dmn_id_var[dmn_idx_var],dmn_nm_var,dmn_nm_grp);        
             } /* endif dbg */
           }
 
