@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.607 2013-03-04 22:12:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.608 2013-03-04 22:31:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1614,10 +1614,10 @@ nco_bld_var_dmn_trv                   /* [fnc] Build dimension info for all vari
 
               /* Search table dimension list */
               for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
-                dmn_trv_sct dmn_fll=trv_tbl->lst_dmn[dmn_lst_idx];  
+                dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst_idx];  
 
                 /* Does the *possible* dimension full name match a *real* dimension full name ? */
-                if(strcmp(dmn_fll.nm_fll,dmn_nm_fll) == 0){
+                if(strcmp(dmn_trv.nm_fll,dmn_nm_fll) == 0){
 
                   /* Store full dimension name  */
                   trv_tbl->lst[uidx].var_dmn[dmn_idx_var].dmn_nm_fll=strdup(dmn_nm_fll);
@@ -1626,7 +1626,7 @@ nco_bld_var_dmn_trv                   /* [fnc] Build dimension info for all vari
                   assert(strcmp(trv_tbl->lst[uidx].var_dmn[dmn_idx_var].dmn_nm,dmn_nm_var) == 0);
 
                   /* Store full group name where dimension is located. NOTE: using member "grp_nm_fll" of dimension  */
-                  trv_tbl->lst[uidx].var_dmn[dmn_idx_var].grp_nm_fll=strdup(dmn_fll.grp_nm_fll);
+                  trv_tbl->lst[uidx].var_dmn[dmn_idx_var].grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
 
                   /* Free allocated */
                   dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
@@ -3261,14 +3261,14 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
         /* Search table dimension list */
         for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
-          dmn_trv_sct dmn_fll=trv_tbl->lst_dmn[dmn_lst_idx];
+          dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst_idx];
 
           /* Compare IDs */
-          if (var_trv.var_dmn->id == dmn_fll.id){
+          if (var_trv.var_dmn->id == dmn_trv.id){
 
             if(dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"match <%d> for var dim <%s> and group dim <%s>\n",
-                dmn_fll.id,var_trv.var_dmn->dmn_nm_fll,dmn_fll.nm_fll);        
+                dmn_trv.id,var_trv.var_dmn->dmn_nm_fll,dmn_trv.nm_fll);        
             } /* endif dbg */
           } /* Compare IDs */
 

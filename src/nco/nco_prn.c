@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.92 2013-03-04 22:12:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.93 2013-03-04 22:31:39 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -673,10 +673,10 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
     else if (var_trv->var_dmn[dmn_idx].is_crd_var == False){
 
       /* Get unique dimension */
-      dmn_trv_sct *dmn_fll=var_trv->var_dmn[dmn_idx].ncd;
+      dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
 
-      dmn_sz[dmn_idx]=dmn_fll->sz;
-      CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=dmn_fll->is_rec_dmn;
+      dmn_sz[dmn_idx]=dmn_trv->sz;
+      CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=dmn_trv->is_rec_dmn;
     }
 
   } /* Loop dimensions */
@@ -741,13 +741,13 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
     else if (var_trv->var_dmn[dmn_idx].is_crd_var == False){
 
       /* Get unique dimension */
-      dmn_trv_sct *dmn_fll=var_trv->var_dmn[dmn_idx].ncd;
+      dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
 
       /* Dimension is not a coordinate */
       if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %zu (",
-        var_trv->nm,dmn_idx,dmn_fll->nm,dmn_fll->sz,cnk_sz[dmn_idx]); 
+        var_trv->nm,dmn_idx,dmn_trv->nm,dmn_trv->sz,cnk_sz[dmn_idx]); 
       else (void)fprintf(stdout,"%s dimension %i: %s, size = %li (",
-        var_trv->nm,dmn_idx,dmn_fll->nm,dmn_fll->sz);
+        var_trv->nm,dmn_idx,dmn_trv->nm,dmn_trv->sz);
       (void)fprintf(stdout,"%son-coordinate dimension)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record n" : "N");
 
     }
