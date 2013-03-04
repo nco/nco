@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.608 2013-03-04 22:31:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.609 2013-03-04 23:04:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2260,7 +2260,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
       /* Full dimension names for each variable */
       for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++){
-        (void)fprintf(stdout,"[%d]%s",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm_fll); 
+        (void)fprintf(stdout,"[%d]%s#%d",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm_fll,trv.var_dmn[dmn_idx_var].id); 
 
         /* Filter output */
         if (trv.var_dmn[dmn_idx_var].is_crd_var == True) (void)fprintf(stdout," (coordinate) : ");
