@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.76 2013-03-03 08:11:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.77 2013-03-04 22:12:36 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -79,7 +79,7 @@ trv_tbl_free
     } 
   } 
 
-  tbl->lst_dmn=(dmn_fll_sct *)nco_free(tbl->lst_dmn);
+  tbl->lst_dmn=(dmn_trv_sct *)nco_free(tbl->lst_dmn);
 
   tbl=(trv_tbl_sct *)nco_free(tbl);
 } /* end trv_tbl_free() */

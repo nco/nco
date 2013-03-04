@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.240 2013-03-02 22:37:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.241 2013-03-04 22:12:37 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1889,7 +1889,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
       } /* !rec_dmn_nm */ 
 
-      dmn_fll_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd; /* [sct] Unique dimension */
+      dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd; /* [sct] Unique dimension */
       char *grp_out_fll; /* [sng] Group name */
 
       /* Does dimension have user-specified limits?

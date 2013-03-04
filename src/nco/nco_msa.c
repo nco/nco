@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.195 2013-03-02 22:37:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.196 2013-03-04 22:12:36 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -776,7 +776,7 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
 
 void
 nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
-(dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from GTT */
+(dmn_trv_sct *dmn_trv) /* [sct] Dimension structure from GTT */
 {
   /* Purpose: Same as nco_msa_wrp_splt() but applied to the Dimension structure from GTT 
   Differences from nco_msa_wrp_splt() are marked "trv" 
@@ -903,7 +903,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 
 void 
 nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (GTT version) */ 
-(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from GTT */
+(dmn_trv_sct *dmn_trv)  /* [sct] Dimension structure from GTT */
 {
   /* Purpose: Same as nco_msa_clc_cnt() but applied to the Dimension structure from GTT */
 
@@ -951,7 +951,7 @@ nco_msa_clc_cnt_trv     /* [fnc] Calculate size of  multiple hyperslab (GTT vers
 
 void             
 nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (GTT version) */
-(dmn_fll_sct *dmn_trv) /* [sct] Dimension structure from GTT */
+(dmn_trv_sct *dmn_trv) /* [sct] Dimension structure from GTT */
 {
   /* Purpose: Same as nco_msa_qsort_srt() but applied to the Dimension structure from GTT */
 
@@ -971,7 +971,7 @@ nco_msa_qsort_srt_trv  /* [fnc] Sort limits by srt values (GTT version) */
 
 nco_bool                /* O [flg] Return true if limits overlap (GTT version) */
 nco_msa_ovl_trv         /* [fnc] See if limits overlap */ 
-(dmn_fll_sct *dmn_trv)  /* [sct] Dimension structure from GTT */
+(dmn_trv_sct *dmn_trv)  /* [sct] Dimension structure from GTT */
 {
   /* Purpose: Same as nco_msa_ovl() but applied to the Dimension structure from GTT 
   Return true if limits overlap NB: Assumes that limits have been sorted */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.245 2013-03-04 08:12:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.246 2013-03-04 22:12:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -238,7 +238,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 nco_bool                              /* O [flg] True if in scope */ 
 nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope */
 (const trv_sct * const var_trv,       /* I [sct] GTT Object Variable */
- const dmn_fll_sct * const dmn_trv,   /* I [sct] GTT unique dimension */
+ const dmn_trv_sct * const dmn_trv,   /* I [sct] GTT unique dimension */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 
@@ -249,7 +249,7 @@ nco_grp_itr                           /* [fnc] Populate traversal table by exami
  trv_tbl_sct *trv_tbl);               /* I/O [sct] Group traversal table  */
 
 void                          
-nco_bld_dmn_trv                       /* [fnc] Build dimension info for all variables */
+nco_bld_var_dmn_trv                   /* [fnc] Build dimension info for all variables */
 (const int nc_id,                     /* I [ID] File ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 

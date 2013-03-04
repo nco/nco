@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.91 2013-03-02 22:37:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.92 2013-03-04 22:12:37 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -673,7 +673,7 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
     else if (var_trv->var_dmn[dmn_idx].is_crd_var == False){
 
       /* Get unique dimension */
-      dmn_fll_sct *dmn_fll=var_trv->var_dmn[dmn_idx].ncd;
+      dmn_trv_sct *dmn_fll=var_trv->var_dmn[dmn_idx].ncd;
 
       dmn_sz[dmn_idx]=dmn_fll->sz;
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=dmn_fll->is_rec_dmn;
@@ -741,7 +741,7 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
     else if (var_trv->var_dmn[dmn_idx].is_crd_var == False){
 
       /* Get unique dimension */
-      dmn_fll_sct *dmn_fll=var_trv->var_dmn[dmn_idx].ncd;
+      dmn_trv_sct *dmn_fll=var_trv->var_dmn[dmn_idx].ncd;
 
       /* Dimension is not a coordinate */
       if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %zu (",

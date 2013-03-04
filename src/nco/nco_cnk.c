@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.58 2013-03-02 22:37:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.59 2013-03-04 22:12:36 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -843,7 +843,7 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   /* Loop dimensions */
   for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
 
-    dmn_fll_sct *dmn_trv=NULL; /* [sct] Unique dimension */
+    dmn_trv_sct *dmn_trv=NULL; /* [sct] Unique dimension */
     crd_sct *crd=NULL; /* [sct] Coordinate dimension */
 
     /* This dimension has a coordinate variable */

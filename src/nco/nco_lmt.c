@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.179 2013-02-24 06:34:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.180 2013-03-04 22:12:36 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1235,7 +1235,7 @@ nco_lmt_evl_dmn_trv            /* [fnc] Parse user-specified limits into hypersl
  lmt_sct *lmt_ptr,             /* I/O [sct] Structure from nco_lmt_prs()  */
  long rec_usd_cml,             /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
- dmn_fll_sct *dmn_trv)         /* I [sct] Structure from GTT (unique dimension in table list, defined in a *group*) */
+ dmn_trv_sct *dmn_trv)         /* I [sct] Structure from GTT (unique dimension in table list, defined in a *group*) */
 {
   /* Purpose: Take parsed list of dimension names, minima, and maxima strings and find appropriate indices into dimensions 
   for formulation of dimension start and count vectors, or fail trying. 

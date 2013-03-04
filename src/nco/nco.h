@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.283 2013-03-04 10:48:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.284 2013-03-04 22:12:36 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -636,8 +636,8 @@ extern "C" {
     int crd_nbr;             /* [nbr] Number of coordinate structures */
     crd_sct **crd;           /* [sct] List of coordinate structures associated with *this* dimension */
     lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
-    int ID;                  /* [ID] */
-  } dmn_fll_sct; 
+    int id;                  /* [ID] */
+  } dmn_trv_sct; 
 
 
   /* GTT Variable dimensions:
@@ -648,8 +648,8 @@ extern "C" {
     char *grp_nm_fll; /* [sng] Full group where dimension is located  */   
     nco_bool is_crd_var; /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
     crd_sct *crd; /* [sct] Pointer to *coordinate variable* if coordinate variable */
-    dmn_fll_sct *ncd; /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
-    int ID; /* [ID] */
+    dmn_trv_sct *ncd; /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
+    int id; /* [ID] */
   } var_dmn_sct; 
  
   /* GTT Object structure 
@@ -701,8 +701,8 @@ extern "C" {
   typedef struct{
     trv_sct *lst;           /* [sct] Array of trv_sct */
     unsigned int nbr;       /* [nbr] Number of trv_sct elements */   
-    dmn_fll_sct *lst_dmn;   /* [sct] Array of dmn_fll_sct */
-    unsigned int nbr_dmn;   /* [nbr] Number of dmn_fll_sct elements */
+    dmn_trv_sct *lst_dmn;   /* [sct] Array of dmn_trv_sct */
+    unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
   } trv_tbl_sct;
 
   /* Chunking structure */
