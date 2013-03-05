@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.284 2013-03-04 22:12:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.285 2013-03-05 08:36:08 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -636,7 +636,7 @@ extern "C" {
     int crd_nbr;             /* [nbr] Number of coordinate structures */
     crd_sct **crd;           /* [sct] List of coordinate structures associated with *this* dimension */
     lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
-    int id;                  /* [ID] */
+    int id;                  /* [ID] Unique ID for dimension; same as "var_dmn_sct.id", obtained from API "nc_inq_dimid" */
   } dmn_trv_sct; 
 
 
@@ -649,7 +649,7 @@ extern "C" {
     nco_bool is_crd_var; /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
     crd_sct *crd; /* [sct] Pointer to *coordinate variable* if coordinate variable */
     dmn_trv_sct *ncd; /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
-    int id; /* [ID] */
+    int id; /* [ID] Unique ID for dimension; same as "dmn_trv_sct.id", obtained from API "nc_inq_vardimid" */
   } var_dmn_sct; 
  
   /* GTT Object structure 
