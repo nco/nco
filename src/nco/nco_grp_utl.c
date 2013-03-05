@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.613 2013-03-05 10:19:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.614 2013-03-05 11:12:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3326,7 +3326,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
                 if(nco_scp_crd_dmn(&var_trv,dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll,crd->nm) == True){
 
                   if(dbg_lvl_get() >= nco_dbg_dev){
-                    (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
+                    (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with in scope coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
                       var_trv.nm_fll,dmn_idx_var,dmn_trv.crd[crd_idx]->crd_nm_fll);        
                   } /* endif dbg */
 
