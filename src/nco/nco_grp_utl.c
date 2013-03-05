@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.614 2013-03-05 11:12:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.615 2013-03-05 22:08:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3129,8 +3129,8 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
  
 
 nco_bool
-nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of dimension ?  */
-(trv_sct *var_trv,                    /* I [sct] Variable object */
+nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope of dimension ?  */
+(trv_sct *var_trv,                    /* I [sct] Variable object (not used) */
  char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
  char * dmn_nm,                       /* I [sng] Dimension name of the *variable* */
  char * crd_nm_fll,                   /* I [sng] Coordinate variable full name */
@@ -3148,7 +3148,7 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
   with coordinate /g16/g16g1/lon1 from the unique dimension (/g16/lon1)  
   */
 
-  const char fnc_nm[]="nco_fnd_crd_var_dmn()";  /* [sng] Function name  */
+  const char fnc_nm[]="nco_scp_crd_dmn()";  /* [sng] Function name  */
 
   const char sls_chr='/';                       /* [chr] Slash character */
   char *sbs_srt;                                /* [sng] Location of user-string match start in object path */
@@ -3206,7 +3206,7 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
 
       /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev */
       if (dmn_nm_fll_var_lng == crd_nm_fll_lng && strcmp(dmn_nm_fll_var,crd_nm_fll) == 0){
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s found absolute match of dimension <%s> and coordinate <%s>:\n",prg_nm_get(),fnc_nm,
             dmn_nm_fll_var,crd_nm_fll);
         }
@@ -3215,7 +3215,7 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
         /* Coordinate in scope of dimension name */
       }else if (crd_nm_fll_lng>dmn_nm_fll_var_lng){
 
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: INFO %s found coordinate <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             dmn_nm_fll_var,crd_nm_fll);
         }
@@ -3273,16 +3273,26 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             /* Match dimension name full to be found with with nm_fll of the unique dimension */ 
             if(strcmp(var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,dmn_trv.nm_fll ) == 0){
 
-              /* Mark as False the position of the bool array coordinate/non coordinate */
-              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=False;
+              /* Use cases:
 
-              /* Store unique dimension (non coordinate ) */
-              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].ncd=&trv_tbl->lst_dmn[dmn_idx];
+              If the unique dimension has no associated coordinate variables, then
+              the dimension name of the variable is simply marked as "non-coordinate", [1]/vrt_nbr#16 below
+
+              /ilev: 2 dimensions: [0]/lev#11 (coordinate) : [1]/vrt_nbr#16
+              /g16/lon2_var: 1 dimensions: [0]/g16/lon2#9
+
+              */
 
               if(dbg_lvl_get() >= nco_dbg_dev){
                 (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
                   var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
               } /* endif dbg */
+
+              /* Mark as False the position of the bool array coordinate/non coordinate */
+              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=False;
+
+              /* Store unique dimension (non coordinate ) */
+              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].ncd=&trv_tbl->lst_dmn[dmn_idx];
 
             } /* No coordinates */
           }/* Match dimension name full to be found with with nm_fll of the unique dimension */ 
@@ -3329,6 +3339,23 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
                     (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with in scope coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
                       var_trv.nm_fll,dmn_idx_var,dmn_trv.crd[crd_idx]->crd_nm_fll);        
                   } /* endif dbg */
+
+
+                  /* Use cases:
+
+                  Unique dimension has coordinate variables associated:
+
+                  /lat: (coordinate) 1 dimensions: [0]/lat#10 (coordinate) : 
+                  /area: 1 dimensions: [0]/lat#10 (coordinate) : 
+                  /lat_lon: 2 dimensions: [0]/lat#10 (coordinate) : [1]/lon#12 (coordinate) : 
+                  /g1/lon: (coordinate) 1 dimensions: [0]/lon#12 (coordinate) : 
+                  /g10/three_dmn_rec_var: 3 dimensions: [0]/time#13 (coordinate) : [1]/lat#10 (coordinate) : [2]/lon#12 (coordinate) : 
+                  /g16/g16g1/lon1: (coordinate) 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
+                  /g16/g16g1/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
+                  /g16/g16g2/lon1: (coordinate) 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
+                  /g16/g16g2/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
+
+                  */
 
                   /* Mark as True */
                   trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
