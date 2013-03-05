@@ -1011,7 +1011,7 @@
 2012-07-09  Charlie Zender  <zender@uci.edu>
 
 	* Negative integer as min or max element of hyperslab specification indicates offset from end
-	Fulfills a 2008 feature request of Nick Bower
+	Fulfills 2008 feature request of Nick Bower
 
 2012-07-09  Pedro Vicente  <pvicente@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.180 2013-03-04 22:12:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.181 2013-03-05 17:40:49 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -371,19 +371,19 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
       msg_sng=strdup("Dimension name not specified");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr == 2 && arg_lst[1] == NULL){ /* No min specified */
-      msg_sng=strdup("No min specified");
+      msg_sng=strdup("Must specify minimum value");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL){ /* No min or max when stride not specified */
-      msg_sng=strdup("No min or max when stride not specified");
+      msg_sng=strdup("Must specify minimum and/or maximum value since stride is also empty");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr == 4 && arg_lst[3] == NULL){ /* Stride should be specified */
-      msg_sng=strdup("Stride should be specified as an integer >= 0");
+      msg_sng=strdup("Stride must be specified (and be a positive integer)");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr == 5 && arg_lst[4] == NULL){ /* Duration should be specified */
-      msg_sng=strdup("Duration should be specified as an integer >= 0");
+      msg_sng=strdup("Duration must be specified (and be a positive integer)");
       NCO_SYNTAX_ERROR=True;
     }else if(arg_nbr == 6 && arg_lst[5] == NULL){ /* Group-mode should be specified */
-      msg_sng=strdup("Group-mode should be specified as 'm' or 'M'");
+      msg_sng=strdup("Group-mode must be specified (as 'm' or 'M')");
       NCO_SYNTAX_ERROR=True;
     } /* end else */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.49 2013-02-28 23:25:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.50 2013-03-05 17:40:49 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -416,44 +416,42 @@ nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specifi
     grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
     (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
     (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,flg_prn);
-    (void)fprintf(stdout,"%s: %s reports group %s returns following dimensions/IDs:\n",prg_nm_get(),fnc_nm,grp_nm_fll);
+    (void)fprintf(stdout,"%s: %s nco_inq_dimids() reports following dimensions/IDs are visible to group %s:\n",prg_nm_get(),fnc_nm,grp_nm_fll);
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
       (void)nco_inq_dimname(*grp_id_dmn,dmn_ids[dmn_idx],dmn_nm_lcl);
       (void)fprintf(stdout,"%s/%d,%s",dmn_nm_lcl,dmn_ids[dmn_idx],(dmn_idx == dmn_nbr-1) ? "\n" : ", ");
     } /* end loop over dmn */
-    if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s reports group %s found dimension %s with ID = %d:\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s did not find dimension %s\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
+    if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s nco_inq_dimid() reports group %s sees dimension %s with ID = %d:\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s does not see dimension %s\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
     if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
   } /* endif dbg */
 
-  /* If dimension exists in output group, find exactly where it is defined */
-  if(rcd == NC_NOERR){
-    /* Until group of definition is found ... */
-    while(!grp_dfn_fnd && (rcd == NC_NOERR)){
-      /* ... obtain all dimension IDs in current group ... */
-      (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,0);
-      /* ... and check each against ID of target dimension */
-      for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
-	if(dmn_ids[dmn_idx] == *dmn_id) break;
-
-      if(dbg_lvl_get() >= nco_dbg_std){
-	char *grp_nm_fll; /* [sng] Group name */
-	size_t grp_nm_fll_lng; /* [nbr] Length of group name */
-	(void)nco_inq_grpname_full(*grp_id_dmn,&grp_nm_fll_lng,(char *)NULL);
-	grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
-	(void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
-	(void)fprintf(stdout,"%s: %s reports dimension %s was%s defined in group %s\n",prg_nm_get(),fnc_nm,dmn_nm,(dmn_idx < dmn_nbr) ? "" : " not",grp_nm_fll);
-	if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
-      } /* endif dbg */
-
-      if(dmn_idx < dmn_nbr){
-	grp_dfn_fnd=True;
-      }else{
-	/* Overwrite current group ID with parent group ID */
-	rcd=nco_inq_grp_parent_flg(*grp_id_dmn,grp_id_dmn);
-      } /* end else */
-    } /* end while */
-  } /* endif rcd */
-
+  /* If dimension is visible to output group, find exactly where it is defined
+     Search ancestors until group of definition is found ... */
+  while(!grp_dfn_fnd && (rcd == NC_NOERR)){
+    /* ... obtain all dimension IDs in current group (_NOT_ in ancestor groups) ... */
+    (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,0);
+    /* ... and check each against ID of target dimension */
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
+      if(dmn_ids[dmn_idx] == *dmn_id) break;
+    
+    if(dbg_lvl_get() >= nco_dbg_std){
+      char *grp_nm_fll; /* [sng] Group name */
+      size_t grp_nm_fll_lng; /* [nbr] Length of group name */
+      (void)nco_inq_grpname_full(*grp_id_dmn,&grp_nm_fll_lng,(char *)NULL);
+      grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
+      (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
+      (void)fprintf(stdout,"%s: %s reports dimension %s was%s defined in group %s\n",prg_nm_get(),fnc_nm,dmn_nm,(dmn_idx < dmn_nbr) ? "" : " not",grp_nm_fll);
+      if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
+    } /* endif dbg */
+    
+    if(dmn_idx < dmn_nbr){
+      grp_dfn_fnd=True;
+    }else{
+      /* Overwrite current group ID with parent group ID */
+      rcd=nco_inq_grp_parent_flg(*grp_id_dmn,grp_id_dmn);
+    } /* end else */
+  } /* end while */
+ 
   return rcd;
 
 } /* end nco_inq_dmn_grp_id */

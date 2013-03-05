@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.762 2013-02-16 19:29:26 pvicente Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.763 2013-03-05 17:40:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4374,9 +4374,10 @@ separated by regular intervals of records.
 It is perhaps best illustrated by an extended example which describes
 how to solve the same problem both with and without the DRN feature.
 
-The first task in data processing is often creating seasonal cycles.
+The first task in climate data processing is often creating seasonal
+cycles. 
 Suppose a 150-year climate simulation produces 150 output files, each
-comprising 12 records, each a monthly mean:
+comprising 12 records, each record a monthly mean:
 @file{1850.nc}, @file{1851.nc}, ... @file{1999.nc}.
 Our goal is to create a single file containing the summertime (June,
 July, and August, aka JJA) mean.
@@ -4395,7 +4396,8 @@ ncra -O clm06 clm07.nc clm08.nc clm_JJA.nc
 @noindent
 So far, nothing is unusual and this task can be performed by any
 @acronym{NCO} version. 
-We can now eliminate the shell loop used in @w{Step 1} above.
+The DRN feature makes obsolete the need for the shell loop used in
+@w{Step 1} above. 
 
 The new DRN option aggregates more than one input record at a time
 before performing arithmetic operations, and, with an additional
@@ -4412,13 +4414,13 @@ The DRN option instructs @command{ncra} (or @command{ncrcat}) to process
 files in groups of three records. 
 
 A separate option, @samp{--mro}, instructs @command{ncra} to output 
-its results on each sub-group, and to produce a @dfn{Multi-Record Output}
+its results from each sub-group, and to produce a @dfn{Multi-Record Output}
 (MRO) file rather than a @dfn{Single-Record Output} (SRO) file.
 Unless @samp{--mro} is specified, @command{ncra} collects all the
 sub-groups together, and operates on their ensemble, producing a single
-record. 
-With the of @samp{--mro} to the above example, we can archive all (150)
-annual summertime means to one file:
+output record. 
+The addition of @samp{--mro} to the above example causes @command{ncra}
+to archive all (150) annual summertime means to one file:
 @example
 # Step 1: Archive all 150 summertime means in one file
 ncra --mro -O -F -d time,6,,12,3 -n 150,4,1 1850.nc 1850_2009_JJA.nc
