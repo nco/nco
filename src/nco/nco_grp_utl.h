@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.246 2013-03-04 22:12:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.247 2013-03-05 03:03:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -311,6 +311,16 @@ void
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */
 (const int nc_id,                     /* I [ID] File ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
+
+dmn_trv_sct *                         /* O [sct] GTT dimension structure (stored in *groups*) */
+nco_dmn_trv_sct                       /* [fnc] Return unique dimension object from unique ID */
+(const int id,                        /* I [id] Unique dimension ID */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
+char *                                /* O [id] Unique dimension full name */
+nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name from unique ID  */
+(const int id,                        /* I [id] Unique dimension ID */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 
 #ifdef __cplusplus
