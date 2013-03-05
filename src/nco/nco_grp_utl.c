@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.615 2013-03-05 22:08:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.616 2013-03-05 23:04:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3172,7 +3172,9 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope o
   crd_nm_fll_lng=strlen(crd_nm_fll);
 
   
-  /* Look for partial match, not necessarily on path boundaries; locate variable (str2) in full dimension name (str1) */
+  /* Look for partial match, not necessarily on path boundaries; 
+     locate string 2 (relative dimension name) in string 1 (full coordinate name)
+     */
   if((sbs_srt=strstr(crd_nm_fll,dmn_nm))){
 
     /* Ensure match spans (begins and ends on) whole path-component boundaries */
@@ -3213,10 +3215,10 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope o
         scp_dmn=True;
 
         /* Coordinate in scope of dimension name */
-      }else if (crd_nm_fll_lng>dmn_nm_fll_var_lng){
+      }else if (dmn_nm_fll_var_lng<crd_nm_fll_lng){
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO %s found coordinate <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
+          (void)fprintf(stdout,"%s: INFO %s found dimension <%s> in scope of coordinate <%s>:\n",prg_nm_get(),fnc_nm,
             dmn_nm_fll_var,crd_nm_fll);
         }
         scp_dmn=True;
