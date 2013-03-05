@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.612 2013-03-05 10:16:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.613 2013-03-05 10:19:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2920,7 +2920,73 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 } /* nco_bld_lmt() */
 
+void                          
+nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name in dimension's scope?   */
+(const int nc_id,                    /* I [ID] File ID */
+ const trv_tbl_sct * const trv_tbl)  /* I [sct] GTT (Group Traversal Table) */
+{
 
+  const char fnc_nm[]="nco_has_crd_dmn_scp()"; /* [sng] Function name  */
+
+  /* Unique dimension list */
+
+  if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO reports dimension information with limits: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+    /* Dimension #/name first */
+    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"#%d%s\n",dmn_trv.id,dmn_trv.nm_fll);
+
+    nco_bool in_scp=False;
+
+    /* Loop object table */
+    for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+
+      /* Filter variables  */
+      if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
+        trv_sct var_trv=trv_tbl->lst[var_idx];   
+
+        /* Is there a variable with this dimension name (a coordinate varible) anywhere (relative name)  */
+        if(strcmp(dmn_trv.nm,var_trv.nm) == 0){
+
+          /* Is variable in scope of dimension ? */
+          if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
+
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: INFO %s reports variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
+                var_trv.nm_fll,dmn_trv.nm_fll);        
+            } /* endif dbg */
+
+            trv_tbl->lst_dmn[dmn_idx].has_crd_scp=True;
+
+            /* Built before; variable must be a cordinate */
+            assert(var_trv.is_crd_var == True);
+
+            in_scp=True;
+
+          } /* Is variable in scope of dimension ? */
+        } /* Is there a variable with this dimension name anywhere? (relative name)  */
+      } /* Filter variables  */
+    } /* Loop object table */
+
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      if (in_scp == False)
+        (void)fprintf(stdout,"%s: INFO %s dimension <%s> with no in scope variables\n",prg_nm_get(),fnc_nm,
+        dmn_trv.nm_fll);        
+    } /* endif dbg */
+
+    trv_tbl->lst_dmn[dmn_idx].has_crd_scp=in_scp;
+
+  } /* Unique dimension list */
+
+  /* Unique dimension list */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+    assert(dmn_trv.has_crd_scp != nco_obj_typ_err);
+  } /* Unique dimension list */
+
+} /* nco_has_crd_dmn_scp() */
 
 nco_bool                               /* O [flg] True if variable is in scope of dimension */
 nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope */
@@ -3339,70 +3405,3 @@ loop_dmn_var:
 } /* nco_bld_var_dmn() */
 
 
-void                          
-nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name in dimension's scope?   */
-(const int nc_id,                    /* I [ID] File ID */
- const trv_tbl_sct * const trv_tbl)  /* I [sct] GTT (Group Traversal Table) */
-{
-
-  const char fnc_nm[]="nco_has_crd_dmn_scp()"; /* [sng] Function name  */
-
-  /* Unique dimension list */
-
-  if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO reports dimension information with limits: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-
-    /* Dimension #/name first */
-    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"#%d%s\n",dmn_trv.id,dmn_trv.nm_fll);
-
-    nco_bool in_scp=False;
-
-    /* Loop object table */
-    for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-
-      /* Filter variables  */
-      if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
-        trv_sct var_trv=trv_tbl->lst[var_idx];   
-
-        /* Is there a variable with this dimension name (a coordinate varible) anywhere (relative name)  */
-        if(strcmp(dmn_trv.nm,var_trv.nm) == 0){
-
-          /* Is variable in scope of dimension ? */
-          if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
-
-            if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: INFO %s reports variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
-                var_trv.nm_fll,dmn_trv.nm_fll);        
-            } /* endif dbg */
-
-            trv_tbl->lst_dmn[dmn_idx].has_crd_scp=True;
-
-            /* Built before; variable must be a cordinate */
-            assert(var_trv.is_crd_var == True);
-
-            in_scp=True;
-
-          } /* Is variable in scope of dimension ? */
-        } /* Is there a variable with this dimension name anywhere? (relative name)  */
-      } /* Filter variables  */
-    } /* Loop object table */
-
-
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      if (in_scp == False)
-        (void)fprintf(stdout,"%s: INFO %s dimension <%s> with no in scope variables\n",prg_nm_get(),fnc_nm,
-        dmn_trv.nm_fll);        
-    } /* endif dbg */
-
-    trv_tbl->lst_dmn[dmn_idx].has_crd_scp=in_scp;
-
-  } /* Unique dimension list */
-
-  /* Unique dimension list */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-    assert(dmn_trv.has_crd_scp != nco_obj_typ_err);
-  } /* Unique dimension list */
-
-} /* nco_has_crd_dmn_scp() */
