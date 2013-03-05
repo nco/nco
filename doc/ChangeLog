@@ -1,6 +1,8 @@
 2013-03-04  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_bld_dmn_ids_trv() Build dimension info for all variables using unique dimension IDs
+  
+	* nco_has_crd_dmn_scp() Is there a variable with same name in dimension's scope?
 
 2013-03-02  Pedro Vicente  <pvicente@uci.edu>
 
