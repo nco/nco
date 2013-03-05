@@ -1,3 +1,7 @@
+2013-03-04  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_bld_dmn_ids_trv() Build dimension info for all variables using unique dimension IDs
+
 2013-03-02  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_xtr_crd_add() Add all coordinates to extraction list
