@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.251 2013-03-06 11:27:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.252 2013-03-06 12:01:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -301,11 +301,9 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 nco_bool
 nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of dimension ?  */
-(trv_sct *var_trv,                    /* I [sct] Variable object */
- char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
+(char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
  char * dmn_nm,                       /* I [sng] Dimension name of the *variable* */
- char * crd_nm_fll,                   /* I [sng] Coordinate variable full name */
- char * crd_nm);                      /* I [sng] Coordinate variable name */
+ char * crd_nm_fll);                   /* I [sng] Coordinate variable full name */
 
 void                          
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */

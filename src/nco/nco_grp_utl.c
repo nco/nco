@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.623 2013-03-06 11:55:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.624 2013-03-06 12:01:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3130,11 +3130,9 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
 nco_bool
 nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope of dimension ?  */
-(trv_sct *var_trv,                    /* I [sct] Variable object (not used) */
- char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
+(char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
  char * dmn_nm,                       /* I [sng] Dimension name of the *variable* */
- char * crd_nm_fll,                   /* I [sng] Coordinate variable full name */
- char * crd_nm)                       /* I [sng] Coordinate variable name */
+ char * crd_nm_fll)                   /* I [sng] Coordinate variable full name */
 {
   /* Purpose: Auxiliary function for nco_bld_var_dmn(): assign variables dimensions to either coordinates or dimension structs
  
@@ -3162,10 +3160,6 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope o
   size_t dmn_nm_fll_var_lng;                    /* [nbr] Length of full coordinate name */
   size_t crd_nm_fll_lng;                        /* [nbr] Length of of full dimension name */
 
-  /* Don't even bother... */
-  if (strcmp(dmn_nm,crd_nm) != 0){
-    return False;
-  }
 
   dmn_nm_fll_var_lng=strlen(dmn_nm_fll_var);
   dmn_nm_lng=strlen(dmn_nm);
@@ -3534,7 +3528,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           char *dmn_nm=var_trv.var_dmn[dmn_idx_var].dmn_nm; /* [sng] Dimension name of the *variable* */
 
           /* The dimension must be in scope of the coordinate variable  */
-          if(nco_scp_crd_dmn(&var_trv,dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll,crd->nm) == True){
+          if(nco_scp_crd_dmn(dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll) == True){
 
             if(dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm,
