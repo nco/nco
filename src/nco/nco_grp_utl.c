@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.621 2013-03-06 11:01:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.622 2013-03-06 11:27:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3300,7 +3300,7 @@ nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
 
   while (ptr_chr!=NULL)
   {
-    if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"%s\n",ptr_chr_tok);
+    if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
 
     psn_chr=ptr_chr-nm_fll;
     
@@ -3318,9 +3318,92 @@ nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
     nbr_sls_chr++;   
   }
 
+  if(dbg_lvl_get() >= 13)(void)fprintf(stdout,"\n");
+
   return nbr_sls_chr;
 
 } /* nco_get_sls_chr_cnt() */
+
+
+nco_bool
+nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordinate ?  */
+(crd_sct *crd,                        /* I [sct] Coordinate object */
+ trv_sct *var_trv)                    /* I [sct] Variable object */
+{
+  /* Purpose: Auxiliary function for nco_bld_var_dmn(): assign variables dimensions to either coordinates or dimension structs
+  */
+
+  const char fnc_nm[]="nco_scp_crd_var()";  /* [sng] Function name  */           
+
+  /* Use cases:
+
+  dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate </g16/g16g1/lon1>
+  dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate </g16/g16g2/lon1>
+  */
+
+  int nbr_sls_chr_var;           /* [nbr] Number of of slash characterrs in  string path */
+  int nbr_sls_chr_crd;           /* [nbr] Number of of slash characterrs in  string path */
+
+  str_pth_sct **str_pth_lst_var; /* [sct] List of tokens in variable full name */
+  str_pth_sct **str_pth_lst_crd; /* [sct] List of tokens in coordinate full name */
+
+  /* Get number of tokens in variable full name */
+  nbr_sls_chr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
+
+  /* Get number of tokens in coordinate full name */
+  nbr_sls_chr_crd=nco_get_sls_chr_cnt(crd->crd_nm_fll); 
+
+  /* If any tokens in variable full name */
+  if (nbr_sls_chr_var){
+
+    str_pth_lst_var=(str_pth_sct **)nco_malloc(nbr_sls_chr_var*sizeof(str_pth_sct *));
+
+    /* Get token list in variable full name */
+    (void)nco_get_str_pth_sct(var_trv->nm_fll,&str_pth_lst_var);
+
+  }/* If any tokens in variable full name */
+
+  /* If any tokens in coordinate full name */
+  if (nbr_sls_chr_crd){
+
+    str_pth_lst_crd=(str_pth_sct **)nco_malloc(nbr_sls_chr_crd*sizeof(str_pth_sct *));
+
+    /* Get token list in variable full name */
+    (void)nco_get_str_pth_sct(crd->crd_nm_fll,&str_pth_lst_crd);
+
+  }/* If any tokens in coordinate full name */
+
+
+  if(dbg_lvl_get() >= 13){
+    for(int sls_idx=0;sls_idx<nbr_sls_chr_var;sls_idx++) {
+      (void)fprintf(stdout,"#%d %s ",str_pth_lst_var[sls_idx]->psn,str_pth_lst_var[sls_idx]->nm);
+    }
+    (void)fprintf(stdout,"\n");
+    for(int sls_idx=0;sls_idx<nbr_sls_chr_crd;sls_idx++) {
+      (void)fprintf(stdout,"#%d %s ",str_pth_lst_crd[sls_idx]->psn,str_pth_lst_crd[sls_idx]->nm);
+    }
+    (void)fprintf(stdout,"\n");
+  }
+
+
+
+
+  /* Free */
+  for(int sls_idx=0;sls_idx<nbr_sls_chr_var;sls_idx++) {
+    str_pth_lst_var[sls_idx]->nm=(char *)nco_free(str_pth_lst_var[sls_idx]->nm);
+    str_pth_lst_var[sls_idx]=(str_pth_sct *)nco_free(str_pth_lst_var[sls_idx]);
+  }
+  str_pth_lst_var=(str_pth_sct **)nco_free(str_pth_lst_var);
+
+  for(int sls_idx=0;sls_idx<nbr_sls_chr_crd;sls_idx++) {
+    str_pth_lst_crd[sls_idx]->nm=(char *)nco_free(str_pth_lst_crd[sls_idx]->nm);
+    str_pth_lst_crd[sls_idx]=(str_pth_sct *)nco_free(str_pth_lst_crd[sls_idx]);
+  }
+  str_pth_lst_crd=(str_pth_sct **)nco_free(str_pth_lst_crd);
+
+  return True;
+
+} /* nco_scp_crd_dmn() */
 
 
 
@@ -3452,12 +3535,11 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             /g16/g16g2/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
             */
 
+            /* Mark as True */
+            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
 
-              /* Mark as True */
-              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
-
-              /* Store coordinate */
-              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=dmn_trv->crd[crd_idx];
+            /* Store coordinate */
+            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=dmn_trv->crd[crd_idx];
 
           } /* The coordinate variable must be in scope of the dimension */
         } /* Loop possible coordinate variables for this dimension  */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.250 2013-03-06 11:01:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.251 2013-03-06 11:27:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -335,7 +335,12 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
 int
 nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
 (char * const nm_fll,                 /* I [sng] Full name  */ 
- str_pth_sct ***str_pth_lst);         /* I/O [sct] List of path components  */   
+ str_pth_sct ***str_pth_lst);         /* I/O [sct] List of path components  */  
+
+nco_bool
+nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordinate ?  */
+(crd_sct *crd,                        /* I [sct] Coordinate object */
+ trv_sct *var_trv);                   /* I [sct] Variable object */
 
 
 #ifdef __cplusplus
