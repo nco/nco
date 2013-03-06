@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.624 2013-03-06 12:01:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.625 2013-03-06 12:13:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3313,6 +3313,8 @@ nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
   }
 
   if(dbg_lvl_get() >= 14)(void)fprintf(stdout,"\n");
+
+  str=(char *)nco_free(str);
 
   return nbr_sls_chr;
 
