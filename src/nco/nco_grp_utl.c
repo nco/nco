@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.617 2013-03-06 03:05:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.618 2013-03-06 03:43:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3339,42 +3339,34 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           char *dmn_nm_fll_var=var_trv.var_dmn[dmn_idx_var].dmn_nm_fll; /* [sng] Dimension full name of the *variable* */
           char *dmn_nm=var_trv.var_dmn[dmn_idx_var].dmn_nm; /* [sng] Dimension name of the *variable* */
 
-          /* Is there a variable with this dimension name anywhere? (relative name)  */
-          if(strcmp(dmn_nm,crd->nm) == 0){
+          /* The coordinate variable must be in scope of the dimension */
+          if(nco_scp_crd_dmn(&var_trv,dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll,crd->nm) == True){
 
-            /* The coordinate variable must be in scope of the dimension */
-            if(nco_scp_crd_dmn(&var_trv,dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll,crd->nm) == True){
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with in scope coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
+                var_trv.nm_fll,dmn_idx_var,dmn_trv->crd[crd_idx]->crd_nm_fll);        
+            } /* endif dbg */
 
-              if(dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with in scope coordinate [%d]%s\n",prg_nm_get(),fnc_nm,
-                  var_trv.nm_fll,dmn_idx_var,dmn_trv->crd[crd_idx]->crd_nm_fll);        
-              } /* endif dbg */
+            /* Use cases:
+            Unique dimension has coordinate variables associated:
+            /lat: (coordinate) 1 dimensions: [0]/lat#10 (coordinate) : 
+            /area: 1 dimensions: [0]/lat#10 (coordinate) : 
+            /lat_lon: 2 dimensions: [0]/lat#10 (coordinate) : [1]/lon#12 (coordinate) : 
+            /g1/lon: (coordinate) 1 dimensions: [0]/lon#12 (coordinate) : 
+            /g10/three_dmn_rec_var: 3 dimensions: [0]/time#13 (coordinate) : [1]/lat#10 (coordinate) : [2]/lon#12 (coordinate) : 
+            /g16/g16g1/lon1: (coordinate) 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
+            /g16/g16g1/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
+            /g16/g16g2/lon1: (coordinate) 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
+            /g16/g16g2/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
+            */
 
+            /* Mark as True */
+            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
 
-              /* Use cases:
-
-              Unique dimension has coordinate variables associated:
-
-              /lat: (coordinate) 1 dimensions: [0]/lat#10 (coordinate) : 
-              /area: 1 dimensions: [0]/lat#10 (coordinate) : 
-              /lat_lon: 2 dimensions: [0]/lat#10 (coordinate) : [1]/lon#12 (coordinate) : 
-              /g1/lon: (coordinate) 1 dimensions: [0]/lon#12 (coordinate) : 
-              /g10/three_dmn_rec_var: 3 dimensions: [0]/time#13 (coordinate) : [1]/lat#10 (coordinate) : [2]/lon#12 (coordinate) : 
-              /g16/g16g1/lon1: (coordinate) 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
-              /g16/g16g1/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
-              /g16/g16g2/lon1: (coordinate) 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
-              /g16/g16g2/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
-
-              */
-
-              /* Mark as True */
-              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
-
-              /* Store coordinate */
-              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=dmn_trv->crd[crd_idx];
+            /* Store coordinate */
+            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=dmn_trv->crd[crd_idx];
 
 
-            } /* Is there a variable with this dimension name anywhere? (relative name)  */
           } /* The coordinate variable must be in scope of the dimension */
         } /* Loop possible coordinate variables for this dimension  */
 
