@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.620 2013-03-06 09:34:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.621 2013-03-06 11:01:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3256,6 +3256,68 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
   }
 
   if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"\n",psn_chr);
+  return nbr_sls_chr;
+
+} /* nco_get_sls_chr_cnt() */
+
+
+
+int
+nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
+(char * const nm_fll,                 /* I [sng] Full name  */ 
+ str_pth_sct ***str_pth_lst)          /* I/O [sct] List of path components  */    
+{
+  /* Purpose: Break a full path name into components separated by the slash character (netCDF4 path separator) 
+  
+  strtok()
+  A sequence of calls to this function split str into tokens, which are sequences of contiguous characters 
+  separated by any of the characters that are part of delimiters.
+
+  strchr() is used to get position of separator that corresponsds to each token
+
+  Use case: "/g16/g16g1/lon1"
+
+  Token 0: g16
+  Token 1: g16g1
+  Token 2: lon1
+  
+  */
+
+  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
+  char *ptr_chr_tok;  /* [sng] Pointer to character */
+  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
+  int psn_chr;        /* [nbr] Position of character '/' in in full name */
+ 
+  /* Duplicate original, since strtok() changes it */
+  char *str=strdup(nm_fll);
+
+  if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"Splitting string \"%s\" into tokens:\n",str);
+
+  /* Get first token */
+  ptr_chr_tok=strtok (str,"/");
+
+  ptr_chr=strchr(nm_fll,'/');
+
+  while (ptr_chr!=NULL)
+  {
+    if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"%s\n",ptr_chr_tok);
+
+    psn_chr=ptr_chr-nm_fll;
+    
+    /* Store token and position */
+    (*str_pth_lst)[nbr_sls_chr]=(str_pth_sct *)nco_malloc(1*sizeof(str_pth_sct));
+
+    (*str_pth_lst)[nbr_sls_chr]->nm=strdup(ptr_chr_tok);
+    (*str_pth_lst)[nbr_sls_chr]->psn=psn_chr;
+
+    /* The point where the last token was found is kept internally by the function */
+    ptr_chr_tok = strtok (NULL, "/");
+
+    ptr_chr=strchr(ptr_chr+1,'/');
+
+    nbr_sls_chr++;   
+  }
+
   return nbr_sls_chr;
 
 } /* nco_get_sls_chr_cnt() */

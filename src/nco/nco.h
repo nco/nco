@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.287 2013-03-05 10:16:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.288 2013-03-06 11:01:09 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -597,6 +597,15 @@ extern "C" {
     size_t lng_cnn; /* [nbr] Length of canonicalized user-specified group path */
     size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
   } gpe_sct;
+
+
+
+
+  /* GTT structure to break a full path name into components  */
+  typedef struct{ 
+    char *nm;       /* [sng] Path component */
+    int psn;        /* [nbr] Position of path component */
+  } str_pth_sct; 
 
  
   /* MSA Limits structure:
