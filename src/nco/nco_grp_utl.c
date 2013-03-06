@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.625 2013-03-06 12:13:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.626 2013-03-06 12:29:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3346,12 +3346,6 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   str_pth_sct **str_pth_lst_var; /* [sct] List of tokens in variable full name */
   str_pth_sct **str_pth_lst_crd; /* [sct] List of tokens in coordinate full name */
 
-
-  /* Absolute match: in scope  */
-  if (strcmp(var_trv->nm_fll,crd->crd_nm_fll) == 0){
-    return True;
-  }
-
   /* Get number of tokens in variable full name */
   nbr_sls_chr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
 
@@ -3362,13 +3356,6 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   if (nbr_sls_chr_crd > nbr_sls_chr_var){
     return False;
   }
-
-  /* Same number of tokens (parallel case): out of scope  */
-  if (nbr_sls_chr_crd == nbr_sls_chr_var){
-    return False;
-  }
-
-
 
 
   /* If any tokens in variable full name */
