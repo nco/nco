@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.248 2013-03-05 10:16:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.249 2013-03-06 09:34:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -327,6 +327,10 @@ void
 nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name in dimension's scope?   */
 (const int nc_id,                    /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+
+int
+nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs in a string path  */
+(char * const nm_fll);                /* I [sct] Full name  */
 
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.619 2013-03-06 04:29:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.620 2013-03-06 09:34:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3233,6 +3233,34 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope o
 } /* nco_scp_crd_dmn() */
 
 
+int
+nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs in a string path  */
+(char * const nm_fll)                 /* I [sct] Full name  */
+{
+  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
+  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
+  int psn_chr;        /* [nbr] Position of character '/' in in full name */
+ 
+  if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"Looking for the '/' character in \"%s\"...",nm_fll);
+
+  ptr_chr=strchr(nm_fll,'/');
+  while (ptr_chr!=NULL)
+  {
+    psn_chr=ptr_chr-nm_fll;
+
+    if(dbg_lvl_get() >= 13) (void)fprintf(stdout," ::found at %d",psn_chr);
+
+    ptr_chr=strchr(ptr_chr+1,'/');
+
+    nbr_sls_chr++;
+  }
+
+  if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"\n",psn_chr);
+  return nbr_sls_chr;
+
+} /* nco_get_sls_chr_cnt() */
+
+
 
 
 void
@@ -3362,12 +3390,12 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             /g16/g16g2/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
             */
 
-            /* Mark as True */
-            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
 
-            /* Store coordinate */
-            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=dmn_trv->crd[crd_idx];
+              /* Mark as True */
+              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
 
+              /* Store coordinate */
+              trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=dmn_trv->crd[crd_idx];
 
           } /* The coordinate variable must be in scope of the dimension */
         } /* Loop possible coordinate variables for this dimension  */
