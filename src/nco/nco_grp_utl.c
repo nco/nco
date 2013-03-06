@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.622 2013-03-06 11:27:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.623 2013-03-06 11:55:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3241,21 +3241,21 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
   int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
   int psn_chr;        /* [nbr] Position of character '/' in in full name */
  
-  if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"Looking for the '/' character in \"%s\"...",nm_fll);
+  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"Looking '/' in \"%s\"...",nm_fll);
 
   ptr_chr=strchr(nm_fll,'/');
   while (ptr_chr!=NULL)
   {
     psn_chr=ptr_chr-nm_fll;
 
-    if(dbg_lvl_get() >= 13) (void)fprintf(stdout," ::found at %d",psn_chr);
+    if(dbg_lvl_get() >= 14) (void)fprintf(stdout," ::found at %d",psn_chr);
 
     ptr_chr=strchr(ptr_chr+1,'/');
 
     nbr_sls_chr++;
   }
 
-  if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"\n",psn_chr);
+  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"\n",psn_chr);
   return nbr_sls_chr;
 
 } /* nco_get_sls_chr_cnt() */
@@ -3291,7 +3291,7 @@ nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
   /* Duplicate original, since strtok() changes it */
   char *str=strdup(nm_fll);
 
-  if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"Splitting string \"%s\" into tokens:\n",str);
+  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
 
   /* Get first token */
   ptr_chr_tok=strtok (str,"/");
@@ -3300,7 +3300,7 @@ nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
 
   while (ptr_chr!=NULL)
   {
-    if(dbg_lvl_get() >= 13) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
+    if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
 
     psn_chr=ptr_chr-nm_fll;
     
@@ -3318,7 +3318,7 @@ nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
     nbr_sls_chr++;   
   }
 
-  if(dbg_lvl_get() >= 13)(void)fprintf(stdout,"\n");
+  if(dbg_lvl_get() >= 14)(void)fprintf(stdout,"\n");
 
   return nbr_sls_chr;
 
@@ -3339,19 +3339,41 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
 
   dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate </g16/g16g1/lon1>
   dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate </g16/g16g2/lon1>
+  dimension [0]/g16/lon3 of variable </g16/g16g3/lon1_var> with coordinate </g16/g16g3/g16g3g3/lon3>
   */
 
-  int nbr_sls_chr_var;           /* [nbr] Number of of slash characterrs in  string path */
-  int nbr_sls_chr_crd;           /* [nbr] Number of of slash characterrs in  string path */
+  nco_bool scp_var_crd=False;     /* [flg] Variable is in coordinate scope */      
+
+  int nbr_sls_chr_var;           /* [nbr] Number of of slash characters in  string path */
+  int nbr_sls_chr_crd;           /* [nbr] Number of of slash characters in  string path */
 
   str_pth_sct **str_pth_lst_var; /* [sct] List of tokens in variable full name */
   str_pth_sct **str_pth_lst_crd; /* [sct] List of tokens in coordinate full name */
+
+
+  /* Absolute match: in scope  */
+  if (strcmp(var_trv->nm_fll,crd->crd_nm_fll) == 0){
+    return True;
+  }
 
   /* Get number of tokens in variable full name */
   nbr_sls_chr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
 
   /* Get number of tokens in coordinate full name */
   nbr_sls_chr_crd=nco_get_sls_chr_cnt(crd->crd_nm_fll); 
+
+  /* Coordinate has more tokens: out of scope  */
+  if (nbr_sls_chr_crd > nbr_sls_chr_var){
+    return False;
+  }
+
+  /* Same number of tokens (parallel case): out of scope  */
+  if (nbr_sls_chr_crd == nbr_sls_chr_var){
+    return False;
+  }
+
+
+
 
   /* If any tokens in variable full name */
   if (nbr_sls_chr_var){
@@ -3516,24 +3538,16 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
             if(dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm,
-                dmn_idx_var,
-                dmn_nm_fll_var,
-                var_trv.nm_fll,
-                dmn_trv->crd[crd_idx]->crd_nm_fll);        
+                dmn_idx_var,dmn_nm_fll_var,var_trv.nm_fll,dmn_trv->crd[crd_idx]->crd_nm_fll);        
             } /* endif dbg */
 
-            /* Use cases:
-            Unique dimension has coordinate variables associated:
-            /lat: (coordinate) 1 dimensions: [0]/lat#10 (coordinate) : 
-            /area: 1 dimensions: [0]/lat#10 (coordinate) : 
-            /lat_lon: 2 dimensions: [0]/lat#10 (coordinate) : [1]/lon#12 (coordinate) : 
-            /g1/lon: (coordinate) 1 dimensions: [0]/lon#12 (coordinate) : 
-            /g10/three_dmn_rec_var: 3 dimensions: [0]/time#13 (coordinate) : [1]/lat#10 (coordinate) : [2]/lon#12 (coordinate) : 
-            /g16/g16g1/lon1: (coordinate) 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
-            /g16/g16g1/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
-            /g16/g16g2/lon1: (coordinate) 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
-            /g16/g16g2/lon1_var: 1 dimensions: [0]/g16/lon1#8 (coordinate) : 
-            */
+           
+            nco_bool is_crd_var_scp=nco_scp_crd_var(crd,&var_trv);
+            if(dbg_lvl_get() >= 13){
+              (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
+                crd->crd_nm_fll,is_crd_var_scp,var_trv.nm_fll);      
+            } /* endif dbg */
+
 
             /* Mark as True */
             trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
