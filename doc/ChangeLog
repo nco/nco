@@ -1,13 +1,17 @@
+2013-03-05  Charlie Zender  <zender@uci.edu>
+
+	* Add record character variables to in.cdl
+
 2013-03-04  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_bld_dmn_ids_trv() Build dimension info for all variables using unique dimension IDs
-  
+
 	* nco_has_crd_dmn_scp() Is there a variable with same name in dimension's scope?
 
 2013-03-02  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_xtr_crd_add() Add all coordinates to extraction list
-  re-written for GTT instead of using netCDF API calls
+	re-written for GTT instead of using netCDF API calls
 
 2013-02-27  Pedro Vicente  <pvicente@uci.edu>
 
