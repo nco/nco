@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.636 2013-03-07 05:42:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.637 2013-03-07 05:59:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3419,7 +3419,7 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
 
   for(int mtc_idx=0;mtc_idx<30;mtc_idx++) mtc_nm[mtc_idx].nm=NULL;
 
-  int mtc_nbr=0;
+  int mtc_nbr=0; /* [nbr] Number of total matches  */ 
 
   /* Loop variable tokens */
   for(int sls_var_idx=0;sls_var_idx<nbr_sls_chr_var;sls_var_idx++) {
@@ -3463,7 +3463,7 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
   */
 
-  int nbr_idx_mtc=0; /* Number of consecutive match indexes */ 
+  int nbr_idx_mtc=0; /* [nbr] Number of *consecutive* match indexes */ 
 
   /* Number of matches until last name */
   if (nbr_sls_chr_var-1 == mtc_nbr){
@@ -3632,11 +3632,21 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             } /* endif dbg */
 
            
+            /* Is  variable in scope of coordinate ? */
             nco_bool is_crd_var_scp=nco_scp_crd_var(crd,&var_trv);
             if(dbg_lvl_get() >= 12){
               (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
                 crd->crd_nm_fll,is_crd_var_scp,var_trv.nm_fll);      
             } /* endif dbg */
+
+
+            /* Use cases:
+            dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
+            coordinate </g16/g16g2/lon1> not in scope of variable 
+            dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1>
+            coordinate </g16/g16g1/lon1> not in scope of variable 
+            */
+
 
 
             /* Mark as True */
