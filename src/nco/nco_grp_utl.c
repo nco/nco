@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.644 2013-03-07 11:24:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.645 2013-03-07 12:04:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3450,6 +3450,43 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
 
 
 
+crd_sct *                             /* O [sct] Coordinate object */
+nco_scp_var_crd                       /* [fnc] Return in scope coordinate for variable  */
+(trv_sct *var_trv,                    /* I [sct] Variable object */
+ dmn_trv_sct *dmn_trv)                /* I [sct] Dimension object */
+{
+
+  const char fnc_nm[]="nco_scp_var_crd()"; /* [sng] Function name  */
+
+  /* Loop coordinates; they all have the unique dimension ID of the variable dimension */
+  for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
+    crd_sct *crd=dmn_trv->crd[crd_idx];
+
+    /* Is  variable in scope of coordinate ? */
+    nco_bool is_crd_var_scp=nco_scp_crd_var(crd,var_trv);
+    if(dbg_lvl_get() >= 12){
+      (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
+        crd->crd_nm_fll,is_crd_var_scp,var_trv->nm_fll);      
+    } /* endif dbg */
+
+
+    /* Use cases:
+
+    Here is needed to solve possible ambiguities, like:
+
+    dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
+    coordinate </g16/g16g2/lon1> not in scope of variable 
+    dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1>
+    coordinate </g16/g16g1/lon1> not in scope of variable 
+    */
+
+    return crd;
+
+
+  } /* Loop coordinates */
+} /* nco_scp_var_crd() */
+
+
 
 void
 nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to either coordinates or dimension structs */
@@ -3495,37 +3532,19 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].ncd=dmn_trv;
         }
 
+        /* There are coordinates; one must be chosen */
+        else if(dmn_trv->crd_nbr > 0) {
 
-        /* Loop coordinates; they all have the unique dimension ID of the variable dimension */
-        for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
-          crd_sct *crd=dmn_trv->crd[crd_idx];
-
-          /* Is  variable in scope of coordinate ? */
-          nco_bool is_crd_var_scp=nco_scp_crd_var(crd,&var_trv);
-          if(dbg_lvl_get() >= 12){
-            (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
-              crd->crd_nm_fll,is_crd_var_scp,var_trv.nm_fll);      
-          } /* endif dbg */
-
-
-          /* Use cases:
-
-          Here is needed to solve possible ambiguities, like:
-
-          dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
-          coordinate </g16/g16g2/lon1> not in scope of variable 
-          dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1>
-          coordinate </g16/g16g1/lon1> not in scope of variable 
-          */
+          /* Choose the "in scope" coordinate for the variable and assign it to the variable dimension */
+          crd_sct *crd=nco_scp_var_crd(&var_trv,dmn_trv);
 
           /* Mark as True */
           trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
 
           /* Store coordinate */
-          trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=dmn_trv->crd[crd_idx];
+          trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=crd;
 
-
-        } /* Loop possible coordinate variables for this dimension  */
+        } /* There are coordinates; one must be chosen */
 
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.253 2013-03-07 09:49:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.254 2013-03-07 12:04:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -339,6 +339,11 @@ nco_bool
 nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordinate ?  */
 (crd_sct *crd,                        /* I [sct] Coordinate object */
  trv_sct *var_trv);                   /* I [sct] Variable object */
+
+crd_sct *                             /* O [sct] Coordinate object */
+nco_scp_var_crd                       /* [fnc] Return in scope coordinate for variable  */
+(trv_sct *var_trv,                    /* I [sct] Variable object */
+ dmn_trv_sct *dmn_trv);               /* I [sct] Dimension object */
 
 
 #ifdef __cplusplus
