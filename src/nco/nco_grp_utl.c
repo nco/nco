@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.634 2013-03-07 05:04:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.635 2013-03-07 05:35:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3349,8 +3349,8 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
 
   nco_bool scp_var_crd=False;     /* [flg] Variable is in coordinate scope */      
 
-  int nbr_sls_chr_var;           /* [nbr] Number of of slash characters in  string path */
-  int nbr_sls_chr_crd;           /* [nbr] Number of of slash characters in  string path */
+  int nbr_sls_chr_var;           /* [nbr] Number of of coordinate slash characters in  string path */
+  int nbr_sls_chr_crd;           /* [nbr] Number of of variable slash characters in  string path */
 
   str_pth_sct **str_pth_lst_var; /* [sct] List of tokens in variable full name */
   str_pth_sct **str_pth_lst_crd; /* [sct] List of tokens in coordinate full name */
@@ -3451,13 +3451,46 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   }
 
 
+  /* Loop matches */
   for(int mtc_idx=0;mtc_idx<mtc_nbr;mtc_idx++){
-
     if(dbg_lvl_get() >= 13){
-      (void)fprintf(stdout,"#%s crd[%d] var[%d]\n",mtc_nm[mtc_idx].nm,mtc_nm[mtc_idx].sls_crd_idx,mtc_nm[mtc_idx].sls_var_idx);
+      (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_nm[mtc_idx].nm,mtc_nm[mtc_idx].sls_crd_idx,mtc_nm[mtc_idx].sls_var_idx);
     }  
+  } /* Loop matches */
 
+
+  /* Case match until last name:
+  variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
+  */
+
+  int nbr_idx_mtc=0; /* Number of match indexes */ 
+
+  /* Number of matches until last name */
+  if (nbr_sls_chr_var-1 == mtc_nbr){
+
+    /* Loop matches */
+    for(int mtc_idx=0;mtc_idx<mtc_nbr;mtc_idx++){
+
+      /* Do match indexes match ? */
+      if (mtc_nm[mtc_idx].sls_crd_idx == mtc_nm[mtc_idx].sls_var_idx) {
+
+        if(dbg_lvl_get() >= 13){
+          (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_nm[mtc_idx].nm,mtc_nm[mtc_idx].sls_crd_idx,mtc_nm[mtc_idx].sls_var_idx);
+        }  
+
+        nbr_idx_mtc++;
+      }
+    } /* Loop matches */
+
+  } /* Number of matches until last name */
+
+  /* Number of matches indexes matches number of tokens until last
+  Use case: /g16/g16g1 in both </g16/g16g1/lon1_var> and </g16/g16g1/lon1>
+  */
+  if (nbr_idx_mtc == nbr_sls_chr_var-1){
+    return True;
   }
+
 
 
   /* Free */
@@ -3473,7 +3506,7 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   }
   str_pth_lst_crd=(str_pth_sct **)nco_free(str_pth_lst_crd);
 
-  return -1;
+  return False;
 
 } /* nco_scp_crd_dmn() */
 
