@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.641 2013-03-07 10:14:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.642 2013-03-07 10:41:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3117,18 +3117,6 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope o
  char * dmn_nm,                       /* I [sng] Dimension name of the *variable* */
  char * crd_nm_fll)                   /* I [sng] Coordinate variable full name */
 {
-  /* Purpose: Auxiliary function for nco_bld_var_dmn(): assign variables dimensions to either coordinates or dimension structs
- 
-  Match  with dimension full name of the *variable* with coordinate full name from the unique dimension list
-
-  Use case:
-  variable /g16/g16g1/lon1_var with dimension (/g16/lon1) 
-  coordinate variable /g16/g16g1/lon1 in scope of previous variable with dimension (/g16/lon1) 
-  
-  Match dimension full name (/g16/lon1) of the variable /g16/g16g1/lon1_var,  
-  with coordinate /g16/g16g1/lon1 from the unique dimension (/g16/lon1)  
-  */
-
   const char fnc_nm[]="nco_scp_crd_dmn()";  /* [sng] Function name  */
 
   const char sls_chr='/';                       /* [chr] Slash character */
@@ -3468,18 +3456,9 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 (const int nc_id,                     /* I [ID] netCDF file ID [chk] */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
-  /* Purpose: Fill variable dimensions with pointers to either a coordinate variable or dimension structs with MSA;
-
-  Use case:
-  variable /g16/g16g1/lon1_var with dimension (/g16/lon1) 
-  coordinate variable /g16/g16g1/lon1 in scope of previous variable with dimension (/g16/lon1) 
-
-  Match dimension full name (/g16/lon1) of the variable /g16/g16g1/lon1_var,  
-  with coordinate /g16/g16g1/lon1 from the unique dimension (/g16/lon1)  
-  */
+  /* Purpose: Fill variable dimensions with pointers to either a coordinate variable or dimension structs  */
 
   const char fnc_nm[]="nco_bld_var_dmn()"; /* [sng] Function name  */
-
 
   /* Sweep 1 - Fill non-coordinates first */
 
@@ -3552,61 +3531,46 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       /* Loop dimensions for object (variable)  */
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
 
+        /* Get unique dimension ID from variable dimension */
         int var_dim_id=var_trv.var_dmn[dmn_idx_var].dim_id;
-        char* dmn_nm_fll=nco_dmn_fll_nm_id(var_dim_id,trv_tbl);
 
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
         if(dbg_lvl_get() >= 13){
-          (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm,var_dim_id);    
-          (void)fprintf(stdout,"<%s>\n",dmn_nm_fll);
-          assert(strcmp(dmn_nm_fll,dmn_trv->nm_fll) == 0);
-          assert(strcmp(var_trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) == 0);
+          (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_dim_id);    
         }
 
-        /* Loop coordinates */
+        /* Loop coordinates; they all have the unique dimension ID of the variable dimension */
         for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
           crd_sct *crd=dmn_trv->crd[crd_idx];
 
-          char *dmn_nm_fll_var=var_trv.var_dmn[dmn_idx_var].dmn_nm_fll; /* [sng] Dimension full name of the *variable* */
-          char *dmn_nm=var_trv.var_dmn[dmn_idx_var].dmn_nm; /* [sng] Dimension name of the *variable* */
-
-          /* The dimension must be in scope of the coordinate variable  */
-          if(nco_scp_crd_dmn(dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll) == True){
-
-            if(dbg_lvl_get() >= 12){
-              (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm,
-                dmn_idx_var,dmn_nm_fll_var,var_trv.nm_fll,dmn_trv->crd[crd_idx]->crd_nm_fll);        
-            } /* endif dbg */
-
-           
-            /* Is  variable in scope of coordinate ? */
-            nco_bool is_crd_var_scp=nco_scp_crd_var(crd,&var_trv);
-            if(dbg_lvl_get() >= 12){
-              (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
-                crd->crd_nm_fll,is_crd_var_scp,var_trv.nm_fll);      
-            } /* endif dbg */
+          /* Is  variable in scope of coordinate ? */
+          nco_bool is_crd_var_scp=nco_scp_crd_var(crd,&var_trv);
+          if(dbg_lvl_get() >= 12){
+            (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
+              crd->crd_nm_fll,is_crd_var_scp,var_trv.nm_fll);      
+          } /* endif dbg */
 
 
-            /* Use cases:
-            dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
-            coordinate </g16/g16g2/lon1> not in scope of variable 
-            dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1>
-            coordinate </g16/g16g1/lon1> not in scope of variable 
-            */
+          /* Use cases:
 
+          Here is needed to solve possible ambiguities, like:
 
+          dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
+          coordinate </g16/g16g2/lon1> not in scope of variable 
+          dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1>
+          coordinate </g16/g16g1/lon1> not in scope of variable 
+          */
 
-            /* Mark as True */
-            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
+          /* Mark as True */
+          trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
 
-            /* Store coordinate */
-            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=dmn_trv->crd[crd_idx];
+          /* Store coordinate */
+          trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=dmn_trv->crd[crd_idx];
 
-            break;
+          break;
 
-          } /* The coordinate variable must be in scope of the dimension */
         } /* Loop possible coordinate variables for this dimension  */
 
       } /* Loop dimensions for object (variable)  */
