@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.648 2013-03-07 13:14:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.649 2013-03-07 13:27:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3297,7 +3297,7 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
 
 
 nco_bool
-nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordinate ?  */
+nco_scp_crd_var                       /* [fnc] Is coordinate in scope of variable?  */
 (crd_sct *crd,                        /* I [sct] Coordinate object */
  trv_sct *var_trv)                    /* I [sct] Variable object */
 {
@@ -3480,29 +3480,20 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
   for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
     crd_sct *crd=dmn_trv->crd[crd_idx];
 
-    /* Is  variable in scope of coordinate ? */
+    /* Is coordinate in scope of variable? */
     nco_bool is_crd_var_scp=nco_scp_crd_var(crd,var_trv);
     if(dbg_lvl_get() >= 12){
       (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
         crd->crd_nm_fll,is_crd_var_scp,var_trv->nm_fll);      
     } /* endif dbg */
 
-
-    /* Use cases:
-
-    Here is needed to solve possible ambiguities, like:
-
-    dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
-    coordinate </g16/g16g2/lon1> not in scope of variable 
-    dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1>
-    coordinate </g16/g16g1/lon1> not in scope of variable 
-    */
-
+    if(is_crd_var_scp)
     return crd;
 
 
   } /* Loop coordinates */
 
+  return NULL;
 } /* nco_scp_var_crd() */
 
 

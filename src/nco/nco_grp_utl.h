@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.254 2013-03-07 12:04:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.255 2013-03-07 13:27:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -336,12 +336,12 @@ nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
  str_pth_sct ***str_pth_lst);         /* I/O [sct] List of path components  */  
 
 nco_bool
-nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordinate ?  */
+nco_scp_crd_var                       /* [fnc] Is coordinate in scope of variable?  */
 (crd_sct *crd,                        /* I [sct] Coordinate object */
  trv_sct *var_trv);                   /* I [sct] Variable object */
 
 crd_sct *                             /* O [sct] Coordinate object */
-nco_scp_var_crd                       /* [fnc] Return in scope coordinate for variable  */
+nco_scp_var_crd                       /* [fnc] Is coordinate in scope of variable?  */
 (trv_sct *var_trv,                    /* I [sct] Variable object */
  dmn_trv_sct *dmn_trv);               /* I [sct] Dimension object */
 
