@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.633 2013-03-07 04:56:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.634 2013-03-07 05:04:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3444,18 +3444,20 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
     } /* Loop coordinate tokens */
   } /* Loop variable tokens */
 
+
+  /* No matches: out of scope  */
+  if (mtc_nbr == 0){
+    return False;
+  }
+
+
   for(int mtc_idx=0;mtc_idx<mtc_nbr;mtc_idx++){
 
     if(dbg_lvl_get() >= 13){
       (void)fprintf(stdout,"#%s crd[%d] var[%d]\n",mtc_nm[mtc_idx].nm,mtc_nm[mtc_idx].sls_crd_idx,mtc_nm[mtc_idx].sls_var_idx);
     }  
 
-
-
-
   }
-
-
 
 
   /* Free */
