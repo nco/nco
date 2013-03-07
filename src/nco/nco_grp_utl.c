@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.640 2013-03-07 09:49:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.641 2013-03-07 10:14:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2384,34 +2384,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
     } /* Filter variables  */
   } /* Variables */
 
-  /* Unique dimension list */
-
-  (void)fprintf(stdout,"\n");
-  (void)fprintf(stdout,"%s: INFO reports dimension information with limits: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
-
-    /* Dimension name first */
-    (void)fprintf(stdout,"#%d%s: ",dmn_trv.dim_id,dmn_trv.nm_fll);
-
-    /* Filter output */
-    if (dmn_trv.is_rec_dmn == True) (void)fprintf(stdout," record dimension (%li)",dmn_trv.sz);
-    else if (dmn_trv.is_rec_dmn == False) (void)fprintf(stdout," dimension (%li)",dmn_trv.sz);
-
-    /* Limits */
-    if (dmn_trv.lmt_msa.lmt_dmn_nbr){
-      for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
-        lmt_sct *lmt_dmn=dmn_trv.lmt_msa.lmt_dmn[lmt_idx];
-        (void)fprintf(stdout," [%d]%s(%li,%li,%li) ",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
-      }
-    }/* Limits */
-
-    /* Terminate line */
-    (void)fprintf(stdout,"\n");
-
-  } /* Unique dimension list */
-
-  /* Coordinate variables stored in unique dimension list */
+  /* Unique dimension list, Coordinate variables stored in unique dimension list, limits */
 
   nbr_crd_var=0;
   (void)fprintf(stdout,"\n");
@@ -2420,7 +2393,11 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
     /* Dimension ID and  full name */
-    (void)fprintf(stdout,"(#%d%s) ::",dmn_trv.dim_id,dmn_trv.nm_fll);
+    (void)fprintf(stdout,"(#%d%s)",dmn_trv.dim_id,dmn_trv.nm_fll);
+
+    /* Filter output */
+    if (dmn_trv.is_rec_dmn == True) (void)fprintf(stdout," record dimension(%li):: ",dmn_trv.sz);
+    else if (dmn_trv.is_rec_dmn == False) (void)fprintf(stdout," dimension(%li):: ",dmn_trv.sz);
 
     nbr_crd_var+=dmn_trv.crd_nbr;
 
