@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.642 2013-03-07 10:41:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.643 2013-03-07 11:11:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3460,67 +3460,6 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
   const char fnc_nm[]="nco_bld_var_dmn()"; /* [sng] Function name  */
 
-  /* Sweep 1 - Fill non-coordinates first */
-
-  /* Loop table */
-  for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
-
-    /* Filter variables  */
-    if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
-      trv_sct var_trv=trv_tbl->lst[var_idx];   
-
-      /* Loop dimensions for object (variable)  */
-      for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
-
-        int var_dim_id=var_trv.var_dmn[dmn_idx_var].dim_id;
-        char* dmn_nm_fll=nco_dmn_fll_nm_id(var_dim_id,trv_tbl);
-
-        /* Get unique dimension object from unique dimension ID */
-        dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
-
-        if(dbg_lvl_get() >= 13){
-          (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm,var_dim_id);    
-          (void)fprintf(stdout,"<%s>\n",dmn_nm_fll);
-          assert(strcmp(dmn_nm_fll,dmn_trv->nm_fll) == 0);
-          assert(strcmp(var_trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) == 0);
-        }
-
-        /* No coordinates */
-        if(dmn_trv->crd_nbr == 0) {
-
-          /* Match dimension name full to be found with with nm_fll of the unique dimension */ 
-          if(strcmp(var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,dmn_trv->nm_fll ) == 0){
-
-            /* Use cases:
-
-            If the unique dimension has no associated coordinate variables, then
-            the dimension name of the variable is simply marked as "non-coordinate", [1]/vrt_nbr#16 below
-
-            /ilev: 2 dimensions: [0]/lev#11 (coordinate) : [1]/vrt_nbr#16
-            /g16/lon2_var: 1 dimensions: [0]/g16/lon2#9
-            */
-
-            if(dbg_lvl_get() >= 12){
-              (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
-                var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
-            } /* endif dbg */
-
-            /* Mark as False the position of the bool array coordinate/non coordinate */
-            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=False;
-
-            /* Store unique dimension (non coordinate ) */
-            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].ncd=dmn_trv;
-
-          } /* No coordinates */
-        }/* Match dimension name full to be found with with nm_fll of the unique dimension */ 
-      } /* Loop dimensions for object (variable)  */
-    } /* Filter variables  */
-  } /* Loop table */
-
-
-
-  /* Sweep 2 - Fill coordinates */
-
   /* Loop table */
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
 
@@ -3540,6 +3479,22 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
         if(dbg_lvl_get() >= 13){
           (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_dim_id);    
         }
+
+        /* No coordinates */
+        if(dmn_trv->crd_nbr == 0) {
+
+          if(dbg_lvl_get() >= 12){
+            (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
+              var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
+          } /* endif dbg */
+
+          /* Mark as False the position of the bool array coordinate/non coordinate */
+          trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=False;
+
+          /* Store unique dimension (non coordinate ) */
+          trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].ncd=dmn_trv;
+        }
+
 
         /* Loop coordinates; they all have the unique dimension ID of the variable dimension */
         for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
@@ -3601,8 +3556,6 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
     } /* Filter variables  */
   } /* Loop table */
 #endif /* NCO_SANITY_CHECK */
-
-
 
 
   /* Check if bool array is all filled  */
