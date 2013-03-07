@@ -1,3 +1,11 @@
+2013-03-06  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_get_sls_chr_cnt() Get number of slash characterrs in a string path 
+  
+	* nco_get_str_pth_sct() Get full name token structure (path components)
+
+	* nco_scp_crd_var() Variable is in scope of coordinate 
+  
 2013-03-05  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_dmn_fll_nm_id() Return unique dimension full name from unique ID 

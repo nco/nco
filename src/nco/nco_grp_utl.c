@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.637 2013-03-07 05:59:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.638 2013-03-07 08:52:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3257,7 +3257,7 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
 
 
 int
-nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
+nco_get_str_pth_sct                   /* [fnc] Get full name token structure (path components) */
 (char * const nm_fll,                 /* I [sng] Full name  */ 
  str_pth_sct ***str_pth_lst)          /* I/O [sct] List of path components  */    
 {
@@ -3304,9 +3304,6 @@ nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
     (*str_pth_lst)[nbr_sls_chr]->nm=strdup(ptr_chr_tok);
     (*str_pth_lst)[nbr_sls_chr]->psn=psn_chr;
 
-    /* Use as index */
-    (*str_pth_lst)[nbr_sls_chr]->idx=nbr_sls_chr;
-
     /* The point where the last token was found is kept internally by the function */
     ptr_chr_tok = strtok (NULL, "/");
 
@@ -3337,23 +3334,22 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   /* Use cases:
 
   dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
-
-          coordinate </g16/g16g2/lon1> not in scope of variable 
-
-  dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1>
-
-          coordinate </g16/g16g1/lon1> not in scope of variable 
-
-  dimension [0]/g16/lon3 of variable </g16/g16g3/lon1_var> with coordinate </g16/g16g3/g16g3g3/lon3>
+  coordinate </g16/g16g2/lon1> not in scope of variable
+  dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1
+  coordinate </g16/g16g1/lon1> not in scope of variable 
   */
 
   nco_bool scp_var_crd=False;     /* [flg] Variable is in coordinate scope */      
 
-  int nbr_sls_chr_var;           /* [nbr] Number of of coordinate slash characters in  string path */
-  int nbr_sls_chr_crd;           /* [nbr] Number of of variable slash characters in  string path */
+  int nbr_sls_chr_var;            /* [nbr] Number of of coordinate slash characters in  string path */
+  int nbr_sls_chr_crd;            /* [nbr] Number of of variable slash characters in  string path */
+  int mtc_nbr=0;                  /* [nbr] Number of total matches  */ 
+  int nbr_idx_mtc=0;              /* [nbr] Number of *consecutive* match indexes */ 
 
-  str_pth_sct **str_pth_lst_var; /* [sct] List of tokens in variable full name */
-  str_pth_sct **str_pth_lst_crd; /* [sct] List of tokens in coordinate full name */
+  str_pth_sct **str_pth_lst_var;  /* [sct] List of tokens in variable full name */
+  str_pth_sct **str_pth_lst_crd;  /* [sct] List of tokens in coordinate full name */
+
+  mtc_tok_sct mtc_tok[30];         /* [sct] Match tokens array */
 
   /* Absolute match: in scope  */ 
   if (strcmp(var_trv->nm_fll,crd->crd_nm_fll) == 0){ 
@@ -3373,7 +3369,6 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   if (nbr_sls_chr_crd > nbr_sls_chr_var){
     return False;
   }
-
 
   /* If any tokens in variable full name */
   if (nbr_sls_chr_var){
@@ -3397,47 +3392,36 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
 
 
   if(dbg_lvl_get() >= 13){
-    for(int sls_var_idx=0;sls_var_idx<nbr_sls_chr_var;sls_var_idx++) {
-      (void)fprintf(stdout,"#%d %s ",str_pth_lst_var[sls_var_idx]->psn,str_pth_lst_var[sls_var_idx]->nm);
+    for(int tok_var_idx=0;tok_var_idx<nbr_sls_chr_var;tok_var_idx++) {
+      (void)fprintf(stdout,"#%d %s ",str_pth_lst_var[tok_var_idx]->psn,str_pth_lst_var[tok_var_idx]->nm);
     }
     (void)fprintf(stdout,"\n");
-    for(int sls_crd_idx=0;sls_crd_idx<nbr_sls_chr_crd;sls_crd_idx++) {
-      (void)fprintf(stdout,"#%d %s ",str_pth_lst_crd[sls_crd_idx]->psn,str_pth_lst_crd[sls_crd_idx]->nm);
+    for(int tok_crd_idx=0;tok_crd_idx<nbr_sls_chr_crd;tok_crd_idx++) {
+      (void)fprintf(stdout,"#%d %s ",str_pth_lst_crd[tok_crd_idx]->psn,str_pth_lst_crd[tok_crd_idx]->nm);
     }
     (void)fprintf(stdout,"\n");
   }
 
-  /* Match name structure   */
-  typedef struct{ 
-    char *nm;           /* [sng] Path component */
-    int sls_var_idx;    /* [nbr] Index */
-    int sls_crd_idx;    /* [nbr] Index */
-  } mtc_nm_sct; 
-
   /* Build a match name array */
-  mtc_nm_sct mtc_nm[30];
-
-  for(int mtc_idx=0;mtc_idx<30;mtc_idx++) mtc_nm[mtc_idx].nm=NULL;
-
-  int mtc_nbr=0; /* [nbr] Number of total matches  */ 
+  for(int mtc_idx=0;mtc_idx<30;mtc_idx++) mtc_tok[mtc_idx].nm=NULL;
 
   /* Loop variable tokens */
-  for(int sls_var_idx=0;sls_var_idx<nbr_sls_chr_var;sls_var_idx++) {
+  for(int tok_var_idx=0;tok_var_idx<nbr_sls_chr_var;tok_var_idx++) {
 
     /* Loop coordinate tokens */
-    for(int sls_crd_idx=0;sls_crd_idx<nbr_sls_chr_crd;sls_crd_idx++) {
+    for(int tok_crd_idx=0;tok_crd_idx<nbr_sls_chr_crd;tok_crd_idx++) {
 
       /* Match */
-      if(strcmp(str_pth_lst_var[sls_var_idx]->nm,str_pth_lst_crd[sls_crd_idx]->nm) == 0){
+      if(strcmp(str_pth_lst_var[tok_var_idx]->nm,str_pth_lst_crd[tok_crd_idx]->nm) == 0){
 
         if(dbg_lvl_get() >= 13){
-          (void)fprintf(stdout,"#%d %s Match crd[%d] var[%d]\n",str_pth_lst_crd[sls_crd_idx]->psn,str_pth_lst_crd[sls_crd_idx]->nm,
-            sls_crd_idx,sls_var_idx);
+          (void)fprintf(stdout,"#%d %s Match crd[%d] var[%d]\n",str_pth_lst_crd[tok_crd_idx]->psn,str_pth_lst_crd[tok_crd_idx]->nm,
+            tok_crd_idx,tok_var_idx);
         }
 
-        mtc_nm[mtc_nbr].nm=str_pth_lst_var[sls_var_idx]->nm;
-        mtc_nm[mtc_nbr].sls_var_idx=sls_var_idx;
-        mtc_nm[mtc_nbr].sls_crd_idx=sls_crd_idx;
+        mtc_tok[mtc_nbr].nm=str_pth_lst_var[tok_var_idx]->nm;
+        mtc_tok[mtc_nbr].tok_var_idx=tok_var_idx;
+        mtc_tok[mtc_nbr].tok_crd_idx=tok_crd_idx;
         mtc_nbr++;
 
       } /* Match */
@@ -3445,16 +3429,10 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   } /* Loop variable tokens */
 
 
-  /* No matches: out of scope  */
-  if (mtc_nbr == 0){
-    return False;
-  }
-
-
   /* Loop matches */
   for(int mtc_idx=0;mtc_idx<mtc_nbr;mtc_idx++){
     if(dbg_lvl_get() >= 13){
-      (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_nm[mtc_idx].nm,mtc_nm[mtc_idx].sls_crd_idx,mtc_nm[mtc_idx].sls_var_idx);
+      (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_tok[mtc_idx].nm,mtc_tok[mtc_idx].tok_crd_idx,mtc_tok[mtc_idx].tok_var_idx);
     }  
   } /* Loop matches */
 
@@ -3463,8 +3441,6 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
   */
 
-  int nbr_idx_mtc=0; /* [nbr] Number of *consecutive* match indexes */ 
-
   /* Number of matches until last name */
   if (nbr_sls_chr_var-1 == mtc_nbr){
 
@@ -3472,11 +3448,11 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
     for(int mtc_idx=0;mtc_idx<mtc_nbr;mtc_idx++){
 
       /* Do match *consecutive* indexes match ? */
-      if ( (mtc_nm[mtc_idx].sls_crd_idx == mtc_nm[mtc_idx].sls_var_idx) &&
-        mtc_idx == mtc_nm[mtc_idx].sls_crd_idx) {
+      if ( (mtc_tok[mtc_idx].tok_crd_idx == mtc_tok[mtc_idx].tok_var_idx) &&
+        mtc_idx == mtc_tok[mtc_idx].tok_crd_idx) {
 
           if(dbg_lvl_get() >= 13){
-            (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_nm[mtc_idx].nm,mtc_nm[mtc_idx].sls_crd_idx,mtc_nm[mtc_idx].sls_var_idx);
+            (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_tok[mtc_idx].nm,mtc_tok[mtc_idx].tok_crd_idx,mtc_tok[mtc_idx].tok_var_idx);
           }  
 
           nbr_idx_mtc++;
@@ -3493,23 +3469,22 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   }
 
 
-
   /* Free */
-  for(int sls_var_idx=0;sls_var_idx<nbr_sls_chr_var;sls_var_idx++) {
-    str_pth_lst_var[sls_var_idx]->nm=(char *)nco_free(str_pth_lst_var[sls_var_idx]->nm);
-    str_pth_lst_var[sls_var_idx]=(str_pth_sct *)nco_free(str_pth_lst_var[sls_var_idx]);
+  for(int tok_var_idx=0;tok_var_idx<nbr_sls_chr_var;tok_var_idx++) {
+    str_pth_lst_var[tok_var_idx]->nm=(char *)nco_free(str_pth_lst_var[tok_var_idx]->nm);
+    str_pth_lst_var[tok_var_idx]=(str_pth_sct *)nco_free(str_pth_lst_var[tok_var_idx]);
   }
   str_pth_lst_var=(str_pth_sct **)nco_free(str_pth_lst_var);
 
-  for(int sls_crd_idx=0;sls_crd_idx<nbr_sls_chr_crd;sls_crd_idx++) {
-    str_pth_lst_crd[sls_crd_idx]->nm=(char *)nco_free(str_pth_lst_crd[sls_crd_idx]->nm);
-    str_pth_lst_crd[sls_crd_idx]=(str_pth_sct *)nco_free(str_pth_lst_crd[sls_crd_idx]);
+  for(int tok_crd_idx=0;tok_crd_idx<nbr_sls_chr_crd;tok_crd_idx++) {
+    str_pth_lst_crd[tok_crd_idx]->nm=(char *)nco_free(str_pth_lst_crd[tok_crd_idx]->nm);
+    str_pth_lst_crd[tok_crd_idx]=(str_pth_sct *)nco_free(str_pth_lst_crd[tok_crd_idx]);
   }
   str_pth_lst_crd=(str_pth_sct **)nco_free(str_pth_lst_crd);
 
   return False;
 
-} /* nco_scp_crd_dmn() */
+} /* nco_scp_crd_var() */
 
 
 

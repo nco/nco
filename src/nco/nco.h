@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.289 2013-03-07 04:42:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.290 2013-03-07 08:52:11 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -599,14 +599,18 @@ extern "C" {
   } gpe_sct;
 
 
-
-
   /* GTT structure to break a full path name into components  */
   typedef struct{ 
     char *nm;       /* [sng] Path component */
-    int idx;        /* [nbr] Index of component (useful for sorting) */
     int psn;        /* [nbr] Position of path component */
   } str_pth_sct; 
+
+  /* Match token structure for finding if a variable is in scope of coordinate   */
+  typedef struct{ 
+    char *nm;           /* [sng] Path token. A token is a component of a path (e.g /g1/ ) */
+    int tok_var_idx;    /* [nbr] Index of token for first full name */
+    int tok_crd_idx;    /* [nbr] Index of token for second full name  */
+  } mtc_tok_sct; 
 
  
   /* MSA Limits structure:
