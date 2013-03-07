@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.638 2013-03-07 08:52:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.639 2013-03-07 09:02:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3437,29 +3437,20 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   } /* Loop matches */
 
 
-  /* Case match until last name:
-  variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
-  */
+  /* Loop matches */
+  for(int mtc_idx=0;mtc_idx<mtc_nbr;mtc_idx++){
 
-  /* Number of matches until last name */
-  if (nbr_sls_chr_var-1 == mtc_nbr){
+    /* Do match *consecutive* indexes match ? */
+    if ( (mtc_tok[mtc_idx].tok_crd_idx == mtc_tok[mtc_idx].tok_var_idx) &&
+      mtc_idx == mtc_tok[mtc_idx].tok_crd_idx) {
 
-    /* Loop matches */
-    for(int mtc_idx=0;mtc_idx<mtc_nbr;mtc_idx++){
+        if(dbg_lvl_get() >= 13){
+          (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_tok[mtc_idx].nm,mtc_tok[mtc_idx].tok_crd_idx,mtc_tok[mtc_idx].tok_var_idx);
+        }  
 
-      /* Do match *consecutive* indexes match ? */
-      if ( (mtc_tok[mtc_idx].tok_crd_idx == mtc_tok[mtc_idx].tok_var_idx) &&
-        mtc_idx == mtc_tok[mtc_idx].tok_crd_idx) {
-
-          if(dbg_lvl_get() >= 13){
-            (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_tok[mtc_idx].nm,mtc_tok[mtc_idx].tok_crd_idx,mtc_tok[mtc_idx].tok_var_idx);
-          }  
-
-          nbr_idx_mtc++;
-      }
-    } /* Loop matches */
-
-  } /* Number of matches until last name */
+        nbr_idx_mtc++;
+    }
+  } /* Loop matches */
 
   /* Number of matches indexes matches number of tokens until last
   Use case: /g16/g16g1 in both </g16/g16g1/lon1_var> and </g16/g16g1/lon1>
