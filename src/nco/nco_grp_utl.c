@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.649 2013-03-07 13:27:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.650 2013-03-07 13:41:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3306,14 +3306,6 @@ nco_scp_crd_var                       /* [fnc] Is coordinate in scope of variabl
 
   const char fnc_nm[]="nco_scp_crd_var()";  /* [sng] Function name  */           
 
-  /* Use cases:
-
-  dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
-  coordinate </g16/g16g2/lon1> not in scope of variable
-  dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1
-  coordinate </g16/g16g1/lon1> not in scope of variable 
-  */
-
   nco_bool scp_var_crd=False;     /* [flg] Variable is in coordinate scope */      
 
   int nbr_sls_chr_var;            /* [nbr] Number of of coordinate slash characters in  string path */
@@ -3474,6 +3466,14 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
  dmn_trv_sct *dmn_trv)                /* I [sct] Dimension object */
 {
 
+  /* Use cases:
+
+  dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
+  coordinate </g16/g16g2/lon1> not in scope of variable
+  dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1
+  coordinate </g16/g16g1/lon1> not in scope of variable 
+  */
+
   const char fnc_nm[]="nco_scp_var_crd()"; /* [sng] Function name  */
 
   /* Loop coordinates; they all have the unique dimension ID of the variable dimension */
@@ -3481,18 +3481,41 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
     crd_sct *crd=dmn_trv->crd[crd_idx];
 
     /* Is coordinate in scope of variable? */
-    nco_bool is_crd_var_scp=nco_scp_crd_var(crd,var_trv);
-    if(dbg_lvl_get() >= 12){
-      (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
-        crd->crd_nm_fll,is_crd_var_scp,var_trv->nm_fll);      
-    } /* endif dbg */
+    nco_bool is_crd_var_scp=False;
 
-    if(is_crd_var_scp)
-    return crd;
+    /* Absolute match: in scope  */ 
+    if (strcmp(var_trv->nm_fll,crd->crd_nm_fll) == 0){ 
 
+      /* The variable must be a coordinate for this to happen */
+      assert(var_trv->is_crd_var == True);
+      is_crd_var_scp=True; 
+    } 
+    /* Same group: in scope  */ 
+    if (strcmp(var_trv->grp_nm_fll,crd->crd_grp_nm_fll) == 0){ 
+
+      is_crd_var_scp=True; 
+    } 
+    /* Level below: in scope  */ 
+    else if (crd->grp_dpt < var_trv->grp_dpt){ 
+
+      is_crd_var_scp=True; 
+    }
+ 
+    /* In scope, return object  */ 
+    if(is_crd_var_scp) {
+
+      if(dbg_lvl_get() >= 12){
+        (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
+          crd->crd_nm_fll,is_crd_var_scp,var_trv->nm_fll);      
+      } /* endif dbg */
+
+      return crd;
+    } /* In scope, return object  */ 
 
   } /* Loop coordinates */
 
+
+  /* Should never happen */
   return NULL;
 } /* nco_scp_var_crd() */
 
