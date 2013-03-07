@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.646 2013-03-07 12:21:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.647 2013-03-07 12:50:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3325,10 +3325,19 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   /* Absolute match: in scope  */ 
   if (strcmp(var_trv->nm_fll,crd->crd_nm_fll) == 0){ 
 
-    /* The variable must be a coordinate */
+    /* The variable must be a coordinate for this to happen */
     assert(var_trv->is_crd_var == True);
     return True; 
   } 
+
+
+  /* Same group: in scope  */ 
+  if (strcmp(var_trv->grp_nm_fll,crd->crd_grp_nm_fll) == 0){ 
+
+    return True; 
+  } 
+
+
 
   /* Get number of tokens in variable full name */
   nbr_sls_chr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
@@ -3484,6 +3493,7 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
 
 
   } /* Loop coordinates */
+
 } /* nco_scp_var_crd() */
 
 
