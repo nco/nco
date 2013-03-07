@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.85 2013-02-28 12:57:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.86 2013-03-07 22:59:21 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -170,7 +170,8 @@ extern "C" {
    const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
    const gpe_sct * const gpe,         /* I [sct] GPE structure */
    const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
-   const trv_sct * const var_trv);     /* I [sct] Object to write (variable) */
+   const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
+   const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
 
   
 #ifdef __cplusplus

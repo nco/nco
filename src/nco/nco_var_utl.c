@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.241 2013-03-04 22:12:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.242 2013-03-07 22:59:21 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1713,7 +1713,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
  const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,         /* I [sct] GPE structure */
  const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
- const trv_sct * const var_trv)     /* I [sct] Object to write (variable) */
+ const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
      Routine is based on nco_cpy_var_dfn_lmt(), and differs trivially from it
@@ -1774,6 +1775,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,(int *)NULL);
+
+  assert(var_typ == var_trv->var_typ);
+  assert(nbr_dim == var_trv->nbr_dmn);
+
+  var_typ=var_trv->var_typ;
+  nbr_dim=var_trv->nbr_dmn;
 
   /* Allocate space to hold dimension IDs */
   dmn_in_id=(int *)nco_malloc(nbr_dim*sizeof(int));
@@ -1837,6 +1844,11 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
     (void)nco_inq_dim(in_id,dmn_in_id[dmn_idx],dmn_nm,&dmn_sz);
 
+    int var_dim_id=dmn_in_id[dmn_idx];
+
+    /* Get unique dimension object from unique dimension ID */
+    dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
+
     /* Has dimension been defined in output file? */
     /* Define output group to be current group and overwrite on debug */
     grp_dmn_out_id=out_id;
@@ -1889,7 +1901,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
       } /* !rec_dmn_nm */ 
 
-      dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd; /* [sct] Unique dimension */
       char *grp_out_fll; /* [sng] Group name */
 
       /* Does dimension have user-specified limits?
