@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.635 2013-03-07 05:35:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.636 2013-03-07 05:42:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3463,7 +3463,7 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
   */
 
-  int nbr_idx_mtc=0; /* Number of match indexes */ 
+  int nbr_idx_mtc=0; /* Number of consecutive match indexes */ 
 
   /* Number of matches until last name */
   if (nbr_sls_chr_var-1 == mtc_nbr){
@@ -3471,14 +3471,15 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
     /* Loop matches */
     for(int mtc_idx=0;mtc_idx<mtc_nbr;mtc_idx++){
 
-      /* Do match indexes match ? */
-      if (mtc_nm[mtc_idx].sls_crd_idx == mtc_nm[mtc_idx].sls_var_idx) {
+      /* Do match *consecutive* indexes match ? */
+      if ( (mtc_nm[mtc_idx].sls_crd_idx == mtc_nm[mtc_idx].sls_var_idx) &&
+        mtc_idx == mtc_nm[mtc_idx].sls_crd_idx) {
 
-        if(dbg_lvl_get() >= 13){
-          (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_nm[mtc_idx].nm,mtc_nm[mtc_idx].sls_crd_idx,mtc_nm[mtc_idx].sls_var_idx);
-        }  
+          if(dbg_lvl_get() >= 13){
+            (void)fprintf(stdout,"match #%s crd[%d] var[%d]\n",mtc_nm[mtc_idx].nm,mtc_nm[mtc_idx].sls_crd_idx,mtc_nm[mtc_idx].sls_var_idx);
+          }  
 
-        nbr_idx_mtc++;
+          nbr_idx_mtc++;
       }
     } /* Loop matches */
 
