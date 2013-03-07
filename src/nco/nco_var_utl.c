@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.242 2013-03-07 22:59:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.243 2013-03-07 23:22:22 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1852,6 +1852,15 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Has dimension been defined in output file? */
     /* Define output group to be current group and overwrite on debug */
     grp_dmn_out_id=out_id;
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> from ",prg_nm_get(),fnc_nm,var_trv->nm_fll);        
+      (void)nco_prt_grp_nm_fll(in_id);
+      (void)fprintf(stdout," to ");   
+      (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
+      (void)fprintf(stdout,"\n");
+    } /* endif dbg */
+
     if(dbg_lvl_get() == nco_dbg_crr) rcd_lcl=nco_inq_dmn_grp_id(out_id,dmn_nm,dmn_out_id+dmn_idx,&grp_dmn_out_id); else rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
 
     /* Define dimension in output file if necessary */
