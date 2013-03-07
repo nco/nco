@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.288 2013-03-06 11:01:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.289 2013-03-07 04:42:36 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -604,6 +604,7 @@ extern "C" {
   /* GTT structure to break a full path name into components  */
   typedef struct{ 
     char *nm;       /* [sng] Path component */
+    int idx;        /* [nbr] Index of component (useful for sorting) */
     int psn;        /* [nbr] Position of path component */
   } str_pth_sct; 
 
