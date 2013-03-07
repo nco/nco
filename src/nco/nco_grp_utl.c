@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.647 2013-03-07 12:50:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.648 2013-03-07 13:14:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2282,6 +2282,10 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             /* Type */
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->var_typ=var_trv.var_typ;
 
+            /* Group depth */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->grp_dpt=var_trv.grp_dpt;
+
+
             /* MSA */     
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm=strdup(var_trv.nm);
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_cnt=dmn_trv.sz;
@@ -3336,6 +3340,11 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
 
     return True; 
   } 
+  /* Level below: in scope  */ 
+  else if (crd->grp_dpt < var_trv->grp_dpt){ 
+
+    return True; 
+  }
 
 
 

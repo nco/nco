@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.292 2013-03-07 10:41:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.293 2013-03-07 13:14:44 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -639,6 +639,7 @@ extern "C" {
     nc_type var_typ;        /* [enm] NetCDF type  */  
     lmt_msa_sct lmt_msa;    /* [sct] MSA Limits structure for every coordinate */
     int dim_id;             /* [ID] Unique ID for dimension (duplicate of dmn_trv_sct.dim_id) */
+    int grp_dpt;            /* [nbr] Depth of group (root = 0); needed to get in scope of variable match */
   } crd_sct; 
 
    /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and a MSA field */
