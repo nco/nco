@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.290 2013-03-07 08:52:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.291 2013-03-07 09:49:51 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -638,6 +638,7 @@ extern "C" {
     size_t sz;              /* [nbr] Size of coordinate */
     nc_type var_typ;        /* [enm] NetCDF type  */  
     lmt_msa_sct lmt_msa;    /* [sct] MSA Limits structure for every coordinate */
+    int dim_id;             /* [ID] Unique ID for dimension */
   } crd_sct; 
 
    /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and a MSA field */
@@ -650,7 +651,7 @@ extern "C" {
     int crd_nbr;             /* [nbr] Number of coordinate structures */
     crd_sct **crd;           /* [sct] List of coordinate structures associated with *this* dimension */
     lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
-    int id;                  /* [ID] Unique ID for dimension; same as "var_dmn_sct.id", obtained from API "nc_inq_dimid" */
+    int dim_id;              /* [ID] Unique ID for dimension; same as "var_dmn_sct.id", obtained from API "nc_inq_dimid" */
     nco_bool has_crd_scp;    /* [flg] Is there a variable with same name in dimension's scope? */
   } dmn_trv_sct; 
 
@@ -664,7 +665,7 @@ extern "C" {
     nco_bool is_crd_var; /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
     crd_sct *crd; /* [sct] Pointer to *coordinate variable* if coordinate variable */
     dmn_trv_sct *ncd; /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
-    int id; /* [ID] Unique ID for dimension; same as "dmn_trv_sct.id", obtained from API "nc_inq_vardimid" */
+    int dim_id; /* [ID] Unique ID for dimension; same as "dmn_trv_sct.id", obtained from API "nc_inq_vardimid" */
   } var_dmn_sct; 
  
   /* GTT Object structure 

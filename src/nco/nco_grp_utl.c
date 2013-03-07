@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.639 2013-03-07 09:02:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.640 2013-03-07 09:49:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1671,7 +1671,7 @@ nco_bld_var_dmn_trv                   /* [fnc] Build dimension info for all vari
 
 dmn_trv_sct *                         /* O [sct] GTT dimension structure (stored in *groups*) */
 nco_dmn_trv_sct                       /* [fnc] Return unique dimension object from unique ID */
-(const int id,                        /* I [id] Unique dimension ID */
+(const int dim_id,                    /* I [id] Unique dimension ID */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
 
@@ -1682,7 +1682,7 @@ nco_dmn_trv_sct                       /* [fnc] Return unique dimension object fr
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst_idx];
 
     /* Compare IDs */
-    if (id == trv_tbl->lst_dmn[dmn_lst_idx].id){
+    if (dim_id == trv_tbl->lst_dmn[dmn_lst_idx].dim_id){
 
       /* Return object  */
       return &trv_tbl->lst_dmn[dmn_lst_idx];
@@ -1697,7 +1697,7 @@ nco_dmn_trv_sct                       /* [fnc] Return unique dimension object fr
 
 char *                                /* O [id] Unique dimension full name */
 nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name from unique ID  */
-(const int id,                        /* I [id] Unique dimension ID */
+(const int dim_id,                    /* I [id] Unique dimension ID */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
 
@@ -1708,7 +1708,7 @@ nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst_idx];
 
     /* Compare IDs */
-    if (id == trv_tbl->lst_dmn[dmn_lst_idx].id){
+    if (dim_id == trv_tbl->lst_dmn[dmn_lst_idx].dim_id){
 
       /* Return object  */
       return trv_tbl->lst_dmn[dmn_lst_idx].nm_fll;
@@ -1749,7 +1749,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
       /* Full dimension names for each variable */
       for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++){
 
-        int var_dim_id=trv.var_dmn[dmn_idx_var].id;
+        int var_dim_id=trv.var_dmn[dmn_idx_var].dim_id;
         char* dmn_nm_fll=nco_dmn_fll_nm_id(var_dim_id,trv_tbl);
 
         /* Get unique dimension object from unique dimension ID */
@@ -1901,7 +1901,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].is_crd_var=nco_obj_typ_err;
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].crd=NULL;
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].ncd=NULL;
-    trv_tbl->lst[idx].var_dmn[dmn_idx_var].id=nco_obj_typ_err;
+    trv_tbl->lst[idx].var_dmn[dmn_idx_var].dim_id=nco_obj_typ_err;
   }
   
 
@@ -1987,7 +1987,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].is_crd_var=nco_obj_typ_err;
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].crd=NULL;
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].ncd=NULL;
-      trv_tbl->lst[idx].var_dmn[dmn_idx_var].id=nco_obj_typ_err;
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].dim_id=nco_obj_typ_err;
     }
 
      /* Variable dimensions; store what we know at this time: relative name and ID */
@@ -2003,7 +2003,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       (void)nco_inq_dim(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var,&dmn_sz_var);
 
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
-      trv_tbl->lst[idx].var_dmn[dmn_idx_var].id=dmn_id_var[dmn_idx_var];
+      trv_tbl->lst[idx].var_dmn[dmn_idx_var].dim_id=dmn_id_var[dmn_idx_var];
     }
  
     /* Free constructed name */
@@ -2073,7 +2073,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst_dmn[idx].lmt_msa.lmt_dmn=NULL;
     trv_tbl->lst_dmn[idx].crd_nbr=0;         
     trv_tbl->lst_dmn[idx].crd=NULL; 
-    trv_tbl->lst_dmn[idx].id=dmn_ids_grp[dmn_idx];
+    trv_tbl->lst_dmn[idx].dim_id=dmn_ids_grp[dmn_idx];
     trv_tbl->lst_dmn[idx].has_crd_scp=nco_obj_typ_err;
 
     /* Free constructed name */
@@ -2258,8 +2258,11 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             /* The coordinate full name is the variable full name found in scope */
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll=strdup(var_trv.nm_fll);
 
-            /* The dimension full name is the dimension full name */
+            /* The coordinate dimension full name is the dimension full name */
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=strdup(dmn_trv.nm_fll);
+
+            /* The coordinate ID is the dimension unique ID */
+            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dim_id=dmn_trv.dim_id;
 
             /* Full group name where coordinate is located is the variable full group name  */
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll=strdup(var_trv.grp_nm_fll);
@@ -2370,7 +2373,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
       /* Full dimension names for each variable */
       for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++){
-        (void)fprintf(stdout,"[%d]%s#%d",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm_fll,trv.var_dmn[dmn_idx_var].id); 
+        (void)fprintf(stdout,"[%d]%s#%d",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm_fll,trv.var_dmn[dmn_idx_var].dim_id); 
 
         /* Filter output */
         if (trv.var_dmn[dmn_idx_var].is_crd_var == True) (void)fprintf(stdout," (coordinate) : ");
@@ -2389,7 +2392,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
     /* Dimension name first */
-    (void)fprintf(stdout,"#%d%s: ",dmn_trv.id,dmn_trv.nm_fll);
+    (void)fprintf(stdout,"#%d%s: ",dmn_trv.dim_id,dmn_trv.nm_fll);
 
     /* Filter output */
     if (dmn_trv.is_rec_dmn == True) (void)fprintf(stdout," record dimension (%li)",dmn_trv.sz);
@@ -2416,6 +2419,9 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
+    /* Dimension ID and  full name */
+    (void)fprintf(stdout,"(#%d%s) ::",dmn_trv.dim_id,dmn_trv.nm_fll);
+
     nbr_crd_var+=dmn_trv.crd_nbr;
 
     /* Loop coordinates */
@@ -2425,8 +2431,8 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
       /* Coordinate full name */
       (void)fprintf(stdout,"%s ",crd->crd_nm_fll);
 
-      /* Dimension full name and size*/
-      (void)fprintf(stdout,"(%s:%li) ",crd->dmn_nm_fll,crd->sz);
+      /* Dimension full name */
+      (void)fprintf(stdout,"(#%d%s) ",crd->dim_id,crd->dmn_nm_fll);
 
       /* Limits */
       if (crd->lmt_msa.lmt_dmn_nbr){
@@ -2935,7 +2941,7 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
     /* Dimension #/name first */
-    if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%d%s\n",dmn_trv.id,dmn_trv.nm_fll);
+    if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%d%s\n",dmn_trv.dim_id,dmn_trv.nm_fll);
 
     nco_bool in_scp=False;
 
@@ -3510,7 +3516,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       /* Loop dimensions for object (variable)  */
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
 
-        int var_dim_id=var_trv.var_dmn[dmn_idx_var].id;
+        int var_dim_id=var_trv.var_dmn[dmn_idx_var].dim_id;
         char* dmn_nm_fll=nco_dmn_fll_nm_id(var_dim_id,trv_tbl);
 
         /* Get unique dimension object from unique dimension ID */
@@ -3569,7 +3575,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       /* Loop dimensions for object (variable)  */
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
 
-        int var_dim_id=var_trv.var_dmn[dmn_idx_var].id;
+        int var_dim_id=var_trv.var_dmn[dmn_idx_var].dim_id;
         char* dmn_nm_fll=nco_dmn_fll_nm_id(var_dim_id,trv_tbl);
 
         /* Get unique dimension object from unique dimension ID */
