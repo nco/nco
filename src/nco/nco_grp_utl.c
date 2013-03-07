@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.632 2013-03-07 04:42:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.633 2013-03-07 04:56:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3336,8 +3336,14 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
 
   /* Use cases:
 
-  dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate </g16/g16g1/lon1>
-  dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate </g16/g16g2/lon1>
+  dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
+
+          coordinate </g16/g16g2/lon1> not in scope of variable 
+
+  dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1>
+
+          coordinate </g16/g16g1/lon1> not in scope of variable 
+
   dimension [0]/g16/lon3 of variable </g16/g16g3/lon1_var> with coordinate </g16/g16g3/g16g3g3/lon3>
   */
 
@@ -3443,6 +3449,10 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
     if(dbg_lvl_get() >= 13){
       (void)fprintf(stdout,"#%s crd[%d] var[%d]\n",mtc_nm[mtc_idx].nm,mtc_nm[mtc_idx].sls_crd_idx,mtc_nm[mtc_idx].sls_var_idx);
     }  
+
+
+
+
   }
 
 
