@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.629 2013-03-07 03:06:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.630 2013-03-07 03:29:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3346,6 +3346,14 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
   str_pth_sct **str_pth_lst_var; /* [sct] List of tokens in variable full name */
   str_pth_sct **str_pth_lst_crd; /* [sct] List of tokens in coordinate full name */
 
+  /* Absolute match: in scope  */ 
+  if (strcmp(var_trv->nm_fll,crd->crd_nm_fll) == 0){ 
+
+    /* The variable must be a coordinate */
+    assert(var_trv->is_crd_var == True);
+    return True; 
+  } 
+
   /* Get number of tokens in variable full name */
   nbr_sls_chr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
 
@@ -3532,7 +3540,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
            
             nco_bool is_crd_var_scp=nco_scp_crd_var(crd,&var_trv);
-            if(dbg_lvl_get() >= 14){
+            if(dbg_lvl_get() >= 12){
               (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
                 crd->crd_nm_fll,is_crd_var_scp,var_trv.nm_fll);      
             } /* endif dbg */
