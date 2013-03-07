@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.628 2013-03-06 23:11:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.629 2013-03-07 03:06:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1734,14 +1734,14 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
   const char fnc_nm[]="nco_bld_dmn_ids_trv()"; /* [sng] Function name  */
 
   /* Loop objects  */
-  if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
 
     /* Filter variables  */
     if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
       trv_sct trv=trv_tbl->lst[var_idx];   
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s:",trv.nm_fll); 
         (void)fprintf(stdout," %d dimensions: ",trv.nbr_dmn);
       }
@@ -1755,13 +1755,13 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm,var_dim_id);    
           (void)fprintf(stdout,"<%s> ",dmn_nm_fll);
           (void)fprintf(stdout,"<%s><%s> ",dmn_trv->nm_fll,dmn_trv->grp_nm_fll);
-          assert(strcmp(dmn_nm_fll,dmn_trv->nm_fll) == 0);
-          assert(strcmp(trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) == 0);
         }
+        assert(strcmp(dmn_nm_fll,dmn_trv->nm_fll) == 0);
+        assert(strcmp(trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) == 0);
 
         /* Store full dimension name  */
         trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].dmn_nm_fll=strdup(dmn_trv->nm_fll);
@@ -1771,7 +1771,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
       }
 
-      if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"\n");
+      if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"\n");
 
     } /* Filter variables  */
   } /* Variables */
@@ -2146,7 +2146,7 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
             /* If the group dimension is a record dimension then the variable is a record variable */
             trv_tbl->lst[var_idx].is_rec_var=dmn_trv.is_rec_dmn;
 
-            if(dbg_lvl_get() >= nco_dbg_dev){
+            if(dbg_lvl_get() == nco_dbg_old){
               (void)fprintf(stdout,"%s: INFO %s <%s> is ",prg_nm_get(),fnc_nm,var_trv.nm_fll);
               if (dmn_trv.is_rec_dmn) (void)fprintf(stdout,"(record) ");
               (void)fprintf(stdout,"coordinate\n");
@@ -2291,7 +2291,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn=NULL;
 
             crd_sct *crd=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx];
-            if(dbg_lvl_get() >= nco_dbg_dev){           
+            if(dbg_lvl_get() == nco_dbg_old){           
               (void)fprintf(stdout,"%s: INFO %s variable <%s> has coordinate <%s> from dimension <%s>\n",prg_nm_get(),fnc_nm,
                 var_trv.nm_fll,crd->crd_nm_fll,crd->dmn_nm_fll);
             }
@@ -2526,7 +2526,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
   const char fnc_nm[]="nco_bld_lmt()"; /* [sng] Function name  */
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
+  if(dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits: ",prg_nm_get(),fnc_nm,lmt_nbr);
     for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++)(void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
     (void)fprintf(stdout,"\n");      
@@ -2631,7 +2631,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
             /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
             (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,lmt[lmt_idx]);
 
-            if(dbg_lvl_get() >= nco_dbg_dev){
+            if(dbg_lvl_get() == nco_dbg_old){
               (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
                 prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
             }
@@ -2667,12 +2667,12 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
           /* Limit is same as dimension in input file ? */
           trv_tbl->lst_dmn[dmn_idx].lmt_msa.BASIC_DMN=False;
 
-          if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
+          if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
 
           /* Parse user-specified limits into hyperslab specifications. NOTE: Use False parameter and "dmn" */
           (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,dmn_trv.grp_nm_fll,dmn_trv.nm,dmn_trv.sz,dmn_trv.is_rec_dmn,False,lmt[lmt_idx]);
 
-          if(dbg_lvl_get() >= nco_dbg_dev){
+          if(dbg_lvl_get() == nco_dbg_old){
             (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
               prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
           }
@@ -2856,7 +2856,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
         crd_sct *crd=dmn_trv.crd[crd_idx];
 
-        if(dbg_lvl_get() >= nco_dbg_dev && crd->lmt_msa.lmt_dmn_nbr){
+        if(dbg_lvl_get() == nco_dbg_old && crd->lmt_msa.lmt_dmn_nbr){
           (void)fprintf(stdout,"%s: INFO %s checking limits for coordinate <%s>:\n",prg_nm_get(),fnc_nm,crd->crd_nm_fll);
         }
 
@@ -2865,7 +2865,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
         /* Loop limits for each coordinate */
         for(int lmt_idx=0;lmt_idx<crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
-          if(dbg_lvl_get() >= nco_dbg_dev){
+          if(dbg_lvl_get() == nco_dbg_old){
             (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
               lmt_idx,
               crd->lmt_msa.lmt_dmn[lmt_idx]->nm,
@@ -2888,7 +2888,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       /* Current index of dimension limits for table dimension  */
       int lmt_crr=dmn_trv.lmt_msa.lmt_crr;
 
-      if(dbg_lvl_get() >= nco_dbg_dev && lmt_dmn_nbr){
+      if(dbg_lvl_get() == nco_dbg_old && lmt_dmn_nbr){
         (void)fprintf(stdout,"%s: INFO %s checking limits for dimension <%s>:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
       }
 
@@ -2897,7 +2897,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
       /* Loop limits for each dimension */
       for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
             lmt_idx,
             dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->nm,
@@ -2930,12 +2930,12 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
 
   /* Unique dimension list */
 
-  if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO reports dimension information with limits: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
+  if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO reports dimension information with limits: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
   for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
 
     /* Dimension #/name first */
-    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"#%d%s\n",dmn_trv.id,dmn_trv.nm_fll);
+    if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%d%s\n",dmn_trv.id,dmn_trv.nm_fll);
 
     nco_bool in_scp=False;
 
@@ -2952,7 +2952,7 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
           /* Is variable in scope of dimension ? */
           if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
-            if(dbg_lvl_get() >= nco_dbg_dev){
+            if(dbg_lvl_get() == nco_dbg_old){
               (void)fprintf(stdout,"%s: INFO %s reports variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
                 var_trv.nm_fll,dmn_trv.nm_fll);        
             } /* endif dbg */
@@ -2970,7 +2970,7 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
     } /* Loop object table */
 
 
-    if(dbg_lvl_get() >= nco_dbg_dev){
+    if(dbg_lvl_get() == nco_dbg_old){
       if (in_scp == False)
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> with no in scope variables\n",prg_nm_get(),fnc_nm,
         dmn_trv.nm_fll);        
@@ -3202,7 +3202,7 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope o
 
       /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev */
       if (dmn_nm_fll_var_lng == crd_nm_fll_lng && strcmp(dmn_nm_fll_var,crd_nm_fll) == 0){
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() >= 13){
           (void)fprintf(stdout,"%s: INFO %s found absolute match of dimension <%s> and coordinate <%s>:\n",prg_nm_get(),fnc_nm,
             dmn_nm_fll_var,crd_nm_fll);
         }
@@ -3211,7 +3211,7 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope o
         /* Coordinate in scope of dimension name */
       }else if (dmn_nm_fll_var_lng<crd_nm_fll_lng){
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() >= 13){
           (void)fprintf(stdout,"%s: INFO %s found dimension <%s> in scope of coordinate <%s>:\n",prg_nm_get(),fnc_nm,
             dmn_nm_fll_var,crd_nm_fll);
         }
@@ -3471,7 +3471,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             /g16/lon2_var: 1 dimensions: [0]/g16/lon2#9
             */
 
-            if(dbg_lvl_get() >= nco_dbg_dev){
+            if(dbg_lvl_get() >= 12){
               (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
                 var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
             } /* endif dbg */
@@ -3525,7 +3525,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           /* The dimension must be in scope of the coordinate variable  */
           if(nco_scp_crd_dmn(dmn_nm_fll_var,dmn_nm,crd->crd_nm_fll) == True){
 
-            if(dbg_lvl_get() >= nco_dbg_dev){
+            if(dbg_lvl_get() >= 12){
               (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm,
                 dmn_idx_var,dmn_nm_fll_var,var_trv.nm_fll,dmn_trv->crd[crd_idx]->crd_nm_fll);        
             } /* endif dbg */
@@ -3568,7 +3568,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
         if(trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var == nco_obj_typ_err) {
 
-          if(dbg_lvl_get() >= nco_dbg_dev){
+          if(dbg_lvl_get() >= 12 ){
             (void)fprintf(stdout,"%s: OOPSY %s reports variable <%s> with NOT filled dimension [%d]%s\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
           } /* endif dbg */
