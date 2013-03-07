@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.645 2013-03-07 12:04:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.646 2013-03-07 12:21:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3537,6 +3537,11 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
           /* Choose the "in scope" coordinate for the variable and assign it to the variable dimension */
           crd_sct *crd=nco_scp_var_crd(&var_trv,dmn_trv);
+
+          if(dbg_lvl_get() >= 12){ 
+            (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm, 
+              dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
+          } /* endif dbg */ 
 
           /* Mark as True */
           trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
