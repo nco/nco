@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.630 2013-03-07 03:29:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.631 2013-03-07 03:52:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3388,33 +3388,35 @@ nco_scp_crd_var                       /* [fnc] Is  variable in scope of coordina
 
 
   if(dbg_lvl_get() >= 13){
-    for(int sls_idx=0;sls_idx<nbr_sls_chr_var;sls_idx++) {
-      (void)fprintf(stdout,"#%d %s ",str_pth_lst_var[sls_idx]->psn,str_pth_lst_var[sls_idx]->nm);
+    for(int sls_var_idx=0;sls_var_idx<nbr_sls_chr_var;sls_var_idx++) {
+      (void)fprintf(stdout,"#%d %s ",str_pth_lst_var[sls_var_idx]->psn,str_pth_lst_var[sls_var_idx]->nm);
     }
     (void)fprintf(stdout,"\n");
-    for(int sls_idx=0;sls_idx<nbr_sls_chr_crd;sls_idx++) {
-      (void)fprintf(stdout,"#%d %s ",str_pth_lst_crd[sls_idx]->psn,str_pth_lst_crd[sls_idx]->nm);
+    for(int sls_crd_idx=0;sls_crd_idx<nbr_sls_chr_crd;sls_crd_idx++) {
+      (void)fprintf(stdout,"#%d %s ",str_pth_lst_crd[sls_crd_idx]->psn,str_pth_lst_crd[sls_crd_idx]->nm);
     }
     (void)fprintf(stdout,"\n");
   }
+
+
 
 
 
 
   /* Free */
-  for(int sls_idx=0;sls_idx<nbr_sls_chr_var;sls_idx++) {
-    str_pth_lst_var[sls_idx]->nm=(char *)nco_free(str_pth_lst_var[sls_idx]->nm);
-    str_pth_lst_var[sls_idx]=(str_pth_sct *)nco_free(str_pth_lst_var[sls_idx]);
+  for(int sls_var_idx=0;sls_var_idx<nbr_sls_chr_var;sls_var_idx++) {
+    str_pth_lst_var[sls_var_idx]->nm=(char *)nco_free(str_pth_lst_var[sls_var_idx]->nm);
+    str_pth_lst_var[sls_var_idx]=(str_pth_sct *)nco_free(str_pth_lst_var[sls_var_idx]);
   }
   str_pth_lst_var=(str_pth_sct **)nco_free(str_pth_lst_var);
 
-  for(int sls_idx=0;sls_idx<nbr_sls_chr_crd;sls_idx++) {
-    str_pth_lst_crd[sls_idx]->nm=(char *)nco_free(str_pth_lst_crd[sls_idx]->nm);
-    str_pth_lst_crd[sls_idx]=(str_pth_sct *)nco_free(str_pth_lst_crd[sls_idx]);
+  for(int sls_crd_idx=0;sls_crd_idx<nbr_sls_chr_crd;sls_crd_idx++) {
+    str_pth_lst_crd[sls_crd_idx]->nm=(char *)nco_free(str_pth_lst_crd[sls_crd_idx]->nm);
+    str_pth_lst_crd[sls_crd_idx]=(str_pth_sct *)nco_free(str_pth_lst_crd[sls_crd_idx]);
   }
   str_pth_lst_crd=(str_pth_sct **)nco_free(str_pth_lst_crd);
 
-  return True;
+  return -1;
 
 } /* nco_scp_crd_dmn() */
 
