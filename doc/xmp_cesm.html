@@ -1,3 +1,16 @@
+<!-- $Header: /data/zender/nco_20150216/nco/doc/xmp_cesm.html,v 1.3 2013-03-08 20:40:29 zender Exp $
+Purpose: NCO processing of CMIP5 and MODIS data
+
+URL:
+http://nco.sf.net/xmp_cesm.html
+http://dust.ess.uci.edu/nco/xmp_cesm.html
+file:///home/zender/nco/doc/xmp_cesm.html
+
+Usage:
+/usr/bin/scp ~/nco/doc/xmp_cesm.html zender,nco@web.sf.net:/home/project-web/nco/htdocs
+scp -p ~/nco/doc/xmp_cesm.html dust.ess.uci.edu:/var/www/html/nco
+-->
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"  
   "http://www.w3.org/TR/html4/loose.dtd">  
 <html > 
@@ -19,9 +32,25 @@ class="cmbx-12x-x-144">Pre-ACCESS CMIP5/MODIS analysis scripts</span><br />
 </div>
 <!--l. 206--><p class="noindent" >The fifth phase of the Coupled Model Intercomparison Project (CMIP5) provides a multi-model
 framework for comparing the mechanisms and responses of climate models from around the world.
-However, the workload of retrieving a centain feature from all these models, each of which includes
-several ensemble members, is tremendous. NCO is designed to simplify and accelerate this process,
-with easy-learning shell-command style and powerful operators.
+However, the workload of retrieving a certain climate statistic from all these models, each of which includes
+several ensemble members, is tremendous. Not only that, it is too
+      often a repetitive process which impedes new research and
+      hypothesis testing.
+Our NASA ACCESS project is designed to simplify and accelerate this
+      process.
+To begin, we have documented below a prototypical example of CMIP5
+      analysis and evaluation using traditional NCO commands on
+      netCDF3-format model and HDF-EOS format observational (NASA
+      MODIS satellite instrument) datasets. 
+These examples complement the NCO User's Guide by detailing
+in-depth data analysis in a frequently encountered &ldquo;real
+      world&rdquo; context.
+Graphical representations of the results (NCL scripts available upon
+      request) are provided to illustrate physical meaning of the analysis.
+Over the summer of 2013, we will add scripts which make use of new NCO
+      features that combine all the loops in the analysis into single
+      commands by exploiting NCO's new group aggregation and
+      arithmetic features.
 <br 
 class="newline" />
    <h3 class="likesectionHead"><a 

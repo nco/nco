@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.763 2013-03-05 17:40:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.764 2013-03-08 20:40:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -381,6 +381,7 @@ Charlie Zender
 * Common features::             
 * Operator Reference Manual::   
 * Contributing::                
+* CMIP5 Example::               
 * CCSM Example::                
 * mybibnode::                   
 * General Index::               
@@ -13983,7 +13984,7 @@ where @math{@var{thr_min} <= @var{msk_var} <= @var{thr_max}}.
 @html
 <a name="ctr"></a> <!-- http://nco.sf.net/nco.html#ctr -->
 @end html
-@node Contributing, CCSM Example, Operator Reference Manual, Top
+@node Contributing, CMIP5 Example, Operator Reference Manual, Top
 @chapter Contributing
 @cindex contributing
 We welcome contributions from anyone.
@@ -14166,6 +14167,9 @@ NCO Spiral Logo
 @cindex Martin Otte
 @item Martin Otte
 Bug report and bug-fix
+@cindex Wenshan Wang
+@item Wenshan Wang
+CMIP5 and MODIS processing documentation.
 @end table
 Please let me know if your name was omitted!
 
@@ -14224,9 +14228,18 @@ Please contact us if you wish to be involved with any future
 Comments on the proposals and letters of support are also very welcome.
 
 @html
+<a name="cmip5"></a> <!-- http://nco.sf.net/nco.html#cmip5 -->
+@end html
+@node CMIP5 Example, CCSM Example, Contributing, Top
+@chapter CMIP5 Example
+@cindex CMIP5
+This @uref{http://nco.sf.net/xmp_cesm.html,Wonderful CMIP5 Documentation}
+shows complete processing of the CMIP5 dataset.
+
+@html
 <a name="ccsm"></a> <!-- http://nco.sf.net/nco.html#ccsm -->
 @end html
-@node CCSM Example, mybibnode, Contributing, Top
+@node CCSM Example, mybibnode, CMIP5 Example, Top
 @chapter CCSM Example
 @cindex CCSM
 
