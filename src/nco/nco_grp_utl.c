@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.656 2013-03-08 13:40:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.657 2013-03-08 13:44:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3065,96 +3065,6 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
   return False;
 } /* nco_var_dmn_scp() */
  
-
-nco_bool
-nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope of dimension ?  */
-(char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
- char * dmn_nm,                       /* I [sng] Dimension name of the *variable* */
- char * crd_nm_fll)                   /* I [sng] Coordinate variable full name */
-{
-  const char fnc_nm[]="nco_scp_crd_dmn()";  /* [sng] Function name  */
-
-  const char sls_chr='/';                       /* [chr] Slash character */
-  char *sbs_srt;                                /* [sng] Location of user-string match start in object path */
-  char *sbs_end;                                /* [sng] Location of user-string match end   in object path */
-
-  nco_bool flg_pth_srt_bnd=False;               /* [flg] String begins at path component boundary */
-  nco_bool flg_pth_end_bnd=False;               /* [flg] String ends   at path component boundary */
-  nco_bool scp_dmn=False;                       /* [flg] Coordinate is in dimension scope */                      
-
-  size_t dmn_nm_lng;                            /* [nbr] Length of coordinate name */
-  size_t dmn_nm_fll_var_lng;                    /* [nbr] Length of full coordinate name */
-  size_t crd_nm_fll_lng;                        /* [nbr] Length of of full dimension name */
-
-
-  dmn_nm_fll_var_lng=strlen(dmn_nm_fll_var);
-  dmn_nm_lng=strlen(dmn_nm);
-  crd_nm_fll_lng=strlen(crd_nm_fll);
-
-  
-  /* Look for partial match, not necessarily on path boundaries; 
-     locate string 2 (relative dimension name) in string 1 (full coordinate name)
-     */
-  if((sbs_srt=strstr(crd_nm_fll,dmn_nm))){
-
-    /* Ensure match spans (begins and ends on) whole path-component boundaries */
-
-    /* Does match begin at path component boundary ... directly on a slash? */
-    if(*sbs_srt == sls_chr){
-      flg_pth_srt_bnd=True;
-    }
-
-    /* ...or one after a component boundary? */
-    if((sbs_srt > crd_nm_fll) && (*(sbs_srt-1L) == sls_chr)){
-      flg_pth_srt_bnd=True;
-    }
-
-    /* Does match end at path component boundary ... directly on a slash? */
-    sbs_end=sbs_srt+dmn_nm_lng-1L;
-
-    if(*sbs_end == sls_chr){
-      flg_pth_end_bnd=True;
-    }
-
-    /* ...or one before a component boundary? */
-    if(sbs_end <= crd_nm_fll+crd_nm_fll_lng-1L){
-      if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0')){
-        flg_pth_end_bnd=True;
-      }
-    }
-
-    /* If match is on both ends of '/' then it's a "real" name */
-    if (flg_pth_srt_bnd && flg_pth_end_bnd){
-
-      /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev */
-      if (dmn_nm_fll_var_lng == crd_nm_fll_lng && strcmp(dmn_nm_fll_var,crd_nm_fll) == 0){
-        if(dbg_lvl_get() >= 13){
-          (void)fprintf(stdout,"%s: INFO %s found absolute match of dimension <%s> and coordinate <%s>:\n",prg_nm_get(),fnc_nm,
-            dmn_nm_fll_var,crd_nm_fll);
-        }
-        scp_dmn=True;
-
-        /* Coordinate in scope of dimension name */
-      }else if (dmn_nm_fll_var_lng<crd_nm_fll_lng){
-
-        if(dbg_lvl_get() >= 13){
-          (void)fprintf(stdout,"%s: INFO %s found dimension <%s> in scope of coordinate <%s>:\n",prg_nm_get(),fnc_nm,
-            dmn_nm_fll_var,crd_nm_fll);
-        }
-        scp_dmn=True;
-      }
-
-    } /* If match is on both ends of '/' then it's a "real" name */
-  }/* Look for partial match, not necessarily on path boundaries */
-
-
-  return scp_dmn;
-
-} /* nco_scp_crd_dmn() */
-
-
-
-
 
 crd_sct *                             /* O [sct] Coordinate object */
 nco_scp_var_crd                       /* [fnc] Return in scope coordinate for variable  */

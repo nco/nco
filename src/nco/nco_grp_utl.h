@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.258 2013-03-08 13:40:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.259 2013-03-08 13:44:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -302,12 +302,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
-nco_bool
-nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of dimension ?  */
-(char * dmn_nm_fll_var,               /* I [sng] Dimension full name of the *variable* */
- char * dmn_nm,                       /* I [sng] Dimension name of the *variable* */
- char * crd_nm_fll);                   /* I [sng] Coordinate variable full name */
 
 void                          
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */
