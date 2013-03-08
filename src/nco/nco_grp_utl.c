@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.653 2013-03-08 10:13:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.654 2013-03-08 13:04:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1722,8 +1722,7 @@ nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name
 
 void                          
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */
-(const int nc_id,                     /* I [ID] File ID */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+(trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: a netCDF4 variable can have its dimensions located anywhere below *in the group path*
   Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
@@ -2480,7 +2479,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
 
   /* Build dimension info for all variables (match dimension IDs) */
-  (void)nco_bld_dmn_ids_trv(nc_id,trv_tbl);
+  (void)nco_bld_dmn_ids_trv(trv_tbl);
 
   /* Build "is_crd_var" and "is_rec_var" members for all variables */
   (void)nco_bld_crd_rec_var_trv(trv_tbl);
@@ -2492,10 +2491,10 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(lmt_nbr)(void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
   /* Variables in dimension's scope?   */
-  (void)nco_has_crd_dmn_scp(nc_id,trv_tbl);
+  (void)nco_has_crd_dmn_scp(trv_tbl);
 
   /* Assign variables dimensions to either coordinates or dimension structs; must be done last */
-  (void)nco_bld_var_dmn(nc_id,trv_tbl);
+  (void)nco_bld_var_dmn(trv_tbl);
 
 } /* nco_bld_trv_tbl() */
 
@@ -2936,8 +2935,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 void                          
 nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name in dimension's scope?   */
-(const int nc_id,                    /* I [ID] File ID */
- const trv_tbl_sct * const trv_tbl)  /* I [sct] GTT (Group Traversal Table) */
+(const trv_tbl_sct * const trv_tbl)  /* I [sct] GTT (Group Traversal Table) */
 {
 
   const char fnc_nm[]="nco_has_crd_dmn_scp()"; /* [sng] Function name  */
@@ -3550,8 +3548,7 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
 
 void
 nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to either coordinates or dimension structs */
-(const int nc_id,                     /* I [ID] netCDF file ID [chk] */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+(trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Fill variable dimensions with pointers to either a coordinate variable or dimension structs  */
 

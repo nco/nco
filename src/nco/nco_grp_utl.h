@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.255 2013-03-07 13:27:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.256 2013-03-08 13:04:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -273,8 +273,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 
 void
 nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to either coordinates or dimension structs */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+(trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void                          
 nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
@@ -307,8 +306,7 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate object in scope of 
 
 void                          
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */
-(const int nc_id,                     /* I [ID] File ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
+(trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 dmn_trv_sct *                         /* O [sct] GTT dimension structure (stored in *groups*) */
 nco_dmn_trv_sct                       /* [fnc] Return unique dimension object from unique ID */
@@ -323,8 +321,7 @@ nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name
 
 void                          
 nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name in dimension's scope?   */
-(const int nc_id,                    /* I [ID] File ID */
- const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+(const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
 int
 nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs in a string path  */
