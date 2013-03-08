@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.225 2013-03-07 13:27:47 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.226 2013-03-08 09:12:50 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1440,17 +1440,22 @@ print "\n";
 # Definition: Chunksize defaults to dimension size. Explicitly specify chunksizes for particular dimensions with ‘--cnk_dmn’ option.
 # Map:Chunksize Equals Dimension Size [default] Explicitly specify chunksizes for particular dimensions with ‘--cnk_dmn’ option.
 
+###
+### fxm check time dimension
+###
+    if(0){
     $dsc_sng="Chunking --cnk_plc=cnk_g3d --cnk_dmn time,2";
     $tst_cmd[0]="ncks $nco_D_flg  -O -4  --cnk_plc=cnk_g3d --cnk_dmn time,2  -v three_dmn_rec_var  $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks -C -m -v three_dmn_rec_var %tmp_fl_00% | egrep -o -w 'three_dmn_rec_var dimension 0: time, size = 10, chunksize = 2'";
-    $tst_cmd[2]="three_dmn_rec_var dimension 0: time, size = 10, chunksize = 2";
+    $tst_cmd[1]="ncks -C -m -v three_dmn_rec_var %tmp_fl_00% | egrep -o -w 'three_dmn_rec_var dimension 0: time, size = 10 NC_DOUBLE, chunksize = 2 (Coordinate dimension)'";
+    $tst_cmd[2]="three_dmn_rec_var dimension 1: lat, size = 2 NC_FLOAT, chunksize = 2 (Coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
      # to do    
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			    
+    $#tst_cmd=0; # Reset array 			 
+ } # endif false    
     
 # 
 # Limit/MSA tests

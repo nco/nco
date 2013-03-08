@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.87 2013-03-08 07:11:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.88 2013-03-08 09:12:50 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -165,7 +165,9 @@ extern "C" {
 
   int                                 /* O [id] Output file variable ID */
   nco_cpy_var_dfn                     /* [fnc] Define specified variable in output file */
-  (const int grp_in_id,               /* I [id] netCDF input group ID */
+  (const int nc_id,                   /* I [ID] netCDF input file ID */
+   const int nc_out_id,               /* I [ID] netCDF output file ID */ 
+   const int grp_in_id,               /* I [id] netCDF input group ID */
    const int grp_out_id,              /* I [id] netCDF output group ID */
    const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
    const gpe_sct * const gpe,         /* I [sct] GPE structure */

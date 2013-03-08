@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.651 2013-03-07 22:59:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.652 2013-03-08 09:12:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1329,7 +1329,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       } /* endif dbg */
 
       /* Define variable in output file */
-      var_out_id=nco_cpy_var_dfn(grp_id,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,&trv,trv_tbl);
+      var_out_id=nco_cpy_var_dfn(nc_id,nc_out_id,grp_id,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,&trv,trv_tbl);
 
       /* Set chunksize parameters */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&trv);
