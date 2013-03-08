@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.765 2013-03-08 20:51:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.766 2013-03-08 21:08:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11657,7 +11657,8 @@ This is because @command{ncflint} is often used to time-interpolate
 between existing files, but is rarely used to spatially interpolate.
 Sometimes however, users wish to multiply entire files by a constant
 that does not multiply any coordinate variables.
-The @samp{--fix_rec_crd} switch exists for this purpose.
+The @samp{--fix_rec_crd} switch was implemented for this purpose
+in @acronym{NCO} version 4.2.6 (March, 2013).
 It prevents @command{ncflint} from multiplying or interpolating any
 coordinate variable, including record coordinate variables. 
 

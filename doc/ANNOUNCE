@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.546 2013-02-21 18:23:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.547 2013-03-08 21:08:17 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
@@ -32,8 +32,20 @@ A. ncks now counts and then ignores non-atomic type netCDF4 variables.
    all the atomic-type (float, double, int, string...) variables as
    usual. 
 
-A. ncrename allows "mandatory attributes" to be present in
-   groups/global instead of in variables.
+A. ncrename allows "mandatory attributes" (i.e., those not prefixed
+   with a period which would make them "optional attributes") to be
+   present in groups/global instead of in variables.
+
+A. ncflint accepts a new switch, --fix_rec_crd, that prevents record
+   coordinates from being multiplied/interpolated. By default, ncflint
+   multplies/interpolates record coordinates (like time) but not other
+   coordinates (like, typically, latitude). This is because ncflint
+   is most often used to time-interpolate files (so you want the time
+   to change, but not the spatial coordinates). However, ncflint is
+   also used quite often to "scale" files by multiplying the variables
+   by a constant. Now one can easily multiply all variables (except
+   coordinates) by a constant, and if --fix_rec_crd is specified, the
+   record coordinate will not change.
 
 BUG FIXES:
 
