@@ -1,3 +1,7 @@
+2013-03-08  Charlie Zender  <zender@uci.edu>
+
+	* Implement and test ncflint --fix_rec_crd
+
 2013-03-07  Charlie Zender  <zender@uci.edu>
 
 	* Add hooks for ncflint --fix_rec_crd

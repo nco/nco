@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.105 2013-01-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.106 2013-03-08 20:51:59 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.105 2013-01-16 22:01:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.105 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.106 2013-03-08 20:51:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.106 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -646,7 +646,7 @@ main(int argc,char **argv)
   xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* We now have final list of variables to extract. Phew. */
   if(dbg_lvl >= nco_dbg_var){

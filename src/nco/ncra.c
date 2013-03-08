@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.319 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.320 2013-03-08 20:51:59 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -157,8 +157,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.319 2013-02-23 19:35:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.319 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.320 2013-03-08 20:51:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.320 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -699,7 +699,7 @@ main(int argc,char **argv)
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;

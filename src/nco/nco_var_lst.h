@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.62 2013-01-13 06:46:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.63 2013-03-08 20:51:59 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -110,6 +110,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD, /* [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_pck_map, /* I [enm] Packing map */
  const int nco_pck_plc, /* I [enm] Packing policy */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */

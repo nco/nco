@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.215 2013-03-08 04:18:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.216 2013-03-08 20:51:59 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.215 2013-03-08 04:18:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.215 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.216 2013-03-08 20:51:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.216 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -601,8 +601,8 @@ main(int argc,char **argv)
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
 
-    /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
+  /* Divide variable lists into lists of fixed variables and variables to be processed */
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt_1;

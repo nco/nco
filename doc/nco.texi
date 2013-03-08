@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.764 2013-03-08 20:40:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.765 2013-03-08 20:51:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11542,7 +11542,8 @@ SYNTAX
 @example
 ncflint [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [--hdr_pad @var{nbr}] 
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
+[-F] [--fix_rec_crd] [-h] [--hdr_pad @var{nbr}] 
 [-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
@@ -11597,7 +11598,7 @@ file by a constant.
 The second method of using @command{ncflint} is to specify the
 interpolation option @w{with @samp{-i}} (or with the @samp{--ntp} or 
 @samp{--interpolate} long options). 
-This is really the inverse of the first method in the following sense. 
+This is the inverse of the first method in the following sense: 
 When the user specifies the weights directly, @command{ncflint} has no
 work to do besides multiplying the input values by their respective
 weights and adding the results together to produce the output values.  
@@ -11648,6 +11649,17 @@ command is an error.
 @command{ncflint} does not interpolate variables of type @code{NC_CHAR}
 and @code{NC_BYTE}. 
 This behavior is hardcoded.
+
+By default @command{ncflint} interpolates or multiplies record
+coordinate variables (e.g., @code{time} is often a record coordinate)
+but not other coordinate variables (e.g., latitude and longitude).
+This is because @command{ncflint} is often used to time-interpolate
+between existing files, but is rarely used to spatially interpolate.
+Sometimes however, users wish to multiply entire files by a constant
+that does not multiply any coordinate variables.
+The @samp{--fix_rec_crd} switch exists for this purpose.
+It prevents @command{ncflint} from multiplying or interpolating any
+coordinate variable, including record coordinate variables. 
 
 @cindex missing values
 @cindex @code{_FillValue}
@@ -11736,6 +11748,17 @@ ncflint -w 3,-2 85.nc 85.nc tst.nc
 @cindex null operation
 This is an example of a null operation, so @file{tst.nc} should be
 identical (within machine precision) to @file{85.nc}.
+
+@cindex multiplication
+@cindex scaling
+Multiply all the variables except the coordinate variables in the file
+@file{emissions.nc} by @w{by 0.8}:
+@example
+ncflint --fix_rec_crd -w 0.8,0.0 emissions.nc emissions.nc scaled_emissions.nc
+@end example
+@noindent
+The use of @samp{--fix_rec_crd} ensures, e.g., that the @code{time}
+coordinate, if any, is not scaled (i.e., multiplied).
 
 Add @file{85.nc} to @file{86.nc} to obtain @file{85p86.nc},
 then subtract @file{86.nc} from @file{85.nc} to obtain @file{85m86.nc} 

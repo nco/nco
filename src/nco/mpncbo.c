@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.131 2013-01-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.132 2013-03-08 20:51:59 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.131 2013-01-16 22:01:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.131 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.132 2013-03-08 20:51:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.132 $";
   const char * const opt_sht_lst="346ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -661,11 +661,11 @@ main(int argc,char **argv)
    
   /* Divide variable lists into lists of fixed variables and variables to be processed
      Create lists from file_1 last so those values remain in *_out arrays */
-  (void)nco_var_lst_dvd(var_2,var_out,xtr_nbr_2,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_2,&var_fix_out,&nbr_var_fix_2,&var_prc_2,&var_prc_out,&nbr_var_prc_2);
+  (void)nco_var_lst_dvd(var_2,var_out,xtr_nbr_2,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_2,&var_fix_out,&nbr_var_fix_2,&var_prc_2,&var_prc_out,&nbr_var_prc_2);
   /* Avoid double-free() condition */
   var_fix_out=(var_sct **)nco_free(var_fix_out);
   var_prc_out=(var_sct **)nco_free(var_prc_out);
-  (void)nco_var_lst_dvd(var_1,var_out,xtr_nbr_1,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_1,&var_fix_out,&nbr_var_fix_1,&var_prc_1,&var_prc_out,&nbr_var_prc_1);
+  (void)nco_var_lst_dvd(var_1,var_out,xtr_nbr_1,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_1,&var_fix_out,&nbr_var_fix_1,&var_prc_1,&var_prc_out,&nbr_var_prc_1);
   
   /* Die gracefully on unsupported features... */
   if(nbr_var_fix_1 < nbr_var_fix_2){

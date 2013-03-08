@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.129 2013-01-19 03:00:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.130 2013-03-08 20:51:59 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -791,6 +791,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
  const nco_bool CNV_CCM_CCSM_CF, /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD, /* [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_pck_map, /* I [enm] Packing map */
  const int nco_pck_plc, /* I [enm] Packing policy */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
@@ -874,8 +875,10 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       if(var[idx]->is_crd_var) var_op_typ[idx]=fix;
       break;
     case ncflint:
-      /* Allow ncflint to interpolate record variables, not fixed coordinates */
+      /* Allow ncflint to interpolate record coordinates, not fixed coordinates ... */
       if((var[idx]->is_crd_var || var_typ_fnk) && !var[idx]->is_rec_var) var_op_typ[idx]=fix;
+      /* ...unless the --fix_rec_crd switch was used to fix record coordinates as well ... */
+      if((var[idx]->is_crd_var && var[idx]->is_rec_var && FIX_REC_CRD)) var_op_typ[idx]=fix;
       break;
     case ncks:
       /* Do nothing */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.165 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.166 2013-03-08 20:52:00 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.165 2013-02-23 19:35:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.165 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.166 2013-03-08 20:52:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.166 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -860,7 +860,7 @@ main(int argc,char **argv)
 
   /* NB: ncap is not well-suited for nco_var_lst_dvd() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */

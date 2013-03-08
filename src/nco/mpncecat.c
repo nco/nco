@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.109 2013-01-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.110 2013-03-08 20:51:59 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.109 2013-01-16 22:01:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.109 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.110 2013-03-08 20:51:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.110 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -555,7 +555,7 @@ main(int argc,char **argv)
   xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
 #ifdef ENABLE_MPI
   if(prc_rnk == rnk_mgr){ /* MPI manager code */

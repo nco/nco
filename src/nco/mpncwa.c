@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.134 2013-01-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.135 2013-03-08 20:51:59 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.134 2013-01-16 22:01:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.134 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.135 2013-03-08 20:51:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.135 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -735,7 +735,7 @@ main(int argc,char **argv)
   xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,nco_pck_plc_nil,nco_pck_map_nil,dmn_avg,dmn_avg_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,dmn_avg,dmn_avg_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* We now have final list of variables to extract. Phew. */
   if(dbg_lvl >= nco_dbg_var){
