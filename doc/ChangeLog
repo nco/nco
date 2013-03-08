@@ -1,5 +1,11 @@
 2013-03-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.2.6 release procedure:
+ 	Changes since nco-4_2_5: --rec_apn, non-atomic ignore, --fix_rec_crd
+	cd ~/nco;cvs tag -d nco-4_2_6;cvs tag -d nco-4_2_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.6 release"
+	cvs tag -c nco-4_2_6;cvs tag -c nco-4_2_6-1
+
 	* Implement and test ncflint --fix_rec_crd
 
 2013-03-07  Charlie Zender  <zender@uci.edu>
@@ -147,12 +153,6 @@
 	variables into nm_id structure to enable MM3->MM4 and MM4->MM3.
 
 2013-02-10  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.6 release procedure:
- 	Changes since nco-4_2_5: --rec_apn, non-atomic ignore
-	cd ~/nco;cvs tag -d nco-4_2_6;cvs tag -d nco-4_2_6-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.6 release"
-	cvs tag -c nco-4_2_6;cvs tag -c nco-4_2_6-1
 
 	* Improve error message when appending variable with rank mismatch
 
