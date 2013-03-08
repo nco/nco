@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.294 2013-03-08 10:13:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.295 2013-03-08 13:53:01 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -710,9 +710,6 @@ extern "C" {
     nco_bool flg_vsg; /* [flg] Variable selected because group matches */
     nco_bool flg_xcl; /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr; /* [flg] Extract object */
-    int grp_dmn_id[NC_MAX_DIMS]; /* [id] (For groups only) Dimension IDs for the group */
-    int grp_ult_dmn_id[NC_MAX_DIMS]; /* [id] (For groups only) Unlimited dimension IDs for the group */
-    int grp_nbr_rec_dmn; /* [id] (For groups only) Number of unlimited dimension for the group */
    } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists

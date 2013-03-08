@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.259 2013-03-08 13:44:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.260 2013-03-08 13:53:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -143,8 +143,7 @@ nco_xtr_xcl                          /* [fnc] Convert extraction list to exclusi
 
 void
 nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction list */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+(trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
 nco_xtr_cf_add                        /* [fnc] Add to extraction list variable associated with CF convention */

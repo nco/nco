@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.657 2013-03-08 13:44:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.658 2013-03-08 13:53:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -775,12 +775,13 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
 
 void
 nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction list */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+(trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Add all coordinates to extraction list
-     Find all coordinates (variables with same names and sizes as dimensions) and
-     ensure they are marked for extraction */
+  Find all coordinates (variables with same names and sizes as dimensions) and
+  ensure they are marked for extraction */
+
+  const char fnc_nm[]="nco_xtr_crd_add()"; /* [sng] Function name */
 
   /* Loop table */
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
@@ -798,7 +799,6 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
   } /* Loop table */
 
   /* Print extraction list in debug mode */
-  const char fnc_nm[]="nco_xtr_crd_add()"; /* [sng] Function name */
   if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,True,fnc_nm);
 
   return;
@@ -815,6 +815,8 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
      Detect associated coordinates specified by CF "bounds" and "coordinates" conventions
      http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
 
+  const char fnc_nm[]="nco_xtr_cf_add()"; /* [sng] Function name */
+
   /* Search for and add CF-compliant bounds and coordinates to extraction list */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
@@ -823,7 +825,6 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
 
 
   /* Print extraction list in debug mode */
-  const char fnc_nm[]="nco_xtr_cf_add()"; /* [sng] Function name */
   if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,True,fnc_nm);
 
   return;
@@ -1627,11 +1628,8 @@ nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
 
-  const char fnc_nm[]="nco_dmn_id()"; /* [sng] Function name  */
-
   /* Search table dimension list */
   for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst_idx];
 
     /* Compare IDs */
     if (dim_id == trv_tbl->lst_dmn[dmn_lst_idx].dim_id){
@@ -1819,23 +1817,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   trv_tbl->lst[idx].var_typ=nco_obj_typ_err;      /* [enm] (For variables only) NetCDF type  */  
 
 
-  /* Group dimensions */
-  for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++){
-    trv_tbl->lst[idx].grp_ult_dmn_id[dmn_idx]=nco_obj_typ_err;
-  }
-  for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++){
-    trv_tbl->lst[idx].grp_dmn_id[dmn_idx]=nco_obj_typ_err;
-  }
-
-  /* Group dimensions */
-  trv_tbl->lst[idx].grp_nbr_rec_dmn=nbr_rec;
-  for(int dmn_idx=0;dmn_idx<nbr_rec;dmn_idx++){
-    trv_tbl->lst[idx].grp_ult_dmn_id[dmn_idx]=dmn_ids_grp_ult[dmn_idx];
-  }
-  for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
-    trv_tbl->lst[idx].grp_dmn_id[dmn_idx]=dmn_ids_grp[dmn_idx];
-  }
-
   /* Variable dimensions  */
   for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm_fll=NULL;
@@ -1947,15 +1928,6 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dim_id=dmn_id_var[dmn_idx_var];
-    }
-
-    /* Group dimensions: not valid */
-    trv_tbl->lst[idx].grp_nbr_rec_dmn=nco_obj_typ_err;
-    for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++){
-      trv_tbl->lst[idx].grp_ult_dmn_id[dmn_idx]=nco_obj_typ_err;
-    }
-    for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++){
-      trv_tbl->lst[idx].grp_dmn_id[dmn_idx]=nco_obj_typ_err;
     }
  
     /* Free constructed name */

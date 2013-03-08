@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.265 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.266 2013-03-08 13:53:01 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.265 2013-02-23 19:35:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.265 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.266 2013-03-08 13:53:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.266 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -846,7 +846,7 @@ main(int argc,char **argv)
       if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
       
       /* Add all coordinate variables to extraction list */
-      if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(in_id,trv_tbl);
+      if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
       
       /* Extract coordinates associated with extracted variables */
       if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
