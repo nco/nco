@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.249 2013-03-08 09:12:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.250 2013-03-08 09:44:56 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1861,14 +1861,14 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Define output group to be current group and overwrite on debug */
     grp_dmn_out_id=grp_out_id;
     if(dbg_lvl_get() == nco_dbg_crr) rcd_lcl=nco_inq_dmn_grp_id(grp_out_id,dmn_nm,dmn_out_id+dmn_idx,&grp_dmn_out_id); else rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
-#else
+#else /* OLD_DIM_CODE */
 
     /* Obtain group ID for dimension in the output using unique dimension full group name in the input */
     (void)nco_inq_grp_full_ncid(nc_out_id,dmn_trv->grp_nm_fll,&grp_dmn_out_id);
 
     /* Inquire if dimension defined  */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
-#endif
+#endif /* OLD_DIM_CODE */
 
     if(dbg_lvl_get() >= nco_dbg_crr){
       (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with dimension in ",prg_nm_get(),fnc_nm,var_trv->nm_fll);        
@@ -1947,7 +1947,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
           if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
         }
       } /* endif dbg */
-#else
+#else /* OLD_DIM_CODE */
 
       /* Determine where to place new dimension in output file */
       if(gpe){
@@ -1969,7 +1969,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
       /* Memory management after defining current output dimension */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-#endif
+#endif /* OLD_DIM_CODE */
 
       /* At long last ... */
       if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
