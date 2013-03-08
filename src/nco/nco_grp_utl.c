@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.652 2013-03-08 09:12:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.653 2013-03-08 10:13:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1883,8 +1883,8 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err;    /* [id] Group ID in input file */
   trv_tbl->lst[idx].grp_id_out=nco_obj_typ_err;   /* [id] Group ID in output file */
 
-  trv_tbl->lst[idx].nbr_att=nbr_att;              /* [nbr] Number of attributes */
   trv_tbl->lst[idx].nbr_dmn=nbr_dmn_grp;          /* [nbr] Number of dimensions */
+  trv_tbl->lst[idx].nbr_att=nbr_att;              /* [nbr] Number of attributes */
   trv_tbl->lst[idx].nbr_grp=nbr_grp;              /* [nbr] Number of sub-groups (for group) */
   trv_tbl->lst[idx].nbr_rec=nbr_rec;              /* [nbr] Number of record dimensions */
   trv_tbl->lst[idx].nbr_var=nbr_var;              /* [nbr] Number of variables (for group) */
@@ -1893,7 +1893,25 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
   trv_tbl->lst[idx].var_typ=nco_obj_typ_err;      /* [enm] (For variables only) NetCDF type  */  
 
-  /* Variable dimensions */
+
+  /* Group dimensions */
+  for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++){
+    trv_tbl->lst[idx].grp_ult_dmn_id[dmn_idx]=nco_obj_typ_err;
+  }
+  for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++){
+    trv_tbl->lst[idx].grp_dmn_id[dmn_idx]=nco_obj_typ_err;
+  }
+
+  /* Group dimensions */
+  trv_tbl->lst[idx].grp_nbr_rec_dmn=nbr_rec;
+  for(int dmn_idx=0;dmn_idx<nbr_rec;dmn_idx++){
+    trv_tbl->lst[idx].grp_ult_dmn_id[dmn_idx]=dmn_ids_grp_ult[dmn_idx];
+  }
+  for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
+    trv_tbl->lst[idx].grp_dmn_id[dmn_idx]=dmn_ids_grp[dmn_idx];
+  }
+
+  /* Variable dimensions  */
   for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm_fll=NULL;
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=NULL;
@@ -2004,6 +2022,15 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dim_id=dmn_id_var[dmn_idx_var];
+    }
+
+    /* Group dimensions: not valid */
+    trv_tbl->lst[idx].grp_nbr_rec_dmn=nco_obj_typ_err;
+    for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++){
+      trv_tbl->lst[idx].grp_ult_dmn_id[dmn_idx]=nco_obj_typ_err;
+    }
+    for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++){
+      trv_tbl->lst[idx].grp_dmn_id[dmn_idx]=nco_obj_typ_err;
     }
  
     /* Free constructed name */

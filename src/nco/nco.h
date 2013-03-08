@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.293 2013-03-07 13:14:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.294 2013-03-08 10:13:24 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -638,7 +638,7 @@ extern "C" {
     size_t sz;              /* [nbr] Size of coordinate */
     nc_type var_typ;        /* [enm] NetCDF type  */  
     lmt_msa_sct lmt_msa;    /* [sct] MSA Limits structure for every coordinate */
-    int dim_id;             /* [ID] Unique ID for dimension (duplicate of dmn_trv_sct.dim_id) */
+    int dim_id;             /* [ID] Unique ID for dimension (duplicate of dmn_trv_sct.dim_id, since all coordinates share that ID) */
     int grp_dpt;            /* [nbr] Depth of group (root = 0); needed to get in scope of variable match */
   } crd_sct; 
 
@@ -679,6 +679,7 @@ extern "C" {
      free() each pointer member of trv_sct structure in trv_tbl_free() 
      */
   typedef struct{ 
+    nco_obj_typ nco_typ; /* [enm] netCDF4 object type: group or variable */
     char *nm_fll; /* [sng] Fully qualified name (path) */
     var_dmn_sct var_dmn[NC_MAX_DIMS]; /* [sct] (For variables only) Dimensions for variable object */
     nco_bool is_crd_var; /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
@@ -688,12 +689,11 @@ extern "C" {
     char *grp_nm_fll; /* [sng] Full group name (for groups, same as nm_fll) */
     char nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
     size_t nm_lng; /* [sng] Length of short name */
-    nco_obj_typ nco_typ; /* [enm] netCDF4 object type: group or variable */
     int grp_dpt; /* [nbr] Depth of group (root = 0) */
     int grp_id_in; /* [id] Group ID in input file */
     int grp_id_out; /* [id] Group ID in output file */
     int nbr_att; /* [nbr] Number of attributes */
-    int nbr_dmn; /* [nbr] Number of dimensions */
+    int nbr_dmn; /* [nbr] Number of dimensions  */
     int nbr_grp; /* [nbr] Number of sub-groups (for group) */
     int nbr_rec; /* [nbr] Number of record dimensions */
     int nbr_var; /* [nbr] Number of variables (for group) */
@@ -710,6 +710,9 @@ extern "C" {
     nco_bool flg_vsg; /* [flg] Variable selected because group matches */
     nco_bool flg_xcl; /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr; /* [flg] Extract object */
+    int grp_dmn_id[NC_MAX_DIMS]; /* [id] (For groups only) Dimension IDs for the group */
+    int grp_ult_dmn_id[NC_MAX_DIMS]; /* [id] (For groups only) Unlimited dimension IDs for the group */
+    int grp_nbr_rec_dmn; /* [id] (For groups only) Number of unlimited dimension for the group */
    } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists
