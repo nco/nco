@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.655 2013-03-08 13:32:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.656 2013-03-08 13:40:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -330,6 +330,111 @@ nco_def_grp_rcr                       /* [fnc] Define groups */
 
   return rcd;
 } /* end nco_grp_dfn_rcr() */
+
+int
+nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs in a string path  */
+(char * const nm_fll)                 /* I [sct] Full name  */
+{
+  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
+  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
+  int psn_chr;        /* [nbr] Position of character '/' in in full name */
+ 
+  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"Looking '/' in \"%s\"...",nm_fll);
+
+  ptr_chr=strchr(nm_fll,'/');
+  while (ptr_chr!=NULL)
+  {
+    psn_chr=ptr_chr-nm_fll;
+
+    if(dbg_lvl_get() >= 14) (void)fprintf(stdout," ::found at %d",psn_chr);
+
+    ptr_chr=strchr(ptr_chr+1,'/');
+
+    nbr_sls_chr++;
+  }
+
+  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"\n",psn_chr);
+  return nbr_sls_chr;
+
+} /* nco_get_sls_chr_cnt() */
+
+
+
+int
+nco_get_str_pth_sct                   /* [fnc] Get full name token structure (path components) */
+(char * const nm_fll,                 /* I [sng] Full name  */ 
+ str_pth_sct ***str_pth_lst)          /* I/O [sct] List of path components  */    
+{
+  /* Purpose: Break a full path name into components separated by the slash character (netCDF4 path separator) 
+  
+  strtok()
+  A sequence of calls to this function split str into tokens, which are sequences of contiguous characters 
+  separated by any of the characters that are part of delimiters.
+
+  strchr() is used to get position of separator that corresponsds to each token
+
+  Use case: "/g16/g16g1/lon1"
+
+  Token 0: g16
+  Token 1: g16g1
+  Token 2: lon1
+
+  Usage
+
+  Get number of tokens in variable full name
+  nbr_sls_chr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
+
+  Alloc
+  str_pth_lst_var=(str_pth_sct **)nco_malloc(nbr_sls_chr_var*sizeof(str_pth_sct *)); 
+
+  Get token list in variable full name 
+  (void)nco_get_str_pth_sct(var_trv->nm_fll,&str_pth_lst_var); 
+  
+  */
+
+  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
+  char *ptr_chr_tok;  /* [sng] Pointer to character */
+  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
+  int psn_chr;        /* [nbr] Position of character '/' in in full name */
+ 
+  /* Duplicate original, since strtok() changes it */
+  char *str=strdup(nm_fll);
+
+  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
+
+  /* Get first token */
+  ptr_chr_tok=strtok (str,"/");
+
+  ptr_chr=strchr(nm_fll,'/');
+
+  while (ptr_chr!=NULL)
+  {
+    if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
+
+    psn_chr=ptr_chr-nm_fll;
+    
+    /* Store token and position */
+    (*str_pth_lst)[nbr_sls_chr]=(str_pth_sct *)nco_malloc(1*sizeof(str_pth_sct));
+
+    (*str_pth_lst)[nbr_sls_chr]->nm=strdup(ptr_chr_tok);
+    (*str_pth_lst)[nbr_sls_chr]->psn=psn_chr;
+
+    /* The point where the last token was found is kept internally by the function */
+    ptr_chr_tok = strtok (NULL, "/");
+
+    ptr_chr=strchr(ptr_chr+1,'/');
+
+    nbr_sls_chr++;   
+  }
+
+  if(dbg_lvl_get() >= 14)(void)fprintf(stdout,"\n");
+
+  str=(char *)nco_free(str);
+
+  return nbr_sls_chr;
+
+} /* nco_get_sls_chr_cnt() */
+
 
 
 void 
@@ -1491,174 +1596,6 @@ nco_prt_dmn /* [fnc] Print dimensions for a group  */
 
 
 
-
-
-
-void                          
-nco_bld_var_dmn_trv                   /* [fnc] Build dimension info for all variables */
-(const int nc_id,                     /* I [ID] File ID */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
-{
-  /* Purpose: a netCDF4 variable can have its dimensions located anywhere below *in the group path*
-  Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
-  where we know the full picture of the file tree
-  */
-
-  char dmn_nm_var[NC_MAX_NAME];/* [sng] Dimension name for variable */ 
-  char dmn_nm_grp[NC_MAX_NAME];/* [sng] Dimension name for group */ 
-
-  const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
-
-  int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array for group */
-  int dmn_id_var[NC_MAX_DIMS]; /* [id] Dimensions IDs array for variable */
-
-  int nbr_dmn_grp;             /* [nbr] Number of dimensions for group  */
-  int nbr_dmn_var;             /* [nbr] Number of dimensions for variable */
-  int var_id;                  /* [id] ID of variable  */
-  int grp_id;                  /* [id] ID of group */
-
-  char *ptr_chr;               /* [sng] Pointer to character '/' in full name */
-  int psn_chr;                 /* [nbr] Position of character '/' in in full name */
-
-  /* Loop *object* traversal table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var){
-      trv_sct trv=trv_tbl->lst[uidx];  
-
-      /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
-
-      /* Obtain variable ID using group ID */
-      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
-
-      /* Get number of dimensions for variable */
-      (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
-
-      /* Get dimension IDs for variable */
-      (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
-
-      /* Obtain dimension IDs for group. NB: go to parents */
-      (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
-
-      /* Loop over dimensions of variable */
-      for(int dmn_idx_var=0;dmn_idx_var<nbr_dmn_var;dmn_idx_var++){
-
-        /* Get dimension name */
-        (void)nco_inq_dimname(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var);
-
-        /* Now the exciting part; we have to locate where "dmn_var_nm" is located
-        1) Dimensions are defined in *groups*: find group where variable resides
-        2) Most common case is for the dimension to be defined in the same group where variable is
-        3) If not, we have to traverse the group back until the dimension name is found
-
-        From: "Dennis Heimbigner" <dmh@unidata.ucar.edu>
-        Subject: Re: [netcdfgroup] defining dimensions in groups
-        1. The inner dimension is used. The rule is to look up the group tree
-        from innermost to root and choose the first one that is found
-        with a matching name.
-        2. The fact that it is a dimension for a coordinate variable is not relevant for the
-        choice.
-        However, note that this rule is only used by ncgen when disambiguating a reference
-        in the CDL.  The issue does not come up in the netcdf API because
-        you have to specifically supply the dimension id when defining the dimension
-        for a variable.
-
-        4) Use case example: /g5/g5g1/rz variable and rz(rlev), where dimension "rlev" resides in /g5/rlev 
-        */
-
-        /* Loop over dimensions of group *and* parents */
-        for(int dmn_idx_grp=0;dmn_idx_grp<nbr_dmn_grp;dmn_idx_grp++){
-
-          /* Get dimension name for group */
-          (void)nco_inq_dimname(grp_id,dmn_id_grp[dmn_idx_grp],dmn_nm_grp);
-
-          /* Does dimension name for *variable* match dimension name for *group* ? */ 
-          if(strcmp(dmn_nm_var,dmn_nm_grp) == 0){
-
-            /* Now...we know that *somewhere* for all this group dimensions one is the real deal 
-            Attempt to construct a *possible* full dimension name and compare with the table dimension list
-            until a full name match is found ... */
-
-            /* Was the dimension found?: handy in all this *tortured* logic; needs revision, but works ! */
-            nco_bool dmn_was_found=False;
-
-            /* Construct *possible* dimension full name */
-            char *dmn_nm_fll=(char*)nco_malloc(strlen(trv.grp_nm_fll)+strlen(dmn_nm_var)+2L);
-            strcpy(dmn_nm_fll,trv.grp_nm_fll);
-            if(strcmp(trv.grp_nm_fll,"/")) strcat(dmn_nm_fll,"/");
-            strcat(dmn_nm_fll,dmn_nm_var);
-
-            /* Brute-force approach to find valid "dmn_nm_fll":
-            Start at grp_nm_fll/dmn_nm_var and build all possible paths with dmn_nm_var. 
-            Use cases are:
-            Real life output of: ncks --get_grp_info  ~/nco/data/in_grp.nc
-            /g1/lon: 1 dimensions: /lon : 
-            /g5/g5g1/rz: 1 dimensions: /g5/rlev : 
-            /g10/three_dmn_rec_var: 3 dimensions: /time : /lat : /lon :           
-            */
-
-            /* Find last occurence of '/' */
-            ptr_chr=strrchr(dmn_nm_fll,'/');
-            psn_chr=ptr_chr-dmn_nm_fll;
-
-            /* While there is a possible dimension path */
-            while(ptr_chr && !dmn_was_found){
-
-              /* Search table dimension list */
-              for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
-                dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst_idx];  
-
-                /* Does the *possible* dimension full name match a *real* dimension full name ? */
-                if(strcmp(dmn_trv.nm_fll,dmn_nm_fll) == 0){
-
-                  /* Store full dimension name  */
-                  trv_tbl->lst[uidx].var_dmn[dmn_idx_var].dmn_nm_fll=strdup(dmn_nm_fll);
-
-                  /* The relative dimension name was already stored   */
-                  assert(strcmp(trv_tbl->lst[uidx].var_dmn[dmn_idx_var].dmn_nm,dmn_nm_var) == 0);
-
-                  /* Store full group name where dimension is located. NOTE: using member "grp_nm_fll" of dimension  */
-                  trv_tbl->lst[uidx].var_dmn[dmn_idx_var].grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
-
-                  /* Free allocated */
-                  dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-
-                  /* Found */
-                  dmn_was_found=True;
-
-                  /* Exit table dimension list loop */
-                  break;
-                } /* End Does the *possible* dimension full name match a *real* dimension full name */
-              } /* End Search table dimension list loop */
-
-              /* Keep on trying... Re-add dimension name to shortened path */ 
-
-              /* If a valid (pointer) name here, then the constructed name was not found */
-              if(dmn_nm_fll) {
-                dmn_nm_fll[psn_chr]='\0';
-                ptr_chr=strrchr(dmn_nm_fll,'/');
-                if(ptr_chr){
-                  psn_chr=ptr_chr-dmn_nm_fll;
-                  dmn_nm_fll[psn_chr]='\0';
-                  if(strcmp(dmn_nm_fll,"/")) strcat(dmn_nm_fll,"/");
-                  strcat(dmn_nm_fll,dmn_nm_var);
-                  ptr_chr=strrchr(dmn_nm_fll,'/');
-                  psn_chr=ptr_chr-dmn_nm_fll;
-                } /* !ptr_chr */
-              } /* If dmn_nm_fll */
-            } /* End While there is a possible dimension path */ 
-
-            /* Free allocated (this should never happen here; a dimension must always be found) */
-            if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-
-          } /* End Does dimension name for variable match dimension name for group ?  */
-        } /* End Loop over dimensions of group *and* parents */
-      } /* End Loop over dimensions of variable */
-    } /* End object is variable nco_obj_typ_var */
-  } /* End Loop *object* traversal table  */
-
-
-} /* end nco_blb_dmn_trv() */
 
 
 dmn_trv_sct *                         /* O [sct] GTT dimension structure (stored in *groups*) */
@@ -3216,98 +3153,6 @@ nco_scp_crd_dmn                       /* [fnc] Is coordinate variable in scope o
 } /* nco_scp_crd_dmn() */
 
 
-int
-nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs in a string path  */
-(char * const nm_fll)                 /* I [sct] Full name  */
-{
-  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
-  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
-  int psn_chr;        /* [nbr] Position of character '/' in in full name */
- 
-  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"Looking '/' in \"%s\"...",nm_fll);
-
-  ptr_chr=strchr(nm_fll,'/');
-  while (ptr_chr!=NULL)
-  {
-    psn_chr=ptr_chr-nm_fll;
-
-    if(dbg_lvl_get() >= 14) (void)fprintf(stdout," ::found at %d",psn_chr);
-
-    ptr_chr=strchr(ptr_chr+1,'/');
-
-    nbr_sls_chr++;
-  }
-
-  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"\n",psn_chr);
-  return nbr_sls_chr;
-
-} /* nco_get_sls_chr_cnt() */
-
-
-
-int
-nco_get_str_pth_sct                   /* [fnc] Get full name token structure (path components) */
-(char * const nm_fll,                 /* I [sng] Full name  */ 
- str_pth_sct ***str_pth_lst)          /* I/O [sct] List of path components  */    
-{
-  /* Purpose: Break a full path name into components separated by the slash character (netCDF4 path separator) 
-  
-  strtok()
-  A sequence of calls to this function split str into tokens, which are sequences of contiguous characters 
-  separated by any of the characters that are part of delimiters.
-
-  strchr() is used to get position of separator that corresponsds to each token
-
-  Use case: "/g16/g16g1/lon1"
-
-  Token 0: g16
-  Token 1: g16g1
-  Token 2: lon1
-  
-  */
-
-  char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
-  char *ptr_chr_tok;  /* [sng] Pointer to character */
-  int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
-  int psn_chr;        /* [nbr] Position of character '/' in in full name */
- 
-  /* Duplicate original, since strtok() changes it */
-  char *str=strdup(nm_fll);
-
-  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
-
-  /* Get first token */
-  ptr_chr_tok=strtok (str,"/");
-
-  ptr_chr=strchr(nm_fll,'/');
-
-  while (ptr_chr!=NULL)
-  {
-    if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
-
-    psn_chr=ptr_chr-nm_fll;
-    
-    /* Store token and position */
-    (*str_pth_lst)[nbr_sls_chr]=(str_pth_sct *)nco_malloc(1*sizeof(str_pth_sct));
-
-    (*str_pth_lst)[nbr_sls_chr]->nm=strdup(ptr_chr_tok);
-    (*str_pth_lst)[nbr_sls_chr]->psn=psn_chr;
-
-    /* The point where the last token was found is kept internally by the function */
-    ptr_chr_tok = strtok (NULL, "/");
-
-    ptr_chr=strchr(ptr_chr+1,'/');
-
-    nbr_sls_chr++;   
-  }
-
-  if(dbg_lvl_get() >= 14)(void)fprintf(stdout,"\n");
-
-  str=(char *)nco_free(str);
-
-  return nbr_sls_chr;
-
-} /* nco_get_sls_chr_cnt() */
 
 
 

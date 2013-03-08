@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.257 2013-03-08 13:32:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.258 2013-03-08 13:40:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -112,6 +112,15 @@ nco_def_grp_rcr                      /* [fnc] Define groups */
  const int out_id,                   /* I [ID] netCDF output-file ID */
  const char * const prn_nm,          /* I [sng] Parent group name */
  const int rcr_lvl);                 /* I [nbr] Recursion level */
+
+int
+nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs in a string path  */
+(char * const nm_fll);                /* I [sct] Full name  */
+
+int
+nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
+(char * const nm_fll,                 /* I [sng] Full name  */ 
+ str_pth_sct ***str_pth_lst);         /* I/O [sct] List of path components  */  
 
 void
 nco_prt_grp_nm_fll                   /* [fnc] Debug function to print group full name from ID */
@@ -248,10 +257,6 @@ nco_grp_itr                           /* [fnc] Populate traversal table by exami
  char * const grp_pth,                /* I [sng] Absolute group path */
  trv_tbl_sct *trv_tbl);               /* I/O [sct] Group traversal table  */
 
-void                          
-nco_bld_var_dmn_trv                   /* [fnc] Build dimension info for all variables */
-(const int nc_id,                     /* I [ID] File ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
@@ -323,14 +328,7 @@ void
 nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name in dimension's scope?   */
 (const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
-int
-nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs in a string path  */
-(char * const nm_fll);                /* I [sct] Full name  */
 
-int
-nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
-(char * const nm_fll,                 /* I [sng] Full name  */ 
- str_pth_sct ***str_pth_lst);         /* I/O [sct] List of path components  */  
 
 
 crd_sct *                             /* O [sct] Coordinate object */
