@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.257 2013-03-09 09:01:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.258 2013-03-09 09:51:11 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1861,6 +1861,10 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Get unique dimension object from unique dimension ID */
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
+    if(dbg_lvl_get() >= nco_dbg_crr){
+      (void)nco_inq_grp_full_ncid(nc_out_id,dmn_trv->grp_nm_fll,&grp_dmn_out_id);
+    }
+
 #if 0
 #define OLD_DIM_CODE
 #endif
@@ -1874,26 +1878,24 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 #else /* OLD_DIM_CODE */
 
 
-#ifdef KEEP /* This tesst must be done *before* testing the existence of the dimension */
+    /* Test group existence before testing dimension existence */
+
+#ifdef KEEP
     /* Determine where to place new dimension in output file */
     if(gpe){
       grp_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll);
       /* !gpe */
     }else {
       grp_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
-
-      /* Obtain group ID for dimension in the output using unique dimension full group name in the input */
-      (void)nco_inq_grp_full_ncid(nc_out_id,dmn_trv->grp_nm_fll,&grp_dmn_out_id);
-    } /* Determine where to place new dimension in output file */
+    } /* gpe */
 
     /* Test existence of group and create if not existent */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_dmn_out_id)){
       nco_def_grp_full(nc_out_id,grp_out_fll,&grp_dmn_out_id);
-    }
+    } 
 #endif
 
-
-    /* Inquire if dimension defined using obtaiend group ID */
+    /* Inquire if dimension defined using obtained group ID */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
 #endif /* OLD_DIM_CODE */
 
