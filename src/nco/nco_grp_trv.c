@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.77 2013-03-04 22:12:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.78 2013-03-09 07:38:51 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -200,7 +200,6 @@ trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for
 void 
 trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal table */
 (const trv_tbl_sct * const trv_tbl,  /* I [sct] Traversal table */
- const nco_bool flg_var,             /* I [flg] Filter object type */
  const char * const fnc_nm)          /* I [sng] Function name of the calling function */
 {
   int idx=0;
@@ -209,18 +208,7 @@ trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal
   /* Loop table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-
-    /* Filter variables */
-    if(flg_var == True){
-      if(trv.flg_xtr && trv.nco_typ == nco_obj_typ_var){
-        nbr_flg++;
-      } /* endif */
-    /* ! Filter variables */
-    }else {
-      if(trv.flg_xtr){
-        nbr_flg++;
-      }
-    } /* ! Filter variables */
+    if(trv.flg_xtr) nbr_flg++;
   } /* Loop table */
 
   (void)fprintf(stdout,"%s: INFO %s reports <%d> objects with extraction flag (flg_xtr) set:\n",prg_nm_get(),fnc_nm,nbr_flg); 
@@ -228,23 +216,7 @@ trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal
   /* Loop table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-
-    /* Filter variables */
-    if(flg_var == True){
-      if(trv.flg_xtr && trv.nco_typ == nco_obj_typ_var){
-        (void)fprintf(stdout,"[%d] %s\n",idx++,trv.nm_fll); 
-      } /* endif */
-    }
-
-    /* ! Filter variables */
-    else {
-      if(flg_var == True){
-        if(trv.flg_xtr){
-          (void)fprintf(stdout,"[%d] %s\n",idx++,trv.nm_fll); 
-        } /* endif */
-      }
-    }/* ! Filter variables */
-
+    if(trv.flg_xtr) (void)fprintf(stdout,"[%d] %s\n",idx++,trv.nm_fll); 
   }/* Loop table */
 
 } /* end trv_tbl_prn_xtr() */

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.226 2013-03-08 09:12:50 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.227 2013-03-09 07:38:51 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1626,6 +1626,24 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
+    
+#ncks #65
+# Test creation of variables with ancestor group dimensions
+#ncks -O -g g6g1 -v area  in_grp.nc out.nc
+#/g6/g6g1/area
+#lat[1]=90 area[1]=50
+
+    $dsc_sng="Dimemsions in ancestor groups -g g6g1 -v area";
+    $tst_cmd[0]="ncks $nco_D_flg -O -g g6g1 -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -H -C -v area -d lat,1,1 %tmp_fl_00%";
+    $tst_cmd[2]="lat[1]=90 area[1]=50";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     # to do    
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			      
          
      
      
