@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.228 2013-03-09 09:01:23 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.229 2013-03-09 11:20:13 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1664,7 +1664,20 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			      
          
-     
+#ncks #67
+# Test "out of scope " coordinate
+# ncks  -H  -v lon3_var  in_grp.nc
+
+    $dsc_sng="Out of scope coordinate -v lon3_var";
+    $tst_cmd[0]="ncks $nco_D_flg -H -v lon3_var $in_pth_arg in_grp.nc";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="lon3[3] lon3_var[3]=3";
+    $tst_cmd[2]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     # to do    
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			  
      
      
     

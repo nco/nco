@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.661 2013-03-09 07:38:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.662 2013-03-09 11:20:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3050,9 +3050,6 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
   coordinate </g16/g16g2/lon1> not in scope of variable
   dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1
   coordinate </g16/g16g1/lon1> not in scope of variable 
-
-  Note: fxm Order "lower" scope coordinate objects.. or order all in construction
-
   */
 
   const char fnc_nm[]="nco_scp_var_crd()"; /* [sng] Function name  */
@@ -3061,42 +3058,23 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
   for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
     crd_sct *crd=dmn_trv->crd[crd_idx];
 
-    /* Is coordinate in scope of variable? */
-    nco_bool is_crd_var_scp=False;
-
     /* Absolute match: in scope  */ 
     if (strcmp(var_trv->nm_fll,crd->crd_nm_fll) == 0){ 
 
       /* The variable must be a coordinate for this to happen */
       assert(var_trv->is_crd_var == True);
-      is_crd_var_scp=True; 
+      return crd;
     } 
     /* Same group: in scope  */ 
-    if (strcmp(var_trv->grp_nm_fll,crd->crd_grp_nm_fll) == 0){ 
-
-      is_crd_var_scp=True; 
+    else if (strcmp(var_trv->grp_nm_fll,crd->crd_grp_nm_fll) == 0){ 
+      return crd;
     } 
     /* Level below: in scope  */ 
     else if (crd->grp_dpt < var_trv->grp_dpt){ 
-
-      is_crd_var_scp=True; 
-    }
- 
-    /* In scope, return object  */ 
-    if(is_crd_var_scp) {
-
-      if(dbg_lvl_get() >= 13){
-        (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
-          crd->crd_nm_fll,is_crd_var_scp,var_trv->nm_fll);      
-      } /* endif dbg */
-
       return crd;
-    } /* In scope, return object  */ 
-
+    }
   } /* Loop coordinates */
 
-
-  /* Should never happen */
   return NULL;
 } /* nco_scp_var_crd() */
 
@@ -3145,25 +3123,42 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].ncd=dmn_trv;
         }
 
-        /* There are coordinates; one must be chosen */
+        /* There are coordinates; one must be chosen 
+        Scope definition: In the same group of the variable or beneath (closer to root) 
+        Above: out of scope */
         else if(dmn_trv->crd_nbr > 0) {
 
           /* Choose the "in scope" coordinate for the variable and assign it to the variable dimension */
           crd_sct *crd=nco_scp_var_crd(&var_trv,dmn_trv);
 
-          if(dbg_lvl_get() >= 13){ 
-            (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm, 
-              dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
-          } /* endif dbg */ 
+          /* The "in scope" coordinate is returned */
+          if (crd) {
+            if(dbg_lvl_get() >= 13){ 
+              (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm, 
+                dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
+            } /* endif dbg */ 
 
-          /* Mark as True */
-          trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
+            /* Mark as True */
+            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=True;
 
-          /* Store coordinate */
-          trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=crd;
+            /* Store coordinate */
+            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].crd=crd;
 
+          /* None was found in scope */
+          }else {
+            if(dbg_lvl_get() >= 13){ 
+              (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> with out of scope coordinate\n",prg_nm_get(),fnc_nm, 
+                dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll);         
+            } /* endif dbg */
+
+            /* Mark as False */
+            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var=False;
+
+            /* Store the unique dimension as if it was a non coordinate */
+            trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].ncd=dmn_trv;
+
+          } /* None was found in scope */
         } /* There are coordinates; one must be chosen */
-
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
   } /* Loop table */

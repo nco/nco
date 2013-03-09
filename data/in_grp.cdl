@@ -43,7 +43,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.72 2013-03-02 06:42:14 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.73 2013-03-09 11:20:14 pvicente Exp $";
   
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
@@ -200,7 +200,7 @@ netcdf in_grp {
       float rz(rlev);
     data:
       rz=1,2,3;
-    } //end g6g1 
+    } //end g5g1 
   } // end g5
   
   //
@@ -436,6 +436,7 @@ netcdf in_grp {
     dimensions:
     lon1=4;  //dimension that has a coordinate variable down in scope at /g16/g16g1/lon1(lon1)
     lon2=4;  //dimension that does NOT have a coordinate variable anywhere 
+    lon3=4;  //dimension that has a coordinate "out of scope" (with group depth greater than the variable that uses the coordinate, g16g3g3)
     variables:
     float lat1(lat);
     float lon2_var(lon2); //variable with no associated coordinate variable
@@ -465,6 +466,24 @@ netcdf in_grp {
      lon1=3.,4.,5.,6.;
      lon1_var=0.,1.,2.,3.;  
     } // end g16g2 
+    
+    group: g16g3 { 
+     variables:
+     float lon3_var(lon3); 
+     data:
+     lon3_var=0.,1.,2.,3.;  
+        group: g16g3g3 { 
+           variables:
+            //coordinate "out of scope" (with group depth greater than the variable that uses the coordinate, in g16g3)
+            float lon3(lon3);
+            data:
+            lon3=7.,8.,9.,10.;
+        } // end g16g3g3
+    } // end g16g3
+    
+    
+    
+    
   } // end g16
 
 } // end root group
