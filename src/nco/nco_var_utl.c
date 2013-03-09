@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.251 2013-03-08 13:58:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.252 2013-03-09 01:48:19 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1739,20 +1739,19 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   char *rec_dmn_nm=NULL; /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL; /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
 
-  int *dmn_in_id;
-  int *dmn_out_id;
+  int dmn_in_id_var[NC_MAX_DIMS];  /* [ID] Dimension IDs array for input variable */
+  int dmn_in_id_grp[NC_MAX_DIMS];  /* [ID] Dimension IDs array for input group */
+  int dmn_ids_rec[NC_MAX_DIMS];    /* [ID] Record dimension IDs array */
+  int *dmn_out_id;                 /* [ID] Dimension IDs array for output variable */
 
-  int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
-
-  int dmn_idx;
   int fl_fmt; /* [enm] Output file format */
-  int nbr_dim;
+  int nbr_dmn_var;
+  int nbr_dmn_grp;
   int nbr_rec; /* [nbr] Number of unlimited dimensions */
-  int rec_idx;
-  int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
   int var_in_id;
   int var_out_id;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   nc_type var_typ;
 
@@ -1776,22 +1775,24 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",prg_nm_get(),fnc_nm,var_nm);
 
   /* Get type of variable and number of dimensions */
-  (void)nco_inq_var(grp_in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(grp_in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_var,(int *)NULL,(int *)NULL);
 
   assert(var_typ == var_trv->var_typ);
-  assert(nbr_dim == var_trv->nbr_dmn);
+  assert(nbr_dmn_var == var_trv->nbr_dmn);
 
   var_typ=var_trv->var_typ;
-  nbr_dim=var_trv->nbr_dmn;
+  nbr_dmn_var=var_trv->nbr_dmn;
 
   /* Allocate space to hold dimension IDs */
-  dmn_in_id=(int *)nco_malloc(nbr_dim*sizeof(int));
-  dmn_out_id=(int *)nco_malloc(nbr_dim*sizeof(int));
+  dmn_out_id=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
 
-  /* Get dimension IDs */
-  (void)nco_inq_vardimid(grp_in_id,var_in_id,dmn_in_id);
+  /* Get dimension IDs for *variable* */
+  (void)nco_inq_vardimid(grp_in_id,var_in_id,dmn_in_id_var);
 
-  /* Get unlimited dimension information from input file/group */
+  /* Obtain dimensions IDs for group */
+  rcd+=nco_inq_dimids(grp_in_id,&nbr_dmn_grp,dmn_in_id_grp,0);
+
+  /* Get unlimited dimension  IDs for input *group* */
   rcd=nco_inq_unlimdims(grp_in_id,&nbr_rec,dmn_ids_rec);
 
   /* Get unlimited dimension information from output file/group */
@@ -1824,8 +1825,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* endif */
 
     /* Does variable contain requested record dimension? */
-    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
-      if(dmn_in_id[dmn_idx] == rec_dmn_id_dmy){
+    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+      if(dmn_in_id_var[dmn_idx] == rec_dmn_id_dmy){
         if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
         break;
       } /* endif */
@@ -1838,16 +1839,17 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports starting to define dimensions for variable %s\n",prg_nm_get(),fnc_nm,var_trv->nm_fll);
 
   /* Get input and set output dimension sizes and names */
-  for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+  for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
     char dmn_nm[NC_MAX_NAME];
     int rcd_lcl; /* [rcd] Return code */
     int grp_dmn_out_id; /* [id] Group ID where dimension visible to specified group is defined */
     long dmn_sz;
 
-    (void)nco_inq_dim(grp_in_id,dmn_in_id[dmn_idx],dmn_nm,&dmn_sz);
+    /* Get dimension name and size from ID */
+    (void)nco_inq_dim(grp_in_id,dmn_in_id_var[dmn_idx],dmn_nm,&dmn_sz);
 
     /* Unique dimension ID */
-    int var_dim_id=dmn_in_id[dmn_idx];
+    int var_dim_id=dmn_in_id_var[dmn_idx];
 
     /* Get unique dimension object from unique dimension ID */
     dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
@@ -1879,14 +1881,18 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Define dimension in output file if necessary */
     if(rcd_lcl != NC_NOERR){
 
+      int rec_idx;
+
       /* Here begins a complex tree to decide a simple, binary output:
       Will current input dimension be defined as an output record dimension or as a fixed dimension?
       Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
       Otherwise would repeat netCDF action code too many times */
 
-      /* Is dimension unlimited in input file? */
+      /* Is dimension unlimited in input file? ( pvn why dim IDs for var here ?*/
       for(rec_idx=0;rec_idx<nbr_rec;rec_idx++)
-        if(dmn_in_id[dmn_idx] == dmn_ids_rec[rec_idx]) break;
+        if(dmn_in_id_var[dmn_idx] == dmn_ids_rec[rec_idx]){
+          break;
+        }
       if(rec_idx < nbr_rec) CRR_DMN_IS_REC_IN_INPUT=True; else CRR_DMN_IS_REC_IN_INPUT=False;
 
       /* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
@@ -1988,12 +1994,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   } /* end loop over dimensions */
 
   /* Define variable in output file */
-  (void)nco_def_var(grp_out_id,var_nm,var_typ,nbr_dim,dmn_out_id,&var_out_id);
+  (void)nco_def_var(grp_out_id,var_nm,var_typ,nbr_dmn_var,dmn_out_id,&var_out_id);
 
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     /* Deflation */
-    if(nbr_dim > 0){
+    if(nbr_dmn_var > 0){
       int deflate; /* [flg] Turn on deflate filter */
       int dfl_lvl_in; /* [enm] Deflate level [0..9] */
       int shuffle; /* [flg] Turn on shuffle filter */
@@ -2010,7 +2016,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* Free locally allocated space */
   if(rec_dmn_nm_mlc) rec_dmn_nm_mlc=(char *)nco_free(rec_dmn_nm_mlc);
-  if(dmn_in_id) dmn_in_id=(int *)nco_free(dmn_in_id);
   if(dmn_out_id) dmn_out_id=(int *)nco_free(dmn_out_id);
 
   return var_out_id;
