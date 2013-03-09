@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.659 2013-03-08 13:58:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.660 2013-03-09 02:42:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2933,7 +2933,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
   /* Most common case is for the unique dimension full name to match the full variable name   */
   if (strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-    if(dbg_lvl_get() == nco_dbg_old){
+    if(dbg_lvl_get() >= 13){
       (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
         var_trv->nm_fll,dmn_trv->nm_fll);
     }
@@ -2980,7 +2980,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
       /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
       if (var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= 13){
           (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -3024,7 +3024,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
         /* Variable out of scope of dimension */
       }else if (var_nm_fll_lng < dmn_nm_fll_lng){
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= 13){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -3050,6 +3050,9 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
   coordinate </g16/g16g2/lon1> not in scope of variable
   dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1
   coordinate </g16/g16g1/lon1> not in scope of variable 
+
+  Note: fxm Order "lower" scope coordinate objects.. or order all in construction
+
   */
 
   const char fnc_nm[]="nco_scp_var_crd()"; /* [sng] Function name  */
@@ -3082,7 +3085,7 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
     /* In scope, return object  */ 
     if(is_crd_var_scp) {
 
-      if(dbg_lvl_get() >= 12){
+      if(dbg_lvl_get() >= 13){
         (void)fprintf(stdout,"%s: INFO %s reports coordinate <%s> with scope %d of variable <%s>\n",prg_nm_get(),fnc_nm,
           crd->crd_nm_fll,is_crd_var_scp,var_trv->nm_fll);      
       } /* endif dbg */
@@ -3130,7 +3133,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
         /* No coordinates */
         if(dmn_trv->crd_nbr == 0) {
 
-          if(dbg_lvl_get() >= 12){
+          if(dbg_lvl_get() >= 13){
             (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
           } /* endif dbg */
@@ -3148,7 +3151,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           /* Choose the "in scope" coordinate for the variable and assign it to the variable dimension */
           crd_sct *crd=nco_scp_var_crd(&var_trv,dmn_trv);
 
-          if(dbg_lvl_get() >= 12){ 
+          if(dbg_lvl_get() >= 13){ 
             (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm, 
               dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
           } /* endif dbg */ 
@@ -3180,7 +3183,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
         if(trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var == nco_obj_typ_err) {
 
-          if(dbg_lvl_get() >= 12 ){
+          if(dbg_lvl_get() >= 13 ){
             (void)fprintf(stdout,"%s: OOPSY %s reports variable <%s> with NOT filled dimension [%d]%s\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
           } /* endif dbg */
