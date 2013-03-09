@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.255 2013-03-09 03:14:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.256 2013-03-09 08:25:53 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1880,10 +1880,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 #endif /* OLD_DIM_CODE */
 
     if(dbg_lvl_get() >= nco_dbg_crr){
-      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with dimension '%s(%li)' in ",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,dmn_nm,dmn_sz);        
-      (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
-      (void)fprintf(stdout,"\n");
+      if (rcd_lcl == NC_NOERR) {
+        (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with existing dimension '%s(%li)' in ",prg_nm_get(),fnc_nm,
+          var_trv->nm_fll,dmn_nm,dmn_sz);        
+        (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
+        (void)fprintf(stdout,"\n");
+      }
     } /* endif dbg */
 
     /* Define dimension in output file if necessary */
