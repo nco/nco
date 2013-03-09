@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.253 2013-03-09 02:42:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.254 2013-03-09 02:58:29 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1873,21 +1873,14 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 #endif /* OLD_DIM_CODE */
 
     if(dbg_lvl_get() >= nco_dbg_crr){
-      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with dimension in ",prg_nm_get(),fnc_nm,var_trv->nm_fll);        
+      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with dimension '%s(%li)' in ",prg_nm_get(),fnc_nm,
+        var_trv->nm_fll,dmn_nm,dmn_sz);        
       (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
       (void)fprintf(stdout,"\n");
     } /* endif dbg */
 
     /* Define dimension in output file if necessary */
     if(rcd_lcl != NC_NOERR){
-
-      if(dbg_lvl_get() >= nco_dbg_crr){
-        (void)fprintf(stdout,"%s: INFO %s defining not defined dimension '%s(%li)' in <%s>",prg_nm_get(),fnc_nm,
-          dmn_nm,dmn_sz,var_trv->nm_fll);        
-        (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
-        (void)fprintf(stdout,"\n");
-      } /* endif dbg */
-
       int rec_idx;
 
       /* Here begins a complex tree to decide a simple, binary output:
@@ -1971,12 +1964,15 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         nco_def_grp_full(nc_out_id,grp_out_fll,&grp_dmn_out_id);
       }
 
-      if(dbg_lvl_get() == nco_dbg_crr){
-        (void)fprintf(stdout,"%s: INFO %s defining dimension <%s> in",prg_nm_get(),fnc_nm,dmn_nm);        
+      if(dbg_lvl_get() >= nco_dbg_crr){
+        (void)fprintf(stdout,"%s: INFO %s defining *NOT* defined dimension '%s(%li)' in",prg_nm_get(),fnc_nm,
+          dmn_nm,dmn_sz);        
         (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
         (void)fprintf(stdout,"\n");
-        (void)fprintf(stdout,"%s: INFO %s defining variable %s output dimension #%d: %s/%s with size=%li\n",prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_idx,grp_out_fll,dmn_trv->nm,dmn_sz);
-      }
+        (void)fprintf(stdout,"%s: INFO %s defining variable %s output dimension #%d: %s/%s with size=%li\n",prg_nm_get(),fnc_nm,
+          var_trv->nm_fll,dmn_idx,grp_out_fll,dmn_trv->nm,dmn_sz);
+      } /* endif dbg */
+
 
       /* Memory management after defining current output dimension */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
