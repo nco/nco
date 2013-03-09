@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.254 2013-03-09 02:58:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.255 2013-03-09 03:14:56 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1840,19 +1840,26 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* Get input and set output dimension sizes and names */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
-    char dmn_nm[NC_MAX_NAME];
-    int rcd_lcl; /* [rcd] Return code */
-    int grp_dmn_out_id; /* [id] Group ID where dimension visible to specified group is defined */
-    long dmn_sz;
+    char *grp_out_fll;       /* [sng] Group name of dimension in output */
+    char dmn_nm[NC_MAX_NAME];/* [sng] Dimension name  */   
+
+    int rec_idx;             /* [nbr] Record index */  
+    int grp_dmn_out_id;      /* [id] Group ID where dimension visible to specified group is defined */
+    int rcd_lcl;             /* [rcd] Return code */
+    int var_dim_id;          /* [id] Unique dimension ID */  
+
+    long dmn_sz;             /* [sng] Dimension size  */  
+
+    dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */   
 
     /* Get dimension name and size from ID */
     (void)nco_inq_dim(grp_in_id,dmn_in_id_var[dmn_idx],dmn_nm,&dmn_sz);
 
     /* Unique dimension ID */
-    int var_dim_id=dmn_in_id_var[dmn_idx];
+    var_dim_id=dmn_in_id_var[dmn_idx];
 
     /* Get unique dimension object from unique dimension ID */
-    dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
+    dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
 #if 0
 #define OLD_DIM_CODE
@@ -1881,7 +1888,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
     /* Define dimension in output file if necessary */
     if(rcd_lcl != NC_NOERR){
-      int rec_idx;
 
       /* Here begins a complex tree to decide a simple, binary output:
       Will current input dimension be defined as an output record dimension or as a fixed dimension?
@@ -1928,8 +1934,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         /* ... no user-specified record dimension so define dimension in output same as in input ... */
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
       } /* !rec_dmn_nm */ 
-
-      char *grp_out_fll; /* [sng] Group name */
 
       /* Does dimension have user-specified limits?
       Following line is only difference between defining a variable with and without limits */
