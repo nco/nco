@@ -1,3 +1,12 @@
+2013-03-08  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add regression tests for creation of variables with ancestor group dimensions (GPE, non-GPE)
+  
+	* nco_bld_var_dmn() Assign variables dimensions to either coordinates or dimension structs
+    handle "out of scope" cases as non assigned coordinate
+
+	* Add regression test for coordinate "out of scope" (with group depth greater than the variable that uses the coordinate)
+
 2013-03-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.2.6 release procedure:

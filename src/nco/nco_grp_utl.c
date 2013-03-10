@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.662 2013-03-09 11:20:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.663 2013-03-10 02:48:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3044,12 +3044,21 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
  dmn_trv_sct *dmn_trv)                /* I [sct] Dimension object */
 {
 
-  /* Use cases:
+  /* Purpose: Choose one coordinate from the dimension object to assign as a valid coordinate
+  to the variable dimension
+  Scope definition: In the same group of the variable or beneath (closer to root) 
+  Above: out of scope (no luck)
 
-  dimension [0]/g16/lon1 of variable </g16/g16g1/lon1_var> with coordinate in scope </g16/g16g1/lon1>
-  coordinate </g16/g16g2/lon1> not in scope of variable
-  dimension [0]/g16/lon1 of variable </g16/g16g2/lon1_var> with coordinate in scope </g16/g16g2/lon1
-  coordinate </g16/g16g1/lon1> not in scope of variable 
+  Use cases:
+
+  dimension lon4;
+  variable lon4_var(lon4)
+
+  Variable /g16/g16g4/g16g4g4/g16g4g4g4/lon4_var
+  2 coordinates down in scope 
+  /g16/g16g4/g16g4g4/lon4
+  /g16/g16g4/lon4
+
   */
 
   const char fnc_nm[]="nco_scp_var_crd()"; /* [sng] Function name  */
@@ -3128,8 +3137,10 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
         Above: out of scope */
         else if(dmn_trv->crd_nbr > 0) {
 
+          crd_sct *crd=NULL; /* [sct] Coordinate to assign to dimension of variable */
+
           /* Choose the "in scope" coordinate for the variable and assign it to the variable dimension */
-          crd_sct *crd=nco_scp_var_crd(&var_trv,dmn_trv);
+          crd=nco_scp_var_crd(&var_trv,dmn_trv);
 
           /* The "in scope" coordinate is returned */
           if (crd) {
