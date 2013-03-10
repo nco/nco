@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.258 2013-03-09 09:51:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.259 2013-03-10 11:47:59 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1741,14 +1741,21 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   int dmn_in_id_var[NC_MAX_DIMS];  /* [ID] Dimension IDs array for input variable */
   int dmn_in_id_grp[NC_MAX_DIMS];  /* [ID] Dimension IDs array for input group */
+
+#ifdef REMOVE
   int dmn_ids_rec[NC_MAX_DIMS];    /* [ID] Record dimension IDs array */
+#endif
+
+
   int *dmn_out_id;                 /* [ID] Dimension IDs array for output variable */
 
   int fl_fmt; /* [enm] Output file format */
   int nbr_dmn_var;
   int nbr_dmn_grp;
   int nbr_rec; /* [nbr] Number of unlimited dimensions */
+
   int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
+
   int var_in_id;
   int var_out_id;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -1792,11 +1799,15 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   /* Obtain dimensions IDs for group */
   rcd+=nco_inq_dimids(grp_in_id,&nbr_dmn_grp,dmn_in_id_grp,0);
 
+#ifdef REMOVE
   /* Get unlimited dimension  IDs for input *group* */
   rcd=nco_inq_unlimdims(grp_in_id,&nbr_rec,dmn_ids_rec);
 
   /* Get unlimited dimension information from output file/group */
   (void)nco_inq(grp_out_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_out_id);
+#endif
+
+  
 
   /* Does user want a record dimension to receive special handling? */
   if(rec_dmn_nm_cst){
@@ -1916,12 +1927,22 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
       Otherwise would repeat netCDF action code too many times */
 
-      /* Is dimension unlimited in input file? ( pvn why dim IDs for var here ?*/
+      /* Is dimension unlimited in input file? */
+
+#ifdef REMOVE
       for(rec_idx=0;rec_idx<nbr_rec;rec_idx++)
         if(dmn_in_id_var[dmn_idx] == dmn_ids_rec[rec_idx]){
           break;
         }
       if(rec_idx < nbr_rec) CRR_DMN_IS_REC_IN_INPUT=True; else CRR_DMN_IS_REC_IN_INPUT=False;
+#else
+
+      /* Is dimension unlimited in input file? Handy unique dimension has all this info */
+
+      CRR_DMN_IS_REC_IN_INPUT=dmn_trv->is_rec_dmn;
+
+#endif
+
 
       /* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
       if(rec_dmn_nm){
