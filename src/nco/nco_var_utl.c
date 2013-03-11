@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.268 2013-03-11 23:12:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.269 2013-03-11 23:29:32 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1890,7 +1890,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     }
 
     /* Check if dimension needs to be defined */
-    nco_bool need_to_define_dim=False;
+    nco_bool need_to_define_dim=True;
 
     /* Inquire if dimension defined using obtained group ID */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
@@ -1911,8 +1911,16 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       if(dbg_lvl_get() >= nco_dbg_crr){
         (void)fprintf(stdout,"#%d '%s' size=%li\n",dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,dmn_sz_grp);
       }
-    } /* Loop group defined dimensions */
 
+      if(strcmp(dmn_nm_grp,dmn_nm) == 0){
+
+        need_to_define_dim=False;
+
+        if(dbg_lvl_get() >= nco_dbg_crr){
+          (void)fprintf(stdout,"No need to define '%s'\n",dmn_nm_grp);
+        }
+      }
+    } /* Loop group defined dimensions */
 
 
     if(dbg_lvl_get() >= nco_dbg_crr){
@@ -1929,7 +1937,11 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
 
     /* Define dimension in output file if necessary */
+#if 1
     if(rcd_lcl != NC_NOERR){
+#else
+    if (need_to_define_dim == True){
+#endif
 
       /* Here begins a complex tree to decide a simple, binary output:
       Will current input dimension be defined as an output record dimension or as a fixed dimension?
