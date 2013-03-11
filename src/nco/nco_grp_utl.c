@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.668 2013-03-11 19:13:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.669 2013-03-11 23:09:47 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2624,7 +2624,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
         crd_sct *crd=dmn_trv.crd[crd_idx];
 
-        /* Adapted from the original MSA loop in nco_msa_lmt_all_int(); differences are marked GTT specific */
+        /* Adapted from the original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
 
         nco_bool flg_ovl; /* [flg] Limits overlap */
 
@@ -2684,7 +2684,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     }else{
       /* b) case of dimension only (there is no coordinate variable for this dimension) */
 
-      /* Adapted from the original MSA loop in nco_msa_lmt_all_int(); differences are marked GTT specific */
+      /* Adapted from the original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
 
       nco_bool flg_ovl; /* [flg] Limits overlap */
 

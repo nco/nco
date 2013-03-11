@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.70 2013-03-04 22:12:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.71 2013-03-11 23:09:47 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -77,7 +77,7 @@ nco_msa_qsort_srt  /* [fnc] sort limits by srt values  */
 (lmt_msa_sct *lmt_lst);
 
 void      
-nco_msa_lmt_all_int     /* [fnc] Initilaize lmt_msa_sct's */ 
+nco_msa_lmt_all_ntl     /* [fnc] Initilaize lmt_msa_sct's */ 
 (int in_id,
  nco_bool MSA_USR_RDR,
  lmt_msa_sct **lmt_all_lst,

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.269 2013-03-11 22:06:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.270 2013-03-11 23:09:47 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.269 2013-03-11 22:06:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.269 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.270 2013-03-11 23:09:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.270 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -575,7 +575,7 @@ main(int argc,char **argv)
     /* Place all dimensions in lmt_all_lst */
     lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
     /* Initialize lmt_msa_sct's */ 
-    (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+    (void)nco_msa_lmt_all_ntl(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
     /* Find dimensions associated with variables to be extracted */
     dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,xtr_nbr,&nbr_dmn_xtr);
@@ -873,15 +873,6 @@ main(int argc,char **argv)
       } /* CNV_CCM_CCSM_CF */
 
       /* We now have final list of variables to extract. Phew. */
-
-      /* Find coordinate/dimension values associated with user-specified limits
-      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-      for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
-
-      /* Place all dimensions in lmt_all_lst */
-      lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
-      /* Initialize lmt_msa_sct's */ 
-      (void)nco_msa_lmt_all_int(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
       /* Define extracted groups, variables, and attributes in output file */
       (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CPY_GLB_METADATA,(nco_bool)True,rec_dmn_nm,trv_tbl);

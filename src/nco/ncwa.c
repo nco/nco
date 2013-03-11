@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.318 2013-03-08 20:51:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.319 2013-03-11 23:09:47 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.318 2013-03-08 20:51:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.318 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.319 2013-03-11 23:09:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.319 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -615,7 +615,7 @@ main(int argc,char **argv)
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
   /* Initialize lmt_msa_sct's */ 
-  (void)nco_msa_lmt_all_int(in_id,False,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
+  (void)nco_msa_lmt_all_ntl(in_id,False,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,xtr_nbr,&nbr_dmn_xtr);

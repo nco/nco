@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.196 2013-03-04 22:12:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.197 2013-03-11 23:09:47 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -564,10 +564,8 @@ nco_msa_c_2_f /* [fnc] Replace brackets with parentheses in a string */
   } /* end while */
 } /* end nco_msa_c_2_f() */
 
-
-
 void /* Initilaize lmt_msa_sct's */ 
-nco_msa_lmt_all_int
+nco_msa_lmt_all_ntl
 (int in_id,
  nco_bool MSA_USR_RDR,
  lmt_msa_sct **lmt_all_lst,
@@ -696,7 +694,7 @@ nco_msa_lmt_all_int
 
   } /* end idx */    
 
-} /* end nco_msa_lmt_all_int() */
+} /* end nco_msa_lmt_all_ntl() */
 
 void
 nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
