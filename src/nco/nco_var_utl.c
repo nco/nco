@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.263 2013-03-11 20:30:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.264 2013-03-11 21:00:56 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1880,16 +1880,17 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       nco_def_grp_full(nc_out_id,grp_out_fll,&grp_dmn_out_id);
     } 
 
+
     /* Inquire if dimension defined using obtained group ID */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
 
     if(dbg_lvl_get() >= nco_dbg_crr){
       if (rcd_lcl == NC_NOERR) 
-        (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with existing dimension #%d'%s(%li)' in ",prg_nm_get(),fnc_nm,
-          var_trv->nm_fll,var_dim_id,dmn_nm,dmn_sz);
+        (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with existing dimension #%d<%s> in ",prg_nm_get(),fnc_nm,
+          var_trv->nm_fll,var_dim_id,dmn_trv->nm_fll);
       else
-        (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with *NOT* defined dimension #%d'%s(%li)' in",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,var_dim_id,dmn_nm,dmn_sz);        
+        (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with *NOT* defined dimension #%d<%s> in",prg_nm_get(),fnc_nm,
+        var_trv->nm_fll,var_dim_id,dmn_trv->nm_fll);        
 
       (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
       (void)fprintf(stdout,"\n");
