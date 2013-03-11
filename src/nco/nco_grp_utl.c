@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.666 2013-03-11 17:39:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.667 2013-03-11 18:42:00 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -353,7 +353,7 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
     nbr_sls_chr++;
   }
 
-  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"\n",psn_chr);
+  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"\n");
   return nbr_sls_chr;
 
 } /* nco_get_sls_chr_cnt() */
@@ -1684,7 +1684,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
           (void)fprintf(stdout,"<%s><%s> ",dmn_trv->nm_fll,dmn_trv->grp_nm_fll);
         }
         assert(strcmp(dmn_nm_fll,dmn_trv->nm_fll) == 0);
-        assert(strcmp(trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) == 0);
+	assert(strcmp(trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) == 0);
 
         /* Store full dimension name  */
         trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].dmn_nm_fll=strdup(dmn_trv->nm_fll);
@@ -2270,7 +2270,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
   } /* Loop groups */
 
 
-  assert(nbr_dmn == trv_tbl->nbr_dmn);
+  assert((unsigned int)nbr_dmn == trv_tbl->nbr_dmn);
 
   /* Variables */
 
@@ -3046,8 +3046,8 @@ nco_cmp_crd_dpt                      /* [fnc] Compare two crd_sct's by group dep
   /* Purpose: Compare two crd_sct's by group depth structure member, used by qsort()
      crd_sct **crd of unique dimension of is an array of pointers, not an array of crd_sct structs */
 
-  crd_sct **crd1=(crd_sct**)p1;
-  crd_sct **crd2=(crd_sct**)p2;
+  crd_sct **crd1=(crd_sct **)p1;
+  crd_sct **crd2=(crd_sct **)p2;
 
   if ( (*crd1)->grp_dpt > (*crd2)->grp_dpt ) return -1;
   else if ( (*crd1)->grp_dpt < (*crd2)->grp_dpt ) return 1;
