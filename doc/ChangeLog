@@ -1,3 +1,10 @@
+2013-03-10  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add regression tests for order coordinates by group depth and "out of scope " coordinate
+  
+	* nco_cmp_crd_dpt() Compare two coordinate structs by group depth, used to choose the coordinate closer to variable
+    in group depth
+
 2013-03-08  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add regression tests for creation of variables with ancestor group dimensions (GPE, non-GPE)

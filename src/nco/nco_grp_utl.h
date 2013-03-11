@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.260 2013-03-08 13:53:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.261 2013-03-11 07:22:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -275,10 +275,6 @@ void
 nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
-void
-nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to either coordinates or dimension structs */
-(trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
 void                          
 nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
 (const int nc_id,                    /* I [ID] File ID */
@@ -321,13 +317,19 @@ void
 nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name in dimension's scope?   */
 (const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
-
-
+void
+nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to either coordinates or dimension structs */
+(trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 crd_sct *                             /* O [sct] Coordinate object */
 nco_scp_var_crd                       /* [fnc] Is coordinate in scope of variable?  */
 (trv_sct *var_trv,                    /* I [sct] Variable object */
  dmn_trv_sct *dmn_trv);               /* I [sct] Dimension object */
+
+int                                  /* O [nbr] Comparison result */
+nco_cmp_crd_dpt                      /* [fnc] Compare two crd_sct's by group depth */
+(const void *p1,                     /* I [sct] crd_sct* to compare */
+ const void *p2);                    /* I [sct] crd_sct* to compare */
 
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.663 2013-03-10 02:48:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.664 2013-03-11 07:22:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3036,7 +3036,35 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
   return False;
 } /* nco_var_dmn_scp() */
- 
+
+
+#if 0
+int compare(const void *a, const void *b) {
+    const INPUT **p1 = a;
+    const INPUT **p2 = b;
+    return (((*p1)->startTime) - ((*p2)->startTime));
+}
+
+#endif
+
+
+int                                  /* O [nbr] Comparison result */
+nco_cmp_crd_dpt                      /* [fnc] Compare two crd_sct's by group depth */
+(const void *p1,                     /* I [sct] crd_sct* to compare */
+ const void *p2)                     /* I [sct] crd_sct* to compare */
+{
+  /* Purpose: Compare two crd_sct's by group depth structure member, used by qsort()
+     crd_sct **crd of unique dimension of is an array of pointers, not an array of crd_sct structs */
+
+  crd_sct **crd1=(crd_sct**)p1;
+  crd_sct **crd2=(crd_sct**)p2;
+
+  if ( (*crd1)->grp_dpt > (*crd2)->grp_dpt ) return -1;
+  else if ( (*crd1)->grp_dpt < (*crd2)->grp_dpt ) return 1;
+  else return 0;
+
+} /* end nco_cmp_crd_dpt() */
+
 
 crd_sct *                             /* O [sct] Coordinate object */
 nco_scp_var_crd                       /* [fnc] Return in scope coordinate for variable  */
@@ -3062,6 +3090,11 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
   */
 
   const char fnc_nm[]="nco_scp_var_crd()"; /* [sng] Function name  */
+
+  /* If more then 1 coordinate, sort them by group depth */
+  if (dmn_trv->crd_nbr>1){
+    qsort(dmn_trv->crd,(size_t)dmn_trv->crd_nbr,sizeof(crd_sct *),nco_cmp_crd_dpt);
+  }
 
   /* Loop coordinates; they all have the unique dimension ID of the variable dimension */
   for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
