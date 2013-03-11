@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.233 2013-03-11 21:04:56 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.234 2013-03-11 21:08:47 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1323,8 +1323,8 @@ print "\n";
 
     $dsc_sng="Check --mk_rec_dmn (netCDF3 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --mk_rec_dmn lat -v three_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -m -v lat %tmp_fl_00% | egrep -o -w 'Record coordinate dimension'";
-    $tst_cmd[2]="Record coordinate dimension";
+    $tst_cmd[1]="ncks -C -m -v lat %tmp_fl_00% | egrep -o -w 'Record coordinate is lat'";
+    $tst_cmd[2]="Record coordinate is lat";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
