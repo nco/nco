@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.94 2013-03-11 18:42:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.95 2013-03-11 19:44:54 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -729,12 +729,9 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
       /* Get coordinate from table */
       crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
 
-      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu (",
-					      var_trv->nm,dmn_idx,(!strcmp(crd->crd_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->crd_nm_fll,crd->sz,nco_typ_sng(crd->var_typ),cnk_sz[dmn_idx]); 
-      else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s (",
-        var_trv->nm,dmn_idx,(!strcmp(crd->crd_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->crd_nm_fll,crd->sz,nco_typ_sng(crd->var_typ));
-      (void)fprintf(stdout,"%soordinate dimension)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record c" : "C");
-
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu (",var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->sz,nco_typ_sng(crd->var_typ),cnk_sz[dmn_idx]); 
+      else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s (",var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->sz,nco_typ_sng(crd->var_typ));
+      (void)fprintf(stdout,"%soordinate is %s)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record c" : "C",(!strcmp(crd->crd_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->crd_nm_fll);
     }
 
     /* This dimension does not has a coordinate variable, it must have a unique dimension pointer */
