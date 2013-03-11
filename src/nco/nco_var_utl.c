@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.267 2013-03-11 23:04:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.268 2013-03-11 23:12:14 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1841,6 +1841,10 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
     long dmn_sz;             /* [sng] Dimension size  */  
 
+    char dmn_nm_grp[NC_MAX_NAME];/* [sng] Dimension name  */  
+
+    long dmn_sz_grp;             /* [sng] Dimension size  */  
+
     dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */   
 
     /* Get dimension name and size from ID */
@@ -1891,20 +1895,23 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Inquire if dimension defined using obtained group ID */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
 
-     /* Check output group (only) dimensions  */
+    /* Check output group (only) dimensions  */
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
 
     if(dbg_lvl_get() >= nco_dbg_crr){
-      (void)fprintf(stdout,"%s: INFO %s OUTPUT group with dimension IDS/names = ",prg_nm_get(),fnc_nm);
-      for(int dmn_idx=0;dmn_idx<nbr_dmn_out_grp;dmn_idx++){
+      (void)fprintf(stdout,"%s: INFO %s OUTPUT group with dimension IDS/names = \n",prg_nm_get(),fnc_nm);
+    }
 
-        /* Get dimension name and size from ID */
-        (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[dmn_idx],dmn_nm,&dmn_sz);
+    /* Loop group defined dimensions */
+    for(int dmn_idx_grp=0;dmn_idx_grp<nbr_dmn_out_grp;dmn_idx_grp++){
 
-        (void)fprintf(stdout,"#%d '%s' size=%li",dmn_out_id_grp[dmn_idx],dmn_nm,dmn_sz);
+      /* Get dimension name and size from ID */
+      (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,&dmn_sz_grp);
+
+      if(dbg_lvl_get() >= nco_dbg_crr){
+        (void)fprintf(stdout,"#%d '%s' size=%li\n",dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,dmn_sz_grp);
       }
-      (void)fprintf(stdout,"\n");
-    } /* endif dbg */
+    } /* Loop group defined dimensions */
 
 
 
