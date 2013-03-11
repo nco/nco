@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.265 2013-03-11 21:34:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.266 2013-03-11 22:54:33 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1740,10 +1740,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   char *rec_dmn_nm_mlc=NULL; /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
 
   int dmn_in_id_var[NC_MAX_DIMS];  /* [ID] Dimension IDs array for input variable */
-
-
   int *dmn_out_id;                 /* [ID] Dimension IDs array for output variable */
-
   int fl_fmt; /* [enm] Output file format */
   int nbr_dmn_var;
 
@@ -1839,6 +1836,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     int grp_dmn_out_id;      /* [id] Group ID where dimension visible to specified group is defined */
     int rcd_lcl;             /* [rcd] Return code */
     int var_dim_id;          /* [id] Unique dimension ID */  
+    int dmn_out_id_grp[NC_MAX_DIMS];  /* [ID] Dimension IDs array in output group */ 
+    int nbr_dmn_out_grp;
 
     long dmn_sz;             /* [sng] Dimension size  */  
 
@@ -1879,6 +1878,27 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_dmn_out_id)){
       nco_def_grp_full(nc_out_id,grp_out_fll,&grp_dmn_out_id);
     } 
+
+    if(dbg_lvl_get() >= nco_dbg_crr){
+      (void)fprintf(stdout,"%s: INFO %s OUTPUT group",prg_nm_get(),fnc_nm);
+      (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
+      (void)fprintf(stdout,"\n");
+    }
+
+    /* Check output group dimensions  */
+    (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
+
+    if(dbg_lvl_get() >= nco_dbg_crr){
+      (void)fprintf(stdout,"%s: INFO %s OUTPUT group with dimension IDS/names = ",prg_nm_get(),fnc_nm);
+      for(int dmn_idx=0;dmn_idx<nbr_dmn_out_grp;dmn_idx++){
+
+        /* Get dimension name and size from ID */
+        (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[dmn_idx],dmn_nm,&dmn_sz);
+
+        (void)fprintf(stdout,"#%d '%s' size=%li",dmn_out_id_grp[dmn_idx],dmn_nm,dmn_sz);
+      }
+      (void)fprintf(stdout,"\n");
+    } /* endif dbg */
 
 
     /* Inquire if dimension defined using obtained group ID */
@@ -1984,7 +2004,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       (void)fprintf(stdout,"#%d ",dmn_out_id[dmn_idx]);
     }
     (void)fprintf(stdout,"\n");
-
   } /* endif dbg */
 
 
