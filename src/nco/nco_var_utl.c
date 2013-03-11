@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.262 2013-03-11 20:11:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.263 2013-03-11 20:30:00 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1949,13 +1949,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         dmn_sz=var_trv->var_dmn[dmn_idx].ncd->lmt_msa.dmn_cnt;
       }
 
-      
-      if(dbg_lvl_get() >= nco_dbg_crr){
-        (void)fprintf(stdout,"%s: INFO %s defining variable %s output dimension #%d: %s/%s with size=%li\n",prg_nm_get(),fnc_nm,
-          var_trv->nm_fll,dmn_idx,grp_out_fll,dmn_trv->nm,dmn_sz);
-      } /* endif dbg */
-
-
       /* At long last ... */
       if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
         (void)nco_def_dim(grp_dmn_out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+dmn_idx);
@@ -1963,6 +1956,14 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       }else{ /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
         (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
+
+      if(dbg_lvl_get() >= nco_dbg_crr){
+        (void)fprintf(stdout,"%s: INFO %s defining <%s> with dimension OUT_ID=%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
+          var_trv->nm_fll,dmn_out_id[dmn_idx],dmn_idx,dmn_trv->nm_fll,dmn_sz);
+      } /* endif dbg */
+
+
+    
 
       /* Memory management after defining current output dimension */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
