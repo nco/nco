@@ -1,18 +1,23 @@
+2013-03-11  Charlie Zender  <zender@uci.edu>
+
+	* Verify ncks dumps many NASA HDF5 and HDF-EOS5 files, though no HDF4 or HDF-EOS2 files
+
+	* Clarify NC_ENOTNC and NC_ENOTBUILT errors
+
 2013-03-10  Pedro Vicente  <pvicente@uci.edu>
 
-	* Add regression tests for order coordinates by group depth and "out of scope " coordinate
-  
-	* nco_cmp_crd_dpt() Compare two coordinate structs by group depth, used to choose the coordinate closer to variable
-    in group depth
+	* Regression tests for order coordinates by group depth and "out of scope" coordinate
+
+	* nco_cmp_crd_dpt() Compare coordinate structures by group depth
 
 2013-03-08  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add regression tests for creation of variables with ancestor group dimensions (GPE, non-GPE)
-  
-	* nco_bld_var_dmn() Assign variables dimensions to either coordinates or dimension structs
-    handle "out of scope" cases as non assigned coordinate
 
-	* Add regression test for coordinate "out of scope" (with group depth greater than the variable that uses the coordinate)
+	* nco_bld_var_dmn() Assign variable's dimensions to either coordinates or dimension structures
+	Handle "out of scope" cases as non-assigned coordinate
+
+	* Regression test for coordinate "out of scope" (group depth greater than variable that uses coordinate)
 
 2013-03-08  Charlie Zender  <zender@uci.edu>
 
