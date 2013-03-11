@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.231 2013-03-11 07:22:54 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.232 2013-03-11 18:52:19 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1443,8 +1443,8 @@ print "\n";
     $dsc_sng="Chunking --cnk_plc=cnk_g3d --cnk_dmn time,2";
     $tst_cmd[0]="ncks $nco_D_flg  -O -4  --cnk_plc=cnk_g3d --cnk_dmn time,2  -v three_dmn_rec_var  $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks -C -m -v three_dmn_rec_var %tmp_fl_00% | grep  'three_dmn_rec_var dimension 0: time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate dimension)'";
-    $tst_cmd[2]="three_dmn_rec_var dimension 0: time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate dimension)";
+    $tst_cmd[1]="ncks -C -m -v three_dmn_rec_var %tmp_fl_00% | grep  'three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate dimension)'";
+    $tst_cmd[2]="three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
      # to do    
