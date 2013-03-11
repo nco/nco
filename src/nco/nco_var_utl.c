@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.259 2013-03-10 11:47:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.260 2013-03-11 15:28:55 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1727,7 +1727,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
      Behavior until today required rec_dmn_nm even if not changing it
      As of today, rec_dmn_nm passed only when user-specified
      Otherwise, re-use old record dimension name
-     2013222: csz
+     20130222: csz
      Unify nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt_trv()
      Same routine is called with or without limits
      Routine works with GTT instead of plain names */
@@ -1979,7 +1979,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       } /* !rec_dmn_nm */ 
 
       /* Does dimension have user-specified limits?
-      Following line is only difference between defining a variable with and without limits */
+	 Following line is only difference between defining a variable with and without limits */
       if(var_trv->var_dmn[dmn_idx].is_crd_var){
         dmn_sz=var_trv->var_dmn[dmn_idx].crd->lmt_msa.dmn_cnt;
       }else {
