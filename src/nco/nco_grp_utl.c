@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.665 2013-03-11 07:26:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.666 2013-03-11 17:39:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1664,7 +1664,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
     if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
       trv_sct trv=trv_tbl->lst[var_idx];   
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(dbg_lvl_get() >= 13){
         (void)fprintf(stdout,"%s:",trv.nm_fll); 
         (void)fprintf(stdout," %d dimensions: ",trv.nbr_dmn);
       }
@@ -1678,7 +1678,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= 13){
           (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm,var_dim_id);    
           (void)fprintf(stdout,"<%s> ",dmn_nm_fll);
           (void)fprintf(stdout,"<%s><%s> ",dmn_trv->nm_fll,dmn_trv->grp_nm_fll);
@@ -1694,7 +1694,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
       }
 
-      if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"\n");
+      if(dbg_lvl_get() >= 13)(void)fprintf(stdout,"\n");
 
     } /* Filter variables  */
   } /* Variables */
