@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.268 2013-03-11 21:24:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.269 2013-03-11 22:06:13 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.268 2013-03-11 21:24:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.268 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.269 2013-03-11 22:06:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.269 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -164,6 +164,7 @@ main(int argc,char **argv)
   int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
+  int gpe_id; /* [id] Group ID of GPE path (diagnostic only) */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int grp_nbr=0; /* [nbr] Number of groups to extract */
   int idx;
@@ -784,9 +785,9 @@ main(int argc,char **argv)
           sfx_lng=4L;
           sfx_fst=fl_in_lng-sfx_lng;
           if(strncmp(fl_in+sfx_fst,".cdf",sfx_lng) && /* netCDF old-fashioned suffix */
-	     strncmp(fl_in+sfx_fst,".hdf",sfx_lng) && /* HDF4-EOS2 suffix used by AIRS, AMSR-E, MODIS, e.g., AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf, MSR_E_L2_Rain_V10_200905312326_A.hdf, MOD10CM.A2007001.005.2007108111758.hdf */
-	     strncmp(fl_in+sfx_fst,".HDF",sfx_lng) && /* HDF4-EOS2 suffix used by TRMM, e.g.,  */
-	     strncmp(fl_in+sfx_fst,".he5",sfx_lng) && /* HDF5-EOS5 suffix used by HIRDLS, e.g., HIRDLS-Aura_L3ZAD_v06-00-00-c02_2005d022-2008d077.he5 */
+	     strncmp(fl_in+sfx_fst,".hdf",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by AIRS, AMSR-E, MODIS, e.g., AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf, MSR_E_L2_Rain_V10_200905312326_A.hdf, MOD10CM.A2007001.005.2007108111758.hdf */
+	     strncmp(fl_in+sfx_fst,".HDF",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by TRMM, e.g., 3B43.070901.6A.HDF */
+	     strncmp(fl_in+sfx_fst,".he5",sfx_lng) && /* HDF-EOS5 (HDF5) suffix used by HIRDLS, e.g., HIRDLS-Aura_L3ZAD_v06-00-00-c02_2005d022-2008d077.he5 */
 	     strncmp(fl_in+sfx_fst,".nc3",sfx_lng) && /* netCDF3 variant suffix */
 	     strncmp(fl_in+sfx_fst,".nc4",sfx_lng)){ /* netCDF4 variant suffix */
               (void)fprintf(stderr,"%s: WARNING GAG filename suffix is unusual---using whole filename as group name\n",prg_nm_get());
@@ -800,12 +801,17 @@ main(int argc,char **argv)
         gpe_arg=(char *)nco_malloc((gpe_arg_lng+1L)*sizeof(char));
         gpe_arg=strncpy(gpe_arg,stb_srt_psn,strlen(stb_srt_psn)-sfx_lng);
         gpe_arg[gpe_arg_lng]='\0';
+
+	/* GPE arguments derived from filenames check for existence of path in output file */
+	rcd=nco_inq_grp_full_ncid_flg(out_id,gpe_arg,&gpe_id);
+	/* Existence implies the current file may overwrite contents of previous file */
+	if(rcd == NC_NOERR) (void)fprintf(stderr,"%s: WARNING GAG path \"%s\" automatically derived from stub of filename %s conflicts with existing path in output file. Any input data with same absolute path names as contents of a previous input file will be overwritten. Is the same input file specified multiple times? Is this intentional?\nHINT: To distribute copies of a single input file into different groups, use GPE to generate distinct output group names, e.g., %s -G copy in.nc in.nc out.nc\n",prg_nm_get(),gpe_arg,fl_in,prg_nm_get());
       } /* !grp_out */
       /* Free old structure, if any, before re-use */
       if(gpe) nco_gpe_free(gpe);
       gpe=nco_gpe_prs_arg(gpe_arg);
       gpe_arg=(char *)nco_free(gpe_arg);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file has gpe->arg=%s\n",prg_nm_get(),gpe_arg);
+      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file has gpe->arg=%s\n",prg_nm_get(),gpe->arg);
 
       /* Open file using appropriate buffer size hints and verbosity */
       if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;

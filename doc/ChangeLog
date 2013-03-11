@@ -1,5 +1,7 @@
 2013-03-11  Charlie Zender  <zender@uci.edu>
 
+	* ncecat warn when automatically generated GPE paths conflict during GAG
+
 	* Verify ncks dumps many NASA HDF5 and HDF-EOS5 files, though no HDF4 or HDF-EOS2 files
 
 	* Clarify NC_ENOTNC and NC_ENOTBUILT errors
