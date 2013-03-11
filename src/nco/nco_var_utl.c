@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.266 2013-03-11 22:54:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.267 2013-03-11 23:04:40 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1885,7 +1885,13 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       (void)fprintf(stdout,"\n");
     }
 
-    /* Check output group dimensions  */
+    /* Check if dimension needs to be defined */
+    nco_bool need_to_define_dim=False;
+
+    /* Inquire if dimension defined using obtained group ID */
+    rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
+
+     /* Check output group (only) dimensions  */
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
 
     if(dbg_lvl_get() >= nco_dbg_crr){
@@ -1901,8 +1907,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* endif dbg */
 
 
-    /* Inquire if dimension defined using obtained group ID */
-    rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
 
     if(dbg_lvl_get() >= nco_dbg_crr){
       if (rcd_lcl == NC_NOERR) 
