@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.664 2013-03-11 07:22:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.665 2013-03-11 07:26:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3036,16 +3036,6 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
   return False;
 } /* nco_var_dmn_scp() */
-
-
-#if 0
-int compare(const void *a, const void *b) {
-    const INPUT **p1 = a;
-    const INPUT **p2 = b;
-    return (((*p1)->startTime) - ((*p2)->startTime));
-}
-
-#endif
 
 
 int                                  /* O [nbr] Comparison result */
