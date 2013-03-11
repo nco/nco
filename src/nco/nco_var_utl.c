@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.264 2013-03-11 21:00:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.265 2013-03-11 21:34:29 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1959,12 +1959,10 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 
       if(dbg_lvl_get() >= nco_dbg_crr){
-        (void)fprintf(stdout,"%s: INFO %s defining <%s> with dimension OUT_ID=%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
-          var_trv->nm_fll,dmn_out_id[dmn_idx],dmn_idx,dmn_trv->nm_fll,dmn_sz);
+        (void)fprintf(stdout,"%s: INFO %s defining dimension OUT_ID=%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
+          dmn_out_id[dmn_idx],dmn_idx,dmn_trv->nm_fll,dmn_sz);
       } /* endif dbg */
 
-
-    
 
       /* Memory management after defining current output dimension */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
@@ -1978,6 +1976,17 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* end if err */
 
   } /* end loop over dimensions */
+
+
+  if(dbg_lvl_get() >= nco_dbg_crr){
+    (void)fprintf(stdout,"%s: INFO %s DEFINING variable <%s> with dimension IDS = ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+      (void)fprintf(stdout,"#%d ",dmn_out_id[dmn_idx]);
+    }
+    (void)fprintf(stdout,"\n");
+
+  } /* endif dbg */
+
 
   /* Define variable in output file */
   (void)nco_def_var(grp_out_id,var_nm,var_typ,nbr_dmn_var,dmn_out_id,&var_out_id);
