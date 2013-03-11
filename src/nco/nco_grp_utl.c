@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.667 2013-03-11 18:42:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.668 2013-03-11 19:13:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1662,29 +1662,26 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
     /* Filter variables  */
     if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
-      trv_sct trv=trv_tbl->lst[var_idx];   
+      trv_sct var_trv=trv_tbl->lst[var_idx];   
 
       if(dbg_lvl_get() >= 13){
-        (void)fprintf(stdout,"%s:",trv.nm_fll); 
-        (void)fprintf(stdout," %d dimensions: ",trv.nbr_dmn);
+        (void)fprintf(stdout,"%s:",var_trv.nm_fll); 
+        (void)fprintf(stdout," %d dimensions:\n",var_trv.nbr_dmn);
       }
 
       /* Full dimension names for each variable */
-      for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++){
+      for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++){
 
-        int var_dim_id=trv.var_dmn[dmn_idx_var].dim_id;
-        char* dmn_nm_fll=nco_dmn_fll_nm_id(var_dim_id,trv_tbl);
+        int var_dim_id=var_trv.var_dmn[dmn_idx_var].dim_id;
 
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
         if(dbg_lvl_get() >= 13){
-          (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm,var_dim_id);    
-          (void)fprintf(stdout,"<%s> ",dmn_nm_fll);
-          (void)fprintf(stdout,"<%s><%s> ",dmn_trv->nm_fll,dmn_trv->grp_nm_fll);
+          (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm,var_dim_id);    
+          (void)fprintf(stdout,"<%s>\n",dmn_trv->nm_fll);
         }
-        assert(strcmp(dmn_nm_fll,dmn_trv->nm_fll) == 0);
-	assert(strcmp(trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) == 0);
+        assert(strcmp(var_trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) == 0);
 
         /* Store full dimension name  */
         trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].dmn_nm_fll=strdup(dmn_trv->nm_fll);
@@ -1693,8 +1690,6 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].grp_nm_fll=strdup(dmn_trv->grp_nm_fll);
 
       }
-
-      if(dbg_lvl_get() >= 13)(void)fprintf(stdout,"\n");
 
     } /* Filter variables  */
   } /* Variables */
