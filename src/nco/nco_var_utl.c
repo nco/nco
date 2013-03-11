@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.261 2013-03-11 20:08:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.262 2013-03-11 20:11:13 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1854,7 +1854,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
     if(dbg_lvl_get() >= nco_dbg_crr){
-      (void)fprintf(stdout,"%s: INFO %s obtained unique dimension #%d <%s>",prg_nm_get(),fnc_nm,
+      (void)fprintf(stdout,"%s: INFO %s obtained unique dimension #%d <%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
     }
 
@@ -1870,7 +1870,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
 
     if(dbg_lvl_get() >= nco_dbg_crr){
-      (void)fprintf(stdout,"%s: INFO %s to be defined in <%s>",prg_nm_get(),fnc_nm,
+      (void)fprintf(stdout,"%s: INFO %s to be defined in <%s>\n",prg_nm_get(),fnc_nm,
         grp_out_fll);
     }
 
