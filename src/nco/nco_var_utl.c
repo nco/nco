@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.269 2013-03-11 23:29:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.270 2013-03-12 00:09:01 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1925,23 +1925,31 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
     if(dbg_lvl_get() >= nco_dbg_crr){
       if (rcd_lcl == NC_NOERR) 
-        (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with existing dimension #%d<%s> in ",prg_nm_get(),fnc_nm,
-          var_trv->nm_fll,var_dim_id,dmn_trv->nm_fll);
+        (void)fprintf(stdout,"%s: INFO %s dimension is visible  #%d<%s> in ",prg_nm_get(),fnc_nm,
+        var_dim_id,dmn_trv->nm_fll);
       else
-        (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with *NOT* defined dimension #%d<%s> in",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,var_dim_id,dmn_trv->nm_fll);        
-
+        (void)fprintf(stdout,"%s: INFO %s dimesnion is NOT visible #%d<%s> in",prg_nm_get(),fnc_nm,
+        var_dim_id,dmn_trv->nm_fll);        
       (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
       (void)fprintf(stdout,"\n");
     } /* endif dbg */
 
 
     /* Define dimension in output file if necessary */
-#if 1
+#if 0
     if(rcd_lcl != NC_NOERR){
 #else
     if (need_to_define_dim == True){
 #endif
+
+
+      if(dbg_lvl_get() >= nco_dbg_crr){
+        (void)fprintf(stdout,"%s: INFO %s defining dimension '%s' in",prg_nm_get(),fnc_nm,
+          dmn_nm);        
+        (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
+        (void)fprintf(stdout,"\n");
+      } /* endif dbg */
+
 
       /* Here begins a complex tree to decide a simple, binary output:
       Will current input dimension be defined as an output record dimension or as a fixed dimension?
