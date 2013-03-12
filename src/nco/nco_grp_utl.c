@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.669 2013-03-11 23:09:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.670 2013-03-12 02:01:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1707,6 +1707,8 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 {
   /* Purpose: Populate traversal table by examining, recursively, subgroups of parent */
 
+  const char fnc_nm[]="nco_grp_itr()"; /* [sng] Function name */
+
   const char sls_sng[]="/"; /* [sng] Slash string */
 
   char grp_nm[NC_MAX_NAME+1]; /* [sng] Group name */
@@ -1923,6 +1925,11 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dim_id=dmn_id_var[dmn_idx_var];
+
+      if(dbg_lvl_get() >= 13){
+        (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension #%d'%s'\n",prg_nm_get(),fnc_nm,
+          var_nm_fll,dmn_id_var[dmn_idx_var],dmn_nm_var);
+      }
     }
  
     /* Free constructed name */

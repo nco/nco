@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.270 2013-03-12 00:09:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.271 2013-03-12 02:01:20 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1830,30 +1830,33 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* Get input and set output dimension sizes and names */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
-    char *grp_out_fll;       /* [sng] Group name of dimension in output */
-    char dmn_nm[NC_MAX_NAME];/* [sng] Dimension name  */   
+    char *grp_out_fll;               /* [sng] Group name of dimension in output */
+    char dmn_nm[NC_MAX_NAME];        /* [sng] Dimension names  */
+    char dmn_nm_grp[NC_MAX_NAME];    /* [sng] Dimension names for group */  
  
-    int grp_dmn_out_id;      /* [id] Group ID where dimension visible to specified group is defined */
-    int rcd_lcl;             /* [rcd] Return code */
-    int var_dim_id;          /* [id] Unique dimension ID */  
-    int dmn_out_id_grp[NC_MAX_DIMS];  /* [ID] Dimension IDs array in output group */ 
+    int grp_dmn_out_id;              /* [id] Group ID where dimension visible to specified group is defined */
+    int rcd_lcl;                     /* [rcd] Return code */
+    int var_dim_id;                  /* [id] Unique dimension ID */  
+    int dmn_out_id_grp[NC_MAX_DIMS]; /* [ID] Dimension IDs array in output group */ 
     int nbr_dmn_out_grp;
 
-    long dmn_sz;             /* [sng] Dimension size  */  
+    long dmn_sz;                     /* [sng] Dimension size  */  
+    long dmn_sz_grp;                 /* [sng] Dimension size for group  */  
 
-    char dmn_nm_grp[NC_MAX_NAME];/* [sng] Dimension name  */  
+    dmn_trv_sct *dmn_trv;            /* [sct] Unique dimension object */   
 
-    long dmn_sz_grp;             /* [sng] Dimension size  */  
+    nco_bool need_to_define_dim;     /* [flg] Dimension needs to be defined in *this* group */  
 
-    dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */   
+    /* Dimension needs to be defined in *this* group? Assume yes... */
+    need_to_define_dim=True;
 
-    /* Get dimension name and size from ID */
+    /* Get dimension name and size from ID in *input* group */
     (void)nco_inq_dim(grp_in_id,dmn_in_id_var[dmn_idx],dmn_nm,&dmn_sz);
 
-    /* Unique dimension ID */
+    /* Unique dimension ID  */
     var_dim_id=dmn_in_id_var[dmn_idx];
 
-    /* Get unique dimension object from unique dimension ID */
+    /* Get unique dimension object from unique dimension ID, in *input* list */
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
     if(dbg_lvl_get() >= nco_dbg_crr){
@@ -1877,7 +1880,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         grp_out_fll);
     }
 
-
     /* Test existence of group and create if not existent */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_dmn_out_id)){
       nco_def_grp_full(nc_out_id,grp_out_fll,&grp_dmn_out_id);
@@ -1889,11 +1891,21 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       (void)fprintf(stdout,"\n");
     }
 
-    /* Check if dimension needs to be defined */
-    nco_bool need_to_define_dim=True;
 
-    /* Inquire if dimension defined using obtained group ID */
+    /* Inquire if dimension defined in output using obtained group ID (return value not used in the logic) */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
+
+    if(dbg_lvl_get() >= nco_dbg_crr){
+      if (rcd_lcl == NC_NOERR) 
+        (void)fprintf(stdout,"%s: INFO %s dimension is visible (by parents or group) #%d<%s> in ",prg_nm_get(),fnc_nm,
+        var_dim_id,dmn_trv->nm_fll);
+      else
+        (void)fprintf(stdout,"%s: INFO %s dimesnion is NOT visible (by parents or group) #%d<%s> in",prg_nm_get(),fnc_nm,
+        var_dim_id,dmn_trv->nm_fll);        
+      (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
+      (void)fprintf(stdout,"\n");
+    } /* endif dbg */
+
 
     /* Check output group (only) dimensions  */
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
@@ -1912,6 +1924,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         (void)fprintf(stdout,"#%d '%s' size=%li\n",dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,dmn_sz_grp);
       }
 
+      /* A relative name for variable and group exists fro this group...the dimension is already defined */
       if(strcmp(dmn_nm_grp,dmn_nm) == 0){
 
         need_to_define_dim=False;
@@ -1923,25 +1936,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* Loop group defined dimensions */
 
 
-    if(dbg_lvl_get() >= nco_dbg_crr){
-      if (rcd_lcl == NC_NOERR) 
-        (void)fprintf(stdout,"%s: INFO %s dimension is visible  #%d<%s> in ",prg_nm_get(),fnc_nm,
-        var_dim_id,dmn_trv->nm_fll);
-      else
-        (void)fprintf(stdout,"%s: INFO %s dimesnion is NOT visible #%d<%s> in",prg_nm_get(),fnc_nm,
-        var_dim_id,dmn_trv->nm_fll);        
-      (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
-      (void)fprintf(stdout,"\n");
-    } /* endif dbg */
-
-
     /* Define dimension in output file if necessary */
-#if 0
-    if(rcd_lcl != NC_NOERR){
-#else
     if (need_to_define_dim == True){
-#endif
-
 
       if(dbg_lvl_get() >= nco_dbg_crr){
         (void)fprintf(stdout,"%s: INFO %s defining dimension '%s' in",prg_nm_get(),fnc_nm,
