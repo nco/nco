@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.271 2013-03-12 02:01:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.272 2013-03-12 03:24:17 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1719,42 +1719,43 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
-     Routine is based on nco_cpy_var_dfn_lmt(), and differs trivially from it
-     Should perhaps be merged into one call that always takes lmt_all_lst information?
-     Routine truncates dimensions in variable definition in output file according to user-specified limits
-     Routine copies_variable by variable, old-style, used only by ncks
-     20130126: csz 
-     Behavior until today required rec_dmn_nm even if not changing it
-     As of today, rec_dmn_nm passed only when user-specified
-     Otherwise, re-use old record dimension name
-     20130222: csz
-     Unify nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt_trv()
-     Same routine is called with or without limits
-     Routine works with GTT instead of plain names */
-  
+  Routine is based on nco_cpy_var_dfn_lmt(), and differs trivially from it
+  Should perhaps be merged into one call that always takes lmt_all_lst information?
+  Routine truncates dimensions in variable definition in output file according to user-specified limits
+  Routine copies_variable by variable, old-style, used only by ncks
+  20130126: csz 
+  Behavior until today required rec_dmn_nm even if not changing it
+  As of today, rec_dmn_nm passed only when user-specified
+  Otherwise, re-use old record dimension name
+  20130222: csz
+  Unify nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt_trv()
+  Same routine is called with or without limits
+  Routine works with GTT instead of plain names */
+
   const char fnc_nm[]="nco_cpy_var_dfn()"; /* [sng] Function name */
 
   char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 
+  char *rec_dmn_nm=NULL;           /* [sng] User-specified record dimension name */
+  char *rec_dmn_nm_mlc=NULL;       /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
 
-  char *rec_dmn_nm=NULL; /* [sng] User-specified record dimension name */
-  char *rec_dmn_nm_mlc=NULL; /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
+  int dmn_in_id_var[NC_MAX_DIMS];  /* [id] Dimension IDs array for input variable */
+  int dmn_out_id[NC_MAX_DIMS];     /* [id] Dimension IDs array for output variable */
+  int rec_dmn_out_id;              /* [id] Record dimension for output variable */
+  int var_in_id;                   /* [id] Variable ID */
+  int var_out_id;                  /* [id] Variable ID */
+  int fl_fmt;                      /* [enm] Output file format */
+  int nbr_dmn_var;                 /* [nbr] Number of dimensions for variable */
+  int rcd=NC_NOERR;                /* [rcd] Return code */
 
-  int dmn_in_id_var[NC_MAX_DIMS];  /* [ID] Dimension IDs array for input variable */
-  int *dmn_out_id;                 /* [ID] Dimension IDs array for output variable */
-  int fl_fmt; /* [enm] Output file format */
-  int nbr_dmn_var;
-
-  int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
-
-  int var_in_id;
-  int var_out_id;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-
-  nc_type var_typ;
+  nc_type var_typ;                 /* [enm] netCDF type */
 
   nco_bool CRR_DMN_IS_REC_IN_INPUT; /* [flg] Current dimension of variable is record dimension of variable in input file/group */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
   nco_bool FIX_REC_DMN=False; /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
+
+  rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
+
+  for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++)dmn_out_id[dmn_idx]=nco_obj_typ_err;
 
   /* Local copy of object name */ 
   strcpy(var_nm,var_trv->nm);       
@@ -1779,9 +1780,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   var_typ=var_trv->var_typ;
   nbr_dmn_var=var_trv->nbr_dmn;
-
-  /* Allocate space to hold dimension IDs */
-  dmn_out_id=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
 
   /* Get dimension IDs for *variable* */
   (void)nco_inq_vardimid(grp_in_id,var_in_id,dmn_in_id_var);
@@ -1833,12 +1831,13 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     char *grp_out_fll;               /* [sng] Group name of dimension in output */
     char dmn_nm[NC_MAX_NAME];        /* [sng] Dimension names  */
     char dmn_nm_grp[NC_MAX_NAME];    /* [sng] Dimension names for group */  
- 
+
     int grp_dmn_out_id;              /* [id] Group ID where dimension visible to specified group is defined */
     int rcd_lcl;                     /* [rcd] Return code */
-    int var_dim_id;                  /* [id] Unique dimension ID */  
-    int dmn_out_id_grp[NC_MAX_DIMS]; /* [ID] Dimension IDs array in output group */ 
-    int nbr_dmn_out_grp;
+    int var_dim_id;                  /* [id] Variable dimension ID */  
+    int dmn_out_id_grp[NC_MAX_DIMS]; /* [id] Dimension IDs array in output group */ 
+    int dmn_id_out;                  /* [id] Dimension ID defined in outout group */  
+    int nbr_dmn_out_grp;             /* [id] Number of dimensions in group */  
 
     long dmn_sz;                     /* [sng] Dimension size  */  
     long dmn_sz_grp;                 /* [sng] Dimension size for group  */  
@@ -1847,16 +1846,19 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
     nco_bool need_to_define_dim;     /* [flg] Dimension needs to be defined in *this* group */  
 
+    /* Initialize dimension ID to be obtained */
+    dmn_id_out=nco_obj_typ_err;
+
     /* Dimension needs to be defined in *this* group? Assume yes... */
     need_to_define_dim=True;
 
     /* Get dimension name and size from ID in *input* group */
     (void)nco_inq_dim(grp_in_id,dmn_in_id_var[dmn_idx],dmn_nm,&dmn_sz);
 
-    /* Unique dimension ID  */
+    /* Dimension ID for variable, used to get dimension object in input list  */
     var_dim_id=dmn_in_id_var[dmn_idx];
 
-    /* Get unique dimension object from unique dimension ID, in *input* list */
+    /* Get unique dimension object from unique dimension ID, in input list */
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
     if(dbg_lvl_get() >= nco_dbg_crr){
@@ -1886,24 +1888,21 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } 
 
     if(dbg_lvl_get() >= nco_dbg_crr){
-      (void)fprintf(stdout,"%s: INFO %s OUTPUT group",prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: INFO %s OUTPUT group ",prg_nm_get(),fnc_nm);
       (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
       (void)fprintf(stdout,"\n");
     }
 
-
     /* Inquire if dimension defined in output using obtained group ID (return value not used in the logic) */
-    rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,dmn_out_id+dmn_idx);
+    rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,&dmn_id_out);
 
     if(dbg_lvl_get() >= nco_dbg_crr){
       if (rcd_lcl == NC_NOERR) 
-        (void)fprintf(stdout,"%s: INFO %s dimension is visible (by parents or group) #%d<%s> in ",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: INFO %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
       else
-        (void)fprintf(stdout,"%s: INFO %s dimesnion is NOT visible (by parents or group) #%d<%s> in",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: INFO %s dimesnion is NOT visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);        
-      (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
-      (void)fprintf(stdout,"\n");
     } /* endif dbg */
 
 
@@ -1929,6 +1928,9 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
         need_to_define_dim=False;
 
+        /* Assign the defined ID to the dimension ID array for the variable */
+        dmn_out_id[dmn_idx]=dmn_out_id_grp[dmn_idx_grp];
+
         if(dbg_lvl_get() >= nco_dbg_crr){
           (void)fprintf(stdout,"No need to define '%s'\n",dmn_nm_grp);
         }
@@ -1940,7 +1942,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     if (need_to_define_dim == True){
 
       if(dbg_lvl_get() >= nco_dbg_crr){
-        (void)fprintf(stdout,"%s: INFO %s defining dimension '%s' in",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: INFO %s defining dimension '%s' in ",prg_nm_get(),fnc_nm,
           dmn_nm);        
         (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
         (void)fprintf(stdout,"\n");
@@ -1999,15 +2001,27 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
       /* At long last ... */
       if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
-        (void)nco_def_dim(grp_dmn_out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+dmn_idx);
-        rec_dmn_out_id=dmn_out_id[dmn_idx];
+
+        /* Define dimension and obtain dimension ID */
+        (void)nco_def_dim(grp_dmn_out_id,dmn_nm,NC_UNLIMITED,&dmn_id_out);
+
+        /* Assign the defined ID to the dimension ID array for the variable */
+        dmn_out_id[dmn_idx]=dmn_id_out;
+
+        rec_dmn_out_id=dmn_id_out;
       }else{ /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
-        (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,dmn_out_id+dmn_idx);
+
+        /* Define dimension and obtain dimension ID */
+        (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);
+
+        /* Assign the defined ID to the dimension ID array for the variable */
+        dmn_out_id[dmn_idx]=dmn_id_out;
+
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 
       if(dbg_lvl_get() >= nco_dbg_crr){
         (void)fprintf(stdout,"%s: INFO %s defining dimension OUT_ID=%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
-          dmn_out_id[dmn_idx],dmn_idx,dmn_trv->nm_fll,dmn_sz);
+          dmn_id_out,dmn_idx,dmn_trv->nm_fll,dmn_sz);
       } /* endif dbg */
 
 
@@ -2057,7 +2071,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* Free locally allocated space */
   if(rec_dmn_nm_mlc) rec_dmn_nm_mlc=(char *)nco_free(rec_dmn_nm_mlc);
-  if(dmn_out_id) dmn_out_id=(int *)nco_free(dmn_out_id);
 
   return var_out_id;
 } /* end nco_cpy_var_dfn() */
