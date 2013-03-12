@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.670 2013-03-12 02:01:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.671 2013-03-12 04:14:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1585,12 +1585,12 @@ nco_prt_dmn /* [fnc] Print dimensions for a group  */
     for(int dnm_ult_idx=0;dnm_ult_idx<nbr_dmn_ult;dnm_ult_idx++){ 
       if(dmn_ids[dnm_idx] == dmn_ids_ult[dnm_ult_idx]){ 
         is_rec_dim=True;
-        (void)fprintf(stdout," record dimension: %s(%li)\n",dmn_nm,dmn_sz);
+        (void)fprintf(stdout," #%d record dimension: '%s'(%li)\n",dmn_ids[dnm_idx],dmn_nm,dmn_sz);
       } /* end if */
     } /* end dnm_ult_idx dimensions */
 
     /* An unlimited ID was not matched, so dimension is a plain vanilla dimension */
-    if(!is_rec_dim) (void)fprintf(stdout," dimension: %s(%li)\n",dmn_nm,dmn_sz);
+    if(!is_rec_dim) (void)fprintf(stdout," #%d dimension: '%s'(%li)\n",dmn_ids[dnm_idx],dmn_nm,dmn_sz);
 
   } /* end dnm_idx dimensions */
 } /* end nco_prt_dmn() */
@@ -1657,7 +1657,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
   const char fnc_nm[]="nco_bld_dmn_ids_trv()"; /* [sng] Function name  */
 
   /* Loop objects  */
-  if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
+  if(dbg_lvl_get() >= 13)(void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
 
     /* Filter variables  */
@@ -2303,7 +2303,12 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
       /* Full dimension names for each variable */
       for(int dmn_idx_var=0;dmn_idx_var<trv.nbr_dmn;dmn_idx_var++){
-        (void)fprintf(stdout,"[%d]%s#%d",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm_fll,trv.var_dmn[dmn_idx_var].dim_id); 
+
+        /* Table can be printed before full dimension names are known, while debugging; in this case use relative name */
+        if (trv.var_dmn[dmn_idx_var].dmn_nm_fll != NULL)
+          (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm_fll,trv.var_dmn[dmn_idx_var].dim_id); 
+        else
+          (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,trv.var_dmn[dmn_idx_var].dmn_nm,trv.var_dmn[dmn_idx_var].dim_id); 
 
         /* Filter output */
         if (trv.var_dmn[dmn_idx_var].is_crd_var == True) (void)fprintf(stdout," (coordinate) : ");
@@ -2377,6 +2382,9 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Construct traversal table objects (groups,variables) */
   (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
+
+  /* Print table in debug mode */
+  if(dbg_lvl_get() >= 13)(void)nco_prt_trv_tbl(nc_id,trv_tbl);
 
   /* Build dimension info for all variables (match dimension IDs) */
   (void)nco_bld_dmn_ids_trv(trv_tbl);
