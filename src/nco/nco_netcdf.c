@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.190 2013-03-13 22:49:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.191 2013-03-13 22:52:37 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1035,9 +1035,7 @@ nco_inq_dimid2(int ncid,const char *dmn_nm_fll,int *dmn_id)
   }	
 
   return ret;
-}
-
-
+} /* end nco_inq_dimid2() */
 
 /* End Dimension routines */
 
