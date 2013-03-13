@@ -1,3 +1,7 @@
+2013-03-13  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_inq_dimid2() Get unique dimension ID from a full dimension path name that may include group names 
+
 2013-03-11  Charlie Zender  <zender@uci.edu>
 
 	* ncecat remove lmt_all structure code from GAG branch
