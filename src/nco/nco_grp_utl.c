@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.671 2013-03-12 04:14:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.672 2013-03-13 20:56:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1646,7 +1646,8 @@ nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name
 
 void                          
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */
-(trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: a netCDF4 variable can have its dimensions located anywhere below *in the group path*
   Construction of this list *must* be done after traversal table is build in nco_grp_itr(),
@@ -1681,7 +1682,45 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
           (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm,var_dim_id);    
           (void)fprintf(stdout,"<%s>\n",dmn_trv->nm_fll);
         }
-        assert(strcmp(var_trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) == 0);
+        if (strcmp(var_trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) != 0){
+
+
+        /*      
+        Test case generates duplicated dimension IDs in netCDF file
+
+        ncks -O  -v two_dmn_rec_var in_grp.nc out.nc
+
+        dimensions:
+        #0,time = UNLIMITED ; // (10 currently)
+        #1,lev = 3 ;
+        #4,vrt_nbr = 2 ;
+
+        group: g8 {
+        dimensions:
+        #0,lev = 3 ;
+        #1,vrt_nbr = 2 ;
+
+        From: "Unidata netCDF Support" <support-netcdf@unidata.ucar.edu>
+        To: <pvicente@uci.edu>
+        Sent: Tuesday, March 12, 2013 5:02 AM
+        Subject: [netCDF #SHH-257980]: Re: [netcdfgroup] Dimensions IDs
+
+        > Your Ticket has been received, and a Unidata staff member will review it and reply accordingly. Listed below are details of this new Ticket. Please make sure the Ticket ID remains in the Subject: line on all correspondence related to this Ticket.
+        > 
+        >    Ticket ID: SHH-257980
+        >    Subject: Re: [netcdfgroup] Dimensions IDs
+        >    Department: Support netCDF
+        >    Priority: Normal
+        >    Status: Open
+
+        */
+
+
+          (void)fprintf(stdout,"%s: ERROR netCDF file with duplicated dimension IDs detected. Contact help http://sourceforge.net/projects/nco/\n",prg_nm_get());
+          (void)nco_prt_trv_tbl(nc_id,trv_tbl);
+          nco_exit(EXIT_FAILURE);
+        }
+
 
         /* Store full dimension name  */
         trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].dmn_nm_fll=strdup(dmn_trv->nm_fll);
@@ -2387,7 +2426,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(dbg_lvl_get() >= 13)(void)nco_prt_trv_tbl(nc_id,trv_tbl);
 
   /* Build dimension info for all variables (match dimension IDs) */
-  (void)nco_bld_dmn_ids_trv(trv_tbl);
+  (void)nco_bld_dmn_ids_trv(nc_id,trv_tbl);
 
   /* Build "is_crd_var" and "is_rec_var" members for all variables */
   (void)nco_bld_crd_rec_var_trv(trv_tbl);
