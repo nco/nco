@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.191 2013-03-13 22:52:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.192 2013-03-13 23:39:35 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1011,29 +1011,42 @@ nco_inq_dimid2(int ncid,const char *dmn_nm_fll,int *dmn_id)
 
   Missing functionality that should be in nc_inq_dimid(), to get
   dimid from a full dimension path name that may include group names 
+
+  Changes from nc_inq_dimid2()
+
+  NCO path names have a leading /; remove it
   */
 
   int ret=NC_NOERR;
+  char *dmn_nm_fll_cp;
+
+  dmn_nm_fll_cp=strdup(dmn_nm_fll);
+
+  if (dmn_nm_fll_cp[0] == '/'){
+    dmn_nm_fll_cp++;
+  }
 
   /* If '/' doesn't occur in dimname, just return id found by nc_inq_dimid() */
-  const char *sp=strrchr(dmn_nm_fll,'/');
+  const char *sp=strrchr(dmn_nm_fll_cp,'/');
   if(!sp) {
-    ret=nc_inq_dimid(ncid,dmn_nm_fll,dmn_id);
+    ret=nc_inq_dimid(ncid,dmn_nm_fll_cp,dmn_id);
   } 
 
   else {  /* Parse group name out and get dimid using that */
-    size_t grp_nm_lng=sp-dmn_nm_fll;
+    size_t grp_nm_lng=sp-dmn_nm_fll_cp;
     char *grp_nm=(char *)malloc(grp_nm_lng+1);
     int grp_id;
-    strncpy(grp_nm,dmn_nm_fll,grp_nm_lng);
+    strncpy(grp_nm,dmn_nm_fll_cp,grp_nm_lng);
     grp_nm[grp_nm_lng]='\0';
     ret=nc_inq_grp_full_ncid(ncid,grp_nm,&grp_id);
     if(ret==NC_NOERR){
-      ret=nc_inq_dimid(grp_id,dmn_nm_fll,dmn_id);
+      ret=nc_inq_dimid(grp_id,dmn_nm_fll_cp,dmn_id);
     }
     free(grp_nm);
   }	
 
+  dmn_nm_fll_cp--;
+  free(dmn_nm_fll_cp);
   return ret;
 } /* end nco_inq_dimid2() */
 

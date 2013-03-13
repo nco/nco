@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.275 2013-03-13 21:16:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.276 2013-03-13 23:39:35 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1864,6 +1864,15 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     if(dbg_lvl_get() >= 13){
       (void)fprintf(stdout,"%s: INFO %s obtained unique dimension #%d <%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
+
+      int dmn_id;
+
+      /* Get dimension ID using dimension full name */
+      (void)nco_inq_dimid2(nc_id,dmn_trv->nm_fll,&dmn_id);
+
+      (void)fprintf(stdout,"%s: INFO %s obtained unique dimension #%d <%s>\n",prg_nm_get(),fnc_nm,
+        dmn_id,dmn_trv->nm_fll);
+
     }
 
     /* Test group existence before testing dimension existence */
