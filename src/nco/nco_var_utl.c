@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.272 2013-03-12 03:24:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.273 2013-03-13 19:06:07 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1923,7 +1923,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         (void)fprintf(stdout,"#%d '%s' size=%li\n",dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,dmn_sz_grp);
       }
 
-      /* A relative name for variable and group exists fro this group...the dimension is already defined */
+      /* A relative name for variable and group exists for this group...the dimension is already defined */
       if(strcmp(dmn_nm_grp,dmn_nm) == 0){
 
         need_to_define_dim=False;
