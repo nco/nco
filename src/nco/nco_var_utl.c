@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.274 2013-03-13 19:09:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.275 2013-03-13 21:16:36 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2020,7 +2020,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 
       if(dbg_lvl_get() >= 13){
-        (void)fprintf(stdout,"%s: INFO %s defining dimension OUT_ID=%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: INFO %s defining dimension #%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
           dmn_id_out,dmn_idx,dmn_trv->nm_fll,dmn_sz);
       } /* endif dbg */
 

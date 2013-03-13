@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.672 2013-03-13 20:56:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.673 2013-03-13 21:16:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1689,6 +1689,17 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         Test case generates duplicated dimension IDs in netCDF file
 
         ncks -O  -v two_dmn_rec_var in_grp.nc out.nc
+
+        nco_cpy_var_dfn() defines new dimesions for the file, as
+
+        ncks: INFO nco_cpy_var_dfn() defining dimensions
+        ID=0 index [0]:</time> 
+        ID=1 index [1]:</lev> 
+        ID=2 index [0]:</g8/lev> 
+        ID=3 index [1]:</g8/vrt_nbr> 
+        ID=4 index [1]:</vrt_nbr> 
+
+        but the resulting file, when read, has the following IDs
 
         dimensions:
         #0,time = UNLIMITED ; // (10 currently)
