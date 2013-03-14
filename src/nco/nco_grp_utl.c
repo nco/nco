@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.674 2013-03-13 23:39:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.675 2013-03-14 21:33:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3304,3 +3304,70 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
 
 
+void                          
+nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (Group Traversal Table) for debugging  */
+(const int nc_id,                    /* I [ID] File ID */
+ const trv_tbl_sct * const trv_tbl)  /* I [sct] GTT (Group Traversal Table) */
+{
+
+  const char fnc_nm[]="nco_wrt_trv_tbl()"; /* [sng] Function name  */
+
+  int nbr_dmn_var;             /* [nbr] Number of variables in group */
+  int grp_id;                  /* [id] Group ID */
+  int var_id;                  /* [id] Variable ID */
+  int dmn_id_var[NC_MAX_DIMS]; /* [id] Dimensions IDs array for variable */
+
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    /* If object is an extracted variable... */ 
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+
+      if(dbg_lvl_get() >= 14){
+        (void)fprintf(stdout,"%s: INFO %s variable <%s>",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
+      } /* endif dbg */
+
+
+      /* Obtain group ID where variable is located using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+
+      /* Obtain variable ID */
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+
+      /* Get type of variable and number of dimensions */
+      (void)nco_inq_var(grp_id,var_id,(char *)NULL,(nc_type *)NULL,&nbr_dmn_var,(int *)NULL,(int *)NULL);
+
+      /* Get dimension IDs for variable */
+      (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
+
+      if(dbg_lvl_get() >= 14){
+        (void)fprintf(stdout," %d dimensions: ",nbr_dmn_var);        
+      } /* endif dbg */
+
+      /* Variable dimensions */
+      for(int dmn_idx_var=0;dmn_idx_var<nbr_dmn_var;dmn_idx_var++){
+
+        char dmn_nm_var[NC_MAX_NAME+1]; /* [sng] Dimension name */
+        long dmn_sz_var;                /* [nbr] Dimension size */ 
+
+        /* Get dimension name 
+        nc_inq_dimname() currently returns only a simple dimension
+        name, without a prefix identifying the group it came from.
+        */
+        (void)nco_inq_dim(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var,&dmn_sz_var);
+
+        if(dbg_lvl_get() >= 14){
+          (void)fprintf(stdout,"#%d'%s'",
+            dmn_id_var[dmn_idx_var],dmn_nm_var);
+        }
+      }
+
+      if(dbg_lvl_get() >= 14){
+        (void)fprintf(stdout,"\n");
+      }
+
+    } /* endif */
+
+  } /* end loop over uidx */
+
+}
