@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.376 2013-01-27 04:49:15 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.377 2013-03-14 03:28:50 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -208,6 +208,17 @@ AC_CHECK_SIZEOF(int*)
 AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
+
+echo "#################################"
+echo "#  Test for netCDF             #"
+echo "################################"
+
+#Mac OSX MacPorts packages
+#sudo port install netcdf
+#installs to /opt/local/include, /opt/local/lib
+#add this path to CPPFLAGS if it exists, otherwise do nothing
+AC_CHECK_FILE([/opt/local/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include"], [])
+AC_CHECK_FILE([/opt/local/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib -lnetcdf"], [])
 
 # Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
