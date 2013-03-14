@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.602 2013-03-14 22:14:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.603 2013-03-14 22:22:43 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.602 2013-03-14 22:14:24 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.602 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.603 2013-03-14 22:22:43 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.603 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -859,7 +859,7 @@ main(int argc,char **argv)
 
    (void)trv_tbl_init(&trv_tbl);
 
-   (void)nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&out_id);
+   (void)nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&out_id);
 
    (void)nco_bld_trv_tbl(out_id,trv_pth,MSA_USR_RDR,0,(lmt_sct **)NULL,FORTRAN_IDX_CNV,trv_tbl);
 
