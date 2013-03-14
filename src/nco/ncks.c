@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.601 2013-03-14 21:33:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.602 2013-03-14 22:14:24 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.601 2013-03-14 21:33:24 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.601 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.602 2013-03-14 22:14:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.602 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -775,9 +775,9 @@ main(int argc,char **argv)
     /* [fnc] Close unformatted binary data file */
     if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
 
-    if(dbg_lvl_get() >= 14){
-      (void)nco_wrt_trv_tbl(in_id,trv_tbl);
-      (void)nco_wrt_trv_tbl(out_id,trv_tbl);
+    if(dbg_lvl_get() == 14){
+      (void)nco_wrt_trv_tbl(in_id,trv_tbl,True);
+      (void)nco_wrt_trv_tbl(out_id,trv_tbl,True);
     }
 
     /* Close output file and move it from temporary to permanent location */
@@ -852,6 +852,22 @@ main(int argc,char **argv)
 
  trv_tbl_free(trv_tbl);
  if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+
+
+ if(dbg_lvl_get() == 14){
+   int out_id;
+
+   (void)trv_tbl_init(&trv_tbl);
+
+   (void)nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&out_id);
+
+   (void)nco_bld_trv_tbl(out_id,trv_pth,MSA_USR_RDR,0,(lmt_sct **)NULL,FORTRAN_IDX_CNV,trv_tbl);
+
+   (void)nco_wrt_trv_tbl(out_id,trv_tbl,False);
+
+   (void)trv_tbl_free(trv_tbl);
+ }
+
 
  /* End timer */ 
  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */

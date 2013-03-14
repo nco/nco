@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.264 2013-03-14 21:33:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.265 2013-03-14 22:14:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -336,7 +336,8 @@ nco_cmp_crd_dpt                      /* [fnc] Compare two crd_sct's by group dep
 void                          
 nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (Group Traversal Table) for debugging  */
 (const int nc_id,                    /* I [ID] File ID */
- const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
+ nco_bool use_flg_xtr);              /* I [flg] Use flg_xtr in selection */
 
 
 #ifdef __cplusplus

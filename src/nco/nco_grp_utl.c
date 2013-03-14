@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.675 2013-03-14 21:33:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.676 2013-03-14 22:14:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -339,21 +339,21 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
   int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
   int psn_chr;        /* [nbr] Position of character '/' in in full name */
  
-  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"Looking '/' in \"%s\"...",nm_fll);
+  if(dbg_lvl_get() == 14) (void)fprintf(stdout,"Looking '/' in \"%s\"...",nm_fll);
 
   ptr_chr=strchr(nm_fll,'/');
   while (ptr_chr!=NULL)
   {
     psn_chr=ptr_chr-nm_fll;
 
-    if(dbg_lvl_get() >= 14) (void)fprintf(stdout," ::found at %d",psn_chr);
+    if(dbg_lvl_get() == 14) (void)fprintf(stdout," ::found at %d",psn_chr);
 
     ptr_chr=strchr(ptr_chr+1,'/');
 
     nbr_sls_chr++;
   }
 
-  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"\n");
+  if(dbg_lvl_get() == 14) (void)fprintf(stdout,"\n");
   return nbr_sls_chr;
 
 } /* nco_get_sls_chr_cnt() */
@@ -400,7 +400,7 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
   /* Duplicate original, since strtok() changes it */
   char *str=strdup(nm_fll);
 
-  if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
+  if(dbg_lvl_get() == 14) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
 
   /* Get first token */
   ptr_chr_tok=strtok (str,"/");
@@ -409,7 +409,7 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
 
   while (ptr_chr!=NULL)
   {
-    if(dbg_lvl_get() >= 14) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
+    if(dbg_lvl_get() == 14) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
 
     psn_chr=ptr_chr-nm_fll;
     
@@ -427,7 +427,7 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
     nbr_sls_chr++;   
   }
 
-  if(dbg_lvl_get() >= 14)(void)fprintf(stdout,"\n");
+  if(dbg_lvl_get() == 14)(void)fprintf(stdout,"\n");
 
   str=(char *)nco_free(str);
 
@@ -748,7 +748,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   } /* endif dbg */
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() >= 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return (nco_bool)True;
 
@@ -768,7 +768,7 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
       trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr;
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() >= 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* end nco_xtr_xcl() */
@@ -799,7 +799,7 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
   } /* Loop table */
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() >= 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* end nco_xtr_crd_add() */
@@ -825,7 +825,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
 
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() >= 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* nco_xtr_cf_add() */
@@ -1454,7 +1454,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
   /* Print extraction list in developer mode */
-  if(dbg_lvl_get() >= 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
 } /* end nco_xtr_dfn() */
 
@@ -1541,7 +1541,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
 
   /* Print extraction list in developer mode */
-  if(dbg_lvl_get() >= 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
 } /* end nco_xtr_wrt() */
 
@@ -1658,14 +1658,14 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
   const char fnc_nm[]="nco_bld_dmn_ids_trv()"; /* [sng] Function name  */
 
   /* Loop objects  */
-  if(dbg_lvl_get() >= 13)(void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
+  if(dbg_lvl_get() == 13)(void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
 
     /* Filter variables  */
     if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
       trv_sct var_trv=trv_tbl->lst[var_idx];   
 
-      if(dbg_lvl_get() >= 13){
+      if(dbg_lvl_get() == 13){
         (void)fprintf(stdout,"%s:",var_trv.nm_fll); 
         (void)fprintf(stdout," %d dimensions:\n",var_trv.nbr_dmn);
       }
@@ -1678,7 +1678,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dmn_id,trv_tbl);
 
-        if(dbg_lvl_get() >= 13){
+        if(dbg_lvl_get() == 13){
           (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm,var_dmn_id);    
           (void)fprintf(stdout,"<%s>\n",dmn_trv->nm_fll);
         }
@@ -1976,7 +1976,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_id=dmn_id_var[dmn_idx_var];
 
-      if(dbg_lvl_get() >= 13){
+      if(dbg_lvl_get() == 13){
         (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension #%d'%s'\n",prg_nm_get(),fnc_nm,
           var_nm_fll,dmn_id_var[dmn_idx_var],dmn_nm_var);
       }
@@ -2434,7 +2434,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
 
   /* Print table in debug mode */
-  if(dbg_lvl_get() >= 13)(void)nco_prt_trv_tbl(nc_id,trv_tbl);
+  if(dbg_lvl_get() == 13)(void)nco_prt_trv_tbl(nc_id,trv_tbl);
 
   /* Build dimension info for all variables (match dimension IDs) */
   (void)nco_bld_dmn_ids_trv(nc_id,trv_tbl);
@@ -2993,7 +2993,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
   /* Most common case is for the unique dimension full name to match the full variable name   */
   if (strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-    if(dbg_lvl_get() >= 13){
+    if(dbg_lvl_get() == 12){
       (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
         var_trv->nm_fll,dmn_trv->nm_fll);
     }
@@ -3040,7 +3040,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
       /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
       if (var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-        if(dbg_lvl_get() >= 13){
+        if(dbg_lvl_get() == 12){
           (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -3065,7 +3065,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
             if(var.nco_typ == nco_obj_typ_var){
               /* Is there a *full* match already for the *input* dimension ?  */
               if(strcmp(var_trv->nm_fll,dmn.nm_fll) == 0 ){
-                if(dbg_lvl_get() == nco_dbg_old){
+                if(dbg_lvl_get() == 12){
                   (void)fprintf(stdout,"%s: INFO %s variable <%s> has another dimension full match <%s>:\n",prg_nm_get(),fnc_nm,
                     var_trv->nm_fll,dmn.nm_fll);
                 }
@@ -3076,7 +3076,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
         } /* Loop unique dimensions list in groups */
 
 
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() == 12){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -3084,7 +3084,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
         /* Variable out of scope of dimension */
       }else if (var_nm_fll_lng < dmn_nm_fll_lng){
-        if(dbg_lvl_get() >= 13){
+        if(dbg_lvl_get() == 12){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -3196,14 +3196,10 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dmn_id,trv_tbl);
 
-        if(dbg_lvl_get() >= 13){
-          (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_dmn_id);    
-        }
-
         /* No coordinates */
         if(dmn_trv->crd_nbr == 0) {
 
-          if(dbg_lvl_get() >= 13){
+          if(dbg_lvl_get() == 13){
             (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
           } /* endif dbg */
@@ -3227,7 +3223,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
           /* The "in scope" coordinate is returned */
           if (crd) {
-            if(dbg_lvl_get() >= 13){ 
+            if(dbg_lvl_get() == 13){ 
               (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm, 
                 dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
             } /* endif dbg */ 
@@ -3240,7 +3236,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
           /* None was found in scope */
           }else {
-            if(dbg_lvl_get() >= 13){ 
+            if(dbg_lvl_get() == 13){ 
               (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> with out of scope coordinate\n",prg_nm_get(),fnc_nm, 
                 dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll);         
             } /* endif dbg */
@@ -3272,7 +3268,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
         if(trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var == nco_obj_typ_err) {
 
-          if(dbg_lvl_get() >= 13 ){
+          if(dbg_lvl_get() == 13 ){
             (void)fprintf(stdout,"%s: OOPSY %s reports variable <%s> with NOT filled dimension [%d]%s\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
           } /* endif dbg */
@@ -3307,7 +3303,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 void                          
 nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (Group Traversal Table) for debugging  */
 (const int nc_id,                    /* I [ID] File ID */
- const trv_tbl_sct * const trv_tbl)  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
+ nco_bool use_flg_xtr)               /* I [flg] Use flg_xtr in selection */
 {
 
   const char fnc_nm[]="nco_wrt_trv_tbl()"; /* [sng] Function name  */
@@ -3320,10 +3317,14 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
-    /* If object is an extracted variable... */ 
-    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+    nco_bool flg_xtr;
+    
+    if (use_flg_xtr)flg_xtr=var_trv.flg_xtr; else flg_xtr=True;
 
-      if(dbg_lvl_get() >= 14){
+    /* If object is an extracted variable... */ 
+    if(var_trv.nco_typ == nco_obj_typ_var && flg_xtr){
+
+      if(dbg_lvl_get() == 14){
         (void)fprintf(stdout,"%s: INFO %s variable <%s>",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
       } /* endif dbg */
 
@@ -3340,7 +3341,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
 
-      if(dbg_lvl_get() >= 14){
+      if(dbg_lvl_get() == 14){
         (void)fprintf(stdout," %d dimensions: ",nbr_dmn_var);        
       } /* endif dbg */
 
@@ -3350,19 +3351,16 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
         char dmn_nm_var[NC_MAX_NAME+1]; /* [sng] Dimension name */
         long dmn_sz_var;                /* [nbr] Dimension size */ 
 
-        /* Get dimension name 
-        nc_inq_dimname() currently returns only a simple dimension
-        name, without a prefix identifying the group it came from.
-        */
+        /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var,&dmn_sz_var);
 
-        if(dbg_lvl_get() >= 14){
+        if(dbg_lvl_get() == 14){
           (void)fprintf(stdout,"#%d'%s'",
             dmn_id_var[dmn_idx_var],dmn_nm_var);
         }
       }
 
-      if(dbg_lvl_get() >= 14){
+      if(dbg_lvl_get() == 14){
         (void)fprintf(stdout,"\n");
       }
 
