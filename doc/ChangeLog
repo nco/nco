@@ -1,3 +1,7 @@
+2013-03-13  Pedro Vicente  <pvicente@uci.edu>
+
+	* configure: detect Mac OS MacPorts netCDF library
+
 2013-03-11  Charlie Zender  <zender@uci.edu>
 
 	* ncecat remove lmt_all structure code from GAG branch

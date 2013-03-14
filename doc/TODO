@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1230 2013-03-08 21:08:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1231 2013-03-14 03:34:00 pvicente Exp $
 
 # Purpose: TODO items for NCO
 
@@ -709,7 +709,6 @@ nco1077. wnd: utilize netCDF CMake for linking so DAP/UDUNITS support is automat
 nco1079. ncap2: add option to return index of max/min/etc. kevin raeder suggestion
 nco1080. ncrename: nc_rename_grp() library call for libnetcdf written with HDF API
 nco1084. ncks feature: allow multiple specifications of mk_rec_dmn and fix_rec_dmn
-nco1087. autoconf detect UDunits2 in Mac OSX
 nco1091. 
 qrk
 ************************************************************************
