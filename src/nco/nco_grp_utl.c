@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.677 2013-03-14 22:22:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.678 2013-03-15 00:25:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3139,8 +3139,6 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
 
   */
 
-  const char fnc_nm[]="nco_scp_var_crd()"; /* [sng] Function name  */
-
   /* If more then 1 coordinate, sort them by group depth */
   if (dmn_trv->crd_nbr>1){
     qsort(dmn_trv->crd,(size_t)dmn_trv->crd_nbr,sizeof(crd_sct *),nco_cmp_crd_dpt);
@@ -3355,7 +3353,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
         (void)nco_inq_dim(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var,&dmn_sz_var);
 
         if(dbg_lvl_get() == 14){
-          (void)fprintf(stdout,"#%d'%s'",
+          (void)fprintf(stdout,"#%d'%s' ",
             dmn_id_var[dmn_idx_var],dmn_nm_var);
         }
       }
