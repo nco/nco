@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.603 2013-03-14 22:22:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.604 2013-03-16 10:07:15 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.603 2013-03-14 22:22:43 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.603 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.604 2013-03-16 10:07:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.604 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -854,7 +854,7 @@ main(int argc,char **argv)
  if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
 
 
- if(dbg_lvl_get() == 14){
+ if(dbg_lvl_get() == 14 && fl_out){
    int out_id;
 
    (void)trv_tbl_init(&trv_tbl);
