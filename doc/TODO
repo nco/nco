@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1231 2013-03-14 03:34:00 pvicente Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1232 2013-03-18 06:57:41 pvicente Exp $
 
 # Purpose: TODO items for NCO
 
@@ -709,7 +709,11 @@ nco1077. wnd: utilize netCDF CMake for linking so DAP/UDUNITS support is automat
 nco1079. ncap2: add option to return index of max/min/etc. kevin raeder suggestion
 nco1080. ncrename: nc_rename_grp() library call for libnetcdf written with HDF API
 nco1084. ncks feature: allow multiple specifications of mk_rec_dmn and fix_rec_dmn
-nco1091. 
+nco1091. ncks -O -v two_dmn_rec_var in_grp.nc out.nc
+         exposes a netCDF bug; duplicate dimension IDs are generated;
+         this seems to happen when a dimension has the same name when defined in a group and its ancestor group
+         C programt that reproduces it, using only netCDF API calls, in http://glace.ess.uci.edu/libs/netcdf/257980/
+nco1092. 
 qrk
 ************************************************************************
 End ncoXXX TODOs
