@@ -3,7 +3,7 @@
 	* nco1091. ncks -O -v two_dmn_rec_var in_grp.nc out.nc
          exposes a netCDF bug; duplicate dimension IDs are generated;
          this seems to happen when a dimension has the same name when defined in a group and its ancestor group
-         C programt that reproduces it, using only netCDF API calls, in http://glace.ess.uci.edu/libs/netcdf/257980/
+         C program that reproduces it, using only netCDF API calls, in http://glace.ess.uci.edu/libs/netcdf/257980/
 
 2013-03-13  Pedro Vicente  <pvicente@uci.edu>
 
