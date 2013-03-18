@@ -1,22 +1,30 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.547 2013-03-08 21:08:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.548 2013-03-18 22:01:47 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release continues to improve support of netCDF4 files, by
-adding new features and fixing some bugs from the last release.
-The many new netCDF4 features NCO supports leads to release churn.
+This release continues to improve support of netCDF4 files in ncks and
+ncecat, and add a sprinkle of new and convenient features to the rest
+of NCO. ncks and ncecat now handle corner cases of netCDF4 groups,
+dimensions, and coordinates. We perverted our own test file with
+tortuous situations that all work, such as dimensions, coordinates, 
+and variables all being in separate groups.
 
-Work on NCO 4.2.7 is underway and focuses on better support for more
-complex netCDF4 files, and on netCDF4 support for ncrename and ncbo
-operators. 
+ncks and ncecat work on many coommon HDF5 datasets in the wild, e.g.,
+NASA ICESat GLAS HDF5
+NASA AURA HIRDLS HDF-EOS5
+NASA SBUV HDF5...
+
+Work on NCO 4.2.7 is underway and focuses on netCDF4 support for
+ncrename and ncbo operators, and on better support for Windows builds
+(enabling DAP, UDUnits).
 
 Enjoy,
 Charlie
 
-"New stuff" in 4.2.5 summary (full details always in ChangeLog):
+"New stuff" in 4.2.6 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
@@ -66,7 +74,7 @@ KNOWN BUGS NOT YET FIXED:
    This section of the ANNOUNCE file reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.2.5 built/tested with netCDF
-   4.2.1.1-snapshot2013020723 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.3.0-rc3 released 20130311 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
@@ -124,16 +132,14 @@ D. NOT YET FIXED
    Cause: DAP translates scalar characters into 64-element, NUL-terminated strings so MD5 agreement fails
 
 E. NOT YET FIXED
-   NCO fails to retrieve single element hyperslabs of unsigned int
-   variables with values larger than INT_MAX=2147483647 (rather than
-   being valid up to UINT_MAX = 4294967295).
+   ncdump is unable to dump the NCO test file in_grp.nc
 
    Demonstration:
-   ncap2 -O -4 -v -s 'var_uint_max=2147483647u;' ~/nco/data/in.nc ~/foo.nc
-   ncap2 -O -4 -v -s 'var_uint_max=2147483648u;' ~/nco/data/in.nc ~/foo.nc
+   ncdump ~/nco/data/in_grp.nc # breaks with "NetCDF: Invalid argument
+   	  Location: file dumplib.c; line 970"
 
-   20130208: Verified problem still exists. 
-   Bug report filed: netCDF #PUX-602809: Problem with nc_get_var1_uint()?
+   20130311: Verified
+   Bug report filed 201303XX: netCDF fxm
 
 "Sticky" reminders:
 
