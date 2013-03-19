@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.193 2013-03-14 01:59:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.194 2013-03-19 02:16:58 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -101,7 +101,9 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   case NC_EINVAL: (void)fprintf(stdout,"ERROR NC_EINVAL Invalid argument\nHINT: NC_EINVAL errors will occur when NCO operators attempt to open netCDF4 files using the diskless option, usually invoked with --diskless_all, --ram_all, or --open_ram.  Is your input file netCDF4 format?  (http://nco.sf.net/nco.html#fmt_inq shows how to tell.) If so then omitting the diskless option may solve this problem.\n"); break;
   case NC_ELATEFILL: /* netcdf.h replaced NC_EFILLVALUE by NC_ELATEFILL after about netCDF ~4.2.1 */
     (void)fprintf(stdout,"ERROR NC_ELATEFILL (formerly NC_EFILLVALUE) Attempt to define fill value when data already exists\nHINT: NC_ELATEFILL errors can occur when ncap2 attempts to define a variable with a _FillValue attribute in a netCDF4 file.  We believe this is an NCO bug (fxm TODO nco1089) and are working to fix it. Does your output file need to be netCDF4 or netCDF4_classic format? If so, then wait for us to fix the bug. If not, change the output format to netCDF3 (e.g., with -3 option) as a temporary workaround. This file can then successfully be converted to netCDF4 (e.g., with ncks -4 in.nc out.nc).\n"); break;
+#ifdef ENABLE_NETCDF4
   case NC_ENOTBUILT: (void)fprintf(stdout,"ERROR NC_ENOTBUILT Attempt to use feature that was not turned on when netCDF was built\nHINT: NC_ENOTBUILT errors occur only, in our experience, when NCO attempts to access an HDF-EOS2 or HDF4 file. In this case it may be possible to access the input files using NCO if NCO is first re-linked to a version of netCDF configured with the --enable-hdf4 option. This is a non-standard netCDF build option.\n");
+#endif
   case NC_ENOTNC: (void)fprintf(stdout,"ERROR NC_ENOTNC Not a netCDF file\nHINT: NC_ENOTNC errors can occur for many reasons; decide if any of these apply to your use case and take the appropriate action:\n1. Often NC_ENOTNC occurs when NCO operators linked to the netCDF3 library attempt to read netCDF4 files. ");
 #ifdef ENABLE_NETCDF4
     (void)fprintf(stdout," However, this executable seems to have been built with the capability to manipulate netCDF4 files, so it is unlikely that this command failed only because the input datasets are netCDF4 format. Something else is going wrong. \n");
@@ -746,7 +748,7 @@ nc_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
      to include CSZ's proposed definition of nc_rename_grp().
      To create that patch, CSZ does this:
      cd ${DATA}/tmp/netcdf-4.2.1
-     tar cvzf ~/nc_rename_grp.tar.gz libsrc4/nc4dispatch.c libsrc4/nc4dispatch.h libsrc4/nc4grp.c include/netcdf.h libsrc4/*.orig include/*.orig
+     'tar cvzf ~/nc_rename_grp.tar.gz libsrc4/nc4dispatch.c libsrc4/nc4dispatch.h libsrc4/nc4grp.c include/netcdf.h libsrc4/*.orig include/*.orig'
      scp ~/nc_rename_grp.tar.gz dust.ess.uci.edu:/var/www/html/tmp/nc_rename_grp.tar.gz
      To install the patch you do something like this:
      cd ${DATA}/tmp/netcdf-4.2.1 # i.e., cd to top-level of your netCDF distribution
