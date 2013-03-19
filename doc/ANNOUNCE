@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.549 2013-03-19 16:42:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.550 2013-03-19 20:35:59 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.2.5 are ready. 
+The netCDF operators NCO version 4.2.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -40,6 +40,8 @@ A. ncks now counts and then ignores non-atomic type netCDF4 variables.
    all the atomic-type (float, double, int, string...) variables as
    usual. 
 
+A. ncks prints fulls paths of non-local dimensions and coordinates.
+
 A. ncrename allows "mandatory attributes" (i.e., those not prefixed
    with a period which would make them "optional attributes") to be
    present in groups/global instead of in variables.
@@ -57,6 +59,13 @@ A. ncflint accepts a new switch, --fix_rec_crd, that prevents record
 
 BUG FIXES:
 
+A. ncks correctly interprets scopes in corner cases including:
+   1. Dimension defined in ancestor of variable's group
+   2. Coordinate defined in relative (sibling, ancestor, descendent)
+      of variable's group
+   3. Single dimension has multiple associated coordinates
+   Handling these cases correctly is a major milestone for NCO.
+
 A. ncks prints accurate netCDF4 metadata summaries (with -M) and
    breaks dimensions into fixed vs. record, and variables into
    atomic-types vs. non-atomic. Formerly, the number of netCDF4
@@ -73,7 +82,7 @@ KNOWN BUGS NOT YET FIXED:
 
    This section of the ANNOUNCE file reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.2.5 built/tested with netCDF
+   These problems occur with NCO 4.2.6 built/tested with netCDF
    4.3.0-rc3 released 20130311 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
@@ -132,14 +141,27 @@ D. NOT YET FIXED
    Cause: DAP translates scalar characters into 64-element, NUL-terminated strings so MD5 agreement fails
 
 E. NOT YET FIXED
+   netCDF4 library can create dimensions with duplicate IDs if
+   dimension with same name defined in a group and its ancestor group.
+   Problem with HDF5 or with netCDF4 library implementation?
+
+   Demonstration:
+   ncks -O -v two_dmn_rec_var ~/nco/data/in_grp.nc ~/foo.nc
+   ncks -m ~/foo.nc
+
+   20130319: Verified problem still exists
+   Bug report filed 20120312: netCDF #SHH-257980: Re: [netcdfgroup] Dimensions IDs
+
+F. NOT YET FIXED
    ncdump is unable to dump the NCO test file in_grp.nc
+   Unclear whether problem with ncdump, HDF5, or with netCDF4 library implementation
 
    Demonstration:
    ncdump ~/nco/data/in_grp.nc # breaks with "NetCDF: Invalid argument
    	  Location: file dumplib.c; line 970"
 
-   20130311: Verified
-   Bug report filed 201303XX: netCDF fxm
+   20130319: Verified
+   Bug report not yet filed
 
 "Sticky" reminders:
 

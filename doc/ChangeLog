@@ -1,9 +1,24 @@
+2013-03-19  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.0 release procedure:
+ 	Changes since nco-4_2_6: fxm
+	cd ~/nco;cvs tag -d nco-4_3_0;cvs tag -d nco-4_3_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.0 release"
+	cvs tag -c nco-4_3_0;cvs tag -c nco-4_3_0-1
+
+	* NCO 4.2.6 release procedure:
+ 	Changes since nco-4_2_5: --rec_apn, non-atomics, --fix_rec_crd, scope
+	cd ~/nco;cvs tag -d nco-4_2_6;cvs tag -d nco-4_2_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.2.6 release"
+	cvs tag -c nco-4_2_6;cvs tag -c nco-4_2_6-1
+
 2013-03-16  Pedro Vicente  <pvicente@uci.edu>
 
-	* nco1091. ncks -O -v two_dmn_rec_var in_grp.nc out.nc
-         exposes a netCDF bug; duplicate dimension IDs are generated;
-         this seems to happen when a dimension has the same name when defined in a group and its ancestor group
-         C program that reproduces it, using only netCDF API calls, in http://glace.ess.uci.edu/libs/netcdf/257980/
+	* ncks -O -v two_dmn_rec_var ~/nco/data/in_grp.nc ~/foo.nc;ncks ~/foo.nc
+        exposes TODO nco1091, a possible netCDF/HDF bug---duplicate dimension IDs are generated
+        Seems to occur if dimension the same name when defined in a group and its ancestor group
+        C program that reproduces it, using only netCDF API calls, in
+	http://glace.ess.uci.edu/libs/netcdf/257980
 
 2013-03-13  Pedro Vicente  <pvicente@uci.edu>
 
@@ -35,12 +50,6 @@
 	* Regression test for coordinate "out of scope" (group depth greater than variable that uses coordinate)
 
 2013-03-08  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.6 release procedure:
- 	Changes since nco-4_2_5: --rec_apn, non-atomic ignore, --fix_rec_crd
-	cd ~/nco;cvs tag -d nco-4_2_6;cvs tag -d nco-4_2_6-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.6 release"
-	cvs tag -c nco-4_2_6;cvs tag -c nco-4_2_6-1
 
 	* Implement and test ncflint --fix_rec_crd
 

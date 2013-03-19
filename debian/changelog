@@ -1,3 +1,9 @@
+nco (4.2.6-1) unstable; urgency=low
+
+  * new upstream version (--rec_apn, non-atomics, --fix_rec_crd, scope)
+
+ -- Charlie Zender <zender@uci.edu>  Tue, 19 Mar 2013 13:23:36 -0700
+
 nco (4.2.5-1) unstable; urgency=low
 
   * new upstream version (fix ncks mk/fix_rec_dmn bugs, metadata printing)
