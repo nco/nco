@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.237 2013-03-11 21:17:57 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.238 2013-03-19 02:31:56 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1429,7 +1429,8 @@ print "\n";
     $tst_cmd[2]="lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";      
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
@@ -1447,7 +1448,8 @@ print "\n";
     $tst_cmd[2]="three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate is /time)";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";      
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			 
@@ -1469,7 +1471,8 @@ print "\n";
     $tst_cmd[1]="time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
@@ -1488,7 +1491,8 @@ print "\n";
     $tst_cmd[1]="time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
@@ -1505,7 +1509,8 @@ print "\n";
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
@@ -1522,7 +1527,8 @@ print "\n";
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";       
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
@@ -1546,7 +1552,8 @@ print "\n";
     $tst_cmd[1]="gds_crd[1]=1 lon_gds[1]=0";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";       
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
@@ -1566,7 +1573,8 @@ print "\n";
     $tst_cmd[1]="gds_crd[3]=3 gds_var[3]=273.4";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";    
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
@@ -1585,7 +1593,8 @@ print "\n";
     $tst_cmd[1]="lon1[3]=3";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";      
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			 
@@ -1601,7 +1610,8 @@ print "\n";
     $tst_cmd[1]="lon1[1]=1 lon1_var[1]=1";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";    
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
@@ -1618,7 +1628,8 @@ print "\n";
     $tst_cmd[1]="lon1[1]=4 lon1_var[1]=1";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";      
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
@@ -1636,7 +1647,8 @@ print "\n";
     $tst_cmd[2]="lat[1]=90 area[1]=50";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
@@ -1655,7 +1667,8 @@ print "\n";
     $tst_cmd[2]="lat[1]=90 area[1]=50";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";    
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			      
@@ -1670,7 +1683,8 @@ print "\n";
     $tst_cmd[1]="lon3[3] lon3_var[3]=3";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";       
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
@@ -1685,7 +1699,8 @@ print "\n";
     $tst_cmd[1]="lon4[1]=4 lon4_var[1]=1";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     # to do    
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			      
