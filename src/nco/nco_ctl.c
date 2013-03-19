@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.382 2013-03-08 04:18:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.383 2013-03-19 21:13:39 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -792,7 +792,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Raise. Rise. Hot Raise.\n";
+  return "Cambria\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.768 2013-03-19 20:35:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.769 2013-03-19 21:13:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -103,8 +103,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.2.6
-@set doc-edition 4.2.6
+@set nco-edition 4.3.0
+@set doc-edition 4.3.0
 @set copyright-years 1995--2013
 @set update-year 2013
 @set update-date 19 March 2013
@@ -1120,6 +1120,12 @@ chunking in @command{ncks} and @command{ncecat}.
 netCDF4 chunking in the remaining operators.
 See @ref{Chunking} for more details.
 
+@cindex groups
+@acronym{NCO} version 4.2.2 (October, 2012) added support for netCDF4
+groups in @command{ncks} and @command{ncecat}.
+This support was fully complete as of 
+@acronym{NCO} version 4.2.6 (April, 2013).
+
 @cindex @acronym{HDF5}
 @cindex @code{-4}
 @cindex @code{-3}
@@ -1133,11 +1139,10 @@ See @ref{Selecting Output File Format} for more details.
 
 @cindex @acronym{RPM}
 @cindex Debian
-As of 2010, netCDF4 is still relatively new software.
-Problems with netCDF4 and @acronym{HDF} libraries are still being fixed.
-Binary @acronym{NCO} distributions shipped as @acronym{RPM}s use the
-netCDF4 library, while debs use the netCDF3 library, because of upstream
-requirements. 
+As of 2012, netCDF4 is relatively stable software.
+Problems with netCDF4 and @acronym{HDF} libraries have mainly been fixed.
+Binary @acronym{NCO} distributions shipped as @acronym{RPM}s and as debs
+have used the netCDF4 library since 2010 and 2011, respectively.
 
 @cindex @code{NETCDF4_ROOT}
 One must often build @acronym{NCO} from source to obtain netCDF4
@@ -4286,7 +4291,7 @@ Short options: None@*
 Long options: 
 @samp{--rec_apn}, @samp{--record_append}@*
 @end cartouche
-As of version 4.2.6 (February, 2013), @acronym{NCO} allows both
+As of version 4.2.6 (March, 2013), @acronym{NCO} allows both
 Multi-File, Multi-Record operators, @command{ncra} and @command{ncrcat},
 to append their output directly to the end of an existing file.
 This feature useful when a target file is to be augmented, rather than

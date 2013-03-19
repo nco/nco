@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.550 2013-03-19 20:35:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.551 2013-03-19 21:13:39 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 4.2.6 are ready. 
+The netCDF Operators NCO version 4.3.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -12,9 +12,9 @@ dimensions, and coordinates. We perverted our own test file with
 tortuous situations that all work, such as dimensions, coordinates, 
 and variables all being in separate groups.
 
-ncks and ncecat work on many coommon HDF5 datasets in the wild, e.g.,
-NASA ICESat GLAS HDF5
+ncks and ncecat now work well on many common HDF5 datasets, e.g.,
 NASA AURA HIRDLS HDF-EOS5
+NASA ICESat GLAS HDF5
 NASA SBUV HDF5...
 
 Work on NCO 4.2.7 is underway and focuses on netCDF4 support for
@@ -24,7 +24,7 @@ ncrename and ncbo operators, and on better support for Windows builds
 Enjoy,
 Charlie
 
-"New stuff" in 4.2.6 summary (full details always in ChangeLog):
+"New stuff" in 4.3.0 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
@@ -33,20 +33,20 @@ A. Regular expressions (rx's) now work on full paths, not just stubs.
    Now rx's like ncks -v /cesm/temperature.+ can succeed.
    http://nco.sf.net/nco.html#rx
 
-A. ncks now counts and then ignores non-atomic type netCDF4 variables.
+B. ncks now counts and then ignores non-atomic type netCDF4 variables.
    Previously, ncks would die if it encountered the new netCDF4
    non-atomic types: vlen, opaque, enum, and compound.
    Now ncks prints the variable name and then ignores it and processes
    all the atomic-type (float, double, int, string...) variables as
    usual. 
 
-A. ncks prints fulls paths of non-local dimensions and coordinates.
+C. ncks prints fulls paths of non-local dimensions and coordinates.
 
-A. ncrename allows "mandatory attributes" (i.e., those not prefixed
+D. ncrename allows "mandatory attributes" (i.e., those not prefixed
    with a period which would make them "optional attributes") to be
    present in groups/global instead of in variables.
 
-A. ncflint accepts a new switch, --fix_rec_crd, that prevents record
+E. ncflint accepts a new switch, --fix_rec_crd, that prevents record
    coordinates from being multiplied/interpolated. By default, ncflint
    multplies/interpolates record coordinates (like time) but not other
    coordinates (like, typically, latitude). This is because ncflint
@@ -66,12 +66,12 @@ A. ncks correctly interprets scopes in corner cases including:
    3. Single dimension has multiple associated coordinates
    Handling these cases correctly is a major milestone for NCO.
 
-A. ncks prints accurate netCDF4 metadata summaries (with -M) and
+B. ncks prints accurate netCDF4 metadata summaries (with -M) and
    breaks dimensions into fixed vs. record, and variables into
    atomic-types vs. non-atomic. Formerly, the number of netCDF4
    dimensions was ill-defined.
 
-A. ncks 4.2.4-4.2.5 failed when attempting to copy certain netCDF3 
+C. ncks 4.2.4-4.2.5 failed when attempting to copy certain netCDF3 
    files (known as MM3 files because they contain multiple record
    variables that require a special copying algorithm) into netCDF4
    files when group-path-editing (GPE) was invoked. This has been
@@ -82,7 +82,7 @@ KNOWN BUGS NOT YET FIXED:
 
    This section of the ANNOUNCE file reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.2.6 built/tested with netCDF
+   These problems occur with NCO 4.3.0 built/tested with netCDF
    4.3.0-rc3 released 20130311 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
@@ -190,10 +190,4 @@ F. NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
-   NCO supports netCDF4 atomic data types, compression, and chunking.
-
-G. Have you seen the NCO logo candidates by Tony Freeman, Rich
-   Signell, Rob Hetland, and Andrea Cimatoribus? 
-   http://nco.sf.net
-   Tell us what you think...
-
+   NCO supports netCDF4 atomic data types, compression, chunking, and groups.
