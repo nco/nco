@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.548 2013-03-18 22:01:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.549 2013-03-19 16:42:51 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 4.2.5 are ready. 
 
@@ -102,7 +102,7 @@ B. NOT YET FIXED
    ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
    ncks -m ~/foo.nc
 
-   20121025: Verified problem still exists
+   20130319: Verified problem still exists
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
 C. NOT YET FIXED
