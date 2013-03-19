@@ -19200,6 +19200,69 @@ if test "x$ac_cv_file__usr_include_udunits2_udunits2_h" = xyes; then :
 fi
 
 
+#Ubuntu
+#/usr/lib/x86_64-linux-gnu/libudunits2.a
+#/usr/lib/i386-linux-gnu/libudunits2.a
+#/usr/include/udunits2.h
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/include/udunits2.h" >&5
+$as_echo_n "checking for /usr/include/udunits2.h... " >&6; }
+if ${ac_cv_file__usr_include_udunits2_h+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/include/udunits2.h"; then
+  ac_cv_file__usr_include_udunits2_h=yes
+else
+  ac_cv_file__usr_include_udunits2_h=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_include_udunits2_h" >&5
+$as_echo "$ac_cv_file__usr_include_udunits2_h" >&6; }
+if test "x$ac_cv_file__usr_include_udunits2_h" = xyes; then :
+  CPPFLAGS="$CPPFLAGS -I/usr/include"
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/lib/x86_64-linux-gnu/libudunits2.a" >&5
+$as_echo_n "checking for /usr/lib/x86_64-linux-gnu/libudunits2.a... " >&6; }
+if ${ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/lib/x86_64-linux-gnu/libudunits2.a"; then
+  ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a=yes
+else
+  ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a" >&5
+$as_echo "$ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a" >&6; }
+if test "x$ac_cv_file__usr_lib_x86_64_linux_gnu_libudunits2_a" = xyes; then :
+  LDFLAGS="$LDFLAGS -L/usr/lib/x86_64-linux-gnu"
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/lib/i386-linux-gnu/libudunits2.a" >&5
+$as_echo_n "checking for /usr/lib/i386-linux-gnu/libudunits2.a... " >&6; }
+if ${ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/lib/i386-linux-gnu/libudunits2.a"; then
+  ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a=yes
+else
+  ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a" >&5
+$as_echo "$ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a" >&6; }
+if test "x$ac_cv_file__usr_lib_i386_linux_gnu_libudunits2_a" = xyes; then :
+  LDFLAGS="$LDFLAGS -L/usr/lib/i386-linux-gnu"
+fi
+
+
+
 #Mac OSX MacPorts packages
 #sudo port install libdap
 #sudo port install gsl
@@ -19209,7 +19272,6 @@ fi
 #installs to /opt/local/include/udunits2/udunits2.h
 #/opt/local/share/udunits/udunits2.xml
 #add this path to CPPFLAGS if it exists, otherwise do nothing
-#AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/udunits2/udunits2.h" >&5
 $as_echo_n "checking for /opt/local/include/udunits2/udunits2.h... " >&6; }
 if ${ac_cv_file__opt_local_include_udunits2_udunits2_h+:} false; then :
@@ -19226,12 +19288,29 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_include_udunits2_udunits2_h" >&5
 $as_echo "$ac_cv_file__opt_local_include_udunits2_udunits2_h" >&6; }
 if test "x$ac_cv_file__opt_local_include_udunits2_udunits2_h" = xyes; then :
-  non_std_udunits2=yes
+  CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"
 fi
 
-
 #/opt/local/lib/libudunits2.a
-#AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib/"], [])
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/lib/libudunits2.a" >&5
+$as_echo_n "checking for /opt/local/lib/libudunits2.a... " >&6; }
+if ${ac_cv_file__opt_local_lib_libudunits2_a+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/opt/local/lib/libudunits2.a"; then
+  ac_cv_file__opt_local_lib_libudunits2_a=yes
+else
+  ac_cv_file__opt_local_lib_libudunits2_a=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_lib_libudunits2_a" >&5
+$as_echo "$ac_cv_file__opt_local_lib_libudunits2_a" >&6; }
+if test "x$ac_cv_file__opt_local_lib_libudunits2_a" = xyes; then :
+  LDFLAGS="$LDFLAGS -L/opt/local/lib/"
+fi
+
 
 #echo "DEBUG: After UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
 #echo "DEBUG: After UDUnits2 tests LDFLAGS = ${LDFLAGS}"
@@ -19360,7 +19439,7 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-#    echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
+#   echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
 #    echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
 
 
@@ -19440,54 +19519,13 @@ else
 fi
 
 
-#   Mac weirdness
-    elif test "${non_std_udunits2}" != 'no'; then
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/udunits2/udunits2.h" >&5
-$as_echo_n "checking for /opt/local/include/udunits2/udunits2.h... " >&6; }
-if ${ac_cv_file__opt_local_include_udunits2_udunits2_h+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/opt/local/include/udunits2/udunits2.h"; then
-  ac_cv_file__opt_local_include_udunits2_udunits2_h=yes
-else
-  ac_cv_file__opt_local_include_udunits2_udunits2_h=no
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_include_udunits2_udunits2_h" >&5
-$as_echo "$ac_cv_file__opt_local_include_udunits2_udunits2_h" >&6; }
-if test "x$ac_cv_file__opt_local_include_udunits2_udunits2_h" = xyes; then :
-
-$as_echo "#define HAVE_UDUNITS2_H 1" >>confdefs.h
-
-fi
-
-        { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/udunits2/udunits2.h" >&5
-$as_echo_n "checking for /opt/local/include/udunits2/udunits2.h... " >&6; }
-if ${ac_cv_file__opt_local_include_udunits2_udunits2_h+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/opt/local/include/udunits2/udunits2.h"; then
-  ac_cv_file__opt_local_include_udunits2_udunits2_h=yes
-else
-  ac_cv_file__opt_local_include_udunits2_udunits2_h=no
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_include_udunits2_udunits2_h" >&5
-$as_echo "$ac_cv_file__opt_local_include_udunits2_udunits2_h" >&6; }
-if test "x$ac_cv_file__opt_local_include_udunits2_udunits2_h" = xyes; then :
-  CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"
-fi
-
-        LIBS="${LIBS} -ludunits2"
-
-$as_echo "#define ENABLE_UDUNITS 1" >>confdefs.h
-
-	{ $as_echo "$as_me:${as_lineno-$LINENO}: UDUnits2 support enabled" >&5
-$as_echo "$as_me: UDUnits2 support enabled" >&6;}
+#   Mac
+#    elif test "${non_std_udunits2}" != 'no'; then
+#	AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]), [])
+#        AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
+#        LIBS="${LIBS} -ludunits2"
+#	AC_DEFINE(ENABLE_UDUNITS,1,Compile operators with UDUnits2 support)
+#	AC_MSG_NOTICE([UDUnits2 support enabled])
     else
 	ac_fn_c_check_header_mongrel "$LINENO" "udunits2.h" "ac_cv_header_udunits2_h" "$ac_includes_default"
 if test "x$ac_cv_header_udunits2_h" = xyes; then :

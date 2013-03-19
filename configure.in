@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.377 2013-03-14 03:28:50 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.378 2013-03-19 08:56:16 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -631,6 +631,15 @@ echo "########################################"
 #add this path to CPPFLAGS if it exists, otherwise do nothing
 AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include/udunits2"], [])
 
+#Ubuntu
+#/usr/lib/x86_64-linux-gnu/libudunits2.a
+#/usr/lib/i386-linux-gnu/libudunits2.a
+#/usr/include/udunits2.h
+AC_CHECK_FILE([/usr/include/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/include"], [])
+AC_CHECK_FILE([/usr/lib/x86_64-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/x86_64-linux-gnu"], [])
+AC_CHECK_FILE([/usr/lib/i386-linux-gnu/libudunits2.a], [LDFLAGS="$LDFLAGS -L/usr/lib/i386-linux-gnu"], [])
+
+
 #Mac OSX MacPorts packages
 #sudo port install libdap
 #sudo port install gsl
@@ -640,11 +649,9 @@ AC_CHECK_FILE([/usr/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/usr/in
 #installs to /opt/local/include/udunits2/udunits2.h
 #/opt/local/share/udunits/udunits2.xml
 #add this path to CPPFLAGS if it exists, otherwise do nothing
-#AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
-AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], non_std_udunits2=yes, [])
-
+AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
 #/opt/local/lib/libudunits2.a
-#AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib/"], [])
+AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib/"], [])
 
 #echo "DEBUG: After UDUnits2 tests CPPFLAGS = ${CPPFLAGS}"
 #echo "DEBUG: After UDUnits2 tests LDFLAGS = ${LDFLAGS}"
@@ -690,7 +697,7 @@ if test "${enable_udunits2}" != 'no'; then
 # Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
     AC_DEFINE_UNQUOTED([UDUNITS2_PATH],["$nco_udunits2_xml"],[Location of UDUnits2 data file])
  
-#    echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
+#   echo "DEBUG: nco_udunits2_xml = ${nco_udunits2_xml}"
 #    echo "DEBUG: UDUNITS2_PATH = ${UDUNITS2_PATH}"
 
 
@@ -699,13 +706,13 @@ if test "${enable_udunits2}" != 'no'; then
     if test "${UDUNITS2_PATH}"; then
 	AC_CHECK_FILE([${UDUNITS2_PATH}/include/udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
     
-#   Mac weirdness 
-    elif test "${non_std_udunits2}" != 'no'; then
-	AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]), [])
-        AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
-        LIBS="${LIBS} -ludunits2"
-	AC_DEFINE(ENABLE_UDUNITS,1,Compile operators with UDUnits2 support)
-	AC_MSG_NOTICE([UDUnits2 support enabled])
+#   Mac  
+#    elif test "${non_std_udunits2}" != 'no'; then
+#	AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]), [])
+#        AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
+#        LIBS="${LIBS} -ludunits2"
+#	AC_DEFINE(ENABLE_UDUNITS,1,Compile operators with UDUnits2 support)
+#	AC_MSG_NOTICE([UDUnits2 support enabled])
     else
 	AC_CHECK_HEADER([udunits2.h],AC_DEFINE([HAVE_UDUNITS2_H],1,[Define to 1 if <udunits2.h> is present]),enable_udunits2=no)
     fi
