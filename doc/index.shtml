@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.768 2013-03-19 17:45:38 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.769 2013-03-19 17:50:37 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -943,7 +943,7 @@ wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.2.6.windows.mvs.exe -
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
 scp /tmp/nco-4.2.6.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
 -->
-<li><a href="src/nco-4.2.5.windows.mvs.exe">nco-4.2.5.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.2.5.windows.mvs.exe"-->) : Windows Self-Extracting Installer (NB: UDUnits not yet included, last updated <!--#flastmod file="src/nco-4.2.5.windows.mvs.exe"-->). Maintained by NCO Project.</li>
+<li><a href="src/nco-4.2.6.windows.mvs.exe">nco-4.2.6.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.2.6.windows.mvs.exe"-->) : Windows Self-Extracting Installer (NB: UDUnits not yet included, last updated <!--#flastmod file="src/nco-4.2.6.windows.mvs.exe"-->). Maintained by NCO Project.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
