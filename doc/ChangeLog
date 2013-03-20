@@ -1,3 +1,8 @@
+2013-03-19  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncbo. nco_dmn_ass_var_trv() Create list of all dimensions associated with input variable list;
+  done by marking nco_bool flg_ass_var in unique dimension list
+
 2013-03-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.0 release procedure:
