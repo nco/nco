@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.265 2013-03-14 22:14:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.266 2013-03-20 11:49:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -134,7 +134,7 @@ nco_xtr_mk                           /* [fnc] Check -v and -g input names and cr
  const int var_xtr_nbr,              /* I [nbr] Number of variables in list */
  const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
  const nco_bool flg_unn,             /* I [flg] Select union of specified groups and variables */
- trv_tbl_sct * const trv_tbl);       /* I [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl);       /* I/O [sct] Traversal table */
 
 void
 nco_xtr_xcl                          /* [fnc] Convert extraction list to exclusion list */
@@ -162,7 +162,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
 void 
 nco_prn_att_trv                       /* [fnc] Print all attributes of single variable */
 (const int in_id,                     /* I [id] netCDF input file ID */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 void
 nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordinates associated with extracted variables */
@@ -175,7 +175,7 @@ nco_get_prg_info(void);               /* [fnc] Get program info */
 void
 nco_prn_xtr_dfn                       /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
 (const int nc_id,                     /* I netCDF file ID */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 
 void 
@@ -214,7 +214,7 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
  const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
  const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 
 void
@@ -240,7 +240,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
  const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 
 nco_bool                              /* O [flg] True if in scope */ 

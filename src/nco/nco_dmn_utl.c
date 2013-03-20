@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.50 2013-03-05 17:40:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.51 2013-03-20 11:49:23 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -215,6 +215,173 @@ nco_dmn_lmt_all_mrg /* [fnc] Merge limit structure information into dimension st
   } /* end loop over dmn */
 } /* end nco_dmn_lmt_all_mrg() */
 
+
+
+dmn_sct ** /* O [sct] Pointer to free'd structure list */
+nco_dmn_lst_free /* [fnc] Free memory associated with dimension structure list */
+(dmn_sct **dmn_lst, /* I/O [sct] Dimension structure list to free */
+ const int dmn_nbr) /* I [nbr] Number of dimension structures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated dimension structure list */
+  int idx;
+
+  for(idx=0;idx<dmn_nbr;idx++){
+    dmn_lst[idx]=nco_dmn_free(dmn_lst[idx]);
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  dmn_lst=(dmn_sct **)nco_free(dmn_lst);
+
+  return dmn_lst;
+} /* end nco_dmn_lst_free() */
+
+nm_id_sct * /* O [sct] Dimension list */
+nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
+(const int nc_id, /* I [id] netCDF file ID */
+ CST_X_PTR_CST_PTR_CST_Y(char,dmn_lst_in), /* I [sng] User-specified list of dimension names */
+ const int nbr_dmn) /* I [nbr] Total number of dimensions in list */
+{
+  /* Purpose: Create list of dimension name-ID structures from list of dimension name strings */
+  int idx;
+
+  nm_id_sct *dmn_lst;
+  
+  dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn*sizeof(nm_id_sct));
+  for(idx=0;idx<nbr_dmn;idx++){
+    /* Copy name and then get requested dimension ID from input file */
+    dmn_lst[idx].nm=(char *)strdup(dmn_lst_in[idx]);
+
+    /* netCDF3/netCDF4 compat */
+    dmn_lst[idx].grp_nm_fll=(char *)strdup("/");
+    char var_nm_fll[NC_MAX_NAME+1];
+    strcpy(var_nm_fll,"/");
+    strcat(var_nm_fll,dmn_lst[idx].nm);
+    dmn_lst[idx].var_nm_fll=(char *)strdup(var_nm_fll);
+
+    (void)nco_inq_dimid(nc_id,dmn_lst[idx].nm,&dmn_lst[idx].id);
+  } /* end loop over idx */
+  
+  return dmn_lst;
+} /* end nco_dmn_lst_mk() */
+
+void
+nco_dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
+(dmn_sct * const dmn_1, /* I/O [sct] Dimension structure */
+ dmn_sct * const dmn_2) /* I/O [sct] Dimension structure */
+{
+  /* Purpose: Make xrf elements of dimension structures point to eachother */
+  dmn_1->xrf=dmn_2;
+  dmn_2->xrf=dmn_1;
+} /* end nco_dmn_xrf() */
+
+
+
+int /* O [flg] Dimension exists in scope of group (if rcd != NC_NOERR) */
+nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specified group */
+(const int nc_id, /* I [id] netCDF group ID */
+ const char * const dmn_nm, /* I [sng] Dimension name */
+ int * const dmn_id, /* O [id] Dimension ID in specified group */
+ int * const grp_id_dmn) /* O [id] Group ID where dimension visible to specified group is defined */
+{
+  /* Purpose: Return location and ID of named dimension in specified group
+     ncks -O -D 1 -v two_dmn_rec_var ~/nco/data/in_grp.nc ~/foo.nc */
+
+  const char fnc_nm[]="nco_inq_dmn_grp_id()"; /* [sng] Function name */
+
+  const int flg_prn=1; /* [flg] Retrieve all dimensions in all parent groups */        
+
+  int dmn_ids[NC_MAX_DIMS]; /* [nbr] Dimensions IDs array */
+
+  int dmn_idx; /* [idx] Dimension index */
+  int dmn_nbr; /* [nbr] Number of dimensions for group */
+  int rcd; /* [rcd] Return code */
+
+  nco_bool grp_dfn_fnd=False; /* [flg] Group of definition has been found */
+
+  /* Initialize search to start with specified group */
+  *grp_id_dmn=nc_id;
+
+  rcd=nco_inq_dimid_flg(*grp_id_dmn,dmn_nm,dmn_id);
+  
+  if(dbg_lvl_get() >= nco_dbg_std){
+    char *grp_nm_fll; /* [sng] Group name */
+    char dmn_nm_lcl[NC_MAX_NAME]; /* [sng] Dimension name */
+    size_t grp_nm_fll_lng; /* [nbr] Length of group name */
+    (void)nco_inq_grpname_full(*grp_id_dmn,&grp_nm_fll_lng,(char *)NULL);
+    grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
+    (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
+    (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,flg_prn);
+    (void)fprintf(stdout,"%s: %s nco_inq_dimids() reports following dimensions/IDs are visible to group %s:\n",prg_nm_get(),fnc_nm,grp_nm_fll);
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      (void)nco_inq_dimname(*grp_id_dmn,dmn_ids[dmn_idx],dmn_nm_lcl);
+      (void)fprintf(stdout,"%s/%d,%s",dmn_nm_lcl,dmn_ids[dmn_idx],(dmn_idx == dmn_nbr-1) ? "\n" : ", ");
+    } /* end loop over dmn */
+    if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s nco_inq_dimid() reports group %s sees dimension %s with ID = %d:\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s does not see dimension %s\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
+    if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
+  } /* endif dbg */
+
+  /* If dimension is visible to output group, find exactly where it is defined
+     Search ancestors until group of definition is found ... */
+  while(!grp_dfn_fnd && (rcd == NC_NOERR)){
+    /* ... obtain all dimension IDs in current group (_NOT_ in ancestor groups) ... */
+    (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,0);
+    /* ... and check each against ID of target dimension */
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
+      if(dmn_ids[dmn_idx] == *dmn_id) break;
+    
+    if(dbg_lvl_get() >= nco_dbg_std){
+      char *grp_nm_fll; /* [sng] Group name */
+      size_t grp_nm_fll_lng; /* [nbr] Length of group name */
+      (void)nco_inq_grpname_full(*grp_id_dmn,&grp_nm_fll_lng,(char *)NULL);
+      grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
+      (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
+      (void)fprintf(stdout,"%s: %s reports dimension %s was%s defined in group %s\n",prg_nm_get(),fnc_nm,dmn_nm,(dmn_idx < dmn_nbr) ? "" : " not",grp_nm_fll);
+      if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
+    } /* endif dbg */
+    
+    if(dmn_idx < dmn_nbr){
+      grp_dfn_fnd=True;
+    }else{
+      /* Overwrite current group ID with parent group ID */
+      rcd=nco_inq_grp_parent_flg(*grp_id_dmn,grp_id_dmn);
+    } /* end else */
+  } /* end while */
+ 
+  return rcd;
+
+} /* end nco_inq_dmn_grp_id */
+
+
+void 
+nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
+(dmn_sct ** const dim_1, /* I [sct] Dimension list 1 */
+ const int nbr_dmn_1,  /* I [nbr] Number of dimension structures in structure list */
+ dmn_sct **const dim_2,  /* I [sct] Dimension list 1 */
+ const int nbr_dmn_2,  /* I [nbr] Number of dimension structures in structure list */
+ const char *const fl_sng_1, /* I [sng] Name of first file */
+ const char *fl_sng_2)       /* I [sng] Name of second file */
+{
+  int idx;
+  int jdx;
+
+  for(idx=0;idx<nbr_dmn_2;idx++ ){
+    for(jdx=0;jdx<nbr_dmn_1;jdx++) 
+      if(!strcmp(dim_2[idx]->nm,dim_1[jdx]->nm)) break;
+		 		
+    if(jdx == nbr_dmn_1){
+      (void)fprintf(stderr,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm_get(),dim_2[idx]->nm,fl_sng_2,fl_sng_1);
+      nco_exit(EXIT_FAILURE);
+    } /* end if missing dimension */
+	
+    if(dim_2[idx]->cnt != dim_1[jdx]->cnt){
+      (void)fprintf(stderr,"%s: ERROR %sdimension size mismatch: dimension %s in file %s is size %li while dimension %s in file %s is size %li\n",prg_nm_get(),(dim_1[jdx]->is_rec_dmn) ? "record " : "",dim_1[jdx]->nm,fl_sng_1,dim_1[jdx]->cnt,dim_2[idx]->nm,fl_sng_2,dim_2[idx]->cnt);
+      nco_exit(EXIT_FAILURE); 
+    } /* endif size mismatch */
+  } /* end loop over dimensions */
+} /* end nco_dmn_sct_cmp() */
+
+
 nm_id_sct * /* O [sct] List of dimensions associated with input variable list */
 nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input variable list */
 (const int nc_id, /* I [id] netCDF input-file ID */
@@ -295,163 +462,23 @@ nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input
   return dmn;
 } /* end nco_dmn_lst_ass_var() */
 
-dmn_sct ** /* O [sct] Pointer to free'd structure list */
-nco_dmn_lst_free /* [fnc] Free memory associated with dimension structure list */
-(dmn_sct **dmn_lst, /* I/O [sct] Dimension structure list to free */
- const int dmn_nbr) /* I [nbr] Number of dimension structures in list */
-{
-  /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: Free all memory associated with dynamically allocated dimension structure list */
-  int idx;
-
-  for(idx=0;idx<dmn_nbr;idx++){
-    dmn_lst[idx]=nco_dmn_free(dmn_lst[idx]);
-  } /* end loop over idx */
-
-  /* Free structure pointer last */
-  dmn_lst=(dmn_sct **)nco_free(dmn_lst);
-
-  return dmn_lst;
-} /* end nco_dmn_lst_free() */
-
-nm_id_sct * /* O [sct] Dimension list */
-nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
-(const int nc_id, /* I [id] netCDF file ID */
- CST_X_PTR_CST_PTR_CST_Y(char,dmn_lst_in), /* I [sng] User-specified list of dimension names */
- const int nbr_dmn) /* I [nbr] Total number of dimensions in list */
-{
-  /* Purpose: Create list of dimension name-ID structures from list of dimension name strings */
-  int idx;
-
-  nm_id_sct *dmn_lst;
-  
-  dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn*sizeof(nm_id_sct));
-  for(idx=0;idx<nbr_dmn;idx++){
-    /* Copy name and then get requested dimension ID from input file */
-    dmn_lst[idx].nm=(char *)strdup(dmn_lst_in[idx]);
-
-    /* netCDF3/netCDF4 compat */
-    dmn_lst[idx].grp_nm_fll=(char *)strdup("/");
-    char var_nm_fll[NC_MAX_NAME+1];
-    strcpy(var_nm_fll,"/");
-    strcat(var_nm_fll,dmn_lst[idx].nm);
-    dmn_lst[idx].var_nm_fll=(char *)strdup(var_nm_fll);
-
-    (void)nco_inq_dimid(nc_id,dmn_lst[idx].nm,&dmn_lst[idx].id);
-  } /* end loop over idx */
-  
-  return dmn_lst;
-} /* end nco_dmn_lst_mk() */
 
 void
-nco_dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
-(dmn_sct * const dmn_1, /* I/O [sct] Dimension structure */
- dmn_sct * const dmn_2) /* I/O [sct] Dimension structure */
+nco_dmn_ass_var_trv                  /* [fnc] Create list of all dimensions associated with input variable list */
+(trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Make xrf elements of dimension structures point to eachother */
-  dmn_1->xrf=dmn_2;
-  dmn_2->xrf=dmn_1;
-} /* end nco_dmn_xrf() */
+  /* Purpose: Create list of all dimensions associated with input variable list */
+
+  
+} /* nco_dmn_ass_var_trv() */
+
 
 void 
-nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
-(dmn_sct ** const dim_1, /* I [sct] Dimension list 1 */
- const int nbr_dmn_1,  /* I [nbr] Number of dimension structures in structure list */
- dmn_sct **const dim_2,  /* I [sct] Dimension list 1 */
- const int nbr_dmn_2,  /* I [nbr] Number of dimension structures in structure list */
- const char *const fl_sng_1, /* I [sng] Name of first file */
- const char *fl_sng_2)       /* I [sng] Name of second file */
+nco_dmn_sct_cmp_trv                   /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
+(const trv_tbl_sct * const trv_tbl_1, /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2, /* I [sct] GTT (Group Traversal Table) */
+ const char *const fl_sng_1,          /* I [sng] Name of first file */
+ const char *const fl_sng_2)          /* I [sng] Name of second file */
 {
-  int idx;
-  int jdx;
-
-  for(idx=0;idx<nbr_dmn_2;idx++ ){
-    for(jdx=0;jdx<nbr_dmn_1;jdx++) 
-      if(!strcmp(dim_2[idx]->nm,dim_1[jdx]->nm)) break;
-		 		
-    if(jdx == nbr_dmn_1){
-      (void)fprintf(stderr,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm_get(),dim_2[idx]->nm,fl_sng_2,fl_sng_1);
-      nco_exit(EXIT_FAILURE);
-    } /* end if missing dimension */
-	
-    if(dim_2[idx]->cnt != dim_1[jdx]->cnt){
-      (void)fprintf(stderr,"%s: ERROR %sdimension size mismatch: dimension %s in file %s is size %li while dimension %s in file %s is size %li\n",prg_nm_get(),(dim_1[jdx]->is_rec_dmn) ? "record " : "",dim_1[jdx]->nm,fl_sng_1,dim_1[jdx]->cnt,dim_2[idx]->nm,fl_sng_2,dim_2[idx]->cnt);
-      nco_exit(EXIT_FAILURE); 
-    } /* endif size mismatch */
-  } /* end loop over dimensions */
-} /* end nco_dmn_sct_cmp() */
-
-int /* O [flg] Dimension exists in scope of group (if rcd != NC_NOERR) */
-nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specified group */
-(const int nc_id, /* I [id] netCDF group ID */
- const char * const dmn_nm, /* I [sng] Dimension name */
- int * const dmn_id, /* O [id] Dimension ID in specified group */
- int * const grp_id_dmn) /* O [id] Group ID where dimension visible to specified group is defined */
-{
-  /* Purpose: Return location and ID of named dimension in specified group
-     ncks -O -D 1 -v two_dmn_rec_var ~/nco/data/in_grp.nc ~/foo.nc */
-
-  const char fnc_nm[]="nco_inq_dmn_grp_id()"; /* [sng] Function name */
-
-  const int flg_prn=1; /* [flg] Retrieve all dimensions in all parent groups */        
-
-  int dmn_ids[NC_MAX_DIMS]; /* [nbr] Dimensions IDs array */
-
-  int dmn_idx; /* [idx] Dimension index */
-  int dmn_nbr; /* [nbr] Number of dimensions for group */
-  int rcd; /* [rcd] Return code */
-
-  nco_bool grp_dfn_fnd=False; /* [flg] Group of definition has been found */
-
-  /* Initialize search to start with specified group */
-  *grp_id_dmn=nc_id;
-
-  rcd=nco_inq_dimid_flg(*grp_id_dmn,dmn_nm,dmn_id);
-  
-  if(dbg_lvl_get() >= nco_dbg_std){
-    char *grp_nm_fll; /* [sng] Group name */
-    char dmn_nm_lcl[NC_MAX_NAME]; /* [sng] Dimension name */
-    size_t grp_nm_fll_lng; /* [nbr] Length of group name */
-    (void)nco_inq_grpname_full(*grp_id_dmn,&grp_nm_fll_lng,(char *)NULL);
-    grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
-    (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
-    (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,flg_prn);
-    (void)fprintf(stdout,"%s: %s nco_inq_dimids() reports following dimensions/IDs are visible to group %s:\n",prg_nm_get(),fnc_nm,grp_nm_fll);
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-      (void)nco_inq_dimname(*grp_id_dmn,dmn_ids[dmn_idx],dmn_nm_lcl);
-      (void)fprintf(stdout,"%s/%d,%s",dmn_nm_lcl,dmn_ids[dmn_idx],(dmn_idx == dmn_nbr-1) ? "\n" : ", ");
-    } /* end loop over dmn */
-    if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s nco_inq_dimid() reports group %s sees dimension %s with ID = %d:\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s does not see dimension %s\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
-    if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
-  } /* endif dbg */
-
-  /* If dimension is visible to output group, find exactly where it is defined
-     Search ancestors until group of definition is found ... */
-  while(!grp_dfn_fnd && (rcd == NC_NOERR)){
-    /* ... obtain all dimension IDs in current group (_NOT_ in ancestor groups) ... */
-    (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,0);
-    /* ... and check each against ID of target dimension */
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
-      if(dmn_ids[dmn_idx] == *dmn_id) break;
-    
-    if(dbg_lvl_get() >= nco_dbg_std){
-      char *grp_nm_fll; /* [sng] Group name */
-      size_t grp_nm_fll_lng; /* [nbr] Length of group name */
-      (void)nco_inq_grpname_full(*grp_id_dmn,&grp_nm_fll_lng,(char *)NULL);
-      grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
-      (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
-      (void)fprintf(stdout,"%s: %s reports dimension %s was%s defined in group %s\n",prg_nm_get(),fnc_nm,dmn_nm,(dmn_idx < dmn_nbr) ? "" : " not",grp_nm_fll);
-      if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
-    } /* endif dbg */
-    
-    if(dmn_idx < dmn_nbr){
-      grp_dfn_fnd=True;
-    }else{
-      /* Overwrite current group ID with parent group ID */
-      rcd=nco_inq_grp_parent_flg(*grp_id_dmn,grp_id_dmn);
-    } /* end else */
-  } /* end while */
  
-  return rcd;
-
-} /* end nco_inq_dmn_grp_id */
+} /* nco_dmn_sct_cmp_trv() */

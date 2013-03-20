@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.39 2013-02-23 19:35:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.40 2013-03-20 11:49:23 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -95,17 +95,24 @@ nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
  CST_X_PTR_CST_PTR_CST_Y(char,dmn_lst_in), /* I [sng] User-specified list of dimension names */
  const int nbr_dmn); /* I [nbr] Total number of dimensions in list */
 
+void
+nco_dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
+(dmn_sct * const dmn_1, /* I/O [sct] Dimension structure */
+ dmn_sct * const dmn_2); /* I/O [sct] Dimension structure */
+
+int /* O [flg] Dimension exists in scope of group (if rcd != NC_NOERR) */
+nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specified group */
+(const int nc_id, /* I [id] netCDF group ID */
+ const char * const dmn_nm, /* I [sng] Dimension name */
+ int * const dmn_id, /* O [id] Dimension ID in specified group */
+ int * const grp_id_dmn); /* O [id] Group ID where dimension visible to specified group is defined */
+
 nm_id_sct * /* O [sct] List of dimensions associated with input variable list */
 nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input variable list */
 (const int nc_id, /* I [id] netCDF input-file ID */
  const nm_id_sct * const var, /* I [sct] Variable list */
  const int nbr_var, /* I [nbr] Number of variables in list */
  int * const nbr_dmn); /* O [nbr] Number of dimensions associated with input variable list */
-
-void
-nco_dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
-(dmn_sct * const dmn_1, /* I/O [sct] Dimension structure */
- dmn_sct * const dmn_2); /* I/O [sct] Dimension structure */
 
 void 
 nco_dmn_sct_cmp /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
@@ -116,12 +123,16 @@ nco_dmn_sct_cmp /* [fnc] Check that dims in list 2 are a subset of list 1 and th
  const char *const fl_sng_1, /* I [sng] Name of first file */
  const char *fl_sng_2); /* I [sng] Name of second file */
 
-int /* O [flg] Dimension exists in scope of group (if rcd != NC_NOERR) */
-nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specified group */
-(const int nc_id, /* I [id] netCDF group ID */
- const char * const dmn_nm, /* I [sng] Dimension name */
- int * const dmn_id, /* O [id] Dimension ID in specified group */
- int * const grp_id_dmn); /* O [id] Group ID where dimension visible to specified group is defined */
+void
+nco_dmn_ass_var_trv                   /* [fnc] Create list of all dimensions associated with input variable list */
+(trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
+
+void 
+nco_dmn_sct_cmp_trv                    /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
+(const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
+ const char *const fl_sng_1,           /* I [sng] Name of first file */
+ const char *const fl_sng_2);          /* I [sng] Name of second file */
 
 #ifdef __cplusplus
 } /* end extern "C" */
