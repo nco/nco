@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.604 2013-03-16 10:07:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.605 2013-03-20 07:12:21 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.604 2013-03-16 10:07:15 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.604 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.605 2013-03-20 07:12:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.605 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -186,7 +186,6 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int grp_dpt_fl; /* [nbr] Maximum group depth (root = 0) */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
-  int grp_nbr=0; /* [nbr] Number of groups to extract */
   int grp_nbr_fl;
   int idx;
   int in_id;  
@@ -493,7 +492,6 @@ main(int argc,char **argv)
       (void)nco_rx_comma2hash(optarg_lcl);
       grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
-      grp_nbr=grp_lst_in_nbr;
       break;
     case 'H': /* Toggle printing data to screen */
       PRN_VAR_DATA_TGL=True;
@@ -626,7 +624,7 @@ main(int argc,char **argv)
 #endif /* ENABLE_NETCDF4 */
 
   /* Check -v and -g input names and create extraction list */
-  (void)nco_xtr_mk(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
+  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 

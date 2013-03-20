@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.213 2013-03-20 05:27:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.214 2013-03-20 07:12:21 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.213 2013-03-20 05:27:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.213 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.214 2013-03-20 07:12:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.214 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -589,6 +589,41 @@ main(int argc,char **argv)
   /* Sort extraction list by variable ID for fastest I/O */
   if(xtr_nbr_1 > 1) xtr_lst_1=nco_lst_srt_nm_id(xtr_lst_1,xtr_nbr_1,False);
   if(xtr_nbr_2 > 1) xtr_lst_2=nco_lst_srt_nm_id(xtr_lst_2,xtr_nbr_2,False);
+
+  /* Check -v and -g input names and create extraction list. NB: use var_lst_in_nbr */
+  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_1);
+  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_2);
+
+   /* Change included variables to excluded variables */
+  if(EXCLUDE_INPUT_LIST)(void)nco_xtr_xcl(trv_tbl_1);
+  if(EXCLUDE_INPUT_LIST)(void)nco_xtr_xcl(trv_tbl_2);
+
+  /* Add all coordinate variables to extraction list */
+  if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl_1);
+  if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl_2);
+
+  /* Extract coordinates associated with extracted variables */
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id_1,trv_tbl_1);
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id_2,trv_tbl_2);
+
+  /* Is this a CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
+  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+    /* Implement CF "coordinates" and "bounds" conventions */
+    (void)nco_xtr_cf_add(in_id_1,"coordinates",trv_tbl_1);
+    (void)nco_xtr_cf_add(in_id_1,"bounds",trv_tbl_1);
+  } /* CNV_CCM_CCSM_CF */
+  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+    /* Implement CF "coordinates" and "bounds" conventions */
+    (void)nco_xtr_cf_add(in_id_2,"coordinates",trv_tbl_2);
+    (void)nco_xtr_cf_add(in_id_2,"bounds",trv_tbl_2);
+  } /* CNV_CCM_CCSM_CF */
+
+
+#ifdef NCO_SANITY_CHECK
+  (void)nco_trv_tbl_chk(in_id_1,xtr_lst_1,xtr_nbr_1,trv_tbl_1,True);
+  (void)nco_trv_tbl_chk(in_id_2,xtr_lst_2,xtr_nbr_2,trv_tbl_2,True);
+#endif
   
   /* We now have final list of variables to extract. Phew. */
   
