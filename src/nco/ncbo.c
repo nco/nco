@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.211 2013-03-11 23:09:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.212 2013-03-20 04:45:11 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.211 2013-03-11 23:09:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.211 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.212 2013-03-20 04:45:11 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.212 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -184,6 +184,8 @@ main(int argc,char **argv)
   int nbr_dmn_xtr_2;
   int nbr_glb_att_1;
   int nbr_glb_att_2;
+  int nbr_att_var_1;
+  int nbr_att_var_2;
   int nbr_grp_fl_1;
   int nbr_grp_fl_2;
   int nbr_rec_fl_1;
@@ -230,6 +232,9 @@ main(int argc,char **argv)
   char **grp_lst_in=NULL; /* [sng] User-specified list of groups */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
+
+  trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table */
+  trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table */
   
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -481,7 +486,9 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
-  
+  /* Initialize traversal table */
+  (void)trv_tbl_init(&trv_tbl_1);
+  (void)trv_tbl_init(&trv_tbl_2);
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -521,6 +528,10 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
+
+  /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+  (void)nco_bld_trv_tbl(in_id_1,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_1);
+  (void)nco_bld_trv_tbl(in_id_2,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_2);
   
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
@@ -860,8 +871,6 @@ main(int argc,char **argv)
   } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
-close_and_free: /* goto close_and_free (used for -z, print file list and exit) */
-
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_2_arr[thr_idx]);
@@ -931,6 +940,9 @@ close_and_free: /* goto close_and_free (used for -z, print file list and exit) *
     if(xtr_nbr_1 > 0) var_out=nco_var_lst_free(var_out,xtr_nbr_1);
     var_prc_out=(var_sct **)nco_free(var_prc_out);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
+
+    trv_tbl_free(trv_tbl_1);
+    trv_tbl_free(trv_tbl_2);
   } /* !flg_cln */
 
   /* End timer */ 
