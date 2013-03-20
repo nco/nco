@@ -1,7 +1,11 @@
+2013-03-20  Charlie Zender  <zender@uci.edu>
+
+	* ncecat: insert stubs for netCDF4 RECORD_AGGREGATE
+
 2013-03-19  Pedro Vicente  <pvicente@uci.edu>
 
-	* ncbo. nco_dmn_ass_var_trv() Create list of all dimensions associated with input variable list;
-  done by marking nco_bool flg_ass_var in unique dimension list
+	* ncbo: nco_dmn_ass_var_trv() creates list of dimensions associated with input
+	variable list by marking flg_ass_var in	unique dimension list
 
 2013-03-19  Charlie Zender  <zender@uci.edu>
 

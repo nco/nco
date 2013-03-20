@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.206 2013-02-01 05:56:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.207 2013-03-20 22:24:26 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1357,7 +1357,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* Make sure output is possible */
 #ifndef ENABLE_NETCDF4
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-    (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was built without netCDF4 support\n",prg_nm_get());
     (void)fprintf(stdout,"%s: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* netCDF4 */

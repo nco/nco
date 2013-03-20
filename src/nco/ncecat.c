@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.270 2013-03-11 23:09:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.271 2013-03-20 22:24:26 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -119,13 +119,13 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] New record dimension name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  /* NCO_GRP_OUT_SFX_LNG is number of consecutive numeric digits autumatically generated as group name suffixes */
+  /* NCO_GRP_OUT_SFX_LNG is number of consecutive numeric digits automatically generated as group name suffixes */
 #define	NCO_GRP_OUT_SFX_LNG 2
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.270 2013-03-11 23:09:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.270 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.271 2013-03-20 22:24:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.271 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -171,7 +171,7 @@ main(int argc,char **argv)
   int jdx;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int lmt_nbr_org=0; /* Option d. keep the original command line for GTT init */
+  int lmt_nbr_rgn=0; /* Option d. Original limit number for GTT initialization */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
   int nbr_dmn_xtr;
@@ -397,7 +397,7 @@ main(int argc,char **argv)
     case 'd': /* Copy limit argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
-      lmt_nbr_org=lmt_nbr;
+      lmt_nbr_rgn=lmt_nbr;
       HAVE_LIMITS=True;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
@@ -546,7 +546,38 @@ main(int argc,char **argv)
 
     /* Get number of variables, dimensions, and record dimension ID of input file */
     (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
-    (void)nco_inq_format(in_id,&fl_in_fmt);
+    (void)nco_inq_format(in_id,&fl_in_fmt); /* fxm: not sure why this line must be _here_ rather than at "consanguinous", but it must */
+
+    /* Begin API4 */
+    /* Construct traversal table */
+    trv_tbl_init(&trv_tbl);
+
+    /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+    (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
+
+    /* Get number of variables, dimensions, and global attributes in file, file format */
+    (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
+
+    /* Check -v and -g input names and create extraction list */
+    (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
+
+    /* Change included variables to excluded variables */
+    if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
+    
+    /* Add all coordinate variables to extraction list */
+    if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
+    
+    /* Extract coordinates associated with extracted variables */
+    if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
+
+    /* Is this a CCM/CCSM/CF-format history tape? */
+    CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+    if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+      /* Implement CF "coordinates" and "bounds" conventions */
+      (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
+      (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
+    } /* CNV_CCM_CCSM_CF */
+    /* End API4 */
 
     /* Form initial extraction list which may include extended regular expressions */
     xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
@@ -804,7 +835,7 @@ main(int argc,char **argv)
 
 	/* GPE arguments derived from filenames check for existence of path in output file */
 	rcd=nco_inq_grp_full_ncid_flg(out_id,gpe_arg,&gpe_id);
-	/* Existence implies the current file may overwrite contents of previous file */
+	/* Existence implies current file may overwrite contents of previous file */
 	if(rcd == NC_NOERR) (void)fprintf(stderr,"%s: WARNING GAG path \"%s\" automatically derived from stub of filename %s conflicts with existing path in output file. Any input data with same absolute path names as contents of a previous input file will be overwritten. Is the same input file specified multiple times? Is this intentional?\nHINT: To distribute copies of a single input file into different groups, use GPE to generate distinct output group names, e.g., %s -G copy in.nc in.nc out.nc\n",prg_nm_get(),gpe_arg,fl_in,prg_nm_get());
       } /* !grp_out */
       /* Free old structure, if any, before re-use */
@@ -833,7 +864,7 @@ main(int argc,char **argv)
       trv_tbl_init(&trv_tbl);
 
       /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-      (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_org,lmt,FORTRAN_IDX_CNV,trv_tbl);
+      (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
       /* Get number of variables, dimensions, and global attributes in file, file format */
       (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);

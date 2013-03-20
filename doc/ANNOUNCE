@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.552 2013-03-20 02:58:01 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.553 2013-03-20 22:24:26 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.0 are ready. 
 
@@ -27,28 +27,11 @@ A. fxm
 
 BUG FIXES:
 
-A. ncks correctly interprets scopes in corner cases including:
-   1. Dimension defined in ancestor of variable's group
-   2. Coordinate defined in relative (sibling, ancestor, descendent)
-      of variable's group
-   3. Single dimension has multiple associated coordinates
-   Handling these cases correctly is a major milestone for NCO.
-
-B. ncks prints accurate netCDF4 metadata summaries (with -M) and
-   breaks dimensions into fixed vs. record, and variables into
-   atomic-types vs. non-atomic. Formerly, the number of netCDF4
-   dimensions was ill-defined.
-
-C. ncks 4.2.4-4.2.5 failed when attempting to copy certain netCDF3 
-   files (known as MM3 files because they contain multiple record
-   variables that require a special copying algorithm) into netCDF4
-   files when group-path-editing (GPE) was invoked. This has been
-   fixed so commands like this work again: 
-   ncks -G g1 -4 in.nc out.nc
+A. fxm
 
 KNOWN BUGS NOT YET FIXED:
 
-   This section of the ANNOUNCE file reports and reminds users of the
+   This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.3.0 built/tested with netCDF
    4.3.0-rc3 released 20130311 on top of HDF5 hdf5-1.8.9 with these methods: 
@@ -60,7 +43,7 @@ A. NOT YET FIXED
    Correctly read netCDF4 input over DAP, write netCDF4 output, then read resulting file.
    Replacing netCDF4 with netCDF3 in either location of preceding sentence leads to success.
    DAP non-transparency: Works locally, fails through DAP server.
-   Unclear whether resulting file is "legal" because of dimension ID ordering assumptions
+   Unclear whether resulting file is "legal" because of dimension ID ordering assumptions.
 
    Demonstration:
    ncks -4 -O -v three_dmn_rec_var http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc ~/foo.nc
@@ -82,7 +65,7 @@ B. NOT YET FIXED
    20130319: Verified problem still exists
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
-C. NOT YET FIXED
+C. NOT YET FIXED (requires change to DAP protocol)
    Unable to retrieve contents of variables including period '.' in name
    Metadata is returned successfully, data is not.
    DAP non-transparency: Works locally, fails through DAP server.
@@ -92,12 +75,12 @@ C. NOT YET FIXED
 
    20120731: Verified problem still exists. 
    Stopped testing because inclusion of var_nm.dot broke all test scripts.
-   NB: Problem hard to fix since DAP interprets '.' as structure delimiter in query string of HTTP requests.
+   NB: Hard to fix since DAP interprets '.' as structure delimiter in HTTP query string.
 
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-D. NOT YET FIXED
-   Correctly read scalar characters over.
+D. NOT YET FIXED (requires change to DAP protocol)
+   Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol
 
@@ -122,7 +105,8 @@ E. NOT YET FIXED
 
 F. NOT YET FIXED
    ncdump is unable to dump the NCO test file in_grp.nc
-   Unclear whether problem with ncdump, HDF5, or with netCDF4 library implementation
+   This is not an NCO problem per se, but may indicate a deeper netCDF bug that affects NCO.
+   Unclear whether problem with ncdump, HDF5, or with netCDF4 library implementation.
 
    Demonstration:
    ncdump ~/nco/data/in_grp.nc # breaks with "NetCDF: Invalid argument

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.605 2013-03-20 07:12:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.606 2013-03-20 22:24:26 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.605 2013-03-20 07:12:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.605 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.606 2013-03-20 22:24:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.606 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -609,19 +609,12 @@ main(int argc,char **argv)
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
-  /* Get number of variables, dimensions, and global attributes in file, file format */
+  /* Get number of variables, dimensions, and global attributes in file */
   (void)trv_tbl_inq(&att_glb_nbr,&att_grp_nbr,&att_var_nbr,&dmn_nbr_fl,&dmn_rec_fl,&grp_dpt_fl,&grp_nbr_fl,&var_ntm_fl,&var_nbr_fl,trv_tbl);
-  (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Make output and input files consanguinous */
+  (void)nco_inq_format(in_id,&fl_in_fmt);
   if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-#ifndef ENABLE_NETCDF4
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-    (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was not built with netCDF4 support\n",prg_nm_get());
-    (void)fprintf(stdout,"%s: HINT: Obtain or build a netCDF4-enabled version of NCO. Try, e.g., ./configure --enable-netcdf4 ...;make;make install\n",prg_nm_get());
-    nco_exit(EXIT_FAILURE);
-  } /* netCDF4 */
-#endif /* ENABLE_NETCDF4 */
 
   /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
