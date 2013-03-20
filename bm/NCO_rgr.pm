@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.238 2013-03-19 02:31:56 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.239 2013-03-20 07:32:08 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -135,7 +135,6 @@ if( $? == -1 ){
     print "failed to execute: ncks --get_prg_info: $!\n";
 }else{
   my $exit_value=$? >> 8;
-  printf "ncks --get_prg_info exited with value %d", $exit_value;
   if ($exit_value==20) {$HAVE_NETCDF4_H=0;}else{$HAVE_NETCDF4_H=1;}
   if ($exit_value==30) {$ENABLE_NETCDF4=1;}else{$ENABLE_NETCDF4=0;}
 }

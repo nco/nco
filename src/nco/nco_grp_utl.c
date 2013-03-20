@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.679 2013-03-19 20:35:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.680 2013-03-20 07:32:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1105,7 +1105,6 @@ nco_get_prg_info(void)                 /* [fnc] Get program info */
 #endif /* ENABLE_NETCDF4 */
 #endif /* HAVE_NETCDF4_H */
 
-  (void)fprintf(stdout,"%s: INFO: %d\n",prg_nm_get(),ret);
   exit(ret);
 } /* end nco_get_prg_info() */
 
