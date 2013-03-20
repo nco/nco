@@ -1,18 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.551 2013-03-19 21:13:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.552 2013-03-20 02:58:01 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release continues to improve support of netCDF4 files in ncks and
-ncecat, and add a sprinkle of new and convenient features to the rest
-of NCO. ncks and ncecat now handle corner cases of netCDF4 groups,
-dimensions, and coordinates. We perverted our own test file with
-tortuous situations that all work, such as dimensions, coordinates, 
-and variables all being in separate groups.
+This release ...
 
-ncks and ncecat now work well on many common HDF5 datasets, e.g.,
+Reminder that ncks and ncecat work on many common HDF5 datasets, e.g.,
 NASA AURA HIRDLS HDF-EOS5
 NASA ICESat GLAS HDF5
 NASA SBUV HDF5...
@@ -28,34 +23,7 @@ Charlie
 
 NEW FEATURES:
 
-A. Regular expressions (rx's) now work on full paths, not just stubs. 
-   Previously, rx's only worked on last components of full names.
-   Now rx's like ncks -v /cesm/temperature.+ can succeed.
-   http://nco.sf.net/nco.html#rx
-
-B. ncks now counts and then ignores non-atomic type netCDF4 variables.
-   Previously, ncks would die if it encountered the new netCDF4
-   non-atomic types: vlen, opaque, enum, and compound.
-   Now ncks prints the variable name and then ignores it and processes
-   all the atomic-type (float, double, int, string...) variables as
-   usual. 
-
-C. ncks prints fulls paths of non-local dimensions and coordinates.
-
-D. ncrename allows "mandatory attributes" (i.e., those not prefixed
-   with a period which would make them "optional attributes") to be
-   present in groups/global instead of in variables.
-
-E. ncflint accepts a new switch, --fix_rec_crd, that prevents record
-   coordinates from being multiplied/interpolated. By default, ncflint
-   multplies/interpolates record coordinates (like time) but not other
-   coordinates (like, typically, latitude). This is because ncflint
-   is most often used to time-interpolate files (so you want the time
-   to change, but not the spatial coordinates). However, ncflint is
-   also used quite often to "scale" files by multiplying the variables
-   by a constant. Now one can easily multiply all variables (except
-   coordinates) by a constant, and if --fix_rec_crd is specified, the
-   record coordinate will not change.
+A. fxm
 
 BUG FIXES:
 
