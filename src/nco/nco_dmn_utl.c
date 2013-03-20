@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.52 2013-03-20 12:57:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.53 2013-03-20 14:24:08 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -367,7 +367,9 @@ nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and 
 
   for(idx=0;idx<nbr_dmn_2;idx++ ){
     for(jdx=0;jdx<nbr_dmn_1;jdx++) 
-      if(!strcmp(dim_2[idx]->nm,dim_1[jdx]->nm)) break;
+      if(!strcmp(dim_2[idx]->nm,dim_1[jdx]->nm)) {
+        break;
+      }
 		 		
     if(jdx == nbr_dmn_1){
       (void)fprintf(stderr,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm_get(),dim_2[idx]->nm,fl_sng_2,fl_sng_1);
@@ -464,6 +466,40 @@ nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input
 
 
 void
+nco_dmn_ass_var_prt                  /* [fnc] Print list of all dimensions associated with input variable list */
+(trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Print list of all dimensions associated with input variable list */
+
+  int nbr_flg_ass_var; /* [nbr] Number of dimensions associated with input variable list */
+
+  nbr_flg_ass_var=0;
+
+  /* Loop unique dimension list */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+      if(trv_tbl->lst_dmn[dmn_idx].flg_ass_var == True){
+        nbr_flg_ass_var++;
+      }
+
+  } /* Loop unique dimension list */
+
+  (void)fprintf(stdout,"%s: INFO List: %d extraction dimensions\n",prg_nm_get(),nbr_flg_ass_var); 
+
+  /* Loop unique dimension list */
+  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+      if(trv_tbl->lst_dmn[dmn_idx].flg_ass_var == True){
+        (void)fprintf(stdout,"[%d] %s\n",dmn_idx,trv_tbl->lst_dmn[dmn_idx].nm_fll); 
+      }
+
+  } /* Loop unique dimension list */
+} /* nco_dmn_ass_var_trv() */
+
+
+void
 nco_dmn_ass_var_trv                  /* [fnc] Create list of all dimensions associated with input variable list */
 (trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
 {
@@ -472,8 +508,8 @@ nco_dmn_ass_var_trv                  /* [fnc] Create list of all dimensions asso
   /* Loop object list  */
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
 
-    /* Filter variables  */
-    if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
+    /* Filter extracted variables  */
+    if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[var_idx].flg_xtr){
       trv_sct var_trv=trv_tbl->lst[var_idx];   
 
       /* Loop variable dimension names */
@@ -505,5 +541,34 @@ nco_dmn_sct_cmp_trv                   /* [fnc] Check that dims in list 2 are a s
  const char *const fl_sng_1,          /* I [sng] Name of first file */
  const char *const fl_sng_2)          /* I [sng] Name of second file */
 {
- 
+
+  /* Loop unique dimension list */
+  for(unsigned dmn_idx_1=0;dmn_idx_1<trv_tbl_1->nbr_dmn;dmn_idx_1++){
+    dmn_trv_sct dmn_trv_1=trv_tbl_1->lst_dmn[dmn_idx_1]; 
+
+    /* Flag associated variable is True */
+    if(dmn_trv_1.flg_ass_var == True) {
+
+      /* Loop unique dimension list */
+      for(unsigned dmn_idx_2=0;dmn_idx_2<trv_tbl_2->nbr_dmn;dmn_idx_2++){
+        dmn_trv_sct dmn_trv_2=trv_tbl_2->lst_dmn[dmn_idx_2]; 
+
+        /* Flag associated variable is True */
+        if(dmn_trv_2.flg_ass_var == True) {
+
+          if(strcmp(dmn_trv_1.nm_fll,dmn_trv_2.nm_fll) == 0){
+            break;
+          }
+
+          if(dmn_idx_2 == trv_tbl_1->nbr_dmn){
+            (void)fprintf(stderr,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm_get(),
+              dmn_trv_2.nm_fll,fl_sng_2,fl_sng_1);
+            nco_exit(EXIT_FAILURE);
+          } /* end if missing dimension */
+
+        
+        } /* Flag associated variable is True */
+      } /* Flag associated variable is True */
+    } /* Loop unique dimension list */
+  } /* Loop unique dimension list */
 } /* nco_dmn_sct_cmp_trv() */

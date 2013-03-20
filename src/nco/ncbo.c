@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.215 2013-03-20 07:32:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.216 2013-03-20 14:24:08 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.215 2013-03-20 07:32:09 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.215 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.216 2013-03-20 14:24:08 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.216 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -642,10 +642,16 @@ main(int argc,char **argv)
   dmn_lst_1=nco_dmn_lst_ass_var(in_id_1,xtr_lst_1,xtr_nbr_1,&nbr_dmn_xtr_1);
   dmn_lst_2=nco_dmn_lst_ass_var(in_id_2,xtr_lst_2,xtr_nbr_2,&nbr_dmn_xtr_2);
 
+  /* Find dimensions associated with variables to be extracted */
+  (void)nco_dmn_ass_var_trv(trv_tbl_1);
+  (void)nco_dmn_ass_var_trv(trv_tbl_2);
+
   /* Print dimension list */
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)xtr_lst_prn(dmn_lst_1,nbr_dmn_xtr_1);
-    (void)xtr_lst_prn(dmn_lst_2,nbr_dmn_xtr_2);   
+    (void)xtr_lst_prn(dmn_lst_2,nbr_dmn_xtr_2); 
+    (void)nco_dmn_ass_var_prt(trv_tbl_1);
+    (void)nco_dmn_ass_var_prt(trv_tbl_2);
   }
 
   /* Fill-in dimension structure for all extracted dimensions */
@@ -657,10 +663,11 @@ main(int argc,char **argv)
   dmn_lst_1=nco_nm_id_lst_free(dmn_lst_1,nbr_dmn_xtr_1);
   dmn_lst_2=nco_nm_id_lst_free(dmn_lst_2,nbr_dmn_xtr_2);
 
-
+  /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
+  (void)nco_dmn_sct_cmp(dim_1,nbr_dmn_xtr_1,dim_2,nbr_dmn_xtr_2,fl_in_1,fl_in_2); 
 
   /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
-  (void)nco_dmn_sct_cmp(dim_1,nbr_dmn_xtr_1,dim_2,nbr_dmn_xtr_2,fl_in_1,fl_in_2);    
+  (void)nco_dmn_sct_cmp_trv(trv_tbl_1,trv_tbl_2,fl_in_1,fl_in_2); 
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
