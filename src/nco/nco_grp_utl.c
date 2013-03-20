@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.680 2013-03-20 07:32:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.681 2013-03-20 12:57:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1595,9 +1595,6 @@ nco_prt_dmn /* [fnc] Print dimensions for a group  */
 } /* end nco_prt_dmn() */
 
 
-
-
-
 dmn_trv_sct *                         /* O [sct] GTT dimension structure (stored in *groups*) */
 nco_dmn_trv_sct                       /* [fnc] Return unique dimension object from unique ID */
 (const int dmn_id,                    /* I [id] Unique dimension ID */
@@ -2049,6 +2046,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst_dmn[idx].crd=NULL; 
     trv_tbl->lst_dmn[idx].dmn_id=dmn_ids_grp[dmn_idx];
     trv_tbl->lst_dmn[idx].has_crd_scp=nco_obj_typ_err;
+    trv_tbl->lst_dmn[idx].flg_ass_var=False;
 
     /* Free constructed name */
     dmn_nm_fll=(char *)nco_free(dmn_nm_fll);

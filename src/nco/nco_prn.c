@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.95 2013-03-11 19:44:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.96 2013-03-20 12:57:07 pvicente Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -618,8 +618,6 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
 {
   /* Purpose: Print variable metadata */
 
-  const char fnc_nm[]="nco_prn_var_dfn()"; /* [sng] Function name */
-
   int deflate; /* [flg] Deflation is on */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
   int packing; /* [flg] Variable is packed */
@@ -721,7 +719,7 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
   /* Print dimension sizes and names */
 
   /* Loop dimensions for object (variable)  */
-  for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++) {
+  for(dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++) {
 
     /* This dimension has a coordinate variable */
     if (var_trv->var_dmn[dmn_idx].is_crd_var == True){

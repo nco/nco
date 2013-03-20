@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.51 2013-03-20 11:49:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.52 2013-03-20 12:57:07 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -469,7 +469,32 @@ nco_dmn_ass_var_trv                  /* [fnc] Create list of all dimensions asso
 {
   /* Purpose: Create list of all dimensions associated with input variable list */
 
-  
+  /* Loop object list  */
+  for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
+
+    /* Filter variables  */
+    if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
+      trv_sct var_trv=trv_tbl->lst[var_idx];   
+
+      /* Loop variable dimension names */
+      for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++){
+
+        /* Unique dimension ID */
+        int var_dmn_id=var_trv.var_dmn[dmn_idx_var].dmn_id;
+
+        /* Loop unique dimension list */
+        for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+          dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+
+          /* ID match ? */
+          if (dmn_trv.dmn_id == var_dmn_id){
+            trv_tbl->lst_dmn[dmn_idx].flg_ass_var=True;
+          } /* ID match ? */
+        } /* Loop unique dimension list */
+      } /* Loop variable dimension names */
+    } /* Filter variables  */
+  } /* Loop object list  */
+
 } /* nco_dmn_ass_var_trv() */
 
 

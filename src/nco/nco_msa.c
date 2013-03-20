@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.197 2013-03-11 23:09:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.198 2013-03-20 12:57:07 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1790,8 +1790,6 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   1) Object to write (variable) is passed as parameter
   */
 
-  const char fnc_nm[]="nco_cpy_var_val_mlt_lmt_trv()"; /* [sng] Function name  */
-
   char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 
 
   int nbr_dim;                     /* [nbr] Number of dimensions */
@@ -1931,8 +1929,6 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
  lmt_msa_sct ***lmt_msa)            /* O [sct] MSA array for dimensions */
 {
   /* Purpose: Deep copy MSA structs from table to local array used in print or write */
-
-  const char fnc_nm[]="nco_cpy_msa_lmt()"; /* [sng] Function name  */
 
   /* Loop dimensions for object (variable)  */
   for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
