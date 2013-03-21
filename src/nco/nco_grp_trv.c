@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.78 2013-03-09 07:38:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.79 2013-03-21 13:50:42 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -242,9 +242,10 @@ trv_tbl_srt /* [fnc] Sort traversal table */
 } /* end trv_tbl_srt() */
 
 void                          
-trv_tbl_mch                           /* [fnc] Match 2 tables (find common objects) */
-(trv_tbl_sct * const trv_tbl_1,       /* I/O [sct] Traversal table 1 */  
- trv_tbl_sct * const trv_tbl_2)       /* I/O [sct] Traversal table 2 */  
+trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) and export common objects */
+(trv_tbl_sct * const trv_tbl_1,   /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,   /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl)     /* O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Find common objects; the algorithm used for this search is the
   *  cosequential match algorithm and is described in
@@ -258,7 +259,7 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
   */
 
   typedef struct{		
-    char *var_nm_fll; /* [sng] Full path of variable */
+    char *var_nm_fll;       /* [sng] Full path of variable */
     nco_bool flg_in_fl[2];  /* [flg] Is this name if each file?; files are [0] and [1] */
   } nco_cmn_t;
 
@@ -276,11 +277,13 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
   (void)trv_tbl_srt(trv_tbl_1);
   (void)trv_tbl_srt(trv_tbl_2);
 
-  (void)fprintf(stdout,"Sorted table 1\n");
-  (void)trv_tbl_prn(trv_tbl_1);
-  (void)fprintf(stdout,"Sorted table 2\n");
-  (void)trv_tbl_prn(trv_tbl_2);
-  (void)fprintf(stdout,"Common objects\n");
+  if(dbg_lvl_get() >= 15){
+    (void)fprintf(stdout,"Sorted table 1\n");
+    (void)trv_tbl_prn(trv_tbl_1);
+    (void)fprintf(stdout,"Sorted table 2\n");
+    (void)trv_tbl_prn(trv_tbl_2);
+    (void)fprintf(stdout,"Common objects\n");
+  }
 
   /* Get number of objects in each table */
   nbr_tbl_1=trv_tbl_1->nbr;
@@ -316,7 +319,7 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      (void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
 
       idx_tbl_1++;
       idx_tbl_2++;
@@ -331,7 +334,7 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      (void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
 
       idx_tbl_1++;
     }
@@ -345,7 +348,7 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
-      (void)fprintf(stdout,"tbl_2[%d]:%s\n",idx_tbl_2,trv_2.nm_fll);
+      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_2[%d]:%s\n",idx_tbl_2,trv_2.nm_fll);
 
       idx_tbl_2++;
     }
@@ -368,7 +371,7 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      (void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
 
       idx_tbl_1++;
     }
@@ -388,27 +391,32 @@ trv_tbl_mch                           /* [fnc] Match 2 tables (find common objec
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
-      (void)fprintf(stdout,"tbl_2[%d]:%s\n",idx_tbl_2,trv_2.nm_fll);
+      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_2[%d]:%s\n",idx_tbl_2,trv_2.nm_fll);
 
       idx_tbl_2++;
     }
   }
 
   /* Print the list */
-  (void)fprintf(stdout,"\n");
-  (void)fprintf(stdout,"file1     file2\n");
-  (void)fprintf(stdout,"---------------------------------------\n");
+  if(dbg_lvl_get() >= nco_dbg_vrb){
+    (void)fprintf(stdout,"Common objects\n");
+    (void)fprintf(stdout,"file1     file2\n");
+    (void)fprintf(stdout,"---------------------------------------\n");
+    for(int idx=0;idx<idx_lst;idx++){
+      char c1, c2;
+
+      c1 = (cmn_lst[idx].flg_in_fl[0]) ? 'x' : ' ';
+      c2 = (cmn_lst[idx].flg_in_fl[1]) ? 'x' : ' ';
+      (void)fprintf(stdout,"%5c %6c    %-15s\n", c1, c2, cmn_lst[idx].var_nm_fll);
+
+    } /* end loop over idx */
+    (void)fprintf(stdout,"\n");
+  }
+
+
   for(int idx=0;idx<idx_lst;idx++){
-    char c1, c2;
-
-    c1 = (cmn_lst[idx].flg_in_fl[0]) ? 'x' : ' ';
-    c2 = (cmn_lst[idx].flg_in_fl[1]) ? 'x' : ' ';
-    (void)fprintf(stdout,"%5c %6c    %-15s\n", c1, c2, cmn_lst[idx].var_nm_fll);
-
     cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
-  } /* end loop over idx */
-  (void)fprintf(stdout,"\n");
-
+  } 
   cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
 } /* end trv_tbl_mch() */

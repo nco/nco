@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.37 2013-03-09 07:38:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.38 2013-03-21 13:50:42 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -85,9 +85,9 @@ nco_cmp_trv_tbl_nm_fll  /* [fnc] Compare two trv_sct's by full name member */
  const void *val_2); /* I [sct] trv_sct to compare */
 
 void                          
-trv_tbl_mch                           /* [fnc] Match 2 tables (find common objects) */
-(trv_tbl_sct * const trv_tbl_1,       /* I/O [sct] Traversal table 1 */  
- trv_tbl_sct * const trv_tbl_2);      /* I/O [sct] Traversal table 2 */  
-
+trv_tbl_mch                          /* [fnc] Match 2 tables (find common objects) and export common objects */
+(trv_tbl_sct * const trv_tbl_1,      /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,      /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl);       /* O [sct] GTT (Group Traversal Table) */
 
 #endif /* NCO_GRP_TRV_H */

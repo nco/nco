@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.216 2013-03-20 14:24:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.217 2013-03-21 13:50:42 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.216 2013-03-20 14:24:08 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.216 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.217 2013-03-21 13:50:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.217 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -242,8 +242,9 @@ main(int argc,char **argv)
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
 
-  trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table */
-  trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table */
+  trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table input file 1 */
+  trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table input file 2 */
+  trv_tbl_sct *trv_tbl=NULL;   /* [lst] Traversal table in output file */
   
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -495,9 +496,10 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
-  /* Initialize traversal table */
+  /* Initialize traversal tables */
   (void)trv_tbl_init(&trv_tbl_1);
   (void)trv_tbl_init(&trv_tbl_2);
+  (void)trv_tbl_init(&trv_tbl);
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -626,6 +628,8 @@ main(int argc,char **argv)
 #endif
 
   /* We now have final list of variables to extract. Phew. */
+
+  (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,trv_tbl);          
 
 
   /* Find coordinate/dimension values associated with user-specified limits
@@ -990,6 +994,7 @@ main(int argc,char **argv)
 
     trv_tbl_free(trv_tbl_1);
     trv_tbl_free(trv_tbl_2);
+    trv_tbl_free(trv_tbl);
   } /* !flg_cln */
 
   /* End timer */ 
