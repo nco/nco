@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.217 2013-03-21 13:50:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.218 2013-03-21 15:05:35 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -105,7 +105,7 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
-  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   
   char **fl_lst_abb=NULL; /* Option a */
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.217 2013-03-21 13:50:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.217 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.218 2013-03-21 15:05:35 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.218 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;

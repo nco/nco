@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.79 2013-03-21 13:50:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.80 2013-03-21 15:05:35 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -256,7 +256,13 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
   *  if Name(1) is greater than Name(2), read the next name from List 2
   *  if the names are the same, read the next names from the two lists 
   * 
+  * Used in ncbo; ncbo performs binary operations on variables in file 1 and the corresponding variables
+  * (those with the same name) in file 2 and stores the results in file 3.
+  * This function builds an output traversal table trv_tbl from common absolute names in tables 1 and 2
+  *
   */
+
+  const char fnc_nm[]="trv_tbl_mch()"; /* [sng] Function name */
 
   typedef struct{		
     char *var_nm_fll;       /* [sng] Full path of variable */
@@ -264,25 +270,27 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
   } nco_cmn_t;
 
   nco_cmn_t *cmn_lst=NULL;       /* [sct] A list of common names */ 
+
   int nbr_tbl_1;                 /* [nbr] Number of items in list 1 */
   int nbr_tbl_2;                 /* [nbr] Number of items in list 2 */
-  nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
   int nco_cmp;                   /* [nbr] Return value of strcmp() */ 
   int idx_tbl_1;                 /* [idx] Current position in List 1 */ 
   int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
   int idx_lst;                   /* [idx] Current position in common List */ 
+
+  nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
   nco_bool flg_in_fl[2];         /* [flg] Is this name if each file?; files are [0] and [1] */
 
   /* Tables *must* be sorted */
   (void)trv_tbl_srt(trv_tbl_1);
   (void)trv_tbl_srt(trv_tbl_2);
 
-  if(dbg_lvl_get() >= 15){
-    (void)fprintf(stdout,"Sorted table 1\n");
+  if(dbg_lvl_get() == 15){
+    (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_1);
-    (void)fprintf(stdout,"Sorted table 2\n");
+    (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_2);
-    (void)fprintf(stdout,"Common objects\n");
+    (void)fprintf(stdout,"%s: INFO %s reports Common objects\n",prg_nm_get(),fnc_nm);
   }
 
   /* Get number of objects in each table */
@@ -319,7 +327,17 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
+
+      /* Add one more element to GTT (nco_realloc nicely handles first time/not first time insertions) */
+
+      if(dbg_lvl_get() >= 16){
+        (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll);
+
+
+      }
+
+
 
       idx_tbl_1++;
       idx_tbl_2++;
@@ -334,7 +352,7 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
 
       idx_tbl_1++;
     }
@@ -348,7 +366,7 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_2[%d]:%s\n",idx_tbl_2,trv_2.nm_fll);
+      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
 
       idx_tbl_2++;
     }
@@ -371,7 +389,7 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_1[%d]:%s\n",idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
 
       idx_tbl_1++;
     }
@@ -391,7 +409,7 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() >= 15)(void)fprintf(stdout,"tbl_2[%d]:%s\n",idx_tbl_2,trv_2.nm_fll);
+      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
 
       idx_tbl_2++;
     }
@@ -399,7 +417,7 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
 
   /* Print the list */
   if(dbg_lvl_get() >= nco_dbg_vrb){
-    (void)fprintf(stdout,"Common objects\n");
+    (void)fprintf(stdout,"%s: INFO %s reports Common objects\n",prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"file1     file2\n");
     (void)fprintf(stdout,"---------------------------------------\n");
     for(int idx=0;idx<idx_lst;idx++){
