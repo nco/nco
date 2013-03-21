@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.80 2013-03-21 15:05:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.81 2013-03-21 22:45:34 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -329,13 +329,12 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
 
       if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
 
-      /* Add one more element to GTT (nco_realloc nicely handles first time/not first time insertions) */
-
+      
+      /* Add this common element to new GTT */
       if(dbg_lvl_get() >= 16){
         (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll);
-
-
       }
+      (void)trv_sct_new(&trv_1,trv_tbl);
 
 
 
@@ -437,5 +436,17 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
   } 
   cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
-} /* end trv_tbl_mch() */
+} /* trv_tbl_mch() */
+
+
+void                          
+trv_sct_new                       /* [fnc] Enter a new object to table */
+(trv_sct *trv,                    /* I [sct] Object structure to enter in new table */
+ trv_tbl_sct * const trv_tbl)     /* O [sct] GTT (Group Traversal Table) */
+{
+
+
+
+
+} /* trv_sct_new() */
 
