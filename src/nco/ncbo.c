@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.226 2013-03-22 17:27:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.227 2013-03-22 17:51:38 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.226 2013-03-22 17:27:32 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.226 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.227 2013-03-22 17:51:38 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.227 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -757,7 +757,7 @@ main(int argc,char **argv)
 
 #ifdef USE_TRV_API
   /* Match 2 tables (find common objects) and process common objects (define mode) */
-  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,dfl_lvl,trv_tbl_1,trv_tbl_2,True);
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,trv_tbl_1,trv_tbl_2,True);
 #else /* USE_TRV_API */
 
   /* Copy global attributes */
@@ -794,7 +794,7 @@ main(int argc,char **argv)
 
 #ifdef USE_TRV_API
   /* Match 2 tables (find common objects) and process common objects (write mode) */
-  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,dfl_lvl,trv_tbl_1,trv_tbl_2,False);
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,trv_tbl_1,trv_tbl_2,False);
 #else /* USE_TRV_API */
 
 

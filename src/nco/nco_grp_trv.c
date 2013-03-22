@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.88 2013-03-22 17:27:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.89 2013-03-22 17:51:38 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -245,14 +245,19 @@ trv_tbl_srt /* [fnc] Sort traversal table */
 
 
 void                          
-trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) and process common objects  */
-(const int nc_id_1,               /* I [id] netCDF input-file ID */
- const int nc_id_2,               /* I [id] netCDF input-file ID */
- const int nc_out_id,             /* I [id] netCDF output-file ID */
- const int dfl_lvl,               /* I [enm] Deflate level [0..9] */
- trv_tbl_sct * const trv_tbl_1,   /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,   /* I/O [sct] GTT (Group Traversal Table) */
- nco_bool flg_def)                /* I [flg] Action type (True for define variables, False when write variables ) */
+trv_tbl_mch                            /* [fnc] Match 2 tables (find common objects) and process common objects  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ int * const cnk_map_ptr,              /* I [enm] Chunking map */
+ int * const cnk_plc_ptr,              /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ nco_bool flg_def)                     /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   /* Purpose: Find common objects; the algorithm used for this search is the
   *  cosequential match algorithm and is described in
@@ -284,9 +289,13 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
   int idx_tbl_1;                 /* [idx] Current position in List 1 */ 
   int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
   int idx_lst;                   /* [idx] Current position in common List */ 
+  int fl_fmt;                    /* [enm] netCDF file format */
 
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
   nco_bool flg_in_fl[2];         /* [flg] Is this name if each file?; files are [0] and [1] */
+
+  /* Get output file format */
+  (void)nco_inq_format(nc_out_id,&fl_fmt);
 
   /* Tables *must* be sorted */
   (void)trv_tbl_srt(trv_tbl_1);
@@ -357,6 +366,7 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
         if(flg_def){
 
           int grp_id;     /* [id] Group ID in input file */
+          int var_id;     /* [id] Variable ID in input file */
           int grp_out_id; /* [id] Group ID in output file */ 
           int var_out_id; /* [id] Variable ID in output file */
 
@@ -371,6 +381,14 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
           /* Define variable in output file. NB. using table 1 as parameter */
           var_out_id=nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id,grp_out_id,dfl_lvl,NULL,NULL,&trv_1,trv_tbl_1);
 
+          /* Set chunksize parameters */
+          if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&trv_1);
+
+          /* Get variable ID */
+          (void)nco_inq_varid(grp_id,trv_1.nm,&var_id);
+
+          /* Copy variable's attributes */
+          (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
 
         }
 
