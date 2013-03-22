@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.82 2013-03-22 12:33:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.83 2013-03-22 13:29:26 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -242,7 +242,7 @@ trv_tbl_srt /* [fnc] Sort traversal table */
 } /* end trv_tbl_srt() */
 
 void                          
-trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects)  */
+trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) and process common objects  */
 (trv_tbl_sct * const trv_tbl_1,   /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2)   /* I/O [sct] GTT (Group Traversal Table) */
 {
@@ -327,6 +327,12 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
       idx_lst++;
 
       if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
+
+      if(dbg_lvl_get() >= 16){ 
+        (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
+      } 
+
+
 
       idx_tbl_1++;
       idx_tbl_2++;
