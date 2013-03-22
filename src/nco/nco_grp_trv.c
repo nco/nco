@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.84 2013-03-22 14:56:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.85 2013-03-22 15:47:19 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -339,7 +339,21 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
         (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
       } 
 
+      /* Define mode */
+      if(flg_def){
 
+
+
+      }
+
+      /* ! Define mode */
+      else {
+
+
+
+
+      }
+      /* ! Define mode */
 
       idx_tbl_1++;
       idx_tbl_2++;
