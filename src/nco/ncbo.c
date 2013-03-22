@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.223 2013-03-22 14:56:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.224 2013-03-22 15:18:55 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.223 2013-03-22 14:56:50 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.223 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.224 2013-03-22 15:18:55 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.224 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -750,8 +750,10 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-  /* Match 2 tables (find common objects) and process common objects */
+#ifdef USE_TRV_API
+  /* Match 2 tables (find common objects) and process common objects (define mode) */
   (void)trv_tbl_mch(in_id_1,in_id_2,out_id,trv_tbl_1,trv_tbl_2,True);
+#else /* USE_TRV_API */
 
   /* Copy global attributes */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -771,6 +773,8 @@ main(int argc,char **argv)
   /* Set chunksize parameters */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl_1,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
+#endif /* USE_TRV_API */
+
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
@@ -781,6 +785,13 @@ main(int argc,char **argv)
     (void)nco__enddef(out_id,hdr_pad);
     if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
+
+
+#ifdef USE_TRV_API
+  /* Match 2 tables (find common objects) and process common objects (write mode) */
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,trv_tbl_1,trv_tbl_2,False);
+#else /* USE_TRV_API */
+
 
   /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr_1);
@@ -919,6 +930,8 @@ main(int argc,char **argv)
 
   } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+
+#endif /* USE_TRV_API */
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
