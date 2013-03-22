@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.85 2013-03-22 15:47:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.86 2013-03-22 16:17:04 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -246,9 +246,9 @@ trv_tbl_srt /* [fnc] Sort traversal table */
 
 void                          
 trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) and process common objects  */
-(const int in_1_id,               /* I [id] netCDF input-file ID */
- const int in_2_id,               /* I [id] netCDF input-file ID */
- const int ou_id,                 /* I [id] netCDF output-file ID */
+(const int in_id_1,               /* I [id] netCDF input-file ID */
+ const int in_id_2,               /* I [id] netCDF input-file ID */
+ const int out_id,                /* I [id] netCDF output-file ID */
  trv_tbl_sct * const trv_tbl_1,   /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,   /* I/O [sct] GTT (Group Traversal Table) */
  nco_bool flg_def)                /* I [flg] Action type (True for define variables, False when write variables ) */
@@ -313,6 +313,14 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
 
   /* Store a list of common objects */
   cmn_lst=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
+
+  /* Define mode */
+  if(flg_def){
+
+    /* Copy global attributes */
+    (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+  }
+
 
   /* Iterate the 2 lists */
   while (flg_more_names_exist)
