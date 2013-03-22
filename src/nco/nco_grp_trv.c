@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.87 2013-03-22 17:04:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.88 2013-03-22 17:27:32 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -249,6 +249,7 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
 (const int nc_id_1,               /* I [id] netCDF input-file ID */
  const int nc_id_2,               /* I [id] netCDF input-file ID */
  const int nc_out_id,             /* I [id] netCDF output-file ID */
+ const int dfl_lvl,               /* I [enm] Deflate level [0..9] */
  trv_tbl_sct * const trv_tbl_1,   /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,   /* I/O [sct] GTT (Group Traversal Table) */
  nco_bool flg_def)                /* I [flg] Action type (True for define variables, False when write variables ) */
@@ -355,7 +356,20 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
         /* Define mode */
         if(flg_def){
 
-          
+          int grp_id;     /* [id] Group ID in input file */
+          int grp_out_id; /* [id] Group ID in output file */ 
+          int var_out_id; /* [id] Variable ID in output file */
+
+          /* Obtain group ID using full group name */
+          (void)nco_inq_grp_full_ncid(nc_id_1,trv_1.grp_nm_fll,&grp_id);
+
+          /* If output group does not exist, create it */
+          if(nco_inq_grp_full_ncid_flg(nc_out_id,trv_1.grp_nm_fll,&grp_out_id)){
+            nco_def_grp_full(nc_out_id,trv_1.grp_nm_fll,&grp_out_id);
+          } /* Create group */
+
+          /* Define variable in output file. NB. using table 1 as parameter */
+          var_out_id=nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id,grp_out_id,dfl_lvl,NULL,NULL,&trv_1,trv_tbl_1);
 
 
         }

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.681 2013-03-20 12:57:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.682 2013-03-22 17:27:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1368,7 +1368,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
     /* If object is an extracted variable... */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-      /* Obtain group ID from netCDF API using full group name */
+      /* Obtain group ID using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
       /* Obtain info for group */
