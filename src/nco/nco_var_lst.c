@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.130 2013-03-08 20:51:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.131 2013-03-22 14:31:57 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1107,7 +1107,9 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
     /* ...search through second list... */
     for(idx_2=0;idx_2<*var_nbr_2;idx_2++){
       /* ...until variable with same name is found... */
-      if(!strcmp(var_1[idx_1]->nm,var_2[idx_2]->nm)) break; /* ...then search no further... */
+      if(!strcmp(var_1[idx_1]->nm,var_2[idx_2]->nm)) {
+        break; /* ...then search no further... */
+      }
     } /* end loop over idx_2 */
     /* ...and if variable was not found in second list... */
     if(idx_2 == *var_nbr_2){
