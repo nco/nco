@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.83 2013-03-22 13:29:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.84 2013-03-22 14:56:50 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -241,10 +241,17 @@ trv_tbl_srt /* [fnc] Sort traversal table */
   qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),nco_cmp_trv_tbl_nm_fll);
 } /* end trv_tbl_srt() */
 
+
+
+
 void                          
 trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) and process common objects  */
-(trv_tbl_sct * const trv_tbl_1,   /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2)   /* I/O [sct] GTT (Group Traversal Table) */
+(const int in_1_id,               /* I [id] netCDF input-file ID */
+ const int in_2_id,               /* I [id] netCDF input-file ID */
+ const int ou_id,                 /* I [id] netCDF output-file ID */
+ trv_tbl_sct * const trv_tbl_1,   /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,   /* I/O [sct] GTT (Group Traversal Table) */
+ nco_bool flg_def)                /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   /* Purpose: Find common objects; the algorithm used for this search is the
   *  cosequential match algorithm and is described in

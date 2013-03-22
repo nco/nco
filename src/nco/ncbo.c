@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.222 2013-03-22 14:22:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.223 2013-03-22 14:56:50 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.222 2013-03-22 14:22:01 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.222 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.223 2013-03-22 14:56:50 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.223 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -627,10 +627,6 @@ main(int argc,char **argv)
 
   /* We now have final list of variables to extract. Phew. */
 
-  /* Match 2 tables (find common objects) and process common objects */
-  (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2);
-
-
   /* Find coordinate/dimension values associated with user-specified limits
   NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id_1,lmt[idx],0L,FORTRAN_IDX_CNV);
@@ -753,6 +749,9 @@ main(int argc,char **argv)
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+
+  /* Match 2 tables (find common objects) and process common objects */
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,trv_tbl_1,trv_tbl_2,True);
 
   /* Copy global attributes */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
