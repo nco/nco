@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.219 2013-03-21 22:45:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.220 2013-03-22 12:33:36 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.219 2013-03-21 22:45:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.219 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.220 2013-03-22 12:33:36 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.220 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -628,9 +628,6 @@ main(int argc,char **argv)
 #endif
 
   /* We now have final list of variables to extract. Phew. */
-
-  /* Match the 2 input tables and generate an output table */
-  (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,trv_tbl);          
 
 
   /* Find coordinate/dimension values associated with user-specified limits

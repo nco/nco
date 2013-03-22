@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.81 2013-03-21 22:45:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.82 2013-03-22 12:33:37 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -242,10 +242,9 @@ trv_tbl_srt /* [fnc] Sort traversal table */
 } /* end trv_tbl_srt() */
 
 void                          
-trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) and export common objects */
+trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects)  */
 (trv_tbl_sct * const trv_tbl_1,   /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,   /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl)     /* O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2)   /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Find common objects; the algorithm used for this search is the
   *  cosequential match algorithm and is described in
@@ -328,15 +327,6 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
       idx_lst++;
 
       if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
-
-      
-      /* Add this common element to new GTT */
-      if(dbg_lvl_get() >= 16){
-        (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll);
-      }
-      (void)trv_sct_new(&trv_1,trv_tbl);
-
-
 
       idx_tbl_1++;
       idx_tbl_2++;
@@ -439,14 +429,5 @@ trv_tbl_mch                       /* [fnc] Match 2 tables (find common objects) 
 } /* trv_tbl_mch() */
 
 
-void                          
-trv_sct_new                       /* [fnc] Enter a new object to table */
-(trv_sct *trv,                    /* I [sct] Object structure to enter in new table */
- trv_tbl_sct * const trv_tbl)     /* O [sct] GTT (Group Traversal Table) */
-{
 
-
-
-
-} /* trv_sct_new() */
 
