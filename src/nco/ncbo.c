@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.221 2013-03-22 13:29:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.222 2013-03-22 14:22:01 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.221 2013-03-22 13:29:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.221 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.222 2013-03-22 14:22:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.222 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -244,7 +244,6 @@ main(int argc,char **argv)
 
   trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table input file 1 */
   trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table input file 2 */
-  trv_tbl_sct *trv_tbl=NULL;   /* [lst] Traversal table in output file */
   
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -499,7 +498,6 @@ main(int argc,char **argv)
   /* Initialize traversal tables */
   (void)trv_tbl_init(&trv_tbl_1);
   (void)trv_tbl_init(&trv_tbl_2);
-  (void)trv_tbl_init(&trv_tbl);
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -995,7 +993,6 @@ main(int argc,char **argv)
 
     trv_tbl_free(trv_tbl_1);
     trv_tbl_free(trv_tbl_2);
-    trv_tbl_free(trv_tbl);
   } /* !flg_cln */
 
   /* End timer */ 
