@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.47 2013-03-23 14:29:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.48 2013-03-23 15:46:31 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -99,6 +99,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  nco_bool flg_def);                    /* I [flg] Action type (True for define variables, False when write variables ) */
