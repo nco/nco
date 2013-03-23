@@ -1,7 +1,11 @@
 2013-03-22  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncbo: nco_var_op_typ() Find operation type on variable, fixed or processed.
-
+  
+	* ncbo: nco_msa_var_get_trv() Get variable data from disk taking account of multihyperslabs 
+  
+	* ncbo: trv_tbl_mch() Match 2 tables (find common objects) and process common objects  
+  
 
 2013-03-20  Charlie Zender  <zender@uci.edu>
 

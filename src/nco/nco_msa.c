@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.198 2013-03-20 12:57:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.199 2013-03-23 15:31:10 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -2054,5 +2054,76 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
   } /* Loop dimensions for object (variable)  */
 
 } /* nco_cpy_msa_lmt() */
+
+
+
+void
+nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking account of multihyperslabs */
+(const int in_id,                   /* I [id] netCDF input file ID */
+ var_sct *var_in,                   /* O [sct] Variable */
+ const trv_sct * const var_trv)     /* O [sct] Object to read (variable) */
+{
+  int idx;
+  int jdx;
+  int nbr_dim;
+
+  nc_type typ_tmp;
+
+  void *void_ptr;
+
+  lmt_msa_sct **lmt_msa;
+  lmt_sct **lmt;
+
+  nbr_dim=var_in->nbr_dim;	
+  var_in->nc_id=in_id; 
+
+  /* Scalars */
+  if(nbr_dim == 0){
+    var_in->val.vp=nco_malloc(nco_typ_lng(var_in->typ_dsk));
+    (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
+    goto do_upk;
+  } /* end if scalar */
+
+  /* Allocate local MSA */
+  lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
+  lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
+
+  /* Copy from table to local MSA */
+  (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
+
+  /* Call super-dooper recursive routine */
+  typ_tmp=var_in->type;
+  var_in->type=var_in->typ_dsk; 
+  void_ptr=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,var_in);
+
+  var_in->type=typ_tmp;
+  var_in->val.vp=void_ptr;
+
+  (void)nco_free(lmt_msa);
+  (void)nco_free(lmt);
+
+do_upk:
+  /* Following code copied from nco_var_get() */
+
+  if(var_in->pck_dsk) var_in=nco_cnv_mss_val_typ(var_in,var_in->typ_dsk);
+
+  /* Type of variable and missing value in memory are now same as type on disk */
+  var_in->type=var_in->typ_dsk; /* [enm] Type of variable in RAM */
+
+  /* Packing in RAM is now same as packing on disk pck_dbg 
+  fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
+  (void)nco_pck_dsk_inq(in_id,var_in);
+
+  /* Packing/Unpacking */
+  if(nco_is_rth_opr(prg_get())){
+    /* Arithmetic operators must unpack variables before performing arithmetic
+    Otherwise arithmetic will produce garbage results */
+    /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
+    20050629: Making this region multi-threaded causes no problems */
+    if(var_in->pck_dsk) var_in=nco_var_upk(var_in);
+  } /* endif arithmetic operator */
+
+  return;
+} /* nco_msa_var_get_trv() */
 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.71 2013-03-11 23:09:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.72 2013-03-23 15:31:10 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -172,6 +172,12 @@ void
 nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local function (print or write) */
 (const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
  lmt_msa_sct ***lmt_msa);           /* O [sct] MSA array for dimensions */
+
+void
+nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking account of multihyperslabs */
+(const int in_id,                   /* I [id] netCDF input file ID */
+ var_sct *var_in,                   /* O [sct] Variable */
+ const trv_sct * const var_trv);   /* O [sct] Object to read (variable) */
 
 
 
