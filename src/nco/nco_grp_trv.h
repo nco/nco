@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.46 2013-03-22 17:51:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.47 2013-03-23 14:29:52 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -89,16 +89,19 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_id_2,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int * const cnk_map_ptr,              /* I [enm] Chunking map */
- int * const cnk_plc_ptr,              /* I [enm] Chunking policy */
+ int cnk_map,                          /* I [enm] Chunking map */
+ int cnk_plc,                          /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  nco_bool flg_def);                    /* I [flg] Action type (True for define variables, False when write variables ) */
-
 
 
 #endif /* NCO_GRP_TRV_H */
