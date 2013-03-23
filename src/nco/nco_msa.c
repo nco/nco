@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.199 2013-03-23 15:31:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.200 2013-03-23 16:36:22 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -2076,6 +2076,8 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
 
   nbr_dim=var_in->nbr_dim;	
   var_in->nc_id=in_id; 
+
+  assert(nbr_dim == var_trv->nbr_dmn);
 
   /* Scalars */
   if(nbr_dim == 0){

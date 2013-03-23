@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.97 2013-03-23 16:07:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.98 2013-03-23 16:36:22 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -295,6 +295,12 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
   int idx_lst;                   /* [idx] Current position in common List */ 
   int fl_fmt;                    /* [enm] netCDF file format */
+  int grp_id_1;                  /* [id] Group ID in input file */
+  int var_id_1;                  /* [id] Variable ID in input file */
+  int grp_id_2;                  /* [id] Group ID in input file */
+  int var_id_2;                  /* [id] Variable ID in input file */
+  int grp_out_id;                /* [id] Group ID in output file */ 
+  int var_out_id;                /* [id] Variable ID in output file */
 
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
   nco_bool flg_in_fl[2];         /* [flg] Is this name if each file?; files are [0] and [1] */
@@ -364,16 +370,18 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
         } 
 
+
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(nc_id_1,trv_1.grp_nm_fll,&grp_id_1);
+        (void)nco_inq_grp_full_ncid(nc_id_2,trv_2.grp_nm_fll,&grp_id_2);
+
+        /* Get variable ID */
+        (void)nco_inq_varid(grp_id_1,trv_1.nm,&var_id_1);
+        (void)nco_inq_varid(grp_id_2,trv_2.nm,&var_id_2);
+
+
         /* Define mode */
-        if(flg_def){
-
-          int grp_id;     /* [id] Group ID in input file */
-          int var_id;     /* [id] Variable ID in input file */
-          int grp_out_id; /* [id] Group ID in output file */ 
-          int var_out_id; /* [id] Variable ID in output file */
-
-          /* Obtain group ID using full group name */
-          (void)nco_inq_grp_full_ncid(nc_id_1,trv_1.grp_nm_fll,&grp_id);
+        if(flg_def){     
 
           /* If output group does not exist, create it */
           if(nco_inq_grp_full_ncid_flg(nc_out_id,trv_1.grp_nm_fll,&grp_out_id)){
@@ -381,16 +389,13 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           } /* Create group */
 
           /* Define variable in output file. NB. using table 1 as parameter */
-          var_out_id=nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id,grp_out_id,dfl_lvl,NULL,NULL,&trv_1,trv_tbl_1);
+          var_out_id=nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,NULL,NULL,&trv_1,trv_tbl_1);
 
           /* Set chunksize parameters */
           if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,&trv_1);
 
-          /* Get variable ID */
-          (void)nco_inq_varid(grp_id,trv_1.nm,&var_id);
-
           /* Copy variable's attributes */
-          (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
+          (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,(nco_bool)True);
 
         }
 
@@ -419,11 +424,16 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             int has_mss_val=False;
             ptr_unn mss_val;
 
+            var_prc_1.nbr_dim=trv_1.nbr_dmn;
+            var_prc_2.nbr_dim=trv_2.nbr_dmn;
+            var_prc_1.id=var_id_1;
+            var_prc_2.id=var_id_2;
+
             /* Read hyperslab from first file */
-            (void)nco_msa_var_get_trv(nc_id_1,&var_prc_1,&trv_1);
+            (void)nco_msa_var_get_trv(grp_id_1,&var_prc_1,&trv_1);
 
             /* Read hyperslab from second file */
-            (void)nco_msa_var_get_trv(nc_id_2,&var_prc_2,&trv_2);
+            (void)nco_msa_var_get_trv(grp_id_2,&var_prc_2,&trv_2);
 
             /* Perform specified binary operation */
             switch(nco_op_typ){
