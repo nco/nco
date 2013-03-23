@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.102 2013-03-23 17:57:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.103 2013-03-23 18:10:45 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -404,6 +404,28 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           op_typ_enm op_typ_1; /* [enm] Operation type */
           op_typ_enm op_typ_2; /* [enm] Operation type */
+          var_sct var_prc_1;
+          var_sct var_prc_2;
+          var_sct var_prc_out;
+          int has_mss_val=False;
+          ptr_unn mss_val;
+          long cnt[NC_MAX_DIMS];
+          long srt[NC_MAX_DIMS]; 
+
+          for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
+            srt[idx_dmn]=0;
+            if(trv_1.var_dmn[idx_dmn].crd){
+              cnt[idx_dmn]=trv_1.var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+            }
+            else if (trv_1.var_dmn[idx_dmn].ncd){
+              cnt[idx_dmn]=trv_1.var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+            }
+          }
+
+          trv_1.sz=1;
+          for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
+            trv_1.sz*=cnt[idx_dmn];
+          }
 
           (void)nco_var_op_typ(&trv_1,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1);                    
           (void)nco_var_op_typ(&trv_2,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2);
@@ -428,24 +450,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           /* Processed variable */
           if (op_typ_1 == prc){
-
-            var_sct var_prc_1;
-            var_sct var_prc_2;
-            var_sct var_prc_out;
-            int has_mss_val=False;
-            ptr_unn mss_val;
-            long cnt[NC_MAX_DIMS];
-            long srt[NC_MAX_DIMS]; 
-
-            for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
-              srt[idx_dmn]=0;
-              if(trv_1.var_dmn[idx_dmn].crd){
-                cnt[idx_dmn]=trv_1.var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
-              }
-              else if (trv_1.var_dmn[idx_dmn].ncd){
-                cnt[idx_dmn]=trv_1.var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
-              }
-            }
 
             var_prc_1.nbr_dim=trv_1.nbr_dmn;
             var_prc_2.nbr_dim=trv_2.nbr_dmn;
