@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.229 2013-03-23 15:46:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.230 2013-03-23 18:33:23 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.229 2013-03-23 15:46:31 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.229 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.230 2013-03-23 18:33:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.230 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -561,12 +561,15 @@ main(int argc,char **argv)
   } /* endif aux_nbr */
 
 
+
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att_1,&nbr_grp_att_1,&nbr_att_var_1,&nbr_dmn_fl_1,&nbr_rec_fl_1,&grp_dpt_fl_1,&nbr_grp_fl_1,&var_ntm_fl_1,&nbr_var_fl_1,trv_tbl_1);
   (void)trv_tbl_inq(&nbr_glb_att_2,&nbr_grp_att_2,&nbr_att_var_2,&nbr_dmn_fl_2,&nbr_rec_fl_2,&grp_dpt_fl_2,&nbr_grp_fl_2,&var_ntm_fl_2,&nbr_var_fl_2,trv_tbl_2);
 
   (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
   (void)nco_inq_format(in_id_2,&fl_in_fmt_2);
+
+#ifndef USE_TRV_API
 
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst_1=nco_var_lst_mk(in_id_1,nbr_var_fl_1,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr_1);
@@ -594,6 +597,8 @@ main(int argc,char **argv)
   /* Sort extraction list by variable ID for fastest I/O */
   if(xtr_nbr_1 > 1) xtr_lst_1=nco_lst_srt_nm_id(xtr_lst_1,xtr_nbr_1,False);
   if(xtr_nbr_2 > 1) xtr_lst_2=nco_lst_srt_nm_id(xtr_lst_2,xtr_nbr_2,False);
+
+#endif /* USE_TRV_API */
 
   /* Check -v and -g input names and create extraction list. NB: use var_lst_in_nbr */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_1);
@@ -624,13 +629,9 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id_2,"bounds",trv_tbl_2);
   } /* CNV_CCM_CCSM_CF */
 
-
-#ifdef NCO_SANITY_CHECK
-  (void)nco_trv_tbl_chk(in_id_1,xtr_lst_1,xtr_nbr_1,trv_tbl_1,True);
-  (void)nco_trv_tbl_chk(in_id_2,xtr_lst_2,xtr_nbr_2,trv_tbl_2,True);
-#endif
-
   /* We now have final list of variables to extract. Phew. */
+
+#ifndef USE_TRV_API
 
   /* Find coordinate/dimension values associated with user-specified limits
   NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
@@ -745,6 +746,8 @@ main(int argc,char **argv)
 
   /* Merge two variable lists into same order */
   rcd=nco_var_lst_mrg(&var_prc_1,&var_prc_2,&nbr_var_prc_1,&nbr_var_prc_2); 
+
+#endif /* USE_TRV_API */
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt_1;
