@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.101 2013-03-23 17:41:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.102 2013-03-23 17:57:50 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -414,6 +414,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           /* Get variable ID */
           (void)nco_inq_varid(grp_out_id,trv_1.nm,&var_out_id);
 
+          if(dbg_lvl_get() >= 16){ 
+            (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,op_typ_1,trv_1.nm_fll); 
+          } 
+
           /* Non-processed variable */
           if (op_typ_1 == fix){
 
@@ -488,6 +492,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             } /* end case */
 
             var_prc_2.val.vp=nco_free(var_prc_2.val.vp);
+
+            if(dbg_lvl_get() >= 16){ 
+              (void)fprintf(stdout,"%s: INFO %s reports write for <%s>\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
+            } 
 
             /* Copy result to output file and free workspace buffer */
             if(var_prc_1.nbr_dim == 0){
@@ -579,7 +587,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   }
 
   /* Print the list */
-  if(dbg_lvl_get() >= nco_dbg_vrb){
+  if(dbg_lvl_get() == 15){
     (void)fprintf(stdout,"%s: INFO %s reports Common objects\n",prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"file1     file2\n");
     (void)fprintf(stdout,"---------------------------------------\n");
