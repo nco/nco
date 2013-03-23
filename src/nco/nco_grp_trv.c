@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.92 2013-03-23 14:50:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.93 2013-03-23 15:04:37 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -405,12 +405,26 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           (void)nco_var_op_typ(&trv_1,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1);                    
           (void)nco_var_op_typ(&trv_2,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2);
 
+          /* Non-processed variable */
+          if (op_typ_1 == fix){
+
+            /* Copy variable data for non-processed variables */
+            (void)nco_cpy_var_val_mlt_lmt_trv(nc_id_1,nc_out_id,(FILE *)NULL,False,&trv_1);
+
+          } /* Non-processed variable */
+
+          /* Processed variable */
+          if (op_typ_1 == prc){
 
 
 
-        }
-        /* Write mode */
 
+
+
+
+
+          } /* Processed variable */
+        } /* Write mode */
       }  /* If object is an extracted variable... */ 
 
       idx_tbl_1++;
