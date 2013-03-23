@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.99 2013-03-23 17:05:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.100 2013-03-23 17:25:30 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -408,6 +408,12 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           (void)nco_var_op_typ(&trv_1,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1);                    
           (void)nco_var_op_typ(&trv_2,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2);
 
+          /* Get group ID */
+          (void)nco_inq_grp_full_ncid(nc_out_id,trv_1.grp_nm_fll,&grp_out_id);
+
+          /* Get variable ID */
+          (void)nco_inq_varid(grp_out_id,trv_1.nm,&var_out_id);
+
           /* Non-processed variable */
           if (op_typ_1 == fix){
 
@@ -421,6 +427,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
             var_sct var_prc_1;
             var_sct var_prc_2;
+            var_sct var_prc_out;
             int has_mss_val=False;
             ptr_unn mss_val;
 
@@ -440,7 +447,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             var_prc_2.has_add_fst=False;
             var_prc_1.pck_dsk=False;
             var_prc_2.pck_dsk=False;
-         
+
+            var_prc_out.id=var_out_id;
+     
 
             /* Read hyperslab from first file */
             (void)nco_msa_var_get_trv(grp_id_1,&var_prc_1,&trv_1);
@@ -464,6 +473,16 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               break;
             } /* end case */
 
+            var_prc_2.val.vp=nco_free(var_prc_2.val.vp);
+
+            /* Copy result to output file and free workspace buffer */
+            if(var_prc_1.nbr_dim == 0){
+              (void)nco_put_var1(nc_out_id,var_prc_out.id,var_prc_out.srt,var_prc_1.val.vp,var_prc_1.type);
+            }else{ /* end if variable is scalar */
+              (void)nco_put_vara(nc_out_id,var_prc_out.id,var_prc_out.srt,var_prc_out.cnt,var_prc_1.val.vp,var_prc_1.type);
+            } /* end else */
+
+            var_prc_1.val.vp=nco_free(var_prc_1.val.vp);
 
           } /* Processed variable */
         } /* Write mode */
