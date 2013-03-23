@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.96 2013-03-23 15:53:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.97 2013-03-23 16:07:26 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -336,7 +336,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     (void)nco_att_cpy(nc_id_1,nc_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
   }
 
-
   /* Iterate the 2 lists */
   while (flg_more_names_exist)
   {
@@ -358,10 +357,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
       if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
 
-
       /* If object is an extracted variable... */
       if(trv_1.nco_typ == nco_obj_typ_var && trv_2.nco_typ == nco_obj_typ_var && trv_1.flg_xtr && trv_2.flg_xtr){
-
 
         if(dbg_lvl_get() >= 16){ 
           (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
@@ -427,7 +424,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
             /* Read hyperslab from second file */
             (void)nco_msa_var_get_trv(nc_id_2,&var_prc_2,&trv_2);
-
 
             /* Perform specified binary operation */
             switch(nco_op_typ){
