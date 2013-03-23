@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.95 2013-03-23 15:46:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.96 2013-03-23 15:53:13 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -419,6 +419,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
             var_sct var_prc_1;
             var_sct var_prc_2;
+            int has_mss_val=False;
+            ptr_unn mss_val;
 
             /* Read hyperslab from first file */
             (void)nco_msa_var_get_trv(nc_id_1,&var_prc_1,&trv_1);
@@ -426,6 +428,22 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             /* Read hyperslab from second file */
             (void)nco_msa_var_get_trv(nc_id_2,&var_prc_2,&trv_2);
 
+
+            /* Perform specified binary operation */
+            switch(nco_op_typ){
+            case nco_op_add: /* [enm] Add file_1 to file_2 */
+              (void)nco_var_add(var_prc_1.type,var_prc_1.sz,has_mss_val,mss_val,var_prc_2.val,var_prc_1.val); break;
+            case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
+              (void)nco_var_mlt(var_prc_1.type,var_prc_1.sz,has_mss_val,mss_val,var_prc_2.val,var_prc_1.val); break;
+            case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
+              (void)nco_var_dvd(var_prc_1.type,var_prc_1.sz,has_mss_val,mss_val,var_prc_2.val,var_prc_1.val); break;
+            case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
+              (void)nco_var_sbt(var_prc_1.type,var_prc_1.sz,has_mss_val,mss_val,var_prc_2.val,var_prc_1.val); break;
+            default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbo() */
+              (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm_get);
+              nco_exit(EXIT_FAILURE);
+              break;
+            } /* end case */
 
 
           } /* Processed variable */
