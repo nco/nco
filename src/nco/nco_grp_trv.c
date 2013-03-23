@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.100 2013-03-23 17:25:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.101 2013-03-23 17:41:55 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -430,6 +430,18 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             var_sct var_prc_out;
             int has_mss_val=False;
             ptr_unn mss_val;
+            long cnt[NC_MAX_DIMS];
+            long srt[NC_MAX_DIMS]; 
+
+            for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
+              srt[idx_dmn]=0;
+              if(trv_1.var_dmn[idx_dmn].crd){
+                cnt[idx_dmn]=trv_1.var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+              }
+              else if (trv_1.var_dmn[idx_dmn].ncd){
+                cnt[idx_dmn]=trv_1.var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+              }
+            }
 
             var_prc_1.nbr_dim=trv_1.nbr_dmn;
             var_prc_2.nbr_dim=trv_2.nbr_dmn;
@@ -449,6 +461,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             var_prc_2.pck_dsk=False;
 
             var_prc_out.id=var_out_id;
+            var_prc_out.srt=srt;
+            var_prc_out.cnt=cnt;
      
 
             /* Read hyperslab from first file */
