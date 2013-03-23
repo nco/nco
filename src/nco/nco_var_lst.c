@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.132 2013-03-23 08:09:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.133 2013-03-23 13:56:57 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1162,7 +1162,7 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
   /* Purpose: Divide two input lists into output lists based on program type */
 
   enum op_typ{
-    fix,                          /* 0 [enm] Fix variable (operator alters neither data nor metadata) */
+    fix,                          /* 0 [enm] Fixed variable (operator alters neither data nor metadata) */
     prc                           /* 1 [enm] Process variable (operator may alter data or metadata) */
   }; 
 

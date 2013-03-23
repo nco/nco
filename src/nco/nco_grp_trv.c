@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.89 2013-03-22 17:51:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.90 2013-03-23 13:56:57 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -270,7 +270,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   * 
   * Used in ncbo; ncbo performs binary operations on variables in file 1 and the corresponding variables
   * (those with the same name) in file 2 and stores the results in file 3.
-  * This function builds an output traversal table trv_tbl from common absolute names in tables 1 and 2
+  * This function detects common absolute names in tables 1 and 2 and does the ncbo binary operation on it
   *
   */
 
