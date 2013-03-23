@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.98 2013-03-23 16:36:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.99 2013-03-23 17:05:45 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -428,6 +428,19 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             var_prc_2.nbr_dim=trv_2.nbr_dmn;
             var_prc_1.id=var_id_1;
             var_prc_2.id=var_id_2;
+            var_prc_1.typ_dsk=trv_1.var_typ;
+            var_prc_2.typ_dsk=trv_2.var_typ;
+            var_prc_1.type=trv_1.var_typ;
+            var_prc_2.type=trv_2.var_typ;
+            var_prc_1.typ_upk=trv_1.var_typ;
+            var_prc_2.typ_upk=trv_1.var_typ;
+            var_prc_1.has_scl_fct=False;
+            var_prc_2.has_scl_fct=False;
+            var_prc_1.has_add_fst=False;
+            var_prc_2.has_add_fst=False;
+            var_prc_1.pck_dsk=False;
+            var_prc_2.pck_dsk=False;
+         
 
             /* Read hyperslab from first file */
             (void)nco_msa_var_get_trv(grp_id_1,&var_prc_1,&trv_1);
