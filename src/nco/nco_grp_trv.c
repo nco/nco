@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.91 2013-03-23 14:29:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.92 2013-03-23 14:50:03 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -399,7 +399,11 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         /* Write mode */
         else {
 
-          nco_var_op_typ(&trv_1,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl);                    
+          op_typ_enm op_typ_1; /* [enm] Operation type */
+          op_typ_enm op_typ_2; /* [enm] Operation type */
+
+          (void)nco_var_op_typ(&trv_1,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1);                    
+          (void)nco_var_op_typ(&trv_2,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2);
 
 
 

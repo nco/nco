@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.133 2013-03-23 13:56:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.134 2013-03-23 14:50:03 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1157,14 +1157,11 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
  const int nco_pck_map,                      /* I [enm] Packing map */
  const int nco_pck_plc,                      /* I [enm] Packing policy */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl)                      /* I [nbr] Number of altered dimensions */
+  const int nbr_dmn_xcl,                     /* I [nbr] Number of altered dimensions */
+ op_typ_enm *op_typ)                         /* O [enm] Operation type */
 {
   /* Purpose: Divide two input lists into output lists based on program type */
 
-  enum op_typ{
-    fix,                          /* 0 [enm] Fixed variable (operator alters neither data nor metadata) */
-    prc                           /* 1 [enm] Process variable (operator may alter data or metadata) */
-  }; 
 
   char *var_nm=NULL_CEWI; 
 
@@ -1331,7 +1328,8 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
     } /* end if */
   } /* end if prc */
 
-
+  /* Export */
+  *op_typ=(op_typ_enm)var_op_typ;
 
 } /* nco_var_dvd() */
 
