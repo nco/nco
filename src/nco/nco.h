@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.297 2013-03-20 12:57:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.298 2013-03-23 08:09:42 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -711,6 +711,9 @@ extern "C" {
     nco_bool flg_vsg; /* [flg] Variable selected because group matches */
     nco_bool flg_xcl; /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr; /* [flg] Extract object */
+    int pck_ram;      /* [flg] (Operator) Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
+    nc_type typ_upk;  /* [enm] (Operator) Type of variable when unpacked (expanded) (in memory) */
+    long sz;          /* [nbr] (Operator) Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
    } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists

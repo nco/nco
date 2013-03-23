@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.63 2013-03-08 20:51:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.64 2013-03-23 08:09:42 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -128,6 +128,18 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
  var_sct *** var_2_ptr, /* I/O [sct] Variable list 2 */
  int * const var_nbr_1, /* I/O [nbr] Number of variables in list 1 */
  int * const var_nbr_2); /* I/O [nbr] Number of variables in list 2 */
+
+void
+nco_var_op_typ                               /* [fnc] Find operation type on variable */
+(trv_sct *var_trv,                           /* I [sct] Variable object */
+ const nco_bool CNV_CCM_CCSM_CF,             /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD,                 /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
+ const int nco_pck_map,                      /* I [enm] Packing map */
+ const int nco_pck_plc,                      /* I [enm] Packing policy */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl);                     /* I [nbr] Number of altered dimensions */
+
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
