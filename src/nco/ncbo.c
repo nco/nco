@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.230 2013-03-23 18:33:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.231 2013-03-23 18:57:30 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.230 2013-03-23 18:33:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.230 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.231 2013-03-23 18:57:30 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.231 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -958,6 +958,8 @@ main(int argc,char **argv)
     if(fl_in_1) fl_in_1=(char *)nco_free(fl_in_1);
     if(fl_in_2) fl_in_2=(char *)nco_free(fl_in_2);
 
+#ifndef USE_TRV_API
+
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
@@ -967,6 +969,8 @@ main(int argc,char **argv)
 
     if(nbr_dmn_fl_1 > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl_1);   
     lmt=(lmt_sct**)nco_free(lmt); 
+
+#endif /* USE_TRV_API */
 
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
     if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
@@ -994,6 +998,8 @@ main(int argc,char **argv)
     if(nbr_dmn_xtr_1 > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr_1);
     if(nbr_dmn_xtr_2 > 0) dim_2=nco_dmn_lst_free(dim_2,nbr_dmn_xtr_2);
 
+#ifndef USE_TRV_API
+
     /* Free variable lists 
     Using nco_var_lst_free() to free main var_1 and var_2 lists would fail
     if ncap_var_prc_dmn() had to broadcast any variables because pointer
@@ -1010,6 +1016,7 @@ main(int argc,char **argv)
     if(xtr_nbr_1 > 0) var_out=nco_var_lst_free(var_out,xtr_nbr_1);
     var_prc_out=(var_sct **)nco_free(var_prc_out);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
+#endif
 
     trv_tbl_free(trv_tbl_1);
     trv_tbl_free(trv_tbl_2);

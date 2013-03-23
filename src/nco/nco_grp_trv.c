@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.103 2013-03-23 18:10:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.104 2013-03-23 18:57:30 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -501,11 +501,11 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               (void)fprintf(stdout,"%s: INFO %s reports write for <%s>\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
             } 
 
-            /* Copy result to output file and free workspace buffer */
+            /* Copy result to output file and free workspace buffer. NB. use grp_out_id */
             if(var_prc_1.nbr_dim == 0){
-              (void)nco_put_var1(nc_out_id,var_prc_out.id,var_prc_out.srt,var_prc_1.val.vp,var_prc_1.type);
+              (void)nco_put_var1(grp_out_id,var_prc_out.id,var_prc_out.srt,var_prc_1.val.vp,var_prc_1.type);
             }else{ /* end if variable is scalar */
-              (void)nco_put_vara(nc_out_id,var_prc_out.id,var_prc_out.srt,var_prc_out.cnt,var_prc_1.val.vp,var_prc_1.type);
+              (void)nco_put_vara(grp_out_id,var_prc_out.id,var_prc_out.srt,var_prc_out.cnt,var_prc_1.val.vp,var_prc_1.type);
             } /* end else */
 
             var_prc_1.val.vp=nco_free(var_prc_1.val.vp);
