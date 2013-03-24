@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.42 2013-03-20 14:24:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.43 2013-03-24 21:55:26 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -124,20 +124,6 @@ nco_dmn_sct_cmp /* [fnc] Check that dims in list 2 are a subset of list 1 and th
  const char *const fl_sng_1, /* I [sng] Name of first file */
  const char *fl_sng_2); /* I [sng] Name of second file */
 
-void
-nco_dmn_ass_var_prt                  /* [fnc] Print list of all dimensions associated with input variable list */
-(trv_tbl_sct * const trv_tbl);       /* I/O [sct] GTT (Group Traversal Table) */
-
-void
-nco_dmn_ass_var_trv                   /* [fnc] Create list of all dimensions associated with input variable list */
-(trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
-
-void 
-nco_dmn_sct_cmp_trv                    /* [fnc] Check that dims in list 2 are a subset of list 1 and that they are the same size */
-(const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
- const char *const fl_sng_1,           /* I [sng] Name of first file */
- const char *const fl_sng_2);          /* I [sng] Name of second file */
 
 #ifdef __cplusplus
 } /* end extern "C" */

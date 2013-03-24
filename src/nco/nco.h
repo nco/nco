@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.299 2013-03-23 14:50:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.300 2013-03-24 21:55:26 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -654,7 +654,6 @@ extern "C" {
     lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
     int dmn_id;              /* [ID] Unique ID for dimension; same as "var_dmn_sct.id", obtained from API "nc_inq_dimid" */
     nco_bool has_crd_scp;    /* [flg] Is there a variable with same name in dimension's scope? */
-    nco_bool flg_ass_var;    /* [flg] Is dimension associated with input variable list? ncbo only */
   } dmn_trv_sct; 
 
 
@@ -680,40 +679,37 @@ extern "C" {
      free() each pointer member of trv_sct structure in trv_tbl_free() 
      */
   typedef struct{ 
-    nco_obj_typ nco_typ; /* [enm] netCDF4 object type: group or variable */
-    char *nm_fll; /* [sng] Fully qualified name (path) */
+    nco_obj_typ nco_typ;              /* [enm] netCDF4 object type: group or variable */
+    char *nm_fll;                     /* [sng] Fully qualified name (path) */
     var_dmn_sct var_dmn[NC_MAX_DIMS]; /* [sct] (For variables only) Dimensions for variable object */
-    nco_bool is_crd_var; /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
-    nco_bool is_rec_var; /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
-    nc_type var_typ;     /* [enm] (For variables only) NetCDF type  */  
-    size_t nm_fll_lng; /* [sng] Length of full name */
-    char *grp_nm_fll; /* [sng] Full group name (for groups, same as nm_fll) */
-    char nm[NC_MAX_NAME+1L]; /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
-    size_t nm_lng; /* [sng] Length of short name */
-    int grp_dpt; /* [nbr] Depth of group (root = 0) */
-    int grp_id_in; /* [id] Group ID in input file */
-    int grp_id_out; /* [id] Group ID in output file */
-    int nbr_att; /* [nbr] Number of attributes */
-    int nbr_dmn; /* [nbr] Number of dimensions  */
-    int nbr_grp; /* [nbr] Number of sub-groups (for group) */
-    int nbr_rec; /* [nbr] Number of record dimensions */
-    int nbr_var; /* [nbr] Number of variables (for group) */
-    nco_bool flg_cf; /* [flg] Object matches CF-metadata extraction criteria */
-    nco_bool flg_crd; /* [flg] Object matches coordinate extraction criteria */
-    nco_bool flg_dfl; /* [flg] Object meets default subsetting criteria */
-    nco_bool flg_gcv; /* [flg] Group contains matched variable */
-    nco_bool flg_mch; /* [flg] Object matches user-specified strings */
-    nco_bool flg_ncs; /* [flg] Group is ancestor of specified group or variable */
-    nco_bool flg_nsx; /* [flg] Object matches intersection criteria */
-    nco_bool flg_rcr; /* [flg] Extract group recursively */
-    nco_bool flg_unn; /* [flg] Object matches union criteria */
-    nco_bool flg_vfp; /* [flg] Variable matches full path specification */
-    nco_bool flg_vsg; /* [flg] Variable selected because group matches */
-    nco_bool flg_xcl; /* [flg] Object matches exclusion criteria */
-    nco_bool flg_xtr; /* [flg] Extract object */
-    int pck_ram;      /* [flg] (Operator) Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
-    nc_type typ_upk;  /* [enm] (Operator) Type of variable when unpacked (expanded) (in memory) */
-    long sz;          /* [nbr] (Operator) Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
+    nco_bool is_crd_var;              /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
+    nco_bool is_rec_var;              /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
+    nc_type var_typ;                  /* [enm] (For variables only) NetCDF type  */  
+    size_t nm_fll_lng;                /* [sng] Length of full name */
+    char *grp_nm_fll;                 /* [sng] Full group name (for groups, same as nm_fll) */
+    char nm[NC_MAX_NAME+1L];          /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
+    size_t nm_lng;                    /* [sng] Length of short name */
+    int grp_dpt;                      /* [nbr] Depth of group (root = 0) */
+    int grp_id_in;                    /* [id] Group ID in input file */
+    int grp_id_out;                   /* [id] Group ID in output file */
+    int nbr_att;                      /* [nbr] Number of attributes */
+    int nbr_dmn;                      /* [nbr] Number of dimensions  */
+    int nbr_rec;                      /* [nbr] Number of record dimensions */
+    int nbr_grp;                      /* [nbr] (For groups only) Number of sub-groups */   
+    int nbr_var;                      /* [nbr] (For groups only) Number of variables */
+    nco_bool flg_cf;                  /* [flg] Object matches CF-metadata extraction criteria */
+    nco_bool flg_crd;                 /* [flg] Object matches coordinate extraction criteria */
+    nco_bool flg_dfl;                 /* [flg] Object meets default subsetting criteria */
+    nco_bool flg_gcv;                 /* [flg] Group contains matched variable */
+    nco_bool flg_mch;                 /* [flg] Object matches user-specified strings */
+    nco_bool flg_ncs;                 /* [flg] Group is ancestor of specified group or variable */
+    nco_bool flg_nsx;                 /* [flg] Object matches intersection criteria */
+    nco_bool flg_rcr;                 /* [flg] Extract group recursively */
+    nco_bool flg_unn;                 /* [flg] Object matches union criteria */
+    nco_bool flg_vfp;                 /* [flg] Variable matches full path specification */
+    nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */
+    nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
+    nco_bool flg_xtr;                 /* [flg] Extract object */ 
    } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists
@@ -726,13 +722,10 @@ extern "C" {
     unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
   } trv_tbl_sct;
 
-
   typedef enum op_typ{
     fix,                    /* 0 [enm] Fixed variable (operator alters neither data nor metadata) */
     prc                     /* 1 [enm] Process variable (operator may alter data or metadata) */
   } op_typ_enm; 
-
-
 
   /* Chunking structure */
   typedef struct{ /* cnk_sct */
@@ -740,7 +733,7 @@ extern "C" {
     size_t sz; /* [nbr] Chunk size */
     nco_bool is_usr_spc_cnk; /* [flg] Chunk size was user-specified */
   } cnk_sct;
-  
+
   /* Fill actual value of dmn_sct structure in in nco_dmn_fll()
      free() each pointer member of dmn_sct structure in nco_dmn_free()
      deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
@@ -810,6 +803,7 @@ extern "C" {
     struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually structure for variable on output) fxm: deprecate! TODO nco226 */
   } var_sct; /* end var_sct_tag */
 
+  
   /* GPE duplicate name check structure */
   typedef struct{ /* gpe_nm_sct */
     char *var_nm_fll; /* Fully qualified variable name */

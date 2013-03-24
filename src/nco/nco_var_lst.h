@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.65 2013-03-23 14:50:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.66 2013-03-24 21:55:26 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -130,8 +130,9 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
  int * const var_nbr_2); /* I/O [nbr] Number of variables in list 2 */
 
 void
-nco_var_op_typ                               /* [fnc] Find operation type on variable */
-(trv_sct *var_trv,                           /* I [sct] Variable object */
+nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into output lists */
+(var_sct * const var,                        /* I [sct] Variable list (input file) */
+ var_sct * const var_out,                    /* I [sct] Variable list (output file) */
  const nco_bool CNV_CCM_CCSM_CF,             /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,                 /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_pck_map,                      /* I [enm] Packing map */

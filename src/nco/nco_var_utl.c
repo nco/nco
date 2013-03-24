@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.277 2013-03-14 01:59:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.278 2013-03-24 21:55:26 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2077,4 +2077,96 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
 
 
+var_sct *                             /* O [sct] Variable structure */
+nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const int var_id,                    /* I [id] Variable ID */
+ const char * const var_nm,           /* I [sng] Variable name */
+ long *srt,                           /* I [nbr] Start array  */
+ long *cnt,                           /* I [nbr] Count array  */
+ const int nbr_dim)                   /* I [nbr] Number of dimensions  */
+{
+  /* Purpose: nco_malloc() and return a completed var_sct */
+  char dmn_nm[NC_MAX_NAME];
 
+  int fl_fmt;
+  int dmn_idx;
+  int idx;
+  int rec_dmn_id;
+
+  var_sct *var;
+
+  /* Get file format */
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+  /* Get record dimension ID */
+  (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
+
+  /* Allocate space for variable structure */
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
+  (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+
+  /* Fill-in known fields */
+  /* Make sure var_free() frees names when variable is destroyed */
+  var->nm=(char *)strdup(var_nm);
+  var->id=var_id;
+  var->nc_id=nc_id;
+
+  /* Get type and number of dimensions and attributes for variable */
+  (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
+
+  /* Allocate space for dimension information */
+  if(var->nbr_dim > 0) var->dim=(dmn_sct **)nco_malloc(var->nbr_dim*sizeof(dmn_sct *)); else var->dim=(dmn_sct **)NULL;
+  if(var->nbr_dim > 0) var->dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
+  if(var->nbr_dim > 0) var->cnk_sz=(size_t *)nco_malloc(var->nbr_dim*sizeof(size_t)); else var->cnk_sz=(size_t *)NULL;
+  if(var->nbr_dim > 0) var->cnt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
+  if(var->nbr_dim > 0) var->srt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
+  if(var->nbr_dim > 0) var->end=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
+  if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
+
+  /* Get dimension IDs from input file */
+  (void)nco_inq_vardimid(var->nc_id,var->id,var->dmn_id);
+
+  /* Type in memory begins as same type as on disk */
+  var->type=var->typ_dsk; /* [enm] Type of variable in RAM */
+  /* Type of packed data on disk */
+  var->typ_pck=var->type;  /* [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+
+  /* Refresh number of attributes and missing value attribute, if any */
+  var->has_mss_val=nco_mss_val_get(var->nc_id,var);
+
+  /* Size defaults to 1 in var_dfl_set(), and set to 1 here for extra safety */
+  var->sz=1L; 
+  for(idx=0;idx<var->nbr_dim;idx++){
+
+    (void)nco_inq_dimname(nc_id,var->dmn_id[idx],dmn_nm);
+
+    var->cnt[idx]=cnt[idx];
+    var->srt[idx]=srt[idx];
+    var->sz*=var->cnt[idx];
+  } /* end loop over dim */
+
+  /* Variables associated with "bounds" and "coordinates" attributes should, in most cases, be treated as coordinates */
+  if(nco_is_spc_in_bnd_att(var->nc_id,var->id)) var->is_crd_var=True;
+  if(nco_is_spc_in_crd_att(var->nc_id,var->id)) var->is_crd_var=True;
+
+  /* Portions of variable structure depend on packing properties, e.g., typ_upk nco_pck_dsk_inq() fills in these portions harmlessly */
+  (void)nco_pck_dsk_inq(nc_id,var);
+
+  /* Set deflate and chunking to defaults */  
+  var->dfl_lvl=0; /* [enm] Deflate level */
+  var->shuffle=False; /* [flg] Turn on shuffle filter */
+
+  for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
+
+  /* Read deflate levels and chunking (if any) */  
+  if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC){
+    int deflate; /* [enm] Deflate filter is on */
+    int srg_typ; /* [enm] Storage type */
+    (void)nco_inq_var_deflate(nc_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    
+    (void)nco_inq_var_chunking(nc_id,var->id,&srg_typ,var->cnk_sz);   
+  } /* endif */
+
+  var->undefined=False; /* [flg] Used by ncap parser */
+  return var;
+} /* nco_var_fll_trv() */

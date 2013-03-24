@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.104 2013-03-23 18:57:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.105 2013-03-24 21:55:26 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -402,16 +402,24 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         /* Write mode */
         else {
 
-          op_typ_enm op_typ_1; /* [enm] Operation type */
-          op_typ_enm op_typ_2; /* [enm] Operation type */
-          var_sct var_prc_1;
-          var_sct var_prc_2;
-          var_sct var_prc_out;
-          int has_mss_val=False;
-          ptr_unn mss_val;
-          long cnt[NC_MAX_DIMS];
-          long srt[NC_MAX_DIMS]; 
+          op_typ_enm op_typ_1;  /* [enm] Operation type */
+          op_typ_enm op_typ_2;  /* [enm] Operation type */
 
+          var_sct *var_prc_1;   /* [sct] Variable to process */
+          var_sct *var_prc_2;   /* [sct] Variable to process */
+          var_sct var_prc_out;  /* [sct] Variable to process */
+
+          int has_mss_val;      /* [flg] Variable has missing value */
+
+          ptr_unn mss_val;      /* [sct] Missing value */
+
+          long cnt[NC_MAX_DIMS];/* [nbr] Count array */
+          long srt[NC_MAX_DIMS];/* [nbr] Start array */
+
+
+          has_mss_val=False;
+
+          /* Initialize operator variable structures */
           for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
             srt[idx_dmn]=0;
             if(trv_1.var_dmn[idx_dmn].crd){
@@ -422,19 +430,25 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             }
           }
 
-          trv_1.sz=1;
+          
+          /* Allocate variable structure and fill with metadata */
+          var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1.nm,srt,cnt,trv_1.nbr_dmn);     
+          var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,trv_2.nm,srt,cnt,trv_2.nbr_dmn);
+
+          var_prc_1->sz=1;
           for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
-            trv_1.sz*=cnt[idx_dmn];
+           var_prc_1->sz*=cnt[idx_dmn];
           }
 
-          (void)nco_var_op_typ(&trv_1,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1);                    
-          (void)nco_var_op_typ(&trv_2,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2);
+
+          (void)nco_var_lst_dvd_trv(var_prc_1,&var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1); 
+          (void)nco_var_lst_dvd_trv(var_prc_2,&var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2); 
 
           /* Get group ID */
           (void)nco_inq_grp_full_ncid(nc_out_id,trv_1.grp_nm_fll,&grp_out_id);
 
           /* Get variable ID */
-          (void)nco_inq_varid(grp_out_id,trv_1.nm,&var_out_id);
+          (void)nco_inq_varid(grp_out_id,trv_1.nm,&var_out_id);         
 
           if(dbg_lvl_get() >= 16){ 
             (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,op_typ_1,trv_1.nm_fll); 
@@ -451,22 +465,22 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           /* Processed variable */
           if (op_typ_1 == prc){
 
-            var_prc_1.nbr_dim=trv_1.nbr_dmn;
-            var_prc_2.nbr_dim=trv_2.nbr_dmn;
-            var_prc_1.id=var_id_1;
-            var_prc_2.id=var_id_2;
-            var_prc_1.typ_dsk=trv_1.var_typ;
-            var_prc_2.typ_dsk=trv_2.var_typ;
-            var_prc_1.type=trv_1.var_typ;
-            var_prc_2.type=trv_2.var_typ;
-            var_prc_1.typ_upk=trv_1.var_typ;
-            var_prc_2.typ_upk=trv_1.var_typ;
-            var_prc_1.has_scl_fct=False;
-            var_prc_2.has_scl_fct=False;
-            var_prc_1.has_add_fst=False;
-            var_prc_2.has_add_fst=False;
-            var_prc_1.pck_dsk=False;
-            var_prc_2.pck_dsk=False;
+            var_prc_1->nbr_dim=trv_1.nbr_dmn;
+            var_prc_2->nbr_dim=trv_2.nbr_dmn;
+            var_prc_1->id=var_id_1;
+            var_prc_2->id=var_id_2;
+            var_prc_1->typ_dsk=trv_1.var_typ;
+            var_prc_2->typ_dsk=trv_2.var_typ;
+            var_prc_1->type=trv_1.var_typ;
+            var_prc_2->type=trv_2.var_typ;
+            var_prc_1->typ_upk=trv_1.var_typ;
+            var_prc_2->typ_upk=trv_1.var_typ;
+            var_prc_1->has_scl_fct=False;
+            var_prc_2->has_scl_fct=False;
+            var_prc_1->has_add_fst=False;
+            var_prc_2->has_add_fst=False;
+            var_prc_1->pck_dsk=False;
+            var_prc_2->pck_dsk=False;
 
             var_prc_out.id=var_out_id;
             var_prc_out.srt=srt;
@@ -474,41 +488,41 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
      
 
             /* Read hyperslab from first file */
-            (void)nco_msa_var_get_trv(grp_id_1,&var_prc_1,&trv_1);
+            (void)nco_msa_var_get_trv(grp_id_1,var_prc_1,&trv_1);
 
             /* Read hyperslab from second file */
-            (void)nco_msa_var_get_trv(grp_id_2,&var_prc_2,&trv_2);
+            (void)nco_msa_var_get_trv(grp_id_2,var_prc_2,&trv_2);
 
             /* Perform specified binary operation */
             switch(nco_op_typ){
             case nco_op_add: /* [enm] Add file_1 to file_2 */
-              (void)nco_var_add(var_prc_1.type,var_prc_1.sz,has_mss_val,mss_val,var_prc_2.val,var_prc_1.val); break;
+              (void)nco_var_add(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
             case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
-              (void)nco_var_mlt(var_prc_1.type,var_prc_1.sz,has_mss_val,mss_val,var_prc_2.val,var_prc_1.val); break;
+              (void)nco_var_mlt(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
             case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
-              (void)nco_var_dvd(var_prc_1.type,var_prc_1.sz,has_mss_val,mss_val,var_prc_2.val,var_prc_1.val); break;
+              (void)nco_var_dvd(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
             case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
-              (void)nco_var_sbt(var_prc_1.type,var_prc_1.sz,has_mss_val,mss_val,var_prc_2.val,var_prc_1.val); break;
+              (void)nco_var_sbt(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
             default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbo() */
               (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm_get);
               nco_exit(EXIT_FAILURE);
               break;
             } /* end case */
 
-            var_prc_2.val.vp=nco_free(var_prc_2.val.vp);
+            var_prc_2->val.vp=nco_free(var_prc_2->val.vp);
 
             if(dbg_lvl_get() >= 16){ 
               (void)fprintf(stdout,"%s: INFO %s reports write for <%s>\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
             } 
 
             /* Copy result to output file and free workspace buffer. NB. use grp_out_id */
-            if(var_prc_1.nbr_dim == 0){
-              (void)nco_put_var1(grp_out_id,var_prc_out.id,var_prc_out.srt,var_prc_1.val.vp,var_prc_1.type);
+            if(var_prc_1->nbr_dim == 0){
+              (void)nco_put_var1(grp_out_id,var_prc_out.id,var_prc_out.srt,var_prc_1->val.vp,var_prc_1->type);
             }else{ /* end if variable is scalar */
-              (void)nco_put_vara(grp_out_id,var_prc_out.id,var_prc_out.srt,var_prc_out.cnt,var_prc_1.val.vp,var_prc_1.type);
+              (void)nco_put_vara(grp_out_id,var_prc_out.id,var_prc_out.srt,var_prc_out.cnt,var_prc_1->val.vp,var_prc_1->type);
             } /* end else */
 
-            var_prc_1.val.vp=nco_free(var_prc_1.val.vp);
+            var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
 
           } /* Processed variable */
         } /* Write mode */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.135 2013-03-23 16:36:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.136 2013-03-24 21:55:26 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1150,8 +1150,9 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
 
 
 void
-nco_var_op_typ                               /* [fnc] Find operation type on variable */
-(trv_sct *var_trv,                           /* I [sct] Variable object */
+nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into output lists */
+(var_sct * const var,                        /* I [sct] Variable list (input file) */
+ var_sct * const var_out,                    /* I [sct] Variable list (output file) */
  const nco_bool CNV_CCM_CCSM_CF,             /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,                 /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_pck_map,                      /* I [enm] Packing map */
@@ -1162,7 +1163,6 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
 {
   /* Purpose: Divide two input lists into output lists based on program type */
 
-
   char *var_nm=NULL_CEWI; 
 
   int prg_id;                     /* [enm] Program key */
@@ -1171,7 +1171,7 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
   int var_op_typ;
 
   nco_bool is_sz_rnk_prv_rth_opr; /* [flg] Size- and rank-preserving operator */
-  nco_bool var_typ_fnk=False;     /* [flg] Variable type is too funky for arithmetic */ /* CEWI */
+  nco_bool var_typ_fnk=False;     /* [flg] Variable type is too funky for arithmetic */ 
 
   nc_type var_typ=NC_NAT;         /* NC_NAT present in netcdf.h version netCDF 3.5+ */
 
@@ -1180,17 +1180,15 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
   var_sct var_prc;
   var_sct var_prc_out;
 
-
-  assert(var_trv->nco_typ == nco_obj_typ_var);
-
   prg_id=prg_get(); 
 
   is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc);
 
+
   /* Initialize operation type to processed. Change to fixed where warranted later. */
   var_op_typ=prc;
-  var_nm=var_trv->nm;
-  var_typ=var_trv->var_typ;
+  var_nm=var->nm;
+  var_typ=var->type;
   if((var_typ == NC_BYTE) || (var_typ == NC_UBYTE) || (var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
 
   /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...)
@@ -1209,29 +1207,29 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
     /* Do nothing */
     break;
   case ncbo:
-    if(var_trv->is_crd_var || var_typ_fnk) var_op_typ=fix;
+    if(var->is_crd_var || var_typ_fnk) var_op_typ=fix;
     break;
   case ncea:
-    if(var_trv->is_crd_var || var_typ_fnk) var_op_typ=fix;
+    if(var->is_crd_var || var_typ_fnk) var_op_typ=fix;
     break;
   case ncecat:
     /* Allow ncecat to concatenate funky variables */
-    if(var_trv->is_crd_var) var_op_typ=fix;
+    if(var->is_crd_var) var_op_typ=fix;
     break;
   case ncflint:
     /* Allow ncflint to interpolate record coordinates, not fixed coordinates ... */
-    if((var_trv->is_crd_var || var_typ_fnk) && !var_trv->is_rec_var) var_op_typ=fix;
+    if((var->is_crd_var || var_typ_fnk) && !var->is_rec_var) var_op_typ=fix;
     /* ...unless the --fix_rec_crd switch was used to fix record coordinates as well ... */
-    if((var_trv->is_crd_var && var_trv->is_rec_var && FIX_REC_CRD)) var_op_typ=fix;
+    if((var->is_crd_var && var->is_rec_var && FIX_REC_CRD)) var_op_typ=fix;
     break;
   case ncks:
     /* Do nothing */
     break;
   case ncra:
-    if(!var_trv->is_rec_var) var_op_typ=fix;
+    if(!var->is_rec_var) var_op_typ=fix;
     break;
   case ncrcat:
-    if(!var_trv->is_rec_var) var_op_typ=fix;
+    if(!var->is_rec_var) var_op_typ=fix;
     break;
   case ncpdq:
   case ncwa:
@@ -1240,15 +1238,15 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
       Variables are processed for packing/unpacking operator unless... */
       if(
         /* ...packing coordinate variables has few benefits... */
-        (var_trv->is_crd_var && !(nco_pck_plc == nco_pck_plc_upk) ) ||
+        (var->is_crd_var && !(nco_pck_plc == nco_pck_plc_upk) ) ||
         /* unless if it's NOT a record variable and the policy is unpack 
         20120711. nco: ncpdq unpack coordinate variables */     
         /* ...unpacking requested for unpacked variable... */
-        (nco_pck_plc == nco_pck_plc_upk && !var_trv->pck_ram) ||
+        (nco_pck_plc == nco_pck_plc_upk && !var->pck_ram) ||
         /* ...or packing unpacked requested and variable is already packed... */
-        (nco_pck_plc == nco_pck_plc_all_xst_att && var_trv->pck_ram) ||
+        (nco_pck_plc == nco_pck_plc_all_xst_att && var->pck_ram) ||
         /* ...or re-packing packed requested and variable is unpacked... */
-        (nco_pck_plc == nco_pck_plc_xst_new_att && !var_trv->pck_ram) ||
+        (nco_pck_plc == nco_pck_plc_xst_new_att && !var->pck_ram) ||
         /* ...or... */
         (
         /* ...any type of packing requested... */
@@ -1256,17 +1254,15 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
         nco_pck_plc == nco_pck_plc_all_xst_att || 
         nco_pck_plc == nco_pck_plc_xst_new_att) &&
         /* ...yet map does not allow (re-)packing... */
-        !nco_pck_plc_typ_get(nco_pck_map,var_trv->typ_upk,(nc_type *)NULL)
+        !nco_pck_plc_typ_get(nco_pck_map,var->typ_upk,(nc_type *)NULL)
         )
         )
         var_op_typ=fix;
     }else{ /* endif packing operation requested */
       /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
-      for(idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+      for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
         for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
-          if(var_trv->var_dmn[idx_dmn].dmn_id == dmn_xcl[idx_xcl]->id){
-            break;
-          }
+          if(var->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
         } /* end loop over idx_xcl */
         if(idx_xcl != nbr_dmn_xcl){
           var_op_typ=prc;
@@ -1274,7 +1270,7 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
         } /* end if */
       } /* end loop over idx_dmn */
       /* Fix variables with no altered (averaged, re-ordered, reversed) dimensions */
-      if(idx_dmn == var_trv->nbr_dmn) var_op_typ=fix;
+      if(idx_dmn == var->nbr_dim) var_op_typ=fix;
     } /* endif averaging or re-ordering */
     break;
   default: nco_dfl_case_prg_id_err(); break;
@@ -1282,7 +1278,7 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
 
   /* Previous case-statement does not account for variables with no data */
   if(nco_is_rth_opr(prg_id))
-    if(var_trv->sz == 0L)
+    if(var->sz == 0L)
       var_op_typ=fix;
 
   if(CNV_CCM_CCSM_CF){
@@ -1324,14 +1320,11 @@ nco_var_op_typ                               /* [fnc] Find operation type on var
   /* Warn about any expected weird behavior */
   if(var_op_typ == prc){
     if(var_typ_fnk && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var_trv->nm,nco_typ_sng(var_trv->var_typ));
+      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var->nm,nco_typ_sng(var->type));
     } /* end if */
   } /* end if prc */
 
   /* Export */
   *op_typ=(op_typ_enm)var_op_typ;
 
-} /* nco_var_dvd() */
-
-
-
+} /* end nco_var_lst_dvd */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.231 2013-03-23 18:57:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.232 2013-03-24 21:55:26 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.231 2013-03-23 18:57:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.231 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.232 2013-03-24 21:55:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.232 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -642,21 +642,14 @@ main(int argc,char **argv)
   /* Initialize lmt_msa_sct's */ 
   (void)nco_msa_lmt_all_ntl(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl_1,lmt,lmt_nbr);
 
-
   /* Find dimensions associated with variables to be extracted */
   dmn_lst_1=nco_dmn_lst_ass_var(in_id_1,xtr_lst_1,xtr_nbr_1,&nbr_dmn_xtr_1);
   dmn_lst_2=nco_dmn_lst_ass_var(in_id_2,xtr_lst_2,xtr_nbr_2,&nbr_dmn_xtr_2);
-
-  /* Find dimensions associated with variables to be extracted */
-  (void)nco_dmn_ass_var_trv(trv_tbl_1);
-  (void)nco_dmn_ass_var_trv(trv_tbl_2);
 
   /* Print dimension list */
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)xtr_lst_prn(dmn_lst_1,nbr_dmn_xtr_1);
     (void)xtr_lst_prn(dmn_lst_2,nbr_dmn_xtr_2); 
-    (void)nco_dmn_ass_var_prt(trv_tbl_1);
-    (void)nco_dmn_ass_var_prt(trv_tbl_2);
   }
 
   /* Fill-in dimension structure for all extracted dimensions */
@@ -670,9 +663,6 @@ main(int argc,char **argv)
 
   /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
   (void)nco_dmn_sct_cmp(dim_1,nbr_dmn_xtr_1,dim_2,nbr_dmn_xtr_2,fl_in_1,fl_in_2); 
-
-  /* Check that dims in list 2 are a subset of list 1 and that they are the same size */
-  (void)nco_dmn_sct_cmp_trv(trv_tbl_1,trv_tbl_2,fl_in_1,fl_in_2); 
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr_1*sizeof(dmn_sct *));
