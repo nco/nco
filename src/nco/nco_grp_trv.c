@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.107 2013-03-25 13:41:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.108 2013-03-25 13:59:15 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -408,7 +408,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           var_sct *var_prc_1;   /* [sct] Variable to process */
           var_sct *var_prc_2;   /* [sct] Variable to process */
-          var_sct var_prc_out;  /* [sct] Variable to process */
+          var_sct *var_prc_out; /* [sct] Variable to process */
 
           int has_mss_val;      /* [flg] Variable has missing value */
 
@@ -416,6 +416,13 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           long cnt[NC_MAX_DIMS];/* [nbr] Count array */
           long srt[NC_MAX_DIMS];/* [nbr] Start array */
+
+
+          /* Allocate space for variable structure */
+          var_prc_out=(var_sct *)nco_malloc(sizeof(var_sct));
+
+          /* Set defaults for each member of variable structure */
+          (void)var_dfl_set(var_prc_out); 
 
           /* Initialize operator variable structures */
           for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
@@ -437,8 +444,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
            var_prc_1->sz*=cnt[idx_dmn];
           }
 
-          (void)nco_var_lst_dvd_trv(var_prc_1,&var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1); 
-          (void)nco_var_lst_dvd_trv(var_prc_2,&var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2); 
+          (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1); 
+          (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2); 
 
           /* Get group ID */
           (void)nco_inq_grp_full_ncid(nc_out_id,trv_1.grp_nm_fll,&grp_out_id);
@@ -461,9 +468,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           /* Processed variable */
           if (op_typ_1 == prc){
 
-            var_prc_out.id=var_out_id;
-            var_prc_out.srt=srt;
-            var_prc_out.cnt=cnt;
+            var_prc_out->id=var_out_id;
+            var_prc_out->srt=srt;
+            var_prc_out->cnt=cnt;
 
             /* Find and set variable dmn_nbr, ID, mss_val, type in first file */
             (void)nco_var_mtd_refresh(grp_id_1,var_prc_1);
@@ -485,6 +492,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               (void)fprintf(stdout,"%s: ERROR Variable %s has lesser rank in first file than in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm_get(),var_prc_1->nm,var_prc_1->nbr_dim,var_prc_2->nbr_dim);
               nco_exit(EXIT_FAILURE);
             } /* endif */
+
+            if(var_prc_1->nbr_dim > var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_out,&var_prc_2);
 
             /* var2 now conforms in size to var1, and is in memory */
 
@@ -525,15 +534,16 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
             /* Copy result to output file and free workspace buffer. NB. use grp_out_id */
             if(var_prc_1->nbr_dim == 0){
-              (void)nco_put_var1(grp_out_id,var_prc_out.id,var_prc_out.srt,var_prc_1->val.vp,var_prc_1->type);
+              (void)nco_put_var1(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_1->val.vp,var_prc_1->type);
             }else{ /* end if variable is scalar */
-              (void)nco_put_vara(grp_out_id,var_prc_out.id,var_prc_out.srt,var_prc_out.cnt,var_prc_1->val.vp,var_prc_1->type);
+              (void)nco_put_vara(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_out->cnt,var_prc_1->val.vp,var_prc_1->type);
             } /* end else */
 
             var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
 
             var_prc_1=(var_sct *)nco_free(var_prc_1);
             var_prc_2=(var_sct *)nco_free(var_prc_2);
+            var_prc_out=(var_sct *)nco_free(var_prc_out);
 
           } /* Processed variable */
         } /* Write mode */

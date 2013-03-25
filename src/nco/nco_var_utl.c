@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.279 2013-03-25 13:07:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.280 2013-03-25 13:59:15 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2094,15 +2094,11 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   int fl_fmt;
   int dmn_idx;
   int idx;
-  int rec_dmn_id;
 
   var_sct *var;
 
   /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
-
-  /* Get record dimension ID */
-  (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
 
   /* Allocate space for variable structure */
   var=(var_sct *)nco_malloc(sizeof(var_sct));

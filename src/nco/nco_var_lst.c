@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.137 2013-03-25 13:41:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.138 2013-03-25 13:59:15 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1175,15 +1175,9 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
 
   nc_type var_typ=NC_NAT;         /* NC_NAT present in netcdf.h version netCDF 3.5+ */
 
-  var_sct var_fix;
-  var_sct var_fix_out;
-  var_sct var_prc;
-  var_sct var_prc_out;
-
   prg_id=prg_get(); 
 
   is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc);
-
 
   /* Initialize operation type to processed. Change to fixed where warranted later. */
   var_op_typ=prc;
@@ -1262,7 +1256,9 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
       /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
       for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
         for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
-          if(var->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
+          if(var->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id){
+            break;
+          }
         } /* end loop over idx_xcl */
         if(idx_xcl != nbr_dmn_xcl){
           var_op_typ=prc;
@@ -1325,9 +1321,9 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   } /* end if prc */
 
   if(var_op_typ == fix){
-    var_prc_out.is_fix_var=True;
+    var_out->is_fix_var=True;
   }else{
-    var_prc_out.is_fix_var=False;
+    var_out->is_fix_var=False;
   } 
 
   /* Export */
