@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.278 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.279 2013-03-25 13:07:15 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1374,7 +1374,9 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     (void)nco_inq_dimname(nc_id,var->dmn_id[idx],dmn_nm);
     /* Search input dimension list for matching name */
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++)
-      if(!strcmp(dmn_nm,dim[dmn_idx]->nm)) break;
+      if(!strcmp(dmn_nm,dim[dmn_idx]->nm)){
+        break;
+      }
 
     if(dmn_idx == nbr_dim){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in list of dimensions available to nco_var_fll()\n",prg_nm_get(),dmn_nm);

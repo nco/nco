@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.105 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.106 2013-03-25 13:07:15 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -11,6 +11,7 @@
 
 #include "nco_grp_trv.h" /* Group traversal */
 #include "nco_lmt.h" /* Hyperslab limits */
+#include "nco_cnf_dmn.h" /* Conform dimensions */
 
 void                          
 trv_tbl_init
@@ -416,9 +417,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           long cnt[NC_MAX_DIMS];/* [nbr] Count array */
           long srt[NC_MAX_DIMS];/* [nbr] Start array */
 
-
-          has_mss_val=False;
-
           /* Initialize operator variable structures */
           for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
             srt[idx_dmn]=0;
@@ -429,7 +427,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               cnt[idx_dmn]=trv_1.var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
             }
           }
-
           
           /* Allocate variable structure and fill with metadata */
           var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1.nm,srt,cnt,trv_1.nbr_dmn);     
@@ -439,7 +436,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
            var_prc_1->sz*=cnt[idx_dmn];
           }
-
 
           (void)nco_var_lst_dvd_trv(var_prc_1,&var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1); 
           (void)nco_var_lst_dvd_trv(var_prc_2,&var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2); 
@@ -465,33 +461,45 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           /* Processed variable */
           if (op_typ_1 == prc){
 
-            var_prc_1->nbr_dim=trv_1.nbr_dmn;
-            var_prc_2->nbr_dim=trv_2.nbr_dmn;
-            var_prc_1->id=var_id_1;
-            var_prc_2->id=var_id_2;
-            var_prc_1->typ_dsk=trv_1.var_typ;
-            var_prc_2->typ_dsk=trv_2.var_typ;
-            var_prc_1->type=trv_1.var_typ;
-            var_prc_2->type=trv_2.var_typ;
-            var_prc_1->typ_upk=trv_1.var_typ;
-            var_prc_2->typ_upk=trv_1.var_typ;
-            var_prc_1->has_scl_fct=False;
-            var_prc_2->has_scl_fct=False;
-            var_prc_1->has_add_fst=False;
-            var_prc_2->has_add_fst=False;
-            var_prc_1->pck_dsk=False;
-            var_prc_2->pck_dsk=False;
-
             var_prc_out.id=var_out_id;
             var_prc_out.srt=srt;
             var_prc_out.cnt=cnt;
-     
+
+            /* Find and set variable dmn_nbr, ID, mss_val, type in first file */
+            (void)nco_var_mtd_refresh(grp_id_1,var_prc_1);
+
+            /* Set missing value */
+            has_mss_val=var_prc_1->has_mss_val; 
 
             /* Read hyperslab from first file */
             (void)nco_msa_var_get_trv(grp_id_1,var_prc_1,&trv_1);
 
+            /* Find and set variable dmn_nbr, ID, mss_val, type in second file */
+            (void)nco_var_mtd_refresh(grp_id_2,var_prc_2);
+
             /* Read hyperslab from second file */
             (void)nco_msa_var_get_trv(grp_id_2,var_prc_2,&trv_2);
+
+            /* Die gracefully on unsupported features... */
+            if(var_prc_1->nbr_dim < var_prc_2->nbr_dim){
+              (void)fprintf(stdout,"%s: ERROR Variable %s has lesser rank in first file than in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm_get(),var_prc_1->nm,var_prc_1->nbr_dim,var_prc_2->nbr_dim);
+              nco_exit(EXIT_FAILURE);
+            } /* endif */
+
+            /* var2 now conforms in size to var1, and is in memory */
+
+            /* Make sure var2 conforms to type of var1 */
+            if(var_prc_1->type != var_prc_2->type){
+              if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: variable %s has type %s, variable %s has type %s, variable %s will have type %s\n",prg_nm_get(),var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_1->nm,nco_typ_sng(var_prc_1->type));
+            }  
+
+            var_prc_2=nco_var_cnf_typ(var_prc_1->type,var_prc_2);
+
+            /* Change missing_value of var_prc_2, if any, to missing_value of var_prc_1, if any */
+            has_mss_val=nco_mss_val_cnf(var_prc_1,var_prc_2);
+
+            /* mss_val in fl_1, if any, overrides mss_val in fl_2 */
+            if(has_mss_val) mss_val=var_prc_1->mss_val;
 
             /* Perform specified binary operation */
             switch(nco_op_typ){
