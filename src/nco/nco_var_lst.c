@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.136 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.137 2013-03-25 13:41:11 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1323,6 +1323,12 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var->nm,nco_typ_sng(var->type));
     } /* end if */
   } /* end if prc */
+
+  if(var_op_typ == fix){
+    var_prc_out.is_fix_var=True;
+  }else{
+    var_prc_out.is_fix_var=False;
+  } 
 
   /* Export */
   *op_typ=(op_typ_enm)var_op_typ;
