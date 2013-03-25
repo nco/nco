@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.90 2013-03-25 20:33:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.91 2013-03-25 20:40:18 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -42,50 +42,50 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  void
-  nco_cpy_var_val /* [fnc] Copy variable data from input to output file, no limits */
-  (const int in_id, /* I [id] netCDF input file ID */
+void
+nco_cpy_var_val /* [fnc] Copy variable data from input to output file, no limits */
+(const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
    const char *var_nm); /* I [sng] Variable name */
 
-  void
-  nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simple hyperslabs */
-  (const int in_id, /* I [id] netCDF input file ID */
+void
+nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simple hyperslabs */
+(const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    char *var_nm, /* I [sng] Variable name */
    const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
  
-  nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
-  nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
-  (const int in_id, /* I [id] Input file ID */
+nco_bool /* O [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
+nco_use_mm3_workaround /* [fnc] Use faster copy on Multi-record Multi-variable netCDF3 files? */
+(const int in_id, /* I [id] Input file ID */
    const int fl_out_fmt); /* I [enm] Output file format */
 
-  void
-  nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */
-  (const int in_id, /* I [id] netCDF input file ID */
+void
+nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */
+(const int in_id, /* I [id] netCDF input file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const nco_bool MD5_DIGEST, /* I [flg] Perform MD5 digests */
    CST_X_PTR_CST_PTR_CST_Y(nm_id_sct,var_lst), /* I [sct] Record variables to be extracted */
    const int var_nbr); /* I [nbr] Number of record variables */
 
-  void 
-  nco_var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
-  (const nc_type var_typ, /* I [enm] netCDF type */
+void 
+nco_var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
+(const nc_type var_typ, /* I [enm] netCDF type */
    const long sz, /* I [nbr] Number of elements to copy */
    const ptr_unn op1, /* I [sct] Values to copy */
    ptr_unn op2); /* O [sct] Destination to copy values to */
   
-  int /* O [enm] Return code */
-  var_dfl_set /* [fnc] Set defaults for each member of variable structure */
-  (var_sct * const var); /* I [sct] Variable strucutre to initialize to defaults */
+int /* O [enm] Return code */
+var_dfl_set /* [fnc] Set defaults for each member of variable structure */
+(var_sct * const var); /* I [sct] Variable strucutre to initialize to defaults */
 
-  void
-  nco_var_dfn /* [fnc] Define variables and write their attributes to output file */
-  (const int in_id, /* I [enm] netCDF input-file ID */
+void
+nco_var_dfn /* [fnc] Define variables and write their attributes to output file */
+(const int in_id, /* I [enm] netCDF input-file ID */
    const char * const fl_out, /* I [sng] Name of output file */
    const int out_id, /* I [enm] netCDF output-file ID */
    var_sct * const * const var, /* I/O [sct] Variables to be defined in output file */
@@ -96,78 +96,76 @@ extern "C" {
    const int nco_pck_plc, /* I [enm] Packing policy */
    const int dfl_lvl); /* I [enm] Deflate level [0..9] */
   
-  var_sct * /* O [sct] Copy of input variable */
-  nco_var_dpl /* [fnc] Duplicate input variable */
-  (const var_sct * const var); /* I [sct] Variable to duplicate */
+var_sct * /* O [sct] Copy of input variable */
+nco_var_dpl /* [fnc] Duplicate input variable */
+(const var_sct * const var); /* I [sct] Variable to duplicate */
   
+var_sct * /* O [sct] Pointer to free'd variable */
+nco_var_free /* [fnc] Free all memory associated with variable structure */
+(var_sct *var); /* I/O [sct] Variable to free */
   
+void
+nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
+(const int nc_id, /* I [id] netCDF file ID */
+ var_sct *var); /* I [sct] Variable to get */
   
-  var_sct * /* O [sct] Pointer to free'd variable */
-  nco_var_free /* [fnc] Free all memory associated with variable structure */
-  (var_sct *var); /* I/O [sct] Variable to free */
-  
-  void
-  nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
-  (const int nc_id, /* I [id] netCDF file ID */
-   var_sct *var); /* I [sct] Variable to get */
-  
-  var_sct ** /* O [sct] Pointer to free'd structure list */
-  nco_var_lst_free /* [fnc] Free memory associated with variable structure list */
-  (var_sct **var_lst, /* I/O [sct] Variable structure list to free */
-   const int var_nbr); /* I [nbr] Number of variable structures in list */
+var_sct ** /* O [sct] Pointer to free'd structure list */
+nco_var_lst_free /* [fnc] Free memory associated with variable structure list */
+(var_sct **var_lst, /* I/O [sct] Variable structure list to free */
+ const int var_nbr); /* I [nbr] Number of variable structures in list */
 
-  nco_bool /* [flg] Variable is listed in a "bounds" attribute */
-  nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
-  (const int nc_id, /* I [id] netCDF file ID */
-   const int var_trg_id); /* I [id] Variable ID */
+nco_bool /* [flg] Variable is listed in a "bounds" attribute */
+nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int var_trg_id); /* I [id] Variable ID */
 
-  nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
-  nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */
-  (const int nc_id, /* I [id] netCDF file ID */
-   const int var_trg_id); /* I [id] Variable ID */
+nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
+nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int var_trg_id); /* I [id] Variable ID */
 
-  void
-  nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
-  (const int nc_id, /* I [id] netCDF input-file ID */
-   var_sct * const var); /* I/O [sct] Variable to update */
+void
+nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, type) */
+(const int nc_id, /* I [id] netCDF input-file ID */
+ var_sct * const var); /* I/O [sct] Variable to update */
   
-  void
-  nco_var_srd_srt_set /* [fnc] Assign zero to start and unity to stride vectors in variables */
-  (var_sct ** const var, /* I [sct] Variables whose duration, start, and stride arrays to set */
-   const int nbr_var); /* I [nbr] Number of structures in variable structure list */
+void
+nco_var_srd_srt_set /* [fnc] Assign zero to start and unity to stride vectors in variables */
+(var_sct ** const var, /* I [sct] Variables whose duration, start, and stride arrays to set */
+ const int nbr_var); /* I [nbr] Number of structures in variable structure list */
   
-  void
-  nco_var_dmn_refresh /* [fnc] Refresh var hyperslab info with var->dim[] info */
-  (var_sct ** const var, /* I [sct] Variables to refresh */
-   const int nbr_var); /* I [nbr] Number of structures in variable structure list */
+void
+nco_var_dmn_refresh /* [fnc] Refresh var hyperslab info with var->dim[] info */
+(var_sct ** const var, /* I [sct] Variables to refresh */
+ const int nbr_var); /* I [nbr] Number of structures in variable structure list */
   
-  void
-  nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
-  (const int in_id, /* I [enm] netCDF file ID */
-   const int out_id, /* I [enm] netCDF output file ID */
-   var_sct ** const var, /* I/O [sct] Variables to copy to output file */
-   const int nbr_var); /* I [nbr] Number of variables */
+void
+nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
+(const int in_id, /* I [enm] netCDF file ID */
+ const int out_id, /* I [enm] netCDF output file ID */
+ var_sct ** const var, /* I/O [sct] Variables to copy to output file */
+ const int nbr_var); /* I [nbr] Number of variables */
   
-  void
-  nco_xrf_dmn /* [fnc] Switch pointers to dimension structures so var->dim points to var->dim->xrf */
-  (var_sct * const var); /* I [sct] Variable to manipulate */
+void
+nco_xrf_dmn /* [fnc] Switch pointers to dimension structures so var->dim points to var->dim->xrf */
+(var_sct * const var); /* I [sct] Variable to manipulate */
   
-  void
-  nco_xrf_var /* [fnc] Make xrf elements of variable structures point to eachother */
-  (var_sct * const var_1, /* I/O [sct] Variable */
-   var_sct * const var_2); /* I/O [sct] Related variable */
+void
+nco_xrf_var /* [fnc] Make xrf elements of variable structures point to eachother */
+(var_sct * const var_1, /* I/O [sct] Variable */
+ var_sct * const var_2); /* I/O [sct] Related variable */
 
-  int                                 /* O [id] Output file variable ID */
-  nco_cpy_var_dfn                     /* [fnc] Define specified variable in output file */
-  (const int nc_id,                   /* I [ID] netCDF input file ID */
-   const int nc_out_id,               /* I [ID] netCDF output file ID */ 
-   const int grp_in_id,               /* I [id] netCDF input group ID */
-   const int grp_out_id,              /* I [id] netCDF output group ID */
-   const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
-   const gpe_sct * const gpe,         /* I [sct] GPE structure */
-   const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
-   const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
-   const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
+int                                 /* O [id] Output file variable ID */
+nco_cpy_var_dfn                     /* [fnc] Define specified variable in output file */
+(const int nc_id,                   /* I [ID] netCDF input file ID */
+ const int nc_out_id,               /* I [ID] netCDF output file ID */ 
+ const int grp_in_id,               /* I [id] netCDF input group ID */
+ const int grp_out_id,              /* I [id] netCDF output group ID */
+ const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,         /* I [sct] GPE structure */
+ const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
+ const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
+ const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
 
 
 var_sct *                             /* O [sct] Variable structure */
