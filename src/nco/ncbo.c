@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.232 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.233 2013-03-25 11:44:51 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.232 2013-03-24 21:55:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.232 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.233 2013-03-25 11:44:51 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.233 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -504,6 +504,9 @@ main(int argc,char **argv)
   (void)trv_tbl_init(&trv_tbl_1);
   (void)trv_tbl_init(&trv_tbl_2);
 
+  /* Default operation depends on invocation name */
+  if(nco_op_typ_sng == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
@@ -808,9 +811,6 @@ main(int argc,char **argv)
 
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
-
-  /* Default operation depends on invocation name */
-  if(nco_op_typ_sng == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
 
   /* Timestamp end of metadata setup and disk layout */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
