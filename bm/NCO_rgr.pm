@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.239 2013-03-20 07:32:08 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.240 2013-03-25 20:33:13 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -312,6 +312,9 @@ print "\n";
     $opr_nm="ncbo";
 ####################
 #if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
+
+# ncbo #1
+
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_03%";;
     $tst_cmd[2]="ncks -C -H -s '%g' -v rec_var_dbl_mss_val_dbl_pck %tmp_fl_03%";
@@ -320,6 +323,8 @@ print "\n";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array - ok
+
+# ncbo #2
 
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time $in_pth_arg in.nc %tmp_fl_03%";;
     $tst_cmd[1]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth/in.nc %tmp_fl_03% %tmp_fl_00%";;
@@ -330,6 +335,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array - ok
 
+# ncbo #3    
+    
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
     $dsc_sng="difference scalar missing value";
@@ -337,6 +344,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array - ok
+    
+# ncbo #4    
     
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_00%";
@@ -346,6 +355,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array ok
     
+# ncbo #5  
+    
     $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -d lon,0 -v no_mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v no_mss_val %tmp_fl_00%";
     $dsc_sng="difference without missing value attribute";
@@ -353,6 +364,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array ok
+    
+# ncbo #6    
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v mss_val_fst $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -v mss_val_fst,mss_val %tmp_fl_00%";
@@ -364,6 +377,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array ok
     
+# ncbo #7   
+    
     $tst_cmd[0]="ncrename -h $nco_D_flg -O -v no_mss_val,one_dmn_arr_with_and_without_mss_val $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename -h $nco_D_flg -O -v mss_val,one_dmn_arr_with_and_without_mss_val $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncbo $omp_flg  -h -O $fl_fmt $nco_D_flg -y '-' -v one_dmn_arr_with_and_without_mss_val %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_03%";
@@ -374,6 +389,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array ok
     
+# ncbo #8    
+    
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_00%";
     $dsc_sng="ncdiff symbolically linked to ncbo";
@@ -381,6 +398,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array ok
+    
+# ncbo #9    
     
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,1 -v mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_00%";
@@ -390,6 +409,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array ok
     
+# ncbo #10   
+    
     $tst_cmd[0]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg -d lon,0 -v no_mss_val $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v no_mss_val %tmp_fl_00%";
     $dsc_sng="Difference without missing value attribute";
@@ -397,6 +418,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array ok
+    
+# ncbo #11   
     
     $tst_cmd[0]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tmp_fl_03%";
     $tst_cmd[1]="ncbo $omp_flg -C -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth/in.nc %tmp_fl_03% %tmp_fl_00%";
@@ -406,6 +429,8 @@ print "\n";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+    
+# ncbo #12    
     
     $tst_cmd[0]="ncks -C -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -C -O $fl_fmt $nco_D_flg -v -s 'three_dmn_var_dbl[lon]={0.0,1,2,3};' $in_pth_arg in.nc %tmp_fl_01%";
@@ -417,6 +442,8 @@ print "\n";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+    
+# ncbo #13   
 	
     $tst_cmd[0]="ncks -C -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -C -O $fl_fmt $nco_D_flg -v -s 'three_dmn_var_dbl[lon]={0.0,1,2,3};' $in_pth_arg in.nc %tmp_fl_01%";

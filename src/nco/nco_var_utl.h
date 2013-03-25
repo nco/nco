@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.89 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.90 2013-03-25 20:33:13 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -100,13 +100,7 @@ extern "C" {
   nco_var_dpl /* [fnc] Duplicate input variable */
   (const var_sct * const var); /* I [sct] Variable to duplicate */
   
-  var_sct * /* O [sct] Variable structure */
-  nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
-  (const int nc_id, /* I [id] netCDF file ID */
-   const int var_id, /* I [id] variable ID */
-   const char * const var_nm, /* I [sng] Variable name */
-   dmn_sct * const * const dim, /* I [sct] Dimensions available to variable */
-   const int nbr_dim); /* I [nbr] Number of dimensions in list */
+  
   
   var_sct * /* O [sct] Pointer to free'd variable */
   nco_var_free /* [fnc] Free all memory associated with variable structure */
@@ -174,6 +168,15 @@ extern "C" {
    const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
    const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
    const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
+
+
+var_sct *                             /* O [sct] Variable structure */
+nco_var_fll                           /* [fnc] Allocate variable structure and fill with metadata */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const int var_id,                    /* I [id] variable ID */
+ const char * const var_nm,           /* I [sng] Variable name */
+ dmn_sct * const * const dim,         /* I [sct] Dimensions available to variable */
+ const int nbr_dim);                  /* I [nbr] Number of dimensions in list */
 
 var_sct *                             /* O [sct] Variable structure */
 nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
