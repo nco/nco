@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.108 2013-03-25 13:59:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.109 2013-03-25 21:02:12 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -414,35 +414,15 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           ptr_unn mss_val;      /* [sct] Missing value */
 
-          long cnt[NC_MAX_DIMS];/* [nbr] Count array */
-          long srt[NC_MAX_DIMS];/* [nbr] Start array */
-
-
           /* Allocate space for variable structure */
           var_prc_out=(var_sct *)nco_malloc(sizeof(var_sct));
 
           /* Set defaults for each member of variable structure */
           (void)var_dfl_set(var_prc_out); 
-
-          /* Initialize operator variable structures */
-          for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
-            srt[idx_dmn]=0;
-            if(trv_1.var_dmn[idx_dmn].crd){
-              cnt[idx_dmn]=trv_1.var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
-            }
-            else if (trv_1.var_dmn[idx_dmn].ncd){
-              cnt[idx_dmn]=trv_1.var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
-            }
-          }
           
           /* Allocate variable structure and fill with metadata */
-          var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1.nm,srt,cnt,trv_1.nbr_dmn);     
-          var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,trv_2.nm,srt,cnt,trv_2.nbr_dmn);
-
-          var_prc_1->sz=1;
-          for(int idx_dmn=0;idx_dmn<trv_1.nbr_dmn;idx_dmn++){
-           var_prc_1->sz*=cnt[idx_dmn];
-          }
+          var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,&trv_1,trv_tbl_1);     
+          var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,&trv_2,trv_tbl_2);
 
           (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1); 
           (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2); 
@@ -469,8 +449,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           if (op_typ_1 == prc){
 
             var_prc_out->id=var_out_id;
-            var_prc_out->srt=srt;
-            var_prc_out->cnt=cnt;
+            var_prc_out->srt=var_prc_1->srt;
+            var_prc_out->cnt=var_prc_1->cnt;
 
             /* Find and set variable dmn_nbr, ID, mss_val, type in first file */
             (void)nco_var_mtd_refresh(grp_id_1,var_prc_1);

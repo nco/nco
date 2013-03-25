@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.91 2013-03-25 20:40:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.92 2013-03-25 21:02:12 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -180,10 +180,8 @@ var_sct *                             /* O [sct] Variable structure */
 nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const int var_id,                    /* I [id] Variable ID */
- const char * const var_nm,           /* I [sng] Variable name */
- long *srt,                           /* I [nbr] Start array  */
- long *cnt,                           /* I [nbr] Count array  */
- const int nbr_dim);                  /* I [nbr] Number of dimensions  */
+ const trv_sct * const var_trv,       /* I [sct] Object to write (variable) */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
   
 #ifdef __cplusplus

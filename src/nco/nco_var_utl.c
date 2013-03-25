@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.281 2013-03-25 20:33:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.282 2013-03-25 21:02:12 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2083,19 +2083,21 @@ var_sct *                             /* O [sct] Variable structure */
 nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const int var_id,                    /* I [id] Variable ID */
- const char * const var_nm,           /* I [sng] Variable name */
- long *srt,                           /* I [nbr] Start array  */
- long *cnt,                           /* I [nbr] Count array  */
- const int nbr_dim)                   /* I [nbr] Number of dimensions  */
+ const trv_sct * const var_trv,       /* I [sct] Object to write (variable) */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: nco_malloc() and return a completed var_sct */
+
   char dmn_nm[NC_MAX_NAME];
 
   int fl_fmt;
-  int dmn_idx;
-  int idx;
 
   var_sct *var;
+
+  long cnt[NC_MAX_DIMS];/* [nbr] Count array */
+  long srt[NC_MAX_DIMS];/* [nbr] Start array */
+
+  assert(var_trv->nco_typ == nco_obj_typ_var);
 
   /* Get file format */
   (void)nco_inq_format(nc_id,&fl_fmt);
@@ -2105,13 +2107,17 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
 
   /* Fill-in known fields */
-  /* Make sure var_free() frees names when variable is destroyed */
-  var->nm=(char *)strdup(var_nm);
+  var->nm=(char *)strdup(var_trv->nm);
   var->id=var_id;
   var->nc_id=nc_id;
+  var->is_crd_var=var_trv->is_crd_var;
 
   /* Get type and number of dimensions and attributes for variable */
   (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
+
+  assert(var->typ_dsk == var_trv->var_typ);
+  assert(var->nbr_dim == var_trv->nbr_dmn);
+  assert(var->nbr_att == var_trv->nbr_att);
 
   /* Allocate space for dimension information */
   if(var->nbr_dim > 0) var->dim=(dmn_sct **)nco_malloc(var->nbr_dim*sizeof(dmn_sct *)); else var->dim=(dmn_sct **)NULL;
@@ -2133,9 +2139,20 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
+  /* Initialize start, count */
+  for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+    srt[idx_dmn]=0;
+    if(var_trv->var_dmn[idx_dmn].crd){
+      cnt[idx_dmn]=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+    }
+    else if (var_trv->var_dmn[idx_dmn].ncd){
+      cnt[idx_dmn]=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+    }
+  }
+
   /* Size defaults to 1 in var_dfl_set(), and set to 1 here for extra safety */
   var->sz=1L; 
-  for(idx=0;idx<var->nbr_dim;idx++){
+  for(int idx=0;idx<var->nbr_dim;idx++){
 
     (void)nco_inq_dimname(nc_id,var->dmn_id[idx],dmn_nm);
 
@@ -2155,7 +2172,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   var->dfl_lvl=0; /* [enm] Deflate level */
   var->shuffle=False; /* [flg] Turn on shuffle filter */
 
-  for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
+  for(int idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
 
   /* Read deflate levels and chunking (if any) */  
   if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC){
