@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.75 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.76 2013-03-26 14:42:44 pvicente Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -73,22 +73,22 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 
   /* Initialize flag to false. Overwrite by true after successful conformance */
   *DO_CONFORM=False;
-  
+
   /* Does current weight (wgt_crr) conform to variable's dimensions? */
   if(wgt_crr){
     /* Test rank first because wgt_crr because of 19960218 bug (invalid dmn_id in old wgt_crr leads to match) */
     if(var->nbr_dim == wgt_crr->nbr_dim){
       /* Test whether all wgt and var dimensions match in sequence */
       for(idx=0;idx<var->nbr_dim;idx++){
-	if(strcmp(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
+        if(strcmp(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
       } /* end loop over dimensions */
       if(idx == var->nbr_dim) *DO_CONFORM=True;
     } /* end if ranks are equal */
 
     /* 20060425: Weight re-use will not occur if wgt_crr is free()'d here
-       Some DDRA benchmarks need to know cost of broadcasting weights
-       To turn off weight re-use and cause broadcasting, execute "else" block below
-       by (temporarily) using in following condition
+    Some DDRA benchmarks need to know cost of broadcasting weights
+    To turn off weight re-use and cause broadcasting, execute "else" block below
+    by (temporarily) using in following condition
 
     if(*DO_CONFORM && False){
 
@@ -109,69 +109,69 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
       /* Test that all dimensions in wgt appear in var */
       for(idx=0;idx<wgt->nbr_dim;idx++){
         for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
-	  /* Compare names, not dimension IDs */
-	  if(!strcmp(wgt->dim[idx]->nm,var->dim[idx_dmn]->nm)){
-	    wgt_var_dmn_shr_nbr++; /* wgt and var share this dimension */
-	    break;
-	  } /* endif */
+          /* Compare names, not dimension IDs */
+          if(!strcmp(wgt->dim[idx]->nm,var->dim[idx_dmn]->nm)){
+            wgt_var_dmn_shr_nbr++; /* wgt and var share this dimension */
+            break;
+          } /* endif */
         } /* end loop over var dimensions */
       } /* end loop over wgt dimensions */
       /* Decide whether wgt and var dimensions conform, are mutually exclusive, or are partially exclusive (an error) */ 
       if(wgt_var_dmn_shr_nbr == wgt->nbr_dim){
-	/* wgt and var conform */
-	CONFORMABLE=True;
+        /* wgt and var conform */
+        CONFORMABLE=True;
       }else if(wgt_var_dmn_shr_nbr == 0){
-	/* Dimensions in wgt and var are mutually exclusive */
-	CONFORMABLE=False;
-	if(MUST_CONFORM){
-	  (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),wgt->nm,var->nm);
-	  nco_exit(EXIT_FAILURE);
-	}else{
-	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s and template %s share no dimensions: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,var->nm,wgt->nm,var->nm);
-	  USE_DUMMY_WGT=True;
-	} /* endif */
+        /* Dimensions in wgt and var are mutually exclusive */
+        CONFORMABLE=False;
+        if(MUST_CONFORM){
+          (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),wgt->nm,var->nm);
+          nco_exit(EXIT_FAILURE);
+        }else{
+          if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s and template %s share no dimensions: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,var->nm,wgt->nm,var->nm);
+          USE_DUMMY_WGT=True;
+        } /* endif */
       }else if(wgt->nbr_dim > var->nbr_dim){
-	/* wgt is larger rank than var---no possibility of conforming */
-	CONFORMABLE=False;
-	if(MUST_CONFORM){
-	  (void)fprintf(stdout,"%s: ERROR %s is rank %d but template %s is rank %d: Impossible to broadcast\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim);
-	  nco_exit(EXIT_FAILURE);
-	}else{
-	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
-	  USE_DUMMY_WGT=True;
-	} /* endif */
+        /* wgt is larger rank than var---no possibility of conforming */
+        CONFORMABLE=False;
+        if(MUST_CONFORM){
+          (void)fprintf(stdout,"%s: ERROR %s is rank %d but template %s is rank %d: Impossible to broadcast\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim);
+          nco_exit(EXIT_FAILURE);
+        }else{
+          if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
+          USE_DUMMY_WGT=True;
+        } /* endif */
       }else if(wgt_var_dmn_shr_nbr > 0 && wgt_var_dmn_shr_nbr < wgt->nbr_dim){
-	/* Some, but not all, of wgt dimensions are in var */
-	CONFORMABLE=False;
-	if(MUST_CONFORM){
-	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr);
-	  nco_exit(EXIT_FAILURE);
-	}else{
-	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr,wgt->nm,var->nm);
-	  USE_DUMMY_WGT=True;
-	} /* endif */
+        /* Some, but not all, of wgt dimensions are in var */
+        CONFORMABLE=False;
+        if(MUST_CONFORM){
+          (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr);
+          nco_exit(EXIT_FAILURE);
+        }else{
+          if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr,wgt->nm,var->nm);
+          USE_DUMMY_WGT=True;
+        } /* endif */
       } /* end if */
       if(USE_DUMMY_WGT){
-	/* Variables do not truly conform, but this might be OK, depending on the application, so set DO_CONFORM flag to false and ... */
-	*DO_CONFORM=False;
-	/* ... return a dummy weight of 1.0, which allows program logic to pretend variable is weighted, but does not change answers */ 
-	wgt_out=nco_var_dpl(var);
-	(void)vec_set(wgt_out->type,wgt_out->sz,wgt_out->val,1.0);
+        /* Variables do not truly conform, but this might be OK, depending on the application, so set DO_CONFORM flag to false and ... */
+        *DO_CONFORM=False;
+        /* ... return a dummy weight of 1.0, which allows program logic to pretend variable is weighted, but does not change answers */ 
+        wgt_out=nco_var_dpl(var);
+        (void)vec_set(wgt_out->type,wgt_out->sz,wgt_out->val,1.0);
       } /* endif */
       if(CONFORMABLE){
-	if(var->nbr_dim == wgt->nbr_dim){
-	  /* var and wgt conform and are same rank */
-	  /* Test whether all wgt and var dimensions match in sequence */
-	  for(idx=0;idx<var->nbr_dim;idx++){
-	    if(strcmp(wgt->dim[idx]->nm,var->dim[idx]->nm)) break;
-	       /*	    if(wgt->dmn_id[idx] != var->dmn_id[idx]) break;*/
-	  } /* end loop over dimensions */
-	  /* If so, take shortcut and copy wgt to wgt_out */
-	  if(idx == var->nbr_dim) *DO_CONFORM=True;
-	}else{
-	  /* var and wgt conform but are not same rank, set flag to proceed to generic conform routine */
-	  *DO_CONFORM=False;
-	} /* end else */
+        if(var->nbr_dim == wgt->nbr_dim){
+          /* var and wgt conform and are same rank */
+          /* Test whether all wgt and var dimensions match in sequence */
+          for(idx=0;idx<var->nbr_dim;idx++){
+            if(strcmp(wgt->dim[idx]->nm,var->dim[idx]->nm)) break;
+            /*	    if(wgt->dmn_id[idx] != var->dmn_id[idx]) break;*/
+          } /* end loop over dimensions */
+          /* If so, take shortcut and copy wgt to wgt_out */
+          if(idx == var->nbr_dim) *DO_CONFORM=True;
+        }else{
+          /* var and wgt conform but are not same rank, set flag to proceed to generic conform routine */
+          *DO_CONFORM=False;
+        } /* end else */
       } /* endif CONFORMABLE */
     }else{
       /* var is scalar, if wgt is also then set flag to copy wgt to wgt_out else proceed to generic conform routine */
@@ -192,7 +192,6 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     char * restrict wgt_out_cp;
 
     int idx_wgt_var[NC_MAX_DIMS];
-    /*    int idx_var_wgt[NC_MAX_DIMS];*/
     int wgt_nbr_dim;
     int var_nbr_dmn_m1;
 
@@ -211,9 +210,9 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     (void)nco_xrf_var(wgt,wgt_out);
 
     /* wgt_out variable was copied from template var
-       Modify key fields so its name and type are based on wgt, not var
-       wgt_out will then be hybrid between wgt and var 
-       Remainder of routine fills wgt_out's var-dimensionality with wgt-values */
+    Modify key fields so its name and type are based on wgt, not var
+    wgt_out will then be hybrid between wgt and var 
+    Remainder of routine fills wgt_out's var-dimensionality with wgt-values */
     wgt_out->nm=(char *)nco_free(wgt_out->nm);
     wgt_out->nm=(char *)strdup(wgt->nm);
     wgt_out->id=wgt->id;
@@ -229,64 +228,63 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
       (void)memcpy(wgt_out_cp,wgt_cp,wgt_typ_sz);
     }else if(wgt->nbr_dim == 0){
       /* Lesser-ranked input variable is scalar 
-	 Expansion in this degenerate case needs no index juggling (reverse-mapping)
-	 Code as special case to speed-up important applications of ncap
-	 for synthetic file creation */
+      Expansion in this degenerate case needs no index juggling (reverse-mapping)
+      Code as special case to speed-up important applications of ncap
+      for synthetic file creation */
       var_sz=var->sz;
       for(var_lmn=0;var_lmn<var_sz;var_lmn++){
-	(void)memcpy(wgt_out_cp+var_lmn*wgt_typ_sz,wgt_cp,wgt_typ_sz);      
+        (void)memcpy(wgt_out_cp+var_lmn*wgt_typ_sz,wgt_cp,wgt_typ_sz);      
       } /* end loop over var_lmn */
     }else{
       /* Variable (and therefore wgt_out) are arrays, not scalars */
-      
+
       /* Create forward and reverse mappings from variable's dimensions to weight's dimensions:
 
-	 dmn_var_map[i] is number of elements between one value of i_th 
-	 dimension of variable and next value of i_th dimension, i.e., 
-	 number of elements in memory between indicial increments in i_th dimension. 
-	 This is computed as product of one (1) times size of all dimensions (if any) after i_th 
-	 dimension in variable.
+      dmn_var_map[i] is number of elements between one value of i_th 
+      dimension of variable and next value of i_th dimension, i.e., 
+      number of elements in memory between indicial increments in i_th dimension. 
+      This is computed as product of one (1) times size of all dimensions (if any) after i_th 
+      dimension in variable.
 
-	 dmn_wgt_map[i] contains analogous information, except for original weight variable
+      dmn_wgt_map[i] contains analogous information, except for original weight variable
 
-	 idx_wgt_var[i] contains index into variable's dimensions of i_th dimension of original weight
-	 idx_var_wgt[i] contains index into original weight's dimensions of i_th dimension of variable 
+      idx_wgt_var[i] contains index into variable's dimensions of i_th dimension of original weight
+      idx_var_wgt[i] contains index into original weight's dimensions of i_th dimension of variable 
 
-	 Since weight is a subset of variable, some elements of idx_var_wgt may be "empty", or unused
+      Since weight is a subset of variable, some elements of idx_var_wgt may be "empty", or unused
 
-	 Since mapping arrays (dmn_var_map and dmn_wgt_map) are ultimately used for a
-	 memcpy() operation, they could (read: should) be computed as byte offsets, not type offsets. 
-	 This is why netCDF generic hyperslab routines (ncvarputg(), ncvargetg())
-	 request imap vector to specify offset (imap) vector in bytes. */
+      Since mapping arrays (dmn_var_map and dmn_wgt_map) are ultimately used for a
+      memcpy() operation, they could (read: should) be computed as byte offsets, not type offsets. 
+      This is why netCDF generic hyperslab routines (ncvarputg(), ncvargetg())
+      request imap vector to specify offset (imap) vector in bytes. */
 
       for(idx=0;idx<wgt->nbr_dim;idx++){
-	for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
-	  /* Compare names, not dimension IDs */
-	  if(!strcmp(var->dim[idx_dmn]->nm,wgt->dim[idx]->nm)){
-	    idx_wgt_var[idx]=idx_dmn;
-	    /*	    idx_var_wgt[idx_dmn]=idx;*/
-	    break;
-	  } /* end if */
-	  /* Sanity check */
-	  if(idx_dmn == var->nbr_dim-1){
-	    (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in nco_var_cnf_dmn()\n",prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
-	    nco_exit(EXIT_FAILURE);
-	  } /* end if err */
-	} /* end loop over variable dimensions */
+        for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
+          /* Compare names, not dimension IDs */
+          if(!strcmp(var->dim[idx_dmn]->nm,wgt->dim[idx]->nm)){
+            idx_wgt_var[idx]=idx_dmn;
+            break;
+          } /* end if */
+          /* Sanity check */
+          if(idx_dmn == var->nbr_dim-1){
+            (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in nco_var_cnf_dmn()\n",prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
+            nco_exit(EXIT_FAILURE);
+          } /* end if err */
+        } /* end loop over variable dimensions */
       } /* end loop over weight dimensions */
-      
+
       /* Figure out map for each dimension of variable */
       for(idx=0;idx<var->nbr_dim;idx++)	dmn_var_map[idx]=1L;
       for(idx=0;idx<var->nbr_dim-1;idx++)
-	for(idx_dmn=idx+1;idx_dmn<var->nbr_dim;idx_dmn++)
-	  dmn_var_map[idx]*=var->cnt[idx_dmn];
-      
+        for(idx_dmn=idx+1;idx_dmn<var->nbr_dim;idx_dmn++)
+          dmn_var_map[idx]*=var->cnt[idx_dmn];
+
       /* Figure out map for each dimension of weight */
       for(idx=0;idx<wgt->nbr_dim;idx++)	dmn_wgt_map[idx]=1L;
       for(idx=0;idx<wgt->nbr_dim-1;idx++)
-	for(idx_dmn=idx+1;idx_dmn<wgt->nbr_dim;idx_dmn++)
-	  dmn_wgt_map[idx]*=wgt->cnt[idx_dmn];
-      
+        for(idx_dmn=idx+1;idx_dmn<wgt->nbr_dim;idx_dmn++)
+          dmn_wgt_map[idx]*=wgt->cnt[idx_dmn];
+
       /* Define convenience variables to avoid repetitive indirect addressing */
       wgt_nbr_dim=wgt->nbr_dim;
       var_sz=var->sz;
@@ -295,46 +293,46 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 
       /* var_lmn is offset into 1-D array corresponding to N-D indices dmn_ss */
       for(var_lmn=0;var_lmn<var_sz;var_lmn++){
-	/* dmn_ss are corresponding indices (subscripts) into N-D array */
-	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
-	   Repetitions: \lmnnbr
-	   Total Counts: \rthnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
-	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
-	dmn_ss[var_nbr_dmn_m1]=var_lmn%var_cnt[var_nbr_dmn_m1];
-	for(idx=0;idx<var_nbr_dmn_m1;idx++){
-	  /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
-	     Repetitions: \lmnnbr(\dmnnbr-1)
-	     Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
-	     NB: LHS assumed compact and cached, counted RHS offsets and fetches only
-	     NB: Neglected loop arithmetic/compare */
-	  dmn_ss[idx]=(long int)(var_lmn/dmn_var_map[idx]);
-	  dmn_ss[idx]%=var_cnt[idx];
-	} /* end loop over dimensions */
-	
-	/* Map (shared) N-D array indices into 1-D index into original weight data */
-	wgt_lmn=0L;
-	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
-	   Repetitions: \lmnnbr\rnkwgt
-	   Counts: \rthnbr=5\lmnnbr\rnkwgt, \mmrusrnbr=3\lmnnbr\rnkwgt */
-	for(idx=0;idx<wgt_nbr_dim;idx++) wgt_lmn+=dmn_ss[idx_wgt_var[idx]]*dmn_wgt_map[idx];
-	
-	/* Operations: 2 add, 2 multiply, 0 pointer offset, 1 system memory copy
-	   Repetitions: \lmnnbr
-	   Counts: \rthnbr=4\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
-	(void)memcpy(wgt_out_cp+var_lmn*wgt_typ_sz,wgt_cp+wgt_lmn*wgt_typ_sz,wgt_typ_sz);
-	
+        /* dmn_ss are corresponding indices (subscripts) into N-D array */
+        /* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
+        Repetitions: \lmnnbr
+        Total Counts: \rthnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
+        NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
+        dmn_ss[var_nbr_dmn_m1]=var_lmn%var_cnt[var_nbr_dmn_m1];
+        for(idx=0;idx<var_nbr_dmn_m1;idx++){
+          /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
+          Repetitions: \lmnnbr(\dmnnbr-1)
+          Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
+          NB: LHS assumed compact and cached, counted RHS offsets and fetches only
+          NB: Neglected loop arithmetic/compare */
+          dmn_ss[idx]=(long int)(var_lmn/dmn_var_map[idx]);
+          dmn_ss[idx]%=var_cnt[idx];
+        } /* end loop over dimensions */
+
+        /* Map (shared) N-D array indices into 1-D index into original weight data */
+        wgt_lmn=0L;
+        /* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
+        Repetitions: \lmnnbr\rnkwgt
+        Counts: \rthnbr=5\lmnnbr\rnkwgt, \mmrusrnbr=3\lmnnbr\rnkwgt */
+        for(idx=0;idx<wgt_nbr_dim;idx++) wgt_lmn+=dmn_ss[idx_wgt_var[idx]]*dmn_wgt_map[idx];
+
+        /* Operations: 2 add, 2 multiply, 0 pointer offset, 1 system memory copy
+        Repetitions: \lmnnbr
+        Counts: \rthnbr=4\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
+        (void)memcpy(wgt_out_cp+var_lmn*wgt_typ_sz,wgt_cp+wgt_lmn*wgt_typ_sz,wgt_typ_sz);
+
       } /* end loop over var_lmn */
-      
+
     } /* end if variable (and weight) are arrays, not scalars */
-    
+
     *DO_CONFORM=True;
   } /* end if we had to stretch weight to fit variable */
-  
+
   if(MUST_CONFORM && !(*DO_CONFORM)){
     (void)fprintf(stdout,"%s: ERROR Variables which MUST_CONFORM do not on exit from nco_var_cnf_dmn()\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  
+
   /* Current weight (wgt_out) now conforms to current variable */
   return wgt_out;
   
