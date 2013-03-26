@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.31 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.32 2013-03-26 04:13:33 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -8,7 +8,7 @@
 
 #include "nco_rth_flt.h" /* Float-precision arithmetic */
 
-/* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer */
+/* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer away from 0 */
 #ifdef _MSC_VER
 long long llround(double x){return floor(x+0.5);}
 long long llroundf(float x){return floorf(x+0.5f);}

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1232 2013-03-18 06:57:41 pvicente Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1233 2013-03-26 04:13:28 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -713,7 +713,8 @@ nco1091. ncks -O -v two_dmn_rec_var in_grp.nc out.nc
          exposes a netCDF bug; duplicate dimension IDs are generated;
          this seems to happen when a dimension has the same name when defined in a group and its ancestor group
          C programt that reproduces it, using only netCDF API calls, in http://glace.ess.uci.edu/libs/netcdf/257980/
-nco1092. 
+nco1092. ncap2: implement rint(), rintf(), round(), roundf()
+nco1093. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.770 2013-03-19 20:35:59 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.771 2013-03-26 04:13:28 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1679,21 +1679,24 @@ these versions of NCO.
 <ul><b>Older Operator-specific Run-time Problems:</b>
 <!-- http://nco.sf.net#bug_ncks_sbs -->
 <a name="bug_ncks_sbs"></a>
-<li><i>Version 4.2.4 of <tt>ncks</tt> sometimes dumps core
+<li><i><tt>ncks</tt> bug subsetting variables:</i>
+Version 4.2.4 of <tt>ncks</tt> sometimes dumps core
 when subsetting variables with <tt>-v var</tt>.
+Fixed in version 4.2.5.
 </li>
 
 <!-- http://nco.sf.net#bug_ncks_mk_rec_dmn -->
 <a name="bug_ncks_mk_rec_dmn"></a>
-<li><i><tt>ncks</tt> bug with altering record dimensions.
+<li><i><tt>ncks</tt> bug with altering record dimensions:</i>
 Version 4.2.4 of <tt>ncks</tt> ignored both the 
 <tt>--mk_rec_dmn</tt> and the <tt>--fix_rec_dmn</tt> switches.  
 It exited successfully without altering the record variable.
+Fixed in version 4.2.5.
 </li>
 
 <!-- http://nco.sf.net#bug_ncea_rec_var -->
 <a name="bug_ncea_rec_var"></a>
-<li><i><tt>ncea</tt> bug with non-record files.
+<li><i><tt>ncea</tt> bug with non-record files:</i>
 Versions 4.2.1&mdash;4.2.3 of <tt>ncea</tt> incorrectly referenced
 the record variable on files which do not contain it.
 This caused a segmentation violation and core dump.
@@ -1701,7 +1704,7 @@ This caused a segmentation violation and core dump.
 
 <!-- http://nco.sf.net#bug_ncra_flg_bfr_nrm -->
 <a name="bug_ncra_flg_bfr_nrm"></a>
-<li><i><tt>ncra</tt> bug when last file(s) is/are superfluous.
+<li><i><tt>ncra</tt> bug when last file(s) is/are superfluous:</i>
 Versions 4.2.1&mdash;4.2.3 of <tt>ncra</tt> incorrectly skipped
 writing the results of the final normalization when trailing files
 were superfluous (not used). 
@@ -1711,7 +1714,7 @@ Upgrade if you call <tt>ncra</tt> with trailing superfluous files.
 
 <!-- http://nco.sf.net#bug_ncecat_nintap -->
 <a name="bug_ncecat_nintap"></a>
-<li><i><tt>ncecat</tt> bug when files generated with <tt>-n</tt>.
+<li><i><tt>ncecat</tt> bug when files generated with <tt>-n</tt>:</i>
 Version 4.2.2 of <tt>ncecat</tt> could incorrectly skip the first
 input file in the default mode (RECORD_AGGREGATE) when 
 the <tt>-n NINTAP</tt> switch is used to automate filename generation.
@@ -1946,9 +1949,9 @@ Bug-fixes:
 <a name="zender"></a><a name="Zender"></a> <!-- http://nco.sf.net#zender -->
 <a href="http://www.ess.uci.edu/~zender">Charlie Zender</a>, 
 Professor of Earth System Science
-(<a href="http://www.ess.uci.edu">ESS</a>) and former
-Director, UCI Earth System Modeling Facility
-(<a href="http://www.ess.uci.edu/esmf">ESMF</a>).
+(<a href="http://www.ess.uci.edu">ESS</a>) and of
+Computer Science
+(<a href="http://www.ics.uci.edu">CS</a>).
 <i>Role</i>: Project PI.
 <i>Contributions</i>: NCO core library, porting, release manager
 <i>Related Research</i>: 
@@ -1980,6 +1983,17 @@ software engineer.
 1.&nbsp;Support for hierarchical datasets.
 2.&nbsp;Optimization of hierarchical access.
 <i>Other Interests</i>: HDF and netCDF data visualization.
+</li>
+
+<li><dt>
+<a name="wenshan"></a><a name="Wenshan"></a> <!-- http://nco.sf.net#wenshan -->
+<a href="http://dust.ess.uci.edu/wenshanw">Wenshan Wang</a>, 
+software engineer.
+<i>Roles</i>: Graduate Student
+<i>Current Research</i>: 
+1.&nbsp;Causes and implications of snowpack darkening.
+2.&nbsp;Rapid evaluation and exploitation of multi-model datasets.
+<i>Other Interests</i>: Passing Comps.
 </li>
 
 </ul>
