@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.109 2013-03-25 21:02:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.110 2013-03-26 14:20:30 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -414,15 +414,11 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           ptr_unn mss_val;      /* [sct] Missing value */
 
-          /* Allocate space for variable structure */
-          var_prc_out=(var_sct *)nco_malloc(sizeof(var_sct));
-
-          /* Set defaults for each member of variable structure */
-          (void)var_dfl_set(var_prc_out); 
           
           /* Allocate variable structure and fill with metadata */
           var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,&trv_1,trv_tbl_1);     
           var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,&trv_2,trv_tbl_2);
+          var_prc_out=nco_var_dpl(var_prc_1);
 
           (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1); 
           (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2); 
