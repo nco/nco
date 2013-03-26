@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.282 2013-03-25 21:02:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.283 2013-03-26 15:47:32 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2095,7 +2095,6 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   var_sct *var;
 
   long cnt[NC_MAX_DIMS];/* [nbr] Count array */
-  long srt[NC_MAX_DIMS];/* [nbr] Start array */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
@@ -2141,7 +2140,6 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Initialize start, count */
   for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-    srt[idx_dmn]=0;
     if(var_trv->var_dmn[idx_dmn].crd){
       cnt[idx_dmn]=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
     }
@@ -2157,7 +2155,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     (void)nco_inq_dimname(nc_id,var->dmn_id[idx],dmn_nm);
 
     var->cnt[idx]=cnt[idx];
-    var->srt[idx]=srt[idx];
+    var->srt[idx]=0L;
+    var->srd[idx]=1L;
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
 
