@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.283 2013-03-26 15:47:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.284 2013-03-26 16:25:14 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2081,25 +2081,30 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
 var_sct *                             /* O [sct] Variable structure */
 nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
-(const int nc_id,                     /* I [id] netCDF file ID */
+(const int grp_id,                    /* I [id] Group ID */
  const int var_id,                    /* I [id] Variable ID */
  const trv_sct * const var_trv,       /* I [sct] Object to write (variable) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: nco_malloc() and return a completed var_sct */
 
-  char dmn_nm[NC_MAX_NAME];
+  char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name  */  
 
-  int fl_fmt;
+  int fl_fmt;                    /* [enm] File format */  
+  int dmn_in_id_var[NC_MAX_DIMS];/* [id] Dimension IDs array for variable */
+  int var_dim_id;                /* [id] Variable dimension ID */  
+  
+  long cnt[NC_MAX_DIMS];         /* [nbr] Count array */
+  long dmn_sz;                   /* [nbr] Dimension size  */  
 
-  var_sct *var;
+  var_sct *var;                  /* [sct] Variable structure (output) */   
 
-  long cnt[NC_MAX_DIMS];/* [nbr] Count array */
+  dmn_trv_sct *dmn_trv;          /* [sct] Unique dimension object */   
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
   /* Get file format */
-  (void)nco_inq_format(nc_id,&fl_fmt);
+  (void)nco_inq_format(grp_id,&fl_fmt);
 
   /* Allocate space for variable structure */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -2108,7 +2113,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Fill-in known fields */
   var->nm=(char *)strdup(var_trv->nm);
   var->id=var_id;
-  var->nc_id=nc_id;
+  var->nc_id=grp_id;
   var->is_crd_var=var_trv->is_crd_var;
 
   /* Get type and number of dimensions and attributes for variable */
@@ -2117,6 +2122,9 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   assert(var->typ_dsk == var_trv->var_typ);
   assert(var->nbr_dim == var_trv->nbr_dmn);
   assert(var->nbr_att == var_trv->nbr_att);
+
+  /* Get dimension IDs for *variable* */
+  (void)nco_inq_vardimid(var->nc_id,var->id,dmn_in_id_var); 
 
   /* Allocate space for dimension information */
   if(var->nbr_dim > 0) var->dim=(dmn_sct **)nco_malloc(var->nbr_dim*sizeof(dmn_sct *)); else var->dim=(dmn_sct **)NULL;
@@ -2128,7 +2136,28 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
 
   /* Get dimension IDs from input file */
-  (void)nco_inq_vardimid(var->nc_id,var->id,var->dmn_id);
+  (void)nco_inq_vardimid(var->nc_id,var->id,var->dmn_id); 
+
+  /* Get input and set output dimension sizes and names */
+  for(int dmn_idx=0;dmn_idx<var->nbr_dim;dmn_idx++){
+
+    assert(var->dmn_id[dmn_idx] == dmn_in_id_var[dmn_idx]);
+
+    /* Get dimension name and size from ID in *input* group */
+    (void)nco_inq_dim(grp_id,dmn_in_id_var[dmn_idx],dmn_nm,&dmn_sz);
+
+    /* Dimension ID for variable, used to get dimension object in input list  */
+    var_dim_id=dmn_in_id_var[dmn_idx];
+
+    /* Get unique dimension object from unique dimension ID, in input list */
+    dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
+
+    var->dim[dmn_idx]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+    var->dim[dmn_idx]->is_rec_dmn=dmn_trv->is_rec_dmn;
+    var->dim[dmn_idx]->sz=dmn_trv->sz;
+    var->dim[dmn_idx]->nm=strdup(dmn_trv->nm);
+  }
+
 
   /* Type in memory begins as same type as on disk */
   var->type=var->typ_dsk; /* [enm] Type of variable in RAM */
@@ -2152,7 +2181,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   var->sz=1L; 
   for(int idx=0;idx<var->nbr_dim;idx++){
 
-    (void)nco_inq_dimname(nc_id,var->dmn_id[idx],dmn_nm);
+    (void)nco_inq_dimname(grp_id,var->dmn_id[idx],dmn_nm);
 
     var->cnt[idx]=cnt[idx];
     var->srt[idx]=0L;
@@ -2165,7 +2194,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   if(nco_is_spc_in_crd_att(var->nc_id,var->id)) var->is_crd_var=True;
 
   /* Portions of variable structure depend on packing properties, e.g., typ_upk nco_pck_dsk_inq() fills in these portions harmlessly */
-  (void)nco_pck_dsk_inq(nc_id,var);
+  (void)nco_pck_dsk_inq(grp_id,var);
 
   /* Set deflate and chunking to defaults */  
   var->dfl_lvl=0; /* [enm] Deflate level */
@@ -2177,8 +2206,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC){
     int deflate; /* [enm] Deflate filter is on */
     int srg_typ; /* [enm] Storage type */
-    (void)nco_inq_var_deflate(nc_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    
-    (void)nco_inq_var_chunking(nc_id,var->id,&srg_typ,var->cnk_sz);   
+    (void)nco_inq_var_deflate(grp_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    
+    (void)nco_inq_var_chunking(grp_id,var->id,&srg_typ,var->cnk_sz);   
   } /* endif */
 
   var->undefined=False; /* [flg] Used by ncap parser */

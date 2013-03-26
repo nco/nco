@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.110 2013-03-26 14:20:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.111 2013-03-26 16:25:14 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -414,6 +414,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           ptr_unn mss_val;      /* [sct] Missing value */
 
+          int idx_dmn_1;
+          int idx_dmn_2;
           
           /* Allocate variable structure and fill with metadata */
           var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,&trv_1,trv_tbl_1);     
@@ -462,6 +464,19 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
             /* Read hyperslab from second file */
             (void)nco_msa_var_get_trv(grp_id_2,var_prc_2,&trv_2);
+
+            /* Check that all dims in var_prc_2 are in var_prc_1 */
+            for(idx_dmn_2=0;idx_dmn_2<var_prc_2->nbr_dim;idx_dmn_2++){
+              for(idx_dmn_1=0;idx_dmn_1<var_prc_1->nbr_dim;idx_dmn_1++)  
+                if(!strcmp(var_prc_2->dim[idx_dmn_2]->nm,var_prc_1->dim[idx_dmn_1]->nm)){
+                  break;
+                }
+                if(idx_dmn_1 == var_prc_1->nbr_dim){
+                  (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present variable %s\n",prg_nm_get(),var_prc_2->nm, var_prc_2->dim[idx_dmn_1]->nm,var_prc_1->nm);
+                  nco_exit(EXIT_FAILURE);
+                } /* endif error */
+            } /* end loop over idx */
+
 
             /* Die gracefully on unsupported features... */
             if(var_prc_1->nbr_dim < var_prc_2->nbr_dim){
