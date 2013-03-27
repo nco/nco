@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.0 release"
 	cvs tag -c nco-4_3_0;cvs tag -c nco-4_3_0-1
 
+	* Fix/revert ncatted to not NUL-terminate attributes
+
 2013-03-27  Pedro Vicente  <pvicente@uci.edu>
 
 	* Enable nearbyint(), rint(), round(), trunc() for MSVC

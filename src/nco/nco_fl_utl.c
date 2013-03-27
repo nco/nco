@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.207 2013-03-20 22:24:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.208 2013-03-27 21:31:30 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -897,7 +897,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(rmt_cmd == NULL){
       if(HTTP_URL){
 	rmt_cmd=&http;
-	(void)fprintf(stderr,"%s: INFO Will now attempt wget on the full filepath. wget will likely fail if the file is truly behind a DAP server. Unfortunately, even a failed wget attempt creates a rather long pathname in the current directory. fxm TODO nco970, nco971. On the other hand, wget should succeed if the file is stored in any publicly-accessible web location.\n",prg_nm_get());
+	(void)fprintf(stderr,"%s: INFO Will now attempt wget on the full filepath. wget will fail if the file is \"hidden\" behind a DAP server. Unfortunately, failed wget attempts creates rather long pathnames in the current directory. fxm TODO nco970, nco971. On the other hand, wget should succeed if the file is stored in any publicly-accessible web location.\n",prg_nm_get());
       } /* end if HTTP */
     } /* end if rmt_cmd */
 
