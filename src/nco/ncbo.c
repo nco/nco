@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.233 2013-03-25 11:44:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.234 2013-03-27 15:18:56 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -52,7 +52,7 @@
    Test nco_var_cnf_dmn:
    ncks -O -v scalar_var in.nc ~/foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncbo -O -v four_dmn_rec_var in.nc ~/foo.nc foo2.nc */
 
-#if 0
+#if 1
 #define USE_TRV_API
 #endif
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.233 2013-03-25 11:44:51 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.233 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.234 2013-03-27 15:18:56 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.234 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
