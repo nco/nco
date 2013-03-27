@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.111 2013-03-26 16:25:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.112 2013-03-27 17:34:45 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -516,8 +516,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               nco_exit(EXIT_FAILURE);
               break;
             } /* end case */
-
-            var_prc_2->val.vp=nco_free(var_prc_2->val.vp);
+     
 
             if(dbg_lvl_get() >= 16){ 
               (void)fprintf(stdout,"%s: INFO %s reports write for <%s>\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
@@ -530,8 +529,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               (void)nco_put_vara(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_out->cnt,var_prc_1->val.vp,var_prc_1->type);
             } /* end else */
 
-            var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
 
+            /* Free allocated variable structures */
+            var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
+            var_prc_2->val.vp=nco_free(var_prc_2->val.vp);
             var_prc_1=(var_sct *)nco_free(var_prc_1);
             var_prc_2=(var_sct *)nco_free(var_prc_2);
             var_prc_out=(var_sct *)nco_free(var_prc_out);

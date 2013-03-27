@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.142 2013-02-20 18:54:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.143 2013-03-27 17:34:45 pvicente Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -321,9 +321,9 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
  const nco_bool PCK_ATT_CPY) /* I [flg] Copy attributes "scale_factor", "add_offset" */
 {
   /* Purpose: Copy attributes from input netCDF file to output netCDF file
-     If var_in_id == NC_GLOBAL, then copy global attributes
-     Otherwise copy only indicated variable's attributes
-     When PCK_ATT_CPY is false, copy all attributes except "scale_factor", "add_offset" */
+  If var_in_id == NC_GLOBAL, then copy global attributes
+  Otherwise copy only indicated variable's attributes
+  When PCK_ATT_CPY is false, copy all attributes except "scale_factor", "add_offset" */
 
   char att_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
@@ -346,34 +346,34 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     (void)nco_inq_attname(in_id,var_in_id,idx,att_nm);
     /* Look for same attribute in output variable in output file */
     rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,(nc_type *)NULL,(long *)NULL);
-      
+
     /* If attribute is "scale_factor" or "add_offset" ... */
     if(!strcmp(att_nm,"scale_factor") || !strcmp(att_nm,"add_offset")){
       /* ...and if instructed to copy packing attributes... */
       if(PCK_ATT_CPY){
-	int prg_id; /* [enm] Program ID */
-	prg_id=prg_get(); /* [enm] Program ID */
-	/* ...and if multifile concatenator (ncrcat, ncecat)... */
-	if(prg_id == ncrcat || prg_id == ncecat){
-	  /* ...then risk exists that packing attributes in first file do not match subsequent files... */
-	  static short FIRST_WARNING=True;
-	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: INFO/WARNING Multi-file concatenator encountered packing attribute %s for variable %s. NCO copies the packing attributes from the first file to the output file. The packing attributes from the remaining files must match exactly those in the first file or the data from the subsequent files will not be unpacked correctly. Be sure that all input files share the same packing attributes. If in doubt, unpack (with ncpdq -U) the input files, then concatenate them, then pack the result (with ncpdq). This message is printed only once per invocation.\n",prg_nm_get(),att_nm,var_nm);
-	  FIRST_WARNING=False;
-	} /* endif ncrcat or ncecat */
+        int prg_id; /* [enm] Program ID */
+        prg_id=prg_get(); /* [enm] Program ID */
+        /* ...and if multifile concatenator (ncrcat, ncecat)... */
+        if(prg_id == ncrcat || prg_id == ncecat){
+          /* ...then risk exists that packing attributes in first file do not match subsequent files... */
+          static short FIRST_WARNING=True;
+          if(FIRST_WARNING) (void)fprintf(stderr,"%s: INFO/WARNING Multi-file concatenator encountered packing attribute %s for variable %s. NCO copies the packing attributes from the first file to the output file. The packing attributes from the remaining files must match exactly those in the first file or the data from the subsequent files will not be unpacked correctly. Be sure that all input files share the same packing attributes. If in doubt, unpack (with ncpdq -U) the input files, then concatenate them, then pack the result (with ncpdq). This message is printed only once per invocation.\n",prg_nm_get(),att_nm,var_nm);
+          FIRST_WARNING=False;
+        } /* endif ncrcat or ncecat */
       }else{ /* ...do not copy packing attributes... */
-	/* ...then skip remainder of loop, thereby skipping attribute copy... */
-	continue;
+        /* ...then skip remainder of loop, thereby skipping attribute copy... */
+        continue;
       } /* endelse */
     } /* endif attribute is "scale_factor" or "add_offset" */
-    
+
     /* Inform user when copy will overwrite an existing attribute */
     if(dbg_lvl_get() >= nco_dbg_std){
       if(rcd == NC_NOERR){
-	if(var_out_id == NC_GLOBAL){
-	  (void)fprintf(stderr,"%s: INFO Overwriting global attribute %s\n",prg_nm_get(),att_nm);
-	}else{
-	  (void)fprintf(stderr,"%s: INFO Overwriting attribute %s for output variable %s\n",prg_nm_get(),att_nm,var_nm);
-	} /* end else */
+        if(var_out_id == NC_GLOBAL){
+          (void)fprintf(stderr,"%s: INFO Overwriting global attribute %s\n",prg_nm_get(),att_nm);
+        }else{
+          (void)fprintf(stderr,"%s: INFO Overwriting attribute %s for output variable %s\n",prg_nm_get(),att_nm,var_nm);
+        } /* end else */
       } /* end if */
     } /* end if dbg */
 
@@ -382,33 +382,33 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
     }else{
       /* Convert "_FillValue" attribute to unpacked type then copy 
-	 Impose NCO convention that _FillValue is same type as variable,
-	 whether variable is packed or not */
+      Impose NCO convention that _FillValue is same type as variable,
+      whether variable is packed or not */
       aed_sct aed;
-      
+
       long att_sz;
       size_t att_lng_in;
-      
+
       nc_type att_typ_in;
       nc_type att_typ_out;
-      
+
       ptr_unn mss_tmp;
-      
+
       (void)nco_inq_att(in_id,var_in_id,att_nm,&att_typ_in,&att_sz);
-      
+
       if(att_sz != 1L){
-	(void)fprintf(stderr,"%s: WARNING input %s attribute has %li elements, but CF convention insists that %s be scalar (i.e., one element, possibly of compound type). Will attempt to copy using nco_copy_att(). HINT: If this fails, redefine %s as scalar.\n",prg_nm_get(),att_nm,att_sz,att_nm,att_nm);
-	(void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
-	return;
+        (void)fprintf(stderr,"%s: WARNING input %s attribute has %li elements, but CF convention insists that %s be scalar (i.e., one element, possibly of compound type). Will attempt to copy using nco_copy_att(). HINT: If this fails, redefine %s as scalar.\n",prg_nm_get(),att_nm,att_sz,att_nm,att_nm);
+        (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
+        return;
       } /* end if */
-      
+
       /* Convert "_FillValue" to unpacked type before copying */
       aed.att_nm=att_nm; /* Name of attribute */
       if(var_out_id == NC_GLOBAL){
-	aed.var_nm=NULL;
+        aed.var_nm=NULL;
       }else{
-	(void)nco_inq_varname(out_id,var_out_id,var_nm);
-	aed.var_nm=var_nm; /* Name of variable, or NULL for global attribute */
+        (void)nco_inq_varname(out_id,var_out_id,var_nm);
+        aed.var_nm=var_nm; /* Name of variable, or NULL for global attribute */
       } /* end if */
       aed.id=out_id; /* Variable ID or NC_GLOBAL ( = -1) for global attribute */
       aed.sz=att_sz; /* Number of elements in attribute */
@@ -421,7 +421,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
         aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
         (void)nco_get_att(in_id,var_in_id,att_nm,aed.val.vp,att_typ_out);
       }else{ /* att_typ_out!=att_typ_in */
-	/* Convert type */          
+        /* Convert type */          
         aed.type=att_typ_out; /* Type of attribute */
         aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
         att_lng_in=att_sz*nco_typ_lng(att_typ_in);
@@ -432,7 +432,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       } /* att_typ_out!=att_typ_in */
 
       /* Overwrite mode causes problems with netCDF4 and "_FillValue" 
-	 Use create mode instead */
+      Use create mode instead */
       aed.mode=aed_create;
       (void)nco_aed_prc(out_id,var_out_id,aed); 
       /* Release temporary memory */
