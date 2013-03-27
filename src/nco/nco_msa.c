@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.200 2013-03-23 16:36:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.201 2013-03-27 19:27:25 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1309,7 +1309,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var.sz*nco_typ_lng(var.type),in_id,(long *)NULL,(long *)NULL,var.val.vp);
 
   /* Warn if variable is packed */
-  if(nco_pck_dsk_inq(in_id,&var)) (void)fprintf(stderr,"%s: WARNING about to print packed contents of variable \"%s\". Consider unpacking variable first using ncpdq -U.\n",prg_nm_get(),var_nm);
+  if(nco_pck_dsk_inq(in_id,&var)) (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",prg_nm_get(),var_nm);
 
   /* Refresh number of attributes and missing value attribute, if any */
   var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
@@ -2055,16 +2055,12 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
 
 } /* nco_cpy_msa_lmt() */
 
-
-
 void
 nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking account of multihyperslabs */
 (const int in_id,                   /* I [id] netCDF input file ID */
  var_sct *var_in,                   /* O [sct] Variable */
  const trv_sct * const var_trv)     /* O [sct] Object to read (variable) */
 {
-  int idx;
-  int jdx;
   int nbr_dim;
 
   nc_type typ_tmp;

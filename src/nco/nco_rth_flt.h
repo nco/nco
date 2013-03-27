@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.41 2013-03-27 14:09:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.42 2013-03-27 19:27:25 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -34,14 +34,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#ifdef _MSC_VER
-#define NEED_RINT
-#define NEED_NEARBYINT
-#define NEED_ROUND
-#define NEED_TRUNC
-#endif
-
-  /* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer */
+  /* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer, halfway cases round away from 0 */
 #ifdef _MSC_VER
   long long llround(double x);
   long long llroundf(float x);
@@ -49,40 +42,43 @@ extern "C" {
   long lroundf(float x);
 #endif /* !_MSC_VER */ 
 
-
-
+#ifdef _MSC_VER
+  /* 20130227: Hard-code these because MSVC does not have access to config.h
+     Lack of double-precision version implies lack of single-precision version
+     Hence single-precision ("float") tokens are set in double-precision prototypes below */
+# define NEED_RINT
+# define NEED_NEARBYINT
+# define NEED_ROUND
+# define NEED_TRUNC
+#endif /* !_MSC_VER */
 
 #ifdef NEED_RINT
 # define NEED_RINTF
 double /* O [frc] Rounded value of x */
-rint /* [fnc] Round x to nearest integer */
+rint /* [fnc] Round x to nearest even integer, raise exceptions */
 (double x); /* I [frc] Value to round */
 #endif /* !NEED_RINT */ 
 
 #ifdef NEED_NEARBYINT
-/* Lack of double-precision version implies lack of single-precision version */
 # define NEED_NEARBYINTF
 double /* O [frc] Rounded value of x */
-nearbyint /* [fnc] Round x to nearest integer */
+nearbyint /* [fnc] Round x to nearest even integer, do not raise exceptions */
 (double x); /* I [frc] Value to round */
 #endif /* !NEED_NEARBYINT */ 
 
 #ifdef NEED_ROUND
-/* Lack of double-precision version implies lack of single-precision version */
 # define NEED_ROUNDF
 double /* O [frc] Rounded value of x */
-round /* [fnc] Round x to nearest integer */
+round /* [fnc] Round x to nearest integer, half-way cases round away from zero */
 (double x); /* I [frc] Value to round */
 #endif /* !NEED_ROUND */ 
 
 #ifdef NEED_TRUNC
-/* Lack of double-precision version implies lack of single-precision version */
 # define NEED_TRUNCF
 double /* O [frc] Truncated value of x */
-trunc /* [fnc] Truncate x to nearest integer */
+trunc /* [fnc] Truncate x to nearest integer not larger in absolute value */
 (double x); /* I [frc] Value to truncate */
 #endif /* !NEED_TRUNC */
-
 
 #if !defined(HPUX) && !defined(__INTEL_COMPILER)
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX

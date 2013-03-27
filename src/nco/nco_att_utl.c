@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.143 2013-03-27 17:34:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.144 2013-03-27 19:27:25 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -351,15 +351,15 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     if(!strcmp(att_nm,"scale_factor") || !strcmp(att_nm,"add_offset")){
       /* ...and if instructed to copy packing attributes... */
       if(PCK_ATT_CPY){
-        int prg_id; /* [enm] Program ID */
-        prg_id=prg_get(); /* [enm] Program ID */
-        /* ...and if multifile concatenator (ncrcat, ncecat)... */
-        if(prg_id == ncrcat || prg_id == ncecat){
-          /* ...then risk exists that packing attributes in first file do not match subsequent files... */
-          static short FIRST_WARNING=True;
-          if(FIRST_WARNING) (void)fprintf(stderr,"%s: INFO/WARNING Multi-file concatenator encountered packing attribute %s for variable %s. NCO copies the packing attributes from the first file to the output file. The packing attributes from the remaining files must match exactly those in the first file or the data from the subsequent files will not be unpacked correctly. Be sure that all input files share the same packing attributes. If in doubt, unpack (with ncpdq -U) the input files, then concatenate them, then pack the result (with ncpdq). This message is printed only once per invocation.\n",prg_nm_get(),att_nm,var_nm);
-          FIRST_WARNING=False;
-        } /* endif ncrcat or ncecat */
+	int prg_id; /* [enm] Program ID */
+	prg_id=prg_get(); /* [enm] Program ID */
+	/* ...and if multifile concatenator (ncrcat, ncecat)... */
+	if(prg_id == ncrcat || prg_id == ncecat){
+	  /* ...then risk exists that packing attributes in first file do not match subsequent files... */
+	  static short FIRST_WARNING=True;
+	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: INFO/WARNING Multi-file concatenator encountered packing attribute %s for variable %s. NCO copies the packing attributes from the first file to the output file. The packing attributes from the remaining files must match exactly those in the first file or the data from the subsequent files will not unpack correctly. Be sure all input files share the same packing attributes. If in doubt, unpack (with ncpdq -U) the input files, then concatenate them, then pack the result (with ncpdq). This message is printed only once per invocation.\n",prg_nm_get(),att_nm,var_nm);
+	  FIRST_WARNING=False;
+	} /* endif ncrcat or ncecat */
       }else{ /* ...do not copy packing attributes... */
         /* ...then skip remainder of loop, thereby skipping attribute copy... */
         continue;
