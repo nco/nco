@@ -213,6 +213,9 @@
 /* Define to 1 if compiler finds external `nc_inq_format' function */
 #undef HAVE_NC_INQ_FORMAT
 
+/* Define to 1 if compiler finds external `nearbyint' function */
+#undef HAVE_NEARBYINT
+
 /* Define to 1 if compiler finds external `nearbyintf' function */
 #undef HAVE_NEARBYINTF
 
@@ -252,8 +255,14 @@
 /* Define to 1 if 'regfree()' is present */
 #undef HAVE_REGFREE
 
+/* Define to 1 if compiler finds external `rint' function */
+#undef HAVE_RINT
+
 /* Define to 1 if compiler finds external `rintf' function */
 #undef HAVE_RINTF
+
+/* Define to 1 if compiler finds external `round' function */
+#undef HAVE_ROUND
 
 /* Define to 1 if compiler finds external `roundf' function */
 #undef HAVE_ROUNDF
@@ -327,6 +336,9 @@
 
 /* Define to 1 if compiler finds external `tanhf' function */
 #undef HAVE_TANHF
+
+/* Define to 1 if compiler finds external `trunc' function */
+#undef HAVE_TRUNC
 
 /* Define to 1 if compiler finds external `truncf' function */
 #undef HAVE_TRUNCF
@@ -456,14 +468,23 @@
 /* Define to 1 if compiler needs external `nc_inq_format' function */
 #undef NEED_NC_INQ_FORMAT
 
+/* Define to 1 if compiler needs external `nearbyint' function */
+#undef NEED_NEARBYINT
+
 /* Define to 1 if compiler needs external `nearbyintf' function */
 #undef NEED_NEARBYINTF
 
 /* Define to 1 if compiler needs external `powf' function */
 #undef NEED_POWF
 
+/* Define to 1 if compiler needs external `rint' function */
+#undef NEED_RINT
+
 /* Define to 1 if compiler needs external `rintf' function */
 #undef NEED_RINTF
+
+/* Define to 1 if compiler needs external `round' function */
+#undef NEED_ROUND
 
 /* Define to 1 if compiler needs external `roundf' function */
 #undef NEED_ROUNDF
@@ -491,6 +512,9 @@
 
 /* Define to 1 if compiler needs external `tanhf' function */
 #undef NEED_TANHF
+
+/* Define to 1 if compiler needs external `trunc' function */
+#undef NEED_TRUNC
 
 /* Define to 1 if compiler needs external `truncf' function */
 #undef NEED_TRUNCF

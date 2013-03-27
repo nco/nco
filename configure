@@ -18539,6 +18539,63 @@ _ACEOF
 
 fi
 
+ac_fn_c_check_func "$LINENO" "nearbyint" "ac_cv_func_nearbyint"
+if test "x$ac_cv_func_nearbyint" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_NEARBYINT 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_NEARBYINT 1
+_ACEOF
+
+fi
+ac_fn_c_check_func "$LINENO" "rint" "ac_cv_func_rint"
+if test "x$ac_cv_func_rint" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_RINT 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_RINT 1
+_ACEOF
+
+fi
+ac_fn_c_check_func "$LINENO" "round" "ac_cv_func_round"
+if test "x$ac_cv_func_round" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_ROUND 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_ROUND 1
+_ACEOF
+
+fi
+ac_fn_c_check_func "$LINENO" "trunc" "ac_cv_func_trunc"
+if test "x$ac_cv_func_trunc" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_TRUNC 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_TRUNC 1
+_ACEOF
+
+fi
+
 ac_fn_c_check_func "$LINENO" "nearbyintf" "ac_cv_func_nearbyintf"
 if test "x$ac_cv_func_nearbyintf" = xyes; then :
 
