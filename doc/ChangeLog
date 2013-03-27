@@ -1,6 +1,8 @@
 2013-03-27  Pedro Vicente  <pvicente@uci.edu>
 
 	* Enabled ncap/ncap2 rounding functions: nearbyint(), rint(), round(), trunc() for MSVC
+  
+	* Add ncbo test #14; Group addition 
 
 2013-03-26  Charlie Zender  <zender@uci.edu>
 
