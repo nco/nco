@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.380 2013-03-19 21:13:39 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.381 2013-03-27 00:33:24 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -372,6 +372,7 @@ NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf
 NCO_CHECK_FUNCS([erff erfcf gammaf])
 NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
 NCO_CHECK_FUNCS([ceilf floorf])
+NCO_CHECK_FUNCS([nearbyint rint round trunc])
 NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
 NCO_CHECK_FUNCS([getopt_long])
 NCO_CHECK_FUNCS([strdup strcasecmp strcasestr])

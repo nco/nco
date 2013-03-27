@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.269 2013-03-08 20:51:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.270 2013-03-27 00:33:25 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.269 2013-03-08 20:51:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.269 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.270 2013-03-27 00:33:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.270 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_sct **cnk=NULL_CEWI;
@@ -571,15 +571,16 @@ main(int argc,char **argv)
   sym_tbl_nbr-=6; /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
 #endif /* !LINUX */
   
+  /* Advanced Rounding: nearbyint, round, trunc */
   /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf
      Only LINUX* supplies all of these and I do not care about them enough
      to activate them on LINUX* but not on MACOSX* and SUN* */
-  sym_tbl_nbr-=4; /* Advanced Rounding: nearbyint, rint, round, trunc */
-  /* Advanced Rounding: nearbyint, round, trunc */
-  /* sym_tbl[sym_idx++]=ncap_sym_init("nearbyint",nearbyint,nearbyintf); *//* Round to integer value in floating point format using current rounding direction, do not raise inexact exceptions */
-  /* sym_tbl[sym_idx++]=ncap_sym_init("round",round,roundf); *//* Round to nearest integer away from zero */
-  /* sym_tbl[sym_idx++]=ncap_sym_init("trunc",trunc,truncf); *//* Round to nearest integer not larger in absolute value */
-  /* sym_tbl[sym_idx++]=ncap_sym_init("rint",rint,rintf); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
+  /* 20130326: Re-activate these functions on all architectures */
+  sym_tbl_nbr-=0; /* Advanced Rounding: nearbyint, rint, round, trunc */
+  sym_tbl[sym_idx++]=ncap_sym_init("nearbyint",nearbyint,nearbyintf); /* Round to integer value in floating point format using current rounding direction, do not raise inexact exceptions */
+  sym_tbl[sym_idx++]=ncap_sym_init("rint",rint,rintf); /* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
+  sym_tbl[sym_idx++]=ncap_sym_init("round",round,roundf); /* Round to nearest integer away from zero */
+  sym_tbl[sym_idx++]=ncap_sym_init("trunc",trunc,truncf); /* Round to nearest integer not larger in absolute value */
   assert(sym_idx == sym_tbl_nbr);
   
   if(PRN_FNC_TBL){

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.771 2013-03-26 04:13:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.772 2013-03-27 00:33:25 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1007,6 +1007,7 @@ all the documentation except the highly mathematical sections.
 </ul>
 
 <!-- This documentation went MIA sometime in 2004:
+<a href="http://www.ncl.ucar.edu/Training/Workshops/PPTS/nco.ppt">Slideshow</a> and
 <a href="http://www.cgd.ucar.edu/csm/support/Document/pdf/nco.pdf">pamphlet</a> and
 <a href="http://www.cgd.ucar.edu/csm/support/Document/shows/nco/nco_files/v3_document.htm">slide presentation</a> 
 introduce and summarize the NCO operators.

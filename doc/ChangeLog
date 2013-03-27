@@ -1,3 +1,13 @@
+2013-03-26  Charlie Zender  <zender@uci.edu>
+
+	* ncks: always copy group and variable metadata (fixes bug introduced in 4.2.6)
+
+	* Re-activate ncap/ncap2 rounding functions: nearbyint(), rint(), round(), trunc()
+
+	* Implement source code for nearbyint(), rint(), round(), trunc()
+
+	* Add configure checks for nearbyint(), rint(), round(), trunc()
+
 2013-03-22  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncbo: nco_var_op_typ() Find operation type on variable, fixed or processed

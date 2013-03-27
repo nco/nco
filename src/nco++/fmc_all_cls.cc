@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.57 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.58 2013-03-27 00:33:25 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -778,50 +778,51 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
       /* Basic Rounding: ceil, fl<oor */
       sym_vtr.push_back(sym_cls("ceil",ceil,ceilf)); /* Round up to nearest integer */
       sym_vtr.push_back(sym_cls("floor",floor,floorf)); /* Round down to nearest integer */
-  
-     /* Advanced math: erf, erfc, gamma
-       LINUX*, MACOSX*, and SUN* provide these functions with C89
-       20020122 and 20020422: AIX, CRAY, SGI*, WIN32 do not define erff(), erfcf(), gammaf() with C89
-       20050610: C99 mandates support for erf(), erfc(), tgamma()
-       Eventually users without C99 will forego ncap */
-
-       #if defined(LINUX) || defined(LINUXAMD64)  || defined(MACOSX)
-         sym_vtr.push_back(sym_cls("erf",erf,erff));
-         sym_vtr.push_back(sym_cls("erfc",erfc,erfcf));
-         sym_vtr.push_back(sym_cls("gamma",tgamma,tgammaf));
-       #endif /* !LINUX */
-
+      
+      /* Advanced math: erf, erfc, gamma
+	 LINUX*, MACOSX*, and SUN* provide these functions with C89
+	 20020122 and 20020422: AIX, CRAY, SGI*, WIN32 do not define erff(), erfcf(), gammaf() with C89
+	 20050610: C99 mandates support for erf(), erfc(), tgamma()
+	 Eventually users without C99 will forego ncap */
+      
+#if defined(LINUX) || defined(LINUXAMD64)  || defined(MACOSX)
+      sym_vtr.push_back(sym_cls("erf",erf,erff));
+      sym_vtr.push_back(sym_cls("erfc",erfc,erfcf));
+      sym_vtr.push_back(sym_cls("gamma",tgamma,tgammaf));
+#endif /* !LINUX */
+      
        /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh
-         20020703: AIX, SGI*, WIN32 do not define acoshf, asinhf, atanhf
-         20050610: C99 mandates support for acosh(), asinh(), atanh(), cosh(), sinh(), tanh()
-         Eventually users without C99 will forego ncap */
-       #if defined(LINUX) || defined(LINUXAMD64)
-          sym_vtr.push_back(sym_cls("acosh",acosh,acoshf));
-          sym_vtr.push_back(sym_cls("asinh",asinh,asinhf));
-          sym_vtr.push_back(sym_cls("atanh",atanh,atanhf));
-          sym_vtr.push_back(sym_cls("cosh",cosh,coshf));
-          sym_vtr.push_back(sym_cls("sinh",sinh,sinhf));
-          sym_vtr.push_back(sym_cls("tanh",tanh,tanhf));
-       #endif /* !LINUX */
-  
-      /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf
-      Only LINUX* supplies all of these and I do not care about them enough
-      to activate them on LINUX* but not on MACOSX* and SUN* */
+	  20020703: AIX, SGI*, WIN32 do not define acoshf, asinhf, atanhf
+	  20050610: C99 mandates support for acosh(), asinh(), atanh(), cosh(), sinh(), tanh()
+	  Eventually users without C99 will forego ncap */
+#if defined(LINUX) || defined(LINUXAMD64)
+      sym_vtr.push_back(sym_cls("acosh",acosh,acoshf));
+      sym_vtr.push_back(sym_cls("asinh",asinh,asinhf));
+      sym_vtr.push_back(sym_cls("atanh",atanh,atanhf));
+      sym_vtr.push_back(sym_cls("cosh",cosh,coshf));
+      sym_vtr.push_back(sym_cls("sinh",sinh,sinhf));
+      sym_vtr.push_back(sym_cls("tanh",tanh,tanhf));
+#endif /* !LINUX */
+      
       /* Advanced Rounding: nearbyint, rint, round, trunc */
-     /* Advanced Rounding: nearbyint, round, trunc */
-     /* sym_vtr.push(sym_cls("nearbyint",nearbyint,nearbyintf)); *//* Round to integer value in floating point format using current rounding direction, do not raise inexact exceptions */
-     /* sym_vtr.push(sym_cls("round",round,roundf)); *//* Round to nearest integer away from zero */
-      /* sym_vtr.push(sym_cls("trunc",trunc,truncf)); *//* Round to nearest integer not larger in absolute value */
-      /* sym_vtr.push(sym_cls("rint",rint,rintf)); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
+      /* Advanced Rounding: nearbyint, round, trunc */
+      /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf
+	 Only LINUX* supplies all of these and I do not care about them enough
+	 to activate them on LINUX* but not on MACOSX* and SUN* */
+      /* 20130326: Re-activate these functions on all architectures */
+      sym_vtr.push_back(sym_cls("nearbyint",nearbyint,nearbyintf)); /* Round to integer value in floating point format using current rounding direction, do not raise inexact exceptions */
+      sym_vtr.push_back(sym_cls("rint",rint,rintf)); /* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
+      sym_vtr.push_back(sym_cls("round",round,roundf)); /* Round to nearest integer away from zero */
+      sym_vtr.push_back(sym_cls("trunc",trunc,truncf)); /* Round to nearest integer not larger in absolute value */
   
-     // create fmc vector from sym vector
-     int idx;
-     int sz=sym_vtr.size();
-            
-     for(idx=0 ; idx<sz ;idx++){
-       fmc_cls fmc_obj( sym_vtr[idx].fnm(),this,idx);   
-       fmc_vtr.push_back(fmc_obj);
-     }
+      // Create fmc vector from sym vector
+      int idx;
+      int sz=sym_vtr.size();
+      
+      for(idx=0 ; idx<sz ;idx++){
+	fmc_cls fmc_obj( sym_vtr[idx].fnm(),this,idx);   
+	fmc_vtr.push_back(fmc_obj);
+      }
     }
   }		      
   var_sct * mth_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.553 2013-03-20 22:24:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.554 2013-03-27 00:33:25 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.0 are ready. 
 
@@ -27,7 +27,8 @@ A. fxm
 
 BUG FIXES:
 
-A. fxm
+A. Fixed ncks bug introduced in version 4.2.6 where, by default,
+   variable attributes were not copied to output file.
 
 KNOWN BUGS NOT YET FIXED:
 
