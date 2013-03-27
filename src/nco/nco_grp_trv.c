@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.113 2013-03-27 17:55:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.114 2013-03-27 18:06:51 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -371,11 +371,18 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       /* If object is an extracted variable... */
       if(trv_1.nco_typ == nco_obj_typ_var && trv_2.nco_typ == nco_obj_typ_var && trv_1.flg_xtr && trv_2.flg_xtr){
 
+        op_typ_enm op_typ_1;  /* [enm] Operation type */
+        op_typ_enm op_typ_2;  /* [enm] Operation type */
+
+        var_sct *var_prc_1;   /* [sct] Variable to process */
+        var_sct *var_prc_2;   /* [sct] Variable to process */
+        var_sct *var_prc_out; /* [sct] Variable to process */
+
         if(dbg_lvl_get() >= 16){ 
           (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
         } 
 
-
+        
         /* Obtain group ID using full group name */
         (void)nco_inq_grp_full_ncid(nc_id_1,trv_1.grp_nm_fll,&grp_id_1);
         (void)nco_inq_grp_full_ncid(nc_id_2,trv_2.grp_nm_fll,&grp_id_2);
@@ -383,6 +390,15 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         /* Get variable ID */
         (void)nco_inq_varid(grp_id_1,trv_1.nm,&var_id_1);
         (void)nco_inq_varid(grp_id_2,trv_2.nm,&var_id_2);
+
+
+        /* Allocate variable structure and fill with metadata */
+        var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,&trv_1,trv_tbl_1);     
+        var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,&trv_2,trv_tbl_2);
+        var_prc_out=nco_var_dpl(var_prc_1);
+
+        (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1); 
+        (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2); 
 
 
         /* Define mode */
@@ -403,7 +419,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
           4. Variable is not packed on input, packing is performed, and output is packed
           --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
-#if 0
+
           /* Do not copy packing attributes "scale_factor" and "add_offset" 
           if variable is packed in input file and unpacked in output file 
           Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
@@ -414,7 +430,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             !var_prc_1->is_fix_var && /* ...and variable is processed (not fixed)... */
             var_prc_1->pck_dsk) /* ...and variable is packed in input file... */
             PCK_ATT_CPY=False;
-#endif
+
 
           /* Do not copy packing attributes when unpacking variables 
           ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
@@ -440,27 +456,13 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         /* Write mode */
         else {
 
-          op_typ_enm op_typ_1;  /* [enm] Operation type */
-          op_typ_enm op_typ_2;  /* [enm] Operation type */
-
-          var_sct *var_prc_1;   /* [sct] Variable to process */
-          var_sct *var_prc_2;   /* [sct] Variable to process */
-          var_sct *var_prc_out; /* [sct] Variable to process */
-
           int has_mss_val;      /* [flg] Variable has missing value */
 
           ptr_unn mss_val;      /* [sct] Missing value */
 
           int idx_dmn_1;
           int idx_dmn_2;
-          
-          /* Allocate variable structure and fill with metadata */
-          var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,&trv_1,trv_tbl_1);     
-          var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,&trv_2,trv_tbl_2);
-          var_prc_out=nco_var_dpl(var_prc_1);
-
-          (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1); 
-          (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2); 
+         
 
           /* Get group ID */
           (void)nco_inq_grp_full_ncid(nc_out_id,trv_1.grp_nm_fll,&grp_out_id);
@@ -566,16 +568,18 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               (void)nco_put_vara(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_out->cnt,var_prc_1->val.vp,var_prc_1->type);
             } /* end else */
 
-
-            /* Free allocated variable structures */
-            var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
-            var_prc_2->val.vp=nco_free(var_prc_2->val.vp);
-            var_prc_1=(var_sct *)nco_free(var_prc_1);
-            var_prc_2=(var_sct *)nco_free(var_prc_2);
-            var_prc_out=(var_sct *)nco_free(var_prc_out);
-
           } /* Processed variable */
         } /* Write mode */
+
+
+        /* Free allocated variable structures */
+        var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
+        var_prc_2->val.vp=nco_free(var_prc_2->val.vp);
+        var_prc_1=(var_sct *)nco_free(var_prc_1);
+        var_prc_2=(var_sct *)nco_free(var_prc_2);
+        var_prc_out=(var_sct *)nco_free(var_prc_out);
+
+
       }  /* If object is an extracted variable... */ 
 
       idx_tbl_1++;
