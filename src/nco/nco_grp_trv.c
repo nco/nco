@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.112 2013-03-27 17:34:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.113 2013-03-27 17:55:13 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -302,9 +302,13 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   int var_id_2;                  /* [id] Variable ID in input file */
   int grp_out_id;                /* [id] Group ID in output file */ 
   int var_out_id;                /* [id] Variable ID in output file */
+  int prg_id;                    /* [enm] Program ID */
 
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
   nco_bool flg_in_fl[2];         /* [flg] Is this name if each file?; files are [0] and [1] */
+
+  /* Get Program ID */
+  prg_id=prg_get(); 
 
   /* Get output file format */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
@@ -382,7 +386,40 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
 
         /* Define mode */
-        if(flg_def){     
+        if(flg_def){  
+
+          nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
+
+          const int nco_pck_plc=nco_pck_map_nil; /* I [enm] Packing policy */
+
+          /* Copy all attributes except in cases where packing/unpacking is involved
+          0. Variable is unpacked on input, unpacked on output
+          --> Copy all attributes
+          1. Variable is packed on input, is not altered, and remains packed on output
+          --> Copy all attributes
+          2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
+          --> Copy all attributes except scale_factor and add_offset
+          3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
+          --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
+          4. Variable is not packed on input, packing is performed, and output is packed
+          --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
+#if 0
+          /* Do not copy packing attributes "scale_factor" and "add_offset" 
+          if variable is packed in input file and unpacked in output file 
+          Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
+          Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
+          /* Copy exising packing attributes, if any, unless... */
+          if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
+            prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
+            !var_prc_1->is_fix_var && /* ...and variable is processed (not fixed)... */
+            var_prc_1->pck_dsk) /* ...and variable is packed in input file... */
+            PCK_ATT_CPY=False;
+#endif
+
+          /* Do not copy packing attributes when unpacking variables 
+          ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
+          if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
+            PCK_ATT_CPY=False;
 
           /* If output group does not exist, create it */
           if(nco_inq_grp_full_ncid_flg(nc_out_id,trv_1.grp_nm_fll,&grp_out_id)){
@@ -396,7 +433,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,&trv_1);
 
           /* Copy variable's attributes */
-          (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,(nco_bool)True);
+          (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY);
 
         }
 
