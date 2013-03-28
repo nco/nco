@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.683 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.684 2013-03-28 15:38:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1856,7 +1856,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;   /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
-  trv_tbl->lst[idx].var_typ=nco_obj_typ_err;      /* [enm] (For variables only) NetCDF type  */  
+  trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;      /* [enm] (For variables only) NetCDF type  */  
 
 
   /* Variable dimensions  */
