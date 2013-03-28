@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.201 2013-03-27 19:27:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.202 2013-03-28 19:49:25 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1240,7 +1240,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   char nul_chr='\0';                         /* [sng] Character to end string */ 
   char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (used for validation only) */ 
 
-  int val_sz_byt;                            /* [nbr] Type size */
+  int val_sz_byt=int_CEWI;                   /* [nbr] Type size */
 
   long lmn;                                  /* [nbr] Index to print variable data */
   long var_dsk;                              /* [nbr] Variable index relative to disk */

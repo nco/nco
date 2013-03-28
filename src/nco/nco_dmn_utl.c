@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.54 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.55 2013-03-28 19:49:25 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -317,7 +317,7 @@ nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specifi
       (void)nco_inq_dimname(*grp_id_dmn,dmn_ids[dmn_idx],dmn_nm_lcl);
       (void)fprintf(stdout,"%s/%d,%s",dmn_nm_lcl,dmn_ids[dmn_idx],(dmn_idx == dmn_nbr-1) ? "\n" : ", ");
     } /* end loop over dmn */
-    if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s nco_inq_dimid() reports group %s sees dimension %s with ID = %d:\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s does not see dimension %s\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
+    if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s nco_inq_dimid() reports group %s sees dimension %s with ID = %d:\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,*dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s does not see dimension %s\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
     if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
   } /* endif dbg */
 
