@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.80 2013-01-13 06:07:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.81 2013-03-28 16:15:22 pvicente Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -529,7 +529,7 @@ sub tst_run {
     # csz++
     $dot_nbr_min=3; # Minimum number of dots between description and "ok" result
     $dot_sng='.....................................................................';
-    $dsc_lng_max=50; # Maximum length of description printed
+    $dsc_lng_max=80; # Maximum length of description printed
     $opr_lng_max=7; # Maximum length of operator name
     $spc_nbr_min=1; # Minimum number of spaces between test ID and description
     $spc_sng='       ';
