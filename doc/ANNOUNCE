@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.559 2013-03-28 19:32:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.560 2013-03-28 20:29:03 zender Exp $ -*-text-*-
 
-The netCDF Operators NCO version 4.3.0 are ready. 
+The netCDF Operators NCO version 4.3.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -22,7 +22,7 @@ and on better support for Windows builds (enabling DAP, UDUnits).
 Enjoy,
 Charlie
 
-"New stuff" in 4.3.0 summary (full details always in ChangeLog):
+"New stuff" in 4.3.1 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
@@ -58,7 +58,7 @@ KNOWN BUGS NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.3.0 built/tested with netCDF
+   These problems occur with NCO 4.3.1 built/tested with netCDF
    4.3.0-rc3 released 20130311 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
