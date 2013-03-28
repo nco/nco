@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.557 2013-03-28 00:46:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.558 2013-03-28 18:46:07 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.0 are ready. 
 
@@ -38,6 +38,12 @@ B. By popular demand ncatted no longer NUL-terminates character
 
 C. ncap2 now supports nearbyint(), rint(), round(), and trunc()
    functions. 
+
+D. NCO now rounds floats to integers internally using the lrint() 
+   rather than the lround() family of functions. Halfway cases that
+   were rounded away from zero now round to nearest even integer.
+   e.g., 2.5 used to round to 3, now it rounds to 2, while 3.5 still 
+   rounds to 4.
 
 BUG FIXES:
 
@@ -119,8 +125,8 @@ E. NOT YET FIXED
    ncks -O -v two_dmn_rec_var ~/nco/data/in_grp.nc ~/foo.nc
    ncks -m ~/foo.nc
 
-   20130319: Verified problem still exists
-   (This is apparently fixed in the netCDF 4.3.0 release)
+   20130328: Verified problem still exists
+   (This may be fixed in the netCDF 4.3.0 release...will check again then)
    Bug report filed 20120312: netCDF #SHH-257980: Re: [netcdfgroup] Dimensions IDs
 
 F. NOT YET FIXED

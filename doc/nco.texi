@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.771 2013-03-28 00:46:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.772 2013-03-28 18:46:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1421,12 +1421,17 @@ to be the same as the @var{input-file} without any danger of
 @cindex @code{--no_tmp_fl}
 @cindex @code{--wrt_tmp_fl}
 @cindex @code{--write_tmp_fl}
+@cindex @code{--create_ram}
+@cindex @code{--open_ram}
+@cindex RAM disks
+@cindex RAM files
 Over time many ``power users'' have requested a way to turn-off the
 fault-tolerance safety feature of automatically creating a temporary
 file. 
-Often these users are building and executing production data analysis 
-scripts that are repeated frequently on large datasets, and where 
-canceling the extra file write conserves disk space and time.
+Often these users build and execute production data analysis scripts
+that are repeated frequently on large datasets.
+Obviating an extra file write can then conserve significant disk space
+and time.  
 For this purpose @acronym{NCO} has, since version 4.2.1 in August, 2012, 
 made configurable the controls over temporary file creation.
 The @samp{--wrt_tmp_fl} and equivalent @samp{--write_tmp_fl} switches 
@@ -1437,9 +1442,8 @@ However, the default may change some day, especially since writing to
 RAM disks (@pxref{RAM disks}) may some day become the default.
 The @samp{--no_tmp_fl} switch causes @acronym{NCO} to write directly to
 the final output file instead of to an intermediate temporary file. 
-It is expected that ``power users'' may wish to invoke this switch
-to increase performance (i.e., reduce wallclock time) when manipulating 
-large files. 
+``Power users'' may wish to invoke this switch to increase performance
+(i.e., reduce wallclock time) when manipulating large files. 
 When eschewing temporary files, users may forsake the ability to have
 the same name for both @var{output-file} and @var{input-file} since, as   
 described above, the temporary file prevented overlap issues.
@@ -1450,16 +1454,29 @@ then it is still possible to have the same name for both
 ncks -O in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
 ncks -O --wrt_tmp_fl in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
 ncks -O --no_tmp_fl in.nc out.nc # Create out.nc directly on disk
-ncks -O --no_tmp_fl in.nc in.nc # Overwrite in.nc with sub-set of itself
+ncks -O --no_tmp_fl in.nc in.nc # ERROR-prone! Overwrite in.nc with itself
 ncks -O --create_ram --no_tmp_fl in.nc in.nc # Create in.nc in RAM; then write to disk
+ncks -O --open_ram --no_tmp_fl in.nc in.nc # Read in.nc into RAM; then write to disk
 @end example
 @noindent
-Note that, at this time, the @acronym{NCO} authors have no compelling
-use cases for utilizing the RAM switches, much less combining them with
+There is no reason to expect the fourth example to work.
+The behavior of overwriting a file while reading from the same file is
+undefined, much as is the shell command @samp{cat foo > foo}.
+Although it may ``work'' in some cases, it is unreliable.
+One way around this is to use @samp{--create_ram} so that the
+output file is not written to disk until the input file is closed,
+@xref{RAM disks}.
+However, as of 20130328, the behavior of the @samp{--create_ram} and
+@samp{--open_ram} examples has not been thoroughly tested.
+
+The @acronym{NCO} authors have seen compelling use cases for utilizing
+the RAM switches, but not (yet) for combining them with
 @samp{--no_tmp_fl}. 
-We have implemented both options because they are largely independent of
-eachother, and we leave it to ``power users'' to discover which best fit
-their needs.
+@acronym{NCO} implements both options because they are largely
+independent of eachother.
+It is up to ``power users'' to discover which best fit their needs.
+We welcome accounts of your experiences posted to the forums.
+
 
 @html
 <a name="-A"></a> <!-- http://nco.sf.net/nco.html#-A -->
@@ -3426,7 +3443,7 @@ Availability: @command{ncecat}, @command{ncks}@*
 Short options: @*
 Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
-Availability: @command{ncecat}, @command{ncks}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncks}@*
 Short options: @samp{-g}@*
 Long options: @samp{--grp} and @samp{--group}@*
 Options @code{-v @var{var}} and @code{-x}@*
@@ -5687,6 +5704,40 @@ ncks --open_ram --create_ram in.nc out.nc
 ncks --ram_all in.nc out.nc # Same as above
 ncks --diskless_all in.nc out.nc # Same as above
 @end example
+
+It is straightforward to demonstrate the efficacy of RAM disks.
+For @acronym{NASA} we constructed a test that employs @command{ncecat}
+an arbitrary number (set to one hundred thousand) of files are all
+symbolically linked to the same file. 
+Everything is on the local filesystem (not @acronym{DAP}).
+@example
+# Create symbolic links for benchmark
+cd $@{DATA@}/nco # Do all work here
+for idx in @{1..99999@}; do
+  idx_fmt=`printf "%05d" $@{idx@}`
+  /bin/ln -s $@{DATA@}/nco/LPRM-AMSR_E_L3_D_SOILM3_V002-20120512T111931Z_20020619.nc \
+             $@{DATA@}/nco/$@{idx_fmt@}.nc
+done
+# Benchmark time to ncecat one hundred thousand files
+time ncecat --create_ram -O -u time -v ts -d Latitude,40.0 -d Longitude,-105.0 \
+            -p $@{DATA@}/nco -n 99999,5,1 00001.nc ~/foo.nc
+@end example
+Run normally on a laptop in 201303, this completes in @w{21 seconds}.
+The @samp{--create_ram} reduces the elapsed time to @w{9 seconds}.
+Some of this speed may be due to using symlinks and caching.
+However, the efficacy of @samp{--create_ram} is clear.
+Placing the output file in RAM avoids thousands of disk writes.
+It is not unreasonable to for @acronym{NCO} to process a million files
+like this in a few minutes. 
+However, there is no substitute for benchmarking with real files.
+
+@cindex temporary output files
+@cindex temporary files
+@cindex @code{--no_tmp_fl}
+A completely independent way to reduce time spent writing files is 
+to refrain from writing temporary output files.
+This is accomplished with the @samp{--no_tmp_fl} switch 
+(@pxref{Temporary Output Files}).
 
 @html
 <a name="pck"></a> <!-- http://nco.sf.net/nco.html#pck -->

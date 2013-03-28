@@ -1,14 +1,25 @@
-2013-03-28  Pedro Vicente  <pvicente@uci.edu>
-
-	* Add ncbo test #15,16,17,18; Group addition, subtraction, multiplication, division, with limits
-
-2013-03-27  Charlie Zender  <zender@uci.edu>
+2013-03-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.0 release procedure:
  	Changes since nco-4_2_6: ncbo -g, ncatted NULs, ncap2 rounding
 	cd ~/nco;cvs tag -d nco-4_3_0;cvs tag -d nco-4_3_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.0 release"
 	cvs tag -c nco-4_3_0;cvs tag -c nco-4_3_0-1
+
+	* Document one-hundred thousand file ncecat example
+
+2013-03-28  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncbo test #15,16,17,18; Group addition, subtraction, multiplication, division, with limits
+
+2013-03-27  Charlie Zender  <zender@uci.edu>
+
+	* nco.texi: clarify why -O --no_tmp_fl in.nc in.nc _does not work_
+
+	* Replace ?lround?() with ?lrint?() in internal NCO rounding
+	Halfway cases that were rounded away from zero will now round to nearest even integer
+
+	* Add lrint(), lrintf(), llrint(), llrintf() definitions
 
 	* Fix/revert ncatted to not NUL-terminate attributes
 
