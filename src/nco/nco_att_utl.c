@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.146 2013-03-28 00:46:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.147 2013-03-28 03:59:44 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -256,13 +256,11 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       att_val_new=(void *)nco_malloc((att_sz+aed.sz)*nco_typ_lng(aed.type));
       (void)nco_get_att(nc_id,var_id,aed.att_nm,(void *)att_val_new,aed.type);
       /* 20120903: Handle trailing NULs for strings
-	 Prevent NULs from accumulating interstitially
-	 Remove NULs appended by strdup() in nco_prs_aed_lst() */
-      if(aed.type == NC_CHAR){
-	/* To institute Behavior 1, when existing attribute is already NUL-terminated, overwrite that NUL with first character of appended string */
-	if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--;  /* Interstitial */ /* Behavior 1 */
-	; /* Behavior 2 (like ncgen) */
-      } /* !NC_CHAR */
+	 Prevent interstitial NULs accumulation by overwriting NUL-terminator with first character of append string
+	 When Behavior 1 is requested, this line removes NULs appended by strdup() in nco_prs_aed_lst() */
+      if(aed.type == NC_CHAR)
+	if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--;
+
       /* NB: Following assumes sizeof(char) = 1 byte */
       (void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
 		   (void *)aed.val.vp,
@@ -794,9 +792,9 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	   Between 201210 and 201304 the behavior was unclear to me...
 	   ncgen may be interpreted as utilizing Behavior 2, since attributes in CDL are not NUL-terminated after conversion to netCDF binary format
 	   As of 20130327, NCO chooses Behavior 2 (like ncgen)
-	   To revert to Behavior 1, add one to size in next line, and un-comment line labeled "Interstitial" above */
-	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 1L : strlen(arg_lst[idx_att_val_arg])+1L; /* Behavior 1 */
-	/* aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg])+0L; *//* Behavior 2 (like ncgen) */
+	   To revert to Behavior 1, uncomment next line to create space for NUL-terminator */
+	/* aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 1L : strlen(arg_lst[idx_att_val_arg])+1L; */ /* Behavior 1 */
+	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg])+0L; /* Behavior 2 (like ncgen) */
       }else{
 	/* Number of elements of numeric types is determined by number of delimiters */
 	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
