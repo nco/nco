@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.138 2013-03-25 13:59:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.139 2013-03-28 14:20:54 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1321,9 +1321,11 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   } /* end if prc */
 
   if(var_op_typ == fix){
+    var->is_fix_var=True;
     var_out->is_fix_var=True;
   }else{
     var_out->is_fix_var=False;
+    var->is_fix_var=False;
   } 
 
   /* Export */
