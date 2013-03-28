@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.242 2013-03-28 14:57:09 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.243 2013-03-28 15:05:31 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -479,10 +479,30 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
     
 #ncbo #15
+# ncbo -O -y add -g g4 -v one_dmn_rec_var in_grp.nc in_grp.nc out.nc
+# ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
+# /g4/one_dmn_rec_var
+
+
+    $dsc_sng="Group addition with limits -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[2]="4";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";     
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			    
+    
+    
+#ncbo #16
 # ncbo -O  -v one_dmn_rec_var in_grp.nc in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
-# time[0]=1 one_dmn_rec_var[0]=0 
+
 
     $dsc_sng="Group subtraction -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
