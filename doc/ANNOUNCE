@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.560 2013-03-28 20:29:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.561 2013-03-28 22:37:02 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.1 are ready. 
 
@@ -26,33 +26,26 @@ Charlie
 
 NEW FEATURES:
 
-A. ncbo works on netCDF4 files.
-   It is the first NCO floating point operator to work with 
-   netCDF4 files that include groups, e.g., 
-   ncbo -O -p ~/nco/data in_grp.nc in_grp.nc ~/foo.nc
+A. ncbo now supports Group Path Editing (GPE) and list unions.
+   These are the same options already supported by ncks and ncecat. 
+   They are invoked with -G and with --union, respectively.
+   Group-related features are now consistent across ncbo, ncecat,and ncks.
+   ncbo -g g1 -v v1 --union -G dude -O -p ~/nco/data in_grp.nc in_grp.nc ~/foo.nc
+   http://nco.sf.net/nco.html#gpe
+   http://nco.sf.net/nco.html#union
+   fxm
 
-B. By popular demand ncatted no longer NUL-terminates character
-   attributes. Some would call this a bug fix, though I prefer
-   NUL-terminated character attributes (i.e., strings). 
-   The behavior re-institutes behavior from NCO 4.0.2-4.2.2
-   (201007-201210) and is more consistent with ncgen.
-
-C. ncap2 now supports nearbyint(), rint(), round(), and trunc()
-   functions. 
-
-D. NCO now rounds floats to integers internally using the lrint() 
-   rather than the lround() family of functions. Halfway cases that
-   were rounded away from zero now round to nearest even integer.
-   e.g., 2.5 used to round to 3, now it rounds to 2, while 3.5 still 
-   rounds to 4.
+A.
 
 BUG FIXES:
 
-A. Fixed ncks bug introduced in version 4.2.6 where, by default,
-   variable attributes were not copied to output file. 
-   One can work around this problem in 4.2.6 by specifying -m.
-   Otherwise an upgrade is recommended.
-   http://nco.sf.net#bug_ncks_mtd
+A. Fixed ncbo bug introduced in version 4.3.0 where some special
+   exceptions (a subset of http://nco.sf.net/nco.html#prc_xcp) 
+   to variable list processing were inadvertently always turned off.
+   This may cause some grid-related variables (e.g., ntrm and nbdate)
+   and some non-grid variables (e.g., ORO and gw) to be subtracted
+   even when that makes no physical sense in the CF context.
+   http://nco.sf.net#bug_ncbo_ccm_ccsm_cf
 
 KNOWN BUGS NOT YET FIXED:
 

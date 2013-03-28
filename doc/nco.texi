@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.773 2013-03-28 20:29:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.774 2013-03-28 22:37:02 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6616,7 +6616,7 @@ We refer to all such data collectively as @acronym{CF} data.
 Skip this section if you never work with @acronym{CF} data.
 
 The @acronym{CF} netCDF conventions are described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system, here}. 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-system, here}. 
 Most @acronym{CF} netCDF conventions are transparent to @acronym{NCO}  
 @footnote{
 The exception is appending/altering the attributes @code{x_op},
@@ -6647,6 +6647,9 @@ special rules to certain variables in @acronym{CF} files.
 The special functions are not required by the @acronym{CF} netCDF
 conventions, yet experience shows that they simplify data analysis.
 
+@html
+<a name="prc_xcp"></a> <!-- http://nco.sf.net/nco.html#prc_xcp -->
+@end html
 Currently, @acronym{NCO} determines whether a datafile is a
 @acronym{CF} output datafile simply by checking (case-insensitively)
 whether the value of the global attribute @code{Conventions} (if any)

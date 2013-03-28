@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.117 2013-03-28 22:29:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.118 2013-03-28 22:37:02 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -242,9 +242,6 @@ trv_tbl_srt /* [fnc] Sort traversal table */
   qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),nco_cmp_trv_tbl_nm_fll);
 } /* end trv_tbl_srt() */
 
-
-
-
 void                          
 trv_tbl_mch                            /* [fnc] Match 2 tables (find common objects) and process common objects  */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
@@ -256,6 +253,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
@@ -263,7 +261,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- nco_bool flg_def)                     /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_def)                     /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   /* Purpose: Find common objects; the algorithm used for this search is the
   *  cosequential match algorithm and is described in

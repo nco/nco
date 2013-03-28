@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.271 2013-03-20 22:24:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.272 2013-03-28 22:37:02 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.271 2013-03-20 22:24:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.271 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.272 2013-03-28 22:37:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.272 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -404,7 +404,7 @@ main(int argc,char **argv)
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
     case 'G': /* Apply Group Path Editing (GPE) to output group */
-      /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so do not use it
+      /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it
 	 http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
       gpe=nco_gpe_prs_arg(optarg);
       grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */

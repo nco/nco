@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.235 2013-03-28 16:46:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.236 2013-03-28 22:37:02 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.235 2013-03-28 16:46:25 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.235 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.236 2013-03-28 22:37:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.236 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -146,6 +146,8 @@ main(int argc,char **argv)
 
   extern char *optarg;
   extern int optind;
+
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
   int *in_id_1_arr;
   int *in_id_2_arr;
@@ -260,6 +262,7 @@ main(int argc,char **argv)
     {"dmn",required_argument,0,'d'},
     {"fortran",no_argument,0,'F'},
     {"ftn",no_argument,0,'F'},
+    {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
     {"history",no_argument,0,'h'},
     {"hst",no_argument,0,'h'},
     {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
@@ -379,6 +382,10 @@ main(int argc,char **argv)
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
+      break;
+    case 'G': /* Apply Group Path Editing (GPE) to output group */
+      gpe=nco_gpe_prs_arg(optarg);
+      fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -570,8 +577,16 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
+  if(gpe){
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",prg_nm_get());
+    if(fl_out_fmt != NC_FORMAT_NETCDF4){
+      (void)fprintf(stderr,"%s: ERROR Group Path Edit requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+      nco_exit(EXIT_FAILURE);
+    } /* endif err */
+  } /* !gpe */
+
   /* Match 2 tables (find common objects) and process common objects (define mode) */
-  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,False,CNV_CCM_CCSM_CF,(dmn_sct **)NULL,0,nco_op_typ,trv_tbl_1,trv_tbl_2,True);
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
 
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -585,7 +600,7 @@ main(int argc,char **argv)
   } /* hdr_pad */
 
   /* Match 2 tables (find common objects) and process common objects (write mode) */
-  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,False,CNV_CCM_CCSM_CF,(dmn_sct **)NULL,0,nco_op_typ,trv_tbl_1,trv_tbl_2,False);
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);

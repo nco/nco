@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.385 2013-03-28 20:29:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.386 2013-03-28 22:37:02 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -33,10 +33,12 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_vrs_mnr[]=TKN2SNG(__GNUC_MINOR__); // [sng] Compiler minor version
   static const char cmp_vrs_pch[]=TKN2SNG(__GNUC_PATCHLEVEL__); // [sng] Compiler patch version
 
-  if(dbg_lvl_get() >= nco_dbg_scl){
+  if(dbg_lvl_get() >= nco_dbg_fl){
     (void)fprintf(stderr,"%s: INFO GCC major version is %s\n",prg_nm_get(),cmp_vrs_mjr);
     (void)fprintf(stderr,"%s: INFO GCC minor version is %s\n",prg_nm_get(),cmp_vrs_mnr);
     (void)fprintf(stderr,"%s: INFO GCC patch version is %s\n",prg_nm_get(),cmp_vrs_pch);
+  } /* endif dbg */
+  if(dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stderr,"%s: INFO GCC version is %s\n",prg_nm_get(),cmp_vrs);
   } /* endif dbg */
 #endif /* !__GNUC__ */
@@ -62,7 +64,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
 #endif /* !unknown */
 
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports compiler name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports compiler name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
 
   return cmp_nm;
 } /* end nco_cmp_get() */
@@ -103,7 +105,7 @@ nco_mpi_get(void) /* [fnc] Return MPI implementation */
 #endif /* MPI_VERSION */
 #endif /* !unknown */
 
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports MPI implementation name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,mpi_nm,mpi_sng);
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports MPI implementation name is \"%s\"\n%s\n",prg_nm_get(),fnc_nm,mpi_nm,mpi_sng);
   return mpi_nm;
 } /* end nco_mpi_get() */
 

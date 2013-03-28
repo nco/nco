@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.776 2013-03-28 22:03:42 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.777 2013-03-28 22:37:02 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -598,8 +598,9 @@ netCDF4 compound types?;
 Windows DAP &amp; UDUnits?;
 Optimize diskless files?;
 <tt>ncrename -g</tt>?;</li>
-<li><b>NCO 4.3.1</b>: (<i>In Progress, features completed or being worked on include</i>)(<i>Future</i>) 
+<li><b>NCO 4.3.1</b>: (<i>In Progress, features completed or being worked on include</i>)
 <tt>ncbo -G --unn</tt>?;
+<tt>ncbo</tt> CF <a href="#bug_ncbo_ccm_ccsm_cf">bugfix</a>;
 <tt>ncrename -g</tt>?;</li>
 <li><b>NCO 4.3.0</b>: (<i>Current Stable Release</i>)
 <tt>ncbo -g</tt>;
@@ -1693,6 +1694,19 @@ these versions of NCO.
 </ul>
 
 <ul><b>Older Operator-specific Run-time Problems:</b>
+<!-- http://nco.sf.net#bugncbo_ccm_ccsm_cf -->
+<a name="bug_ncbo_ccm_ccsm_cf"></a>
+<li><i><tt>ncbo</tt> bug handling certain special variables:</i>
+Version 4.3.0 of <tt>ncbo</tt> inadvertently always turns off
+certain <a href="http://nco.sf.net/nco.html#prc_xcp">exceptions</a>  
+to variable list processing.
+This may cause some grid-related variables (e.g., <tt>ntrm</tt> and <tt>nbdate</tt>)
+and some non-grid variables (e.g., <tt>ORO</tt> and <tt>gw</tt>) to be
+arithmetically processed (e.g., subtracted) even when that makes no
+sense in most climate model datasets. 
+Fixed in version 4.3.1.
+</li>
+
 <!-- http://nco.sf.net#bug_ncks_mtd -->
 <a name="bug_ncks_mtd"></a>
 <li><i><tt>ncks</tt> bug copying metadata:</i>
