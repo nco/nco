@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.684 2013-03-28 15:38:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.685 2013-03-28 15:57:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -265,11 +265,13 @@ nco_prt_grp_nm_fll                    /* [fnc] Debug function to print group ful
   size_t grp_nm_lng;
   char *grp_nm_fll;
 
+#if defined(HAVE_NETCDF4_H) 
   (void)nco_inq_grpname_full(grp_id, &grp_nm_lng, NULL);
   grp_nm_fll=(char*)nco_malloc(grp_nm_lng+1L);
   (void)nco_inq_grpname_full(grp_id, &grp_nm_lng, grp_nm_fll);
   (void)fprintf(stdout,"<%s>",grp_nm_fll);
   grp_nm_fll=(char*)nco_free(grp_nm_fll);
+#endif
 
 } /* nco_inq_prt_nm_fll() */
 
