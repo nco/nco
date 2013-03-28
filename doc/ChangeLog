@@ -1,3 +1,7 @@
+2013-03-28  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncbo test #15,16,17,18; Group addition, subtraction, multiplication, division, with limits
+
 2013-03-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.0 release procedure:
