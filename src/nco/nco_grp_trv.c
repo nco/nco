@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.116 2013-03-28 18:46:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.117 2013-03-28 22:29:06 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -371,8 +371,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       /* If object is an extracted variable... */
       if(trv_1.nco_typ == nco_obj_typ_var && trv_2.nco_typ == nco_obj_typ_var && trv_1.flg_xtr && trv_2.flg_xtr){
 
-        op_typ_enm op_typ_1;  /* [enm] Operation type */
-        op_typ_enm op_typ_2;  /* [enm] Operation type */
+        prc_typ_enm prc_typ_1;  /* [enm] Processing type */
+        prc_typ_enm prc_typ_2;  /* [enm] Processing type */
 
         var_sct *var_prc_1;   /* [sct] Variable to process */
         var_sct *var_prc_2;   /* [sct] Variable to process */
@@ -397,8 +397,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,&trv_2,trv_tbl_2);
         var_prc_out=nco_var_dpl(var_prc_1);
 
-        (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_1); 
-        (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&op_typ_2); 
+        (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+        (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
 
 
         /* Define mode */
@@ -471,11 +471,11 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           (void)nco_inq_varid(grp_out_id,trv_1.nm,&var_out_id);         
 
           if(dbg_lvl_get() >= 16){ 
-            (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,op_typ_1,trv_1.nm_fll); 
+            (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1.nm_fll); 
           } 
 
           /* Non-processed variable */
-          if (op_typ_1 == fix){
+          if (prc_typ_1 == fix_typ){
 
             /* Copy variable data for non-processed variables */
             (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,False,&trv_1);
@@ -483,7 +483,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           } /* Non-processed variable */
 
           /* Processed variable */
-          if (op_typ_1 == prc){
+          if (prc_typ_1 == prc_typ){
 
             var_prc_out->id=var_out_id;
             var_prc_out->srt=var_prc_1->srt;

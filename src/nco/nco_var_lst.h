@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.66 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.67 2013-03-28 22:29:06 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -139,7 +139,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
  const int nco_pck_plc,                      /* I [enm] Packing policy */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                      /* I [nbr] Number of altered dimensions */
- op_typ_enm *op_typ);                        /* O [enm] Operation type */
+ prc_typ_enm *prc);                          /* O [enm] Processing type */
 
 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.301 2013-03-28 18:46:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.302 2013-03-28 22:29:06 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -722,10 +722,12 @@ extern "C" {
     unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
   } trv_tbl_sct;
 
-  typedef enum op_typ{
-    fix,                    /* 0 [enm] Fixed variable (operator alters neither data nor metadata) */
-    prc                     /* 1 [enm] Process variable (operator may alter data and metadata) */
-  } op_typ_enm; 
+  /* Processing type enumerator. Currently used by ncbo */
+  typedef enum {
+    fix_typ,                /* 0 [enm] Fixed variable (operator alters neither data nor metadata) */
+    prc_typ                 /* 1 [enm] Process variable (operator may alter data and metadata) */
+  } prc_typ_enm; 
+
 
   /* Chunking structure */
   typedef struct{ /* cnk_sct */

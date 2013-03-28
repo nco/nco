@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.140 2013-03-28 18:46:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.141 2013-03-28 22:29:06 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -839,7 +839,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   for(idx=0;idx<nbr_var;idx++){
     
     /* Initialize operation type to processed. Change to fixed where warranted later. */
-    var_op_typ[idx]=prc;
+    var_op_typ[idx]=prc_typ;
     var_nm=var[idx]->nm;
     var_typ=var[idx]->type;
     if((var_typ == NC_BYTE) || (var_typ == NC_UBYTE) || (var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
@@ -854,35 +854,35 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     /* Override operation type based depending on variable properties and program */
     switch(prg_id){
     case ncap:
-      var_op_typ[idx]=fix;
+      var_op_typ[idx]=fix_typ;
       break;
     case ncatted:
       /* Do nothing */
       break;
     case ncbo:
-      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix_typ;
       break;
     case ncea:
-      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix_typ;
       break;
     case ncecat:
       /* Allow ncecat to concatenate funky variables */
-      if(var[idx]->is_crd_var) var_op_typ[idx]=fix;
+      if(var[idx]->is_crd_var) var_op_typ[idx]=fix_typ;
       break;
     case ncflint:
       /* Allow ncflint to interpolate record coordinates, not fixed coordinates ... */
-      if((var[idx]->is_crd_var || var_typ_fnk) && !var[idx]->is_rec_var) var_op_typ[idx]=fix;
+      if((var[idx]->is_crd_var || var_typ_fnk) && !var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
       /* ...unless the --fix_rec_crd switch was used to fix record coordinates as well ... */
-      if((var[idx]->is_crd_var && var[idx]->is_rec_var && FIX_REC_CRD)) var_op_typ[idx]=fix;
+      if((var[idx]->is_crd_var && var[idx]->is_rec_var && FIX_REC_CRD)) var_op_typ[idx]=fix_typ;
       break;
     case ncks:
       /* Do nothing */
       break;
     case ncra:
-      if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
+      if(!var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
       break;
     case ncrcat:
-      if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
+      if(!var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
       break;
     case ncpdq:
     case ncwa:
@@ -910,7 +910,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	    !nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)
 	    )
 	   )
-	  var_op_typ[idx]=fix;
+	  var_op_typ[idx]=fix_typ;
       }else{ /* endif packing operation requested */
 	/* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
 	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
@@ -918,12 +918,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	    if(var[idx]->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
 	  } /* end loop over idx_xcl */
 	  if(idx_xcl != nbr_dmn_xcl){
-	    var_op_typ[idx]=prc;
+	    var_op_typ[idx]=prc_typ;
 	    break;
 	  } /* end if */
 	} /* end loop over idx_dmn */
 	/* Fix variables with no altered (averaged, re-ordered, reversed) dimensions */
-	if(idx_dmn == var[idx]->nbr_dim) var_op_typ[idx]=fix;
+	if(idx_dmn == var[idx]->nbr_dim) var_op_typ[idx]=fix_typ;
       } /* endif averaging or re-ordering */
       break;
     default: nco_dfl_case_prg_id_err(); break;
@@ -932,12 +932,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     /* Previous case-statement does not account for variables with no data */
     if(nco_is_rth_opr(prg_id))
       if(var[idx]->sz == 0L)
-	var_op_typ[idx]=fix;
+	var_op_typ[idx]=fix_typ;
 
     if(CNV_CCM_CCSM_CF){
-      if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
+      if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix_typ;
       /* NB: all !strcmp()'s except "msk_" which uses strstr() */
-      if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix;
+      if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ[idx]=fix_typ;
       /* Known "multi-dimensional coordinates" in CCSM-like model output:
 	 lat, lon, lev are normally 1-D coordinates
 	 Known exceptions:
@@ -967,11 +967,11 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
       /* Conditions #1 and #2 are already implemented above in the case() statement */
       /* Check condition #4 above: */
-      if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix;
+      if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ[idx]=fix_typ;
     } /* end if CNV_CCM_CCSM_CF */
 
     /* Warn about any expected weird behavior */
-    if(var_op_typ[idx] == prc){
+    if(var_op_typ[idx] == prc_typ){
       if(var_typ_fnk && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
 	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
       } /* end if */
@@ -982,7 +982,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   /* Assign list pointers based on operation type for each variable */
   *nbr_var_prc=*nbr_var_fix=0;
   for(idx=0;idx<nbr_var;idx++){
-    if(var_op_typ[idx] == fix){
+    if(var_op_typ[idx] == fix_typ){
       var[idx]->is_fix_var=var_out[idx]->is_fix_var=True;
       var_fix[*nbr_var_fix]=var[idx];
       var_fix_out[*nbr_var_fix]=var_out[idx];
@@ -1154,7 +1154,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
  const int nco_pck_plc,                      /* I [enm] Packing policy */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                      /* I [nbr] Number of altered dimensions */
- op_typ_enm *op_typ)                         /* O [enm] Operation type */
+ prc_typ_enm *prc)                       /* O [enm] Processing type */
 {
   /* Purpose: Divide two input lists into output lists based on program type */
 
@@ -1163,7 +1163,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   int prg_id;                     /* [enm] Program key */
   int idx_dmn;
   int idx_xcl;
-  int var_op_typ;
+  prc_typ_enm var_op_typ;
 
   nco_bool is_sz_rnk_prv_rth_opr; /* [flg] Size- and rank-preserving operator */
   nco_bool var_typ_fnk=False;     /* [flg] Variable type is too funky for arithmetic */ 
@@ -1175,7 +1175,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc);
 
   /* Initialize operation type to processed. Change to fixed where warranted later. */
-  var_op_typ=prc;
+  var_op_typ=prc_typ;
   var_nm=var->nm;
   var_typ=var->type;
   if((var_typ == NC_BYTE) || (var_typ == NC_UBYTE) || (var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
@@ -1190,35 +1190,35 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   /* Override operation type based depending on variable properties and program */
   switch(prg_id){
   case ncap:
-    var_op_typ=fix;
+    var_op_typ=fix_typ;
     break;
   case ncatted:
     /* Do nothing */
     break;
   case ncbo:
-    if(var->is_crd_var || var_typ_fnk) var_op_typ=fix;
+    if(var->is_crd_var || var_typ_fnk) var_op_typ=fix_typ;
     break;
   case ncea:
-    if(var->is_crd_var || var_typ_fnk) var_op_typ=fix;
+    if(var->is_crd_var || var_typ_fnk) var_op_typ=fix_typ;
     break;
   case ncecat:
     /* Allow ncecat to concatenate funky variables */
-    if(var->is_crd_var) var_op_typ=fix;
+    if(var->is_crd_var) var_op_typ=fix_typ;
     break;
   case ncflint:
     /* Allow ncflint to interpolate record coordinates, not fixed coordinates ... */
-    if((var->is_crd_var || var_typ_fnk) && !var->is_rec_var) var_op_typ=fix;
+    if((var->is_crd_var || var_typ_fnk) && !var->is_rec_var) var_op_typ=fix_typ;
     /* ...unless the --fix_rec_crd switch was used to fix record coordinates as well ... */
-    if((var->is_crd_var && var->is_rec_var && FIX_REC_CRD)) var_op_typ=fix;
+    if((var->is_crd_var && var->is_rec_var && FIX_REC_CRD)) var_op_typ=fix_typ;
     break;
   case ncks:
     /* Do nothing */
     break;
   case ncra:
-    if(!var->is_rec_var) var_op_typ=fix;
+    if(!var->is_rec_var) var_op_typ=fix_typ;
     break;
   case ncrcat:
-    if(!var->is_rec_var) var_op_typ=fix;
+    if(!var->is_rec_var) var_op_typ=fix_typ;
     break;
   case ncpdq:
   case ncwa:
@@ -1246,7 +1246,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
         !nco_pck_plc_typ_get(nco_pck_map,var->typ_upk,(nc_type *)NULL)
         )
         )
-        var_op_typ=fix;
+        var_op_typ=fix_typ;
     }else{ /* endif packing operation requested */
       /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
       for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
@@ -1256,12 +1256,12 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
           }
         } /* end loop over idx_xcl */
         if(idx_xcl != nbr_dmn_xcl){
-          var_op_typ=prc;
+          var_op_typ=prc_typ;
           break;
         } /* end if */
       } /* end loop over idx_dmn */
       /* Fix variables with no altered (averaged, re-ordered, reversed) dimensions */
-      if(idx_dmn == var->nbr_dim) var_op_typ=fix;
+      if(idx_dmn == var->nbr_dim) var_op_typ=fix_typ;
     } /* endif averaging or re-ordering */
     break;
   default: nco_dfl_case_prg_id_err(); break;
@@ -1270,12 +1270,12 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   /* Previous case-statement does not account for variables with no data */
   if(nco_is_rth_opr(prg_id))
     if(var->sz == 0L)
-      var_op_typ=fix;
+      var_op_typ=fix_typ;
 
   if(CNV_CCM_CCSM_CF){
-    if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ=fix;
+    if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ=fix_typ;
     /* NB: all !strcmp()'s except "msk_" which uses strstr() */
-    if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ=fix;
+    if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ=fix_typ;
     /* Known "multi-dimensional coordinates" in CCSM-like model output:
     lat, lon, lev are normally 1-D coordinates
     Known exceptions:
@@ -1305,17 +1305,17 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
 
     /* Conditions #1 and #2 are already implemented above in the case() statement */
     /* Check condition #4 above: */
-    if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ=fix;
+    if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ=fix_typ;
   } /* end if CNV_CCM_CCSM_CF */
 
   /* Warn about any expected weird behavior */
-  if(var_op_typ == prc){
+  if(var_op_typ == prc_typ){
     if(var_typ_fnk && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var->nm,nco_typ_sng(var->type));
     } /* end if */
   } /* end if prc */
 
-  if(var_op_typ == fix){
+  if(var_op_typ == fix_typ){
     var->is_fix_var=True;
     var_out->is_fix_var=True;
   }else{
@@ -1324,6 +1324,6 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   } 
 
   /* Export */
-  *op_typ=(op_typ_enm)var_op_typ;
+  *prc=var_op_typ;
 
 } /* end nco_var_lst_dvd */
