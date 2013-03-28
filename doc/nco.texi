@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.769 2013-03-19 21:13:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.770 2013-03-28 00:20:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1873,10 +1873,10 @@ The technique of last resort is to write a script that creates symbolic
 links between the irregular input filenames and a set of regular,
 arithmetic filenames that the @samp{-n @var{loop}} switch understands. 
 @cindex Perl
-For example, the following Perl script a monotonically enumerated
-symbolic link to up to one million @file{.nc} files in a directory.
-If there are 999,999 netCDF files present, the links are named
-@file{000001.nc} to @file{999999.nc}: 
+For example, the following Perl script creates a monotonically
+enumerated symbolic link to up to one million @file{.nc} files in a
+directory. If there are 999,999 netCDF files present, the links are
+named @file{000001.nc} to @file{999999.nc}: 
 @cindex @code{-n @var{loop}}
 @example
 # Create enumerated symbolic links
@@ -1894,7 +1894,8 @@ The symbolic links are easily removed once @acronym{NCO} is finished.
 One drawback to this method is that the @code{history} attribute
 (@pxref{History Attribute}) retains the filename list of the symbolic
 links, rather than the data files themselves. 
-This makes it difficult to determine the data provenance at a later date.
+This makes it difficult to determine the data provenance at a later
+date. 
 
 @node Large Datasets, Memory Requirements, Large Numbers of Files, Strategies
 @section Large Datasets

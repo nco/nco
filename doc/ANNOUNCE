@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.555 2013-03-27 21:31:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.556 2013-03-28 00:20:36 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.0 are ready. 
 
@@ -7,11 +7,16 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release brings some NCO floating point math capabilities to
 netCDF4 files. Specifically, ncbo (i.e., ncdiff) now works with
-on netCDF4 (and thus HDF5) files that also make use of groups.
+on netCDF4 (and thus HDF5) files that make use of groups.
+We made this release relatively swiftly after 4.2.6 both because
+of the new floating point ability, and to correct a bug introduced
+in 4.2.6 in which ncks stopped copying attributes by default.
+This is extremely annoying and we wanted people to have an upgrade
+alternative rather than a downgrade alternative.
 
 Work on NCO 4.3.1 is underway and includes improved netCDF4 support
-for ncrename and ncbo operators, and on better support for Windows
-builds (enabling DAP, UDUnits).
+for ncrename and ncbo operators, other floating point operators,
+and on better support for Windows builds (enabling DAP, UDUnits).
 
 Enjoy,
 Charlie
@@ -20,15 +25,26 @@ Charlie
 
 NEW FEATURES:
 
-A. ncbo works on netCDF4 files
+A. ncbo works on netCDF4 files.
+   It is the first NCO floating point operator to work with 
+   netCDF4 files that include groups.
+
+B. By popular demand ncatted no longer NUL-terminates character
+   attributes. Some would call this a bug fix, though I prefer
+   NUL-terminated character attributes (i.e., strings). 
+   The behavior re-institutes behavior from NCO 4.0.2-4.2.2
+   (201007-201210) and is more consistent with ncgen.
+
+C. ncap2 now supports nearbyint(), rint(), round(), and trunc()
+   functions. 
 
 BUG FIXES:
 
 A. Fixed ncks bug introduced in version 4.2.6 where, by default,
-   variable attributes were not copied to output file.
-
-B. Fixed ncatted fxm
-   Thanks to ocehugo for reporting this problem.
+   variable attributes were not copied to output file. 
+   One can work around this problem in 4.2.6 by specifying -m.
+   Otherwise an upgrade is recommended.
+   http://nco.sf.net#bug_ncks_mtd
 
 KNOWN BUGS NOT YET FIXED:
 
@@ -103,6 +119,7 @@ E. NOT YET FIXED
    ncks -m ~/foo.nc
 
    20130319: Verified problem still exists
+   (This is apparently fixed in the netCDF 4.3.0 release)
    Bug report filed 20120312: netCDF #SHH-257980: Re: [netcdfgroup] Dimensions IDs
 
 F. NOT YET FIXED

@@ -1,7 +1,7 @@
 2013-03-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.0 release procedure:
- 	Changes since nco-4_2_6: fxm
+ 	Changes since nco-4_2_6: ncbo -g, ncatted NULs, ncap2 rounding
 	cd ~/nco;cvs tag -d nco-4_3_0;cvs tag -d nco-4_3_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.0 release"
 	cvs tag -c nco-4_3_0;cvs tag -c nco-4_3_0-1
