@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.114 2013-03-27 18:06:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.115 2013-03-28 13:29:45 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -478,7 +478,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           if (op_typ_1 == fix){
 
             /* Copy variable data for non-processed variables */
-            (void)nco_cpy_var_val_mlt_lmt_trv(nc_id_1,nc_out_id,(FILE *)NULL,False,&trv_1);
+            (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,False,&trv_1);
 
           } /* Non-processed variable */
 
