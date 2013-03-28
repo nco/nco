@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.54 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.55 2013-03-28 18:46:38 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -270,22 +270,22 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
     for(idx=0;idx<sz;idx++) op1.dp[idx]=op2;
     break;
   case NC_INT:
-    for(idx=0;idx<sz;idx++) op1.ip[idx]=(nco_int)lround(op2); /* Coerce to avoid C++ compiler assignment warning */
+    for(idx=0;idx<sz;idx++) op1.ip[idx]=(nco_int)lrint(op2); /* Coerce to avoid C++ compiler assignment warning */
     break;
   case NC_SHORT:
-    for(idx=0;idx<sz;idx++) op1.sp[idx]=(nco_short)lround(op2); /* Coerce to avoid C++ compiler assignment warning */
+    for(idx=0;idx<sz;idx++) op1.sp[idx]=(nco_short)lrint(op2); /* Coerce to avoid C++ compiler assignment warning */
     break;
   case NC_USHORT:
-    for(idx=0;idx<sz;idx++) op1.usp[idx]=(nco_ushort)lround(op2); /* Coerce to avoid C++ compiler assignment warning */
+    for(idx=0;idx<sz;idx++) op1.usp[idx]=(nco_ushort)lrint(op2); /* Coerce to avoid C++ compiler assignment warning */
     break;
   case NC_UINT:
-    for(idx=0;idx<sz;idx++) op1.uip[idx]=(nco_uint)lround(op2); /* Coerce to avoid C++ compiler assignment warning */
+    for(idx=0;idx<sz;idx++) op1.uip[idx]=(nco_uint)lrint(op2); /* Coerce to avoid C++ compiler assignment warning */
     break;
   case NC_INT64:
-    for(idx=0;idx<sz;idx++) op1.i64p[idx]=(nco_int64)llround(op2); /* Coerce to avoid C++ compiler assignment warning */
+    for(idx=0;idx<sz;idx++) op1.i64p[idx]=(nco_int64)llrint(op2); /* Coerce to avoid C++ compiler assignment warning */
     break;
   case NC_UINT64:
-    for(idx=0;idx<sz;idx++) op1.ui64p[idx]=(nco_uint64)llround(op2); /* Coerce to avoid C++ compiler assignment warning */
+    for(idx=0;idx<sz;idx++) op1.ui64p[idx]=(nco_uint64)llrint(op2); /* Coerce to avoid C++ compiler assignment warning */
     break;
   case NC_BYTE: break; /* Do nothing */
   case NC_UBYTE: break; /* Do nothing */

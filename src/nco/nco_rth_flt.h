@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.42 2013-03-27 19:27:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.43 2013-03-28 18:46:38 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -34,12 +34,18 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  /* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer, halfway cases round away from 0 */
+/* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer, halfway cases round away from 0
+   MSVC does not define lrint(), lrintf(), lrintl(), llrint(), llrintf(), llrintl(): Round to nearest even integer, raise exceptions
+   Summary of POSIX, ISO, and MSVC math intrinsics at http://www.johndcook.com/math_h.html */
 #ifdef _MSC_VER
-  long long llround(double x);
-  long long llroundf(float x);
-  long lround(double x);
-  long lroundf(float x);
+  long long int llrint(double x);
+  long long int llrintf(float x);
+  long int lrint(double x);
+  long int lrintf(float x);
+  long long int llround(double x);
+  long long int llroundf(float x);
+  long int lround(double x);
+  long int lroundf(float x);
 #endif /* !_MSC_VER */ 
 
 #ifdef _MSC_VER

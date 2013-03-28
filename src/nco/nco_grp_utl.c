@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.685 2013-03-28 15:57:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.686 2013-03-28 18:46:38 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3093,7 +3093,6 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
   return False;
 } /* nco_var_dmn_scp() */
-
 
 int                                  /* O [nbr] Comparison result */
 nco_cmp_crd_dpt                      /* [fnc] Compare two crd_sct's by group depth */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.115 2013-03-28 13:29:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.116 2013-03-28 18:46:38 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -551,7 +551,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
               (void)nco_var_sbt(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
             default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbo() */
-              (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm_get);
+              (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm_get());
               nco_exit(EXIT_FAILURE);
               break;
             } /* end case */

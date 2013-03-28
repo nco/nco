@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.300 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.301 2013-03-28 18:46:38 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -724,7 +724,7 @@ extern "C" {
 
   typedef enum op_typ{
     fix,                    /* 0 [enm] Fixed variable (operator alters neither data nor metadata) */
-    prc                     /* 1 [enm] Process variable (operator may alter data or metadata) */
+    prc                     /* 1 [enm] Process variable (operator may alter data and metadata) */
   } op_typ_enm; 
 
   /* Chunking structure */

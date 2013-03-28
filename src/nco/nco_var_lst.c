@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.139 2013-03-28 14:20:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.140 2013-03-28 18:46:38 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -809,11 +809,6 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
   int idx;
   int prg_id; /* Program key */
-
-  enum op_typ{
-    fix, /* 0 [enm] Fix variable (operator alters neither data nor metadata) */
-    prc /* 1 [enm] Process variable (operator may alter data or metadata) */
-  }; /* end op_typ */
 
   int idx_dmn;
   int idx_xcl;

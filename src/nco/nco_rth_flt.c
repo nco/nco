@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.34 2013-03-27 19:27:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.35 2013-03-28 18:46:38 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -8,12 +8,18 @@
 
 #include "nco_rth_flt.h" /* Float-precision arithmetic */
 
-/* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer, halfway cases round away from 0 */
+/* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer, halfway cases round away from 0
+   MSVC does not define lrint(), lrintf(), lrintl(), llrint(), llrintf(), llrintl(): Round to nearest even integer, raise exceptions
+   Summary of POSIX, ISO, and MSVC math intrinsics at http://www.johndcook.com/math_h.html */
 #ifdef _MSC_VER
-long long llround(double x){return floor(x+0.5);}
-long long llroundf(float x){return floorf(x+0.5f);}
-long lround(double x){return floor(x+0.5);}
-long lroundf(float x){return floorf(x+0.5f);}
+long long int llrint(double x){return (x >= 0.0) ? floor(x+0.5) : ceil(x-0.5);};
+long long int llrintf(float x){return (x >= 0.0f) ? floorf(x+0.5f) : ceilf(x-0.5f);};
+long int lrint(double x){return (x >= 0.0) ? floor(x+0.5) : ceil(x-0.5);};
+long int lrintf(float x){return (x >= 0.0f) ? floorf(x+0.5f) : ceilf(x-0.5f);};
+long long int llround(double x){return floor(x+0.5);}
+long long int llroundf(float x){return floorf(x+0.5f);}
+long int lround(double x){return floor(x+0.5);}
+long int lroundf(float x){return floorf(x+0.5f);}
 #endif /* !_MSC_VER */ 
 
 /* In ANSI C, <math.h> provides standard math intrinsics in double precision 
@@ -145,7 +151,7 @@ rint /* [fnc] Round x to nearest even integer, raise exceptions */
 (double x) /* I [frc] Value to round */
 {
   /* Purpose: Rounding function for lame systems that lack the intrinsic rint() 
-     rint() should round x to nearest integer, using current rounding direction (unlike round(), which always rounds away from zero). Halfway cases are rounded to nearest even integer (!). Yes, that appears to be the algorithm.
+     rint() should round x to nearest integer, using current rounding direction (unlike round(), which always rounds away from zero). Halfway cases are rounded to nearest even integer (!). Yes, that appears to be an accurate summary of this highly technical IEEE floating point rounding algorithm.
      Only difference from nearbyint() is that rint() should raise inexact flag, nearbyint() should not
      NB: POSIX version of rint() sets IEEE inexact exceptions (unlike nearbyint())
      This hacked version does not */
@@ -162,7 +168,7 @@ nearbyint /* [fnc] Round x to nearest even integer, do not raise exceptions */
 (double x) /* I [frc] Value to round */
 {
   /* Purpose: Rounding function for lame systems that lack the intrinsic nearbyint() 
-     nearbyint() should round x to nearest integer, using current rounding direction (unlike round(), which always rounds away from zero). Halfway cases are rounded to nearest even integer (!). Yes, that appears to be the algorithm.
+     nearbyint() should round x to nearest integer, using current rounding direction (unlike round(), which always rounds away from zero). Halfway cases are rounded to nearest even integer (!). Yes, that appears to be an accurate summary of this highly technical IEEE floating point rounding algorithm.
      Only difference from rint() is that rint() should raise inexact flag, nearbyint() should not
      NB: POSIX version of nearbyint() does not set IEEE inexact exceptions (unlike rint()) */
   /* Source:  */
