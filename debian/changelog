@@ -1,3 +1,9 @@
+nco (4.3.0-1) unstable; urgency=low
+
+  * new upstream version (ncbo -g, ncatted NULs, ncap2 rounding)
+
+ -- Charlie Zender <zender@uci.edu>  Thu, 28 Mar 2013 12:24:45 -0700
+
 nco (4.2.6-1) unstable; urgency=low
 
   * new upstream version (--rec_apn, non-atomics, --fix_rec_crd, scope)

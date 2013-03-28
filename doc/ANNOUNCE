@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.558 2013-03-28 18:46:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.559 2013-03-28 19:32:03 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.0 are ready. 
 
@@ -8,14 +8,15 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 This release brings some NCO floating point math capabilities to
 netCDF4 files. Specifically, ncbo (i.e., ncdiff) now works with
 on netCDF4 (and thus HDF5) files that make use of groups.
+This milestone in capability explains the jump from 4.2.6 to 4.3.0. 
 We made this release relatively swiftly after 4.2.6 both because
 of the new floating point ability, and to correct a bug introduced
 in 4.2.6 in which ncks stopped copying attributes by default.
-This is extremely annoying and we wanted people to have an upgrade
+This is extremely annoying and we want people to have an upgrade
 alternative rather than a downgrade alternative.
 
 Work on NCO 4.3.1 is underway and includes improved netCDF4 support
-for ncrename and ncbo operators, other floating point operators,
+for ncbo (including -G and --unn), other floating point operators,
 and on better support for Windows builds (enabling DAP, UDUnits).
 
 Enjoy,
