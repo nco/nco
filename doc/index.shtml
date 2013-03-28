@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.775 2013-03-28 21:53:28 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.776 2013-03-28 22:03:42 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1214,8 +1214,14 @@ modern Debian-based systems with
 <dt>sudo yum install librx librx-devel # RX</dt>
 <dt>sudo yum install udunits2 udunits2-devel # UDUnits</dt>
 </tt>
+</tt>or, using MacPorts for Mac OS X, with
+<tt>
+<dt>sudo port install libdap # DAP</dt>
+<dt>sudo port install gsl # GSL</dt>
+<dt>sudo port install netcdf # netCDF</dt>
+<dt>sudo port install udunits2 # UDUnits</dt>
+</tt>
 </li>
-
 </ul>
 
 <dt><a name="Makefile"></a></dt> <!-- http://nco.sf.net#Makefile -->
