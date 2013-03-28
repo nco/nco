@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.556 2013-03-28 00:20:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.557 2013-03-28 00:46:07 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.0 are ready. 
 
@@ -27,7 +27,8 @@ NEW FEATURES:
 
 A. ncbo works on netCDF4 files.
    It is the first NCO floating point operator to work with 
-   netCDF4 files that include groups.
+   netCDF4 files that include groups, e.g., 
+   ncbo -O -p ~/nco/data in_grp.nc in_grp.nc ~/foo.nc
 
 B. By popular demand ncatted no longer NUL-terminates character
    attributes. Some would call this a bug fix, though I prefer

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.145 2013-03-27 21:31:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.146 2013-03-28 00:46:07 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -260,8 +260,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 	 Remove NULs appended by strdup() in nco_prs_aed_lst() */
       if(aed.type == NC_CHAR){
 	/* To institute Behavior 1, when existing attribute is already NUL-terminated, overwrite that NUL with first character of appended string */
-	;
-	/* if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--; */ /* Interstitial */
+	if(((char *)att_val_new)[att_sz-1L] == '\0') att_sz--;  /* Interstitial */ /* Behavior 1 */
+	; /* Behavior 2 (like ncgen) */
       } /* !NC_CHAR */
       /* NB: Following assumes sizeof(char) = 1 byte */
       (void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
@@ -788,12 +788,15 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char
 	   Two behaviors are possible:
 	   1. Terminate user-specified strings with NUL before saving as attributes
-	   2. Do not teminate user-specified strings with NUL
-	   ncgen may be interpreted as utilizing second behavior, since attributes in CDL are not NUL-terminated after conversion to netCDF binary format
-	   As of 20130327, NCO chooses this behavior (like ncgen)
-	   To revert to previous behavior, add one to size in next line, and un-comment line labeled "Interstitial" above */
-	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg])+0L; /* Behavior 2 (like ncgen) */
-	/* aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 1L : strlen(arg_lst[idx_att_val_arg])+1L;*/ /* Behavior 1 */
+	      This behavior was used in 4.0.2-4.2.2 (201007-201210)
+	   2. Do not NUL-terminate user-specified strings
+	      This behavior was re-instituted in 4.3.0 (201204)
+	   Between 201210 and 201304 the behavior was unclear to me...
+	   ncgen may be interpreted as utilizing Behavior 2, since attributes in CDL are not NUL-terminated after conversion to netCDF binary format
+	   As of 20130327, NCO chooses Behavior 2 (like ncgen)
+	   To revert to Behavior 1, add one to size in next line, and un-comment line labeled "Interstitial" above */
+	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 1L : strlen(arg_lst[idx_att_val_arg])+1L; /* Behavior 1 */
+	/* aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg])+0L; *//* Behavior 2 (like ncgen) */
       }else{
 	/* Number of elements of numeric types is determined by number of delimiters */
 	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;

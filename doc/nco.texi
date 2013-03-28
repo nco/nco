@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.770 2013-03-28 00:20:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.771 2013-03-28 00:46:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.0
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 19 March 2013
+@set update-date 27 March 2013
 @set update-month March 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -10837,7 +10837,8 @@ SYNTAX
 @example 
 ncbo [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [--hdr_pad @var{nbr}]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
+[-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] [-O] [-o @var{file_3}] [-p @var{path}] 
 [-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
