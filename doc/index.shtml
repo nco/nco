@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.777 2013-03-28 22:37:02 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.778 2013-03-29 01:15:05 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -599,7 +599,8 @@ Windows DAP &amp; UDUnits?;
 Optimize diskless files?;
 <tt>ncrename -g</tt>?;</li>
 <li><b>NCO 4.3.1</b>: (<i>In Progress, features completed or being worked on include</i>)
-<tt>ncbo -G --unn</tt>?;
+<tt>ncbo</tt> commutivity;
+<tt>ncbo -G --unn</tt>;
 <tt>ncbo</tt> CF <a href="#bug_ncbo_ccm_ccsm_cf">bugfix</a>;
 <tt>ncrename -g</tt>?;</li>
 <li><b>NCO 4.3.0</b>: (<i>Current Stable Release</i>)
