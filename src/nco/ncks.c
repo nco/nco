@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.608 2013-03-28 22:37:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.609 2013-03-29 00:19:04 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.608 2013-03-28 22:37:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.608 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.609 2013-03-29 00:19:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.609 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -799,68 +799,62 @@ main(int argc,char **argv)
   } /* !fl_out */
   
  close_and_free: /* goto close_and_free */
+  
+  /* Close input netCDF file */
+  nco_close(in_id);
+  
+  /* Remove local copy of file */
+  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
+  
+  /* Clean memory unless dirty memory allowed */
+  if(flg_cln){
+    /* ncks-specific memory */
+    if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
+    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
+    lmt=(lmt_sct **)nco_free(lmt); 
+    /* NCO-generic clean-up */
+    /* Free individual strings/arrays */
+    if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
+    if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
+    if(fl_in) fl_in=(char *)nco_free(fl_in);
+    if(fl_out) fl_out=(char *)nco_free(fl_out);
+    if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
+    if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
+    if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    /* Free lists of strings */
+    if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
+    if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
+    if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+    if(grp_lst_in_nbr > 0) grp_lst_in=nco_sng_lst_free(grp_lst_in,grp_lst_in_nbr);
+    if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    /* Free limits */
+    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
+    /* Free chunking information */
+    for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
 
- /* Close input netCDF file */
- nco_close(in_id);
+    trv_tbl_free(trv_tbl);
+    if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+  } /* !flg_cln */
+  
+  if(dbg_lvl_get() == 14 && fl_out){
+    int out_id;
+    (void)trv_tbl_init(&trv_tbl);
+    (void)nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&out_id);
+    (void)nco_bld_trv_tbl(out_id,trv_pth,MSA_USR_RDR,0,(lmt_sct **)NULL,FORTRAN_IDX_CNV,trv_tbl);
+    (void)nco_wrt_trv_tbl(out_id,trv_tbl,False);
+    (void)trv_tbl_free(trv_tbl);
+  }
+  
+  /* End timer */ 
+  ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
+  rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
 
- /* Remove local copy of file */
- if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
-
- /* Clean memory unless dirty memory allowed */
- if(flg_cln){
-   /* ncks-specific memory */
-   if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
-   if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
-   lmt=(lmt_sct **)nco_free(lmt); 
-   /* NCO-generic clean-up */
-   /* Free individual strings/arrays */
-   if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
-   if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
-   if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
-   if(fl_in) fl_in=(char *)nco_free(fl_in);
-   if(fl_out) fl_out=(char *)nco_free(fl_out);
-   if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
-   if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
-   if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-   /* Free lists of strings */
-   if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
-   if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
-   if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
-   if(grp_lst_in_nbr > 0) grp_lst_in=nco_sng_lst_free(grp_lst_in,grp_lst_in_nbr);
-   if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-   /* Free limits */
-   for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-   for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
-   if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
-   /* Free chunking information */
-   for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-   if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
- } /* !flg_cln */
-
- trv_tbl_free(trv_tbl);
- if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
-
-
- if(dbg_lvl_get() == 14 && fl_out){
-   int out_id;
-
-   (void)trv_tbl_init(&trv_tbl);
-
-   (void)nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&out_id);
-
-   (void)nco_bld_trv_tbl(out_id,trv_pth,MSA_USR_RDR,0,(lmt_sct **)NULL,FORTRAN_IDX_CNV,trv_tbl);
-
-   (void)nco_wrt_trv_tbl(out_id,trv_tbl,False);
-
-   (void)trv_tbl_free(trv_tbl);
- }
-
-
- /* End timer */ 
- ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
- rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
- if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
- nco_exit_gracefully();
- return EXIT_SUCCESS;
-
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
+  nco_exit_gracefully();
+  return EXIT_SUCCESS;
+  
 } /* end main() */

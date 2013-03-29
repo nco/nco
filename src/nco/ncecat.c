@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.272 2013-03-28 22:37:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.273 2013-03-29 00:19:04 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.272 2013-03-28 22:37:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.272 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.273 2013-03-29 00:19:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.273 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -839,7 +839,7 @@ main(int argc,char **argv)
 	if(rcd == NC_NOERR) (void)fprintf(stderr,"%s: WARNING GAG path \"%s\" automatically derived from stub of filename %s conflicts with existing path in output file. Any input data with same absolute path names as contents of a previous input file will be overwritten. Is the same input file specified multiple times? Is this intentional?\nHINT: To distribute copies of a single input file into different groups, use GPE to generate distinct output group names, e.g., %s -G copy in.nc in.nc out.nc\n",prg_nm_get(),gpe_arg,fl_in,prg_nm_get());
       } /* !grp_out */
       /* Free old structure, if any, before re-use */
-      if(gpe) nco_gpe_free(gpe);
+      if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
       gpe=nco_gpe_prs_arg(gpe_arg);
       gpe_arg=(char *)nco_free(gpe_arg);
       if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file has gpe->arg=%s\n",prg_nm_get(),gpe->arg);
@@ -1044,6 +1044,7 @@ main(int argc,char **argv)
     var_prc_out=(var_sct **)nco_free(var_prc_out);
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
+    if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
   } /* !flg_cln */
 
   /* End timer */ 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.686 2013-03-28 18:46:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.687 2013-03-29 00:19:04 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1346,9 +1346,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
 
         /* If output group does not exist, create it */
-        if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) {
-          nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
-        } /* Create group */
+        if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
         /* Copy group attributes */
         if(grp_trv.nbr_att) (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -1365,24 +1363,17 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct var_trv=trv_tbl->lst[uidx];
 
-    int nbr_dmn; /* [nbr] Number of dimensions in input group */
-
     /* If object is an extracted variable... */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
       /* Obtain group ID using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-      /* Obtain info for group */
-      (void)nco_inq(grp_id,&nbr_dmn,(int *)NULL,(int *)NULL,NULL);
-
       /* Edit group name for output */
       if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
 
       /* If output group does not exist, create it */
-      if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)){
-        nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
-      } /* Create group */
+      if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
       /* Detect duplicate GPE names in advance, then exit with helpful error */
       if(gpe){
@@ -1417,7 +1408,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* Free full path name */
         if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
       } /* !GPE */
-
 
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s defining variable <%s> from ",prg_nm_get(),fnc_nm,var_trv.nm_fll);        

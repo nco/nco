@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.236 2013-03-28 22:37:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.237 2013-03-29 00:19:04 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -99,6 +99,7 @@ main(int argc,char **argv)
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
@@ -131,9 +132,9 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.236 2013-03-28 22:37:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.236 $";
-  const char * const opt_sht_lst="346ACcD:d:Fg:hL:l:Oo:p:rRt:v:X:xzy:-:";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.237 2013-03-29 00:19:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.237 $";
+  const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -207,98 +208,101 @@ main(int argc,char **argv)
 
   char **grp_lst_in=NULL; /* [sng] User-specified list of groups */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
-  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
 
   trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table input file 1 */
   trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table input file 2 */
 
   static struct option opt_lng[]=
-  { /* Structure ordered by short option key if possible */
-    /* Long options with no argument, no short option counterpart */
-    {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-    {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-    {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-    {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-    {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-    {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-    {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
-    {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
-    {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */	  
-    {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-    {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
-    {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
-    {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-    {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
-    {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
-    {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
-    {"version",no_argument,0,0},
-    {"vrs",no_argument,0,0},
-    /* Long options with argument, no short option counterpart */
-    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
-    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
-    {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
-    {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
-    {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
-    {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
-    {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
-    {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
-    {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
-    {"fl_fmt",required_argument,0,0},
-    {"hdr_pad",required_argument,0,0},
-    {"header_pad",required_argument,0,0},
-    /* Long options with short counterparts */
-    {"3",no_argument,0,'3'},
-    {"4",no_argument,0,'4'},
-    {"64bit",no_argument,0,'4'},
-    {"netcdf4",no_argument,0,'4'},
-    {"append",no_argument,0,'A'},
-    {"coords",no_argument,0,'c'},
-    {"crd",no_argument,0,'c'},
-    {"no-coords",no_argument,0,'C'},
-    {"no-crd",no_argument,0,'C'},
-    {"debug",required_argument,0,'D'},
-    {"dbg_lvl",required_argument,0,'D'},
-    {"dimension",required_argument,0,'d'},
-    {"dmn",required_argument,0,'d'},
-    {"fortran",no_argument,0,'F'},
-    {"ftn",no_argument,0,'F'},
-    {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
-    {"history",no_argument,0,'h'},
-    {"hst",no_argument,0,'h'},
-    {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
-    {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
-    {"local",required_argument,0,'l'},
-    {"lcl",required_argument,0,'l'},
-    {"overwrite",no_argument,0,'O'},
-    {"ovr",no_argument,0,'O'},
-    {"path",required_argument,0,'p'},
-    {"retain",no_argument,0,'R'},
-    {"rtn",no_argument,0,'R'},
-    {"revision",no_argument,0,'r'},
-    {"thr_nbr",required_argument,0,'t'},
-    {"threads",required_argument,0,'t'},
-    {"omp_num_threads",required_argument,0,'t'},
-    {"variable",required_argument,0,'v'},
-    {"auxiliary",required_argument,0,'X'},
-    {"exclude",no_argument,0,'x'},
-    {"xcl",no_argument,0,'x'},
-    {"operation",required_argument,0,'y'},
-    {"op_typ",required_argument,0,'y'},
-    {"help",no_argument,0,'?'},
-    {"hlp",no_argument,0,'?'},
-    {0,0,0,0}
-  }; /* end opt_lng */
+    { /* Structure ordered by short option key if possible */
+      /* Long options with no argument, no short option counterpart */
+      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+      {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
+      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */	  
+      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+      {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
+      {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
+      {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+      {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+      {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+      {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
+      {"intersection",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+      {"nsx",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+      {"union",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+      {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+      {"version",no_argument,0,0},
+      {"vrs",no_argument,0,0},
+      /* Long options with argument, no short option counterpart */
+      {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
+      {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
+      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
+      {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
+      {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
+      {"fl_fmt",required_argument,0,0},
+      {"hdr_pad",required_argument,0,0},
+      {"header_pad",required_argument,0,0},
+      /* Long options with short counterparts */
+      {"3",no_argument,0,'3'},
+      {"4",no_argument,0,'4'},
+      {"64bit",no_argument,0,'4'},
+      {"netcdf4",no_argument,0,'4'},
+      {"append",no_argument,0,'A'},
+      {"coords",no_argument,0,'c'},
+      {"crd",no_argument,0,'c'},
+      {"no-coords",no_argument,0,'C'},
+      {"no-crd",no_argument,0,'C'},
+      {"debug",required_argument,0,'D'},
+      {"dbg_lvl",required_argument,0,'D'},
+      {"dimension",required_argument,0,'d'},
+      {"dmn",required_argument,0,'d'},
+      {"fortran",no_argument,0,'F'},
+      {"ftn",no_argument,0,'F'},
+      {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
+      {"history",no_argument,0,'h'},
+      {"hst",no_argument,0,'h'},
+      {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
+      {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
+      {"local",required_argument,0,'l'},
+      {"lcl",required_argument,0,'l'},
+      {"overwrite",no_argument,0,'O'},
+      {"ovr",no_argument,0,'O'},
+      {"path",required_argument,0,'p'},
+      {"retain",no_argument,0,'R'},
+      {"rtn",no_argument,0,'R'},
+      {"revision",no_argument,0,'r'},
+      {"thr_nbr",required_argument,0,'t'},
+      {"threads",required_argument,0,'t'},
+      {"omp_num_threads",required_argument,0,'t'},
+      {"variable",required_argument,0,'v'},
+      {"auxiliary",required_argument,0,'X'},
+      {"exclude",no_argument,0,'x'},
+      {"xcl",no_argument,0,'x'},
+      {"operation",required_argument,0,'y'},
+      {"op_typ",required_argument,0,'y'},
+      {"help",no_argument,0,'?'},
+      {"hlp",no_argument,0,'?'},
+      {0,0,0,0}
+    }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-
+  
   /* Start timer and save command line */ 
   ddra_info.tmr_flg=nco_tmr_srt;
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-
+  
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
-
+  
   /* Parse command line arguments */
   while(1){
     /* getopt_long_only() allows one dash to prefix long options */
@@ -306,7 +310,7 @@ main(int argc,char **argv)
     /* NB: access to opt_crr is only valid when long_opt is detected */
     if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
     opt_crr=(char *)strdup(opt_lng[opt_idx].name);
-
+    
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
@@ -343,6 +347,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
+      if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
+      if(!strcmp(opt_crr,"nsx") || !strcmp(opt_crr,"intersection")) GRP_VAR_UNN=False;
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);
@@ -641,9 +647,10 @@ main(int argc,char **argv)
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
   
-
     trv_tbl_free(trv_tbl_1);
     trv_tbl_free(trv_tbl_2);
+    if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+
   } /* !flg_cln */
 
   /* End timer */ 
@@ -653,4 +660,5 @@ main(int argc,char **argv)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
+
 } /* end main() */

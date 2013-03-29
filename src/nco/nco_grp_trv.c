@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.118 2013-03-28 22:37:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.119 2013-03-29 00:19:04 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -279,36 +279,43 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   */
 
   const char fnc_nm[]="trv_tbl_mch()"; /* [sng] Function name */
+  const char sls_sng[]="/"; /* [sng] Slash string */
 
   typedef struct{		
     char *var_nm_fll;       /* [sng] Full path of variable */
-    nco_bool flg_in_fl[2];  /* [flg] Is this name if each file?; files are [0] and [1] */
+    nco_bool flg_in_fl[2];  /* [flg] Is this name in each file?; files are [0] and [1] */
   } nco_cmn_t;
 
-  nco_cmn_t *cmn_lst=NULL;       /* [sct] A list of common names */ 
+  char *grp_out_fll; /* [sng] Group name */
 
+  gpe_nm_sct *gpe_nm; /* [sct] GPE name duplicate check array */
+
+  int fl_fmt;                    /* [enm] netCDF file format */
+  int grp_id_1;                  /* [id] Group ID in input file */
+  int grp_id_2;                  /* [id] Group ID in input file */
+  int grp_out_id;                /* [id] Group ID in output file */ 
+  int idx_lst;                   /* [idx] Current position in common List */ 
+  int idx_tbl_1;                 /* [idx] Current position in List 1 */ 
+  int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
+  int nbr_gpe_nm; /* [nbr] Number of GPE entries */
   int nbr_tbl_1;                 /* [nbr] Number of items in list 1 */
   int nbr_tbl_2;                 /* [nbr] Number of items in list 2 */
   int nco_cmp;                   /* [nbr] Return value of strcmp() */ 
-  int idx_tbl_1;                 /* [idx] Current position in List 1 */ 
-  int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
-  int idx_lst;                   /* [idx] Current position in common List */ 
-  int fl_fmt;                    /* [enm] netCDF file format */
-  int grp_id_1;                  /* [id] Group ID in input file */
-  int var_id_1;                  /* [id] Variable ID in input file */
-  int grp_id_2;                  /* [id] Group ID in input file */
-  int var_id_2;                  /* [id] Variable ID in input file */
-  int grp_out_id;                /* [id] Group ID in output file */ 
-  int var_out_id;                /* [id] Variable ID in output file */
   int prg_id;                    /* [enm] Program ID */
+  int var_id_1;                  /* [id] Variable ID in input file */
+  int var_id_2;                  /* [id] Variable ID in input file */
+  int var_out_id;                /* [id] Variable ID in output file */
 
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
   nco_bool flg_in_fl[2];         /* [flg] Is this name if each file?; files are [0] and [1] */
+
+  nco_cmn_t *cmn_lst=NULL;       /* [sct] A list of common names */ 
 
   /* Get Program ID */
   prg_id=prg_get(); 
 
   /* Get output file format */
+  nbr_gpe_nm=0;
   (void)nco_inq_format(nc_out_id,&fl_fmt);
 
   /* Tables *must* be sorted */
@@ -330,12 +337,12 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   /* If both lists have names, then there are names to process */
   flg_more_names_exist = (nbr_tbl_1>0 && nbr_tbl_2>0) ? 1 : 0;
 
-  /* Put counters ar start */
+  /* Put counters at start */
   idx_tbl_1=0;
   idx_tbl_2=0;
   idx_lst=0;
 
-  /* Store a list of common objects */
+  /* Store list of common objects */
   cmn_lst=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
 
   /* Define mode */
@@ -429,26 +436,59 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             var_prc_1->pck_dsk) /* ...and variable is packed in input file... */
             PCK_ATT_CPY=False;
 
-
           /* Do not copy packing attributes when unpacking variables 
           ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
           if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
             PCK_ATT_CPY=False;
 
-          /* If output group does not exist, create it */
-          if(nco_inq_grp_full_ncid_flg(nc_out_id,trv_1.grp_nm_fll,&grp_out_id)){
-            nco_def_grp_full(nc_out_id,trv_1.grp_nm_fll,&grp_out_id);
-          } /* Create group */
+	  /* Edit group name for output */
+	  if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1.grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1.grp_nm_fll);
 
-          /* Define variable in output file. NB. using table 1 as parameter */
-          var_out_id=nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,NULL,NULL,&trv_1,trv_tbl_1);
+          /* If output group does not exist, create it */
+          if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+
+	  /* Detect duplicate GPE names in advance, then exit with helpful error */
+	  if(gpe){
+	    char *gpe_var_nm_fll=NULL; 
+	    
+	    /* Construct absolute GPE variable path */
+	    gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv_1.nm)+2L);
+	    strcpy(gpe_var_nm_fll,grp_out_fll);
+	    /* If not root group, concatenate separator */
+	    if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
+	    strcat(gpe_var_nm_fll,trv_1.nm);
+	    
+	    /* GPE name is not already on list, put it there */
+	    if(nbr_gpe_nm == 0){
+	      gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
+	      gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+	      nbr_gpe_nm++;
+	    }else{
+	      /* Put GPE on list only if not already there */
+	      for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
+		if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
+		  (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
+		  for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+		  nco_exit(EXIT_FAILURE);
+		} /* strcmp() */
+	      } /* end loop over gpe_nm */
+	      gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+	      gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+	      nbr_gpe_nm++;
+	    } /* nbr_gpe_nm */
+	    
+	    /* Free full path name */
+	    if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
+	  } /* !GPE */
+
+          /* Define variable in output file. NB: Use table 1 as parameter */
+          var_out_id=nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,&trv_1,trv_tbl_1);
 
           /* Set chunksize parameters */
           if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,&trv_1);
 
           /* Copy variable's attributes */
           (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY);
-
         }
 
         /* Write mode */
@@ -456,11 +496,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           int has_mss_val;      /* [flg] Variable has missing value */
 
-          ptr_unn mss_val;      /* [sct] Missing value */
-
           int idx_dmn_1;
           int idx_dmn_2;
-         
+
+          ptr_unn mss_val;      /* [sct] Missing value */
 
           /* Get group ID */
           (void)nco_inq_grp_full_ncid(nc_out_id,trv_1.grp_nm_fll,&grp_out_id);
@@ -468,17 +507,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           /* Get variable ID */
           (void)nco_inq_varid(grp_out_id,trv_1.nm,&var_out_id);         
 
-          if(dbg_lvl_get() >= 16){ 
-            (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1.nm_fll); 
-          } 
+          if(dbg_lvl_get() >= 16) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1.nm_fll);
 
           /* Non-processed variable */
-          if (prc_typ_1 == fix_typ){
-
-            /* Copy variable data for non-processed variables */
-            (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,False,&trv_1);
-
-          } /* Non-processed variable */
+          if(prc_typ_1 == fix_typ) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,False,&trv_1);
 
           /* Processed variable */
           if (prc_typ_1 == prc_typ){
@@ -505,15 +537,12 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             /* Check that all dims in var_prc_2 are in var_prc_1 */
             for(idx_dmn_2=0;idx_dmn_2<var_prc_2->nbr_dim;idx_dmn_2++){
               for(idx_dmn_1=0;idx_dmn_1<var_prc_1->nbr_dim;idx_dmn_1++)  
-                if(!strcmp(var_prc_2->dim[idx_dmn_2]->nm,var_prc_1->dim[idx_dmn_1]->nm)){
-                  break;
-                }
+                if(!strcmp(var_prc_2->dim[idx_dmn_2]->nm,var_prc_1->dim[idx_dmn_1]->nm)) break;
                 if(idx_dmn_1 == var_prc_1->nbr_dim){
                   (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present variable %s\n",prg_nm_get(),var_prc_2->nm, var_prc_2->dim[idx_dmn_1]->nm,var_prc_1->nm);
                   nco_exit(EXIT_FAILURE);
                 } /* endif error */
             } /* end loop over idx */
-
 
             /* Die gracefully on unsupported features... */
             if(var_prc_1->nbr_dim < var_prc_2->nbr_dim){
@@ -553,11 +582,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               nco_exit(EXIT_FAILURE);
               break;
             } /* end case */
-     
 
-            if(dbg_lvl_get() >= 16){ 
-              (void)fprintf(stdout,"%s: INFO %s reports write for <%s>\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
-            } 
+            if(dbg_lvl_get() >= 16) (void)fprintf(stdout,"%s: INFO %s reports write for <%s>\n",prg_nm_get(),fnc_nm,trv_1.nm_fll);
 
             /* Copy result to output file and free workspace buffer. NB. use grp_out_id */
             if(var_prc_1->nbr_dim == 0){
@@ -569,14 +595,12 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           } /* Processed variable */
         } /* Write mode */
 
-
         /* Free allocated variable structures */
         var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
         var_prc_2->val.vp=nco_free(var_prc_2->val.vp);
         var_prc_1=(var_sct *)nco_free(var_prc_1);
         var_prc_2=(var_sct *)nco_free(var_prc_2);
         var_prc_out=(var_sct *)nco_free(var_prc_out);
-
 
       }  /* If object is an extracted variable... */ 
 
@@ -614,7 +638,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
     flg_more_names_exist = (idx_tbl_1<nbr_tbl_1 && idx_tbl_2<nbr_tbl_2) ? 1 : 0;
   } /* end while */
-
 
   /* List1 did not end */
   if (idx_tbl_1<nbr_tbl_1)
@@ -672,11 +695,11 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     (void)fprintf(stdout,"\n");
   }
 
-
-  for(int idx=0;idx<idx_lst;idx++){
-    cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
-  } 
+  for(int idx=0;idx<idx_lst;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
   cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
+
+  /* Memory management for GPE names */
+  for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
 } /* trv_tbl_mch() */
 

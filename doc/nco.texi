@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.774 2013-03-28 22:37:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.775 2013-03-29 00:19:04 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3439,7 +3439,7 @@ build time.
 @cindex @code{--union}
 @cartouche
 Options @code{--unn}@*
-Availability: @command{ncecat}, @command{ncks}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncks}@*
 Short options: @*
 Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
@@ -3845,7 +3845,7 @@ convention described in @ref{CF Conventions}.
 @cindex @code{--gpe @var{gpe_dsc}}
 @cartouche
 Options @code{-G @var{gpe_dsc}}@*
-Availability: @command{ncecat}, @command{ncks}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncks}@*
 Short options: @samp{-G}@*
 Long options: @samp{--gpe}@*
 @end cartouche
