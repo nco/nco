@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.208 2013-03-27 21:31:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.209 2013-03-29 05:39:40 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -597,7 +597,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
       /* Error codes explained by Dennis Heimbigner in e-mail on 20110627 */
       if(rcd == NC_ECANTREAD) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL does not exist. Is there a typo in the URL? Please verify that the file is accessible on the DAP-server at the specified location.\n",prg_nm_get());
-      if(rcd == NC_EDAPSVC) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL does exist, and that error may be in DAP server.\n",prg_nm_get());
+      if(rcd == NC_EDAPSVC) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL _does_ exist, so error appears to be in DAP server. Reasons for this could include an aggregation server (e.g., GDS or THREDDS) that receives a URL that is valid according to the aggregation metadata but the implied back-end dataset may be temporarily unavailable.\n",prg_nm_get());
       /* Error codes NC_EDDS, NC_EDAS, etc. are self-explanatory with nc_strerror() */
     } /* DAP-access failed */
 
