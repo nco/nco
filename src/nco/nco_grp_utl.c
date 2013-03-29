@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.687 2013-03-29 00:19:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.688 2013-03-29 21:16:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2103,8 +2103,9 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
           /* Is variable in scope of dimension ? */
           if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
-            /* Mark this variable as a coordinate variable */
-            trv_tbl->lst[var_idx].is_crd_var=True;
+            /* Mark this variable as a coordinate variable. NB: coordinate variables are 1D */
+            if (var_trv.nbr_dmn == 1) trv_tbl->lst[var_idx].is_crd_var=True;
+            else trv_tbl->lst[var_idx].is_crd_var=False;
 
             /* If the group dimension is a record dimension then the variable is a record variable */
             trv_tbl->lst[var_idx].is_rec_var=dmn_trv.is_rec_dmn;
@@ -2977,6 +2978,11 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
   size_t var_sng_lng;                        /* [nbr] Length of variable name */
   size_t var_nm_fll_lng;                     /* [nbr] Length of full variable name */
   size_t dmn_nm_fll_lng;                     /* [nbr] Length of of full dimension name */
+
+  /* Coordinate variables are 1D */
+  if (var_trv->nbr_dmn !=1 ){
+    return False;
+  }
 
   /* Most common case is for the unique dimension full name to match the full variable name   */
   if (strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
