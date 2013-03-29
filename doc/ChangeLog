@@ -2,7 +2,7 @@
 
 	* ncbo: document GPE and --union
 
-	* ncbo: Implement GPE. Still buggy but does not break non-GPE case
+	* ncbo: Implement GPE
 
 	* ncbo: Implement --union/--intersection switch
 

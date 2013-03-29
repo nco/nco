@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.119 2013-03-29 00:19:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.120 2013-03-29 00:32:47 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -501,8 +501,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           ptr_unn mss_val;      /* [sct] Missing value */
 
-          /* Get group ID */
-          (void)nco_inq_grp_full_ncid(nc_out_id,trv_1.grp_nm_fll,&grp_out_id);
+ 	  /* Edit group name for output */
+	  if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1.grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1.grp_nm_fll);
+	  /* Get group ID */
+          (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
 
           /* Get variable ID */
           (void)nco_inq_varid(grp_out_id,trv_1.nm,&var_out_id);         
@@ -510,7 +512,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           if(dbg_lvl_get() >= 16) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1.nm_fll);
 
           /* Non-processed variable */
-          if(prc_typ_1 == fix_typ) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,False,&trv_1);
+          if(prc_typ_1 == fix_typ) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,&trv_1);
 
           /* Processed variable */
           if (prc_typ_1 == prc_typ){
@@ -539,7 +541,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               for(idx_dmn_1=0;idx_dmn_1<var_prc_1->nbr_dim;idx_dmn_1++)  
                 if(!strcmp(var_prc_2->dim[idx_dmn_2]->nm,var_prc_1->dim[idx_dmn_1]->nm)) break;
                 if(idx_dmn_1 == var_prc_1->nbr_dim){
-                  (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present variable %s\n",prg_nm_get(),var_prc_2->nm, var_prc_2->dim[idx_dmn_1]->nm,var_prc_1->nm);
+                  (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_2->nm, var_prc_2->dim[idx_dmn_1]->nm,var_prc_1->nm);
                   nco_exit(EXIT_FAILURE);
                 } /* endif error */
             } /* end loop over idx */
