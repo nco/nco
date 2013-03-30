@@ -43,7 +43,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.74 2013-03-10 02:48:59 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.75 2013-03-30 16:11:35 pvicente Exp $";
   
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
@@ -507,5 +507,25 @@ netcdf in_grp {
     } // end g16g4
     
   } // end g16
+   
+  
+  //
+  //g17 
+  //ncks -O -v ts -d time,0,1 -d Latitude,40.0 -d Longitude,-105.0 http://hydro1.sci.gsfc.nasa.gov/opendap/hyrax/ncml/LPRM_AMSRE_D_SOILM3_timeSeries.ncml ~/amsre.nc
+  //
+  group: g17 { 
+    dimensions:
+    time3 = 2; 
+    maxStrlen64 = 64 ;    
+    variables:
+    char time3(time3, maxStrlen64) ;
+     time3:_CoordinateAxisType = "Time" ;
+    data:   
+    time3 = "2002-06-19T00:00:00Z","2002-06-20T00:00:00Z" ;
+    
+
+ } // end  g17
+  
+  
 
 } // end root group
