@@ -1,3 +1,7 @@
+2013-03-29  Charlie Zender  <zender@uci.edu>
+
+	* ncbo: now almost commutative w/r/t variable rank fixes TODO nco552
+
 2013-03-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.1 release procedure:

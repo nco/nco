@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1235 2013-03-29 01:15:05 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1236 2013-03-30 04:15:40 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -347,7 +347,6 @@ nco568. bm: test NC_SHARE in ncatted/ncrename?
 nco576. Re-order arguments so var_sbt computes op2:=op1-op2 rather than op2:=op2-op1
 nco577. ncbo: remove dangling pointers in var_1, var_2 after ncap_var_cnf_dmn()
 nco578. ncbo: Use ncbo.c as template for [mp]ncflint re-write
-nco552. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 1: allow smaller variables to be in file_1 (pre-compute broadcast size and place in var_out before var_def(out_id,var_out))
 nco581. ncbo: symmetric w/r/t fl_1 <--> fl_2, Step 2: allow xtr_nbr_out=max(xtr_nbr_1,xtr_nbr_2) when xtr_nbr_2>xtr_nbr_1 if discrepant variables are type fix (e.g., grid properties) not type prc (NB: already works for xtr_nbr_1>xtr_nbr_2)
 nco599. mpi: Allow targets to determine Makefile variables so, e.g., 'make mpi' automagically defines MPI=Y
 nco607. mpi: mpnc*: Define structures (rather than int arrays) for MPI messages

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.302 2013-03-28 22:29:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.303 2013-03-30 04:15:40 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -805,7 +805,6 @@ extern "C" {
     struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually structure for variable on output) fxm: deprecate! TODO nco226 */
   } var_sct; /* end var_sct_tag */
 
-  
   /* GPE duplicate name check structure */
   typedef struct{ /* gpe_nm_sct */
     char *var_nm_fll; /* Fully qualified variable name */
@@ -825,5 +824,5 @@ extern "C" {
 /* MSVC does not define isnormal */
 #ifdef _MSC_VER
 # define isnormal
-#endif
+#endif /* !_MSC_VER */
 #endif /* NCO_H */

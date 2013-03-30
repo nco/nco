@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.284 2013-03-26 16:25:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.285 2013-03-30 04:15:40 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -725,13 +725,13 @@ nco_var_dpl /* [fnc] Duplicate input variable */
   var_sct *var_cpy;
 
   var_cpy=(var_sct *)nco_malloc(sizeof(var_sct));
-
+  
   /* Shallow-copy structure itself */
   (void)memcpy((void *)var_cpy,(const void *)var,sizeof(var_sct));
-
+  
   /* Make sure var_free() frees names when variable is destructed */
   if(var->nm) var_cpy->nm=(char *)strdup(var->nm);
-
+  
   /* Deep-copy dyamically allocated arrays from original to copy */
   if(var->val.vp){
     var_cpy->val.vp=(void *)nco_malloc_dbg(var_cpy->sz*nco_typ_lng(var_cpy->type),"Unable to malloc() value buffer in variable deep-copy",fnc_nm);
@@ -746,13 +746,13 @@ nco_var_dpl /* [fnc] Duplicate input variable */
       val_in=var->val;
       val_out=var_cpy->val;
       /* Typecast pointer to values before access 
-      Use local copies of pointer unions to maintain const-ness of var */
+	 Use local copies of pointer unions to maintain const-ness of var */
       (void)cast_void_nctype((nc_type)NC_STRING,&val_in); 
       (void)cast_void_nctype((nc_type)NC_STRING,&val_out); 
       for(idx=0;idx<sz;idx++) val_out.sngp[idx]=(char *)strdup(val_in.sngp[idx]);
       /* NB: we operated on local copies of val_in and val_out
-      Neither is used again in this routine
-      Therefore not necessary to un-typecast pointer unions */
+	 Neither is used again in this routine
+	 Therefore not necessary to un-typecast pointer unions */
     } /* endif type */
   } /* end if val */
   if(var->mss_val.vp){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.120 2013-03-29 00:32:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.121 2013-03-30 04:15:40 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -322,7 +322,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   (void)trv_tbl_srt(trv_tbl_1);
   (void)trv_tbl_srt(trv_tbl_2);
 
-  if(dbg_lvl_get() == 15){
+  if(dbg_lvl_get() >= nco_dbg_grp){
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_1);
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",prg_nm_get(),fnc_nm);
@@ -345,12 +345,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   /* Store list of common objects */
   cmn_lst=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
 
-  /* Define mode */
-  if(flg_def){
-
-    /* Copy global attributes */
-    (void)nco_att_cpy(nc_id_1,nc_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-  }
+  /* Copy global attributes in define mode */
+  if(flg_def) (void)nco_att_cpy(nc_id_1,nc_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
 
   /* Iterate the 2 lists */
   while (flg_more_names_exist)
@@ -361,8 +357,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     /* Criteria is string compare */
     nco_cmp = strcmp(trv_1.nm_fll,trv_2.nm_fll);
 
-    /* Names are the same: store flag True for both items and read the next names from the two lists */
-    if (nco_cmp == 0)
+    /* Names match: store flag, define or write in output file, then read next names from lists */
+    if(nco_cmp == 0)
     {
       flg_in_fl[0]=True; 
       flg_in_fl[1]=True;
@@ -371,22 +367,25 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() >= nco_dbg_var)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
 
-      /* If object is an extracted variable... */
+      /* If object is extracted variable... */
       if(trv_1.nco_typ == nco_obj_typ_var && trv_2.nco_typ == nco_obj_typ_var && trv_1.flg_xtr && trv_2.flg_xtr){
 
-        prc_typ_enm prc_typ_1;  /* [enm] Processing type */
-        prc_typ_enm prc_typ_2;  /* [enm] Processing type */
+	nco_bool RNK_1_GTR; /* [flg] Rank of variable in file 1 variable greater than or equal to file 2 */
 
-        var_sct *var_prc_1;   /* [sct] Variable to process */
-        var_sct *var_prc_2;   /* [sct] Variable to process */
-        var_sct *var_prc_out; /* [sct] Variable to process */
+        prc_typ_enm prc_typ_1; /* [enm] Processing type */
+        prc_typ_enm prc_typ_2; /* [enm] Processing type */
 
-        if(dbg_lvl_get() >= 16){ 
-          (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
-        } 
+	trv_sct rnk_gtr; /* [sct] Object of greater or equal rank */
 
+        var_sct *var_prc_1;   /* [sct] Variable to process in file 1 */
+        var_sct *var_prc_2;   /* [sct] Variable to process in file 2 */
+        var_sct *var_prc_out; /* [sct] Variable to process in output */
+        var_sct *var_prc_gtr; /* [sct] Greater rank variable to process */
+        var_sct *var_prc_lsr; /* [sct] Lesser  rank variable to process */
+
+        if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
         
         /* Obtain group ID using full group name */
         (void)nco_inq_grp_full_ncid(nc_id_1,trv_1.grp_nm_fll,&grp_id_1);
@@ -396,15 +395,16 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         (void)nco_inq_varid(grp_id_1,trv_1.nm,&var_id_1);
         (void)nco_inq_varid(grp_id_2,trv_2.nm,&var_id_2);
 
-
         /* Allocate variable structure and fill with metadata */
         var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,&trv_1,trv_tbl_1);     
         var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,&trv_2,trv_tbl_2);
-        var_prc_out=nco_var_dpl(var_prc_1);
 
+	if(var_prc_1->nbr_dim >= var_prc_2->nbr_dim) RNK_1_GTR=True; else RNK_1_GTR=False;
+	rnk_gtr= (RNK_1_GTR) ? trv_1 : trv_2;
+
+        var_prc_out= (RNK_1_GTR) ? nco_var_dpl(var_prc_1) : nco_var_dpl(var_prc_2);
         (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
         (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
-
 
         /* Define mode */
         if(flg_def){  
@@ -481,23 +481,20 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 	    if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
 	  } /* !GPE */
 
-          /* Define variable in output file. NB: Use table 1 as parameter */
-          var_out_id=nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,&trv_1,trv_tbl_1);
+          /* Define variable in output file. NB: Use file/variable of greater rank as template */
+          var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,&trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,(char *)NULL,&trv_2,trv_tbl_2);
 
           /* Set chunksize parameters */
-          if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,&trv_1);
+          if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,&rnk_gtr);
 
           /* Copy variable's attributes */
-          (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY);
-        }
+          if(RNK_1_GTR) (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); else (void)nco_att_cpy(grp_id_2,grp_out_id,var_id_2,var_out_id,PCK_ATT_CPY);
 
-        /* Write mode */
-        else {
+        }else{ /* Write mode */
 
+          int dmn_idx_gtr;
+          int dmn_idx_lsr;
           int has_mss_val;      /* [flg] Variable has missing value */
-
-          int idx_dmn_1;
-          int idx_dmn_2;
 
           ptr_unn mss_val;      /* [sct] Missing value */
 
@@ -509,23 +506,30 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           /* Get variable ID */
           (void)nco_inq_varid(grp_out_id,trv_1.nm,&var_out_id);         
 
-          if(dbg_lvl_get() >= 16) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1.nm_fll);
+          if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1.nm_fll);
 
           /* Non-processed variable */
-          if(prc_typ_1 == fix_typ) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,&trv_1);
+          if(prc_typ_1 == fix_typ){
+	    if(RNK_1_GTR)(void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,&trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,(nco_bool)False,&trv_2);
+	  } /* endif fix */
 
-          /* Processed variable */
-          if (prc_typ_1 == prc_typ){
+	  /* Processed variable */
+          if(prc_typ_1 == prc_typ){
+
+	    var_prc_gtr= (RNK_1_GTR) ? var_prc_1 : var_prc_2;
+	    var_prc_lsr= (RNK_1_GTR) ? var_prc_2 : var_prc_1;
 
             var_prc_out->id=var_out_id;
-            var_prc_out->srt=var_prc_1->srt;
-            var_prc_out->cnt=var_prc_1->cnt;
+
+	    /* fxm: gtr or lsr? */
+            var_prc_out->srt=var_prc_gtr->srt;
+	    var_prc_out->cnt=var_prc_gtr->cnt;
 
             /* Find and set variable dmn_nbr, ID, mss_val, type in first file */
             (void)nco_var_mtd_refresh(grp_id_1,var_prc_1);
 
             /* Set missing value */
-            has_mss_val=var_prc_1->has_mss_val; 
+            has_mss_val=var_prc_gtr->has_mss_val;
 
             /* Read hyperslab from first file */
             (void)nco_msa_var_get_trv(grp_id_1,var_prc_1,&trv_1);
@@ -536,38 +540,33 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             /* Read hyperslab from second file */
             (void)nco_msa_var_get_trv(grp_id_2,var_prc_2,&trv_2);
 
-            /* Check that all dims in var_prc_2 are in var_prc_1 */
-            for(idx_dmn_2=0;idx_dmn_2<var_prc_2->nbr_dim;idx_dmn_2++){
-              for(idx_dmn_1=0;idx_dmn_1<var_prc_1->nbr_dim;idx_dmn_1++)  
-                if(!strcmp(var_prc_2->dim[idx_dmn_2]->nm,var_prc_1->dim[idx_dmn_1]->nm)) break;
-                if(idx_dmn_1 == var_prc_1->nbr_dim){
-                  (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_2->nm, var_prc_2->dim[idx_dmn_1]->nm,var_prc_1->nm);
-                  nco_exit(EXIT_FAILURE);
-                } /* endif error */
+            /* Check that all dims in var_prc_lsr are in var_prc_gtr */
+            for(dmn_idx_lsr=0;dmn_idx_lsr<var_prc_lsr->nbr_dim;dmn_idx_lsr++){
+              for(dmn_idx_gtr=0;dmn_idx_gtr<var_prc_gtr->nbr_dim;dmn_idx_gtr++)  
+                if(!strcmp(var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->dim[dmn_idx_gtr]->nm)) break;
+	      if(dmn_idx_gtr == var_prc_gtr->nbr_dim){
+		(void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_gtr]->nm,var_prc_gtr->nm);
+		nco_exit(EXIT_FAILURE);
+	      } /* endif error */
             } /* end loop over idx */
 
-            /* Die gracefully on unsupported features... */
-            if(var_prc_1->nbr_dim < var_prc_2->nbr_dim){
-              (void)fprintf(stdout,"%s: ERROR Variable %s has lesser rank in first file than in second file (%d < %d). This feature is NCO TODO 552.\n",prg_nm_get(),var_prc_1->nm,var_prc_1->nbr_dim,var_prc_2->nbr_dim);
-              nco_exit(EXIT_FAILURE);
-            } /* endif */
-
-            if(var_prc_1->nbr_dim > var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_out,&var_prc_2);
-
-            /* var2 now conforms in size to var1, and is in memory */
-
-            /* Make sure var2 conforms to type of var1 */
+            /* Make sure variables conform in type */
             if(var_prc_1->type != var_prc_2->type){
-              if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: variable %s has type %s, variable %s has type %s, variable %s will have type %s\n",prg_nm_get(),var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_1->nm,nco_typ_sng(var_prc_1->type));
+              if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",prg_nm_get(),var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(var_prc_gtr->type));
             }  
+	    
+	    /* Broadcast lesser to greater variable. NB: Pointers may change so _gtr, _lsr not valid */
+            if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
 
-            var_prc_2=nco_var_cnf_typ(var_prc_1->type,var_prc_2);
+            if(RNK_1_GTR) var_prc_2=nco_var_cnf_typ(var_prc_1->type,var_prc_2); else var_prc_1=nco_var_cnf_typ(var_prc_2->type,var_prc_1);
 
-            /* Change missing_value of var_prc_2, if any, to missing_value of var_prc_1, if any */
-            has_mss_val=nco_mss_val_cnf(var_prc_1,var_prc_2);
+            /* var1 and var2 now conform in size and type to eachother and are in memory */
 
-            /* mss_val in fl_1, if any, overrides mss_val in fl_2 */
-            if(has_mss_val) mss_val=var_prc_1->mss_val;
+            /* Change missing_value, if any, of lesser rank to missing_value, if any, of greater rank */
+            if(RNK_1_GTR) has_mss_val=nco_mss_val_cnf(var_prc_1,var_prc_2); else has_mss_val=nco_mss_val_cnf(var_prc_2,var_prc_1);
+
+            /* mss_val of larger rank, if any, overrides mss_val of smaller rank */
+            if(has_mss_val) mss_val= (RNK_1_GTR) ? var_prc_1->mss_val : var_prc_2->mss_val;
 
             /* Perform specified binary operation */
             switch(nco_op_typ){
@@ -585,7 +584,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
               break;
             } /* end case */
 
-            if(dbg_lvl_get() >= 16) (void)fprintf(stdout,"%s: INFO %s reports write for <%s>\n",prg_nm_get(),fnc_nm,trv_1.nm_fll);
+            if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports write for <%s>\n",prg_nm_get(),fnc_nm,trv_1.nm_fll);
 
             /* Copy result to output file and free workspace buffer. NB. use grp_out_id */
             if(var_prc_1->nbr_dim == 0){
@@ -604,14 +603,14 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         var_prc_2=(var_sct *)nco_free(var_prc_2);
         var_prc_out=(var_sct *)nco_free(var_prc_out);
 
-      }  /* If object is an extracted variable... */ 
+      }  /* end if object is extracted variable */ 
 
       idx_tbl_1++;
       idx_tbl_2++;
-    }
-    /* Name(1) is less than Name(2), read the next name from List 1  */
-    else if (nco_cmp < 0)
-    {
+
+    }else if(nco_cmp < 0){
+      /* Name(1) is less than Name(2), read the next name from List 1  */
+
       flg_in_fl[0]=True; 
       flg_in_fl[1]=False;
       cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
@@ -619,13 +618,11 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() >= nco_dbg_var)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
 
       idx_tbl_1++;
-    }
-    /* Name(1) is greater than Name(2), read the next name from List 2 */
-    else
-    {
+    }else{
+      /* Name(1) is greater than Name(2), read the next name from List 2 */
       flg_in_fl[0]=False; 
       flg_in_fl[1]=True;
       cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
@@ -633,19 +630,20 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
+      if(dbg_lvl_get() >= nco_dbg_var)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
 
       idx_tbl_2++;
-    }
+    } /* end nco_cmp */
 
     flg_more_names_exist = (idx_tbl_1<nbr_tbl_1 && idx_tbl_2<nbr_tbl_2) ? 1 : 0;
+
   } /* end while */
 
   /* List1 did not end */
-  if (idx_tbl_1<nbr_tbl_1)
-  {
-    while (idx_tbl_1<nbr_tbl_1)
-    {
+
+  if(idx_tbl_1<nbr_tbl_1){
+
+    while(idx_tbl_1<nbr_tbl_1){
       trv_sct trv_1=trv_tbl_1->lst[idx_tbl_1];
 
       flg_in_fl[0]=True; 
@@ -655,17 +653,15 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() >= nco_dbg_var)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
 
       idx_tbl_1++;
-    }
-  }
+    } /* end while */
+  } /* end if */
 
   /* List2 did not end */
-  if (idx_tbl_2<nbr_tbl_2)
-  {
-    while (idx_tbl_2<nbr_tbl_2)
-    {
+  if(idx_tbl_2<nbr_tbl_2){
+    while(idx_tbl_2<nbr_tbl_2){
       trv_sct trv_2=trv_tbl_2->lst[idx_tbl_2];
 
       flg_in_fl[0]=False; 
@@ -675,27 +671,25 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == 15)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
+      if(dbg_lvl_get() >= nco_dbg_var)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
 
       idx_tbl_2++;
-    }
-  }
+    } /* end while */
+  } /* end if */
 
-  /* Print the list */
-  if(dbg_lvl_get() == 15){
+  /* Print list */
+  if(dbg_lvl_get() >= nco_dbg_var){
     (void)fprintf(stdout,"%s: INFO %s reports Common objects\n",prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"file1     file2\n");
     (void)fprintf(stdout,"---------------------------------------\n");
     for(int idx=0;idx<idx_lst;idx++){
       char c1, c2;
-
       c1 = (cmn_lst[idx].flg_in_fl[0]) ? 'x' : ' ';
       c2 = (cmn_lst[idx].flg_in_fl[1]) ? 'x' : ' ';
       (void)fprintf(stdout,"%5c %6c    %-15s\n", c1, c2, cmn_lst[idx].var_nm_fll);
-
     } /* end loop over idx */
     (void)fprintf(stdout,"\n");
-  }
+  } /* endif dbg */
 
   for(int idx=0;idx<idx_lst;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
   cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.181 2013-03-05 17:40:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.182 2013-03-30 04:15:40 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1363,8 +1363,8 @@ nco_lmt_evl_dmn_trv            /* [fnc] Parse user-specified limits into hypersl
   /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
 
-  /* No need to inquire netCDF: "dmn_trv" already has the dimension size, but do it for sanity check */
-  assert(dmn_sz == dmn_trv->sz);
+  /* No need to inquire netCDF: Sanity check since dmn_trv already has dimension size */
+  assert((unsigned long)dmn_sz == dmn_trv->sz);
 
   if(rec_dmn_and_mfo){
     lmt.rec_dmn_sz=dmn_sz;
