@@ -43,7 +43,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.75 2013-03-30 16:11:35 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.76 2013-03-31 00:38:45 zender Exp $";
   
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
@@ -96,7 +96,7 @@ netcdf in_grp {
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   tm2=1.,2.;
   tm3=1.,2.,3.;
-  // 20130127: Braces are required to disambiguate correct record dimension sizes, but brace syntax but was not supported by ncgen until netCDF snapshots ~201211, i.e., post netCDF 4.2.1.1. Uggh.
+  // 20130127: Braces are required to disambiguate correct record dimension sizes, but brace syntax was not supported by ncgen until netCDF snapshots ~201211, i.e., post netCDF 4.2.1.1. Uggh.
   //tm2_tm3={1.,2.,3.},{4.,5.,6.};
   unique=73;
   //
@@ -522,10 +522,6 @@ netcdf in_grp {
      time3:_CoordinateAxisType = "Time" ;
     data:   
     time3 = "2002-06-19T00:00:00Z","2002-06-20T00:00:00Z" ;
-    
-
  } // end  g17
-  
-  
 
 } // end root group
