@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.121 2013-03-30 04:15:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.122 2013-03-31 20:10:12 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -372,18 +372,21 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       /* If object is extracted variable... */
       if(trv_1.nco_typ == nco_obj_typ_var && trv_2.nco_typ == nco_obj_typ_var && trv_1.flg_xtr && trv_2.flg_xtr){
 
-	nco_bool RNK_1_GTR; /* [flg] Rank of variable in file 1 variable greater than or equal to file 2 */
+        nco_bool RNK_1_GTR; /* [flg] Rank of variable in file 1 variable greater than or equal to file 2 */
 
         prc_typ_enm prc_typ_1; /* [enm] Processing type */
         prc_typ_enm prc_typ_2; /* [enm] Processing type */
 
-	trv_sct rnk_gtr; /* [sct] Object of greater or equal rank */
+        trv_sct rnk_gtr; /* [sct] Object of greater or equal rank */
 
         var_sct *var_prc_1;   /* [sct] Variable to process in file 1 */
         var_sct *var_prc_2;   /* [sct] Variable to process in file 2 */
         var_sct *var_prc_out; /* [sct] Variable to process in output */
         var_sct *var_prc_gtr; /* [sct] Greater rank variable to process */
         var_sct *var_prc_lsr; /* [sct] Lesser  rank variable to process */
+
+        /* Edit group name for output */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1.grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1.grp_nm_fll);
 
         if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports new element in output:%s\n",prg_nm_get(),fnc_nm,trv_1.nm_fll); 
         
@@ -399,8 +402,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,&trv_1,trv_tbl_1);     
         var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,&trv_2,trv_tbl_2);
 
-	if(var_prc_1->nbr_dim >= var_prc_2->nbr_dim) RNK_1_GTR=True; else RNK_1_GTR=False;
-	rnk_gtr= (RNK_1_GTR) ? trv_1 : trv_2;
+        if(var_prc_1->nbr_dim >= var_prc_2->nbr_dim) RNK_1_GTR=True; else RNK_1_GTR=False;
+        rnk_gtr= (RNK_1_GTR) ? trv_1 : trv_2;
 
         var_prc_out= (RNK_1_GTR) ? nco_var_dpl(var_prc_1) : nco_var_dpl(var_prc_2);
         (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
@@ -439,47 +442,44 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
           /* Do not copy packing attributes when unpacking variables 
           ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
           if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
-            PCK_ATT_CPY=False;
-
-	  /* Edit group name for output */
-	  if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1.grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1.grp_nm_fll);
+            PCK_ATT_CPY=False;        
 
           /* If output group does not exist, create it */
           if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
-	  /* Detect duplicate GPE names in advance, then exit with helpful error */
-	  if(gpe){
-	    char *gpe_var_nm_fll=NULL; 
-	    
-	    /* Construct absolute GPE variable path */
-	    gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv_1.nm)+2L);
-	    strcpy(gpe_var_nm_fll,grp_out_fll);
-	    /* If not root group, concatenate separator */
-	    if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
-	    strcat(gpe_var_nm_fll,trv_1.nm);
-	    
-	    /* GPE name is not already on list, put it there */
-	    if(nbr_gpe_nm == 0){
-	      gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
-	      gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-	      nbr_gpe_nm++;
-	    }else{
-	      /* Put GPE on list only if not already there */
-	      for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
-		if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
-		  (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
-		  for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
-		  nco_exit(EXIT_FAILURE);
-		} /* strcmp() */
-	      } /* end loop over gpe_nm */
-	      gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
-	      gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-	      nbr_gpe_nm++;
-	    } /* nbr_gpe_nm */
-	    
-	    /* Free full path name */
-	    if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
-	  } /* !GPE */
+          /* Detect duplicate GPE names in advance, then exit with helpful error */
+          if(gpe){
+            char *gpe_var_nm_fll=NULL; 
+
+            /* Construct absolute GPE variable path */
+            gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv_1.nm)+2L);
+            strcpy(gpe_var_nm_fll,grp_out_fll);
+            /* If not root group, concatenate separator */
+            if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
+            strcat(gpe_var_nm_fll,trv_1.nm);
+
+            /* GPE name is not already on list, put it there */
+            if(nbr_gpe_nm == 0){
+              gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
+              gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+              nbr_gpe_nm++;
+            }else{
+              /* Put GPE on list only if not already there */
+              for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
+                if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
+                  (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
+                  for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+                  nco_exit(EXIT_FAILURE);
+                } /* strcmp() */
+              } /* end loop over gpe_nm */
+              gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+              gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+              nbr_gpe_nm++;
+            } /* nbr_gpe_nm */
+
+            /* Free full path name */
+            if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
+          } /* !GPE */
 
           /* Define variable in output file. NB: Use file/variable of greater rank as template */
           var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,&trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,(char *)NULL,&trv_2,trv_tbl_2);
@@ -498,9 +498,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           ptr_unn mss_val;      /* [sct] Missing value */
 
- 	  /* Edit group name for output */
-	  if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1.grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1.grp_nm_fll);
-	  /* Get group ID */
+          /* Get group ID */
           (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
 
           /* Get variable ID */
@@ -510,20 +508,20 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
           /* Non-processed variable */
           if(prc_typ_1 == fix_typ){
-	    if(RNK_1_GTR)(void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,&trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,(nco_bool)False,&trv_2);
-	  } /* endif fix */
+            if(RNK_1_GTR)(void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,&trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,(nco_bool)False,&trv_2);
+          } /* endif fix */
 
-	  /* Processed variable */
+          /* Processed variable */
           if(prc_typ_1 == prc_typ){
 
-	    var_prc_gtr= (RNK_1_GTR) ? var_prc_1 : var_prc_2;
-	    var_prc_lsr= (RNK_1_GTR) ? var_prc_2 : var_prc_1;
+            var_prc_gtr= (RNK_1_GTR) ? var_prc_1 : var_prc_2;
+            var_prc_lsr= (RNK_1_GTR) ? var_prc_2 : var_prc_1;
 
             var_prc_out->id=var_out_id;
 
-	    /* fxm: gtr or lsr? */
+            /* fxm: gtr or lsr? */
             var_prc_out->srt=var_prc_gtr->srt;
-	    var_prc_out->cnt=var_prc_gtr->cnt;
+            var_prc_out->cnt=var_prc_gtr->cnt;
 
             /* Find and set variable dmn_nbr, ID, mss_val, type in first file */
             (void)nco_var_mtd_refresh(grp_id_1,var_prc_1);
@@ -543,19 +541,21 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
             /* Check that all dims in var_prc_lsr are in var_prc_gtr */
             for(dmn_idx_lsr=0;dmn_idx_lsr<var_prc_lsr->nbr_dim;dmn_idx_lsr++){
               for(dmn_idx_gtr=0;dmn_idx_gtr<var_prc_gtr->nbr_dim;dmn_idx_gtr++)  
-                if(!strcmp(var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->dim[dmn_idx_gtr]->nm)) break;
-	      if(dmn_idx_gtr == var_prc_gtr->nbr_dim){
-		(void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_gtr]->nm,var_prc_gtr->nm);
-		nco_exit(EXIT_FAILURE);
-	      } /* endif error */
+                if(!strcmp(var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->dim[dmn_idx_gtr]->nm)){
+                  break;
+                }
+              if(dmn_idx_gtr == var_prc_gtr->nbr_dim){
+                (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_gtr]->nm,var_prc_gtr->nm);
+                nco_exit(EXIT_FAILURE);
+              } /* endif error */
             } /* end loop over idx */
 
             /* Make sure variables conform in type */
             if(var_prc_1->type != var_prc_2->type){
               if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",prg_nm_get(),var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(var_prc_gtr->type));
             }  
-	    
-	    /* Broadcast lesser to greater variable. NB: Pointers may change so _gtr, _lsr not valid */
+
+            /* Broadcast lesser to greater variable. NB: Pointers may change so _gtr, _lsr not valid */
             if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
 
             if(RNK_1_GTR) var_prc_2=nco_var_cnf_typ(var_prc_1->type,var_prc_2); else var_prc_1=nco_var_cnf_typ(var_prc_2->type,var_prc_1);
@@ -602,6 +602,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         var_prc_1=(var_sct *)nco_free(var_prc_1);
         var_prc_2=(var_sct *)nco_free(var_prc_2);
         var_prc_out=(var_sct *)nco_free(var_prc_out);
+
+        /* Free output path name */
+        grp_out_fll=(char *)nco_free(grp_out_fll);
 
       }  /* end if object is extracted variable */ 
 
