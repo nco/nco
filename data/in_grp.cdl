@@ -43,7 +43,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.76 2013-03-31 00:38:45 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.77 2013-03-31 16:28:35 pvicente Exp $";
   
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
@@ -473,13 +473,13 @@ netcdf in_grp {
      float lon3_var(lon3); 
      data:
      lon3_var=0.,1.,2.,3.;  
-        group: g16g3g3 { 
+        group: g16g3g1 { 
            variables:
             //coordinate "out of scope" (with group depth greater than the variable that uses the coordinate, in g16g3)
             float lon3(lon3);
             data:
             lon3=7.,8.,9.,10.;
-        } // end g16g3g3
+        } // end g16g3g1
     } // end g16g3
     
     group: g16g4 { 
@@ -489,21 +489,21 @@ netcdf in_grp {
      data:
      lon4=1.,2.;     
      
-      group: g16g4g4 { 
+      group: g16g4g1 { 
       variables:
       //intermediate "in scope " coordinate
       float lon4(lon4);
       data:
       lon4=3.,4.; 
       
-        group: g16g4g4g4 { 
+        group: g16g4g1g1 { 
         variables:
         //variable that uses one of the intermediate "in scope " coordinate
         float lon4_var(lon4);
         data:
         lon4_var=0.,1.; 
-       } // end g16g4g4g4
-     } // end g16g4g4
+       } // end g16g4g1g1
+     } // end g16g4g1
     } // end g16g4
     
   } // end g16
