@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.562 2013-03-29 01:15:05 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.563 2013-04-01 19:53:30 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.1 are ready. 
 
@@ -26,15 +26,16 @@ A. ncbo now supports Group Path Editing (GPE) and list unions.
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
 
-A. ncbo is now commutative under interchange of input files.
+A. ncbo now always works when input files are interchanged, i.e.,
+   (ncbo fl_1.nc fl_2.nc) = -(ncbo fl_2.nc fl_1.nc).
    Formerly, ncbo broadcast variables in fl_2 to match the rank of
-   variables in fl_1 when necessary, but would not broadcast in the
-   opposite directions. Hence one could subtract zonal averages, e.g.,
-   from full fields but not the reverse. Now ncbo broadcasts variables
-   both ways. If v1 is scalar in fl_1 and multidimensional in fl_2 then
+   variables in fl_1 when necessary, but would fail rather than 
+   broadcast in the opposite direction. Hence one could subtract zonal
+   averages, e.g., from full fields but not the reverse. Now ncbo
+   broadcasts variables both ways. If v1 is scalar in fl_1 and
+   multidimensional in fl_2 then both these work:
    ncbo -v v1 fl_1.nc fl_2.nc out.nc # Now works too!
    ncbo -v v1 fl_2.nc fl_1.nc out.nc # Always worked
-   fxm
 
 A. 
 
