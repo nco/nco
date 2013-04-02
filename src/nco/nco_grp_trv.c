@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.127 2013-04-02 17:42:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.128 2013-04-02 17:48:51 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -445,20 +445,26 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   } /* endif dbg */
 
 
-  /* Process common objects in list */
+  /* Process objects in list */
   for(int idx=0;idx<idx_lst;idx++){
 
     trv_sct *trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
     trv_sct *trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
 
-    if(trv_1 && trv_2  /* Both objects exist */
-      && cmn_lst[idx].flg_in_fl[0] == True  && cmn_lst[idx].flg_in_fl[1] == True /* Both objects exist in the 2 files */
-      && trv_1->flg_xtr && trv_2->flg_xtr){ /* Both objects are to extract */
+    /* Both objects exist */
+    if(trv_1 && trv_2){  
+
+      /* Both objects exist in the 2 files, both objects are to extract */
+      if (cmn_lst[idx].flg_in_fl[0] == True  && cmn_lst[idx].flg_in_fl[1] == True && trv_1->flg_xtr && trv_2->flg_xtr){
 
         /* Process common object */
         (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
-    }
-  } /* Process common objects in list */
+
+      } /* Both objects exist in the 2 files, both objects are to extract */
+
+
+    } /* Both objects exist */
+  } /* Process objects in list */
 
 
   for(int idx=0;idx<idx_lst;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
