@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.49 2013-03-28 22:37:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.50 2013-04-02 17:32:18 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -64,6 +64,10 @@ trv_tbl_fnd_var_nm_fll                /* [fnc] Check if "var_nm_fll" is in table
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
+trv_sct *                               /* O [sct] Table object */
+trv_tbl_var_nm_fll                    /* [fnc] Check if "var_nm_fll" is in table */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void
 trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for "var_nm_fll" */
@@ -104,6 +108,30 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def);                    /* I [flg] Action type (True for define variables, False when write variables ) */
+
+
+void                          
+trv_tbl_prc                            /* [fnc] Process objects  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ int cnk_map,                          /* I [enm] Chunking map */
+ int cnk_plc,                          /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_sct *trv_1,                       /* I [sct] Table object */
+ trv_sct *trv_2,                       /* I [sct] Table object */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 
 #endif /* NCO_GRP_TRV_H */
