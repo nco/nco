@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.129 2013-04-02 18:19:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.130 2013-04-02 19:32:05 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -451,44 +451,40 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     trv_sct *trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
     trv_sct *trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
 
-    /* Both objects exist */
-    if(trv_1 && trv_2){  
 
-      /* Both objects exist in the 2 files, both objects are to extract */
-      if (cmn_lst[idx].flg_in_fl[0] == True && cmn_lst[idx].flg_in_fl[1] == True && trv_1->flg_xtr == True && trv_2->flg_xtr == True){
+    /* Both objects exist in the 2 files, both objects are to extract */
+    if (trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] == True && cmn_lst[idx].flg_in_fl[1] == True && trv_1->flg_xtr == True && trv_2->flg_xtr == True){
 
-        if(dbg_lvl_get() >= nco_dbg_crr){
-          (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
-        }
-
-        /* Process common object */
-        (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
-
-      } /* Both objects exist in the 2 files, both objects are to extract */
-
-      /* Object exists only in file 1 and is to extract */
-      else if (cmn_lst[idx].flg_in_fl[0] == True && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr == True){
-
-        if(dbg_lvl_get() >= nco_dbg_crr){
-          (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
-        }
-
+      if(dbg_lvl_get() >= nco_dbg_crr){
+        (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
       }
-      /* Object exists only in file 1 and is to extract */
 
-      /* Object exists only in file 2 and is to extract */
-      else if (cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] == True && trv_2->flg_xtr == True){
+      /* Process common object */
+      (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
 
-        if(dbg_lvl_get() >= nco_dbg_crr){
-          (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll); 
-        }
+    } /* Both objects exist in the 2 files, both objects are to extract */
 
+    /* Object exists only in file 1 and is to extract */
+    else if (trv_1 && cmn_lst[idx].flg_in_fl[0] == True && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr == True){
+
+      if(dbg_lvl_get() >= nco_dbg_crr){
+        (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
       }
-      /* Object exists only in file 1 and is to extract */
+
+    }
+    /* Object exists only in file 1 and is to extract */
+
+    /* Object exists only in file 2 and is to extract */
+    else if (trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] == True && trv_2->flg_xtr == True){
+
+      if(dbg_lvl_get() >= nco_dbg_crr){
+        (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll); 
+      }
+
+    }
+    /* Object exists only in file 1 and is to extract */
 
 
-
-    } /* Both objects exist */
   } /* Process objects in list */
 
 
