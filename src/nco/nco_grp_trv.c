@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.124 2013-04-01 18:54:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.125 2013-04-02 03:06:35 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -545,7 +545,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
                   break;
                 }
               if(dmn_idx_gtr == var_prc_gtr->nbr_dim){
-                (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_gtr]->nm,var_prc_gtr->nm);
+                (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->nm);
                 nco_exit(EXIT_FAILURE);
               } /* endif error */
             } /* end loop over idx */
