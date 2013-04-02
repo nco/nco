@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.183 2013-04-02 00:42:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.184 2013-04-02 00:52:39 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -2056,7 +2056,6 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   int min_lmt_typ=int_CEWI;
   int max_lmt_typ=int_CEWI; 
   int prg_id;                      /* [enm] Program ID */
-  int rcd=NC_NOERR;                /* [rcd] Return code */
 
   monotonic_direction_enm monotonic_direction=not_checked; /* CEWI */
 
@@ -2214,11 +2213,13 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   /* Coordinate re-basing code */
   lmt.origin=0.0;
 
-  /* Get variable ID of coordinate. NOTE: using group ID */
-  rcd=nco_inq_varid_flg(grp_id,lmt.nm,&dim.cid);
+ 
 
   /* If there is a coordinate variable */
-  if(rcd == NC_NOERR){
+  if (is_crd){
+
+    /* Get variable ID of coordinate. NOTE: using group ID */
+    (void)nco_inq_varid(grp_id,lmt.nm,&dim.cid);
 
     char *cln_sng=NULL_CEWI;
 
@@ -2266,6 +2267,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       Block is thread-safe for distinct in_id's */
       /* 20110221: replace nco_get_vara() with nc_get_vara_double() */
       /* Retrieve this coordinate */
+      int rcd;
       rcd=nc_get_vara_double(grp_id,var_id,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
 
       /* Exit if read error */
