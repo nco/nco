@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.182 2013-03-30 04:15:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.183 2013-04-02 00:42:17 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -2087,22 +2087,20 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   /* Obtain group ID using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
-  /* Obtain possible coordinate variable ID using group ID */
-  rcd=nco_inq_varid_flg(grp_id,nm,&var_id);
-  if(rcd != NC_NOERR){
-    is_crd_var=False; 
+  /* Use parameter to inquire about coordinate. NB. There might be cases where a variable with the same 
+     name as dimension exists, but it's not a "real" coordinate, coordinates are 1D 
+     Use case:
+     ncks -O -v ts -d time,0,1 -d Latitude,40.0 -d Longitude,-105.0 http://hydro1.sci.gsfc.nasa.gov/opendap/hyrax/ncml/LPRM_AMSRE_D_SOILM3_timeSeries.ncml amsre.nc     
+     */
+  if (is_crd){
 
-    /* Just make sure we get the right thing */
-    assert(is_crd == False);
-
-  }else{ 
-    is_crd_var=True;
-
-    assert(is_crd == True);
+    /* Obtain coordinate variable ID using group ID */
+    (void)nco_inq_varid(grp_id,nm,&var_id);
 
     /* Get coordinate type */
     (void)nco_inq_vartype(grp_id,var_id,&var_typ);
   }
+
 
   if(dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: INFO %s dimension <%s/%s(%li)>:",prg_nm_get(),fnc_nm,grp_nm_fll,nm,sz);
