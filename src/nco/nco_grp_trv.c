@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.131 2013-04-02 21:32:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.132 2013-04-03 16:54:31 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -451,7 +451,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     trv_sct *trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
     trv_sct *trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
 
-
     /* Both objects exist in the 2 files, both objects are to extract */
     if (trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] == True && cmn_lst[idx].flg_in_fl[1] == True && trv_1->flg_xtr == True && trv_2->flg_xtr == True){
 
@@ -471,8 +470,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
       }
 
-    }
-    /* Object exists only in file 1 and is to extract */
+      /* Copy processint type fixed object from file 1 */
+      (void)trv_tbl_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
+    }/* Object exists only in file 1 and is to extract */
 
     /* Object exists only in file 2 and is to extract */
     else if (trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] == True && trv_2->flg_xtr == True){
@@ -481,19 +481,15 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll); 
       }
 
-    }
-    /* Object exists only in file 2 and is to extract */
-
-
+      /* Copy processint type fixed object from file 2 */
+      (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
+    } /* Object exists only in file 2 and is to extract */    
   } /* Process objects in list */
-
 
   for(int idx=0;idx<idx_lst;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
   cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
 } /* trv_tbl_mch() */
-
-
 
 
 void                          
@@ -542,6 +538,13 @@ trv_tbl_prc                            /* [fnc] Process objects  */
   var_sct *var_prc_gtr;          /* [sct] Greater rank variable to process */
   var_sct *var_prc_lsr;          /* [sct] Lesser  rank variable to process */
 
+  nco_bool RNK_1_GTR;            /* [flg] Rank of variable in file 1 variable greater than or equal to file 2 */
+
+  prc_typ_enm prc_typ_1;         /* [enm] Processing type */
+  prc_typ_enm prc_typ_2;         /* [enm] Processing type */
+
+  trv_sct *rnk_gtr;              /* [sct] Object of greater or equal rank */
+
   assert(trv_1->nco_typ == nco_obj_typ_var);
   assert(trv_1->flg_xtr == True);
 
@@ -554,13 +557,6 @@ trv_tbl_prc                            /* [fnc] Process objects  */
   /* Get output file format */
   nbr_gpe_nm=0;
   (void)nco_inq_format(nc_out_id,&fl_fmt);
-
-  nco_bool RNK_1_GTR; /* [flg] Rank of variable in file 1 variable greater than or equal to file 2 */
-
-  prc_typ_enm prc_typ_1; /* [enm] Processing type */
-  prc_typ_enm prc_typ_2; /* [enm] Processing type */
-
-  trv_sct *rnk_gtr; /* [sct] Object of greater or equal rank */
 
   /* Edit group name for output */
   if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1->grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1->grp_nm_fll);
@@ -776,6 +772,181 @@ trv_tbl_prc                            /* [fnc] Process objects  */
   var_prc_2->val.vp=nco_free(var_prc_2->val.vp);
   var_prc_1=(var_sct *)nco_free(var_prc_1);
   var_prc_2=(var_sct *)nco_free(var_prc_2);
+  var_prc_out=(var_sct *)nco_free(var_prc_out);
+
+  /* Free output path name */
+  grp_out_fll=(char *)nco_free(grp_out_fll);
+
+
+} /* trv_tbl_prc() */
+
+void                          
+trv_tbl_fix                            /* [fnc] Copy processing type fixed object  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ int cnk_map,                          /* I [enm] Chunking map */
+ int cnk_plc,                          /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
+ trv_sct *trv_1,                       /* I [sct] Table object */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
+{
+  const char fnc_nm[]="trv_tbl_fix()"; /* [sng] Function name */
+  const char sls_sng[]="/";      /* [sng] Slash string */
+
+  char *grp_out_fll;             /* [sng] Group name */
+
+  gpe_nm_sct *gpe_nm;            /* [sct] GPE name duplicate check array */
+
+  int fl_fmt;                    /* [enm] netCDF file format */
+  int grp_id_1;                  /* [id] Group ID in input file */
+  int grp_out_id;                /* [id] Group ID in output file */ 
+  int nbr_gpe_nm;                /* [nbr] Number of GPE entries */  
+  int prg_id;                    /* [enm] Program ID */
+  int var_id_1;                  /* [id] Variable ID in input file */
+  int var_out_id;                /* [id] Variable ID in output file */
+
+  var_sct *var_prc_1;            /* [sct] Variable to process in file 1 */
+  var_sct *var_prc_out;          /* [sct] Variable to process in output */
+
+  prc_typ_enm prc_typ_1; /* [enm] Processing type */
+
+  assert(trv_1->nco_typ == nco_obj_typ_var);
+  assert(trv_1->flg_xtr == True);
+
+  /* Get Program ID */
+  prg_id=prg_get(); 
+
+  /* Get output file format */
+  nbr_gpe_nm=0;
+  (void)nco_inq_format(nc_out_id,&fl_fmt);
+
+  /* Edit group name for output */
+  if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1->grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1->grp_nm_fll);
+
+  /* Obtain group ID using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id_1,trv_1->grp_nm_fll,&grp_id_1);
+
+  /* Get variable ID */
+  (void)nco_inq_varid(grp_id_1,trv_1->nm,&var_id_1);
+
+  /* Allocate variable structure and fill with metadata */
+  var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1,trv_tbl_1);     
+
+  var_prc_out= nco_var_dpl(var_prc_1);
+  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+
+  if(prc_typ_1 != fix_typ){
+    return;
+  }
+
+  /* Define mode */
+  if(flg_def){  
+
+    nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
+
+    const int nco_pck_plc=nco_pck_map_nil; /* I [enm] Packing policy */
+
+    /* Copy all attributes except in cases where packing/unpacking is involved
+    0. Variable is unpacked on input, unpacked on output
+    --> Copy all attributes
+    1. Variable is packed on input, is not altered, and remains packed on output
+    --> Copy all attributes
+    2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
+    --> Copy all attributes except scale_factor and add_offset
+    3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
+    --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
+    4. Variable is not packed on input, packing is performed, and output is packed
+    --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
+
+    /* Do not copy packing attributes "scale_factor" and "add_offset" 
+    if variable is packed in input file and unpacked in output file 
+    Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
+    Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
+    /* Copy exising packing attributes, if any, unless... */
+    if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
+      prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
+      !var_prc_1->is_fix_var && /* ...and variable is processed (not fixed)... */
+      var_prc_1->pck_dsk) /* ...and variable is packed in input file... */
+      PCK_ATT_CPY=False;
+
+    /* Do not copy packing attributes when unpacking variables 
+    ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
+    if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
+      PCK_ATT_CPY=False;        
+
+    /* If output group does not exist, create it */
+    if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+
+    /* Detect duplicate GPE names in advance, then exit with helpful error */
+    if(gpe){
+      char *gpe_var_nm_fll=NULL; 
+
+      /* Construct absolute GPE variable path */
+      gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv_1->nm)+2L);
+      strcpy(gpe_var_nm_fll,grp_out_fll);
+      /* If not root group, concatenate separator */
+      if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
+      strcat(gpe_var_nm_fll,trv_1->nm);
+
+      /* GPE name is not already on list, put it there */
+      if(nbr_gpe_nm == 0){
+        gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
+        gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+        nbr_gpe_nm++;
+      }else{
+        /* Put GPE on list only if not already there */
+        for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
+          if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
+            (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
+            for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+            nco_exit(EXIT_FAILURE);
+          } /* strcmp() */
+        } /* end loop over gpe_nm */
+        gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+        gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+        nbr_gpe_nm++;
+      } /* nbr_gpe_nm */
+
+      /* Free full path name */
+      if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
+    } /* !GPE */
+
+    /* Define variable in output file. NB: Use file/variable of greater rank as template */
+    var_out_id= nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
+
+    /* Set chunksize parameters */
+    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,trv_1);
+
+    /* Copy variable's attributes */
+    (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); 
+
+  }else{ /* Write mode */
+
+    /* Get group ID */
+    (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
+
+    /* Get variable ID */
+    (void)nco_inq_varid(grp_out_id,trv_1->nm,&var_out_id);         
+
+    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
+
+    /* Copy non-processed variable */
+    (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_1); 
+  
+  } /* Write mode */
+
+  /* Free allocated variable structures */
+  var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
+  var_prc_1=(var_sct *)nco_free(var_prc_1);
   var_prc_out=(var_sct *)nco_free(var_prc_out);
 
   /* Free output path name */

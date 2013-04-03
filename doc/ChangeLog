@@ -1,3 +1,11 @@
+2013-04-03  Pedro Vicente  <pvicente@uci.edu>
+
+	* trv_tbl_prc() Process common objects 
+  
+	* trv_tbl_fix() Copy processing type fixed object  
+  
+	* Add ncbo test #19; Copy associated coordinates as non processed  
+  
 2013-03-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.1 release procedure:
