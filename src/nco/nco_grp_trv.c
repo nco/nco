@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.133 2013-04-03 17:05:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.134 2013-04-03 17:21:22 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -922,7 +922,7 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
       if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
     } /* !GPE */
 
-    /* Define variable in output file. NB: Use file/variable of greater rank as template */
+    /* Define variable in output file. */
     var_out_id= nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
 
     /* Set chunksize parameters */
