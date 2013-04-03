@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.135 2013-04-03 17:31:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.136 2013-04-03 17:51:23 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -677,7 +677,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     /* Get variable ID */
     (void)nco_inq_varid(grp_out_id,trv_1->nm,&var_out_id);         
 
-    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
+    if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
 
     /* Non-processed variable */
     if(prc_typ_1 == fix_typ){
@@ -756,8 +756,6 @@ trv_tbl_prc                            /* [fnc] Process objects  */
         nco_exit(EXIT_FAILURE);
         break;
       } /* end case */
-
-      if(dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: INFO %s reports write for <%s>\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
       /* Copy result to output file and free workspace buffer. NB. use grp_out_id */
       if(var_prc_1->nbr_dim == 0){
@@ -942,8 +940,6 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
 
     /* Get variable ID */
     (void)nco_inq_varid(grp_out_id,trv_1->nm,&var_out_id);         
-
-    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
 
     /* Copy non-processed variable */
     (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_1); 
