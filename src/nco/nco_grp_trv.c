@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.134 2013-04-03 17:21:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.135 2013-04-03 17:31:26 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -847,6 +847,10 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
   (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
 
   if(prc_typ_1 != fix_typ){
+    var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
+    var_prc_1=(var_sct *)nco_free(var_prc_1);
+    var_prc_out=(var_sct *)nco_free(var_prc_out);
+    grp_out_fll=(char *)nco_free(grp_out_fll);
     return;
   }
 
