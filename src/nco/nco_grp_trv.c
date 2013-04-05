@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.136 2013-04-03 17:51:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.137 2013-04-05 21:03:49 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -577,8 +577,11 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
   if(var_prc_1->nbr_dim >= var_prc_2->nbr_dim) RNK_1_GTR=True; else RNK_1_GTR=False;
   rnk_gtr = (RNK_1_GTR) ? trv_1 : trv_2;
-
+  var_prc_gtr= (RNK_1_GTR) ? var_prc_1 : var_prc_2;
+  var_prc_lsr= (RNK_1_GTR) ? var_prc_2 : var_prc_1;
   var_prc_out= (RNK_1_GTR) ? nco_var_dpl(var_prc_1) : nco_var_dpl(var_prc_2);
+
+  /* Get processing type */
   (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
   (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
 
@@ -686,9 +689,6 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
     /* Processed variable */
     if(prc_typ_1 == prc_typ){
-
-      var_prc_gtr= (RNK_1_GTR) ? var_prc_1 : var_prc_2;
-      var_prc_lsr= (RNK_1_GTR) ? var_prc_2 : var_prc_1;
 
       var_prc_out->id=var_out_id;
 
