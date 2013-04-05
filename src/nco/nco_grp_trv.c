@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.137 2013-04-05 21:03:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.138 2013-04-05 21:19:29 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -683,12 +683,12 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
 
     /* Non-processed variable */
-    if(prc_typ_1 == fix_typ){
+    if(prc_typ_1 == fix_typ || prc_typ_2 == fix_typ){
       if(RNK_1_GTR)(void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_2);
     } /* endif fix */
 
     /* Processed variable */
-    if(prc_typ_1 == prc_typ){
+    if(prc_typ_1 == prc_typ && prc_typ_2 == prc_typ){
 
       var_prc_out->id=var_out_id;
 
