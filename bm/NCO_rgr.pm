@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.246 2013-04-03 16:54:30 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.247 2013-04-06 22:15:34 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -572,7 +572,25 @@ print "\n";
     $tst_cmd[3]="time[9]=10 lat[1]=90 lon[3]=270 three_dmn_rec_var[79]=80";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array    
+    $#tst_cmd=0; # Reset array  
+
+# ncbo #20
+
+    $dsc_sng="Process different types -g g1 -v var1 in_grp_1.nc  in_grp_2.nc";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg  -g g1 -v var1 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'var1: type NC_FLOAT, 1 dimension, 0 attributes, chunked? no, compressed? no, packed? no'";
+    $tst_cmd[2]="var1: type NC_FLOAT, 1 dimension, 0 attributes, chunked? no, compressed? no, packed? no";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";     
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			  
+
+
+  
    
     
     

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.285 2013-03-30 04:15:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.286 2013-04-06 22:15:34 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1607,6 +1607,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   int fl_fmt;                      /* [enm] Output file format */
   int nbr_dmn_var;                 /* [nbr] Number of dimensions for variable */
   int rcd=NC_NOERR;                /* [rcd] Return code */
+  int prg_id;                      /* [enm] Program ID */
 
   nc_type var_typ;                 /* [enm] netCDF type */
 
@@ -1633,10 +1634,13 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   rcd=nco_inq_varid_flg(grp_in_id,var_nm,&var_in_id);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",prg_nm_get(),fnc_nm,var_nm);
 
-  /* Get type of variable and number of dimensions */
-  (void)nco_inq_var(grp_in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_var,(int *)NULL,(int *)NULL);
+  /* Get type of variable and number of dimensions from input */
+  (void)nco_inq_var(grp_in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_var,(int *)NULL,(int *)NULL);  
 
-  assert(var_typ == var_trv->var_typ);
+  /* Get Program ID */
+  prg_id=prg_get(); 
+
+  if (prg_id == ncks) assert(var_typ == var_trv->var_typ);
   assert(nbr_dmn_var == var_trv->nbr_dmn);
 
   var_typ=var_trv->var_typ;
@@ -2092,7 +2096,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   int fl_fmt;                    /* [enm] File format */  
   int dmn_in_id_var[NC_MAX_DIMS];/* [id] Dimension IDs array for variable */
-  int var_dim_id;                /* [id] Variable dimension ID */  
+  int var_dim_id;                /* [id] Variable dimension ID */ 
+  int prg_id;                    /* [enm] Program ID */
   
   long cnt[NC_MAX_DIMS];         /* [nbr] Count array */
   long dmn_sz;                   /* [nbr] Dimension size  */  
@@ -2119,7 +2124,10 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Get type and number of dimensions and attributes for variable */
   (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
 
-  assert(var->typ_dsk == var_trv->var_typ);
+  /* Get Program ID */
+  prg_id=prg_get(); 
+
+  if (prg_id == ncks) assert(var->typ_dsk == var_trv->var_typ);
   assert(var->nbr_dim == var_trv->nbr_dmn);
   assert(var->nbr_att == var_trv->nbr_att);
 

@@ -1,3 +1,9 @@
+2013-04-06  Pedro Vicente  <pvicente@uci.edu>
+
+	* trv_tbl_prc() Match different types for processed objects
+
+	* Add ncbo test #20; Match different types for processed objects
+
 2013-04-03  Pedro Vicente  <pvicente@uci.edu>
 
 	* trv_tbl_prc() Process common objects
