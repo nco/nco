@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.140 2013-04-06 22:42:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.141 2013-04-06 22:54:50 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -622,15 +622,11 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
     trv_1->var_typ=max_typ;
     trv_2->var_typ=max_typ;
+    var_prc_2=nco_var_cnf_typ(max_typ,var_prc_2);
+    var_prc_1=nco_var_cnf_typ(max_typ,var_prc_1);
 
     /* Broadcast lesser to greater variable. NB: Pointers may change so _gtr, _lsr not valid */
     if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
-
-    if(RNK_1_GTR){
-      var_prc_2=nco_var_cnf_typ(var_prc_1->type,var_prc_2);
-    }else{
-      var_prc_1=nco_var_cnf_typ(var_prc_2->type,var_prc_1);
-    }
 
     /* var1 and var2 now conform in size and type to eachother and are in memory */
 
