@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.139 2013-04-06 22:15:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.140 2013-04-06 22:42:37 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -609,18 +609,22 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     (void)nco_msa_var_get_trv(grp_id_1,var_prc_1,trv_1);
     (void)nco_msa_var_get_trv(grp_id_2,var_prc_2,trv_2);
 
+    int max_typ;
+    if (trv_2->var_typ > trv_1->var_typ) max_typ=trv_2->var_typ; else max_typ=trv_1->var_typ;
+
     /* Make sure variables conform in type */
     if(var_prc_1->type != var_prc_2->type){
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",prg_nm_get(),var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(var_prc_gtr->type));
+      if(dbg_lvl_get() >= nco_dbg_std && flg_def){
+        (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",prg_nm_get(),
+          var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(max_typ));
+      }
     }  
+
+    trv_1->var_typ=max_typ;
+    trv_2->var_typ=max_typ;
 
     /* Broadcast lesser to greater variable. NB: Pointers may change so _gtr, _lsr not valid */
     if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
-
-    int max_typ;
-    if (trv_2->var_typ > trv_1->var_typ) max_typ=trv_2->var_typ; else max_typ=trv_1->var_typ;
-    trv_1->var_typ=max_typ;
-    trv_2->var_typ=max_typ;
 
     if(RNK_1_GTR){
       var_prc_2=nco_var_cnf_typ(var_prc_1->type,var_prc_2);
