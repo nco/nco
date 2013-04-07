@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.141 2013-04-06 22:54:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.142 2013-04-07 03:27:40 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -585,8 +585,6 @@ trv_tbl_prc                            /* [fnc] Process objects  */
   (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
   (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
 
-
-
   /* Conform type and rank for process variables */
   if(prc_typ_1 == prc_typ && prc_typ_2 == prc_typ){
 
@@ -632,6 +630,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
     assert(var_prc_1->type == var_prc_2->type);
     assert(trv_1->var_typ == trv_2->var_typ);
+    assert(trv_1->var_typ == var_prc_1->type);
 
   } /* Conform type and rank for process variables */
 
