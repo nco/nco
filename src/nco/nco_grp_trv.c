@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.142 2013-04-07 03:27:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.143 2013-04-07 18:51:40 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -608,7 +608,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     (void)nco_msa_var_get_trv(grp_id_2,var_prc_2,trv_2);
 
     int max_typ;
-    if (trv_2->var_typ > trv_1->var_typ) max_typ=trv_2->var_typ; else max_typ=trv_1->var_typ;
+    if (var_prc_2->type > var_prc_1->type) max_typ=var_prc_2->type; else max_typ=var_prc_1->type;
 
     /* Make sure variables conform in type */
     if(var_prc_1->type != var_prc_2->type){
