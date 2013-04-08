@@ -1,3 +1,13 @@
+2013-04-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.1 release procedure:
+ 	Changes since nco-4_3_0: ncbo -G --unn commute
+	cd ~/nco;cvs tag -d nco-4_3_1;cvs tag -d nco-4_3_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.1 release"
+	cvs tag -c nco-4_3_1;cvs tag -c nco-4_3_1-1
+
+	* Add in_grp_[12].nc
+
 2013-04-06  Pedro Vicente  <pvicente@uci.edu>
 
 	* trv_tbl_prc() Match different types for processed objects
@@ -13,12 +23,6 @@
 	* Add ncbo test #19; Copy associated coordinates as non processed
 
 2013-03-29  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.3.1 release procedure:
- 	Changes since nco-4_3_0: ncbo -G --unn commute
-	cd ~/nco;cvs tag -d nco-4_3_1;cvs tag -d nco-4_3_1-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.1 release"
-	cvs tag -c nco-4_3_1;cvs tag -c nco-4_3_1-1
 
 	* ncbo: now almost commutative w/r/t variable rank fixes TODO nco552
 

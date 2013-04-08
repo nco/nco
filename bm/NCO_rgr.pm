@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.247 2013-04-06 22:15:34 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.248 2013-04-08 22:45:00 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -566,10 +566,10 @@ print "\n";
 # ncdiff -O -v three_dmn_rec_var ~/one.nc ~/nco/data/in.nc ~/foo.nc
 
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncbo $omp_flg -O $fl_fmt $nco_D_flg -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[2]="ncks -C -H -v three_dmn_rec_var -d time,9,9,1 -d lat,1,1,1 -d lon,3,3,1 %tmp_fl_00%";
+    $tst_cmd[1]="ncbo $omp_flg -O $fl_fmt $nco_D_flg -v three_dmn_rec_var %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -C -H -v three_dmn_rec_var -d time,9,9,1 -d lat,1,1,1 -d lon,3,3,1 %tmp_fl_01%";
     $dsc_sng="Copy associated coordinates -v three_dmn_rec_var";
-    $tst_cmd[3]="time[9]=10 lat[1]=90 lon[3]=270 three_dmn_rec_var[79]=80";
+    $tst_cmd[3]="time[9]=10 lat[1]=90 lon[3]=270 three_dmn_rec_var[79]=0";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array  

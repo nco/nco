@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.51 2013-04-03 16:54:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.52 2013-04-08 22:45:00 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -24,6 +24,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_mmr.h" /* Memory management */
 
 void                         

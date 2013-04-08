@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.66 2013-03-28 18:46:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.67 2013-04-08 22:45:00 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -1300,10 +1300,10 @@ ncap_typ_hgh /* [fnc] Return Highest type */
   if(typ_1 == typ_2) return typ_1;
 
   /* Deal with NC_DOUBLE */
-  if(typ_1 == NC_DOUBLE || typ_2 == NC_DOUBLE ) return NC_DOUBLE;
+  if(typ_1 == NC_DOUBLE || typ_2 == NC_DOUBLE) return NC_DOUBLE;
 
   /* Deal with NC_FLOAT */
-  if(typ_1 == NC_FLOAT || typ_2 ==NC_FLOAT ) return NC_FLOAT;
+  if(typ_1 == NC_FLOAT || typ_2 == NC_FLOAT) return NC_FLOAT;
 
   v1s=nco_typ_sgn(typ_1);
   v2s=nco_typ_sgn(typ_2);
@@ -1343,7 +1343,7 @@ ncap_typ_hgh /* [fnc] Return Highest type */
   return typ_1;
 } /* end ncap_typ_hgh */
 
-nc_type /* O [enm] Highest precision of input variables */
+nc_type /* O [enm] Higher precision of input variables */
 ncap_var_retype /* [fnc] Promote variable to higher common precision */
 (var_sct *var_1, /* I/O [sct] Variable */
  var_sct *var_2) /* I/O [sct] Variable */
@@ -1351,13 +1351,13 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
   /* Threads: Routine is thread safe and makes no unsafe routines */
 
   /* Purpose: Perform intelligent type conversion with the netCDF3/4 types */
-  nc_type type;
+  nc_type typ_hgh;
 
-  type=ncap_typ_hgh(var_1->type,var_2->type);
-  var_1=nco_var_cnf_typ(type,var_1);
-  var_2=nco_var_cnf_typ(type,var_2);
+  typ_hgh=ncap_typ_hgh(var_1->type,var_2->type);
+  if(var_1->type != typ_hgh) var_1=nco_var_cnf_typ(typ_hgh,var_1);
+  if(var_2->type != typ_hgh) var_2=nco_var_cnf_typ(typ_hgh,var_2);
 
-  return type;
+  return typ_hgh;
 } /* end ncap_var_retype */
 
 nc_type /* O [enm] Highest precision of arguments */

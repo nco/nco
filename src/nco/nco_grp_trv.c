@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.143 2013-04-07 18:51:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.144 2013-04-08 22:45:00 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -607,21 +607,19 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     (void)nco_msa_var_get_trv(grp_id_1,var_prc_1,trv_1);
     (void)nco_msa_var_get_trv(grp_id_2,var_prc_2,trv_2);
 
-    int max_typ;
-    if (var_prc_2->type > var_prc_1->type) max_typ=var_prc_2->type; else max_typ=var_prc_1->type;
+    nc_type typ_hgh;
+    typ_hgh=ncap_typ_hgh(var_prc_1->type,var_prc_2->type);
 
     /* Make sure variables conform in type */
     if(var_prc_1->type != var_prc_2->type){
       if(dbg_lvl_get() >= nco_dbg_std && flg_def){
         (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",prg_nm_get(),
-          var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(max_typ));
-      }
-    }  
+		      var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(typ_hgh));
+      } /* endif dbg */
+    } /* endif type */
 
-    trv_1->var_typ=max_typ;
-    trv_2->var_typ=max_typ;
-    var_prc_2=nco_var_cnf_typ(max_typ,var_prc_2);
-    var_prc_1=nco_var_cnf_typ(max_typ,var_prc_1);
+    typ_hgh=ncap_var_retype(var_prc_1,var_prc_2);
+    trv_1->var_typ=trv_2->var_typ=typ_hgh;
 
     /* Broadcast lesser to greater variable. NB: Pointers may change so _gtr, _lsr not valid */
     if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
@@ -731,7 +729,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
     /* Non-processed variable */
     if(prc_typ_1 == fix_typ || prc_typ_2 == fix_typ){
-      if(RNK_1_GTR)(void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_2);
+      if(RNK_1_GTR) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_2);
     } /* endif fix */
 
     /* Processed variable */
