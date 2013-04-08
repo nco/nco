@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.775 2013-03-29 00:19:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.776 2013-04-08 03:50:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5669,8 +5669,10 @@ read-from/write-to RAM.
 However this extra RAM write/read does avoid contention for limited
 system resources like disk-head access.
 Operators which may benefit from RAM disks include @command{ncwa}, which
-may need to read weighting variables multiple times, and @command{ncap2}
-scripts which may be arbitrarily long and convoluted. 
+may need to read weighting variables multiple times, the multi-file 
+operators @command{ncra}, @command{ncrcat}, and @command{ncecat},
+which may try to write output at least once per input file, and
+p@command{ncap2} scripts which may be arbitrarily long and convoluted. 
 
 The @samp{--open_ram} switch causes input files to copied to RAM when
 opened. 
@@ -5687,7 +5689,8 @@ rather than on disk.
 These files are copied to disk only when closed, i.e., when the
 operator completes.
 Creating files in RAM may save time, especially with @command{ncap2}
-computations that are iterative, e.g., loops. 
+computations that are iterative, e.g., loops, and for multi-file
+operators that write output every record (timestep) or file.
 RAM files provide many of the same benefits as RAM variables in such
 cases (@pxref{RAM variables}). 
 
