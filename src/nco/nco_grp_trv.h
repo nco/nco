@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.54 2013-04-09 02:22:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.55 2013-04-09 22:26:55 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -164,8 +164,7 @@ void
 gpe_chk                                /* [fnc] Check valid GPE new name  */
 (const char * const grp_out_fll,       /* I [sng] Group name */
  const char * const var_nm,            /* I [sng] Variable name */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int *nbr_gpe_nm);                     /* I/O [nbr] Number of GPE entries */  
+ gpe_nm_sct * gpe_nm,                  /* I/O [sct] GPE name duplicate check array */
+ int * nbr_gpe_nm);                    /* I/O [nbr] Number of GPE entries */  
 
 #endif /* NCO_GRP_TRV_H */
