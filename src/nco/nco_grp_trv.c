@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.144 2013-04-08 22:45:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.145 2013-04-09 02:14:23 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -266,6 +266,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
@@ -459,7 +461,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       }
 
       /* Process common object */
-      (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
+      (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
 
     } /* Both objects exist in the 2 files, both objects are to extract */
 
@@ -471,7 +473,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       }
 
       /* Copy processint type fixed object from file 1 */
-      (void)trv_tbl_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
+      (void)trv_tbl_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
 
     }/* Object exists only in file 1 and is to extract */
 
@@ -483,7 +485,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       }
 
       /* Copy processint type fixed object from file 2 */
-      (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
+      (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
 
     } /* Object exists only in file 2 and is to extract */    
   } /* Process objects in list */
@@ -506,6 +508,8 @@ trv_tbl_prc                            /* [fnc] Process objects  */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
@@ -522,13 +526,10 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
   char *grp_out_fll;             /* [sng] Group name */
 
-  gpe_nm_sct *gpe_nm;            /* [sct] GPE name duplicate check array */
-
   int fl_fmt;                    /* [enm] netCDF file format */
   int grp_id_1;                  /* [id] Group ID in input file */
   int grp_id_2;                  /* [id] Group ID in input file */
   int grp_out_id;                /* [id] Group ID in output file */ 
-  int nbr_gpe_nm;                /* [nbr] Number of GPE entries */  
   int prg_id;                    /* [enm] Program ID */
   int var_id_1;                  /* [id] Variable ID in input file */
   int var_id_2;                  /* [id] Variable ID in input file */
@@ -557,7 +558,6 @@ trv_tbl_prc                            /* [fnc] Process objects  */
   prg_id=prg_get(); 
 
   /* Get output file format */
-  nbr_gpe_nm=0;
   (void)nco_inq_format(nc_out_id,&fl_fmt);
 
   /* Edit group name for output */
@@ -672,36 +672,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
     /* Detect duplicate GPE names in advance, then exit with helpful error */
     if(gpe){
-      char *gpe_var_nm_fll=NULL; 
-
-      /* Construct absolute GPE variable path */
-      gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv_1->nm)+2L);
-      strcpy(gpe_var_nm_fll,grp_out_fll);
-      /* If not root group, concatenate separator */
-      if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
-      strcat(gpe_var_nm_fll,trv_1->nm);
-
-      /* GPE name is not already on list, put it there */
-      if(nbr_gpe_nm == 0){
-        gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
-        gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-        nbr_gpe_nm++;
-      }else{
-        /* Put GPE on list only if not already there */
-        for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
-          if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
-            (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
-            for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
-            nco_exit(EXIT_FAILURE);
-          } /* strcmp() */
-        } /* end loop over gpe_nm */
-        gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
-        gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-        nbr_gpe_nm++;
-      } /* nbr_gpe_nm */
-
-      /* Free full path name */
-      if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
+      (void)gpe_chk(grp_out_fll,trv_1->nm,gpe,gpe_nm,nbr_gpe_nm);   
     } /* !GPE */
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
@@ -800,6 +771,8 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
@@ -813,12 +786,9 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
 
   char *grp_out_fll;             /* [sng] Group name */
 
-  gpe_nm_sct *gpe_nm;            /* [sct] GPE name duplicate check array */
-
   int fl_fmt;                    /* [enm] netCDF file format */
   int grp_id_1;                  /* [id] Group ID in input file */
-  int grp_out_id;                /* [id] Group ID in output file */ 
-  int nbr_gpe_nm;                /* [nbr] Number of GPE entries */  
+  int grp_out_id;                /* [id] Group ID in output file */  
   int prg_id;                    /* [enm] Program ID */
   int var_id_1;                  /* [id] Variable ID in input file */
   int var_out_id;                /* [id] Variable ID in output file */
@@ -835,7 +805,6 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
   prg_id=prg_get(); 
 
   /* Get output file format */
-  nbr_gpe_nm=0;
   (void)nco_inq_format(nc_out_id,&fl_fmt);
 
   /* Edit group name for output */
@@ -900,37 +869,8 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
     /* Detect duplicate GPE names in advance, then exit with helpful error */
-    if(gpe){
-      char *gpe_var_nm_fll=NULL; 
-
-      /* Construct absolute GPE variable path */
-      gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(trv_1->nm)+2L);
-      strcpy(gpe_var_nm_fll,grp_out_fll);
-      /* If not root group, concatenate separator */
-      if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
-      strcat(gpe_var_nm_fll,trv_1->nm);
-
-      /* GPE name is not already on list, put it there */
-      if(nbr_gpe_nm == 0){
-        gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
-        gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-        nbr_gpe_nm++;
-      }else{
-        /* Put GPE on list only if not already there */
-        for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
-          if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
-            (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
-            for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
-            nco_exit(EXIT_FAILURE);
-          } /* strcmp() */
-        } /* end loop over gpe_nm */
-        gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
-        gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-        nbr_gpe_nm++;
-      } /* nbr_gpe_nm */
-
-      /* Free full path name */
-      if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
+    if(gpe){     
+      (void)gpe_chk(grp_out_fll,trv_1->nm,gpe,gpe_nm,nbr_gpe_nm);                       
     } /* !GPE */
 
     /* Define variable in output file. */
@@ -967,3 +907,49 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
 } /* trv_tbl_prc() */
 
     
+void                          
+gpe_chk                                /* [fnc] Check valid GPE new name  */
+(const char * const grp_out_fll,       /* I [sng] Group name */
+ const char * const var_nm,            /* I [sng] Variable name */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm)                       /* I/O [nbr] Number of GPE entries */  
+{
+
+  /* Detect duplicate GPE names in advance, then exit with helpful error */
+
+  const char fnc_nm[]="gpe_chk()"; /* [sng] Function name */
+  const char sls_sng[]="/";        /* [sng] Slash string */
+  char *gpe_var_nm_fll=NULL;       /* [sng] absolute GPE variable path */
+  
+  /* Construct absolute GPE variable path */
+  gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(var_nm)+2L);
+  strcpy(gpe_var_nm_fll,grp_out_fll);
+  /* If not root group, concatenate separator */
+  if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
+  strcat(gpe_var_nm_fll,var_nm);
+
+  /* GPE name is not already on list, put it there */
+  if(nbr_gpe_nm == 0){
+    gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
+    gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+    nbr_gpe_nm++;
+  }else{
+    /* Put GPE on list only if not already there */
+    for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
+      if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
+        (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
+        for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+        nco_exit(EXIT_FAILURE);
+      } /* strcmp() */
+    } /* end loop over gpe_nm */
+    gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+    gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+    nbr_gpe_nm++;
+  } /* nbr_gpe_nm */
+
+  /* Free full path name */
+  if(gpe_var_nm_fll) gpe_var_nm_fll=(char *)nco_free(gpe_var_nm_fll);
+
+
+}

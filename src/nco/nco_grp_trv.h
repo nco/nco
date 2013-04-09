@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.52 2013-04-08 22:45:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.53 2013-04-09 02:14:23 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -101,6 +101,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
@@ -123,6 +125,8 @@ trv_tbl_prc                            /* [fnc] Process objects  */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
@@ -145,6 +149,8 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
@@ -152,5 +158,14 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
  trv_sct *trv_1,                       /* I [sct] Table object */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+
+
+void                          
+gpe_chk                                /* [fnc] Check valid GPE new name  */
+(const char * const grp_out_fll,       /* I [sng] Group name */
+ const char * const var_nm,            /* I [sng] Variable name */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm);                      /* I/O [nbr] Number of GPE entries */  
 
 #endif /* NCO_GRP_TRV_H */

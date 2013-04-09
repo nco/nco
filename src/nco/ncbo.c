@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.237 2013-03-29 00:19:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.238 2013-04-09 02:14:23 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.237 2013-03-29 00:19:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.237 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.238 2013-04-09 02:14:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.238 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -198,6 +198,7 @@ main(int argc,char **argv)
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
+  int nbr_gpe_nm; /* [nbr] Number of GPE entries */
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
@@ -211,6 +212,8 @@ main(int argc,char **argv)
 
   trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table input file 1 */
   trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table input file 2 */
+
+  gpe_nm_sct *gpe_nm=NULL; /* [sct] GPE name duplicate check array */
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -292,7 +295,10 @@ main(int argc,char **argv)
       {"hlp",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
+
   int opt_idx=0; /* Index of current long option into opt_lng array */
+
+  nbr_gpe_nm=0;
   
   /* Start timer and save command line */ 
   ddra_info.tmr_flg=nco_tmr_srt;
@@ -592,7 +598,7 @@ main(int argc,char **argv)
   } /* !gpe */
 
   /* Match 2 tables (find common objects) and process common objects (define mode) */
-  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
 
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -606,7 +612,7 @@ main(int argc,char **argv)
   } /* hdr_pad */
 
   /* Match 2 tables (find common objects) and process common objects (write mode) */
-  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
@@ -650,6 +656,9 @@ main(int argc,char **argv)
     trv_tbl_free(trv_tbl_1);
     trv_tbl_free(trv_tbl_2);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+
+    /* Memory management for GPE names */
+    for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
   } /* !flg_cln */
 
