@@ -1,6 +1,8 @@
-2013-04-08  Pedro Vicente  <pvicente@uci.edu>
+2013-04-09  Pedro Vicente  <pvicente@uci.edu>
 
 	* gpe_chk() Check valid GPE new name
+  
+	* pck_cpy_attr() Inquire about copying attributes "scale_factor", "add_offset" 
   
 2013-04-08  Charlie Zender  <zender@uci.edu>
 
