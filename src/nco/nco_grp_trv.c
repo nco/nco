@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.145 2013-04-09 02:14:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.146 2013-04-09 02:22:43 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -672,7 +672,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
     /* Detect duplicate GPE names in advance, then exit with helpful error */
     if(gpe){
-      (void)gpe_chk(grp_out_fll,trv_1->nm,gpe,gpe_nm,nbr_gpe_nm);   
+      (void)gpe_chk(grp_out_fll,trv_1->nm,gpe,gpe_nm,&nbr_gpe_nm);   
     } /* !GPE */
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
@@ -870,7 +870,7 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
 
     /* Detect duplicate GPE names in advance, then exit with helpful error */
     if(gpe){     
-      (void)gpe_chk(grp_out_fll,trv_1->nm,gpe,gpe_nm,nbr_gpe_nm);                       
+      (void)gpe_chk(grp_out_fll,trv_1->nm,gpe,gpe_nm,&nbr_gpe_nm);                       
     } /* !GPE */
 
     /* Define variable in output file. */
@@ -913,7 +913,7 @@ gpe_chk                                /* [fnc] Check valid GPE new name  */
  const char * const var_nm,            /* I [sng] Variable name */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm)                       /* I/O [nbr] Number of GPE entries */  
+ int *nbr_gpe_nm)                      /* I/O [nbr] Number of GPE entries */  
 {
 
   /* Detect duplicate GPE names in advance, then exit with helpful error */
@@ -931,21 +931,21 @@ gpe_chk                                /* [fnc] Check valid GPE new name  */
 
   /* GPE name is not already on list, put it there */
   if(nbr_gpe_nm == 0){
-    gpe_nm=(gpe_nm_sct *)nco_malloc((nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
-    gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-    nbr_gpe_nm++;
+    gpe_nm=(gpe_nm_sct *)nco_malloc((*nbr_gpe_nm+1)*sizeof(gpe_nm_sct)); 
+    gpe_nm[*nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+    *nbr_gpe_nm++;
   }else{
     /* Put GPE on list only if not already there */
-    for(int idx_gpe=0;idx_gpe<nbr_gpe_nm;idx_gpe++){
+    for(int idx_gpe=0;idx_gpe<*nbr_gpe_nm;idx_gpe++){
       if(!strcmp(gpe_var_nm_fll,gpe_nm[idx_gpe].var_nm_fll)){
         (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
-        for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+        for(int idx=0;idx<*nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
         nco_exit(EXIT_FAILURE);
       } /* strcmp() */
     } /* end loop over gpe_nm */
-    gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
-    gpe_nm[nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
-    nbr_gpe_nm++;
+    gpe_nm=(gpe_nm_sct *)nco_realloc((void *)gpe_nm,(*nbr_gpe_nm+1)*sizeof(gpe_nm_sct));
+    gpe_nm[*nbr_gpe_nm].var_nm_fll=strdup(gpe_var_nm_fll);
+    *nbr_gpe_nm++;
   } /* nbr_gpe_nm */
 
   /* Free full path name */
