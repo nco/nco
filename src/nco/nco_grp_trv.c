@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.151 2013-04-10 18:16:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.152 2013-04-10 18:45:46 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -769,8 +769,8 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
- trv_sct *trv_1,                       /* I [sct] Table object */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ const trv_sct * const trv_1,          /* I [sct] Table object */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   char *grp_out_fll;             /* [sng] Group name */
@@ -980,6 +980,8 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
 {
 
   trv_sct *trv_1=trv_tbl_var_nm(var_nm,trv_tbl_2); 
+
+  if (trv_1 == NULL) return False;
 
 
   return False;
