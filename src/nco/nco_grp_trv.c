@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.150 2013-04-10 17:38:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.151 2013-04-10 18:16:15 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -185,8 +185,8 @@ trv_tbl_fnd_var_nm_fll                /* [fnc] Check if "var_nm_fll" is in table
   return False;
 } /* end trv_tbl_fnd_var_nm_fll() */
 
-trv_sct *                               /* O [sct] Table object */
-trv_tbl_var_nm_fll                    /* [fnc] Check if "var_nm_fll" is in table */
+trv_sct *                             /* O [sct] Table object */
+trv_tbl_var_nm_fll                    /* [fnc] Check if absolute name "var_nm_fll" is in table */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
@@ -197,6 +197,19 @@ trv_tbl_var_nm_fll                    /* [fnc] Check if "var_nm_fll" is in table
   return NULL;
 
 } /* trv_tbl_var_nm_fll() */
+
+trv_sct *                             /* O [sct] Table object */
+trv_tbl_var_nm                        /* [fnc] Check if relative name "var_nm" is in table */
+(const char * const var_nm,           /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm,trv_tbl->lst[uidx].nm))
+      return &trv_tbl->lst[uidx];
+
+  return NULL;
+
+} /* trv_tbl_var_nm() */
 
 
 void
@@ -475,7 +488,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       nco_bool has_mch; /* [flg] A relative match was found in file 2 */
 
       /* Try a relative  match in file 2 */
-      has_mch=trv_tbl_rel_mch(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_tbl_2,flg_def);
+      has_mch=trv_tbl_rel_mch(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1->nm,trv_tbl_2,flg_def);
 
       /* A match was not found in file 2, copy instead as fixed to output */
       if (has_mch == False) {
@@ -961,10 +974,12 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- const trv_sct * const var_trv_1,      /* I [sct] Object from table 1 */
+ const char * const var_nm,            /* I [sng] Relative name from table 1 */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
+
+  trv_sct *trv_1=trv_tbl_var_nm(var_nm,trv_tbl_2); 
 
 
   return False;
