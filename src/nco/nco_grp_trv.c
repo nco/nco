@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.155 2013-04-10 20:06:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.156 2013-04-10 23:26:43 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -465,13 +465,13 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
     trv_sct *trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
     trv_sct *trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
+    nco_bool has_mch; /* [flg] A relative match was found in file 2 */
 
+    
     /* Both objects exist in the 2 files, both objects are to extract */
-    if (trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] == True && cmn_lst[idx].flg_in_fl[1] == True && trv_1->flg_xtr && trv_2->flg_xtr){
+    if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
-      }
+      if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
 
       /* Process common object */
       (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
@@ -479,32 +479,22 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     } /* Both objects exist in the 2 files, both objects are to extract */
 
     /* Object exists only in file 1 and is to extract */
-    else if (trv_1 && cmn_lst[idx].flg_in_fl[0] == True && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
+    else if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
-      }
+      if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
-      nco_bool has_mch; /* [flg] A relative match was found in file 2 */
-
-      /* Try a relative  match in file 2 */
+      /* Try a relative match in file 2 */
       has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_tbl_1,trv_tbl_2,flg_def);
 
-      /* A match was not found in file 2, copy instead as fixed to output */
-      if (has_mch == False) {
+      /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
+      if(has_mch == False) (void)trv_tbl_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
 
-        /* Copy processint type fixed object from file 1 */
-        (void)trv_tbl_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
-      }
-
-    }/* Object exists only in file 1 and is to extract */
+    } /* Object exists only in file 1 and is to extract */
 
     /* Object exists only in file 2 and is to extract */
-    else if (trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] == True && trv_2->flg_xtr){
+    else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll); 
-      }
+      if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
       /* Copy processint type fixed object from file 2 */
       (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
@@ -663,9 +653,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
     /* Detect duplicate GPE names in advance, then exit with helpful error */
-    if(gpe){
-      (void)gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);   
-    } /* !GPE */
+    if(gpe) (void)gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);   
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
     var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_2,trv_tbl_2);
@@ -900,7 +888,7 @@ gpe_chk
     /* Put GPE on list only if not already there */
     for(int idx_gpe=0;idx_gpe<nbr_gpe;idx_gpe++){
       if(!strcmp(gpe_var_nm_fll,(*gpe_nm)[idx_gpe].var_nm_fll)){
-        (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
+        (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined in output file. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
         for(int idx=0;idx<nbr_gpe;idx++) (*gpe_nm)[idx].var_nm_fll=(char *)nco_free((*gpe_nm)[idx].var_nm_fll);
         nco_exit(EXIT_FAILURE);
       } /* strcmp() */
@@ -987,7 +975,6 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
 
   /* Process common object */
   (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
-
 
   return True;
 
