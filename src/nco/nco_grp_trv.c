@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.154 2013-04-10 19:07:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.155 2013-04-10 20:06:09 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -989,7 +989,7 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
   (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
 
 
-  return False;
+  return True;
 
 } /* trv_tbl_rel_mch() */
 
