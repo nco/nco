@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.60 2013-04-10 18:45:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.61 2013-04-10 18:55:37 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -115,7 +115,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_bool flg_def);                    /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 
 void                          
@@ -137,10 +137,10 @@ trv_tbl_prc                            /* [fnc] Process objects  */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_sct *trv_1,                       /* I [sct] Table object */
- trv_sct *trv_2,                       /* I [sct] Table object */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_sct * trv_1,                      /* I [sct] Table object */
+ trv_sct * trv_2,                      /* I [sct] Table object */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 void                          
@@ -180,7 +180,8 @@ pck_cpy_attr                           /* [fnc] Inquire about copying packing at
 
 nco_bool                               /* O [flg] True for match found */
 trv_tbl_rel_mch                        /* [fnc] Relative match of object in table 1 to table 2  */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1*/
+(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
  int cnk_map,                          /* I [enm] Chunking map */
  int cnk_plc,                          /* I [enm] Chunking policy */
