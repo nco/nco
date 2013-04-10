@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.57 2013-04-10 03:50:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.58 2013-04-10 17:38:27 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -172,5 +172,27 @@ pck_cpy_attr                           /* [fnc] Inquire about copying packing at
 (const int prg_id,                     /* I [enm] Program ID */
  const int nco_pck_plc,                /* I [enm] Packing policy */
  const var_sct * const var_prc);       /* I [sct] Variable */
+
+nco_bool                               /* O [flg] True for match found */
+trv_tbl_rel_mch                        /* [fnc] Relative match of object in table 1 to table 2  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1*/
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ int cnk_map,                          /* I [enm] Chunking map */
+ int cnk_plc,                          /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ const trv_sct * const var_trv_1,      /* I [sct] Object from table 1 */
+ const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 #endif /* NCO_GRP_TRV_H */
