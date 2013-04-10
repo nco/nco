@@ -4,17 +4,20 @@
 // ncgen -k netCDF-4 -b -o ~/nco/data/in_grp_2.nc ~/nco/data/in_grp_2.cdl
 
 netcdf in_grp_1 {
+
+  dimensions:
+  lon1=4;
  
   //
   //g1
   //
   group: g1 { 
-  dimensions:
-  lon1=4;
   variables:
     short var1(lon1);
+    float var2(lon1);
   data:
     var1=0,0,0,0;
+    var2=0,0,0,0;
   } // end g1
 
 } // end root group

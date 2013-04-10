@@ -1,5 +1,11 @@
 2013-04-09  Pedro Vicente  <pvicente@uci.edu>
 
+	* trv_tbl_rel_mch()  Relative match of object in table 1 to table 2 
+  
+	* Add ncbo test #20; Relative match of object in table 1 to table 2
+
+2013-04-09  Pedro Vicente  <pvicente@uci.edu>
+
 	* gpe_chk() Check valid GPE new name
   
 	* pck_cpy_attr() Inquire about copying attributes "scale_factor", "add_offset" 

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.248 2013-04-08 22:45:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.249 2013-04-10 20:06:09 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -560,10 +560,6 @@ print "\n";
 #   
 
 # ncbo #19  
-# ncks -O -v one ~/nco/data/in.nc ~/one.nc
-# ncrename -O -v one,three_dmn_rec_var ~/one.nc
-# ncdiff -O -v three_dmn_rec_var ~/nco/data/in.nc ~/one.nc ~/foo.nc
-# ncdiff -O -v three_dmn_rec_var ~/one.nc ~/nco/data/in.nc ~/foo.nc
 
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncbo $omp_flg -O $fl_fmt $nco_D_flg -v three_dmn_rec_var %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
@@ -588,6 +584,21 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
+    
+# ncbo #20
+
+    $dsc_sng="Process relative match -v var2 in_grp_1.nc  in_grp_2.nc";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -d lon1,2,2,1 %tmp_fl_00%";
+    $tst_cmd[2]="lon1[2] var2[2]=-1";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";     
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			      
 
 
   
