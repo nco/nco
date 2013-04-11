@@ -1,3 +1,7 @@
+2013-04-11  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add cmip5_1.cdl obs_1.cdl
+
 2013-04-10  Pedro Vicente  <pvicente@uci.edu>
 
 	* trv_tbl_rel_mch()  Relative match of object in table 1 to table 2 
