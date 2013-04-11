@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.156 2013-04-10 23:26:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.157 2013-04-11 06:38:32 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -197,20 +197,6 @@ trv_tbl_var_nm_fll                    /* [fnc] Check if absolute name "var_nm_fl
   return NULL;
 
 } /* trv_tbl_var_nm_fll() */
-
-trv_sct *                             /* O [sct] Table object */
-trv_tbl_var_nm                        /* [fnc] Check if relative name "var_nm" is in table */
-(const char * const var_nm,           /* I [sng] Variable name to find */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
-{
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm,trv_tbl->lst[uidx].nm))
-      return &trv_tbl->lst[uidx];
-
-  return NULL;
-
-} /* trv_tbl_var_nm() */
-
 
 void
 trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for "var_nm_fll" */
@@ -463,11 +449,11 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   /* Process objects in list */
   for(int idx=0;idx<idx_lst;idx++){
 
-    trv_sct *trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
-    trv_sct *trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
     nco_bool has_mch; /* [flg] A relative match was found in file 2 */
 
-    
+    trv_sct *trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
+    trv_sct *trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
+      
     /* Both objects exist in the 2 files, both objects are to extract */
     if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
 
@@ -968,15 +954,27 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
+  nco_bool rel_mch; /* [flg] A match was found */
 
-  trv_sct *trv_2=trv_tbl_var_nm(trv_1->nm,trv_tbl_2); 
+  rel_mch=False;
 
-  if (trv_2 == NULL) return False;
+  /* Loop table 2 */
+  for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
 
-  /* Process common object */
-  (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
+    /* A relative match was found */
+    if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(trv_1->nm,trv_tbl_2->lst[uidx].nm)) {
 
-  return True;
+      trv_sct *trv_2=&trv_tbl_2->lst[uidx];
+
+      rel_mch=True;
+
+      /* Process common object */
+      (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
+
+    } /* A relative match was found */
+  } /* Loop table 2 */
+
+  return rel_mch;
 
 } /* trv_tbl_rel_mch() */
 
