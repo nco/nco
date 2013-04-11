@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.157 2013-04-11 06:38:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.158 2013-04-11 20:38:08 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -470,7 +470,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
       /* Try a relative match in file 2 */
-      has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_tbl_1,trv_tbl_2,flg_def);
+      has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,True,trv_tbl_1,trv_tbl_2,flg_def);
 
       /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
       if(has_mch == False) (void)trv_tbl_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
@@ -482,9 +482,12 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
       if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
-      /* Copy processint type fixed object from file 2 */
-      (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
+      /* Try a relative match in file 1 */
+      has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_2,False,trv_tbl_1,trv_tbl_2,flg_def);
 
+      /* A match was not found in file 2, copy instead object from file 2 as fixed to output */
+      if(has_mch == False) (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
+      
     } /* Object exists only in file 2 and is to extract */    
   } /* Process objects in list */
 
@@ -949,7 +952,8 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_sct * trv_1,                      /* I [sct] Table object */
+ trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
+ nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
@@ -958,21 +962,43 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
 
   rel_mch=False;
 
-  /* Loop table 2 */
-  for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
+  if (flg_tbl_1 == True ){
 
-    /* A relative match was found */
-    if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(trv_1->nm,trv_tbl_2->lst[uidx].nm)) {
+    /* Loop table 2 */
+    for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
 
-      trv_sct *trv_2=&trv_tbl_2->lst[uidx];
+      /* A relative match was found */
+      if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)) {
 
-      rel_mch=True;
+        trv_sct *trv_2=&trv_tbl_2->lst[uidx];
 
-      /* Process common object */
-      (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
+        rel_mch=True;
 
-    } /* A relative match was found */
-  } /* Loop table 2 */
+        /* Process common object */
+        (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_def);
+
+      } /* A relative match was found */
+    } /* Loop table 2 */
+
+  } else if (flg_tbl_1 == False ){
+
+    /* Loop table 1 */
+    for(unsigned uidx=0;uidx<trv_tbl_1->nbr;uidx++){
+
+      /* A relative match was found */
+      if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)) {
+
+        trv_sct *trv_1=&trv_tbl_1->lst[uidx];
+
+        rel_mch=True;
+
+        /* Process common object */
+        (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_def);
+
+      } /* A relative match was found */
+    } /* Loop table 2 */
+
+  }
 
   return rel_mch;
 

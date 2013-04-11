@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.63 2013-04-11 06:38:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.64 2013-04-11 20:38:08 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -192,7 +192,8 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_sct * trv_1,                      /* I [sct] Table object */
+ trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
+ nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
