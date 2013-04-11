@@ -1,0 +1,38 @@
+// Generate netCDF file with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/cmip5_1.nc ~/nco/data/cmip5_1.cdl
+
+netcdf cmip5_1 {
+  dimensions:
+  time=4;
+ 
+  //
+  //cesm
+  //
+  group: cesm { 
+  variables:
+  float t(time);
+  data:
+  t=0,0,0,0;
+  } // end cesm
+  
+  //
+  //ecmwf
+  //
+  group: ecmwf { 
+  variables:
+  float t(time);
+  data:
+  t=1,1,1,1;
+  } // end ecmwf
+  
+  //
+  //gfdl
+  //
+  group: gfdl { 
+  variables:
+  float t(time);
+  data:
+  t=2,2,2,2;
+  } // end gfdl
+
+} // end root group

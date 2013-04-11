@@ -1,0 +1,12 @@
+// Generate netCDF file with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/obs_1.nc ~/nco/data/obs_1.cdl
+
+netcdf obs_1 {
+  dimensions:
+  time=4;
+  variables:
+  float t(time);
+  data:
+  t=5,5,5,5;
+ 
+} // end root group
