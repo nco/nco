@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.64 2013-04-11 20:38:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.65 2013-04-12 10:33:21 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -197,5 +197,10 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+
+int                                    /* O [nbr] Number of depth 1 groups (root = 0) */
+trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups */
+(const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+           
 
 #endif /* NCO_GRP_TRV_H */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.158 2013-04-11 20:38:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.159 2013-04-12 10:33:21 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -449,10 +449,19 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   /* Process objects in list */
   for(int idx=0;idx<idx_lst;idx++){
 
-    nco_bool has_mch; /* [flg] A relative match was found in file 2 */
+    trv_sct *trv_1;    /* [sct] Table object */
+    trv_sct *trv_2;    /* [sct] Table object */
 
-    trv_sct *trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
-    trv_sct *trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
+    nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
+
+    int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0) */
+    int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0) */
+
+    nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
+    nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
+            
+    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
+    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
       
     /* Both objects exist in the 2 files, both objects are to extract */
     if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
@@ -852,7 +861,6 @@ gpe_chk
  gpe_nm_sct ** gpe_nm,                 /* I/O [sct] GPE name duplicate check array */
  int * nbr_gpe_nm)                     /* I/O [nbr] Number of GPE entries */  
 {
-
   /* Detect duplicate GPE names in advance, then exit with helpful error */
 
   const char fnc_nm[]="gpe_chk()"; /* [sng] Function name */
@@ -1003,4 +1011,28 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
   return rel_mch;
 
 } /* trv_tbl_rel_mch() */
+
+
+int                                    /* O [nbr] Number of depth 1 groups (root = 0) */             
+trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups */
+(const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */           
+{
+
+  int nbr_grp_dpt;
+
+  nbr_grp_dpt=0;
+
+  /* Loop table */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+
+    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_grp && trv_tbl->lst[uidx].grp_dpt == 1) {
+
+      nbr_grp_dpt++;
+
+    } 
+  } /* Loop table  */
+
+  return nbr_grp_dpt;
+
+} /* trv_tbl_inq_dpt() */
 
