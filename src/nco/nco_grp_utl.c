@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.689 2013-04-10 03:50:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.690 2013-04-12 23:23:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1377,9 +1377,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
       /* Detect duplicate GPE names in advance, then exit with helpful error */
-      if(gpe){     
-        (void)gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
-      } /* !GPE */
+      if(gpe)nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
 
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s defining variable <%s> from ",prg_nm_get(),fnc_nm,var_trv.nm_fll);        

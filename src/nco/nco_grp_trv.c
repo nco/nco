@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.166 2013-04-12 21:40:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.167 2013-04-12 23:23:19 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -694,7 +694,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
     nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
-    PCK_ATT_CPY=pck_cpy_attr(prg_id,nco_pck_map_nil,var_prc_1);
+    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc_1);
 
     /*    if(trv_1->is_rec_var) rec_dmn_nm=(char *)strdup();*/
     /*    if(!rec_dmn_nm && trv_2->is_rec_var) rec_dmn_nm=(char *)strdup();*/
@@ -703,7 +703,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
     /* Detect duplicate GPE names in advance, then exit with helpful error */
-    if(gpe) (void)gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);   
+    if(gpe) (void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);   
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
     var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
@@ -862,15 +862,13 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
 
     nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
-    PCK_ATT_CPY=pck_cpy_attr(prg_id,nco_pck_map_nil,var_prc_1);
+    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc_1);
 
     /* If output group does not exist, create it */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
     /* Detect duplicate GPE names in advance, then exit with helpful error */
-    if(gpe){     
-      (void)gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
-    } /* !GPE */
+    if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
 
     /* Define variable in output file. */
     var_out_id= nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
@@ -907,7 +905,7 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
 
     
 void
-gpe_chk 
+nco_gpe_chk 
 (const char * const grp_out_fll,       /* I [sng] Group name */
  const char * const var_nm,            /* I [sng] Variable name */
  gpe_nm_sct ** gpe_nm,                 /* I/O [sct] GPE name duplicate check array */
@@ -915,7 +913,7 @@ gpe_chk
 {
   /* Detect duplicate GPE names in advance, then exit with helpful error */
 
-  const char fnc_nm[]="gpe_chk()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_gpe_chk()"; /* [sng] Function name */
   const char sls_sng[]="/";        /* [sng] Slash string */
   char *gpe_var_nm_fll=NULL;       /* [sng] absolute GPE variable path */
 
@@ -949,10 +947,10 @@ gpe_chk
 
   *nbr_gpe_nm=nbr_gpe;
 
-} /* gpe_chk() */
+} /* nco_gpe_chk() */
 
 nco_bool                               /* O [flg] Copy packing attributes */
-pck_cpy_attr                           /* [fnc] Inquire about copying packing attributes  */
+nco_pck_cpy_att                        /* [fnc] Inquire about copying packing attributes  */
 (const int prg_id,                     /* I [enm] Program ID */
  const int nco_pck_plc,                /* I [enm] Packing policy */
  const var_sct * const var_prc)        /* I [sct] Variable */
@@ -989,7 +987,7 @@ pck_cpy_attr                           /* [fnc] Inquire about copying packing at
 
   return PCK_ATT_CPY;
 
-} /* pck_cpy_attr() */
+} /* nco_pck_cpy_att() */
 
 
 
