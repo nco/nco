@@ -2,7 +2,9 @@
 
 	* Add cmip5_1.cdl obs_1.cdl
   
-        * ncbo test #22; Process relative match cmip5_1.nc obs_1.nc
+        * ncbo test #22; Process relative match from model to observations cmip5_1.nc -> obs_1.nc
+
+        * ncbo test #23; Process relative match from observations to model obs_1.nc -> cmip5_1.nc
 
 2013-04-10  Pedro Vicente  <pvicente@uci.edu>
 
