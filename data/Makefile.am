@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.12 2013-04-12 18:42:46 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.13 2013-04-12 20:56:29 zender Exp $ -*-makefile-*-
 
 test_data = big.nc in.nc in_rec_zero.nc
 
@@ -8,7 +8,7 @@ test_data = big.nc in.nc in_rec_zero.nc
 
 all: ${test_data}
 
-EXTRA_DIST = big.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl cmip5_1.cdl obs_1.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
+EXTRA_DIST = big.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl cmip5.cdl obs.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 
 # Automake manual section 14:
 # If configure built it, 'distclean' should delete it
