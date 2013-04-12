@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.65 2013-04-12 10:33:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.66 2013-04-12 17:47:18 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -136,6 +136,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
  trv_sct * trv_2,                      /* I [sct] Table object */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
+ nco_bool flg_tbl_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 void                          
