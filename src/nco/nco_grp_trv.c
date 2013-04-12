@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.160 2013-04-12 17:15:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.161 2013-04-12 17:24:17 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -446,6 +446,15 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   } /* endif dbg */
 
 
+  int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0)  */
+  int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0)  */
+
+  nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
+  nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
+
+
+
+
   /* Process objects in list */
   for(int idx=0;idx<idx_lst;idx++){
 
@@ -453,13 +462,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     trv_sct *trv_2;    /* [sct] Table object */
 
     nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
-
-    int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0)  */
-    int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0)  */
-
-    nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
-    nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
-            
+           
     trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
     trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
       
