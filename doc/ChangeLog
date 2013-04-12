@@ -1,12 +1,14 @@
 2013-04-11  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add cmip5_1.cdl obs_1.cdl
+  
+        * ncbo test #22; Process relative match cmip5_1.nc obs_1.nc
 
 2013-04-10  Pedro Vicente  <pvicente@uci.edu>
 
 	* trv_tbl_rel_mch()  Relative match of object in table 1 to table 2 
   
-	* Add ncbo test #21; Relative match of object in table 1 to table 2
+	* ncbo test #21; Relative match of object in table 1 to table 2
 
 2013-04-09  Pedro Vicente  <pvicente@uci.edu>
 
@@ -28,7 +30,7 @@
 
 	* trv_tbl_prc() Match different types for processed objects
 
-	* Add ncbo test #20; Match different types for processed objects
+	* ncbo test #20; Match different types for processed objects
 
 2013-04-03  Pedro Vicente  <pvicente@uci.edu>
 
