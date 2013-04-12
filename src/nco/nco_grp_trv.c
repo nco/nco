@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.159 2013-04-12 10:33:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.160 2013-04-12 17:15:52 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -454,8 +454,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
     nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
 
-    int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0) */
-    int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0) */
+    int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0)  */
+    int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0)  */
 
     nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
     nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
@@ -473,6 +473,27 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
     } /* Both objects exist in the 2 files, both objects are to extract */
 
+#if 0
+
+    /* Object exists only in one file and is to extract */
+    else {
+
+      /* Number of depth 1 groups in file 1 greater (typically model file) */
+      if (nbr_grp_dpt_1 > nbr_grp_dpt_2){
+
+       
+
+      } else { /* Number of depth 1 groups in file 2 greater */
+
+       
+
+
+
+      } /* Number of depth 1 groups in file 2 greater */
+
+    } /* Object exists only in one file and is to extract */
+
+#else
     /* Object exists only in file 1 and is to extract */
     else if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
 
@@ -497,7 +518,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       /* A match was not found in file 2, copy instead object from file 2 as fixed to output */
       if(has_mch == False) (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
       
-    } /* Object exists only in file 2 and is to extract */    
+    } /* Object exists only in file 2 and is to extract */ 
+#endif
+
   } /* Process objects in list */
 
   for(int idx=0;idx<idx_lst;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
