@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.66 2013-04-12 17:47:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.67 2013-04-12 18:07:00 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -136,7 +136,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
  trv_sct * trv_2,                      /* I [sct] Table object */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
- nco_bool flg_tbl_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 void                          
@@ -195,6 +195,7 @@ trv_tbl_rel_mch                        /* [fnc] Relative match of object in tabl
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
  nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+ nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
