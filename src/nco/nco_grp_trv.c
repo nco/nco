@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.164 2013-04-12 18:11:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.165 2013-04-12 18:33:13 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -460,10 +460,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     trv_sct *trv_2;    /* [sct] Table object */
 
     nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
-           
+
     trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
     trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
-      
+
     /* Both objects exist in the 2 files, both objects are to extract */
     if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
 
@@ -474,7 +474,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
     } /* Both objects exist in the 2 files, both objects are to extract */
 
-#if 1
 
     /* Object exists only in one file and is to extract */
     else {
@@ -509,7 +508,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         } /* Object exists only in file 2 and is to extract */ 
 
 
-
       } else { /* Number of depth 1 groups in file 2 greater */
 
 
@@ -539,39 +537,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
         } /* Object exists only in file 2 and is to extract */ 
 
-
-
       } /* Number of depth 1 groups in file 2 greater */
 
     } /* Object exists only in one file and is to extract */
-
-#else
-    /* Object exists only in file 1 and is to extract */
-    else if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
-
-      if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
-
-      /* Try a relative match in file 2 */
-      has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,True,trv_tbl_1,trv_tbl_2,flg_def);
-
-      /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
-      if(has_mch == False) (void)trv_tbl_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
-
-    } /* Object exists only in file 1 and is to extract */
-
-    /* Object exists only in file 2 and is to extract */
-    else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
-
-      if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
-
-      /* Try a relative match in file 1 */
-      has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_2,False,trv_tbl_1,trv_tbl_2,flg_def);
-
-      /* A match was not found in file 2, copy instead object from file 2 as fixed to output */
-      if(has_mch == False) (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
-      
-    } /* Object exists only in file 2 and is to extract */ 
-#endif
 
   } /* Process objects in list */
 
