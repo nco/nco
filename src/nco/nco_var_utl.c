@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.286 2013-04-06 22:15:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.287 2013-04-12 21:40:45 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1580,8 +1580,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
-  Routine is based on nco_cpy_var_dfn_lmt(), and differs trivially from it
-  Should perhaps be merged into one call that always takes lmt_all_lst information?
+  Routine was based on nco_cpy_var_dfn_lmt(), and differed trivially from it
+  Now merged into one call that always takes limit information?
   Routine truncates dimensions in variable definition in output file according to user-specified limits
   Routine copies_variable by variable, old-style, used only by ncks
   20130126: csz 

@@ -3,7 +3,7 @@
 
 netcdf cmip5_1 {
   dimensions:
-  time=4;
+  time=unlimited;
  
   //
   //cesm

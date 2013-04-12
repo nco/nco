@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.633 2013-04-12 18:42:46 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.634 2013-04-12 21:40:45 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -565,6 +565,7 @@ MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these file
 # Variables having to do with NCO build
 MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,libnco_tst.c libnco_c++_tst.cc Makefile nco.spec nco_dst.pl) # `make tags' includes these files
 MDL_BLD_SRC += $(addprefix ${MY_BM_DIR}/,NCO_bm.pm NCO_benchmarks.pm NCO_rgr.pm nco_bm.pl nco_bm.sh mk_bm_plots.pl) # `make tags' includes these files
+MDL_BLD_SRC += $(addprefix ${MY_DAT_DIR}/,Makefile.am) $(addprefix ${MY_SRC_DIR}/,Makefile.am) $(addprefix ${MY_DOC_DIR}/,Makefile.am) $(addprefix ${NCO_CXX_SRC_DIR}/,Makefile.am)  $(addprefix ${NCOXX_SRC_DIR}/,Makefile.am) # `make tags' includes these files
 # Files, if any, to exclude from tags
 # TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc ../src/nco/lex.${NCO_YY_PFX}.c
 TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
@@ -1763,7 +1764,7 @@ tst:	dat
 dap:	data
 	- cd ~/nco/data; scp in.nc in.cdl dust.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/data/dodsdata
 data:	dat
-dat:	${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_rec_zero.nc
+dat:	${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_rec_zero.nc
 	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	ncgen -b -o $@ $<
@@ -1775,9 +1776,9 @@ ${MY_DAT_DIR}/in_grp_1.nc: ${MY_DAT_DIR}/in_grp_1.cdl
 	ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/in_grp_2.nc: ${MY_DAT_DIR}/in_grp_2.cdl
 	ncgen -k netCDF-4 -b -o $@ $<
-${MY_DAT_DIR}/cmip5_1.nc: ${MY_DAT_DIR}/cmip5_1.cdl
+${MY_DAT_DIR}/cmip5.nc: ${MY_DAT_DIR}/cmip5.cdl
 	ncgen -k netCDF-4 -b -o $@ $<
-${MY_DAT_DIR}/obs_1.nc: ${MY_DAT_DIR}/obs_1.cdl
+${MY_DAT_DIR}/obs.nc: ${MY_DAT_DIR}/obs.cdl
 	ncgen -k netCDF-4 -b -o $@ $<
 dataclean: dat_cln
 dat_cln:
@@ -2005,7 +2006,7 @@ dbg:
 distclean: dst_cln
 dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
-	cd ${MY_DAT_DIR}; rm -f in.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_rec_zero.nc *~
+	cd ${MY_DAT_DIR}; rm -f cmip5.nc obs.nc in.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_rec_zero.nc *~
 tags: 
 	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.238 2013-04-09 02:14:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.239 2013-04-12 21:40:45 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -106,7 +106,6 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
-  nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
 
@@ -132,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.238 2013-04-09 02:14:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.238 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.239 2013-04-12 21:40:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.239 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -189,8 +188,6 @@ main(int argc,char **argv)
   int var_ntm_fl_2;   /* [nbr] Number of non-atomic variables in file */
   int nbr_var_fl_1;   /* [nbr] Number of atomic-type variables in file */
   int nbr_var_fl_2;   /* [nbr] Number of atomic-type variables in file */
-  int xtr_nbr_1=0; /* xtr_nbr_1 won't otherwise be set for -c with no -v */
-  int xtr_nbr_2=0; /* xtr_nbr_2 won't otherwise be set for -c with no -v */
   int nco_op_typ=nco_op_nil; /* [enm] Operation type */
   int opt;
   int out_id;  
@@ -445,7 +442,6 @@ main(int argc,char **argv)
       (void)nco_rx_comma2hash(optarg_lcl);
       var_lst_in=nco_lst_prs_2D(optarg_lcl,",",&var_lst_in_nbr);
       optarg_lcl=(char *)nco_free(optarg_lcl);
-      xtr_nbr_1=xtr_nbr_2=var_lst_in_nbr;
       break;
     case 'X': /* Copy auxiliary coordinate argument for later processing */
       aux_arg[aux_nbr]=(char *)strdup(optarg);
@@ -458,9 +454,6 @@ main(int argc,char **argv)
     case 'y': /* User-specified operation type overrides invocation default */
       nco_op_typ_sng=(char *)strdup(optarg);
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
-      break;
-    case 'z': /* Print absolute path of all input variables then exit */
-      GET_LIST=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -600,6 +593,10 @@ main(int argc,char **argv)
   /* Match 2 tables (find common objects) and process common objects (define mode) */
   (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
 
+  /* Catenate timestamped command line to "history" global attribute */
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+  if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
+
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
@@ -658,7 +655,7 @@ main(int argc,char **argv)
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
 
     /* Memory management for GPE names */
-    for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+    for(idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
   } /* !flg_cln */
 
