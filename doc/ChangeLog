@@ -1,3 +1,7 @@
+2013-04-14  Pedro Vicente  <pvicente@uci.edu>
+
+        * nco_rec_dmn_nm() Return array of record names 
+
 2013-04-11  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add cmip5_1.cdl obs_1.cdl
