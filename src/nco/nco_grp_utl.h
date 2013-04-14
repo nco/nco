@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.266 2013-03-20 11:49:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.267 2013-04-14 20:28:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -338,6 +338,22 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
 (const int nc_id,                    /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
  nco_bool use_flg_xtr);              /* I [flg] Use flg_xtr in selection */
+
+void                          
+nco_gpe_chk                            /* [fnc] Check valid GPE new name  */
+(const char * const grp_out_fll,       /* I [sng] Group name */
+ const char * const var_nm,            /* I [sng] Variable name */
+ gpe_nm_sct ** gpe_nm,                 /* I/O [sct] GPE name duplicate check array */
+ int * nbr_gpe_nm);                    /* I/O [nbr] Number of GPE entries */ 
+
+void
+nco_rec_dmn_nm                         /* [fnc] Return array of record names  */
+(const trv_sct * const var_trv,        /* I [sct] Variable object */
+ const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ gpe_nm_sct ** rec_dmn_nm,             /* I/O [sct] Array of record names */
+ int * nbr_rec_dmn_nm);                /* I/O [nbr] Number of entries in array */  
+
+
 
 
 #ifdef __cplusplus

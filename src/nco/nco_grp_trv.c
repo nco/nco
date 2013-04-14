@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.167 2013-04-12 23:23:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.168 2013-04-14 20:28:13 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -690,29 +690,47 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
   /* Define mode */
   if(flg_def){  
-    char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
+    char *rec_dmn_nm=NULL;    /* [sng] Record dimension name */
 
-    nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
+    gpe_nm_sct *rec_dmn_nm_1=NULL; /* [sct] Record dimension names array */
+    gpe_nm_sct *rec_dmn_nm_2=NULL; /* [sct] Record dimension names array */
+
+    int nbr_rec_dmn_nm_1;          /* [nbr] Number of record dimension names in array */
+    int nbr_rec_dmn_nm_2;          /* [nbr] Number of record dimension names in array */
+
+    nco_bool PCK_ATT_CPY;    /* [flg] Copy attributes "scale_factor", "add_offset" */
 
     PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc_1);
 
-    /*    if(trv_1->is_rec_var) rec_dmn_nm=(char *)strdup();*/
-    /*    if(!rec_dmn_nm && trv_2->is_rec_var) rec_dmn_nm=(char *)strdup();*/
+    nbr_rec_dmn_nm_1=nbr_rec_dmn_nm_2=0;
 
     /* If output group does not exist, create it */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
     /* Detect duplicate GPE names in advance, then exit with helpful error */
-    if(gpe) (void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);   
+    if(gpe) (void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);  
+
+    /* Get array of record names for object */
+    (void)nco_rec_dmn_nm(trv_1,trv_tbl_1,&rec_dmn_nm_1,&nbr_rec_dmn_nm_1);               
+    (void)nco_rec_dmn_nm(trv_2,trv_tbl_2,&rec_dmn_nm_2,&nbr_rec_dmn_nm_2);
+
+    /* Use for record dimension name the first in array */
+    if(nbr_rec_dmn_nm_1) rec_dmn_nm=(char *)strdup(rec_dmn_nm_1[0].var_nm_fll);
+    if(!rec_dmn_nm && nbr_rec_dmn_nm_2) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2[0].var_nm_fll);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
+    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,NULL,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,NULL,trv_2,trv_tbl_2);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,rnk_gtr);
 
     /* Copy variable's attributes */
     if(RNK_1_GTR) (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); else (void)nco_att_cpy(grp_id_2,grp_out_id,var_id_2,var_out_id,PCK_ATT_CPY);
+
+    /* Memory management for record dimension names */
+    if (rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
+    for(int idx=0;idx<nbr_rec_dmn_nm_1;idx++) rec_dmn_nm_1[idx].var_nm_fll=(char *)nco_free(rec_dmn_nm_1[idx].var_nm_fll);
+    for(int idx=0;idx<nbr_rec_dmn_nm_2;idx++) rec_dmn_nm_2[idx].var_nm_fll=(char *)nco_free(rec_dmn_nm_2[idx].var_nm_fll);
 
   }else{ /* Write mode */
 
@@ -903,52 +921,6 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
 
 } /* trv_tbl_fix() */
 
-    
-void
-nco_gpe_chk 
-(const char * const grp_out_fll,       /* I [sng] Group name */
- const char * const var_nm,            /* I [sng] Variable name */
- gpe_nm_sct ** gpe_nm,                 /* I/O [sct] GPE name duplicate check array */
- int * nbr_gpe_nm)                     /* I/O [nbr] Number of GPE entries */  
-{
-  /* Detect duplicate GPE names in advance, then exit with helpful error */
-
-  const char fnc_nm[]="nco_gpe_chk()"; /* [sng] Function name */
-  const char sls_sng[]="/";        /* [sng] Slash string */
-  char *gpe_var_nm_fll=NULL;       /* [sng] absolute GPE variable path */
-
-  int nbr_gpe = *nbr_gpe_nm;
-  
-  /* Construct absolute GPE variable path */
-  gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(var_nm)+2L);
-  strcpy(gpe_var_nm_fll,grp_out_fll);
-  /* If not root group, concatenate separator */
-  if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
-  strcat(gpe_var_nm_fll,var_nm);
-
-  /* GPE name is not already on list, put it there */
-  if(nbr_gpe == 0){
-    (*gpe_nm)=(gpe_nm_sct *)nco_malloc((nbr_gpe+1)*sizeof(gpe_nm_sct)); 
-    (*gpe_nm)[nbr_gpe].var_nm_fll=strdup(gpe_var_nm_fll);
-    nbr_gpe++;
-  }else{
-    /* Put GPE on list only if not already there */
-    for(int idx_gpe=0;idx_gpe<nbr_gpe;idx_gpe++){
-      if(!strcmp(gpe_var_nm_fll,(*gpe_nm)[idx_gpe].var_nm_fll)){
-        (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined in output file. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
-        for(int idx=0;idx<nbr_gpe;idx++) (*gpe_nm)[idx].var_nm_fll=(char *)nco_free((*gpe_nm)[idx].var_nm_fll);
-        nco_exit(EXIT_FAILURE);
-      } /* strcmp() */
-    } /* end loop over gpe_nm */
-    (*gpe_nm)=(gpe_nm_sct *)nco_realloc((void *)(*gpe_nm),(nbr_gpe+1)*sizeof(gpe_nm_sct));
-    (*gpe_nm)[nbr_gpe].var_nm_fll=strdup(gpe_var_nm_fll);
-    nbr_gpe++;
-  } /* nbr_gpe_nm */
-
-  *nbr_gpe_nm=nbr_gpe;
-
-} /* nco_gpe_chk() */
-
 nco_bool                               /* O [flg] Copy packing attributes */
 nco_pck_cpy_att                        /* [fnc] Inquire about copying packing attributes  */
 (const int prg_id,                     /* I [enm] Program ID */
@@ -988,8 +960,6 @@ nco_pck_cpy_att                        /* [fnc] Inquire about copying packing at
   return PCK_ATT_CPY;
 
 } /* nco_pck_cpy_att() */
-
-
 
 nco_bool                               /* O [flg] True for match found */
 trv_tbl_rel_mch                        /* [fnc] Relative match of object in table 1 to table 2  */
@@ -1069,18 +1039,19 @@ trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups 
 (const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */           
 {
 
-  int nbr_grp_dpt;
+  int nbr_grp_dpt; /* [nbr] Number of depth 1 groups (root = 0) */       
 
   nbr_grp_dpt=0;
 
   /* Loop table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
 
+    /* If depth 1 */      
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_grp && trv_tbl->lst[uidx].grp_dpt == 1) {
 
       nbr_grp_dpt++;
 
-    } 
+    } /* If depth 1 */  
   } /* Loop table  */
 
   return nbr_grp_dpt;

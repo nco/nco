@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.68 2013-04-12 23:23:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.69 2013-04-14 20:28:13 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -159,14 +159,6 @@ trv_tbl_fix                            /* [fnc] Copy processing type fixed objec
  const trv_sct * const trv_1,          /* I [sct] Table object */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
-
-
-void                          
-nco_gpe_chk                            /* [fnc] Check valid GPE new name  */
-(const char * const grp_out_fll,       /* I [sng] Group name */
- const char * const var_nm,            /* I [sng] Variable name */
- gpe_nm_sct ** gpe_nm,                 /* I/O [sct] GPE name duplicate check array */
- int * nbr_gpe_nm);                    /* I/O [nbr] Number of GPE entries */  
 
 nco_bool                               /* O [flg] Copy packing attributes */
 nco_pck_cpy_att                        /* [fnc] Inquire about copying packing attributes  */

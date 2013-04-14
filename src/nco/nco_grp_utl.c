@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.690 2013-04-12 23:23:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.691 2013-04-14 20:28:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3329,3 +3329,88 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
   } /* end loop over uidx */
 
 }
+
+void
+nco_gpe_chk                            /* [fnc] Check valid GPE new name  */
+(const char * const grp_out_fll,       /* I [sng] Group name */
+ const char * const var_nm,            /* I [sng] Variable name */
+ gpe_nm_sct ** gpe_nm,                 /* I/O [sct] GPE name duplicate check array */
+ int * nbr_gpe_nm)                     /* I/O [nbr] Number of GPE entries */  
+{
+  /* Detect duplicate GPE names in advance, then exit with helpful error */
+
+  const char fnc_nm[]="nco_gpe_chk()"; /* [sng] Function name */
+  const char sls_sng[]="/";        /* [sng] Slash string */
+  char *gpe_var_nm_fll=NULL;       /* [sng] absolute GPE variable path */
+
+  int nbr_gpe = *nbr_gpe_nm;
+  
+  /* Construct absolute GPE variable path */
+  gpe_var_nm_fll=(char*)nco_malloc(strlen(grp_out_fll)+strlen(var_nm)+2L);
+  strcpy(gpe_var_nm_fll,grp_out_fll);
+  /* If not root group, concatenate separator */
+  if(strcmp(grp_out_fll,sls_sng)) strcat(gpe_var_nm_fll,sls_sng);
+  strcat(gpe_var_nm_fll,var_nm);
+
+  /* GPE name is not already on list, put it there */
+  if(nbr_gpe == 0){
+    (*gpe_nm)=(gpe_nm_sct *)nco_malloc((nbr_gpe+1)*sizeof(gpe_nm_sct)); 
+    (*gpe_nm)[nbr_gpe].var_nm_fll=strdup(gpe_var_nm_fll);
+    nbr_gpe++;
+  }else{
+    /* Put GPE on list only if not already there */
+    for(int idx_gpe=0;idx_gpe<nbr_gpe;idx_gpe++){
+      if(!strcmp(gpe_var_nm_fll,(*gpe_nm)[idx_gpe].var_nm_fll)){
+        (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined in output file. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
+        for(int idx=0;idx<nbr_gpe;idx++) (*gpe_nm)[idx].var_nm_fll=(char *)nco_free((*gpe_nm)[idx].var_nm_fll);
+        nco_exit(EXIT_FAILURE);
+      } /* strcmp() */
+    } /* end loop over gpe_nm */
+    (*gpe_nm)=(gpe_nm_sct *)nco_realloc((void *)(*gpe_nm),(nbr_gpe+1)*sizeof(gpe_nm_sct));
+    (*gpe_nm)[nbr_gpe].var_nm_fll=strdup(gpe_var_nm_fll);
+    nbr_gpe++;
+  } /* nbr_gpe_nm */
+
+  *nbr_gpe_nm=nbr_gpe;
+
+} /* nco_gpe_chk() */
+
+void
+nco_rec_dmn_nm                         /* [fnc] Return array of record names  */
+(const trv_sct * const var_trv,        /* I [sct] Variable object */
+ const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ gpe_nm_sct ** rec_dmn_nm,             /* I/O [sct] Array of record names */
+ int * nbr_rec_dmn_nm)                 /* I/O [nbr] Number of entries in array */  
+{
+  /* Return array of record names */
+
+  int nbr_rec;          /* [nbr] Number of entries in array */  
+
+  dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */  
+
+  nbr_rec = *nbr_rec_dmn_nm;
+
+  /* Loop dimensions for object (variable)  */
+  for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++) {
+
+    /* Get unique dimension object from unique dimension ID, in input list */
+    dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl);
+
+    /* Dimension is a record dimension */
+    if (dmn_trv->is_rec_dmn){
+
+      (*rec_dmn_nm)=(gpe_nm_sct *)nco_realloc((void *)(*rec_dmn_nm),(nbr_rec+1)*sizeof(gpe_nm_sct));
+      (*rec_dmn_nm)[nbr_rec].var_nm_fll=strdup(dmn_trv->nm_fll);
+
+      nbr_rec++;
+
+    } /* Dimension is a record dimension */
+  } /* Loop dimensions for object (variable)  */
+
+  *nbr_rec_dmn_nm=nbr_rec;
+
+} /* nco_rec_dmn_nm() */
+
+
+
+
