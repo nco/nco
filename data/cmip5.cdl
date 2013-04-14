@@ -1,7 +1,7 @@
 // Generate netCDF file with:
-// ncgen -k netCDF-4 -b -o ~/nco/data/cmip5_1.nc ~/nco/data/cmip5_1.cdl
+// ncgen -k netCDF-4 -b -o ~/nco/data/cmip5.nc ~/nco/data/cmip5.cdl
 
-netcdf cmip5_1 {
+netcdf cmip5 {
   dimensions:
   time=unlimited;
  
