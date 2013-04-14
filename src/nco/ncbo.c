@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.239 2013-04-12 21:40:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.240 2013-04-14 20:48:38 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.239 2013-04-12 21:40:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.239 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.240 2013-04-14 20:48:38 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.240 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -655,7 +655,7 @@ main(int argc,char **argv)
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
 
     /* Memory management for GPE names */
-    for(idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+    for(idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].nm_fll=(char *)nco_free(gpe_nm[idx].nm_fll);
 
   } /* !flg_cln */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.691 2013-04-14 20:28:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.692 2013-04-14 20:48:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1412,7 +1412,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   } /* end loop over uidx */
 
   /* Memory management for GPE names */
-  for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+  for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].nm_fll=(char *)nco_free(gpe_nm[idx].nm_fll);
 
   /* Print extraction list in developer mode */
   if(dbg_lvl_get() == 13) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
@@ -3355,19 +3355,19 @@ nco_gpe_chk                            /* [fnc] Check valid GPE new name  */
   /* GPE name is not already on list, put it there */
   if(nbr_gpe == 0){
     (*gpe_nm)=(gpe_nm_sct *)nco_malloc((nbr_gpe+1)*sizeof(gpe_nm_sct)); 
-    (*gpe_nm)[nbr_gpe].var_nm_fll=strdup(gpe_var_nm_fll);
+    (*gpe_nm)[nbr_gpe].nm_fll=strdup(gpe_var_nm_fll);
     nbr_gpe++;
   }else{
     /* Put GPE on list only if not already there */
     for(int idx_gpe=0;idx_gpe<nbr_gpe;idx_gpe++){
-      if(!strcmp(gpe_var_nm_fll,(*gpe_nm)[idx_gpe].var_nm_fll)){
+      if(!strcmp(gpe_var_nm_fll,(*gpe_nm)[idx_gpe].nm_fll)){
         (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined in output file. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
-        for(int idx=0;idx<nbr_gpe;idx++) (*gpe_nm)[idx].var_nm_fll=(char *)nco_free((*gpe_nm)[idx].var_nm_fll);
+        for(int idx=0;idx<nbr_gpe;idx++) (*gpe_nm)[idx].nm_fll=(char *)nco_free((*gpe_nm)[idx].nm_fll);
         nco_exit(EXIT_FAILURE);
       } /* strcmp() */
     } /* end loop over gpe_nm */
     (*gpe_nm)=(gpe_nm_sct *)nco_realloc((void *)(*gpe_nm),(nbr_gpe+1)*sizeof(gpe_nm_sct));
-    (*gpe_nm)[nbr_gpe].var_nm_fll=strdup(gpe_var_nm_fll);
+    (*gpe_nm)[nbr_gpe].nm_fll=strdup(gpe_var_nm_fll);
     nbr_gpe++;
   } /* nbr_gpe_nm */
 
@@ -3400,7 +3400,7 @@ nco_rec_dmn_nm                         /* [fnc] Return array of record names  */
     if (dmn_trv->is_rec_dmn){
 
       (*rec_dmn_nm)=(gpe_nm_sct *)nco_realloc((void *)(*rec_dmn_nm),(nbr_rec+1)*sizeof(gpe_nm_sct));
-      (*rec_dmn_nm)[nbr_rec].var_nm_fll=strdup(dmn_trv->nm_fll);
+      (*rec_dmn_nm)[nbr_rec].nm_fll=strdup(dmn_trv->nm_fll);
 
       nbr_rec++;
 
