@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.692 2013-04-14 20:48:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.693 2013-04-15 18:23:31 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3400,7 +3400,7 @@ nco_rec_dmn_nm                         /* [fnc] Return array of record names  */
     if (dmn_trv->is_rec_dmn){
 
       (*rec_dmn_nm)=(gpe_nm_sct *)nco_realloc((void *)(*rec_dmn_nm),(nbr_rec+1)*sizeof(gpe_nm_sct));
-      (*rec_dmn_nm)[nbr_rec].nm_fll=strdup(dmn_trv->nm_fll);
+      (*rec_dmn_nm)[nbr_rec].nm_fll=strdup(dmn_trv->nm);
 
       nbr_rec++;
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.169 2013-04-14 20:48:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.170 2013-04-15 18:23:31 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -719,7 +719,7 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     if(!rec_dmn_nm && nbr_rec_dmn_nm_2) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2[0].nm_fll);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,NULL,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,NULL,trv_2,trv_tbl_2);
+    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,rnk_gtr);
