@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.19 2012-06-05 21:49:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.hh,v 1.20 2013-04-16 21:53:24 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -62,13 +62,6 @@
 /* Don't know what Charlies done to the bools */
 /* Temporary fix for now !!*/
 #define nco_bool int
-
-/* Name list structure ncap.c
-(for subscript lists) */
-typedef struct{ /* nm_lst_sct */
-  nm_id_sct *lst; /* [sct] List element */
-  int nbr; /* [nbr] Number of structures in list */
-} nm_lst_sct;
 
 /* Used to do an pre-mpi sort */
  typedef struct exp_sct_tag { 
