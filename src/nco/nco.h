@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.306 2013-04-16 01:58:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.307 2013-04-16 20:57:49 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -813,6 +813,7 @@ extern "C" {
   /* Name list structure */
   typedef struct{ /* nm_tbl_sct */
     char *nm;     /* [sng] A name */
+    int nbr;      /* [nbr] Number of items in "nm" array */
   } nm_tbl_sct;
 
   /* Limit "lmt_sct" monotonic direction */

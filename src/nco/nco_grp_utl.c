@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.695 2013-04-16 01:58:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.696 2013-04-16 20:57:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3379,8 +3379,7 @@ void
 nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 (const trv_sct * const var_trv,        /* I [sct] Variable object */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- nm_tbl_sct ** rec_dmn_nm,             /* I/O [sct] Array of record names */
- int * nbr_rec_dmn_nm)                 /* I/O [nbr] Number of entries in array */  
+ nm_tbl_sct ** rec_dmn_nm)             /* I/O [sct] Array of record names */ 
 {
   /* Return array of record names */
 
@@ -3388,7 +3387,7 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 
   dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */  
 
-  nbr_rec = *nbr_rec_dmn_nm;
+  if (*rec_dmn_nm) nbr_rec=(*rec_dmn_nm)->nbr; else nbr_rec=0;
 
   /* Loop dimensions for object (variable)  */
   for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++) {
@@ -3407,7 +3406,7 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
     } /* Dimension is a record dimension */
   } /* Loop dimensions for object (variable)  */
 
-  *nbr_rec_dmn_nm=nbr_rec;
+  if (*rec_dmn_nm) (*rec_dmn_nm)->nbr=nbr_rec;
 
 } /* nco_get_rec_dmn_nm() */
 

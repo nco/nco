@@ -1,6 +1,6 @@
-2013-04-14  Pedro Vicente  <pvicente@uci.edu>
+2013-04-16  Pedro Vicente  <pvicente@uci.edu>
 
-        * nco_rec_dmn_nm() Return array of record names 
+        * nco_get_rec_dmn_nm() Return array of record names 
 
 2013-04-11  Pedro Vicente  <pvicente@uci.edu>
 
