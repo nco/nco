@@ -26,7 +26,6 @@ win32{
  # gsl
  INCLUDEPATH += $(HEADER_GSL)
  DEFINES += ENABLE_GSL
- LIBS += $(LIB_GSL)
 }
 
 win32{
@@ -42,6 +41,8 @@ win32{
  LIBS += $(LIB_HDF5_HL)
  LIBS += $(LIB_ZLIB)
  LIBS += $(LIB_SZIP)
+ LIBS += $(LIB_GSL)
+ LIBS += $(LIB_CURL)
  DEFINES += ENABLE_NETCDF4
  DEFINES += HAVE_NETCDF4_H
 }

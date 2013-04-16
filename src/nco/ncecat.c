@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.273 2013-03-29 00:19:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.274 2013-04-16 05:21:05 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -38,6 +38,10 @@
    ncecat -O -D 1 --gag -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
+
+#if 0
+#define USE_TRV_API
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -124,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.273 2013-03-29 00:19:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.273 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.274 2013-04-16 05:21:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.274 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -510,11 +514,14 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
+
+#ifndef USE_TRV_API
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
+#endif /* USE_TRV_API */
 
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
