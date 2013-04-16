@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.170 2013-04-15 18:23:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.171 2013-04-16 01:19:15 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -715,8 +715,8 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     (void)nco_rec_dmn_nm(trv_2,trv_tbl_2,&rec_dmn_nm_2,&nbr_rec_dmn_nm_2);
 
     /* Use for record dimension name the first in array */
-    if(nbr_rec_dmn_nm_1) rec_dmn_nm=(char *)strdup(rec_dmn_nm_1[0].nm_fll);
-    if(!rec_dmn_nm && nbr_rec_dmn_nm_2) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2[0].nm_fll);
+    if(nbr_rec_dmn_nm_1) rec_dmn_nm=(char *)strdup(rec_dmn_nm_1[0].var_nm_fll);
+    if(!rec_dmn_nm && nbr_rec_dmn_nm_2) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2[0].var_nm_fll);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
     var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
@@ -729,8 +729,8 @@ trv_tbl_prc                            /* [fnc] Process objects  */
 
     /* Memory management for record dimension names */
     if (rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
-    for(int idx=0;idx<nbr_rec_dmn_nm_1;idx++) rec_dmn_nm_1[idx].nm_fll=(char *)nco_free(rec_dmn_nm_1[idx].nm_fll);
-    for(int idx=0;idx<nbr_rec_dmn_nm_2;idx++) rec_dmn_nm_2[idx].nm_fll=(char *)nco_free(rec_dmn_nm_2[idx].nm_fll);
+    for(int idx=0;idx<nbr_rec_dmn_nm_1;idx++) rec_dmn_nm_1[idx].var_nm_fll=(char *)nco_free(rec_dmn_nm_1[idx].var_nm_fll);
+    for(int idx=0;idx<nbr_rec_dmn_nm_2;idx++) rec_dmn_nm_2[idx].var_nm_fll=(char *)nco_free(rec_dmn_nm_2[idx].var_nm_fll);
 
   }else{ /* Write mode */
 
