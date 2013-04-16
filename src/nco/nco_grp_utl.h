@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.267 2013-04-14 20:28:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.268 2013-04-16 01:58:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -347,10 +347,10 @@ nco_gpe_chk                            /* [fnc] Check valid GPE new name  */
  int * nbr_gpe_nm);                    /* I/O [nbr] Number of GPE entries */ 
 
 void
-nco_rec_dmn_nm                         /* [fnc] Return array of record names  */
+nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 (const trv_sct * const var_trv,        /* I [sct] Variable object */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- gpe_nm_sct ** rec_dmn_nm,             /* I/O [sct] Array of record names */
+ nm_tbl_sct ** rec_dmn_nm,             /* I/O [sct] Array of record names */
  int * nbr_rec_dmn_nm);                /* I/O [nbr] Number of entries in array */  
 
 

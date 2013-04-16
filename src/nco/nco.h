@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.305 2013-04-16 01:19:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.306 2013-04-16 01:58:31 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -807,8 +807,13 @@ extern "C" {
 
   /* GPE duplicate name check structure */
   typedef struct{ /* gpe_nm_sct */
-    char *var_nm_fll; /* Fully qualified variable name */
+    char *var_nm_fll; /* [sng] Fully qualified variable name */
   } gpe_nm_sct;
+
+  /* Name list structure */
+  typedef struct{ /* nm_tbl_sct */
+    char *nm;     /* [sng] A name */
+  } nm_tbl_sct;
 
   /* Limit "lmt_sct" monotonic direction */
   typedef enum {

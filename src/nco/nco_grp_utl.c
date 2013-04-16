@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.694 2013-04-16 01:19:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.695 2013-04-16 01:58:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3376,10 +3376,10 @@ nco_gpe_chk                            /* [fnc] Check valid GPE new name  */
 } /* nco_gpe_chk() */
 
 void
-nco_rec_dmn_nm                         /* [fnc] Return array of record names  */
+nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 (const trv_sct * const var_trv,        /* I [sct] Variable object */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- gpe_nm_sct ** rec_dmn_nm,             /* I/O [sct] Array of record names */
+ nm_tbl_sct ** rec_dmn_nm,             /* I/O [sct] Array of record names */
  int * nbr_rec_dmn_nm)                 /* I/O [nbr] Number of entries in array */  
 {
   /* Return array of record names */
@@ -3399,8 +3399,8 @@ nco_rec_dmn_nm                         /* [fnc] Return array of record names  */
     /* Dimension is a record dimension */
     if (dmn_trv->is_rec_dmn){
 
-      (*rec_dmn_nm)=(gpe_nm_sct *)nco_realloc((void *)(*rec_dmn_nm),(nbr_rec+1)*sizeof(gpe_nm_sct));
-      (*rec_dmn_nm)[nbr_rec].var_nm_fll=strdup(dmn_trv->nm);
+      (*rec_dmn_nm)=(nm_tbl_sct *)nco_realloc((void *)(*rec_dmn_nm),(nbr_rec+1)*sizeof(nm_tbl_sct));
+      (*rec_dmn_nm)[nbr_rec].nm=strdup(dmn_trv->nm);
 
       nbr_rec++;
 
@@ -3409,7 +3409,7 @@ nco_rec_dmn_nm                         /* [fnc] Return array of record names  */
 
   *nbr_rec_dmn_nm=nbr_rec;
 
-} /* nco_rec_dmn_nm() */
+} /* nco_get_rec_dmn_nm() */
 
 
 
