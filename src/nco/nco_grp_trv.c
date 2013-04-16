@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.173 2013-04-16 20:57:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.174 2013-04-16 22:40:31 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -710,8 +710,8 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     (void)nco_get_rec_dmn_nm(trv_2,trv_tbl_2,&rec_dmn_nm_2);    
 
     /* Use for record dimension name the first in array */
-    if(rec_dmn_nm_1) rec_dmn_nm=(char *)strdup(rec_dmn_nm_1[0].nm);
-    if(!rec_dmn_nm && rec_dmn_nm_2) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2[0].nm);
+    if(rec_dmn_nm_1->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_1->lst[0].nm);
+    if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
     var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
@@ -723,9 +723,15 @@ trv_tbl_prc                            /* [fnc] Process objects  */
     if(RNK_1_GTR) (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); else (void)nco_att_cpy(grp_id_2,grp_out_id,var_id_2,var_out_id,PCK_ATT_CPY);
 
     /* Memory management for record dimension names */
-    if (rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
-    if(rec_dmn_nm_1) for(int idx=0;idx<rec_dmn_nm_1->nbr;idx++) rec_dmn_nm_1[idx].nm=(char *)nco_free(rec_dmn_nm_1[idx].nm);
-    if(rec_dmn_nm_2) for(int idx=0;idx<rec_dmn_nm_2->nbr;idx++) rec_dmn_nm_2[idx].nm=(char *)nco_free(rec_dmn_nm_2[idx].nm);
+    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
+    if(rec_dmn_nm_1){
+      for(int idx=0;idx<rec_dmn_nm_1->nbr;idx++) rec_dmn_nm_1->lst[idx].nm=(char *)nco_free(rec_dmn_nm_1->lst[idx].nm);
+      rec_dmn_nm_1=(nm_tbl_sct *)nco_free(rec_dmn_nm_1);
+    }
+    if(rec_dmn_nm_2){
+      for(int idx=0;idx<rec_dmn_nm_2->nbr;idx++) rec_dmn_nm_2->lst[idx].nm=(char *)nco_free(rec_dmn_nm_2->lst[idx].nm);
+      rec_dmn_nm_2=(nm_tbl_sct *)nco_free(rec_dmn_nm_2);
+    }
 
   }else{ /* Write mode */
 

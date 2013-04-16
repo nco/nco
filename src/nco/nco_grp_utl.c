@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.696 2013-04-16 20:57:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.697 2013-04-16 22:40:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3387,7 +3387,14 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 
   dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */  
 
-  if (*rec_dmn_nm) nbr_rec=(*rec_dmn_nm)->nbr; else nbr_rec=0;
+  if (*rec_dmn_nm){
+    nbr_rec=(*rec_dmn_nm)->nbr;
+  } else {
+    nbr_rec=0;
+    (*rec_dmn_nm)=(nm_tbl_sct *)nco_malloc(sizeof(nm_tbl_sct));
+    (*rec_dmn_nm)->nbr=0;
+    (*rec_dmn_nm)->lst=NULL; /* Must be NULL to nco_realloc() correct handling */
+  }
 
   /* Loop dimensions for object (variable)  */
   for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++) {
@@ -3398,8 +3405,11 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
     /* Dimension is a record dimension */
     if (dmn_trv->is_rec_dmn){
 
-      (*rec_dmn_nm)=(nm_tbl_sct *)nco_realloc((void *)(*rec_dmn_nm),(nbr_rec+1)*sizeof(nm_tbl_sct));
-      (*rec_dmn_nm)[nbr_rec].nm=strdup(dmn_trv->nm);
+      /* Add one more element to table (nco_realloc nicely handles first time/not first time insertions) */
+      (*rec_dmn_nm)->lst=(nm_sct *)nco_realloc((*rec_dmn_nm)->lst,(nbr_rec+1)*sizeof(nm_sct));
+
+      /* Duplicate string into list */
+      (*rec_dmn_nm)->lst[nbr_rec].nm=strdup(dmn_trv->nm);
 
       nbr_rec++;
 
