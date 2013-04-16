@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.697 2013-04-16 22:40:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.698 2013-04-16 22:51:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3386,6 +3386,8 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
   int nbr_rec;          /* [nbr] Number of entries in array */  
 
   dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */  
+
+  assert(var_trv->nco_typ == nco_obj_typ_var);
 
   if (*rec_dmn_nm){
     nbr_rec=(*rec_dmn_nm)->nbr;
