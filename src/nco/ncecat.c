@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.274 2013-04-16 05:21:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.275 2013-04-17 06:03:52 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -99,7 +99,7 @@ main(int argc,char **argv)
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool RECORD_AGGREGATE=True; /* Option G */
-  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.274 2013-04-16 05:21:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.274 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.275 2013-04-17 06:03:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.275 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -144,12 +144,12 @@ main(int argc,char **argv)
   dmn_sct **dim;
   dmn_sct **dmn_out;
   dmn_sct *rec_dmn;
-  
+
   extern char *optarg;
   extern int optind;
-  
+
   /* Using naked stdin/stdout/stderr in parallel region generates warning
-     Copy appropriate filehandle to variable scoped shared in parallel clause */
+  Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE *fp_bnr=NULL; /* [fl] Unformatted binary output file handle */
 
@@ -196,7 +196,7 @@ main(int argc,char **argv)
   lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
 
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
-  
+
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */  
 
@@ -205,105 +205,103 @@ main(int argc,char **argv)
   size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
-  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
-
   var_sct **var;
   var_sct **var_fix;
   var_sct **var_fix_out;
   var_sct **var_out;
   var_sct **var_prc;
   var_sct **var_prc_out;
-  
+
   static struct option opt_lng[]=
-    { /* Structure ordered by short option key if possible */
-      /* Long options with no argument, no short option counterpart */
-      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"gag",no_argument,0,0}, /* [flg] Group aggregation */
-      {"aggregate_group",no_argument,0,0}, /* [flg] Group aggregation */
-      {"md5_digest",no_argument,0,0}, /* [flg] Print MD5 digest */
-      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
-      {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
-      {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
-      {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
-      {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
-      {"intersection",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
-      {"nsx",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
-      {"union",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
-      {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
-      {"version",no_argument,0,0},
-      {"vrs",no_argument,0,0},
-      /* Long options with argument, no short option counterpart */
-      {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
-      {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
-      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
-      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
-      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
-      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
-      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
-      {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
-      {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
-      {"fl_fmt",required_argument,0,0},
-      {"hdr_pad",required_argument,0,0},
-      {"header_pad",required_argument,0,0},
-      /* Long options with short counterparts */
-      {"3",no_argument,0,'3'},
-      {"4",no_argument,0,'4'},
-      {"64bit",no_argument,0,'4'},
-      {"netcdf4",no_argument,0,'4'},
-      {"append",no_argument,0,'A'},
-      {"coords",no_argument,0,'c'},
-      {"crd",no_argument,0,'c'},
-      {"no-coords",no_argument,0,'C'},
-      {"no-crd",no_argument,0,'C'},
-      {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
-      {"dimension",required_argument,0,'d'},
-      {"dmn",required_argument,0,'d'},
-      {"fortran",no_argument,0,'F'},
-      {"ftn",no_argument,0,'F'},
-      {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
-      {"group",required_argument,0,'g'},
-      {"grp",required_argument,0,'g'},
-      {"fl_lst_in",no_argument,0,'H'},
-      {"file_list",no_argument,0,'H'},
-      {"history",no_argument,0,'h'},
-      {"hst",no_argument,0,'h'},
-      {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
-      {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
-      {"local",required_argument,0,'l'},
-      {"lcl",required_argument,0,'l'},
-      {"glb_mtd_spr",no_argument,0,'M'},
-      {"global_metadata_suppress",no_argument,0,'M'},
-      {"nintap",required_argument,0,'n'},
-      {"overwrite",no_argument,0,'O'},
-      {"ovr",no_argument,0,'O'},
-      {"output",required_argument,0,'o'},
-      {"fl_out",required_argument,0,'o'},
-      {"path",required_argument,0,'p'},
-      {"retain",no_argument,0,'R'},
-      {"rtn",no_argument,0,'R'},
-      {"revision",no_argument,0,'r'},
-      {"thr_nbr",required_argument,0,'t'},
-      {"threads",required_argument,0,'t'},
-      {"omp_num_threads",required_argument,0,'t'},
-      {"ulm_nm",required_argument,0,'u'},
-      {"rcd_nm",required_argument,0,'u'},
-      {"variable",required_argument,0,'v'},
-      {"auxiliary",required_argument,0,'X'},
-      {"exclude",no_argument,0,'x'},
-      {"xcl",no_argument,0,'x'},
-      {"help",no_argument,0,'?'},
-      {"hlp",no_argument,0,'?'},
-      {0,0,0,0}
-    }; /* end opt_lng */
+  { /* Structure ordered by short option key if possible */
+    /* Long options with no argument, no short option counterpart */
+    {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"gag",no_argument,0,0}, /* [flg] Group aggregation */
+    {"aggregate_group",no_argument,0,0}, /* [flg] Group aggregation */
+    {"md5_digest",no_argument,0,0}, /* [flg] Print MD5 digest */
+    {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
+    {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
+    {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+    {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+    {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
+    {"intersection",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+    {"nsx",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+    {"union",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+    {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+    {"version",no_argument,0,0},
+    {"vrs",no_argument,0,0},
+    /* Long options with argument, no short option counterpart */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
+    {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
+    {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+    {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
+    {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
+    {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
+    {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
+    {"fl_fmt",required_argument,0,0},
+    {"hdr_pad",required_argument,0,0},
+    {"header_pad",required_argument,0,0},
+    /* Long options with short counterparts */
+    {"3",no_argument,0,'3'},
+    {"4",no_argument,0,'4'},
+    {"64bit",no_argument,0,'4'},
+    {"netcdf4",no_argument,0,'4'},
+    {"append",no_argument,0,'A'},
+    {"coords",no_argument,0,'c'},
+    {"crd",no_argument,0,'c'},
+    {"no-coords",no_argument,0,'C'},
+    {"no-crd",no_argument,0,'C'},
+    {"debug",required_argument,0,'D'},
+    {"dbg_lvl",required_argument,0,'D'},
+    {"dimension",required_argument,0,'d'},
+    {"dmn",required_argument,0,'d'},
+    {"fortran",no_argument,0,'F'},
+    {"ftn",no_argument,0,'F'},
+    {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
+    {"group",required_argument,0,'g'},
+    {"grp",required_argument,0,'g'},
+    {"fl_lst_in",no_argument,0,'H'},
+    {"file_list",no_argument,0,'H'},
+    {"history",no_argument,0,'h'},
+    {"hst",no_argument,0,'h'},
+    {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
+    {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
+    {"local",required_argument,0,'l'},
+    {"lcl",required_argument,0,'l'},
+    {"glb_mtd_spr",no_argument,0,'M'},
+    {"global_metadata_suppress",no_argument,0,'M'},
+    {"nintap",required_argument,0,'n'},
+    {"overwrite",no_argument,0,'O'},
+    {"ovr",no_argument,0,'O'},
+    {"output",required_argument,0,'o'},
+    {"fl_out",required_argument,0,'o'},
+    {"path",required_argument,0,'p'},
+    {"retain",no_argument,0,'R'},
+    {"rtn",no_argument,0,'R'},
+    {"revision",no_argument,0,'r'},
+    {"thr_nbr",required_argument,0,'t'},
+    {"threads",required_argument,0,'t'},
+    {"omp_num_threads",required_argument,0,'t'},
+    {"ulm_nm",required_argument,0,'u'},
+    {"rcd_nm",required_argument,0,'u'},
+    {"variable",required_argument,0,'v'},
+    {"auxiliary",required_argument,0,'X'},
+    {"exclude",no_argument,0,'x'},
+    {"xcl",no_argument,0,'x'},
+    {"help",no_argument,0,'?'},
+    {"hlp",no_argument,0,'?'},
+    {0,0,0,0}
+  }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
 
   /* Start timer and save command line */ 
@@ -409,7 +407,7 @@ main(int argc,char **argv)
       break;
     case 'G': /* Apply Group Path Editing (GPE) to output group */
       /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it
-	 http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
+      http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
       gpe=nco_gpe_prs_arg(optarg);
       grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
       grp_out_lng=gpe->lng_cnn;
@@ -555,8 +553,10 @@ main(int argc,char **argv)
     (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
     (void)nco_inq_format(in_id,&fl_in_fmt); /* fxm: not sure why this line must be _here_ rather than at "consanguinous", but it must */
 
-    /* Begin API4 */
-    /* Construct traversal table */
+
+#ifdef USE_TRV_API
+    trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table for RECORD_AGGREGATE only */
+
     trv_tbl_init(&trv_tbl);
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
@@ -570,10 +570,10 @@ main(int argc,char **argv)
 
     /* Change included variables to excluded variables */
     if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
-    
+
     /* Add all coordinate variables to extraction list */
     if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
-    
+
     /* Extract coordinates associated with extracted variables */
     if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
 
@@ -584,7 +584,11 @@ main(int argc,char **argv)
       (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
       (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
-    /* End API4 */
+
+    /* Free traversal table */
+    trv_tbl_free(trv_tbl);
+
+#else  /* USE_TRV_API */
 
     /* Form initial extraction list which may include extended regular expressions */
     xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
@@ -653,6 +657,8 @@ main(int argc,char **argv)
     /* Divide variable lists into lists of fixed variables and variables to be processed */
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
+#endif /* USE_TRV_API */
+
   } /* !RECORD_AGGREGATE */
 
   /* Make output and input files consanguinous */
@@ -678,7 +684,10 @@ main(int argc,char **argv)
 
     /* Always construct new "record" dimension from scratch */
     rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
-    if(rec_dmn_nm == NULL) rec_dmn->nm=rec_dmn_nm=(char *)strdup("record"); else rec_dmn->nm=rec_dmn_nm;
+    if(rec_dmn_nm == NULL){
+      rec_dmn->nm=(char *)strdup("record"); 
+      rec_dmn_nm=(char *)strdup("record"); 
+    } else rec_dmn->nm=(char *)strdup(rec_dmn_nm);
     rec_dmn->id=-1;
     rec_dmn->nc_id=-1;
     rec_dmn->xrf=NULL;
@@ -815,22 +824,22 @@ main(int argc,char **argv)
         fl_in_lng=strlen(fl_in);
         sfx_lng=3L;
         sfx_fst=fl_in_lng-sfx_lng;
-	/* Sample data found in, e.g., ftp://ftp.unidata.ucar.edu/pub/netcdf/sample_data and http://hdfeos.org/zoo
-	   Two versions of HDF-EOS exist: HDF-EOS2 for HDF4, and HDF-EOS5 for HDF5 */
+        /* Sample data found in, e.g., ftp://ftp.unidata.ucar.edu/pub/netcdf/sample_data and http://hdfeos.org/zoo
+        Two versions of HDF-EOS exist: HDF-EOS2 for HDF4, and HDF-EOS5 for HDF5 */
         if(strncmp(fl_in+sfx_fst,".nc",sfx_lng) && /* netCDF standard suffix */
-	   strncmp(fl_in+sfx_fst,".H5",sfx_lng) && /* HDF5 suffix used by ICESat GLAS, e.g., GLAH05_633_2103_001_1107_3_01_0001.H5 */
-	   strncmp(fl_in+sfx_fst,".h5",sfx_lng)){ /* HDF5 suffix used by BUV, SBUV, e.g., BUV-Nimbus04_L3zm_v01-00-2012m0203t144121.h5 */
-          sfx_lng=4L;
-          sfx_fst=fl_in_lng-sfx_lng;
-          if(strncmp(fl_in+sfx_fst,".cdf",sfx_lng) && /* netCDF old-fashioned suffix */
-	     strncmp(fl_in+sfx_fst,".hdf",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by AIRS, AMSR-E, MODIS, e.g., AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf, MSR_E_L2_Rain_V10_200905312326_A.hdf, MOD10CM.A2007001.005.2007108111758.hdf */
-	     strncmp(fl_in+sfx_fst,".HDF",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by TRMM, e.g., 3B43.070901.6A.HDF */
-	     strncmp(fl_in+sfx_fst,".he5",sfx_lng) && /* HDF-EOS5 (HDF5) suffix used by HIRDLS, e.g., HIRDLS-Aura_L3ZAD_v06-00-00-c02_2005d022-2008d077.he5 */
-	     strncmp(fl_in+sfx_fst,".nc3",sfx_lng) && /* netCDF3 variant suffix */
-	     strncmp(fl_in+sfx_fst,".nc4",sfx_lng)){ /* netCDF4 variant suffix */
-              (void)fprintf(stderr,"%s: WARNING GAG filename suffix is unusual---using whole filename as group name\n",prg_nm_get());
-              sfx_lng=0;
-          } /* endif */
+          strncmp(fl_in+sfx_fst,".H5",sfx_lng) && /* HDF5 suffix used by ICESat GLAS, e.g., GLAH05_633_2103_001_1107_3_01_0001.H5 */
+          strncmp(fl_in+sfx_fst,".h5",sfx_lng)){ /* HDF5 suffix used by BUV, SBUV, e.g., BUV-Nimbus04_L3zm_v01-00-2012m0203t144121.h5 */
+            sfx_lng=4L;
+            sfx_fst=fl_in_lng-sfx_lng;
+            if(strncmp(fl_in+sfx_fst,".cdf",sfx_lng) && /* netCDF old-fashioned suffix */
+              strncmp(fl_in+sfx_fst,".hdf",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by AIRS, AMSR-E, MODIS, e.g., AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf, MSR_E_L2_Rain_V10_200905312326_A.hdf, MOD10CM.A2007001.005.2007108111758.hdf */
+              strncmp(fl_in+sfx_fst,".HDF",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by TRMM, e.g., 3B43.070901.6A.HDF */
+              strncmp(fl_in+sfx_fst,".he5",sfx_lng) && /* HDF-EOS5 (HDF5) suffix used by HIRDLS, e.g., HIRDLS-Aura_L3ZAD_v06-00-00-c02_2005d022-2008d077.he5 */
+              strncmp(fl_in+sfx_fst,".nc3",sfx_lng) && /* netCDF3 variant suffix */
+              strncmp(fl_in+sfx_fst,".nc4",sfx_lng)){ /* netCDF4 variant suffix */
+                (void)fprintf(stderr,"%s: WARNING GAG filename suffix is unusual---using whole filename as group name\n",prg_nm_get());
+                sfx_lng=0;
+            } /* endif */
         } /* endif */
 
         stb_srt_psn=strrchr(fl_in,'/');
@@ -840,10 +849,10 @@ main(int argc,char **argv)
         gpe_arg=strncpy(gpe_arg,stb_srt_psn,strlen(stb_srt_psn)-sfx_lng);
         gpe_arg[gpe_arg_lng]='\0';
 
-	/* GPE arguments derived from filenames check for existence of path in output file */
-	rcd=nco_inq_grp_full_ncid_flg(out_id,gpe_arg,&gpe_id);
-	/* Existence implies current file may overwrite contents of previous file */
-	if(rcd == NC_NOERR) (void)fprintf(stderr,"%s: WARNING GAG path \"%s\" automatically derived from stub of filename %s conflicts with existing path in output file. Any input data with same absolute path names as contents of a previous input file will be overwritten. Is the same input file specified multiple times? Is this intentional?\nHINT: To distribute copies of a single input file into different groups, use GPE to generate distinct output group names, e.g., %s -G copy in.nc in.nc out.nc\n",prg_nm_get(),gpe_arg,fl_in,prg_nm_get());
+        /* GPE arguments derived from filenames check for existence of path in output file */
+        rcd=nco_inq_grp_full_ncid_flg(out_id,gpe_arg,&gpe_id);
+        /* Existence implies current file may overwrite contents of previous file */
+        if(rcd == NC_NOERR) (void)fprintf(stderr,"%s: WARNING GAG path \"%s\" automatically derived from stub of filename %s conflicts with existing path in output file. Any input data with same absolute path names as contents of a previous input file will be overwritten. Is the same input file specified multiple times? Is this intentional?\nHINT: To distribute copies of a single input file into different groups, use GPE to generate distinct output group names, e.g., %s -G copy in.nc in.nc out.nc\n",prg_nm_get(),gpe_arg,fl_in,prg_nm_get());
       } /* !grp_out */
       /* Free old structure, if any, before re-use */
       if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
@@ -867,7 +876,11 @@ main(int argc,char **argv)
         if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
       } /* endif first file */
 
-      /* Construct traversal table */
+
+
+      trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table for GROUP_AGGREGATE only */
+
+      /* Initialize traversal table */
       trv_tbl_init(&trv_tbl);
 
       /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
@@ -895,19 +908,19 @@ main(int argc,char **argv)
 
       /* Change included variables to excluded variables */
       if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
-      
+
       /* Add all coordinate variables to extraction list */
       if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
-      
+
       /* Extract coordinates associated with extracted variables */
       if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
-      
+
       /* Is this a CCM/CCSM/CF-format history tape? */
       CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
       if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-	/* Implement CF "coordinates" and "bounds" conventions */
-	(void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
-	(void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
+        /* Implement CF "coordinates" and "bounds" conventions */
+        (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
+        (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
       } /* CNV_CCM_CCSM_CF */
 
       /* We now have final list of variables to extract. Phew. */
@@ -1007,9 +1020,6 @@ main(int argc,char **argv)
 
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
-    /* ncecat-specific memory cleanup */
-    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
-
     /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
     for(idx=0;idx<nbr_dmn_fl;idx++)
       for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
@@ -1044,6 +1054,8 @@ main(int argc,char **argv)
     /* Free dimension lists */
     if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has one fewer input than output dimension */
     if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); 
+    /* ncecat-specific memory cleanup */
+    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
     /* Free variable lists */
     if(xtr_nbr > 0) var=nco_var_lst_free(var,xtr_nbr);
     if(xtr_nbr > 0) var_out=nco_var_lst_free(var_out,xtr_nbr);
