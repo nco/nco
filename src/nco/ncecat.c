@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.280 2013-04-18 20:37:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.281 2013-04-18 21:37:48 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.280 2013-04-18 20:37:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.280 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.281 2013-04-18 21:37:48 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.281 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -994,7 +994,7 @@ main(int argc,char **argv)
         rcd=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,&in_id_2);
 
         /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-        (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
+        (void)nco_bld_trv_tbl(in_id_2,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
         /* Get number of variables, dimensions, and global attributes in file, file format */
         (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -1009,14 +1009,14 @@ main(int argc,char **argv)
         if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
 
         /* Extract coordinates associated with extracted variables */
-        if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
+        if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id_2,trv_tbl);
 
         /* Is this a CCM/CCSM/CF-format history tape? */
-        CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+        CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_2);
         if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
           /* Implement CF "coordinates" and "bounds" conventions */
-          (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
-          (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
+          (void)nco_xtr_cf_add(in_id_2,"coordinates",trv_tbl);
+          (void)nco_xtr_cf_add(in_id_2,"bounds",trv_tbl);
         } /* CNV_CCM_CCSM_CF */
 
 
@@ -1024,7 +1024,7 @@ main(int argc,char **argv)
         (void)trv_tbl_mch(trv_tbl_0,trv_tbl,&cmn_lst,&nbr_cmn_nm);
 
         /* Process common objects */
-        (void)nco_prc_cat_cmn_nm(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_tbl_0,trv_tbl,cmn_lst,nbr_cmn_nm,(nco_bool)True);
+        (void)nco_prc_cmn_nm_cat(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_nil,trv_tbl_0,trv_tbl,cmn_lst,nbr_cmn_nm,(nco_bool)True);
 
       } /* If there is a second file */
 
