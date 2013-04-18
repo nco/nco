@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.276 2013-04-18 03:19:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.277 2013-04-18 07:04:56 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.276 2013-04-18 03:19:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.276 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.277 2013-04-18 07:04:56 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.277 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -211,6 +211,10 @@ main(int argc,char **argv)
   var_sct **var_out;
   var_sct **var_prc;
   var_sct **var_prc_out;
+
+#ifdef USE_TRV_API
+  trv_tbl_sct *trv_tbl_0=NULL; /* [lst] Traversal table for first file  */
+#endif
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -554,38 +558,36 @@ main(int argc,char **argv)
 
 
 #ifdef USE_TRV_API
-    trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table for RECORD_AGGREGATE only */
 
-    trv_tbl_init(&trv_tbl);
+    trv_tbl_init(&trv_tbl_0);
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-    (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
+    (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl_0);
 
     /* Get number of variables, dimensions, and global attributes in file, file format */
-    (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
+    (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl_0);
 
     /* Check -v and -g input names and create extraction list */
-    (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
+    (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_0);
 
     /* Change included variables to excluded variables */
-    if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
+    if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl_0);
 
     /* Add all coordinate variables to extraction list */
-    if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
+    if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl_0);
 
     /* Extract coordinates associated with extracted variables */
-    if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
+    if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl_0);
 
     /* Is this a CCM/CCSM/CF-format history tape? */
     CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
     if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
       /* Implement CF "coordinates" and "bounds" conventions */
-      (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
-      (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
+      (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl_0);
+      (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl_0);
     } /* CNV_CCM_CCSM_CF */
 
-    /* Free traversal table */
-    trv_tbl_free(trv_tbl);
+    
 
 #else  /* USE_TRV_API */
 
@@ -797,6 +799,13 @@ main(int argc,char **argv)
 
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
+
+    trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+    /* Initialize traversal table */
+    trv_tbl_init(&trv_tbl);
+
+
     /* Parse filename */
     if(fl_idx) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
@@ -876,14 +885,7 @@ main(int argc,char **argv)
 
         /* Add input file list global attribute */
         if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
-      } /* endif first file */
-
-
-
-      trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table for GROUP_AGGREGATE only */
-
-      /* Initialize traversal table */
-      trv_tbl_init(&trv_tbl);
+      } /* endif first file */     
 
       /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
       (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
@@ -968,6 +970,16 @@ main(int argc,char **argv)
         Makes sense to always use MM3? */
         ;
       } /* endif MM3 workaround */
+
+#ifdef USE_TRV_API
+      /* Compare tables */
+
+
+
+
+
+#endif /* USE_TRV_API */
+
 
       /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
@@ -1066,6 +1078,11 @@ main(int argc,char **argv)
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+
+#ifdef USE_TRV_API
+    /* Free traversal table */
+    (void)trv_tbl_free(trv_tbl_0);
+#endif
   } /* !flg_cln */
 
   /* End timer */ 

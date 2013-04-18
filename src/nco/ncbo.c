@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.243 2013-04-18 03:54:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.244 2013-04-18 07:04:56 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.243 2013-04-18 03:54:43 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.243 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.244 2013-04-18 07:04:56 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.244 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -593,8 +593,11 @@ main(int argc,char **argv)
     } /* endif err */
   } /* !gpe */
 
+  /* Copy global attributes in define mode */
+  (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+
   /* Match 2 tables (find common objects) and export common objects */
-  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm,(nco_bool)True);
+  (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
     
   /* Process common objects (DEFINE mode, True as flg_def parameter ) */
   (void)nco_prc_cmn_nm(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,(nco_bool)True);

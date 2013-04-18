@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.176 2013-04-18 03:54:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.177 2013-04-18 07:04:56 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -255,28 +255,10 @@ trv_tbl_srt /* [fnc] Sort traversal table */
 
 void                          
 trv_tbl_mch                            /* [fnc] Match 2 tables (find common objects) and export common objects  */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_id_2,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+(trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
- int * nbr_cmn_nm,                     /* I/O [nbr] Number of common names entries */
- const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
+ int * nbr_cmn_nm)                     /* I/O [nbr] Number of common names entries */
 {
   /* Purpose: Find common objects; the algorithm used for this search is the
   *  cosequential match algorithm and is described in
@@ -309,12 +291,11 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   (void)trv_tbl_srt(trv_tbl_1);
   (void)trv_tbl_srt(trv_tbl_2);
 
-  if(dbg_lvl_get() >= nco_dbg_vrb && flg_def == True){
+  if(dbg_lvl_get() == 15){
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_1);
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_2);
-    (void)fprintf(stdout,"%s: INFO %s reports Common objects\n",prg_nm_get(),fnc_nm);
   }
 
   /* Get number of objects in each table */
@@ -331,9 +312,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
   /* Store list of common objects */
   (*cmn_lst)=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
-
-  /* Copy global attributes in define mode */
-  if(flg_def) (void)nco_att_cpy(nc_id_1,nc_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
 
   /* Iterate the 2 lists */
   while (flg_more_names_exist)
@@ -427,9 +405,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   } /* end if */
 
   /* Print list */
-  if(dbg_lvl_get() >= nco_dbg_var && flg_def == True){
-    (void)nco_cmn_nm_prt(*cmn_lst,idx_lst);
-  } /* endif dbg */
+  if(dbg_lvl_get() >= nco_dbg_var) (void)nco_cmn_nm_prt(*cmn_lst,idx_lst);
 
   /* Export number of entries */
   *nbr_cmn_nm=idx_lst;
