@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.275 2013-04-17 06:03:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.276 2013-04-18 03:19:54 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.275 2013-04-17 06:03:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.275 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.276 2013-04-18 03:19:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.276 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -549,9 +549,8 @@ main(int argc,char **argv)
       } /* endif aux */
     } /* endif aux_nbr */
 
-    /* Get number of variables, dimensions, and record dimension ID of input file */
-    (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
-    (void)nco_inq_format(in_id,&fl_in_fmt); /* fxm: not sure why this line must be _here_ rather than at "consanguinous", but it must */
+
+    (void)nco_inq_format(in_id,&fl_in_fmt); 
 
 
 #ifdef USE_TRV_API
@@ -589,6 +588,9 @@ main(int argc,char **argv)
     trv_tbl_free(trv_tbl);
 
 #else  /* USE_TRV_API */
+
+    /* Get number of variables, dimensions, and record dimension ID of input file */
+    (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
 
     /* Form initial extraction list which may include extended regular expressions */
     xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
@@ -686,7 +688,7 @@ main(int argc,char **argv)
     rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     if(rec_dmn_nm == NULL){
       rec_dmn->nm=(char *)strdup("record"); 
-      rec_dmn_nm=(char *)strdup("record"); 
+      rec_dmn_nm=(char *)strdup(rec_dmn->nm); 
     } else rec_dmn->nm=(char *)strdup(rec_dmn_nm);
     rec_dmn->id=-1;
     rec_dmn->nc_id=-1;

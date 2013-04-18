@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.174 2013-04-16 22:40:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.175 2013-04-18 03:19:54 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -274,6 +274,8 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
+ int * nbr_cmn_nm,                     /* I/O [nbr] Number of common names entries */
  const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   /* Purpose: Find common objects; the algorithm used for this search is the
@@ -293,11 +295,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
   const char fnc_nm[]="trv_tbl_mch()"; /* [sng] Function name */
 
-  typedef struct{		
-    char *var_nm_fll;            /* [sng] Full path of variable */
-    nco_bool flg_in_fl[2];       /* [flg] Is this name in each file?; files are [0] and [1] */
-  } nco_cmn_t;
-
   int idx_lst;                   /* [idx] Current position in common List */ 
   int idx_tbl_1;                 /* [idx] Current position in List 1 */ 
   int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
@@ -307,8 +304,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
   nco_bool flg_in_fl[2];         /* [flg] Is this name if each file?; files are [0] and [1] */
-
-  nco_cmn_t *cmn_lst=NULL;       /* [sct] A list of common names */ 
 
   /* Tables *must* be sorted */
   (void)trv_tbl_srt(trv_tbl_1);
@@ -335,7 +330,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   idx_lst=0;
 
   /* Store list of common objects */
-  cmn_lst=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
+  (*cmn_lst)=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
 
   /* Copy global attributes in define mode */
   if(flg_def) (void)nco_att_cpy(nc_id_1,nc_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -354,9 +349,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     {
       flg_in_fl[0]=True; 
       flg_in_fl[1]=True;
-      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
-      cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
       idx_tbl_1++;
@@ -367,9 +362,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
       flg_in_fl[0]=True; 
       flg_in_fl[1]=False;
-      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
-      cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
       if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
@@ -379,9 +374,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       /* Name(1) is greater than Name(2), read the next name from List 2 */
       flg_in_fl[0]=False; 
       flg_in_fl[1]=True;
-      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
-      cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
       if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
@@ -402,9 +397,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
       flg_in_fl[0]=True; 
       flg_in_fl[1]=False;
-      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
-      cmn_lst[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
       if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
@@ -420,9 +415,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
       flg_in_fl[0]=False; 
       flg_in_fl[1]=True;
-      cmn_lst[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      cmn_lst[idx_lst].flg_in_fl[1]=flg_in_fl[1];
-      cmn_lst[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
       if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
@@ -438,9 +433,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     (void)fprintf(stdout,"---------------------------------------\n");
     for(int idx=0;idx<idx_lst;idx++){
       char c1, c2;
-      c1 = (cmn_lst[idx].flg_in_fl[0]) ? 'x' : ' ';
-      c2 = (cmn_lst[idx].flg_in_fl[1]) ? 'x' : ' ';
-      (void)fprintf(stdout,"%5c %6c    %-15s\n", c1, c2, cmn_lst[idx].var_nm_fll);
+      c1 = ( (*cmn_lst)[idx].flg_in_fl[0] ) ? 'x' : ' ';
+      c2 = ( (*cmn_lst)[idx].flg_in_fl[1] ) ? 'x' : ' ';
+      (void)fprintf(stdout,"%5c %6c    %-15s\n", c1, c2, (*cmn_lst)[idx].var_nm_fll);
     } /* end loop over idx */
     (void)fprintf(stdout,"\n");
   } /* endif dbg */
@@ -461,11 +456,11 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
     nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
 
-    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
-    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
+    trv_1=trv_tbl_var_nm_fll((*cmn_lst)[idx].var_nm_fll,trv_tbl_1);
+    trv_2=trv_tbl_var_nm_fll((*cmn_lst)[idx].var_nm_fll,trv_tbl_2);
 
     /* Both objects exist in the 2 files, both objects are to extract */
-    if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
+    if(trv_1 && trv_2 && (*cmn_lst)[idx].flg_in_fl[0] && (*cmn_lst)[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
 
       if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
 
@@ -482,7 +477,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       if (nbr_grp_dpt_1 > nbr_grp_dpt_2){
 
         /* Object exists only in file 1 and is to extract */
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
+        if(trv_1 && (*cmn_lst)[idx].flg_in_fl[0] && (*cmn_lst)[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
 
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
@@ -495,7 +490,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         } /* Object exists only in file 1 and is to extract */
 
         /* Object exists only in file 2 and is to extract */
-        else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+        else if(trv_2 && (*cmn_lst)[idx].flg_in_fl[0] == False && (*cmn_lst)[idx].flg_in_fl[1] && trv_2->flg_xtr){
 
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
@@ -512,7 +507,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
 
         /* Object exists only in file 1 and is to extract */
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
+        if(trv_1 && (*cmn_lst)[idx].flg_in_fl[0] && (*cmn_lst)[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
 
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
@@ -525,7 +520,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
         } /* Object exists only in file 1 and is to extract */
 
         /* Object exists only in file 2 and is to extract */
-        else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+        else if(trv_2 && (*cmn_lst)[idx].flg_in_fl[0] == False && (*cmn_lst)[idx].flg_in_fl[1] && trv_2->flg_xtr){
 
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
@@ -543,8 +538,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
   } /* Process objects in list */
 
-  for(int idx=0;idx<idx_lst;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
-  cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
+ 
+  /* Export number of entries */
+  *nbr_cmn_nm=idx_lst;
 
 } /* trv_tbl_mch() */
 

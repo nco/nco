@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.241 2013-04-16 01:19:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.242 2013-04-18 03:19:54 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.241 2013-04-16 01:19:15 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.241 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.242 2013-04-18 03:19:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.242 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -196,6 +196,7 @@ main(int argc,char **argv)
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
   int nbr_gpe_nm; /* [nbr] Number of GPE entries */
+  int nbr_cmn_nm; /* [nbr] Number of common entries */
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
@@ -211,6 +212,8 @@ main(int argc,char **argv)
   trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table input file 2 */
 
   gpe_nm_sct *gpe_nm=NULL; /* [sct] GPE name duplicate check array */
+
+  nco_cmn_t *cmn_lst=NULL; /* [sct] A list of common names */ 
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -518,10 +521,6 @@ main(int argc,char **argv)
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
 
-  /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id_1,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_1);
-  (void)nco_bld_trv_tbl(in_id_2,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_2);
-
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
     int aux_idx_nbr;
@@ -534,6 +533,10 @@ main(int argc,char **argv)
       lmt_nbr=lmt_nbr_new;
     } /* endif aux */
   } /* endif aux_nbr */
+
+  /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+  (void)nco_bld_trv_tbl(in_id_1,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_1);
+  (void)nco_bld_trv_tbl(in_id_2,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_2);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att_1,&nbr_grp_att_1,&nbr_att_var_1,&nbr_dmn_fl_1,&nbr_rec_fl_1,&grp_dpt_fl_1,&nbr_grp_fl_1,&var_ntm_fl_1,&nbr_var_fl_1,trv_tbl_1);
@@ -591,7 +594,7 @@ main(int argc,char **argv)
   } /* !gpe */
 
   /* Match 2 tables (find common objects) and process common objects (define mode) */
-  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm,(nco_bool)True);
 
   /* Catenate timestamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -609,7 +612,7 @@ main(int argc,char **argv)
   } /* hdr_pad */
 
   /* Match 2 tables (find common objects) and process common objects (write mode) */
-  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
+  (void)trv_tbl_mch(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm,(nco_bool)False);
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
@@ -656,6 +659,10 @@ main(int argc,char **argv)
 
     /* Memory management for GPE names */
     for(idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
+
+    /* Memory management for common names list */
+    for(int idx=0;idx<nbr_cmn_nm;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
+    cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
   } /* !flg_cln */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.609 2013-03-29 00:19:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.610 2013-04-18 03:19:54 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.609 2013-03-29 00:19:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.609 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.610 2013-04-18 03:19:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.610 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -606,6 +606,19 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
+  /* Parse auxiliary coordinates */
+  if(aux_nbr > 0){
+     int aux_idx_nbr;
+     aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
+     if(aux_idx_nbr > 0){
+        lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
+        int aux_idx=0;
+        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
+        lmt_nbr=lmt_nbr_new;
+     } /* endif aux */
+  } /* endif aux_nbr */
+
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
@@ -638,19 +651,6 @@ main(int argc,char **argv)
     (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d atomic-type variables, %d non-atomic variables\n",grp_nbr_fl,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,att_glb_nbr+att_glb_nbr,var_nbr_fl,var_ntm_fl);
     goto close_and_free; 
   } /* end GET_FILE_INFO */
-
-  /* Parse auxiliary coordinates */
-  if(aux_nbr > 0){
-     int aux_idx_nbr;
-     aux=nco_aux_evl(in_id,aux_nbr,aux_arg,&aux_idx_nbr);
-     if(aux_idx_nbr > 0){
-        lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
-        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
-        int aux_idx=0;
-        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
-        lmt_nbr=lmt_nbr_new;
-     } /* endif aux */
-  } /* endif aux_nbr */
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);

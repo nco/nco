@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.308 2013-04-16 22:40:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.309 2013-04-18 03:19:54 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -820,6 +820,12 @@ extern "C" {
     nm_sct *lst;  /* [sct] A list of nm_sct ( char* currently) */
     int nbr;      /* [nbr] Number of items in "lst" array */
   } nm_tbl_sct;
+
+  /* Common variable names; common defined as same absolute path in 2 files */
+  typedef struct{		
+    char *var_nm_fll;            /* [sng] Full path of variable */
+    nco_bool flg_in_fl[2];       /* [flg] Is this name in each file?; files are [0] and [1] */
+  } nco_cmn_t;
 
   /* Limit "lmt_sct" monotonic direction */
   typedef enum {
