@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.281 2013-04-18 21:37:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.282 2013-04-18 23:03:20 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.281 2013-04-18 21:37:48 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.281 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.282 2013-04-18 23:03:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.282 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1024,7 +1024,7 @@ main(int argc,char **argv)
         (void)trv_tbl_mch(trv_tbl_0,trv_tbl,&cmn_lst,&nbr_cmn_nm);
 
         /* Process common objects */
-        (void)nco_prc_cmn_nm_cat(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_nil,trv_tbl_0,trv_tbl,cmn_lst,nbr_cmn_nm,(nco_bool)True);
+        (void)nco_prc_cmn_nm_cat(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_nil,trv_tbl_0,trv_tbl,cmn_lst,nbr_cmn_nm,(nco_bool)True,idx_rec_out,rec_dmn);
 
       } /* If there is a second file */
 
