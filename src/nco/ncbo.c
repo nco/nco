@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.244 2013-04-18 07:04:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.245 2013-04-18 07:20:28 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.244 2013-04-18 07:04:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.244 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.245 2013-04-18 07:20:28 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.245 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -195,8 +195,7 @@ main(int argc,char **argv)
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
-  int nbr_gpe_nm; /* [nbr] Number of GPE entries */
-  int nbr_cmn_nm; /* [nbr] Number of common entries */
+  int nbr_gpe_nm; /* [nbr] Number of GPE entries */ 
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
@@ -214,6 +213,7 @@ main(int argc,char **argv)
   gpe_nm_sct *gpe_nm=NULL; /* [sct] GPE name duplicate check array */
 
   nco_cmn_t *cmn_lst=NULL; /* [sct] A list of common names */ 
+  int nbr_cmn_nm; /* [nbr] Number of common entries */
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */

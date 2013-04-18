@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.277 2013-04-18 07:04:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.278 2013-04-18 07:20:28 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.277 2013-04-18 07:04:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.277 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.278 2013-04-18 07:20:28 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.278 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -516,14 +516,11 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
-
-#ifndef USE_TRV_API
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-#endif /* USE_TRV_API */
 
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -589,7 +586,7 @@ main(int argc,char **argv)
 
     
 
-#else  /* USE_TRV_API */
+#endif  /* USE_TRV_API */
 
     /* Get number of variables, dimensions, and record dimension ID of input file */
     (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -660,8 +657,6 @@ main(int argc,char **argv)
 
     /* Divide variable lists into lists of fixed variables and variables to be processed */
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
-
-#endif /* USE_TRV_API */
 
   } /* !RECORD_AGGREGATE */
 
@@ -802,8 +797,14 @@ main(int argc,char **argv)
 
     trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
+    nco_cmn_t *cmn_lst=NULL; /* [sct] A list of common names */
+    
+    int nbr_cmn_nm; /* [nbr] Number of common entries */
+
     /* Initialize traversal table */
     trv_tbl_init(&trv_tbl);
+
+    nbr_cmn_nm=0;
 
 
     /* Parse filename */
@@ -941,9 +942,6 @@ main(int argc,char **argv)
       /* Close input netCDF file */
       (void)nco_close(in_id);
 
-      /* Free traversal table */
-      trv_tbl_free(trv_tbl);
-
     } /* !GROUP_AGGREGATE */
 
     if(RECORD_AGGREGATE){
@@ -973,6 +971,9 @@ main(int argc,char **argv)
 
 #ifdef USE_TRV_API
       /* Compare tables */
+
+      /* Match 2 tables (find common objects) and export common objects */
+      (void)trv_tbl_mch(trv_tbl_0,trv_tbl,&cmn_lst,&nbr_cmn_nm);
 
 
 
@@ -1026,6 +1027,13 @@ main(int argc,char **argv)
 
     /* Remove local copy of file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
+
+    /* Free traversal table */
+    trv_tbl_free(trv_tbl);
+
+     /* Memory management for common names list */
+    for(int idx=0;idx<nbr_cmn_nm;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
+    cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
 
   } /* end loop over fl_idx */
 
