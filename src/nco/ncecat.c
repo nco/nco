@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.278 2013-04-18 07:20:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.279 2013-04-18 20:10:06 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.278 2013-04-18 07:20:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.278 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.279 2013-04-18 20:10:06 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.279 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -215,6 +215,9 @@ main(int argc,char **argv)
 #ifdef USE_TRV_API
   trv_tbl_sct *trv_tbl_0=NULL; /* [lst] Traversal table for first file  */
 #endif
+
+  gpe_nm_sct *gpe_nm=NULL; /* [sct] GPE name duplicate check array */
+  int nbr_gpe_nm; /* [nbr] Number of GPE entries */ 
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -307,6 +310,8 @@ main(int argc,char **argv)
     {0,0,0,0}
   }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
+
+  nbr_gpe_nm=0;
 
   /* Start timer and save command line */ 
   ddra_info.tmr_flg=nco_tmr_srt;
@@ -970,10 +975,25 @@ main(int argc,char **argv)
       } /* endif MM3 workaround */
 
 #ifdef USE_TRV_API
-      /* Compare tables */
+      char *fl_in_2=NULL;
+
+      int in_id_1;
+      int in_id_2; 
+
+      in_id_1=in_id;
+
+      /* Parse filename */
+      if (fl_idx<fl_nbr-1)fl_in_2=nco_fl_nm_prs(fl_in_2,fl_idx+1,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+
+      /* Open file using appropriate buffer size hints and verbosity */
+      rcd=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,&in_id_2);
 
       /* Match 2 tables (find common objects) and export common objects */
       (void)trv_tbl_mch(trv_tbl_0,trv_tbl,&cmn_lst,&nbr_cmn_nm);
+
+      /* Process common objects */
+      (void)nco_prc_cat_cmn_nm(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_tbl_0,trv_tbl,cmn_lst,nbr_cmn_nm,(nco_bool)True);
+
 
 
 
@@ -1086,6 +1106,9 @@ main(int argc,char **argv)
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+
+    /* Memory management for GPE names */
+    for(idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
 #ifdef USE_TRV_API
     /* Free traversal table */
