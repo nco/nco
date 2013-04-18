@@ -1,3 +1,13 @@
+2013-04-17  Pedro Vicente  <pvicente@uci.edu>
+
+        * nco_prc_cmn_nm() Process common objects
+
+        * nco_cmn_nm_prt() Print list of common objects (same absolute path)       
+        
+        * trv_tbl_mch() Match 2 tables (find common objects) and export common objects;
+        previously object processing was done in this function, but now the list of common names
+        is exported for use in operators other than ncbo
+        
 2013-04-16  Pedro Vicente  <pvicente@uci.edu>
 
         * nco_get_rec_dmn_nm() Return array of record names 
