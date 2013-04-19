@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.181 2013-04-18 23:03:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.182 2013-04-19 09:36:22 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -1215,6 +1215,8 @@ trv_tbl_prc_cat                        /* [fnc] Process objects (ncecat only) */
 
   if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
 
+  /* Read */
+  (void)nco_msa_var_get_trv(grp_id_1,var_prc_1,trv_1);
 
 
   /* Prepend record dimension to beginning of all vectors for processed variables */
@@ -1247,7 +1249,8 @@ trv_tbl_prc_cat                        /* [fnc] Process objects (ncecat only) */
   var_prc_out->srd[0]=-1L;
   var_prc_out->srt[0]=-1L;
 
-
+  /* Assign zero to start and unity to stride vectors in output variables */
+  (void)nco_var_srd_srt_set(&var_prc_out,1);
 
   /* Size of record dimension is 1 in output file */
   var_prc_out->cnt[0]=1L;
