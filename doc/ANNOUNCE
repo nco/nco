@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.563 2013-04-01 19:53:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.564 2013-04-19 20:43:12 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.1 are ready. 
 
@@ -48,6 +48,11 @@ A. Fixed ncbo bug introduced in version 4.3.0 where some special
    and some non-grid variables (e.g., ORO and gw) to be subtracted
    even when that makes no physical sense in the CF context.
    http://nco.sf.net#bug_ncbo_ccm_ccsm_cf
+
+A. Fixed ncatted bug where leaving the attribute field blank in
+   attribute edit mode structures could trigger a segfault on netCDF4
+   files. Bug identified and fix provided by Etienne Tourigny.
+   http://nco.sf.net#bug_ncatted_strcmp
 
 KNOWN BUGS NOT YET FIXED:
 

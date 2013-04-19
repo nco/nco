@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.777 2013-04-08 23:54:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.778 2013-04-19 20:43:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,8 +107,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.1
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 27 March 2013
-@set update-month March 2013
+@set update-date 19 April 2013
+@set update-month April 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -14253,8 +14253,9 @@ RHEL and CentOS build scripts and bug reports.
 @item Andrea Cimatoribus
 NCO Spiral Logo
 @cindex Martin Otte
-@item Martin Otte
-Bug report and bug-fix
+@cindex Etienne Tourigny
+@item Martin Otte, Etienne Tourigny
+Single bug reports and fixes
 @cindex Wenshan Wang
 @item Wenshan Wang
 CMIP5 and MODIS processing documentation.

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.778 2013-03-29 01:15:05 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.779 2013-04-19 20:43:12 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -602,6 +602,7 @@ Optimize diskless files?;
 <tt>ncbo</tt> commutivity;
 <tt>ncbo -G --unn</tt>;
 <tt>ncbo</tt> CF <a href="#bug_ncbo_ccm_ccsm_cf">bugfix</a>;
+<tt>ncatted</tt> <a href="#bug_ncatted_strcmp">bugfix</a>;
 <tt>ncrename -g</tt>?;</li>
 <li><b>NCO 4.3.0</b>: (<i>Current Stable Release</i>)
 <tt>ncbo -g</tt>;
@@ -1695,7 +1696,16 @@ these versions of NCO.
 </ul>
 
 <ul><b>Older Operator-specific Run-time Problems:</b>
-<!-- http://nco.sf.net#bugncbo_ccm_ccsm_cf -->
+<!-- http://nco.sf.net#bug_ncatted_strcmp -->
+<a name="bug_ncatted_strcmp"></a>
+<li><i><tt>ncatted</tt> bug on implicit attribute names:</i>
+Versions 4.2.x&ndash;4.3.0 of <tt>ncatted</tt> could segfault when
+processing attributes specified implicitly (i.e., by leaving the
+attribute field blank in the <tt>-a</tt> specification.
+Fixed in version 4.3.1.
+</li>
+
+<!-- http://nco.sf.net#bug_ncbo_ccm_ccsm_cf -->
 <a name="bug_ncbo_ccm_ccsm_cf"></a>
 <li><i><tt>ncbo</tt> bug handling certain special variables:</i>
 Version 4.3.0 of <tt>ncbo</tt> inadvertently always turns off

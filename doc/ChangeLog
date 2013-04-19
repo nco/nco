@@ -1,44 +1,49 @@
+2013-04-19  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.1 release procedure:
+ 	Changes since nco-4_3_0: ncbo -G, --unn, symmetric, broadcast
+	cd ~/nco;cvs tag -d nco-4_3_1;cvs tag -d nco-4_3_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.1 release"
+	cvs tag -c nco-4_3_1;cvs tag -c nco-4_3_1-1
+
+	* ncatted: Fix passing NULL to strcmp() in netCDF4 code path.
+	Bug identified and fix provided by Etienne Tourigny.
+
 2013-04-17  Pedro Vicente  <pvicente@uci.edu>
 
         * nco_prc_cmn_nm() Process common objects
 
-        * nco_cmn_nm_prt() Print list of common objects (same absolute path)       
-        
+        * nco_cmn_nm_prt() Print list of common objects (same absolute path)
+
         * trv_tbl_mch() Match 2 tables (find common objects) and export common objects;
         previously object processing was done in this function, but now the list of common names
         is exported for use in operators other than ncbo
-        
+
 2013-04-16  Pedro Vicente  <pvicente@uci.edu>
 
-        * nco_get_rec_dmn_nm() Return array of record names 
+        * nco_get_rec_dmn_nm() Return array of record names
 
 2013-04-11  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add cmip5_1.cdl obs_1.cdl
-  
+
         * ncbo test #22; Process relative match from model to observations cmip5_1.nc -> obs_1.nc
 
         * ncbo test #23; Process relative match from observations to model obs_1.nc -> cmip5_1.nc
 
 2013-04-10  Pedro Vicente  <pvicente@uci.edu>
 
-	* trv_tbl_rel_mch()  Relative match of object in table 1 to table 2 
-  
+	* trv_tbl_rel_mch()  Relative match of object in table 1 to table 2
+
 	* ncbo test #21; Relative match of object in table 1 to table 2
 
 2013-04-09  Pedro Vicente  <pvicente@uci.edu>
 
 	* gpe_chk() Check valid GPE new name
-  
-	* pck_cpy_attr() Inquire about copying attributes "scale_factor", "add_offset" 
-  
-2013-04-08  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.3.1 release procedure:
- 	Changes since nco-4_3_0: ncbo -G --unn commute
-	cd ~/nco;cvs tag -d nco-4_3_1;cvs tag -d nco-4_3_1-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.1 release"
-	cvs tag -c nco-4_3_1;cvs tag -c nco-4_3_1-1
+	* pck_cpy_attr() Inquire about copying attributes "scale_factor", "add_offset"
+
+2013-04-08  Charlie Zender  <zender@uci.edu>
 
 	* Add in_grp_[12].nc
 

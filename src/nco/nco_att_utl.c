@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.147 2013-03-28 03:59:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.148 2013-04-19 20:43:17 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -233,6 +233,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 
   if(
      flg_fmt_netCDF4 && /* Output file is netCDF4 and ... */
+     aed.att_nm && /* 20130419: Verify att_nm exists before using it in strcmp() below. att_nm does not exist when user leaves field blank. Fix provided by Etienne Tourigny. */
      !strcmp(aed.att_nm,nco_mss_val_sng_get()) && /* ... attribute is missing value and ... */
      aed.mode != aed_delete){ /* ... we are not deleting attribute */
     /* Rename existing attribute to netCDF4-safe name 
