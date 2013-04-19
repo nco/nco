@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.282 2013-04-18 23:03:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.283 2013-04-19 21:34:20 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.282 2013-04-18 23:03:20 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.282 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.283 2013-04-19 21:34:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.283 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -591,7 +591,7 @@ main(int argc,char **argv)
 
     
 
-#endif  /* USE_TRV_API */
+#endif /* !USE_TRV_API */
 
     /* Get number of variables, dimensions, and record dimension ID of input file */
     (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
