@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.284 2013-04-22 02:35:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.285 2013-04-22 05:17:14 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.284 2013-04-22 02:35:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.284 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.285 2013-04-22 05:17:14 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.285 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -584,10 +584,9 @@ main(int argc,char **argv)
       (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
 
-    /* Free traversal table */
-    trv_tbl_free(trv_tbl);
+    
 
-#endif /* !USE_TRV_API */
+#else /* !USE_TRV_API */
 
     /* Get number of variables, dimensions, and record dimension ID of input file */
     (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -655,6 +654,27 @@ main(int argc,char **argv)
 
     /* Refresh var_out with dim_out data */
     (void)nco_var_dmn_refresh(var_out,xtr_nbr);
+
+
+#endif /* !USE_TRV_API */
+
+
+#ifdef USE_TRV_API
+
+    /* Fill-in variable structure list for all extracted variables */
+   
+
+
+
+
+
+    /* Extraction list no longer needed */
+
+    /* Free traversal table */
+    trv_tbl_free(trv_tbl);   
+#endif /* !USE_TRV_API */
+
+
 
     /* Divide variable lists into lists of fixed variables and variables to be processed */
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
