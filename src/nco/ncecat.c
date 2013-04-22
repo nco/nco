@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.290 2013-04-22 21:00:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.291 2013-04-22 23:58:55 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.290 2013-04-22 21:00:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.290 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.291 2013-04-22 23:58:55 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.291 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -810,20 +810,15 @@ main(int argc,char **argv)
     /* Define variables in output file, copy their attributes */
     (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
 
+    /* Set chunksize parameters */
+    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+
 #else /* USE_TRV_API */
 
     /* Define dimensions, extracted groups, variables, and attributes in output file */
     (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,rec_dmn_nm,trv_tbl);
 
-    /* Extraction list no longer needed */
-
-    /* Free traversal table */
-    trv_tbl_free(trv_tbl);  
-
-#endif /* USE_TRV_API */
-
-    /* Set chunksize parameters */
-    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+#endif /* USE_TRV_API */    
 
     /* Turn off default filling behavior to enhance efficiency */
     nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -836,11 +831,25 @@ main(int argc,char **argv)
       if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
 
+#ifndef USE_TRV_API
     /* Assign zero to start and unity to stride vectors in output variables */
     (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
     /* Copy variable data for non-processed variables */
     (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
+
+#else /* USE_TRV_API */
+
+    /* Copy variable data for non-processed variables */
+
+
+
+
+    /* Extraction list no longer needed */
+
+    /* Free traversal table */
+    trv_tbl_free(trv_tbl);  
+#endif /* USE_TRV_API */
 
     /* Close first input netCDF file */
     (void)nco_close(in_id);
