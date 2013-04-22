@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.289 2013-04-22 19:30:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.290 2013-04-22 21:00:56 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.289 2013-04-22 19:30:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.289 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.290 2013-04-22 21:00:56 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.290 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -709,8 +709,6 @@ main(int argc,char **argv)
  
 #endif /* !USE_TRV_API */
 
-
-
     /* Divide variable lists into lists of fixed variables and variables to be processed */
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
@@ -771,8 +769,10 @@ main(int argc,char **argv)
 
     if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
+#ifndef USE_TRV_API
     /* Define dimensions in output file */
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+#endif /* ! USE_TRV_API */
 
     /* Prepend record dimension to beginning of all vectors for processed variables */
     for(int idx=0;idx<nbr_var_prc;idx++){
@@ -812,8 +812,7 @@ main(int argc,char **argv)
 
 #else /* USE_TRV_API */
 
-
-    /* Define extracted groups, variables, and attributes in output file */
+    /* Define dimensions, extracted groups, variables, and attributes in output file */
     (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,rec_dmn_nm,trv_tbl);
 
     /* Extraction list no longer needed */

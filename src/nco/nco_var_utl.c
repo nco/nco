@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.288 2013-04-22 20:18:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.289 2013-04-22 21:00:56 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1615,9 +1615,9 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
   nco_bool FIX_REC_DMN=False; /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
 
-  rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
+  dmn_sct *rec_dmn=NULL; /* [sct] Add "record" dimension in ncecat */
 
-  for(int dmn_idx=0;dmn_idx<NC_MAX_DIMS;dmn_idx++)dmn_out_id[dmn_idx]=nco_obj_typ_err;
+  rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
   /* Local copy of object name */ 
   strcpy(var_nm,var_trv->nm);       
@@ -1689,6 +1689,20 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* ncecat */
     }else  if (prg_id == ncecat){
 
+      /* Always construct new "record" dimension from scratch; moved from ncecat main */
+      rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+      rec_dmn->nm=(char *)strdup(rec_dmn_nm);
+      rec_dmn->id=NCO_REC_DMN_UNDEFINED;
+      rec_dmn->nc_id=-1;
+      rec_dmn->xrf=NULL;
+      rec_dmn->val.vp=NULL;
+      rec_dmn->is_crd_dmn=False;
+      rec_dmn->is_rec_dmn=True;
+      rec_dmn->sz=0L;
+      rec_dmn->cnt=0L;
+      rec_dmn->srd=0L;
+      rec_dmn->srt=0L;
+      rec_dmn->end=rec_dmn->sz-1L;
 
     } /* ncecat */
   } /* !rec_dmn_nm */
@@ -1945,6 +1959,9 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* Free locally allocated space */
   if(rec_dmn_nm_mlc) rec_dmn_nm_mlc=(char *)nco_free(rec_dmn_nm_mlc);
+
+  /* Free ncecat "record" dimension */
+  if(rec_dmn) rec_dmn=nco_dmn_free(rec_dmn);
 
   return var_out_id;
 } /* end nco_cpy_var_dfn() */
