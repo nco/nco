@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.285 2013-04-22 05:17:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.286 2013-04-22 05:33:13 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.285 2013-04-22 05:17:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.285 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.286 2013-04-22 05:33:13 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.286 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -171,8 +171,6 @@ main(int argc,char **argv)
   int gpe_id; /* [id] Group ID of GPE path (diagnostic only) */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int grp_nbr=0; /* [nbr] Number of groups to extract */
-  int idx;
-  int jdx;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int lmt_nbr_rgn=0; /* Option d. Original limit number for GTT initialization */
@@ -613,7 +611,7 @@ main(int argc,char **argv)
 
     /* Find coordinate/dimension values associated with user-specified limits
     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-    for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
+    for(int idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
 
     /* Place all dimensions in lmt_all_lst */
     lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
@@ -625,14 +623,14 @@ main(int argc,char **argv)
 
     /* Fill-in dimension structure for all extracted dimensions */
     dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-    for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+    for(int idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
 
     /* Dimension list no longer needed */
     dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
 
     /* Duplicate input dimension structures for output dimension structures */
     dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-    for(idx=0;idx<nbr_dmn_xtr;idx++){ 
+    for(int idx=0;idx<nbr_dmn_xtr;idx++){ 
       dmn_out[idx]=nco_dmn_dpl(dim[idx]);
       (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
     } /* end loop over dimensions */
@@ -643,7 +641,7 @@ main(int argc,char **argv)
     /* Fill-in variable structure list for all extracted variables */
     var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
     var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-    for(idx=0;idx<xtr_nbr;idx++){
+    for(int idx=0;idx<xtr_nbr;idx++){
       var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
       var_out[idx]=nco_var_dpl(var[idx]);
       (void)nco_xrf_var(var[idx],var_out[idx]);
@@ -662,9 +660,23 @@ main(int argc,char **argv)
 #ifdef USE_TRV_API
 
     /* Fill-in variable structure list for all extracted variables */
-   
+    var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+    var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+
+    int var_idx=0;
+
+    /* Loop table */
+    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+
+      /* Filter variables  */
+      if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
+        trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
 
 
+        var_idx++;
+
+      } /* Filter variables  */
+    } /* Loop table */
 
 
 
@@ -721,7 +733,7 @@ main(int argc,char **argv)
     rec_dmn->end=rec_dmn->sz-1L;
 
     /* Change existing record dimension, if any, to regular dimension */
-    for(idx=0;idx<nbr_dmn_xtr;idx++){
+    for(int idx=0;idx<nbr_dmn_xtr;idx++){
       /* Is any input dimension a record dimension? */
       if(dmn_out[idx]->is_rec_dmn){
         dmn_out[idx]->is_rec_dmn=False;
@@ -740,7 +752,7 @@ main(int argc,char **argv)
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
     /* Prepend record dimension to beginning of all vectors for processed variables */
-    for(idx=0;idx<nbr_var_prc;idx++){
+    for(int idx=0;idx<nbr_var_prc;idx++){
       var_prc_out[idx]->nbr_dim++;
       var_prc_out[idx]->is_rec_var=True;
       var_prc_out[idx]->sz_rec=var_prc_out[idx]->sz;
@@ -992,7 +1004,7 @@ main(int argc,char **argv)
 #pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,jdx,MD5_DIGEST)
 #endif /* !_OPENMP */
       /* Process all variables in current file */
-      for(idx=0;idx<nbr_var_prc;idx++){
+      for(int idx=0;idx<nbr_var_prc;idx++){
         in_id=in_id_arr[omp_get_thread_num()];
 
 
@@ -1053,8 +1065,8 @@ main(int argc,char **argv)
 
     if(RECORD_AGGREGATE){
       /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
-      for(idx=0;idx<nbr_dmn_fl;idx++)
-        for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+      for(int idx=0;idx<nbr_dmn_fl;idx++)
+        for(int jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
           lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
 
       lmt=(lmt_sct**)nco_free(lmt); 
@@ -1078,11 +1090,11 @@ main(int argc,char **argv)
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     /* Free limits */
-    for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
-    for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
+    for(int idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+    for(int idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
     /* Free chunking information */
-    for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
+    for(int idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
     if(RECORD_AGGREGATE){
       /* Free dimension lists */
