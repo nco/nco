@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.288 2013-04-22 06:27:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.289 2013-04-22 19:30:22 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -32,6 +32,7 @@
 /* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncecat.c
 
    Usage:
+   ncecat -O -D 1 -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
    ncecat -O -D 1 -G ensemble:-1 -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
    ncecat -O -D 1 -G ensemble:1 -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
    ncecat -O -D 1 -G ensemble -p ${HOME}/nco/data in_grp.nc in_grp.nc ~/foo.nc
@@ -128,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.288 2013-04-22 06:27:57 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.288 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.289 2013-04-22 19:30:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.289 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -742,7 +743,7 @@ main(int argc,char **argv)
       rec_dmn->nm=(char *)strdup("record"); 
       rec_dmn_nm=(char *)strdup(rec_dmn->nm); 
     } else rec_dmn->nm=(char *)strdup(rec_dmn_nm);
-    rec_dmn->id=-1;
+    rec_dmn->id=NCO_REC_DMN_UNDEFINED;
     rec_dmn->nc_id=-1;
     rec_dmn->xrf=NULL;
     rec_dmn->val.vp=NULL;
@@ -1038,20 +1039,13 @@ main(int argc,char **argv)
 
       /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,jdx,MD5_DIGEST)
+#pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,MD5_DIGEST)
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(int idx=0;idx<nbr_var_prc;idx++){
         in_id=in_id_arr[omp_get_thread_num()];
-
-
 #ifdef USE_TRV_API
-
-
-
-
 #endif /* !USE_TRV_API */
-
 
         if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
         if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);

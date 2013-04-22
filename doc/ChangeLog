@@ -1,5 +1,7 @@
 2013-04-22  Charlie Zender  <zender@uci.edu>
 
+	* ncecat: Tidy OpenMP
+
 	* Document new ncbo, ncecat features
 
 	* Document group broadcasting
