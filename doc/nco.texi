@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.778 2013-04-19 20:43:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.779 2013-04-22 15:39:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1123,8 +1123,14 @@ See @ref{Chunking} for more details.
 @cindex groups
 @acronym{NCO} version 4.2.2 (October, 2012) added support for netCDF4
 groups in @command{ncks} and @command{ncecat}.
-This support was fully complete as of 
+Group support for these operators was complete (e.g., regular
+expressions to select groups and Group Path Editing) as of 
 @acronym{NCO} version 4.2.6 (April, 2013).
+
+Support for netCDF4 in the first arithmetic operator, @command{ncbo},
+was introduced in @acronym{NCO} version 4.3.0 (March, 2013).
+@acronym{NCO} version 4.3.1 (April, 2013) completed this support and
+introduced the first example of automatic group broadcasting.
 
 @cindex @acronym{HDF5}
 @cindex @code{-4}
