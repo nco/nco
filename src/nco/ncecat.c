@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.287 2013-04-22 05:58:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.288 2013-04-22 06:27:57 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.287 2013-04-22 05:58:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.287 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.288 2013-04-22 06:27:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.288 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -502,6 +502,11 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
+
+  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  trv_tbl_init(&trv_tbl);
+
   if(GROUP_AGGREGATE){
     RECORD_AGGREGATE=!GROUP_AGGREGATE;
     fl_out_fmt=NC_FORMAT_NETCDF4; 
@@ -552,9 +557,7 @@ main(int argc,char **argv)
 
 
 #ifdef USE_TRV_API
-    trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table for RECORD_AGGREGATE only */
-
-    trv_tbl_init(&trv_tbl);
+   
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
     (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
@@ -702,13 +705,7 @@ main(int argc,char **argv)
 
       } /* Filter variables  */
     } /* Loop table */
-
-
-
-    /* Extraction list no longer needed */
-
-    /* Free traversal table */
-    trv_tbl_free(trv_tbl);   
+ 
 #endif /* !USE_TRV_API */
 
 
@@ -807,8 +804,23 @@ main(int argc,char **argv)
       var_prc_out[idx]->srt[0]=-1L;
     } /* end loop over idx */
 
+#ifndef USE_TRV_API
+
     /* Define variables in output file, copy their attributes */
     (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
+
+#else /* USE_TRV_API */
+
+
+    /* Define extracted groups, variables, and attributes in output file */
+    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,rec_dmn_nm,trv_tbl);
+
+    /* Extraction list no longer needed */
+
+    /* Free traversal table */
+    trv_tbl_free(trv_tbl);  
+
+#endif /* USE_TRV_API */
 
     /* Set chunksize parameters */
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
