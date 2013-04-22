@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.290 2013-04-22 21:46:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.291 2013-04-22 22:35:12 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1608,6 +1608,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   int nbr_dmn_var;                 /* [nbr] Number of dimensions for variable */
   int rcd=NC_NOERR;                /* [rcd] Return code */
   int prg_id;                      /* [enm] Program ID */
+  int rec_id_out;                  /* [id] Dimension ID for ncecat "record" dimension */  
 
   nc_type var_typ;                 /* [enm] netCDF type */
 
@@ -1717,19 +1718,20 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   /* Define "record" dimension here instead of in the loop */
   if (rec_dmn_nm && prg_id == ncecat){
     int rcd_lcl;    /* [rcd] Return code */
-    int dmn_id_out; /* [id] Dimension ID defined in outout group */  
-
+    
     /* For this variable, add the extra "record" dimension */
     if (var_trv->flg_xtr){
 
       /* Inquire if dimension already defined in output. NB: using output file ID (same as root group) */
-      rcd_lcl=nco_inq_dimid_flg(nc_out_id,rec_dmn_nm,&dmn_id_out);
+      rcd_lcl=nco_inq_dimid_flg(nc_out_id,rec_dmn_nm,&rec_id_out);
 
       /* Dimension not existent, define it */
       if (rcd_lcl != NC_NOERR){
 
         if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s defining ncecat dimension: <%s>\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
 
+        /* Define dimension */
+        (void)nco_def_dim(nc_out_id,rec_dmn_nm,NC_UNLIMITED,&rec_id_out);
 
       } /* Dimension not existent, define it */
     } /* For this variable, add the extra "record" dimension */
@@ -1956,6 +1958,24 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     }
     (void)fprintf(stdout,"\n");
   } /* endif dbg */
+
+  /* Insert extra "record" dimension in dimension array */
+  if (rec_dmn_nm && prg_id == ncecat && var_trv->flg_xtr){
+
+    /* Increment number of dimensions for this variable */
+    nbr_dmn_var++;
+
+    /* Loop dimensions */
+    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+
+      dmn_out_id[dmn_idx+1]=dmn_out_id[dmn_idx];
+
+    } /* Loop dimensions */
+
+    /* Insert the previously obtained record dimension ID at start */
+    dmn_out_id[0]=rec_id_out;
+
+  } /* Insert extra "record" dimension in dimension array */
 
 
   /* Define variable in output file */
