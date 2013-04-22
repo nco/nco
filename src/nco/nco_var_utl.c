@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.287 2013-04-12 21:40:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.288 2013-04-22 20:18:56 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1666,22 +1666,31 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
-    /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
-    rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
-    int rec_dmn_id_dmy;
-    rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
-    if(rcd != NC_NOERR){
-      (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
-      nco_exit(EXIT_FAILURE);
-    } /* endif */
 
-    /* Does variable contain requested record dimension? */
-    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
-      if(dmn_in_id_var[dmn_idx] == rec_dmn_id_dmy){
-        if(dbg_lvl_get() >= 13) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
-        break;
+    /* ncks */
+    if (prg_id == ncks){
+      /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
+      rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
+      int rec_dmn_id_dmy;
+      rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
+      if(rcd != NC_NOERR){
+        (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
+        nco_exit(EXIT_FAILURE);
       } /* endif */
-    } /* end loop over dmn_idx */
+
+      /* Does variable contain requested record dimension? */
+      for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+        if(dmn_in_id_var[dmn_idx] == rec_dmn_id_dmy){
+          if(dbg_lvl_get() >= 13) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+          break;
+        } /* endif */
+      } /* end loop over dmn_idx */
+
+      /* ncecat */
+    }else  if (prg_id == ncecat){
+
+
+    } /* ncecat */
   } /* !rec_dmn_nm */
 
   /* File format needed for decision tree and to enable netCDF4 features */
