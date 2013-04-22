@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.283 2013-04-19 21:34:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.284 2013-04-22 02:35:13 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.283 2013-04-19 21:34:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.283 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.284 2013-04-22 02:35:13 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.284 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -211,13 +211,6 @@ main(int argc,char **argv)
   var_sct **var_out;
   var_sct **var_prc;
   var_sct **var_prc_out;
-
-#ifdef USE_TRV_API
-  trv_tbl_sct *trv_tbl_0=NULL; /* [lst] Traversal table for first file  */
-#endif
-
-  gpe_nm_sct *gpe_nm=NULL; /* [sct] GPE name duplicate check array */
-  int nbr_gpe_nm; /* [nbr] Number of GPE entries */ 
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -310,8 +303,6 @@ main(int argc,char **argv)
     {0,0,0,0}
   }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-
-  nbr_gpe_nm=0;
 
   /* Start timer and save command line */ 
   ddra_info.tmr_flg=nco_tmr_srt;
@@ -521,11 +512,14 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
+
+#ifndef USE_TRV_API
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
+#endif /* !USE_TRV_API */
 
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -560,36 +554,38 @@ main(int argc,char **argv)
 
 
 #ifdef USE_TRV_API
+    trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table for RECORD_AGGREGATE only */
 
-    trv_tbl_init(&trv_tbl_0);
+    trv_tbl_init(&trv_tbl);
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-    (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl_0);
+    (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
     /* Get number of variables, dimensions, and global attributes in file, file format */
-    (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl_0);
+    (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
 
     /* Check -v and -g input names and create extraction list */
-    (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_0);
+    (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
 
     /* Change included variables to excluded variables */
-    if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl_0);
+    if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
 
     /* Add all coordinate variables to extraction list */
-    if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl_0);
+    if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
 
     /* Extract coordinates associated with extracted variables */
-    if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl_0);
+    if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
 
     /* Is this a CCM/CCSM/CF-format history tape? */
     CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
     if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
       /* Implement CF "coordinates" and "bounds" conventions */
-      (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl_0);
-      (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl_0);
+      (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
+      (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
 
-    
+    /* Free traversal table */
+    trv_tbl_free(trv_tbl);
 
 #endif /* !USE_TRV_API */
 
@@ -799,19 +795,6 @@ main(int argc,char **argv)
 
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
-
-    trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
-
-    nco_cmn_t *cmn_lst=NULL; /* [sct] A list of common names */
-    
-    int nbr_cmn_nm; /* [nbr] Number of common entries */
-
-    /* Initialize traversal table */
-    trv_tbl_init(&trv_tbl);
-
-    nbr_cmn_nm=0;
-
-
     /* Parse filename */
     if(fl_idx) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
@@ -891,7 +874,14 @@ main(int argc,char **argv)
 
         /* Add input file list global attribute */
         if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
-      } /* endif first file */     
+      } /* endif first file */
+
+
+
+      trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table for GROUP_AGGREGATE only */
+
+      /* Initialize traversal table */
+      trv_tbl_init(&trv_tbl);
 
       /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
       (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
@@ -947,6 +937,9 @@ main(int argc,char **argv)
       /* Close input netCDF file */
       (void)nco_close(in_id);
 
+      /* Free traversal table */
+      trv_tbl_free(trv_tbl);
+
     } /* !GROUP_AGGREGATE */
 
     if(RECORD_AGGREGATE){
@@ -974,65 +967,6 @@ main(int argc,char **argv)
         ;
       } /* endif MM3 workaround */
 
-#ifdef USE_TRV_API
-      char *fl_in_2=NULL;
-
-      int in_id_1;
-      int in_id_2; 
-
-      in_id_1=in_id;
-
-      xtr_nbr=var_lst_in_nbr;
-
-      /* If there is a second file */
-      if (fl_idx<fl_nbr-1){
-
-        /* Parse filename */
-        fl_in_2=nco_fl_nm_prs(fl_in_2,fl_idx+1,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-
-        /* Open file using appropriate buffer size hints and verbosity */
-        rcd=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,&in_id_2);
-
-        /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-        (void)nco_bld_trv_tbl(in_id_2,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
-
-        /* Get number of variables, dimensions, and global attributes in file, file format */
-        (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
-
-        /* Check -v and -g input names and create extraction list */
-        (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
-
-        /* Change included variables to excluded variables */
-        if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
-
-        /* Add all coordinate variables to extraction list */
-        if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
-
-        /* Extract coordinates associated with extracted variables */
-        if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id_2,trv_tbl);
-
-        /* Is this a CCM/CCSM/CF-format history tape? */
-        CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_2);
-        if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-          /* Implement CF "coordinates" and "bounds" conventions */
-          (void)nco_xtr_cf_add(in_id_2,"coordinates",trv_tbl);
-          (void)nco_xtr_cf_add(in_id_2,"bounds",trv_tbl);
-        } /* CNV_CCM_CCSM_CF */
-
-
-        /* Match 2 tables (find common objects) and export common objects */
-        (void)trv_tbl_mch(trv_tbl_0,trv_tbl,&cmn_lst,&nbr_cmn_nm);
-
-        /* Process common objects */
-        (void)nco_prc_cmn_nm_cat(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_nil,trv_tbl_0,trv_tbl,cmn_lst,nbr_cmn_nm,(nco_bool)True,idx_rec_out,rec_dmn);
-
-      } /* If there is a second file */
-
-
-
-#endif /* USE_TRV_API */
-
-
       /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,jdx,MD5_DIGEST)
@@ -1040,6 +974,16 @@ main(int argc,char **argv)
       /* Process all variables in current file */
       for(idx=0;idx<nbr_var_prc;idx++){
         in_id=in_id_arr[omp_get_thread_num()];
+
+
+#ifdef USE_TRV_API
+
+
+
+
+#endif /* !USE_TRV_API */
+
+
         if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
         if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
         /* Variables may have different ID, missing_value, type, in each file */
@@ -1079,13 +1023,6 @@ main(int argc,char **argv)
     /* Remove local copy of file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
-    /* Free traversal table */
-    trv_tbl_free(trv_tbl);
-
-     /* Memory management for common names list */
-    for(int idx=0;idx<nbr_cmn_nm;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
-    cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
-
   } /* end loop over fl_idx */
 
   /* Close output file and move it from temporary to permanent location */
@@ -1093,13 +1030,16 @@ main(int argc,char **argv)
 
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
-    /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
-    for(idx=0;idx<nbr_dmn_fl;idx++)
-      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
 
-    lmt=(lmt_sct**)nco_free(lmt); 
-    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
+    if(RECORD_AGGREGATE){
+      /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
+      for(idx=0;idx<nbr_dmn_fl;idx++)
+        for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+          lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+
+      lmt=(lmt_sct**)nco_free(lmt); 
+      if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
+    } /* RECORD_AGGREGATE */
 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
@@ -1124,27 +1064,21 @@ main(int argc,char **argv)
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
-    /* Free dimension lists */
-    if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has one fewer input than output dimension */
-    if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); 
-    /* ncecat-specific memory cleanup */
-    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
-    /* Free variable lists */
-    if(xtr_nbr > 0) var=nco_var_lst_free(var,xtr_nbr);
-    if(xtr_nbr > 0) var_out=nco_var_lst_free(var_out,xtr_nbr);
-    var_prc=(var_sct **)nco_free(var_prc);
-    var_prc_out=(var_sct **)nco_free(var_prc_out);
-    var_fix=(var_sct **)nco_free(var_fix);
-    var_fix_out=(var_sct **)nco_free(var_fix_out);
-    if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
-
-    /* Memory management for GPE names */
-    for(idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
-
-#ifdef USE_TRV_API
-    /* Free traversal table */
-    (void)trv_tbl_free(trv_tbl_0);
-#endif
+    if(RECORD_AGGREGATE){
+      /* Free dimension lists */
+      if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has one fewer input than output dimension */
+      if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); 
+      /* ncecat-specific memory cleanup */
+      if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
+      /* Free variable lists */
+      if(xtr_nbr > 0) var=nco_var_lst_free(var,xtr_nbr);
+      if(xtr_nbr > 0) var_out=nco_var_lst_free(var_out,xtr_nbr);
+      var_prc=(var_sct **)nco_free(var_prc);
+      var_prc_out=(var_sct **)nco_free(var_prc_out);
+      var_fix=(var_sct **)nco_free(var_fix);
+      var_fix_out=(var_sct **)nco_free(var_fix_out);
+      if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+    } /* RECORD_AGGREGATE */
   } /* !flg_cln */
 
   /* End timer */ 
