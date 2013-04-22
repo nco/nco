@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.289 2013-04-22 21:00:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.290 2013-04-22 21:46:40 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1687,7 +1687,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       } /* end loop over dmn_idx */
 
       /* ncecat */
-    }else  if (prg_id == ncecat){
+    }else if (prg_id == ncecat){
 
       /* Always construct new "record" dimension from scratch; moved from ncecat main */
       rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
@@ -1710,9 +1710,31 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   /* File format needed for decision tree and to enable netCDF4 features */
   rcd=nco_inq_format(grp_out_id,&fl_fmt);
 
-  if(dbg_lvl_get() >= 13){
+  if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stderr,"%s: %s reports starting to define dimensions for variable %s\n",prg_nm_get(),fnc_nm,var_trv->nm_fll);
   }
+
+  /* Define "record" dimension here instead of in the loop */
+  if (rec_dmn_nm && prg_id == ncecat){
+    int rcd_lcl;    /* [rcd] Return code */
+    int dmn_id_out; /* [id] Dimension ID defined in outout group */  
+
+    /* For this variable, add the extra "record" dimension */
+    if (var_trv->flg_xtr){
+
+      /* Inquire if dimension already defined in output. NB: using output file ID (same as root group) */
+      rcd_lcl=nco_inq_dimid_flg(nc_out_id,rec_dmn_nm,&dmn_id_out);
+
+      /* Dimension not existent, define it */
+      if (rcd_lcl != NC_NOERR){
+
+        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s defining ncecat dimension: <%s>\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
+
+
+      } /* Dimension not existent, define it */
+    } /* For this variable, add the extra "record" dimension */
+  } /* Define "record" dimension here instead of in the loop */
+
 
   /* Get input and set output dimension sizes and names */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
@@ -1749,7 +1771,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Get unique dimension object from unique dimension ID, in input list */
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
-    if(dbg_lvl_get() >= 13){
+    if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s obtained unique dimension #%d <%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
     }
@@ -1765,7 +1787,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* gpe */
 
 
-    if(dbg_lvl_get() >= 13){
+    if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s to be defined in <%s>\n",prg_nm_get(),fnc_nm,
         grp_out_fll);
     }
@@ -1775,7 +1797,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       nco_def_grp_full(nc_out_id,grp_out_fll,&grp_dmn_out_id);
     } 
 
-    if(dbg_lvl_get() >= 13){
+    if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s OUTPUT group ",prg_nm_get(),fnc_nm);
       (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
       (void)fprintf(stdout,"\n");
@@ -1784,7 +1806,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Inquire if dimension defined in output using obtained group ID (return value not used in the logic) */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,&dmn_id_out);
 
-    if(dbg_lvl_get() >= 13){
+    if(dbg_lvl_get() >= nco_dbg_dev){
       if (rcd_lcl == NC_NOERR) 
         (void)fprintf(stdout,"%s: INFO %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
@@ -1797,7 +1819,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Check output group (only) dimensions  */
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
 
-    if(dbg_lvl_get() >= 13){
+    if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s OUTPUT group with dimension IDS/names = \n",prg_nm_get(),fnc_nm);
     }
 
@@ -1807,7 +1829,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* Get dimension name and size from ID */
       (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,&dmn_sz_grp);
 
-      if(dbg_lvl_get() >= 13){
+      if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"#%d '%s' size=%li\n",dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,dmn_sz_grp);
       }
 
@@ -1819,7 +1841,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         /* Assign the defined ID to the dimension ID array for the variable */
         dmn_out_id[dmn_idx]=dmn_out_id_grp[dmn_idx_grp];
 
-        if(dbg_lvl_get() >= 13){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"No need to define '%s'\n",dmn_nm_grp);
         }
       }
@@ -1829,7 +1851,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Define dimension in output file if necessary */
     if (need_to_define_dim == True){
 
-      if(dbg_lvl_get() >= 13){
+      if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s defining dimension '%s' in ",prg_nm_get(),fnc_nm,
           dmn_nm);        
         (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
@@ -1907,7 +1929,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 
-      if(dbg_lvl_get() >= 13){
+      if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s defining dimension #%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
           dmn_id_out,dmn_idx,dmn_trv->nm_fll,dmn_sz);
       } /* endif dbg */
@@ -1927,7 +1949,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   } /* end loop over dimensions */
 
 
-  if(dbg_lvl_get() >= 13){
+  if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: INFO %s DEFINING variable <%s> with dimension IDS = ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
       (void)fprintf(stdout,"#%d ",dmn_out_id[dmn_idx]);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.183 2013-04-22 05:17:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.184 2013-04-22 21:46:40 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -291,7 +291,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   (void)trv_tbl_srt(trv_tbl_1);
   (void)trv_tbl_srt(trv_tbl_2);
 
-  if(dbg_lvl_get() == 15){
+  if(dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_1);
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",prg_nm_get(),fnc_nm);
