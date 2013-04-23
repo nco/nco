@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.147 2013-02-20 18:54:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.148 2013-04-23 07:09:19 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2059,6 +2059,7 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
   /* Overwrite with LHS information */
   /* fxm mmr: memory leak with var->nm */
   var->nm=(char *)strdup(tpl_nm);
+  var->nm_fll=NULL;
   var->type=NC_DOUBLE;
   var->nbr_dim=dmn_nbr;
   var->dim=dmn;
