@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.291 2013-04-22 23:58:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.292 2013-04-23 00:06:11 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.291 2013-04-22 23:58:55 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.291 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.292 2013-04-23 00:06:11 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.292 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1102,6 +1102,7 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
 
+#ifndef USE_TRV_API
     if(RECORD_AGGREGATE){
       /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
       for(int idx=0;idx<nbr_dmn_fl;idx++)
@@ -1111,6 +1112,7 @@ main(int argc,char **argv)
       lmt=(lmt_sct**)nco_free(lmt); 
       if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
     } /* RECORD_AGGREGATE */
+#endif /* USE_TRV_API */
 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
@@ -1137,8 +1139,10 @@ main(int argc,char **argv)
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
     if(RECORD_AGGREGATE){
       /* Free dimension lists */
+#ifndef USE_TRV_API
       if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has one fewer input than output dimension */
       if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); 
+#endif /* USE_TRV_API */
       /* ncecat-specific memory cleanup */
       if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
       /* Free variable lists */
