@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.294 2013-04-23 07:28:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.295 2013-04-23 18:03:45 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.294 2013-04-23 07:28:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.294 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.295 2013-04-23 18:03:45 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.295 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -699,7 +699,7 @@ main(int argc,char **argv)
         (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
         /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
-        var[var_idx]=nco_var_fll(in_id,var_id,var_trv.nm,dim,nbr_dmn_xtr);
+        var[var_idx]=nco_var_fll(grp_id,var_id,var_trv.nm,dim,nbr_dmn_xtr);
         var_out[var_idx]=nco_var_dpl(var[var_idx]);
 
         /* Store full name as key for GTT search */
@@ -1060,7 +1060,7 @@ main(int argc,char **argv)
         int grp_id;        /* [ID] Group ID */
         trv_sct *var_trv;  /* [sct] Variable GTT object */
 
-        /* Obtain variable GTT object using full group name */
+        /* Obtain variable GTT object using full variable name */
         var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
         assert(var_trv);

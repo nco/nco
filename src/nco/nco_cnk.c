@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.59 2013-03-04 22:12:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.60 2013-04-23 18:03:45 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -700,7 +700,7 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
 
   if(!flg_cnk) return;
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
+  if(dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: INFO %s defining chunk for <%s>\n",prg_nm_get(),fnc_nm,
       var_trv->nm_fll);
   }
@@ -764,7 +764,7 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   /* Skip chunking calls for scalars */
   if(nbr_dmn == 0){
 
-    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s skipping scalar...\n",prg_nm_get(),fnc_nm);
+    if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s skipping scalar...\n",prg_nm_get(),fnc_nm);
 
     return; 
   }/* Skip chunking calls for scalars */
@@ -804,7 +804,7 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
         if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",prg_nm_get(),fnc_nm,var_trv->nm_fll);
       } /* !chunked */
 
-      if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s skipping...\n",prg_nm_get(),fnc_nm);
+      if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s skipping...\n",prg_nm_get(),fnc_nm);
 
       /* Skip to next variable in loop. NOTE: loop in nco_cnk_sz_set(), here return */
       return;
@@ -876,7 +876,7 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
   /* Loop dimensions */
   for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
    
-    if(dbg_lvl_get() >= nco_dbg_dev){
+    if(dbg_lvl_get() == nco_dbg_old){
       (void)fprintf(stdout,"%s: INFO %s dimension [%d]:%s(%li)\n",prg_nm_get(),fnc_nm,
         dmn_idx,dmn_cmn[dmn_idx].nm,dmn_cmn[dmn_idx].sz);
     }

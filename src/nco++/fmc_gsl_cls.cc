@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.63 2013-01-14 22:21:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.64 2013-04-23 18:03:45 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -5256,7 +5256,7 @@ var_sct *nco_gsl_cls::fit_fnd(bool &is_mtd,std::vector<RefAST> &vtr_args,fmc_cls
     }
 
     //get fill value from "y_in" only: assumes type convertion to "double"
-    if(dbg_lvl_get() == nco_dbg_dev)
+    if(dbg_lvl_get() == nco_dbg_old)
     {
       if(var_in[2]->mss_val.dp)
       (void)fprintf(stdout,"fill value for %s=%f\n",var_in[2]->nm,var_in[2]->mss_val.dp[0]);

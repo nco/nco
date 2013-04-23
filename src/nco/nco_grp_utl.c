@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.699 2013-04-22 21:46:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.700 2013-04-23 18:03:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -750,7 +750,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   } /* endif dbg */
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return (nco_bool)True;
 
@@ -770,7 +770,7 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
       trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr;
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* end nco_xtr_xcl() */
@@ -801,7 +801,7 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
   } /* Loop table */
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* end nco_xtr_crd_add() */
@@ -827,7 +827,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
 
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* nco_xtr_cf_add() */
@@ -1201,7 +1201,7 @@ nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id
   nm_id_sct *xtr_lst_chk=NULL;
   int xtr_nbr_chk;
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
+  if(dbg_lvl_get() == nco_dbg_old){
     (void)xtr_lst_prn(xtr_lst,xtr_nbr);
     (void)trv_tbl_prn_xtr(trv_tbl,"nco_trv_tbl_chk()");
   }
@@ -1379,7 +1379,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Detect duplicate GPE names in advance, then exit with helpful error */
       if(gpe)nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s defining variable <%s> from ",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
         (void)nco_prt_grp_nm_fll(grp_id);
         (void)fprintf(stdout," to ");   
@@ -1415,7 +1415,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
   /* Print extraction list in developer mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
 } /* end nco_xtr_dfn() */
 
@@ -1484,7 +1484,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
       /* If object is an extracted variable... */ 
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s writing variable <%s> from ",prg_nm_get(),fnc_nm,trv.nm_fll);        
           (void)nco_prt_grp_nm_fll(trv.grp_id_in);
           (void)fprintf(stdout," to ");   
@@ -1502,7 +1502,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
 
   /* Print extraction list in developer mode */
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
 } /* end nco_xtr_wrt() */
 
@@ -1933,7 +1933,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_id=dmn_id_var[dmn_idx_var];
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension #%d'%s'\n",prg_nm_get(),fnc_nm,
           var_nm_fll,dmn_id_var[dmn_idx_var],dmn_nm_var);
       }
@@ -2392,7 +2392,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
 
   /* Print table in debug mode */
-  if(dbg_lvl_get() >= nco_dbg_dev)(void)nco_prt_trv_tbl(nc_id,trv_tbl);
+  if(dbg_lvl_get() == nco_dbg_old)(void)nco_prt_trv_tbl(nc_id,trv_tbl);
 
   /* Build dimension info for all variables (match dimension IDs) */
   (void)nco_bld_dmn_ids_trv(nc_id,trv_tbl);
@@ -2956,7 +2956,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
   /* Most common case is for the unique dimension full name to match the full variable name   */
   if (strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-    if(dbg_lvl_get() == 12){
+    if(dbg_lvl_get() == nco_dbg_old){
       (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
         var_trv->nm_fll,dmn_trv->nm_fll);
     }
@@ -3003,7 +3003,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
       /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
       if (var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-        if(dbg_lvl_get() == 12){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -3028,7 +3028,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
             if(var.nco_typ == nco_obj_typ_var){
               /* Is there a *full* match already for the *input* dimension ?  */
               if(strcmp(var_trv->nm_fll,dmn.nm_fll) == 0 ){
-                if(dbg_lvl_get() == 12){
+                if(dbg_lvl_get() == nco_dbg_old){
                   (void)fprintf(stdout,"%s: INFO %s variable <%s> has another dimension full match <%s>:\n",prg_nm_get(),fnc_nm,
                     var_trv->nm_fll,dmn.nm_fll);
                 }
@@ -3039,7 +3039,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
         } /* Loop unique dimensions list in groups */
 
 
-        if(dbg_lvl_get() == 12){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -3047,7 +3047,7 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
 
         /* Variable out of scope of dimension */
       }else if (var_nm_fll_lng < dmn_nm_fll_lng){
-        if(dbg_lvl_get() == 12){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
@@ -3159,7 +3159,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
         /* No coordinates */
         if(dmn_trv->crd_nbr == 0) {
 
-          if(dbg_lvl_get() >= nco_dbg_dev){
+          if(dbg_lvl_get() == nco_dbg_old){
             (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
           } /* endif dbg */
@@ -3183,7 +3183,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
           /* The "in scope" coordinate is returned */
           if (crd) {
-            if(dbg_lvl_get() >= nco_dbg_dev){ 
+            if(dbg_lvl_get() == nco_dbg_old){ 
               (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm, 
                 dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
             } /* endif dbg */ 
@@ -3196,7 +3196,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
           /* None was found in scope */
           }else {
-            if(dbg_lvl_get() >= nco_dbg_dev){ 
+            if(dbg_lvl_get() == nco_dbg_old){ 
               (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> with out of scope coordinate\n",prg_nm_get(),fnc_nm, 
                 dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll);         
             } /* endif dbg */

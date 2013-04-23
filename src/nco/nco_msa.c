@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.205 2013-04-23 07:28:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.206 2013-04-23 18:03:45 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -803,7 +803,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 
     if(dmn_trv->lmt_msa.lmt_dmn[idx]->srt > dmn_trv->lmt_msa.lmt_dmn[idx]->end){
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%li->%li):\n",
           prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end);
       }
@@ -849,7 +849,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
         lmt_wrp[1].srd=srd;
       } /* end else */
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",prg_nm_get(),fnc_nm,dmn_trv->nm_fll);
         (void)fprintf(stdout,"%d:\n",dmn_trv->lmt_msa.lmt_dmn_nbr);
       }
@@ -882,7 +882,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
       /* Update current index of dimension limits for this table dimension  */
       dmn_trv->lmt_msa.lmt_crr++;
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",
           prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end,
           dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->srt,dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->end);
@@ -1085,7 +1085,7 @@ nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new
 
     if(lmt_lst->lmt_dmn[idx]->srt > lmt_lst->lmt_dmn[idx]->end){
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%li->%li):\n",
           prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end);
       }
@@ -1131,7 +1131,7 @@ nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new
         lmt_wrp[1].srd=srd;
       } /* end else */
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",prg_nm_get(),fnc_nm,lmt_lst->dmn_nm);
         (void)fprintf(stdout,"current limits=%d:\n",lmt_lst->lmt_dmn_nbr);
       }
@@ -1164,7 +1164,7 @@ nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new
       /* Update current index of dimension limits for this table dimension  */
       lmt_lst->lmt_crr++;
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",
           prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end,
           lmt_lst->lmt_dmn[lmt_new_idx]->srt,lmt_lst->lmt_dmn[lmt_new_idx]->end);
@@ -1475,7 +1475,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
         assert(strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn[idx].dmn_nm) == 0);
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s <%s>: reading dimension[%d]:%s: ",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
         }
@@ -1487,7 +1487,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         /* This dimension is not a coordinate variable, do not read... */
         if (var_trv->var_dmn[idx].is_crd_var == False){
 
-          if(dbg_lvl_get() >= nco_dbg_dev){
+          if(dbg_lvl_get() == nco_dbg_old){
             (void)fprintf(stdout,"...<%s> is not a coordinate variable\n",var_trv->var_dmn[idx].dmn_nm_fll);
           }
 
@@ -1498,7 +1498,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
           /* This dimension is a coordinate variable, read it... */
         }else if (var_trv->var_dmn[idx].is_crd_var == True){
 
-          if(dbg_lvl_get() >= nco_dbg_dev){
+          if(dbg_lvl_get() == nco_dbg_old){
             (void)fprintf(stdout,"coordinate variable <%s> found\n",var_trv->var_dmn[idx].dmn_nm_fll);
           }
 
@@ -1972,7 +1972,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       /* No limits? ...Make a limit to read all */
       if ( (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr == 0){
 
-        if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Warning...no limit zone\n "); 
+        if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
 
         /* Alloc 1 dummy limit */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=1;
@@ -2025,7 +2025,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       /* No limits? ...Make a limit to read all */
       if ((*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr == 0){
 
-        if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"Warning...no limit zone\n "); 
+        if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
 
         /* Alloc 1 dummy limit */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=1;
