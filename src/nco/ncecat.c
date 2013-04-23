@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.293 2013-04-23 06:40:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.294 2013-04-23 07:28:18 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.293 2013-04-23 06:40:41 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.293 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.294 2013-04-23 07:28:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.294 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -849,11 +849,6 @@ main(int argc,char **argv)
 
 
 
-
-    /* Extraction list no longer needed */
-
-    /* Free traversal table */
-    trv_tbl_free(trv_tbl);  
 #endif /* USE_TRV_API */
 
     /* Close first input netCDF file */
@@ -1063,23 +1058,18 @@ main(int argc,char **argv)
 #ifdef USE_TRV_API
 
         int grp_id;        /* [ID] Group ID */
-        int var_id;        /* [ID] Variable ID */
         trv_sct *var_trv;  /* [sct] Variable GTT object */
 
         /* Obtain variable GTT object using full group name */
+        var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
+        assert(var_trv);
 
-
-#if 0
         /* Obtain group ID using full group name */
         (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
 
-        /* Get variable ID */
-        (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
-
         /* Read */
         (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
-#endif
 
 #else /* !USE_TRV_API */
         /* Variables may have different ID, missing_value, type, in each file */
@@ -1087,11 +1077,11 @@ main(int argc,char **argv)
         /* Retrieve variable from disk into memory */
         /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
         (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
+#endif /* !USE_TRV_API */
+
         /* Size of record dimension is 1 in output file */
         var_prc_out[idx]->cnt[0]=1L;
         var_prc_out[idx]->srt[0]=idx_rec_out;
-#endif /* !USE_TRV_API */
-
 
         /* Write variable into current record in output file */
 #ifdef _OPENMP
@@ -1181,6 +1171,11 @@ main(int argc,char **argv)
       var_fix=(var_sct **)nco_free(var_fix);
       var_fix_out=(var_sct **)nco_free(var_fix_out);
       if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+#ifdef USE_TRV_API
+      /* Free traversal table */
+      trv_tbl_free(trv_tbl);  
+#endif
+
     } /* RECORD_AGGREGATE */
   } /* !flg_cln */
 
