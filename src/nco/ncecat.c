@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.296 2013-04-23 18:50:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.297 2013-04-23 21:06:26 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.296 2013-04-23 18:50:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.296 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.297 2013-04-23 21:06:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.297 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -557,8 +557,6 @@ main(int argc,char **argv)
     (void)nco_inq_format(in_id,&fl_in_fmt); 
 
 
-#ifdef USE_TRV_API
-   
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
     (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
@@ -588,7 +586,7 @@ main(int argc,char **argv)
 
     
 
-#else /* !USE_TRV_API */
+#ifndef USE_TRV_API
 
     /* Get number of variables, dimensions, and record dimension ID of input file */
     (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -1048,15 +1046,16 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(int idx=0;idx<nbr_var_prc;idx++){
+        int grp_id;        /* [ID] Group ID */
+        int grp_out_id;    /* [ID] Group ID (output) */
+        int var_out_id;    /* [ID] Variable ID (output) */
+        trv_sct *var_trv;  /* [sct] Variable GTT object */
+
         in_id=in_id_arr[omp_get_thread_num()];
         if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
         if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
 #ifdef USE_TRV_API
-
-        int grp_id;        /* [ID] Group ID */
-        trv_sct *var_trv;  /* [sct] Variable GTT object */
-
         /* Obtain variable GTT object using full variable name */
         var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
@@ -1069,11 +1068,13 @@ main(int argc,char **argv)
         (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
 
 #else /* !USE_TRV_API */
+
         /* Variables may have different ID, missing_value, type, in each file */
         (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
         /* Retrieve variable from disk into memory */
         /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
         (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
+
 #endif /* !USE_TRV_API */
 
         /* Size of record dimension is 1 in output file */
@@ -1083,9 +1084,6 @@ main(int argc,char **argv)
         /* Write variable into current record in output file */
 
 #ifdef USE_TRV_API
-        int grp_out_id;    /* [ID] Group ID (output) */
-        int var_out_id;    /* [ID] Variable ID (output) */
-
         /* Obtain output group ID using full group name */
         (void)nco_inq_grp_full_ncid(out_id,var_trv->grp_nm_fll,&grp_out_id);
 
@@ -1094,16 +1092,18 @@ main(int argc,char **argv)
 
         /* Store the output variable ID */
         var_prc_out[idx]->id=var_out_id;
-#endif /* !USE_TRV_API */
+#else
+        grp_out_id=out_id;
+#endif
 
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
         { /* begin OpenMP critical */
           if(var_prc[idx]->nbr_dim == 0){
-            (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
+            (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
           }else{ /* end if variable is scalar */
-            (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
+            (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
           } /* end if variable is array */
           /* Perform MD5 digest of input and output data if requested */
           if(MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
