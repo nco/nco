@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.292 2013-04-23 00:19:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.293 2013-04-23 06:40:41 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -731,6 +731,7 @@ nco_var_dpl /* [fnc] Duplicate input variable */
   
   /* Make sure var_free() frees names when variable is destructed */
   if(var->nm) var_cpy->nm=(char *)strdup(var->nm);
+  if(var->nm_fll) var_cpy->nm_fll=(char *)strdup(var->nm_fll);
   
   /* Deep-copy dyamically allocated arrays from original to copy */
   if(var->val.vp){
@@ -911,6 +912,7 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
   /* String values must be deep-free'd, everything else is a flat buffer */
   if(var->type == (nc_type)NC_STRING && var->val.vp != (void *)NULL) var->val.vp=(void *)nco_sng_lst_free((char **)var->val.vp,var->sz); else var->val.vp=nco_free(var->val.vp);
   var->nm=(char *)nco_free(var->nm);
+  var->nm_fll=(char *)nco_free(var->nm_fll);
   var->mss_val.vp=nco_free(var->mss_val.vp);
   var->tally=(long *)nco_free(var->tally);
   var->dmn_id=(int *)nco_free(var->dmn_id);
@@ -957,6 +959,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
 
   /* Set defaults to be overridden by available information */
   var->nm=NULL;
+  var->nm_fll=NULL;
   var->id=-1;
   var->nc_id=-1;
   var->type=NC_NAT; /* Type of variable in RAM */
@@ -2009,6 +2012,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
   /* Fill-in known fields */
   /* Make sure var_free() frees names when variable is destroyed */
+  var->nm_fll=NULL;
   var->nm=(char *)strdup(var_nm);
   var->id=var_id;
   var->nc_id=nc_id;
@@ -2156,6 +2160,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Fill-in known fields */
   var->nm=(char *)strdup(var_trv->nm);
+  var->nm_fll=(char *)strdup(var_trv->nm);
   var->id=var_id;
   var->nc_id=grp_id;
   var->is_crd_var=var_trv->is_crd_var;

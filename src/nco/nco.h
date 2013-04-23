@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.309 2013-04-18 03:19:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.310 2013-04-23 06:40:41 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -766,6 +766,7 @@ extern "C" {
   /* Variable structure */
   typedef struct var_sct_tag{ /* var_sct */
     char *nm; /* [sng] Variable name */
+    char *nm_fll; /* [sng] Absolute variable name (needed for GTT search for object by full name) */
     char fmt[5]; /* [sng] Hint for printf()-style formatting */
     dmn_sct **dim; /* [sct] Pointers to full dimension structures */
     int *dmn_id; /* [id] Contiguous vector of dimension IDs */
