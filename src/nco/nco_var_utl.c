@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.291 2013-04-22 22:35:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.292 2013-04-23 00:19:37 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1616,8 +1616,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
   nco_bool FIX_REC_DMN=False; /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
 
-  dmn_sct *rec_dmn=NULL; /* [sct] Add "record" dimension in ncecat */
-
   rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
   /* Local copy of object name */ 
@@ -1690,37 +1688,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* ncecat */
     }else if (prg_id == ncecat){
 
-      /* Always construct new "record" dimension from scratch; moved from ncecat main */
-      rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
-      rec_dmn->nm=(char *)strdup(rec_dmn_nm);
-      rec_dmn->id=NCO_REC_DMN_UNDEFINED;
-      rec_dmn->nc_id=-1;
-      rec_dmn->xrf=NULL;
-      rec_dmn->val.vp=NULL;
-      rec_dmn->is_crd_dmn=False;
-      rec_dmn->is_rec_dmn=True;
-      rec_dmn->sz=0L;
-      rec_dmn->cnt=0L;
-      rec_dmn->srd=0L;
-      rec_dmn->srt=0L;
-      rec_dmn->end=rec_dmn->sz-1L;
-
-    } /* ncecat */
-  } /* !rec_dmn_nm */
-
-  /* File format needed for decision tree and to enable netCDF4 features */
-  rcd=nco_inq_format(grp_out_id,&fl_fmt);
-
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stderr,"%s: %s reports starting to define dimensions for variable %s\n",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-  }
-
-  /* Define "record" dimension here instead of in the loop */
-  if (rec_dmn_nm && prg_id == ncecat){
-    int rcd_lcl;    /* [rcd] Return code */
-    
-    /* For this variable, add the extra "record" dimension */
-    if (var_trv->flg_xtr){
+      int rcd_lcl;    /* [rcd] Return code */
 
       /* Inquire if dimension already defined in output. NB: using output file ID (same as root group) */
       rcd_lcl=nco_inq_dimid_flg(nc_out_id,rec_dmn_nm,&rec_id_out);
@@ -1734,9 +1702,15 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         (void)nco_def_dim(nc_out_id,rec_dmn_nm,NC_UNLIMITED,&rec_id_out);
 
       } /* Dimension not existent, define it */
-    } /* For this variable, add the extra "record" dimension */
-  } /* Define "record" dimension here instead of in the loop */
+    } /* ncecat */
+  } /* !rec_dmn_nm */
 
+  /* File format needed for decision tree and to enable netCDF4 features */
+  rcd=nco_inq_format(grp_out_id,&fl_fmt);
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stderr,"%s: %s reports starting to define dimensions for variable %s\n",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+  }
 
   /* Get input and set output dimension sizes and names */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
@@ -2001,9 +1975,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* Free locally allocated space */
   if(rec_dmn_nm_mlc) rec_dmn_nm_mlc=(char *)nco_free(rec_dmn_nm_mlc);
-
-  /* Free ncecat "record" dimension */
-  if(rec_dmn) rec_dmn=nco_dmn_free(rec_dmn);
 
   return var_out_id;
 } /* end nco_cpy_var_dfn() */
