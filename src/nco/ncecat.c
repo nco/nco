@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.295 2013-04-23 18:03:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.296 2013-04-23 18:50:16 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.295 2013-04-23 18:03:45 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.295 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.296 2013-04-23 18:50:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.296 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -662,10 +662,8 @@ main(int argc,char **argv)
 
 
 #ifdef USE_TRV_API
-
     nbr_dmn_xtr=0;
     xtr_nbr=0;
-
 
     /* Loop table */
     for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
@@ -674,7 +672,6 @@ main(int argc,char **argv)
         xtr_nbr++;
       } /* Filter variables  */
     } /* Loop table */
-
 
     /* Fill-in variable structure list for all extracted variables */
     var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
@@ -686,7 +683,7 @@ main(int argc,char **argv)
     for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
       /* Filter variables  */
-      if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var){
+      if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
         trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
 
         int grp_id; /* [ID] Group ID */
@@ -1084,6 +1081,21 @@ main(int argc,char **argv)
         var_prc_out[idx]->srt[0]=idx_rec_out;
 
         /* Write variable into current record in output file */
+
+#ifdef USE_TRV_API
+        int grp_out_id;    /* [ID] Group ID (output) */
+        int var_out_id;    /* [ID] Variable ID (output) */
+
+        /* Obtain output group ID using full group name */
+        (void)nco_inq_grp_full_ncid(out_id,var_trv->grp_nm_fll,&grp_out_id);
+
+        /* Get variable ID */
+        (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+        /* Store the output variable ID */
+        var_prc_out[idx]->id=var_out_id;
+#endif /* !USE_TRV_API */
+
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
