@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.300 2013-04-24 18:20:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.301 2013-04-24 18:48:37 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.300 2013-04-24 18:20:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.300 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.301 2013-04-24 18:48:37 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.301 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -716,6 +716,7 @@ main(int argc,char **argv)
 
       assert(var_trv);
 
+      /* Mark fixed/processed flag in table for "var_nm_fll" */
       (void)trv_tbl_mrk_prc_fix(var_prc[var_idx]->nm_fll,prc_typ,trv_tbl);
     }
 
@@ -728,6 +729,7 @@ main(int argc,char **argv)
 
       assert(var_trv);
 
+      /* Mark fixed/processed flag in table for "var_nm_fll" */
       (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
     }
 
@@ -864,13 +866,12 @@ main(int argc,char **argv)
 
     /* Copy variable data for non-processed variables */
 
-#if 0
     /* Loop table */
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       trv_sct var_trv=trv_tbl->lst[uidx];
 
-      /* If object is an extracted variable... */ 
-      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+      /* If object is a fixed variable... */ 
+      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.enm_prc_typ == fix_typ){
         int grp_id_in;  /* [ID] Group ID */
         int grp_id_out; /* [ID] Group ID */
 
@@ -879,7 +880,7 @@ main(int argc,char **argv)
         (void)nco_inq_grp_full_ncid(out_id,var_trv.grp_nm_fll,&grp_id_out);
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO writing variable <%s> from ",prg_nm_get(),var_trv.nm_fll);        
+          (void)fprintf(stdout,"%s: INFO writing fixed variable <%s> from ",prg_nm_get(),var_trv.nm_fll);        
           (void)nco_prt_grp_nm_fll(grp_id_in);
           (void)fprintf(stdout," to ");   
           (void)nco_prt_grp_nm_fll(grp_id_out);
@@ -889,9 +890,8 @@ main(int argc,char **argv)
         /* Copy variable data */
         (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,(nco_bool)False,&var_trv);  
 
-      } /* If object is an extracted variable... */ 
+      } /* If object is a fixed variable... */ 
     } /* Loop table */
-#endif
 #endif /* USE_TRV_API */
 
     /* Close first input netCDF file */

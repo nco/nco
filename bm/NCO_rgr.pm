@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.254 2013-04-24 08:30:32 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.255 2013-04-24 18:48:37 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -810,8 +810,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
     
-    
- if(0){ # fxm cpy fixed variables
 
 #ncecat #6 part1
 #ncecat  -h -O -g g6g1 -v area in_grp.nc in_grp.nc out.nc
@@ -821,7 +819,7 @@ print "\n";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area  %tmp_fl_00%";
-    $tst_cmd[2]="record[1] lat[1] area[3]=50";
+    $tst_cmd[2]="record[1] lat[1]=90 area[3]=50";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
@@ -856,7 +854,7 @@ print "\n";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -v two_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var %tmp_fl_00%";
-    $tst_cmd[2]="record[1] time[9] lev[2] two_dmn_rec_var[59]=3";
+    $tst_cmd[2]="record[1] time[9]=10 lev[2]=1000 two_dmn_rec_var[59]=3";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
@@ -864,8 +862,6 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			         
-
-} # fxm cpy fixed variables  
     
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
