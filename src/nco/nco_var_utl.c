@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.294 2013-04-24 08:30:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.295 2013-04-24 18:31:18 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1936,8 +1936,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     (void)fprintf(stdout,"\n");
   } /* endif dbg */
 
-  /* Insert extra "record" dimension in dimension array */
-  if (rec_dmn_nm && prg_id == ncecat && var_trv->flg_xtr){
+  /* Insert extra "record" dimension in dimension array. NB: done only for processed variables  */
+  if (rec_dmn_nm && prg_id == ncecat && var_trv->enm_prc_typ == prc_typ){
     int dmn_tmp_id[NC_MAX_DIMS];
     for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++) dmn_tmp_id[dmn_idx]=dmn_out_id[dmn_idx];
 
