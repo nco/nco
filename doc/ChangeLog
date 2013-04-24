@@ -1,3 +1,7 @@
+2013-04-23  Pedro Vicente  <pvicente@uci.edu>
+
+        * ncecat test #4,5 Concatenate variables/groups: scalars 
+        
 2013-04-22  Charlie Zender  <zender@uci.edu>
 
 	* ncecat: Tidy OpenMP

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.209 2013-03-29 05:39:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.210 2013-04-24 08:30:32 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1262,7 +1262,24 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
     fl_nm=(char *)nco_malloc((strlen(fl_nm_stub)+strlen(fl_pth)+2)*sizeof(char));
     (void)strcpy(fl_nm,fl_pth);
 #ifdef _MSC_VER 
-    (void)strcat(fl_nm,"\\"); /* Windows uses backslash for path separator; escape the character */
+    nco_bool is_url;
+    char *sng;
+
+    /* Remote access detection; this should be replaced with NC_testurl; DAP-URL = "http://" host [ ":" port ] [ abs-path ] */
+    if (strlen(fl_pth) < 8 ) is_url=False; else {
+      sng=(char *)nco_malloc(8);
+      sng=strncpy(sng,fl_pth,8);
+      sng[7]='\0';    
+      if (strcmp("http://",sng) == 0) is_url=True; else is_url=False;
+      sng=(char *)nco_free(sng);
+    }
+
+    if (is_url){
+      (void)strcat(fl_nm,"/");
+    } else {
+      (void)strcat(fl_nm,"\\"); /* Windows uses backslash for path separator; escape the character */
+    }
+   
 #else /* !_MSC_VER */
     (void)strcat(fl_nm,"/");
 #endif /* !_MSC_VER */

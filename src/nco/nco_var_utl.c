@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.293 2013-04-23 06:40:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.294 2013-04-24 08:30:32 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1938,20 +1938,21 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* Insert extra "record" dimension in dimension array */
   if (rec_dmn_nm && prg_id == ncecat && var_trv->flg_xtr){
+    int dmn_tmp_id[NC_MAX_DIMS];
+    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++) dmn_tmp_id[dmn_idx]=dmn_out_id[dmn_idx];
 
     /* Increment number of dimensions for this variable */
     nbr_dmn_var++;
 
-    /* Loop dimensions */
-    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
-
-      dmn_out_id[dmn_idx+1]=dmn_out_id[dmn_idx];
-
-    } /* Loop dimensions */
-
     /* Insert the previously obtained record dimension ID at start */
     dmn_out_id[0]=rec_id_out;
 
+    /* Loop dimensions */
+    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+
+      dmn_out_id[dmn_idx+1]=dmn_tmp_id[dmn_idx];
+
+    } /* Loop dimensions */
   } /* Insert extra "record" dimension in dimension array */
 
 
@@ -2203,6 +2204,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
     /* Get unique dimension object from unique dimension ID, in input list */
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
+
+    assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
 
     var->dim[dmn_idx]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     var->dim[dmn_idx]->is_rec_dmn=dmn_trv->is_rec_dmn;

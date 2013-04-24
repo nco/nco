@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.253 2013-04-12 21:40:45 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.254 2013-04-24 08:30:32 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -726,6 +726,9 @@ print "\n";
 ####################
     $opr_nm='ncecat';
 ####################
+
+#ncecat #1
+
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v one $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -v one $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
@@ -736,6 +739,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+#ncecat #2    
+    
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v three_dmn_var_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -C -v -O $fl_fmt $nco_D_flg -s 'three_dmn_var_int+=100;' $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -d time,0,3 -d time,8,9 -d lon,0,1 -d lon,3,3 -v three_dmn_var_int %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
@@ -746,6 +751,8 @@ print "\n";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncecat #3    
     
     if ($ENABLE_NETCDF4 == 1) {
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in.nc %tmp_fl_00%";
@@ -765,6 +772,101 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
     } # end $ENABLE_NETCDF4
+    
+#    
+# NCO 4.3.1 - ncecat for groups 
+#
+#ncecat #4 part1
+#ncecat -h -O -g g1g1 -v v1 in_grp.nc in_grp.nc out.nc
+#ncks -d record,1,1,1 out.nc
+
+    $dsc_sng="Concatenate variables/groups 1: scalars -g g1g1 -v v1";
+    $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -H -d record,1,1,1 %tmp_fl_00%";
+    $tst_cmd[2]="record[1] v1[1]=11";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			     
+
+#ncecat #5 same as #4 but look metadata
+#ncecat -h -O -g g1g1 -v v1 in_grp.nc in_grp.nc out.nc
+#ncks -d record,1,1,1 out.nc    
+    
+    $dsc_sng="Concatenate variables/groups 2: scalars -g g1g1 -v v1";
+    $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'v1 dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)'";
+    $tst_cmd[2]="v1 dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			    
+    
+    
+ if(0){ # fxm cpy fixed variables
+
+#ncecat #6 part1
+#ncecat  -h -O -g g6g1 -v area in_grp.nc in_grp.nc out.nc
+#ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area  out.nc
+
+    $dsc_sng="Concatenate variables/groups 1: 1D -g g6g1 -v area";
+    $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area  %tmp_fl_00%";
+    $tst_cmd[2]="record[1] lat[1] area[3]=50";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			     
+
+#ncecat #7 same as #6 but look metadata
+#ncecat  -h -O -g g6g1 -v area in_grp.nc in_grp.nc out.nc
+#ncks -C -g g6g1 -v area  out.nc
+#area dimension 0: record, size = 2 (Record non-coordinate dimension)
+    
+    $dsc_sng="Concatenate variables/groups 2: 1D -g g6g1 -v area";
+    $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -C -g g6g1 -v area %tmp_fl_00% | grep 'area dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)'";
+    $tst_cmd[2]="area dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			    
+    
+#ncecat #8 part1
+#ncecat  -h -O -v two_dmn_rec_var in_grp.nc in_grp.nc out.nc
+#ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1  -v two_dmn_rec_var  out.nc
+
+    $dsc_sng="Concatenate variables/groups 1: 2D -v two_dmn_rec_var";
+    $tst_cmd[0]="ncecat $nco_D_flg -h -O -v two_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[2]="record[1] time[9] lev[2] two_dmn_rec_var[59]=3";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			         
+
+} # fxm cpy fixed variables  
+    
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
