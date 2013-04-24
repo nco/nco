@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.78 2013-04-23 07:09:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.79 2013-04-24 18:20:16 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -73,6 +73,12 @@ trv_tbl_var_nm_fll                    /* [fnc] Return object from full name key 
 void
 trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void
+trv_tbl_mrk_prc_fix                   /* [fnc] Mark fixed/processed flag in table for "var_nm_fll" */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ prc_typ_enm prc_typ,                 /* I [enm] Processing type */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void 

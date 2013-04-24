@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.310 2013-04-23 06:40:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.311 2013-04-24 18:20:16 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -668,6 +668,14 @@ extern "C" {
     dmn_trv_sct *ncd; /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
     int dmn_id; /* [ID] Unique ID for dimension; same as "dmn_trv_sct.id", obtained from API "nc_inq_vardimid" */
   } var_dmn_sct; 
+
+  /* Processing type enumerator. Currently used by ncbo, ncecat */
+  typedef enum {
+    err_typ=-1,             /* -1 [enm] Invalid type for initialization */
+    fix_typ,                /*  0 [enm] Fixed variable (operator alters neither data nor metadata) */
+    prc_typ                 /*  1 [enm] Process variable (operator may alter data and metadata) */
+  } prc_typ_enm; 
+
  
   /* GTT Object structure 
      Information for each object/node in traversal tree
@@ -710,6 +718,7 @@ extern "C" {
     nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */
     nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr;                 /* [flg] Extract object */ 
+    prc_typ_enm prc_typ;              /* [enm] Processing type enumerator (Used by ncecat) */
    } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists
@@ -722,12 +731,7 @@ extern "C" {
     unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
   } trv_tbl_sct;
 
-  /* Processing type enumerator. Currently used by ncbo */
-  typedef enum {
-    fix_typ,                /* 0 [enm] Fixed variable (operator alters neither data nor metadata) */
-    prc_typ                 /* 1 [enm] Process variable (operator may alter data and metadata) */
-  } prc_typ_enm; 
-
+ 
 
   /* Chunking structure */
   typedef struct{ /* cnk_sct */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.186 2013-04-23 18:03:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.187 2013-04-24 18:20:16 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -208,6 +208,20 @@ trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for
 
   return;
 } /* end trv_tbl_mrk_xtr() */
+
+
+void
+trv_tbl_mrk_prc_fix                   /* [fnc] Mark fixed/processed flag in table for "var_nm_fll" */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ prc_typ_enm prc_typ,                 /* I [enm] Processing type */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(!strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) trv_tbl->lst[uidx].prc_typ=prc_typ;
+
+  return;
+} /* end trv_tbl_mrk_prc_fix() */
+
 
 void 
 trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal table */

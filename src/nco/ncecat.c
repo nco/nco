@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.299 2013-04-24 10:14:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.300 2013-04-24 18:20:16 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.299 2013-04-24 10:14:45 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.299 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.300 2013-04-24 18:20:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.300 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -707,16 +707,28 @@ main(int argc,char **argv)
     /* Divide variable lists into lists of fixed variables and variables to be processed */
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
-    /* Store fixed/processed variables info into table */
-    for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+    /* Store processed variables info into table */
+    for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
       trv_sct *var_trv;
 
       /* Obtain variable GTT object using full variable name */
-      var_trv=trv_tbl_var_nm_fll(var[var_idx]->nm_fll,trv_tbl);
+      var_trv=trv_tbl_var_nm_fll(var_prc[var_idx]->nm_fll,trv_tbl);
 
+      assert(var_trv);
 
+      (void)trv_tbl_mrk_prc_fix(var_prc[var_idx]->nm_fll,prc_typ,trv_tbl);
+    }
 
+    /* Store fixed variables info into table */
+    for(int var_idx=0;var_idx<nbr_var_fix;var_idx++){
+      trv_sct *var_trv;
 
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var_fix[var_idx]->nm_fll,trv_tbl);
+
+      assert(var_trv);
+
+      (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
     }
 
   

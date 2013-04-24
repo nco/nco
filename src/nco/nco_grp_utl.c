@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.700 2013-04-23 18:03:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.701 2013-04-24 18:20:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1492,9 +1492,9 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
           (void)fprintf(stdout,"\n");
         } /* endif dbg */
 
-
-        if(HAVE_LIMITS) (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,&trv); 
-        else (void)nco_cpy_var_val(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,trv.nm);
+        /* Copy variable data from input netCDF file to output netCDF file */
+        (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,&trv); 
+       
       } /* endif */
 
     } /* end loop over uidx */
@@ -1818,7 +1818,8 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
 
   trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;   /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in scope) */
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
-  trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;      /* [enm] (For variables only) NetCDF type  */  
+  trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;/* [enm] (For variables only) NetCDF type  */  
+  trv_tbl->lst[idx].prc_typ=err_typ;              /* [enm] (For variables only) Processing type enumerator  */  
 
 
   /* Variable dimensions  */
@@ -1906,6 +1907,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst[idx].is_crd_var=False;             
     trv_tbl->lst[idx].is_rec_var=False; 
     trv_tbl->lst[idx].var_typ=var_typ; 
+    trv_tbl->lst[idx].prc_typ=err_typ;              
 
     /* Variable dimensions */
     for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
