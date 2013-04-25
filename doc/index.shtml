@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.779 2013-04-19 20:43:12 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.780 2013-04-25 04:22:51 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -143,13 +143,13 @@ and
 
 <ul>
 <li>2013 Apr&nbsp;??: NCO 4.3.1</li>
-<li>2013 Mar&nbsp;28: NCO 4.3.0</li>
+<li>2013 Mar&nbsp;28: NCO 4.3.0</li>(<tt>ncbo</tt> Groups)</li>
 <li>2013 Mar&nbsp;19: NCO 4.2.6</li>
 <li>2013 Jan&nbsp;28: NCO 4.2.5</li>
 <li>2013 Jan&nbsp;21: NCO 4.2.4</li>
 <li>2012 Dec&nbsp;05: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201212.pdf">Talk</a> at Fall AGU, San Francisco, California</li>
 <li>2012 Nov&nbsp;13: NCO 4.2.3 (GPE)</li>
-<li>2012 Oct&nbsp;29: NCO 4.2.2 (Groups)</li>
+<li>2012 Oct&nbsp;29: NCO 4.2.2 (<tt>ncks, ncecat</tt> Groups)</li>
 <li>2012 Aug&nbsp;02: NCO 4.2.1 (RAM disks)</li>
 <li>2012 Jun&nbsp;12: NCO 4.2.0 (Windows support)</li>
 <li>2012 Apr&nbsp;23: Received funding for NASA <a href="#prp_access">ACCESS Project</a></li>

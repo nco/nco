@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.24 2013-02-20 18:54:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.25 2013-04-25 04:22:51 zender Exp $ */
 
 /* Purpose: Record variable utilities */
 
@@ -42,8 +42,8 @@ rec_crd_chk /* Check for monotonicity of coordinate values */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Check for monotonicity of coordinate values */
 
-  static double rec_crd_val_lst;
   static double rec_crd_val_crr;
+  static double rec_crd_val_lst;
 
   static monotonic_direction_enm monotonic_direction;
 

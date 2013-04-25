@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.301 2013-04-24 18:48:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.302 2013-04-25 04:22:51 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.301 2013-04-24 18:48:37 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.301 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.302 2013-04-25 04:22:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.302 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1090,7 +1090,7 @@ main(int argc,char **argv)
 
       /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,MD5_DIGEST)
+#pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,MD5_DIGEST,trv_tbl)
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(int idx=0;idx<nbr_var_prc;idx++){

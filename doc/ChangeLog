@@ -1,13 +1,17 @@
+2013-04-24  Charlie Zender  <zender@uci.edu>
+
+	* ncecat: Tidy OpenMP
+
 2013-04-24  Pedro Vicente  <pvicente@uci.edu>
 
-        * trv_tbl_mrk_prc_fix() Mark fixed/processed flag in table 
-        
-        * ncecat test #6,7,8 Concatenate variables/groups: 1D,2D variables 
+        * trv_tbl_mrk_prc_fix() Mark fixed/processed flag in table
+
+        * ncecat test #6,7,8 Concatenate variables/groups: 1D,2D variables
 
 2013-04-23  Pedro Vicente  <pvicente@uci.edu>
 
-        * ncecat test #4,5 Concatenate variables/groups: scalars 
-        
+        * ncecat test #4,5 Concatenate variables/groups: scalars
+
 2013-04-22  Charlie Zender  <zender@uci.edu>
 
 	* ncecat: Tidy OpenMP

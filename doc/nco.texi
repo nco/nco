@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.780 2013-04-22 16:12:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.781 2013-04-25 04:22:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11323,7 +11323,8 @@ length timeseries from unequal length files.
 @cindex AR4
 @cindex CMIP
 This simplifies analysis of unequal length timeseries from simulation
-ensembles (e.g., the CMIP IPCC AR4 archive).  
+ensembles (e.g., the @acronym{CMIP3} @acronym{IPCC} @acronym{AR4}
+archive).   
 
 @cindex operation types
 @command{ncea} @emph{always averages} coordinate variables regardless of 
@@ -11474,9 +11475,9 @@ Each extracted variable must be constant in size and rank across all
 The only exception is that @command{ncecat} allows files to differ in
 the record dimension size if the requested record hyperslab
 (@pxref{Hyperslabs}) resolves to the same size for all files. 
-@cindex IPCC
+@cindex CMIP
 This allows easier gluing/averaging of unequal length timeseries from 
-simulation ensembles (e.g., the IPCC AR4 archive). 
+simulation ensembles (e.g., the @acronym{CMIP} rchive). 
 
 @html
 <a name="gag"></a> <!-- http://nco.sf.net/nco.html#gag -->
@@ -14375,9 +14376,9 @@ Comments on the proposals and letters of support are also very welcome.
 @end html
 @node CMIP5 Example, CCSM Example, Contributing, Top
 @chapter CMIP5 Example
-@cindex CMIP5
+@cindex CMIP
 This @uref{http://nco.sf.net/xmp_cesm.html,Wonderful CMIP5 Documentation}
-shows complete processing of the CMIP5 dataset.
+shows complete processing of the @acronym{CMIP5} dataset.
 
 @html
 <a name="ccsm"></a> <!-- http://nco.sf.net/nco.html#ccsm -->
