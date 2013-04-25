@@ -1,5 +1,8 @@
 2013-04-24  Charlie Zender  <zender@uci.edu>
 
+	* ncrcat: Fix false positives on non-monotonicity checks in rec_crd_chk()
+	by only checking monotonicity of first record coordinate encountered.
+
 	* ncecat: Tidy OpenMP
 
 2013-04-24  Pedro Vicente  <pvicente@uci.edu>

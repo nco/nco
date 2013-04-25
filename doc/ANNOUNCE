@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.564 2013-04-19 20:43:12 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.565 2013-04-25 04:39:23 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.1 are ready. 
 
@@ -53,6 +53,9 @@ A. Fixed ncatted bug where leaving the attribute field blank in
    attribute edit mode structures could trigger a segfault on netCDF4
    files. Bug identified and fix provided by Etienne Tourigny.
    http://nco.sf.net#bug_ncatted_strcmp
+
+A. Fixed ncrcat bug that falsely warned of non-monotonicity in input
+   files with multiple variables treated as record coordinates.
 
 KNOWN BUGS NOT YET FIXED:
 

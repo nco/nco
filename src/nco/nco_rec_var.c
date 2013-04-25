@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.25 2013-04-25 04:22:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.26 2013-04-25 04:38:08 zender Exp $ */
 
 /* Purpose: Record variable utilities */
 
@@ -42,10 +42,21 @@ rec_crd_chk /* Check for monotonicity of coordinate values */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Check for monotonicity of coordinate values */
 
+  static char *rec_crd_nm=NULL;
+
   static double rec_crd_val_crr;
   static double rec_crd_val_lst;
 
   static monotonic_direction_enm monotonic_direction;
+
+  /* 20130424: First record coordinate variable received will be tested for monotonicity
+     Subsequent record coordinate variables will be ignored
+     Fixes problem caused by associated record coordinates like time_bnds
+     Will be necessary to generalize this for netCDF4 files with multiple record coordinates */
+  if(idx_rec_out == 0L && !rec_crd_nm) rec_crd_nm=(char *)strdup(var->nm);
+  if(rec_crd_nm)
+    if(strcmp(rec_crd_nm,var->nm))
+       return;
 
   /* Use implicit type conversion */
   switch(var->type){
