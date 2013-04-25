@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.302 2013-04-25 04:22:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.303 2013-04-25 18:58:15 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.302 2013-04-25 04:22:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.302 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.303 2013-04-25 18:58:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.303 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -554,7 +554,7 @@ main(int argc,char **argv)
     (void)nco_inq_format(in_id,&fl_in_fmt); 
 
 
-
+#ifdef USE_TRV_API
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
     (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
@@ -580,7 +580,7 @@ main(int argc,char **argv)
       (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
       (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
-
+#endif /* !USE_TRV_API */
     
 
 #ifndef USE_TRV_API
@@ -651,8 +651,6 @@ main(int argc,char **argv)
 
     /* Refresh var_out with dim_out data */
     (void)nco_var_dmn_refresh(var_out,xtr_nbr);
-
-
 #endif /* !USE_TRV_API */
 
 
