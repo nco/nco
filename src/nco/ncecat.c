@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.305 2013-04-26 08:26:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.306 2013-04-26 09:47:25 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.305 2013-04-26 08:26:38 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.305 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.306 2013-04-26 09:47:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.306 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -142,9 +142,11 @@ main(int argc,char **argv)
   ddra_info_sct ddra_info={.flg_ddra=False};
 #endif /* !__cplusplus */
 
+#ifndef USE_TRV_API
   dmn_sct **dim;
   dmn_sct **dmn_out;
   dmn_sct *rec_dmn;
+#endif
 
   extern char *optarg;
   extern int optind;
@@ -185,19 +187,25 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
+#ifndef USE_TRV_API
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+#endif
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
+#ifndef USE_TRV_API
   lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
+#endif
 
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
 
+#ifndef USE_TRV_API
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */  
+#endif
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -756,6 +764,7 @@ main(int argc,char **argv)
     /* Add input file list global attribute */
     if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
+#ifndef USE_TRV_API
     /* Always construct new "record" dimension from scratch */
     rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     if(rec_dmn_nm == NULL){
@@ -773,6 +782,9 @@ main(int argc,char **argv)
     rec_dmn->srd=0L;
     rec_dmn->srt=0L;
     rec_dmn->end=rec_dmn->sz-1L;
+#else
+    if(rec_dmn_nm == NULL) rec_dmn_nm=(char *)strdup("record"); 
+#endif
 
 #ifndef USE_TRV_API
     /* Change existing record dimension, if any, to regular dimension */
@@ -820,8 +832,10 @@ main(int argc,char **argv)
       (void)memmove((void *)(var_prc_out[idx]->srt+1L),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
 
       /* Insert value for new record dimension */
+#ifndef USE_TRV_API
       var_prc_out[idx]->dim[0]=rec_dmn;
       var_prc_out[idx]->dmn_id[0]=rec_dmn->id;
+#endif
       var_prc_out[idx]->cnt[0]=1L;
       var_prc_out[idx]->end[0]=-1L;
       var_prc_out[idx]->srd[0]=-1L;
