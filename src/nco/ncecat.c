@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.307 2013-04-26 17:16:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.308 2013-04-26 18:37:38 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -39,10 +39,6 @@
    ncecat -O -D 1 --gag -p ${HOME}/nco/data h0001.nc h0002.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    ncecat -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
-
-#if 1
-#define USE_TRV_API
-#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -129,8 +125,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.307 2013-04-26 17:16:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.307 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.308 2013-04-26 18:37:38 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.308 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -142,11 +138,6 @@ main(int argc,char **argv)
   ddra_info_sct ddra_info={.flg_ddra=False};
 #endif /* !__cplusplus */
 
-#ifndef USE_TRV_API
-  dmn_sct **dim;
-  dmn_sct **dmn_out;
-  dmn_sct *rec_dmn;
-#endif
 
   extern char *optarg;
   extern int optind;
@@ -187,9 +178,6 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-#ifndef USE_TRV_API
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-#endif
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_idx;
@@ -197,16 +185,8 @@ main(int argc,char **argv)
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
-#ifndef USE_TRV_API
-  lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
-#endif
 
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
-
-#ifndef USE_TRV_API
-  nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */  
-#endif
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -563,7 +543,7 @@ main(int argc,char **argv)
     (void)nco_inq_format(in_id,&fl_in_fmt); 
 
 
-#ifdef USE_TRV_API
+
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
     (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
@@ -589,81 +569,9 @@ main(int argc,char **argv)
       (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
       (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
-#endif /* !USE_TRV_API */
+
     
 
-#ifndef USE_TRV_API
-
-    /* Get number of variables, dimensions, and record dimension ID of input file */
-    (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
-
-    /* Form initial extraction list which may include extended regular expressions */
-    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
-
-    /* Change included variables to excluded variables */
-    if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&xtr_nbr);
-
-    /* Is this a CCM/CCSM/CF-format history tape? */
-    CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-
-    /* Add all coordinate variables to extraction list */
-    if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-
-    /* Extract coordinates associated with extracted variables */
-    if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-
-    /* Sort extraction list by variable ID for fastest I/O */
-    if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,False);
-
-    /* We now have final list of variables to extract. Phew. */
-
-    /* Find coordinate/dimension values associated with user-specified limits
-    NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-    for(int idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt[idx],0L,FORTRAN_IDX_CNV);
-
-    /* Place all dimensions in lmt_all_lst */
-    lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
-    /* Initialize lmt_msa_sct's */ 
-    (void)nco_msa_lmt_all_ntl(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
-
-    /* Find dimensions associated with variables to be extracted */
-    dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,xtr_nbr,&nbr_dmn_xtr);
-
-    /* Fill-in dimension structure for all extracted dimensions */
-    dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-    for(int idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
-
-    /* Dimension list no longer needed */
-    dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
-
-    /* Duplicate input dimension structures for output dimension structures */
-    dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-    for(int idx=0;idx<nbr_dmn_xtr;idx++){ 
-      dmn_out[idx]=nco_dmn_dpl(dim[idx]);
-      (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
-    } /* end loop over dimensions */
-
-    /* Merge hyperslab limit information into dimension structures */
-    if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
-
-    /* Fill-in variable structure list for all extracted variables */
-    var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-    var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-    for(int idx=0;idx<xtr_nbr;idx++){
-      var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-      var_out[idx]=nco_var_dpl(var[idx]);
-      (void)nco_xrf_var(var[idx],var_out[idx]);
-      (void)nco_xrf_dmn(var_out[idx]);
-    } /* end loop over idx */
-    /* Extraction list no longer needed */
-    xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
-
-    /* Refresh var_out with dim_out data */
-    (void)nco_var_dmn_refresh(var_out,xtr_nbr);
-#endif /* !USE_TRV_API */
-
-
-#ifdef USE_TRV_API
     nbr_dmn_xtr=0;
     xtr_nbr=0;
 
@@ -709,9 +617,7 @@ main(int argc,char **argv)
       } /* Filter variables  */
     } /* Loop table */
  
-#endif /* !USE_TRV_API */
 
-#ifdef USE_TRV_API
     /* Divide variable lists into lists of fixed variables and variables to be processed */
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
@@ -740,7 +646,7 @@ main(int argc,char **argv)
       /* Mark fixed/processed flag in table for "var_nm_fll" */
       (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
     }
-#endif /* !USE_TRV_API */
+
   
   } /* !RECORD_AGGREGATE */
 
@@ -765,50 +671,10 @@ main(int argc,char **argv)
     /* Add input file list global attribute */
     if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
-#ifndef USE_TRV_API
-    /* Always construct new "record" dimension from scratch */
-    rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
-    if(rec_dmn_nm == NULL){
-      rec_dmn->nm=(char *)strdup("record"); 
-      rec_dmn_nm=(char *)strdup(rec_dmn->nm); 
-    } else rec_dmn->nm=(char *)strdup(rec_dmn_nm);
-    rec_dmn->id=NCO_REC_DMN_UNDEFINED;
-    rec_dmn->nc_id=-1;
-    rec_dmn->xrf=NULL;
-    rec_dmn->val.vp=NULL;
-    rec_dmn->is_crd_dmn=False;
-    rec_dmn->is_rec_dmn=True;
-    rec_dmn->sz=0L;
-    rec_dmn->cnt=0L;
-    rec_dmn->srd=0L;
-    rec_dmn->srt=0L;
-    rec_dmn->end=rec_dmn->sz-1L;
-#else
+
     if(rec_dmn_nm == NULL) rec_dmn_nm=(char *)strdup("record"); 
-#endif
-
-#ifndef USE_TRV_API
-    /* Change existing record dimension, if any, to regular dimension */
-    for(int idx=0;idx<nbr_dmn_xtr;idx++){
-      /* Is any input dimension a record dimension? */
-      if(dmn_out[idx]->is_rec_dmn){
-        dmn_out[idx]->is_rec_dmn=False;
-        break;
-      } /* end if */
-    } /* end loop over idx */
-
-    /* Add record dimension to end of dimension list */
-    nbr_dmn_xtr++;
-    dmn_out=(dmn_sct **)nco_realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
-    dmn_out[nbr_dmn_xtr-1]=rec_dmn;
-#endif /* ! USE_TRV_API */
 
     if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-
-#ifndef USE_TRV_API
-    /* Define dimensions in output file */
-    (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
-#endif /* ! USE_TRV_API */
 
     /* Prepend record dimension to beginning of all vectors for processed variables */
     for(int idx=0;idx<nbr_var_prc;idx++){
@@ -833,30 +699,15 @@ main(int argc,char **argv)
       (void)memmove((void *)(var_prc_out[idx]->srt+1L),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long int));
 
       /* Insert value for new record dimension */
-#ifndef USE_TRV_API
-      var_prc_out[idx]->dim[0]=rec_dmn;
-      var_prc_out[idx]->dmn_id[0]=rec_dmn->id;
-#endif
       var_prc_out[idx]->cnt[0]=1L;
       var_prc_out[idx]->end[0]=-1L;
       var_prc_out[idx]->srd[0]=-1L;
       var_prc_out[idx]->srt[0]=-1L;
     } /* end loop over idx */
 
-#ifndef USE_TRV_API
-
-    /* Define variables in output file, copy their attributes */
-    (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
-
-    /* Set chunksize parameters */
-    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
-
-#else /* USE_TRV_API */
 
     /* Define dimensions, extracted groups, variables, and attributes in output file */
-    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,rec_dmn_nm,trv_tbl);
-
-#endif /* USE_TRV_API */    
+    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,rec_dmn_nm,trv_tbl);   
 
     /* Turn off default filling behavior to enhance efficiency */
     nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -872,13 +723,6 @@ main(int argc,char **argv)
 
     /* Assign zero to start and unity to stride vectors in output variables */
     (void)nco_var_srd_srt_set(var_out,xtr_nbr);
-
-#ifndef USE_TRV_API
-
-    /* Copy variable data for non-processed variables */
-    (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
-
-#else /* USE_TRV_API */
 
     /* Copy variable data for non-processed variables */
 
@@ -908,7 +752,6 @@ main(int argc,char **argv)
 
       } /* If object is a fixed variable... */ 
     } /* Loop table */
-#endif /* USE_TRV_API */
 
     /* Close first input netCDF file */
     (void)nco_close(in_id);
@@ -1104,11 +947,7 @@ main(int argc,char **argv)
 
       /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
-# ifdef USE_TRV_API
 #  pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,nbr_dmn_fl,MD5_DIGEST,trv_tbl)
-# else /* !USE_TRV_API */
-#  pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,MD5_DIGEST,trv_tbl)
-# endif /* !USE_TRV_API */
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(int idx=0;idx<nbr_var_prc;idx++){
@@ -1121,7 +960,6 @@ main(int argc,char **argv)
         if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
         if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
-#ifdef USE_TRV_API
         /* Obtain variable GTT object using full variable name */
         var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
@@ -1133,23 +971,12 @@ main(int argc,char **argv)
         /* Read */
         (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
 
-#else /* !USE_TRV_API */
-
-        /* Variables may have different ID, missing_value, type, in each file */
-        (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
-        /* Retrieve variable from disk into memory */
-        /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-        (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
-
-#endif /* !USE_TRV_API */
-
         /* Size of record dimension is 1 in output file */
         var_prc_out[idx]->cnt[0]=1L;
         var_prc_out[idx]->srt[0]=idx_rec_out;
 
         /* Write variable into current record in output file */
 
-#ifdef USE_TRV_API
         /* Obtain output group ID using full group name */
         (void)nco_inq_grp_full_ncid(out_id,var_trv->grp_nm_fll,&grp_out_id);
 
@@ -1158,9 +985,6 @@ main(int argc,char **argv)
 
         /* Store the output variable ID */
         var_prc_out[idx]->id=var_out_id;
-#else
-        grp_out_id=out_id;
-#endif
 
 #ifdef _OPENMP
 #pragma omp critical
@@ -1198,18 +1022,6 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
 
-#ifndef USE_TRV_API
-    if(RECORD_AGGREGATE){
-      /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
-      for(int idx=0;idx<nbr_dmn_fl;idx++)
-        for(int jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-          lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-
-      lmt=(lmt_sct**)nco_free(lmt); 
-      if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
-    } /* RECORD_AGGREGATE */
-#endif /* USE_TRV_API */
-
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -1235,10 +1047,6 @@ main(int argc,char **argv)
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
     if(RECORD_AGGREGATE){
       /* Free dimension lists */
-#ifndef USE_TRV_API
-      if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr-1); /* NB: ncecat has one fewer input than output dimension */
-      if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr); 
-#endif /* USE_TRV_API */
       /* ncecat-specific memory cleanup */
       if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
       /* Free variable lists */
@@ -1249,11 +1057,8 @@ main(int argc,char **argv)
       var_fix=(var_sct **)nco_free(var_fix);
       var_fix_out=(var_sct **)nco_free(var_fix_out);
       if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
-#ifdef USE_TRV_API
       /* Free traversal table */
       trv_tbl_free(trv_tbl);  
-#endif
-
     } /* RECORD_AGGREGATE */
   } /* !flg_cln */
 
