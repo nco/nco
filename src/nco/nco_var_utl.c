@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.295 2013-04-24 18:31:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.296 2013-04-26 09:19:02 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1875,6 +1875,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
             } /* !netCDF4 */
           } /* !FIX_REC_DMN */
         } /* strcmp() */
+
+        if (prg_id == ncecat){
+          /* ... all other record dimensions are not defined as record dimensions ... */
+          DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+        }
+
       }else{ /* !rec_dmn_nm */
         /* ... no user-specified record dimension so define dimension in output same as in input ... */
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
