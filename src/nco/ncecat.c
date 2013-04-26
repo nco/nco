@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.304 2013-04-25 19:04:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.305 2013-04-26 08:26:38 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.304 2013-04-25 19:04:50 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.304 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.305 2013-04-26 08:26:38 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.305 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -774,6 +774,7 @@ main(int argc,char **argv)
     rec_dmn->srt=0L;
     rec_dmn->end=rec_dmn->sz-1L;
 
+#ifndef USE_TRV_API
     /* Change existing record dimension, if any, to regular dimension */
     for(int idx=0;idx<nbr_dmn_xtr;idx++){
       /* Is any input dimension a record dimension? */
@@ -787,6 +788,7 @@ main(int argc,char **argv)
     nbr_dmn_xtr++;
     dmn_out=(dmn_sct **)nco_realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
     dmn_out[nbr_dmn_xtr-1]=rec_dmn;
+#endif /* ! USE_TRV_API */
 
     if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
