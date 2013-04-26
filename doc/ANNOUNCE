@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.566 2013-04-26 18:15:09 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.567 2013-04-26 20:43:26 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.1 are ready. 
 
@@ -37,12 +37,12 @@ A. ncbo now always works when input files are interchanged, i.e.,
    ncbo -v v1 fl_1.nc fl_2.nc out.nc # Now works too!
    ncbo -v v1 fl_2.nc fl_1.nc out.nc # Always worked
 
-A. ncecat now supports record aggregation mode for netCDF4 files.
-   Record aggregation (RAG) mode is what most people have always used,
-   and has always been the default for ncecat. RAG mode glues files
-   together with a new record dimension. Group AGgregation (GAG) mode,
-   specified with --gag, was introduced in NCO 4.2.2 to glue files
-   together by placing them in distinct groups in the output file.
+A. ncecat now supports Record AGgregation (RAG) mode for netCDF4.
+   Most people have always used RAG mode, the default for ncecat. 
+   RAG mode glues files together with a new record dimension. 
+   Group AGgregation (GAG) mode, by contrast, is specified with --gag,
+   andwas introduced in NCO 4.2.2 to glue files together by placing
+   them in distinct groups in a netCDF4 output file. 
    GAG mode always worked for both netCDF3 and netCDF4 input files,
    but RAG mode only worked for netCDF3/classic input files.
    Now RAG mode works for netCDF4 files too. And it is the default.
