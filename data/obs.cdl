@@ -1,7 +1,7 @@
 // Generate netCDF file with:
 // ncgen -k netCDF-4 -b -o ~/nco/data/obs_1.nc ~/nco/data/obs_1.cdl
 
-netcdf obs_1 {
+netcdf obs {
   dimensions:
   time=4;
   variables:

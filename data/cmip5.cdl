@@ -10,9 +10,9 @@ netcdf cmip5 {
   //
   group: cesm { 
   variables:
-  float t(time);
+  float tas(time);
   data:
-  t=0,0,0,0;
+  tas=0,0,0,0;
   } // end cesm
   
   //
@@ -20,9 +20,9 @@ netcdf cmip5 {
   //
   group: ecmwf { 
   variables:
-  float t(time);
+  float tas(time);
   data:
-  t=1,1,1,1;
+  tas=1,1,1,1;
   } // end ecmwf
   
   //
@@ -30,9 +30,9 @@ netcdf cmip5 {
   //
   group: gfdl { 
   variables:
-  float t(time);
+  float tas(time);
   data:
-  t=2,2,2,2;
+  tas=2,2,2,2;
   } // end gfdl
 
 } // end root group

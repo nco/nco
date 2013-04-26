@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.781 2013-04-25 04:22:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.782 2013-04-26 18:15:10 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1126,12 +1126,14 @@ groups in @command{ncks} and @command{ncecat}.
 Group support for these operators was complete (e.g., regular
 expressions to select groups and Group Path Editing) as of 
 @acronym{NCO} version 4.2.6 (April, 2013).
+See @ref{Group Path Editing} for more details.
 
 @cindex broadcasting groups
 Support for netCDF4 in the first arithmetic operator, @command{ncbo},
 was introduced in @acronym{NCO} version 4.3.0 (March, 2013).
 @acronym{NCO} version 4.3.1 (April, 2013) completed this support and
 introduced the first example of automatic group broadcasting.
+See @ref{ncbo netCDF Binary Operator} for more details.
 
 @cindex @acronym{HDF5}
 @cindex @code{-4}
@@ -11144,14 +11146,13 @@ albeit in a more convoluted way than @command{ncbo}.
 Beginning with @acronym{NCO} version 4.3.1 (April, 2013), @command{ncbo} 
 supports a feature known as group broadcasting.
 Group broadcasting means processing data based on group patterns in the
-input file(s) and automatically creating those groups in the output
-file. 
+input file(s) and automatically transferring or transforming groups to
+the output file. 
 Consider the case where @var{file_1} contains multiple groups each with
-the variable @var{v1}, while @var{file_2} only contains @var{v1} in its
-top-level group.
-Then @command{ncbo} will replicate the group structure of @var{file_1} 
-in the output file
-
+the variable @var{v1}, while @var{file_2} contains @var{v1} only in its 
+top-level (i.e., root) group.
+Then @command{ncbo} will replicate the group structure of @var{file_1}
+in the output file, @var{file_3}.
 
 @noindent
 @html
@@ -11164,9 +11165,13 @@ Say files @file{85_0112.nc} and @file{86_0112.nc} each contain 12 months
 of data.
 Compute the change in the monthly averages from 1985 to 1986:
 @example
-ncbo -op_typ=sub 86_0112.nc 85_0112.nc 86m85_0112.nc
+ncbo   86_0112.nc 85_0112.nc 86m85_0112.nc
 ncdiff 86_0112.nc 85_0112.nc 86m85_0112.nc
+ncbo --op_typ=sub 86_0112.nc 85_0112.nc 86m85_0112.nc
+ncbo --op_typ='-' 86_0112.nc 85_0112.nc 86m85_0112.nc
 @end example
+@noindent
+These commands are all different ways of expressing the same thing.
 
 @cindex broadcasting
 @cindex rank
@@ -11215,6 +11220,17 @@ ncdiff 85_0112.nc 85_x.nc tx_anm_85_0112.nc
 This examples works assuming @file{85_0112.nc} has dimensions
 @code{time} and @code{lon}, and that @file{85_x.nc} has no @code{time}
 or @code{lon} dimension.
+
+Group broadcasting simplifies evaluation of multiple models against
+observations.
+Consider the input file @file{cmip5.nc} which contains multiple
+top-level groups @code{cesm}, @code{ecmwf}, and @code{gfdl}, each of
+which contains the surface air temperature @code{tas}.
+The comparison input file @file{} while @var{file_2} contains @var{v1} only in its 
+top-level (i.e., root) group.
+Then @command{ncbo} will replicate the group structure of @var{file_1}
+in the output file, @var{file_3}.
+
 
 @html
 <a name="csn_anm"></a> <!-- http://nco.sf.net/nco.html#csn_anm -->
@@ -11459,14 +11475,16 @@ there would be "gaps" in the output file).
 
 A new record dimension is the glue which binds the input file data
 together. 
-The new record dimension name is, by default, ``record''.
+The new record dimension is defined in the root group of the output file
+so it is visible to all sub-groups.
+Its name is, by default, ``record''.
 @cindex unlimited dimension
 @cindex record dimension
 @cindex @samp{-u @var{ulm_nm}}
 @cindex @samp{--ulm_nm @var{ulm_nm}}
 @cindex @samp{--rcd_nm @var{ulm_nm}}
-Its name can be specified with the @samp{-u @var{ulm_nm}} short
-option (or the @samp{--ulm_nm} or @samp{rcd_nm} long options).
+This default name can be overridden with the @samp{-u @var{ulm_nm}}
+short option (or the @samp{--ulm_nm} or @samp{rcd_nm} long options).
 
 Each extracted variable must be constant in size and rank across all
 @var{input-files}. 
@@ -11478,6 +11496,17 @@ the record dimension size if the requested record hyperslab
 @cindex CMIP
 This allows easier gluing/averaging of unequal length timeseries from 
 simulation ensembles (e.g., the @acronym{CMIP} rchive). 
+
+@cindex fixed dimension
+@cindex fix record dimension
+Classic (i.e., all netCDF3 and @code{NETCDF4_CLASSIC}) output files
+can contain only one record dimension.
+@command{ncecat} makes room for the new glue record dimension by
+changing the record dimension, if any, in the input files into a fixed
+dimension. 
+netCDF4 output files may contain any number of record dimensions, so
+@command{ncecat} need not and does not alter the record dimensions,
+if any, of the input files as it copies them to the output file. 
 
 @html
 <a name="gag"></a> <!-- http://nco.sf.net/nco.html#gag -->
