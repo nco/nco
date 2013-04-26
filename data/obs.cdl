@@ -5,8 +5,8 @@ netcdf obs {
   dimensions:
   time=4;
   variables:
-  float t(time);
+  float tas(time);
   data:
-  t=5,5,5,5;
+  tas=5,5,5,5;
  
 } // end root group
