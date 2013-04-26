@@ -1,5 +1,5 @@
 // Generate netCDF file with:
-// ncgen -k netCDF-4 -b -o ~/nco/data/obs_1.nc ~/nco/data/obs_1.cdl
+// ncgen -k netCDF-4 -b -o ~/nco/data/obs.nc ~/nco/data/obs.cdl
 
 netcdf obs {
   dimensions:
