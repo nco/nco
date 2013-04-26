@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.306 2013-04-26 09:47:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.307 2013-04-26 17:16:25 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.306 2013-04-26 09:47:25 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.306 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.307 2013-04-26 17:16:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.307 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -192,6 +192,7 @@ main(int argc,char **argv)
 #endif
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
+  int var_idx;
   int var_lst_in_nbr=0;
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
@@ -678,7 +679,7 @@ main(int argc,char **argv)
     var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
     var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
 
-    int var_idx=0;
+    var_idx=0;
 
     /* Loop table */
     for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
@@ -715,7 +716,7 @@ main(int argc,char **argv)
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
     /* Store processed variables info into table */
-    for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
+    for(var_idx=0;var_idx<nbr_var_prc;var_idx++){
       trv_sct *var_trv;
 
       /* Obtain variable GTT object using full variable name */
@@ -728,7 +729,7 @@ main(int argc,char **argv)
     }
 
     /* Store fixed variables info into table */
-    for(int var_idx=0;var_idx<nbr_var_fix;var_idx++){
+    for(var_idx=0;var_idx<nbr_var_fix;var_idx++){
       trv_sct *var_trv;
 
       /* Obtain variable GTT object using full variable name */
@@ -1012,8 +1013,6 @@ main(int argc,char **argv)
         if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
       } /* endif first file */
 
-
-
       trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table for GROUP_AGGREGATE only */
 
       /* Initialize traversal table */
@@ -1105,7 +1104,11 @@ main(int argc,char **argv)
 
       /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,MD5_DIGEST,trv_tbl)
+# ifdef USE_TRV_API
+#  pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,nbr_dmn_fl,MD5_DIGEST,trv_tbl)
+# else /* !USE_TRV_API */
+#  pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,MD5_DIGEST,trv_tbl)
+# endif /* !USE_TRV_API */
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(int idx=0;idx<nbr_var_prc;idx++){
