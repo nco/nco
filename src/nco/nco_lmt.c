@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.185 2013-04-16 05:21:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.186 2013-04-29 03:12:48 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -52,7 +52,6 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
 
 } /* end nco_lmt_init() */
 
-
 void
 nco_lmt_prt /* [fnc] Print a Limit structure */
 (lmt_sct *lmt) /* I/O [sct] Limit structure to print */
@@ -96,7 +95,6 @@ nco_lmt_prt /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Calendar-type attribute: %d\n",lmt->lmt_cln);
 
 } /* end nco_lmt_prt() */
-
 
 void
 nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */

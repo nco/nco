@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.183 2013-03-28 20:29:03 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.184 2013-04-29 03:12:48 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -195,7 +195,8 @@ bsrc # Reset shell environment for regular development
 # This builds .debs for submission to Debian Sid and ultimately Ubuntu
 # Configuration in ~/.pbuilderrc or /etc/pbuilderrc
 # https://wiki.ubuntu.com/PbuilderHowto
-# DIST=sid sudo pbuilder create
+# sudo aptitude install debian-archive-keyring # Avoid "Release signed by unknown key" error
+sudo DIST=sid pbuilder create --debootstrapopts --keyring=/usr/share/keyrings/debian-archive-keyring.gpg
 DIST=sid sudo pbuilder update # Update chroot before building package in it
 # dget http://ftp.debian.org/debian/pool/main/n/nco/nco_3.9.0-1.dsc
 # dget http://ftp.debian.org/debian/pool/main/n/netcdf/netcdf_3.6.1-1.dsc

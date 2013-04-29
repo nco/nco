@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.41 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.42 2013-04-29 03:12:48 zender Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -144,7 +144,7 @@ nco_aux_evl
      match rectangular region specified by -X arguments.
      Intended for use with non-monotonic grids
      Requires CF-1.0 conventions
-     Uses lat/lon centers rather than cell_bounds to detect matches
+     Uses latitude/longitude centers rather than cell_bounds to detect matches
      Code assumes units are degrees if they are not radians */
   
   const char fnc_nm[]="nco_aux_evl()"; /* [sng] Function name */
@@ -177,7 +177,7 @@ nco_aux_evl
   int lon_id;
   int rcd=NC_NOERR;
   
-  lmt_sct **lmt=0; /* [sct] List of returned lmt structures */
+  lmt_sct **lmt=NULL; /* [sct] List of returned lmt structures */
   
   long dmn_sz=0;
   
@@ -208,25 +208,29 @@ nco_aux_evl
   
   *lmt_nbr=0;
   
-  lmt_sct base;
-  base.nm=(char *)strdup(dmn_nm);
-  base.lmt_typ=lmt_dmn_idx;
-  base.is_usr_spc_lmt=True; 
-  base.is_usr_spc_min=True; 
-  base.is_usr_spc_max=True;
-  base.flg_mro=False;
-  base.srd_sng=(char *)strdup("1");
-  base.drn_sng=(char *)strdup("1");
-  base.mro_sng=(char *)strdup("m");
-  base.is_rec_dmn=0;
-  base.id=dmn_id;
-  base.min_idx=0;
-  base.max_idx=0;
-  base.srt=0L;
-  base.end=0L;
-  base.cnt=0L;
-  base.srd=1L;
-  base.drn=1L;
+  lmt_sct lmt_tpl;
+  /* 20130428: Utilitze nco_lmt_init() to initialize limit structure? */
+  (void)nco_lmt_init(&lmt_tpl);
+  lmt_tpl.nm=(char *)strdup(dmn_nm);
+  lmt_tpl.lmt_typ=lmt_dmn_idx;
+  lmt_tpl.is_usr_spc_lmt=True; 
+  lmt_tpl.is_usr_spc_min=True; 
+  lmt_tpl.is_usr_spc_max=True;
+  lmt_tpl.flg_mro=False;
+  lmt_tpl.srd_sng=(char *)strdup("1");
+  /*  lmt_tpl.drn_sng=(char *)strdup("1");*/
+  lmt_tpl.drn_sng=NULL;
+  /*  lmt_tpl.mro_sng=(char *)strdup("m");*/
+  lmt_tpl.mro_sng=NULL;
+  lmt_tpl.is_rec_dmn=0;
+  lmt_tpl.id=dmn_id;
+  lmt_tpl.min_idx=0;
+  lmt_tpl.max_idx=0;
+  lmt_tpl.srt=0L;
+  lmt_tpl.end=0L;
+  lmt_tpl.cnt=0L;
+  lmt_tpl.srd=1L;
+  lmt_tpl.drn=1L;
   
   /* malloc() lmt structure to return
      No way to know exact size in advance though maximum is about dim_sz/2 */
@@ -269,16 +273,16 @@ nco_aux_evl
       }else if(cll_idx_min != -1){
 	/* Current cell is not within bounding box though immediately previous cell is */
 	sprintf(cll_idx_sng,"%d",cll_idx_min);
-	base.min_sng=(char *)strdup(cll_idx_sng);
-	base.min_idx=base.srt=cll_idx_min;
+	lmt_tpl.min_sng=(char *)strdup(cll_idx_sng);
+	lmt_tpl.min_idx=lmt_tpl.srt=cll_idx_min;
 	sprintf(cll_idx_sng,"%d",cll_idx_min+cll_nbr_cns-1);
-	base.max_sng=(char *)strdup(cll_idx_sng);
-	base.max_idx=base.end=cll_idx_min+cll_nbr_cns-1;
-	base.cnt=cll_nbr_cns;
+	lmt_tpl.max_sng=(char *)strdup(cll_idx_sng);
+	lmt_tpl.max_idx=lmt_tpl.end=cll_idx_min+cll_nbr_cns-1;
+	lmt_tpl.cnt=cll_nbr_cns;
 	(*lmt_nbr)++;
 	if(*lmt_nbr > MAX_LMT_NBR) nco_err_exit(0,"%s: Number of slabs exceeds allocated mamory");
 	lmt[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-	*lmt[(*lmt_nbr)-1]=base;
+	*lmt[(*lmt_nbr)-1]=lmt_tpl;
 	cll_grp_nbr++;
 	cll_nbr_ttl+=cll_nbr_cns;
 	/* Indicate that next cell, if any, in this bounding box requires new limit structure */

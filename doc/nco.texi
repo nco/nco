@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.782 2013-04-26 18:15:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.783 2013-04-29 03:12:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.1
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 19 April 2013
+@set update-date 28 April 2013
 @set update-month April 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -6368,11 +6368,8 @@ in @acronym{NCO} @w{version 1.2}, August, 2000.
 Previous versions never performed unnecessary type conversion for
 arithmetic.}: 
 @enumerate
-@item The operator is @command{ncea}, @command{ncra}, or @command{ncwa}. 
-@command{ncbo} is not yet included in this list because subtraction did
-not benefit from type conversion.
-This will change in the future
-@c fxm TODO #265
+@item The operator is @command{ncbo}, @command{ncea}, @command{ncra}, or
+@command{ncwa}.  
 @item The arithmetic operation could benefit from type conversion.
 Operations that could benefit (e.g., from larger representable sums) 
 include averaging, summation, or any "hard" arithmetic. 
@@ -6381,10 +6378,12 @@ Type conversion does not benefit searching for minima and maxima
 @item The variable on disk is of type @code{NC_BYTE}, @code{NC_CHAR},
 @code{NC_SHORT}, or @code{NC_INT}.
 Type @code{NC_DOUBLE} is not type converted because there is no type of
-higher precision to convert to.
+higher precision.
 Type @code{NC_FLOAT} is not type converted because, in our judgement,
-the performance penalty of always doing so would outweigh the (extremely
-rare) potential benefits.  
+the performance penalty of always doing so would outweigh the potential
+benefits.   
+@c Add NR C citation to bibliography
+The book Numerical Recipes in C discusses this point.
 @end enumerate
 
 When these criteria are all met, the operator promotes the variable in
@@ -9972,7 +9971,6 @@ Arc-tangent of @var{y/x}
 @math{:Example atan2(1,3) =  0.321689857}
 @end ifinfo
 
-
 @item atanh(x)
 @dfn{Hyperbolic arc-tangent}
 Hyperbolic arc-tangent of @var{x} where @var{x} is specified in radians between 
@@ -11058,23 +11056,22 @@ would only broadcast variables in @var{file_2} to conform to
 @var{file_1}. 
 Variables in @var{file_1} were @emph{never} broadcast to conform to the 
 dimensions in @var{file_2}.}. 
-@command{ncbo} is completely symmetric with respect to @var{file_1} and
-@var{file_2}, i.e., 
+Now @command{ncbo} is completely symmetric with respect to @var{file_1}
+and @var{file_2}, i.e., 
 @set flg
 @tex
-$\mbox{file}_1 - \mbox{file}_2 = -(\mbox{file}_2-\mbox{file}_1)$
+$\rm{file}_1 - \rm{file}_2 = -(\rm{file}_2-\rm{file}_1)$.
 @clear flg
 @end tex
 @ifinfo
-@math{@var{file_1} - @var{file_2} = - (@var{file_2} - @var{file_1}}
+@math{@var{file_1} - @var{file_2} = - (@var{file_2} - @var{file_1}}.
 @clear flg
 @end ifinfo
 @ifset flg
 @c texi2html does not like @math{}
-@var{file_1} - @var{file_2} = -(@var{file_2} - @var{file_1}
+@var{file_1} - @var{file_2} = -(@var{file_2} - @var{file_1}.
 @clear flg
 @end ifset
-. fxm
 
 Broadcasting a variable means creating data in non-existing dimensions
 by copying data in existing dimensions.
@@ -11144,7 +11141,7 @@ albeit in a more convoluted way than @command{ncbo}.
 @end html
 @cindex broadcasting groups
 Beginning with @acronym{NCO} version 4.3.1 (April, 2013), @command{ncbo} 
-supports a feature known as group broadcasting.
+supports @dfn{group broadcasting}.
 Group broadcasting means processing data based on group patterns in the
 input file(s) and automatically transferring or transforming groups to
 the output file. 
@@ -11153,6 +11150,10 @@ the variable @var{v1}, while @var{file_2} contains @var{v1} only in its
 top-level (i.e., root) group.
 Then @command{ncbo} will replicate the group structure of @var{file_1}
 in the output file, @var{file_3}.
+Each group in @var{file_3} contains the output of the corresponding
+group in @var{file_1} operating on the data in the single group in
+@var{file_2}. 
+An example is provided below.
 
 @noindent
 @html
@@ -11221,16 +11222,29 @@ This examples works assuming @file{85_0112.nc} has dimensions
 @code{time} and @code{lon}, and that @file{85_x.nc} has no @code{time}
 or @code{lon} dimension.
 
+@cindex broadcasting groups
 Group broadcasting simplifies evaluation of multiple models against
 observations.
 Consider the input file @file{cmip5.nc} which contains multiple
 top-level groups @code{cesm}, @code{ecmwf}, and @code{gfdl}, each of
 which contains the surface air temperature @code{tas}.
-The comparison input file @file{} while @var{file_2} contains @var{v1} only in its 
+The comparison input file @file{obs.nc} contains @code{tas} only in its
 top-level (i.e., root) group.
-Then @command{ncbo} will replicate the group structure of @var{file_1}
-in the output file, @var{file_3}.
-
+Then @command{ncbo} ``broadcasts'' (i.e., replicates) the observational
+data to match the group structure of @file{cmip5.nc}, performs the 
+substraction, and stores the results with the group structure of 
+@file{cmip5.nc} in the output file, @file{bias.nc}.
+@example
+% ncbo -O cmip5.nc obs.nc bias.nc
+% ncks -H -v tas -d time,3 bias.nc
+/cesm/tas
+time[3] tas[3]=-1 
+/ecmwf/tas
+time[3] tas[3]=0 
+/gfdl/tas
+time[3] tas[3]=1 
+@end example
+@noindent
 
 @html
 <a name="csn_anm"></a> <!-- http://nco.sf.net/nco.html#csn_anm -->

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.702 2013-04-24 18:31:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.703 2013-04-29 03:12:48 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2415,8 +2415,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_bld_var_dmn(trv_tbl);
 
 } /* nco_bld_trv_tbl() */
-
-
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */

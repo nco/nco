@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1237 2013-04-15 18:23:31 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1238 2013-04-29 03:12:48 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -215,12 +215,10 @@ nco250. ncks -s should refuse to print strings formatted with %s unless they con
         ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 nco251. Does ncks -B correctly write packed variables in binary format?
 nco255. Desktop icon for NCO gui interface
-nco256. Turn udunits into .deb
 nco258. Develop syntax/procedure for specifying lists of hyperslabs for single pass, low memory consumption MSA jobs like Martin Schultz's in Discussion forum on 20030506
 nco259. Variadic function extension to nco_malloc() to support printing debugging messages?
 nco260. Warn (but work) when coordinate variable has more than two dimensions
 nco261. Switch from toggling defaults to --no-option format for all Booleans. e.g., --abc should ensure alphabetization is True, and --no-abc should ensure it is false, rather than toggling.
-nco265. ncbo: Promote before operations using nco_typ_cnv_rth() in ncbo
 nco266. ncbo: Finish ncbo.1 manpage
 nco270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
 nco275. Use nco_mss_val_cnf() in ncflint

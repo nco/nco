@@ -12,7 +12,7 @@ netcdf cmip5 {
   variables:
   float tas(time);
   data:
-  tas=0,0,0,0;
+  tas=272,272,272,272;
   } // end cesm
   
   //
@@ -22,7 +22,7 @@ netcdf cmip5 {
   variables:
   float tas(time);
   data:
-  tas=1,1,1,1;
+  tas=273,273,273,273;
   } // end ecmwf
   
   //
@@ -32,7 +32,7 @@ netcdf cmip5 {
   variables:
   float tas(time);
   data:
-  tas=2,2,2,2;
+  tas=274,274,274,274;
   } // end gfdl
 
 } // end root group

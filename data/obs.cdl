@@ -7,6 +7,6 @@ netcdf obs {
   variables:
   float tas(time);
   data:
-  tas=5,5,5,5;
+  tas=273,273,273,273;
  
 } // end root group

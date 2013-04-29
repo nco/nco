@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.256 2013-04-26 18:15:09 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.257 2013-04-29 03:12:48 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -587,7 +587,7 @@ print "\n";
     
 # ncbo #21
 
-    $dsc_sng="Process relative match -v var2 in_grp_1.nc  in_grp_2.nc";
+    $dsc_sng="Process relative match -v var2 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -d lon1,2,2,1 %tmp_fl_00%";
@@ -606,7 +606,7 @@ print "\n";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -g gfdl -v tas -d time,3,3,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[3] tas[3]=-3";
+    $tst_cmd[2]="time[3] tas[3]=1";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
@@ -618,10 +618,10 @@ print "\n";
 # ncbo #23
 
     $dsc_sng="Process relative match from observations to model obs.nc -> cmip5.nc";
-    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg  obs.nc cmip5.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -g gfdl -v tas -d time,3,3,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[3] tas[3]=3";
+    $tst_cmd[2]="time[3] tas[3]=-1";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 

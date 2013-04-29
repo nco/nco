@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.567 2013-04-26 20:43:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.568 2013-04-29 03:12:48 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.1 are ready. 
 
@@ -7,10 +7,11 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release solidifies group support in ncbo and makes
 group-related features consistent across ncbo, ncecat, and ncks.
+These three operators fully support group hierarchies.
 
 Work on NCO 4.3.2 is underway and includes improved netCDF4 support
-for other floating point operators, and on better support for Windows
-builds (enabling DAP, UDUnits). 
+for more NCO operators, and better support for Windows builds
+(enabling DAP and UDUnits by default).   
 
 Enjoy,
 Charlie
@@ -26,7 +27,7 @@ A. ncbo now supports Group Path Editing (GPE) and list unions.
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
 
-A. ncbo now always works when input files are interchanged, i.e.,
+B. ncbo now always works when input files are interchanged, i.e.,
    (ncbo fl_1.nc fl_2.nc) = -(ncbo fl_2.nc fl_1.nc).
    Formerly, ncbo broadcast variables in fl_2 to match the rank of
    variables in fl_1 when necessary, but would fail rather than 
@@ -37,7 +38,7 @@ A. ncbo now always works when input files are interchanged, i.e.,
    ncbo -v v1 fl_1.nc fl_2.nc out.nc # Now works too!
    ncbo -v v1 fl_2.nc fl_1.nc out.nc # Always worked
 
-A. ncecat now supports Record AGgregation (RAG) mode for netCDF4.
+C. ncecat now supports Record AGgregation (RAG) mode for netCDF4.
    Most people have always used RAG mode, the default for ncecat. 
    RAG mode glues files together with a new record dimension. 
    Group AGgregation (GAG) mode, by contrast, is specified with --gag,
@@ -63,12 +64,12 @@ A. Fixed ncbo bug introduced in version 4.3.0 where some special
    even when that makes no physical sense in the CF context.
    http://nco.sf.net#bug_ncbo_ccm_ccsm_cf
 
-A. Fixed ncatted bug where leaving the attribute field blank in
+B. Fixed ncatted bug where leaving the attribute field blank in
    attribute edit mode structures could trigger a segfault on netCDF4
    files. Bug identified and fix provided by Etienne Tourigny.
    http://nco.sf.net#bug_ncatted_strcmp
 
-A. Fixed ncrcat bug that falsely warned of non-monotonicity in input
+C. Fixed ncrcat bug that falsely warned of non-monotonicity in input
    files with multiple variables treated as record coordinates.
 
 KNOWN BUGS NOT YET FIXED:
@@ -76,7 +77,7 @@ KNOWN BUGS NOT YET FIXED:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.3.1 built/tested with netCDF
-   4.3.0-rc3 released 20130311 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.3.0-rc4 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
@@ -158,6 +159,17 @@ F. NOT YET FIXED
 
    20130319: Verified
    Bug report not yet filed
+
+G. NOT YET FIXED
+   Auxiliary coordinates do not work in ncks versions 4.2.0-4.3.1.
+   This is an NCO problem discovered just before release.
+
+   Demonstration:
+   ncks -O -X 0.,180.,-30.,30. -v gds_3dvar ~/nco/data/in.nc ~/foo.nc
+
+   20130428: Verified
+   This is our top priority to fix in version 4.3.2.
+   The workaround is to use NCO 4.1.9 or earlier.
 
 "Sticky" reminders:
 
