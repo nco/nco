@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.783 2013-04-29 03:12:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.784 2013-04-29 21:54:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11227,13 +11227,17 @@ Group broadcasting simplifies evaluation of multiple models against
 observations.
 Consider the input file @file{cmip5.nc} which contains multiple
 top-level groups @code{cesm}, @code{ecmwf}, and @code{gfdl}, each of
-which contains the surface air temperature @code{tas}.
-The comparison input file @file{obs.nc} contains @code{tas} only in its
-top-level (i.e., root) group.
+which contains the surface air temperature field @code{tas}.
+We wish to compare these models to observations stored in @file{obs.nc} 
+which contains @code{tas} only in its top-level (i.e., root) group.
+It is often the case that many models and/or model simulations exist,
+whereas only one observational dataset does.
+We evaluate the models and obtain the bias (difference) between models
+and observations by subtracting @file{obs.nc} from @file{cmip5.nc}.
 Then @command{ncbo} ``broadcasts'' (i.e., replicates) the observational
-data to match the group structure of @file{cmip5.nc}, performs the 
-substraction, and stores the results with the group structure of 
-@file{cmip5.nc} in the output file, @file{bias.nc}.
+data to match the group structure of @file{cmip5.nc}, subtracts,
+and then stores the results in the output file, @file{bias.nc}
+which has the same group structure as @file{cmip5.nc}.
 @example
 % ncbo -O cmip5.nc obs.nc bias.nc
 % ncks -H -v tas -d time,3 bias.nc
@@ -11464,13 +11468,13 @@ DESCRIPTION
 
 @command{ncecat} aggregates an arbitrary number of input files into a 
 single output file using using one of two methods.
-@dfn{Record AGgregation} (RAG), the traditional method employed on
+@dfn{Record AGgregation} (@acronym{RAG}), the traditional method employed on
 netCDF3 files and still the default method, stores @var{input-files} as
 consecutive records in the @var{output-file}.
-@dfn{Group AGgregation} (GAG) stores @var{input-files} as top-level
+@dfn{Group AGgregation} (@acronym{GAG}) stores @var{input-files} as top-level
 groups in the netCDF4 @var{output-file}.
-Record Aggregation (RAG) makes numerous assumptions about the structure
-of input files and Group Aggregation (GAG) makes none.
+Record Aggregation (@acronym{RAG}) makes numerous assumptions about the structure
+of input files and Group Aggregation (@acronym{GAG}) makes none.
 Both methods are described in detail below.
 Since @command{ncecat} aggregates all the contents of the input files,
 it can easily produce large output files so it is often helpful to invoke
@@ -11480,7 +11484,8 @@ subsetting simultaneously (@pxref{Subsetting Files}).
 <a name="rag"></a> <!-- http://nco.sf.net/nco.html#rag -->
 @end html
 @cindex record aggregation
-RAG makes each variable (except coordinate variables) in each input file 
+@cindex @acronym{RAG}
+@acronym{RAG} makes each variable (except coordinate variables) in each input file 
 into a single record of the same variable in the output file. 
 Coordinate variables are not concatenated, they are instead simply
 copied from the first input file to the @var{output-file}.
@@ -11507,7 +11512,7 @@ Each extracted variable must be constant in size and rank across all
 The only exception is that @command{ncecat} allows files to differ in
 the record dimension size if the requested record hyperslab
 (@pxref{Hyperslabs}) resolves to the same size for all files. 
-@cindex CMIP
+@cindex @acronym{CMIP}
 This allows easier gluing/averaging of unequal length timeseries from 
 simulation ensembles (e.g., the @acronym{CMIP} rchive). 
 
@@ -11516,8 +11521,8 @@ simulation ensembles (e.g., the @acronym{CMIP} rchive).
 Classic (i.e., all netCDF3 and @code{NETCDF4_CLASSIC}) output files
 can contain only one record dimension.
 @command{ncecat} makes room for the new glue record dimension by
-changing the record dimension, if any, in the input files into a fixed
-dimension. 
+changing the pre-existing record dimension, if any, in the input files
+into a fixed dimension in the output file. 
 netCDF4 output files may contain any number of record dimensions, so
 @command{ncecat} need not and does not alter the record dimensions,
 if any, of the input files as it copies them to the output file. 
@@ -11526,15 +11531,17 @@ if any, of the input files as it copies them to the output file.
 <a name="gag"></a> <!-- http://nco.sf.net/nco.html#gag -->
 @end html
 @cindex group aggregation
-@dfn{Group AGgregation} (GAG) stores @var{input-files} as top-level
-groups in the @var{output-file}.
+@cindex @acronym{GAG}
+@dfn{Group AGgregation} (@acronym{GAG}) stores @var{input-files} as
+top-level groups in the @var{output-file}.
 No assumption is made about the size or shape or type of a given 
 object (variable or dimension or group) in the input file.
 The entire contents of the extracted portion of each input file
 is placed in its own top-level group in @var{output-file}, which
 is automatically made as a netCDF4-format file.
 
-GAG has two methods to specify group names for the @var{output-file}.   
+@acronym{GAG} has two methods to specify group names for the
+@var{output-file}.    
 The @samp{-G} option, or its long-option equivalent @samp{--gpe},
 takes as argument a group path editing description @var{gpe_dsc} of
 where to place the results.
@@ -11546,7 +11553,7 @@ When the user provides @var{gpe_dsc} (i.e., with @samp{-G}), then the
 output groups are formed by enumerating sequential two-digit numeric
 suffixes starting with zero, and appending them to the specified group
 path (@pxref{Group Path Editing}).
-When @var{gpe_dsc} is not provided (i.e., user requests GAG with
+When @var{gpe_dsc} is not provided (i.e., user requests @acronym{GAG} with
 @samp{--gag} instead of @samp{-G}), then @command{ncecat} forms the
 output groups by stripping the input file name of any type-suffix
 (e.g., @code{.nc}), and all but the final component of the full
@@ -11557,8 +11564,8 @@ ncecat -G 85_ a.nc b.nc c.nc 8589.nc # Output groups 85_00, 85_01, 85_02
 ncecat -G 85/ a.nc b.nc c.nc 8589.nc # Output groups 85/00, 85/01, 85/02
 @end example
 
-With both RAG and GAG the @var{output-file} size is the sum of the sizes
-of the extracted variables in the input files. 
+With both @acronym{RAG} and @acronym{GAG} the @var{output-file} size is
+the sum of the sizes of the extracted variables in the input files. 
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
 @cindex multi-file operators

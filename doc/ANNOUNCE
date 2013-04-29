@@ -1,9 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.568 2013-04-29 03:12:48 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.569 2013-04-29 21:54:41 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
+
+CAVEAT: Version 4.3.1 of NCO must be built with and linked to
+the netCDF library snapshot of 20130415 or later. 
+This includes netCDF 4.3.0 (final) but does _not_ include 
+netCDF 4.3.0 Release Candidates (RCs) 1-4. 
+NCO built with an earlier version of netCDF produces errors due to
+hard-to-workaround netCDF library bugs. 
+We are uncomfortable releasing a version of NCO that is not "backwards
+compatible" with earlier versions of netCDF. 
 
 This release solidifies group support in ncbo and makes
 group-related features consistent across ncbo, ncecat, and ncks.

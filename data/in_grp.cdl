@@ -43,7 +43,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.77 2013-03-31 16:28:35 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.78 2013-04-29 21:54:41 zender Exp $";
   
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
@@ -80,10 +80,6 @@ netcdf in_grp {
   area:units = "meter2";
   
   float lat_lon(lat,lon);
-  //float tm2_tm3(tm2,tm3);
-  //tm2_tm3:purpose = "a variable containing mutiple record dimensions";
-  //tm2_tm3:note = "ncdump prior to snapshot 20121116 and/or release netCDF 4.3 fails to print braces required to dis-ambiguate data sizes of mutiple record dimensions";
-  //tm2_tm3:note2 = "ncgen from netCDF after ~201207 fails when ambiguous syntax (without braces) is used. Catch 22. Therefore remove tm2_tm3 from test file for now.";
   
  data:
   area=10.,10.;
@@ -96,8 +92,6 @@ netcdf in_grp {
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   tm2=1.,2.;
   tm3=1.,2.,3.;
-  // 20130127: Braces are required to disambiguate correct record dimension sizes, but brace syntax was not supported by ncgen until netCDF snapshots ~201211, i.e., post netCDF 4.2.1.1. Uggh.
-  //tm2_tm3={1.,2.,3.},{4.,5.,6.};
   unique=73;
   //
   //g1
@@ -379,45 +373,6 @@ netcdf in_grp {
     uint64_var=18446744073709551615; // ULLONG_MAX = 18446744073709551615, NC_FILL_UINT is 18446744073709551614ULL
     ushort_var=65535; // USHRT_MAX = 65535, NC_FILL_USHORT = 65535
  } // end g11
-
- group: g12 { // Level 1
-    // Purpose: Test netCDF4 vlen type
-    // 20130208: ncgen from netCDF 4.2.1- broken for vlen types
-    // Probably broken on all snapshots until ~201211 because brace-handling broken
-  types:
-    int(*) vlen_t;
-  variables:
-    vlen_t vlen_var;
-  data:
-    vlen_var={17,18,19};
-  } // end g12
-
- group: g13 { // Level 1
-    // Purpose: Test netCDF4 opaque type
-  types:
-    opaque(11) opaque_t;
-  } // end g13
-
- group: g14 { // Level 1
-    // Purpose: Test netCDF4 enum type
-  types:
-    ubyte enum enum_t {Clear=0,Cumulonimbus=1,Stratus=2};
-  variables:
-    enum_t cloud_flg(lon);
-  data:
-    cloud_flg=Stratus,Stratus,Cumulonimbus;
-  } // end g14
-
- group: g15 { // Level 1
-    // Purpose: Test netCDF4 compound type
-  types:
-    compound cmpd_t {vlen_t f1;enum_t f2;};
-  variables:
-    cmpd_t compound_var;
-  data:
-    compound_var={{3,4,5},Stratus};
-  } // end g15
-  
   
   //
   //g16 
@@ -508,20 +463,4 @@ netcdf in_grp {
     
   } // end g16
    
-  
-  //
-  //g17 
-  //ncks -O -v ts -d time,0,1 -d Latitude,40.0 -d Longitude,-105.0 http://hydro1.sci.gsfc.nasa.gov/opendap/hyrax/ncml/LPRM_AMSRE_D_SOILM3_timeSeries.ncml ~/amsre.nc
-  //
-  group: g17 { 
-    dimensions:
-    time3 = 2; 
-    maxStrlen64 = 64 ;    
-    variables:
-    char time3(time3, maxStrlen64) ;
-     time3:_CoordinateAxisType = "Time" ;
-    data:   
-    time3 = "2002-06-19T00:00:00Z","2002-06-20T00:00:00Z" ;
- } // end  g17
-
 } // end root group

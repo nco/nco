@@ -1,3 +1,7 @@
+2013-04-29  Charlie Zender  <zender@uci.edu>
+
+	* Move buggy CDL code from in_grp.cdl to buggy.cdl
+
 2013-04-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.1 release procedure:
