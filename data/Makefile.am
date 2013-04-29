@@ -1,12 +1,17 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.14 2013-04-29 22:00:33 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.15 2013-04-29 22:06:09 zender Exp $ -*-makefile-*-
 
-test_data = big.nc in.nc in_grp.nc in_rec_zero.nc
+test_data = big.nc in.nc in_rec_zero.nc
+
+test_data_netCDF4 = in_grp.nc
 
 # netCDF build rules
 %.nc : %.cdl
 	@PATH_TO_NCGEN@ -o $@ $< 
 
-all: ${test_data}
+in_grp.nc : in_grp.cdl
+	@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+
+all: ${test_data} ${test_data_netCDF4}
 
 EXTRA_DIST = big.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl cmip5.cdl obs.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 
