@@ -1,6 +1,6 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.13 2013-04-12 20:56:29 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.14 2013-04-29 22:00:33 zender Exp $ -*-makefile-*-
 
-test_data = big.nc in.nc in_rec_zero.nc
+test_data = big.nc in.nc in_grp.nc in_rec_zero.nc
 
 # netCDF build rules
 %.nc : %.cdl
@@ -16,7 +16,7 @@ EXTRA_DIST = big.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl cmip5.cdl obs.c
 DISTCLEANFILES = foo*
 
 # Build procedure produces these files:
-CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc big.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_rec_zero.nc ../src/nco_c++/in.nc
+CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc big.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_grp.nc in_rec_zero.nc ../src/nco_c++/in.nc
 
 MAINTAINERCLEANFILES = Makefile.in
 
