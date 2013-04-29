@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.704 2013-04-29 20:30:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.705 2013-04-29 22:46:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1684,7 +1684,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
         */
 
-          (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Such files should not exist yet can be created by NCO (and other software) due to an apparent bug in the HDF or netCDF4 libraries. Unidata bug ticket is SHH-257980 filed 20130312.\n",prg_nm_get());
+          (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Please use netCDF version at least 4.3.0.\n",prg_nm_get());
           (void)nco_prt_trv_tbl(nc_id,trv_tbl);
           nco_exit(EXIT_FAILURE);
         }
