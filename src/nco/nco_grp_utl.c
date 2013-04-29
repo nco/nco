@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.703 2013-04-29 03:12:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.704 2013-04-29 20:30:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1935,7 +1935,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_id=dmn_id_var[dmn_idx_var];
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension #%d'%s'\n",prg_nm_get(),fnc_nm,
           var_nm_fll,dmn_id_var[dmn_idx_var],dmn_nm_var);
       }
@@ -2415,6 +2415,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_bld_var_dmn(trv_tbl);
 
 } /* nco_bld_trv_tbl() */
+
+
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
