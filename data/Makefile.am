@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.17 2013-04-30 21:42:50 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.18 2013-04-30 22:22:34 zender Exp $ -*-makefile-*-
 
 test_data = big.nc in.nc in_rec_zero.nc
 
@@ -6,27 +6,25 @@ test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc obs.n
 
 # netCDF build rules
 %.nc : %.cdl
-	@PATH_TO_NCGEN@ -o $@ $< 
+	-@PATH_TO_NCGEN@ -o $@ $< 
 
 in_grp.nc : in_grp.cdl
-	@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
-  
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+
 in_grp_1.nc : in_grp_1.cdl
-	@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 in_grp_2.nc : in_grp_2.cdl
-	@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 in_grp_3.nc : in_grp_3.cdl
-	@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
-  
 cmip5.nc : cmip5.cdl
-	@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 obs.nc : obs.cdl
-	@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
- 
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 all: ${test_data} ${test_data_netCDF4}
 

@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.165 2013-03-19 02:04:43 pvicente Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.166 2013-04-30 22:22:34 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -457,6 +457,9 @@ variables:
 	char non_nul_trm_char_two_dmn(fl_dmn,char_dmn_lng04);
 	non_nul_trm_char_two_dmn:long_name = "Variable contains a two-dimensional array of characters that are not NUL-terminated";
 	non_nul_trm_char_two_dmn:units = "[chr]";
+
+	byte byt_arr(lat,lon);
+	byt_arr:long_name = "byte array";
 
 	byte byte_var;
 	byte_var:long_name = "byte";
@@ -962,6 +965,7 @@ data:
 	area2=20.,5.;
 	area_asm=1.,2.;
 	bnd_var=1,2,3,4,5,6;
+	byt_arr=0,1,2,3,4,5,6,7;
 	byte_var='z';
 	byte_var_neg=-122;
 	char_var="z";

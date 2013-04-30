@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.784 2013-04-29 21:54:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.785 2013-04-30 22:22:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11972,11 +11972,12 @@ SYNTAX
 @example
 ncks [-3] [-4] [-6] [-A] [-a] [-b @var{binary-file}] [-C] [-c] 
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
-[--fix_rec_dmn @var{dim}] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
-[--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] [-Q] [-q] 
-[-R] [-r] [--ram_all] [-s @var{format}] [-u] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+[--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] 
+[-Q] [-q] [-R] [-r] [--ram_all] [-s @var{format}] 
+[-u] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 @var{input-file} [[@var{output-file}]]
 @end example
 
