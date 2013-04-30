@@ -15,7 +15,7 @@ unix {
  # Mac Ports netCDF locations
  LIBS += -L/opt/local/lib
  INCLUDEPATH += /opt/local/include 
- # Mac
+ # Mac Ports udunits locations
  INCLUDEPATH += /opt/local/include/udunits2
 }
 
