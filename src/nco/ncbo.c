@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.246 2013-04-18 20:10:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.247 2013-04-30 08:09:56 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.246 2013-04-18 20:10:06 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.246 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.247 2013-04-30 08:09:56 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.247 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -535,8 +535,8 @@ main(int argc,char **argv)
   } /* endif aux_nbr */
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id_1,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_1);
-  (void)nco_bld_trv_tbl(in_id_2,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl_2);
+  (void)nco_bld_trv_tbl(in_id_1,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl_1);
+  (void)nco_bld_trv_tbl(in_id_2,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl_2);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att_1,&nbr_grp_att_1,&nbr_att_var_1,&nbr_dmn_fl_1,&nbr_rec_fl_1,&grp_dpt_fl_1,&nbr_grp_fl_1,&var_ntm_fl_1,&nbr_var_fl_1,trv_tbl_1);

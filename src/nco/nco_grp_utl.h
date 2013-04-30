@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.269 2013-04-16 20:57:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.270 2013-04-30 08:09:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -265,6 +265,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
+ char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void                      
@@ -353,6 +355,13 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
  nm_tbl_sct ** rec_dmn_nm);            /* I/O [sct] Array of record names */
  
 
+void
+nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
+(const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
+ char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
+ int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
+ lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 
 
