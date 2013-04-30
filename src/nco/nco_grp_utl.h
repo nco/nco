@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.270 2013-04-30 08:09:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.271 2013-04-30 08:40:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -34,6 +34,7 @@
 #include "nco_mmr.h" /* Memory management */
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 #include "nco_var_lst.h" /* Variable list utilities */
+#include "nco_aux.h" /* Auxiliary coordinates */
 
 /* Dynamic array implementation of group stack */
 typedef struct {
@@ -357,7 +358,8 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 
 void
 nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
-(const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
  lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */

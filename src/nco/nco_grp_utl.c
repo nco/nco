@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.706 2013-04-30 08:09:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.707 2013-04-30 08:40:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2399,7 +2399,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(dbg_lvl_get() == nco_dbg_old)(void)nco_prt_trv_tbl(nc_id,trv_tbl);
 
   /* Parse auxiliary coordinates */
-  (void)nco_bld_aux_crd(aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
+  if(aux_nbr)(void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
 
   /* Build dimension info for all variables (match dimension IDs) */
   (void)nco_bld_dmn_ids_trv(nc_id,trv_tbl);
@@ -3432,14 +3432,31 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 
 void
 nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
-(const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
  lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
 
+  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
+
+  int aux_idx_nbr;
+  int grp_id;
+
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    /* Filter variables */ 
+    if(var_trv.nco_typ == nco_obj_typ_var){
+
+      /* Obtain group ID where variable is located using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
 
-}
+    } /* Filter variables */ 
+  } /* Loop table */
+} /* nco_bld_aux_crd() */
 
