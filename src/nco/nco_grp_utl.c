@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.707 2013-04-30 08:40:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.708 2013-04-30 20:41:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1616,14 +1616,14 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
   const char fnc_nm[]="nco_bld_dmn_ids_trv()"; /* [sng] Function name  */
 
   /* Loop objects  */
-  if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
   for(unsigned var_idx=0;var_idx<trv_tbl->nbr;var_idx++){
 
     /* Filter variables  */
     if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
       trv_sct var_trv=trv_tbl->lst[var_idx];   
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
         (void)fprintf(stdout,"%s:",var_trv.nm_fll); 
         (void)fprintf(stdout," %d dimensions:\n",var_trv.nbr_dmn);
       }
@@ -1636,7 +1636,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dmn_id,trv_tbl);
 
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm,var_dmn_id);    
           (void)fprintf(stdout,"<%s>\n",dmn_trv->nm_fll);
         }
@@ -1684,6 +1684,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
         */
 
+          (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with duplicate dimensions\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);
           (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Please use netCDF version at least 4.3.0.\n",prg_nm_get());
           (void)nco_prt_trv_tbl(nc_id,trv_tbl);
           nco_exit(EXIT_FAILURE);
