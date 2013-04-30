@@ -26,6 +26,9 @@
 
 netcdf in_grp {
 
+ variables:
+  :Conventions = "CF-1.0";
+
   //
   //g3
   //
