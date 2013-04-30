@@ -74,6 +74,26 @@ netcdf in_grp {
     } // end g3g1
   } // end g3
   
+  //
+  //g5
+  //
+ group: g5 { // Level 1
+  dimensions:
+    rlev=3;
+  variables:
+  
+    //coordinate variable (/g5/rlev)
+    float rlev(rlev);
+  data:
+    rlev=10.,5.,1.;
+  group: g5g1 { // Level 2
+    variables:
+      float rz(rlev);
+    data:
+      rz=1,2,3;
+    } //end g5g1 
+  } // end g5  
+  
   
   //
   //g8

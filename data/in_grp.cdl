@@ -45,7 +45,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.79 2013-04-30 21:16:45 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.80 2013-04-30 21:58:20 pvicente Exp $";
   
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
@@ -147,25 +147,7 @@ netcdf in_grp {
     one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;  
   } // end g4
   
-  //
-  //g5
-  //
- group: g5 { // Level 1
-  dimensions:
-    //rlev=3;
-  variables:
   
-    //coordinate variable (/g5/rlev)
-    //float rlev(rlev);
-  data:
-    //rlev=10.,5.,1.;
-  group: g5g1 { // Level 2
-    variables:
-      //float rz(rlev);
-    data:
-      //rz=1,2,3;
-    } //end g5g1 
-  } // end g5
   
   //
   //g6
