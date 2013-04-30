@@ -1,0 +1,196 @@
+// -*-C++-*-
+// Purpose: CDL file to generate netCDF4 test file for groups
+
+// Usage:
+// NB: ncgen arguments depend on version:
+// "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
+// "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
+// ncgen -k netCDF-4 -b -o ~/nco/data/in_grp_3.nc ~/nco/data/in_grp_3.cdl
+
+// CDL Data constants:
+// byte: 'a'
+// char: "a"
+// short: 1s
+// int: 1 (no decimal point)
+// float: 1.f (decimal point is required, f is required to distinguish from double)
+// double: 1.0, 1.d, 1.0e-20 (decimal point is required, d is not required)
+// CDL complex types:
+// man ncgen describes all
+// roulee:/data/zender/tmp/netcdf-4.2.1/nc_test/ref_tst_diskless2.cdl
+
+// NCL usage:
+// id_in=addfile("/home/zender/nco/data/in_grp_3.nc","r")
+// print(id_in)
+// list_filevars(id_in)
+// ncks --get_file_info  ~/nco/data/in_grp_3.nc
+
+netcdf in_grp {
+
+  //
+  //g3
+  //
+  // Test case generates duplicated dimension IDs in netCDF file
+  // rlev dimension from g3 must be commented when using netCDF earlier than 4.3.0
+  //
+  //      ncks -O  -v two_dmn_rec_var in_grp.nc out.nc
+  //
+  //      nco_cpy_var_dfn() defines new dimesions for the file, as
+  //
+  //      ncks: INFO nco_cpy_var_dfn() defining dimensions
+  //      ID=0 index [0]:</time> 
+  //      ID=1 index [1]:</lev> 
+  //      ID=2 index [0]:</g8/lev> 
+  //      ID=3 index [1]:</g8/vrt_nbr> 
+  //      ID=4 index [1]:</vrt_nbr> 
+  //
+  //
+ group: g3 {
+  dimensions:
+    rlev=3;
+    time2=unlimited;
+  variables:
+    :g3_group_attribute = "g3_group_attribute";
+    
+    //coordinate variable (/g3/rlev)
+    float rlev(rlev);
+    rlev:purpose = "Monotonically decreasing coordinate pressure";
+    
+    //coordinate variable (/g3/time2)
+    double time2(time2);
+    float rz(rlev);  
+    float scl;
+  data:
+    time2=1.,2.;
+    rz=0,5000,17000;
+    scl=1.3;
+    rlev=1000.,500.,100.;
+    
+  group: g3g1 {
+    variables:
+      float prs(rlev);
+      prs:long_name="reverse pressure";
+    data:
+      prs=1.0,10.0,100.0;
+    } // end g3g1
+  } // end g3
+  
+  
+  //
+  //g8
+  //
+ group: g8 { 
+  dimensions:
+    lon=2,lev=3,vrt_nbr=2;
+  variables:
+  
+    //coordinate variable (/g8/lon)
+    float lon(lon);
+    
+    //coordinate variable (/g8/lev)
+    float lev(lev); 
+    lev:units = "hybrid_sigma_pressure";
+    lev:bounds = "ilev";
+    
+    //coordinate variable (/g8/vrt_nbr)
+    float vrt_nbr(vrt_nbr);
+    
+    float ilev(lev,vrt_nbr);
+  data:
+    lon=-180,0; 
+    lev=100,500,1000;
+    ilev=0,300,300,750,750,1013.25;
+    vrt_nbr=1,2;
+  } // end g8
+  
+ 
+  //
+  //g16 
+  //
+  // Test variables and dimensions in and out of scope
+  // Use case of variable in scope of dimension:
+  // dimension /lon 
+  // variable /g1/lon(lon)
+  // Use case of variable NOT in scope of dimension:
+  // variable /lon
+  // dimension /g1/lon
+  //
+  // Test dimensions with no associated coordinate variable
+  //
+  group: g16 { 
+    dimensions:
+    lat=2;
+    lon1=4;  //dimension that has a coordinate variable down in scope at /g16/g16g1/lon1(lon1)
+    lon2=4;  //dimension that does NOT have a coordinate variable anywhere 
+    lon3=4;  //dimension that has a coordinate "out of scope" (with group depth greater than the variable that uses the coordinate, g16g3g3)
+    lon4=2;  //dimension that has several intermidiate "in scope" coordinates
+    variables:
+    float lat1(lat);
+    float lon2_var(lon2); //variable with no associated coordinate variable
+    data:
+    lat1=0.,1.;
+    lon2_var=0.,1.,2.,3.; 
+    
+    group: g16g1 { 
+     dimensions:
+     lat1=2; //dimension that has a variable /lat1 down in *illegal* scope 
+     variables:
+     // MSA test -v lon1_var -d lon1,3.0, result is 3.
+     float lon1(lon1);  //coordinate variable /g16/g16g1/lon1 that has dimension (/g16/lon1) in scope
+     float lon1_var(lon1); // variable /g16/g16g1/lon1_var that has dimension (/g16/lon1) in scope *and* coordinate (/g16/g16g1/lon1) in scope
+     data:
+     lon1=0.,1.,2.,3.;
+     lon1_var=0.,1.,2.,3.;  
+      } // end g16g1 
+
+    group: g16g2 { 
+     dimensions:
+     variables:
+     //coordinate variable (/g16/lon1)
+     float lon1(lon1); // MSA test -v lon1_var -d lon1,3.0, result is 0.,1.,2.,3.
+     float lon1_var(lon1); //
+     data:
+     lon1=3.,4.,5.,6.;
+     lon1_var=0.,1.,2.,3.;  
+    } // end g16g2 
+    
+    group: g16g3 { 
+     variables:
+     float lon3_var(lon3); 
+     data:
+     lon3_var=0.,1.,2.,3.;  
+        group: g16g3g1 { 
+           variables:
+            //coordinate "out of scope" (with group depth greater than the variable that uses the coordinate, in g16g3)
+            float lon3(lon3);
+            data:
+            lon3=7.,8.,9.,10.;
+        } // end g16g3g1
+    } // end g16g3
+    
+    group: g16g4 { 
+     variables:
+     //intermediate "in scope " coordinate
+     float lon4(lon4);
+     data:
+     lon4=1.,2.;     
+     
+      group: g16g4g1 { 
+      variables:
+      //intermediate "in scope " coordinate
+      float lon4(lon4);
+      data:
+      lon4=3.,4.; 
+      
+        group: g16g4g1g1 { 
+        variables:
+        //variable that uses one of the intermediate "in scope " coordinate
+        float lon4_var(lon4);
+        data:
+        lon4_var=0.,1.; 
+       } // end g16g4g1g1
+     } // end g16g4g1
+    } // end g16g4
+    
+  } // end g16
+   
+} // end root group

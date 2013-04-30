@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.297 2013-04-26 17:16:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.298 2013-04-30 21:16:45 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1790,7 +1790,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         (void)fprintf(stdout,"%s: INFO %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
       else
-        (void)fprintf(stdout,"%s: INFO %s dimesnion is NOT visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: INFO %s dimension is NOT visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);        
     } /* endif dbg */
 
