@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.258 2013-04-30 07:07:36 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.259 2013-04-30 21:42:50 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1184,7 +1184,7 @@ print "\n";
 #ncks #22 groups: Create variables in groups (test -G with -v and -g )
 
     $dsc_sng="(Groups required) Create variables in groups";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g8 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g8 -g g3 -v scl $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%"; 
     $tst_cmd[2]="1.3";
@@ -1226,7 +1226,7 @@ print "\n";
 #ncks #24 groups: Extract group attributes
 
     $dsc_sng="(Groups required) Extract group attributes";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
@@ -1244,7 +1244,7 @@ print "\n";
 #ncks #25 groups: Extract global attributes
 
     $dsc_sng="Extract global attributes";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep Conventions";
     $tst_cmd[2]="Global attribute 0: Conventions, size = 6 NC_CHAR, value = CF-1.0";
@@ -1280,7 +1280,7 @@ print "\n";
 #ncks #27 groups: Extract group attributes with GPE
 
     $dsc_sng="(Groups required) GPE group attribute extraction";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g9 -g g3 -v scl $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g9 -g g3 -v scl $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
     $tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 18 NC_CHAR, value = g3_group_attribute";
@@ -1596,7 +1596,7 @@ print "\n";
 #lev:bounds = "ilev";
 
     $dsc_sng="Extract CF 'bounds' variables (netCDF4 file)";
-    $tst_cmd[0]="ncks $nco_D_flg -v lev $in_pth_arg in_grp.nc | grep -w /g8/ilev";
+    $tst_cmd[0]="ncks $nco_D_flg -g g8 -v lev $in_pth_arg in_grp_3.nc | grep -w /g8/ilev";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g8/ilev";
     $tst_cmd[2]="SS_OK";   
@@ -1802,7 +1802,7 @@ print "\n";
 #lon2[3] lon2_var[3]=3 
 
     $dsc_sng="MSA -d lon2,1,3,2 -v lon2_var";
-    $tst_cmd[0]="ncks $nco_D_flg  -H -d lon2,1,3,2 -v lon2_var  $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg  -H -d lon2,1,3,2 -v lon2_var  $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
@@ -1820,7 +1820,7 @@ print "\n";
 #lon2[3] lon2_var[3]=3 
 
     $dsc_sng="MSA -d lon2,1,3,2 -v lon2_var";
-    $tst_cmd[0]="ncks $nco_D_flg  -d lon2,1,1,1 -d lon2,3,3,1  -v lon2_var  $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg  -d lon2,1,1,1 -d lon2,3,3,1  -v lon2_var  $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
@@ -1886,7 +1886,7 @@ print "\n";
 #lon1[3]=3 
 
     $dsc_sng="Parallel scope MSA -g g16g1 -v lon1 -d lon1,3,3,1";
-    $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1 -d lon1,3,3,1  $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1 -d lon1,3,3,1  $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon1[3]=3";
     $tst_cmd[2]="SS_OK";   
@@ -1903,7 +1903,7 @@ print "\n";
 
 
     $dsc_sng="Parallel scope MSA -g g16g1 -v lon1_var -d lon1,1,1,1";
-    $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon1[1]=1 lon1_var[1]=1";
     $tst_cmd[2]="SS_OK";   
@@ -1921,7 +1921,7 @@ print "\n";
 
 
     $dsc_sng="Parallel scope MSA -g g16g2 -v lon1_var -d lon1,1,1,1";
-    $tst_cmd[0]="ncks $nco_D_flg -H -g g16g2 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -H -g g16g2 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon1[1]=4 lon1_var[1]=1";
     $tst_cmd[2]="SS_OK";   
@@ -1976,7 +1976,7 @@ print "\n";
 # ncks  -H  -v lon3_var  in_grp.nc
 
     $dsc_sng="Out of scope coordinate -v lon3_var";
-    $tst_cmd[0]="ncks $nco_D_flg -H -v lon3_var $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -H -v lon3_var $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon3[3] lon3_var[3]=3";
     $tst_cmd[2]="SS_OK";   
@@ -1992,7 +1992,7 @@ print "\n";
 # ncks  -H  -v lon4_var  in_grp.nc
 
     $dsc_sng="Order coordinates by group depth -v lon4_var";
-    $tst_cmd[0]="ncks $nco_D_flg -C -H -v lon4_var $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -C -H -v lon4_var $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon4[1]=4 lon4_var[1]=1";
     $tst_cmd[2]="SS_OK";   
