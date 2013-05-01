@@ -1,14 +1,18 @@
-2013-04-29  Charlie Zender  <zender@uci.edu>
-
-	* Move buggy CDL code from in_grp.cdl to buggy.cdl
-
-2013-04-28  Charlie Zender  <zender@uci.edu>
+2013-05-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.1 release procedure:
  	Changes since nco-4_3_0: ncbo -G, --unn, symmetric, grp_brd
 	cd ~/nco;cvs tag -d nco-4_3_1;cvs tag -d nco-4_3_1-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.1 release"
 	cvs tag -c nco-4_3_1;cvs tag -c nco-4_3_1-1
+
+	* Update Makefiles to build without failing new CDL files
+
+2013-04-29  Charlie Zender  <zender@uci.edu>
+
+	* Move buggy CDL code from in_grp.cdl to buggy.cdl
+
+2013-04-28  Charlie Zender  <zender@uci.edu>
 
 	* Use realistic temperatures in obs.cdl, cmip5.cdl
 

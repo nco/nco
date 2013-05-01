@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.782 2013-04-29 03:12:48 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.783 2013-05-01 17:31:52 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -142,8 +142,8 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2013 May&nbsp;??: NCO 4.3.2</li>
-<li>2013 Apr&nbsp;26: NCO 4.3.1 (Group broadcasting)</li>
+<li>2013 Jun&nbsp;??: NCO 4.3.2</li>
+<li>2013 May&nbsp;01: NCO 4.3.1 (Group broadcasting)</li>
 <li>2013 Mar&nbsp;28: NCO 4.3.0 (<tt>ncbo</tt> Groups)</li>
 <li>2013 Mar&nbsp;19: NCO 4.2.6</li>
 <li>2013 Jan&nbsp;28: NCO 4.2.5</li>
