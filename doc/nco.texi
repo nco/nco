@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.787 2013-05-01 18:22:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.788 2013-05-01 20:40:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8128,7 +8128,7 @@ To write a @acronym{RAM} variable to disk (like a regular variable) use
 @cindex ram_write()
 @cindex ram_delete()
 @example
-*temp[$time,$lat,lon]=10.0;     // Cast
+*temp[$time,$lat,$lon]=10.0;     // Cast
 *temp_avg=temp.avg($time);      // Regular assign
 temp.ram_delete();              // Delete RAM variable
 temp_avg.ram_write();           // Write Variable to output

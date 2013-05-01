@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.166 2013-04-30 22:22:34 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.167 2013-05-01 20:40:38 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -460,6 +460,12 @@ variables:
 
 	byte byt_arr(lat,lon);
 	byt_arr:long_name = "byte array";
+
+	byte byt_2D(lat,lon);
+
+	byte byt_3D(lat,lev,lon);
+
+	byte byt_3D_rec(time,lat,lon);
 
 	byte byte_var;
 	byte_var:long_name = "byte";
@@ -966,6 +972,18 @@ data:
 	area_asm=1.,2.;
 	bnd_var=1,2,3,4,5,6;
 	byt_arr=0,1,2,3,4,5,6,7;
+	byt_2D=0,1,2,3,4,5,6,7;
+	byt_3D=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23;
+	byt_3D_rec= 	 1, 2, 3, 4, 5, 6, 7, 8,
+			 9,10,11,12,13,14,15,16,
+			17,18,19,20,21,22,23,24,
+			25,26,27,28,29,30,31,32,
+  			33,34,35,36,37,38,39,40,
+			41,42,43,44,45,46,47,48,
+			49,50,51,52,53,54,55,56,
+			57,58,59,60,61,62,63,64,
+			65,66,67,68,69,70,71,72,
+			73,74,75,76,77,78,79,80;
 	byte_var='z';
 	byte_var_neg=-122;
 	char_var="z";
