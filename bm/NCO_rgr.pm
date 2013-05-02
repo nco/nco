@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.260 2013-04-30 21:58:20 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.261 2013-05-02 23:45:11 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1938,7 +1938,7 @@ print "\n";
 #/g6/g6g1/area
 #lat[1]=90 area[1]=50
 
-    $dsc_sng="Dimemsions in ancestor groups -g g6g1 -v area";
+    $dsc_sng="Dimensions in ancestor groups -g g6g1 -v area";
     $tst_cmd[0]="ncks $nco_D_flg -O -g g6g1 -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -C -v area -d lat,1,1 %tmp_fl_00%";
@@ -1958,7 +1958,7 @@ print "\n";
 #lat[0]=-90 area[0]=40 
 #lat[1]=90 area[1]=50 
 
-    $dsc_sng="GPE and Dimemsions in ancestor groups -G o1 -g g6g1 -v area";
+    $dsc_sng="GPE and Dimensions in ancestor groups -G o1 -g g6g1 -v area";
     $tst_cmd[0]="ncks $nco_D_flg -O -G o1 -g g6g1 -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -C -v area -d lat,0,1 %tmp_fl_00%";
