@@ -1,3 +1,9 @@
+2013-05-03 Pedro Vicente  <pvicente@uci.edu>
+
+        * nco_bld_aux_crd() Parse auxiliary coordinates 
+
+        * ncks test #69 Parse auxiliary coordinates
+
 2013-05-01  Charlie Zender  <zender@uci.edu>
 
 	* Add byte arrays to in.cdl

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.247 2013-04-30 08:09:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.248 2013-05-03 22:03:43 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.247 2013-04-30 08:09:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.247 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.248 2013-05-03 22:03:43 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.248 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -520,19 +520,6 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
-
-  /* Parse auxiliary coordinates */
-  if(aux_nbr > 0){
-    int aux_idx_nbr;
-    aux=nco_aux_evl(in_id_1,aux_nbr,aux_arg,&aux_idx_nbr);
-    if(aux_idx_nbr > 0){
-      lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
-      int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
-      int aux_idx=0;
-      for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
-      lmt_nbr=lmt_nbr_new;
-    } /* endif aux */
-  } /* endif aux_nbr */
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id_1,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl_1);

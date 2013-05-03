@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.186 2013-04-29 03:12:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.187 2013-05-03 22:03:43 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1212,7 +1212,7 @@ no_data_ok: /* end goto */
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
 
-  if(dbg_lvl_get() == nco_dbg_io){
+  if(dbg_lvl_get() >= nco_dbg_io){
     (void)nco_prt_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 
@@ -1329,7 +1329,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   }
 
 
-  if(dbg_lvl_get() == nco_dbg_old){
+  if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: INFO %s dimension <%s/%s(%li)>:",prg_nm_get(),fnc_nm,grp_nm_fll,nm,sz);
     if (is_crd_var == False )
       (void)fprintf(stdout,"NOT a coordinate variable\n");
@@ -1970,7 +1970,7 @@ no_data_ok: /* end goto */
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
 
-  if(dbg_lvl_get() == nco_dbg_io){
+  if(dbg_lvl_get() >= nco_dbg_io){
     (void)nco_prt_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 
