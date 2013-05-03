@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.43 2013-05-03 00:45:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.44 2013-05-03 19:54:12 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -17,7 +17,7 @@
 
 #include "nco_aux.h" /* Auxiliary coordinates */
 
-int 
+nco_bool 
 nco_find_lat_lon
 (int nc_id,
  char var_nm_lat[], 
@@ -54,6 +54,7 @@ nco_find_lat_lon
 
   /* Make sure CF tag exists. Currently require CF-1.0 value */
   if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.0")){
+    if(dbg_lvl_get() >= nco_dbg_dev)
     (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n",prg_nm_get(),fnc_nm);
   } /* !CF */
 
@@ -95,10 +96,12 @@ nco_find_lat_lon
 
   } /* end loop over vars */
 
-  /* Die if both not found */
-  if(ret != 2) nco_err_exit(rcd,"nco_find_lat_lon() unable to identify lat/lon auxiliary coordinate variables.");
 
-  return rcd;
+  if(ret != 2){
+    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"nco_find_lat_lon() unable to identify lat/lon auxiliary coordinate variables.\n");
+    return False;
+  } else return True;
+
 
 } /* end nco_find_lat_lon() */
 
@@ -185,9 +188,15 @@ nco_aux_evl
   
   void *vp_lat; /* [dgr] Latitude coordinate array, float or double */
   void *vp_lon; /* [dgr] Longitude coordinate array, float or double */
+
+  nco_bool has_lat_lon;
   
   /* Obtain lat/lon variable names */
-  rcd+=nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ);
+  has_lat_lon=nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ);
+
+  if (has_lat_lon == False){
+    return NULL;
+  }
   
   /* Obtain dimension information of lat/lon coordinates */
   rcd+=nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
