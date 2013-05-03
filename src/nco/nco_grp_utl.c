@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.708 2013-04-30 20:41:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.709 2013-05-03 00:45:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3455,6 +3455,15 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
       /* Obtain group ID where variable is located using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+
+      aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr);
+      if(aux_idx_nbr > 0){
+        *lmt=(lmt_sct **)nco_realloc(lmt,(*lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        int lmt_nbr_new=*lmt_nbr+aux_idx_nbr;
+        int aux_idx=0;
+        for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) *lmt[lmt_idx]=aux[aux_idx++];
+        *lmt_nbr=lmt_nbr_new;
+      }
 
 
     } /* Filter variables */ 

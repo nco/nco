@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.42 2013-04-29 03:12:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.43 2013-05-03 00:45:03 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -51,15 +51,15 @@ nco_find_lat_lon
   long lenp;
 
   nc_type var_typ; /* [enm] variable type */
-  
+
   /* Make sure CF tag exists. Currently require CF-1.0 value */
   if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.0")){
     (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n",prg_nm_get(),fnc_nm);
   } /* !CF */
-  
+
   /* Get number of variables */
   rcd=nco_inq_nvars(nc_id,&nvars);
-  
+
   /* For each variable, see if standard name is latitude or longitude */
   for(idx=0;idx<nvars && ret<2;idx++){
     nco_inq_var(nc_id,idx,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
@@ -68,36 +68,36 @@ nco_find_lat_lon
       NCO_GET_ATT_CHAR(nc_id,idx,"standard_name",value);
       value[lenp]='\0';
       if(strcmp(value,"latitude") == 0){
-	strcpy(var_nm_lat,var_nm);
-	*lat_id=idx;
-	
-	/* Get units; assume same for both lat and lon */
-	rcd=nco_inq_attlen(nc_id,idx,"units",&lenp);
-	if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
-	*units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
-	NCO_GET_ATT_CHAR(nc_id,idx,"units",*units);
-	units[lenp]='\0';
-	
-	if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
+        strcpy(var_nm_lat,var_nm);
+        *lat_id=idx;
 
-	/* Assign type; assumed same for both lat and lon */
-	*crd_typ=var_typ;
-	ret++;
+        /* Get units; assume same for both lat and lon */
+        rcd=nco_inq_attlen(nc_id,idx,"units",&lenp);
+        if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
+        *units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
+        NCO_GET_ATT_CHAR(nc_id,idx,"units",*units);
+        units[lenp]='\0';
+
+        if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
+
+        /* Assign type; assumed same for both lat and lon */
+        *crd_typ=var_typ;
+        ret++;
       } /* end if var is lattitude */
-      
+
       if(strcmp(value,"longitude") == 0){
-	strcpy(var_nm_lon,var_nm);
-	*lon_id=idx;
-	ret++;
+        strcpy(var_nm_lon,var_nm);
+        *lon_id=idx;
+        ret++;
       } /* end if var is longitude */
-      
+
     } /* end if standard_name */
-    
+
   } /* end loop over vars */
-  
+
   /* Die if both not found */
   if(ret != 2) nco_err_exit(rcd,"nco_find_lat_lon() unable to identify lat/lon auxiliary coordinate variables.");
- 
+
   return rcd;
 
 } /* end nco_find_lat_lon() */
