@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.613 2013-05-03 19:54:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.614 2013-05-04 19:04:05 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.613 2013-05-03 19:54:12 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.613 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.614 2013-05-04 19:04:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.614 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -559,6 +559,7 @@ main(int argc,char **argv)
       aux_arg[aux_nbr]=(char *)strdup(optarg);
       aux_nbr++;
       MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+      HAVE_LIMITS=True;
       break;
     case 'x': /* Exclude rather than extract groups and variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
