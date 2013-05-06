@@ -1,3 +1,7 @@
+2013-05-06 Pedro Vicente  <pvicente@uci.edu>
+
+        * nco_fll_var_trv() Fill-in variable structure list for all extracted variables 
+
 2013-05-03 Pedro Vicente  <pvicente@uci.edu>
 
         * nco_bld_aux_crd() Parse auxiliary coordinates 

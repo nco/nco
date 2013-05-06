@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.310 2013-05-03 22:03:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.311 2013-05-06 19:51:29 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.310 2013-05-03 22:03:43 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.310 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.311 2013-05-06 19:51:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.311 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -170,7 +170,6 @@ main(int argc,char **argv)
   int lmt_nbr_rgn=0; /* Option d. Original limit number for GTT initialization */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
-  int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
@@ -199,6 +198,8 @@ main(int argc,char **argv)
   var_sct **var_out;
   var_sct **var_prc;
   var_sct **var_prc_out;
+
+  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -492,9 +493,6 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
-
-  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
-
   trv_tbl_init(&trv_tbl);
 
   if(GROUP_AGGREGATE){
@@ -554,53 +552,15 @@ main(int argc,char **argv)
       (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
 
-    
-
-    nbr_dmn_xtr=0;
-    xtr_nbr=0;
-
-    /* Loop table */
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-      /* Filter variables to extract  */
-      if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
-        xtr_nbr++;
-      } /* Filter variables  */
-    } /* Loop table */
 
     /* Fill-in variable structure list for all extracted variables */
-    var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+    var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
+
     var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+    for(var_idx=0;var_idx<xtr_nbr;var_idx++){
+      var_out[var_idx]=nco_var_dpl(var[var_idx]);
+    }
 
-    var_idx=0;
-
-    /* Loop table */
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-
-      /* Filter variables  */
-      if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
-        trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
-
-        int grp_id; /* [ID] Group ID */
-        int var_id; /* [ID] Variable ID */
-
-        /* Obtain group ID from API using full group name */
-        (void)nco_inq_grp_full_ncid(in_id,var_trv.grp_nm_fll,&grp_id);
-
-        /* Get variable ID */
-        (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
-
-        /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
-        var[var_idx]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
-        var_out[var_idx]=nco_var_dpl(var[var_idx]);
-
-        /* Store full name as key for GTT search */
-        var[var_idx]->nm_fll=strdup(var_trv.nm_fll);
-
-        var_idx++;
-
-      } /* Filter variables  */
-    } /* Loop table */
- 
 
     /* Divide variable lists into lists of fixed variables and variables to be processed */
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);

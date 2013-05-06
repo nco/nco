@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.217 2013-03-11 23:09:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.218 2013-05-06 19:51:29 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -37,6 +37,10 @@
 
    ncdiff -O ~/foo.nc /data/zender/arese/clm/951030_0900_arese_clm.nc foo2.nc;ncks -H foo2.nc | m
  */
+
+#if 0
+#define USE_TRV_API
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -91,7 +95,7 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
-  
+
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **ntp_lst_in;
@@ -113,10 +117,10 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.217 2013-03-11 23:09:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.217 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.218 2013-05-06 19:51:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.218 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
-  
+
   cnk_sct **cnk=NULL_CEWI;
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -128,16 +132,16 @@ main(int argc,char **argv)
 
   dmn_sct **dim;
   dmn_sct **dmn_out;
-  
+
   double ntp_val_out=double_CEWI; /* Option i */
   double wgt_val_1=0.5; /* Option w */
   double wgt_val_2=0.5; /* Option w */
 
   extern char *optarg;
   extern int optind;
-  
+
   /* Using naked stdin/stdout/stderr in parallel region generates warning
-     Copy appropriate filehandle to variable scoped shared in parallel clause */
+  Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
   int *in_id_1_arr;
@@ -175,14 +179,14 @@ main(int argc,char **argv)
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
-    
+
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
   lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
-  
+
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-  
+
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
@@ -200,86 +204,88 @@ main(int argc,char **argv)
   var_sct **var_prc_1;
   var_sct **var_prc_2;
   var_sct **var_prc_out;
-  
+
+  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
   static struct option opt_lng[]=
-    { /* Structure ordered by short option key if possible */
-      /* Long options with no argument, no short option counterpart */
-      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-      {"fix_rec_crd",no_argument,0,0}, /* [flg] Do not interpolate/multiply record coordinate variables */
-      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
-      {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
-      {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
-      {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
-      {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
-      {"version",no_argument,0,0},
-      {"vrs",no_argument,0,0},
-      /* Long options with argument, no short option counterpart */
-      {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
-      {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
-      {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
-      {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
-      {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
-      {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
-      {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
-      {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
-      {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
-      {"fl_fmt",required_argument,0,0},
-      {"file_format",required_argument,0,0},
-      {"hdr_pad",required_argument,0,0},
-      {"header_pad",required_argument,0,0},
-      /* Long options with short counterparts */
-      {"3",no_argument,0,'3'},
-      {"4",no_argument,0,'4'},
-      {"64bit",no_argument,0,'4'},
-      {"netcdf4",no_argument,0,'4'},
-      {"append",no_argument,0,'A'},
-      {"coords",no_argument,0,'c'},
-      {"crd",no_argument,0,'c'},
-      {"no-coords",no_argument,0,'C'},
-      {"no-crd",no_argument,0,'C'},
-      {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
-      {"dimension",required_argument,0,'d'},
-      {"dmn",required_argument,0,'d'},
-      {"fortran",no_argument,0,'F'},
-      {"ftn",no_argument,0,'F'},
-      {"history",no_argument,0,'h'},
-      {"hst",no_argument,0,'h'},
-      {"interpolate",required_argument,0,'i'},
-      {"ntp",required_argument,0,'i'},
-      {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
-      {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
-      {"local",required_argument,0,'l'},
-      {"lcl",required_argument,0,'l'},
-      {"overwrite",no_argument,0,'O'},
-      {"ovr",no_argument,0,'O'},
-      {"output",required_argument,0,'o'},
-      {"fl_out",required_argument,0,'o'},
-      {"path",required_argument,0,'p'},
-      {"retain",no_argument,0,'R'},
-      {"rtn",no_argument,0,'R'},
-      {"revision",no_argument,0,'r'},
-      {"thr_nbr",required_argument,0,'t'},
-      {"threads",required_argument,0,'t'},
-      {"omp_num_threads",required_argument,0,'t'},
-      {"variable",required_argument,0,'v'},
-      {"weight",required_argument,0,'w'},
-      {"wgt_var",no_argument,0,'w'},
-      {"auxiliary",required_argument,0,'X'},
-      {"exclude",no_argument,0,'x'},
-      {"xcl",no_argument,0,'x'},
-      {"help",no_argument,0,'?'},
-      {"hlp",no_argument,0,'?'},
-      {0,0,0,0}
-    }; /* end opt_lng */
+  { /* Structure ordered by short option key if possible */
+    /* Long options with no argument, no short option counterpart */
+    {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    {"fix_rec_crd",no_argument,0,0}, /* [flg] Do not interpolate/multiply record coordinate variables */
+    {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
+    {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
+    {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+    {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
+    {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
+    {"version",no_argument,0,0},
+    {"vrs",no_argument,0,0},
+    /* Long options with argument, no short option counterpart */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
+    {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
+    {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+    {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
+    {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
+    {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
+    {"chunk_dimension",required_argument,0,0}, /* [nbr] Chunk size */
+    {"fl_fmt",required_argument,0,0},
+    {"file_format",required_argument,0,0},
+    {"hdr_pad",required_argument,0,0},
+    {"header_pad",required_argument,0,0},
+    /* Long options with short counterparts */
+    {"3",no_argument,0,'3'},
+    {"4",no_argument,0,'4'},
+    {"64bit",no_argument,0,'4'},
+    {"netcdf4",no_argument,0,'4'},
+    {"append",no_argument,0,'A'},
+    {"coords",no_argument,0,'c'},
+    {"crd",no_argument,0,'c'},
+    {"no-coords",no_argument,0,'C'},
+    {"no-crd",no_argument,0,'C'},
+    {"debug",required_argument,0,'D'},
+    {"dbg_lvl",required_argument,0,'D'},
+    {"dimension",required_argument,0,'d'},
+    {"dmn",required_argument,0,'d'},
+    {"fortran",no_argument,0,'F'},
+    {"ftn",no_argument,0,'F'},
+    {"history",no_argument,0,'h'},
+    {"hst",no_argument,0,'h'},
+    {"interpolate",required_argument,0,'i'},
+    {"ntp",required_argument,0,'i'},
+    {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
+    {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
+    {"local",required_argument,0,'l'},
+    {"lcl",required_argument,0,'l'},
+    {"overwrite",no_argument,0,'O'},
+    {"ovr",no_argument,0,'O'},
+    {"output",required_argument,0,'o'},
+    {"fl_out",required_argument,0,'o'},
+    {"path",required_argument,0,'p'},
+    {"retain",no_argument,0,'R'},
+    {"rtn",no_argument,0,'R'},
+    {"revision",no_argument,0,'r'},
+    {"thr_nbr",required_argument,0,'t'},
+    {"threads",required_argument,0,'t'},
+    {"omp_num_threads",required_argument,0,'t'},
+    {"variable",required_argument,0,'v'},
+    {"weight",required_argument,0,'w'},
+    {"wgt_var",no_argument,0,'w'},
+    {"auxiliary",required_argument,0,'X'},
+    {"exclude",no_argument,0,'x'},
+    {"xcl",no_argument,0,'x'},
+    {"help",no_argument,0,'?'},
+    {"hlp",no_argument,0,'?'},
+    {0,0,0,0}
+  }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
 
   /* Start timer and save command line */ 
@@ -287,7 +293,7 @@ main(int argc,char **argv)
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  
+
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
@@ -302,27 +308,27 @@ main(int argc,char **argv)
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
-	bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+        bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
-	/* Copy limit argument for later processing */
-	cnk_arg[cnk_nbr]=(char *)strdup(optarg);
-	cnk_nbr++;
+        /* Copy limit argument for later processing */
+        cnk_arg[cnk_nbr]=(char *)strdup(optarg);
+        cnk_nbr++;
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
-	cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+        cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
-	/* Chunking map */
-	cnk_map_sng=(char *)strdup(optarg);
-	cnk_map=nco_cnk_map_get(cnk_map_sng);
+        /* Chunking map */
+        cnk_map_sng=(char *)strdup(optarg);
+        cnk_map=nco_cnk_map_get(cnk_map_sng);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
-	/* Chunking policy */
-	cnk_plc_sng=(char *)strdup(optarg);
-	cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
+        /* Chunking policy */
+        cnk_plc_sng=(char *)strdup(optarg);
+        cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
@@ -336,8 +342,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
-	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
-	nco_exit(EXIT_SUCCESS);
+        (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+        nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
@@ -382,8 +388,8 @@ main(int argc,char **argv)
       /* Name of variable to guide interpolation. Default is none */
       ntp_lst_in=nco_lst_prs_2D(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
-	(void)fprintf(stdout,"%s: ERROR too many arguments to -i\n",prg_nm_get());
-	nco_exit(EXIT_FAILURE);
+        (void)fprintf(stdout,"%s: ERROR too many arguments to -i\n",prg_nm_get());
+        nco_exit(EXIT_FAILURE);
       } /* end if */
       ntp_nm=ntp_lst_in[0];
       ntp_val_out=strtod(ntp_lst_in[1],&sng_cnv_rcd);
@@ -433,17 +439,17 @@ main(int argc,char **argv)
       /* Weight(s) for interpolation.  Default is wgt_val_1=wgt_val_2=0.5 */
       ntp_lst_in=nco_lst_prs_2D(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
-	(void)fprintf(stdout,"%s: ERROR too many arguments to -w\n",prg_nm_get());
-	nco_exit(EXIT_FAILURE);
+        (void)fprintf(stdout,"%s: ERROR too many arguments to -w\n",prg_nm_get());
+        nco_exit(EXIT_FAILURE);
       }else if(nbr_ntp == 2){
-	wgt_val_1=strtod(ntp_lst_in[0],&sng_cnv_rcd);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(ntp_lst_in[0],"strtod",sng_cnv_rcd);
-	wgt_val_2=strtod(ntp_lst_in[1],&sng_cnv_rcd);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(ntp_lst_in[1],"strtod",sng_cnv_rcd);
+        wgt_val_1=strtod(ntp_lst_in[0],&sng_cnv_rcd);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(ntp_lst_in[0],"strtod",sng_cnv_rcd);
+        wgt_val_2=strtod(ntp_lst_in[1],&sng_cnv_rcd);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(ntp_lst_in[1],"strtod",sng_cnv_rcd);
       }else if(nbr_ntp == 1){
-	wgt_val_1=strtod(ntp_lst_in[0],&sng_cnv_rcd);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(ntp_lst_in[0],"strtod",sng_cnv_rcd);
-	wgt_val_2=1.0-wgt_val_1;
+        wgt_val_1=strtod(ntp_lst_in[0],&sng_cnv_rcd);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(ntp_lst_in[0],"strtod",sng_cnv_rcd);
+        wgt_val_2=1.0-wgt_val_1;
       } /* end else */
       CMD_LN_NTP_WGT=True;
       break;
@@ -471,7 +477,7 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
-  
+
   if(CMD_LN_NTP_VAR && CMD_LN_NTP_WGT){
     (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) and fixed weight(s) (-w) both set\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
@@ -482,13 +488,13 @@ main(int argc,char **argv)
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
-  
+
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-    
+
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_1_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
@@ -518,24 +524,45 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,in_id_2_arr+thr_idx);
   in_id_2=in_id_2_arr[0];
-  
-  /* Parse auxiliary coordinates */
-  if(aux_nbr > 0){
-     int aux_idx_nbr;
-     aux=nco_aux_evl(in_id_1,aux_nbr,aux_arg,&aux_idx_nbr);
-     if(aux_idx_nbr > 0){
-        lmt=(lmt_sct **)nco_realloc(lmt,(lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
-        int lmt_nbr_new=lmt_nbr+aux_idx_nbr;
-        int aux_idx=0;
-        for(int lmt_idx=lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) lmt[lmt_idx]=aux[aux_idx++];
-        lmt_nbr=lmt_nbr_new;
-     } /* endif aux */
-  } /* endif aux_nbr */
-  
-  /* Get number of variables and dimensions in file */
-  (void)nco_inq(in_id_1,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
+
   (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
   (void)nco_inq_format(in_id_2,&fl_in_fmt_2);
+
+ 
+#ifdef USE_TRV_API
+
+  trv_tbl_init(&trv_tbl);
+
+  /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+  (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
+
+  /* Get number of variables, dimensions, and global attributes in file, file format */
+  (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
+
+  /* Check -v and -g input names and create extraction list */
+  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
+
+  /* Change included variables to excluded variables */
+  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
+
+  /* Add all coordinate variables to extraction list */
+  if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
+
+  /* Extract coordinates associated with extracted variables */
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
+
+  /* Is this a CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+    /* Implement CF "coordinates" and "bounds" conventions */
+    (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
+    (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
+  } /* CNV_CCM_CCSM_CF */
+
+#else
+
+  /* Get number of variables and dimensions in file */
+  (void)nco_inq(in_id_1,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id_1,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
@@ -556,16 +583,16 @@ main(int argc,char **argv)
   if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,False);
 
   /* We now have final list of variables to extract. Phew. */
-  
+
   /* Find coordinate/dimension values associated with user-specified limits
-     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
+  NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id_1,lmt[idx],0L,FORTRAN_IDX_CNV);
 
   /* Place all dimensions in lmt_all_lst */
   lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
   /* Initialize lmt_msa_sct's */ 
   (void)nco_msa_lmt_all_ntl(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
- 
+
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id_1,xtr_lst,xtr_nbr,&nbr_dmn_xtr);
 
@@ -601,6 +628,8 @@ main(int argc,char **argv)
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
 
+#endif /* ! USE_TRV_API */
+
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
 
@@ -615,12 +644,12 @@ main(int argc,char **argv)
 
   /* Copy global attributes */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-  
+
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-  
+
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
@@ -632,7 +661,7 @@ main(int argc,char **argv)
 
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-  
+
   /* Take output file out of define mode */
   if(hdr_pad == 0UL){
     (void)nco_enddef(out_id);
@@ -640,7 +669,7 @@ main(int argc,char **argv)
     (void)nco__enddef(out_id,hdr_pad);
     if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
-  
+
   /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
@@ -655,7 +684,7 @@ main(int argc,char **argv)
   if(CMD_LN_NTP_VAR){
     int ntp_id_1;
     int ntp_id_2;
-    
+
     var_sct *ntp_1;
     var_sct *ntp_2;
     var_sct *ntp_var_out;
@@ -669,7 +698,7 @@ main(int argc,char **argv)
 
     ntp_1=nco_var_fll(in_id_1,ntp_id_1,ntp_nm,dim,nbr_dmn_xtr);
     ntp_2=nco_var_fll(in_id_2,ntp_id_2,ntp_nm,dim,nbr_dmn_xtr);
-    
+
     /* Currently, only support scalar variables */
     if(ntp_1->sz > 1 || ntp_2->sz > 1){
       (void)fprintf(stdout,"%s: ERROR interpolation variable %s must be scalar\n",prg_nm_get(),ntp_nm);
@@ -728,8 +757,8 @@ main(int argc,char **argv)
   /* Loop over each interpolated variable */
 #ifdef _OPENMP
   /* OpenMP notes:
-     shared(): msk and wgt are not altered within loop
-     private(): wgt_avg does not need initialization */
+  shared(): msk and wgt are not altered within loop
+  private(): wgt_avg does not need initialization */
 #pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
@@ -745,7 +774,7 @@ main(int argc,char **argv)
     /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
     (void)nco_msa_var_get(in_id_1,var_prc_1[idx],lmt_all_lst,nbr_dmn_fl);
     (void)nco_msa_var_get(in_id_2,var_prc_2[idx],lmt_all_lst,nbr_dmn_fl);
-     
+
     /* Set var_prc_1 and var_prc_2 to correct size */
     var_prc_1[idx]->sz=var_prc_out[idx]->sz;       
     var_prc_2[idx]->sz=var_prc_out[idx]->sz;  
@@ -762,7 +791,7 @@ main(int argc,char **argv)
     /*    var_prc_out[idx]->tally=var_prc_1[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long int));*/
     var_prc_out[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long int));
     (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-  
+
     /* Weight variable by taking product of weight with variable */
     (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,wgt_out_1->val,var_prc_1[idx]->val);
     (void)nco_var_mlt(var_prc_2[idx]->type,var_prc_2[idx]->sz,var_prc_2[idx]->has_mss_val,var_prc_2[idx]->mss_val,wgt_out_2->val,var_prc_2[idx]->val);
@@ -770,7 +799,7 @@ main(int argc,char **argv)
     has_mss_val=nco_mss_val_cnf(var_prc_1[idx],var_prc_2[idx]);
     /* NB: fxm: use tally to determine when to "unweight" answer? TODO  */
     (void)nco_var_add_tll_ncflint(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
-    
+
     /* Re-cast output variable to original type */
     var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);
 
@@ -780,31 +809,31 @@ main(int argc,char **argv)
     { /* begin OpenMP critical */
       /* Copy interpolations to output file */
       if(var_prc_out[idx]->nbr_dim == 0){
-	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
+        (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
       }else{ /* end if variable is scalar */
-	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
+        (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
       } /* end else */
     } /* end OpenMP critical */
-    
+
     /* Free dynamically allocated buffers */
     if(var_prc_1[idx]) var_prc_1[idx]=nco_var_free(var_prc_1[idx]);
     if(var_prc_2[idx]) var_prc_2[idx]=nco_var_free(var_prc_2[idx]);
     if(var_prc_out[idx]) var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
-    
+
   } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
-  
+
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_2_arr[thr_idx]);
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
-  
+
   /* Remove local copy of file */
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in_2);
-  
+
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncflint-specific memory */
@@ -820,8 +849,8 @@ main(int argc,char **argv)
     /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
     for(idx=0;idx<nbr_dmn_fl;idx++)
       for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-    
+        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
+
     if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl); 
     lmt=(lmt_sct**)nco_free(lmt); 
 
@@ -858,8 +887,11 @@ main(int argc,char **argv)
     var_prc_out=(var_sct **)nco_free(var_prc_out);
     if(nbr_var_fix > 0) var_fix=nco_var_lst_free(var_fix,nbr_var_fix);
     if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
+
+    /* Free traversal table */
+    trv_tbl_free(trv_tbl);  
   } /* !flg_cln */
-  
+
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);

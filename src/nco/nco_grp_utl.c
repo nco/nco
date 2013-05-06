@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.710 2013-05-03 19:54:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.711 2013-05-06 19:51:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -941,7 +941,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
   /* Purpose: Create extraction list of nm_id_sct from traversal table */
 
   nm_id_sct *xtr_lst; /* [sct] Extraction list */
-  
+
   int nbr_tbl=0; 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr){
@@ -958,9 +958,9 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
       xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
       /* 20130213: Necessary to allow MM3->MM4 and MM4->MM3 workarounds
-	 Store in/out group IDs as determined in nco_xtr_dfn() 
-	 In MM3/4 cases, either grp_in_id or grp_out_id are always root
-	 Other is always root unless GPE is used */
+      Store in/out group IDs as determined in nco_xtr_dfn() 
+      In MM3/4 cases, either grp_in_id or grp_out_id are always root
+      Other is always root unless GPE is used */
       xtr_lst[nbr_tbl].grp_id_in=trv_tbl->lst[uidx].grp_id_in;
       xtr_lst[nbr_tbl].grp_id_out=trv_tbl->lst[uidx].grp_id_out;
 
@@ -3430,7 +3430,6 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 
 } /* nco_get_rec_dmn_nm() */
 
-
 void
 nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 (const int nc_id,                     /* I [ID] netCDF file ID */
@@ -3470,4 +3469,63 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     } /* Filter variables */ 
   } /* Loop table */
 } /* nco_bld_aux_crd() */
+
+var_sct **                            /* O [sct] Variable list */  
+nco_fll_var_trv                       /* [fnc] Fill-in variable structure list for all extracted variables */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  int var_idx;
+  int nbr_xtr;
+
+  var_sct **var=NULL;
+
+  nbr_xtr=0;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Filter variables to extract  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
+      nbr_xtr++;
+    } /* Filter variables  */
+  } /* Loop table */
+
+  /* Fill-in variable structure list for all extracted variables */
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+
+  var_idx=0;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+
+    /* Filter variables  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
+      trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
+
+      int grp_id; /* [ID] Group ID */
+      int var_id; /* [ID] Variable ID */
+
+      /* Obtain group ID from API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+
+      /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
+      var[var_idx]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
+
+      /* Store full name as key for GTT search */
+      var[var_idx]->nm_fll=strdup(var_trv.nm_fll);
+
+      var_idx++;
+
+    } /* Filter variables  */
+  } /* Loop table */
+
+
+  *xtr_nbr=nbr_xtr;
+  return var;
+
+} /* nco_fll_var_trv() */
 

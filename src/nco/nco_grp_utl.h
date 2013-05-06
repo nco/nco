@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.271 2013-04-30 08:40:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.272 2013-05-06 19:51:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -355,7 +355,6 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  nm_tbl_sct ** rec_dmn_nm);            /* I/O [sct] Array of record names */
  
-
 void
 nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 (const int nc_id,                     /* I [ID] netCDF file ID */
@@ -365,7 +364,11 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
  lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
-
+var_sct **                            /* O [sct] Variable list */  
+nco_fll_var_trv                       /* [fnc] Fill-in variable structure list for all extracted variables */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
