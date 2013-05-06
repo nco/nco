@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.221 2013-05-06 21:15:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.222 2013-05-06 21:52:22 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.221 2013-05-06 21:15:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.221 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.222 2013-05-06 21:52:22 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.222 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -733,15 +733,41 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
-#ifdef USE_TRV_API
-
-  goto out;
-
-
-#else /* ! USE_TRV_API */
-
   /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
+
+#ifdef USE_TRV_API
+
+  /* Copy variable data for non-processed variables */
+
+  /* Loop table */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_sct var_trv=trv_tbl->lst[uidx];
+
+    /* If object is a fixed variable... */ 
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.enm_prc_typ == fix_typ){
+      int grp_id_in;  /* [ID] Group ID */
+      int grp_id_out; /* [ID] Group ID */
+
+      /* Obtain group IDs using full group name */
+      (void)nco_inq_grp_full_ncid(in_id_1,var_trv.grp_nm_fll,&grp_id_in);
+      (void)nco_inq_grp_full_ncid(out_id,var_trv.grp_nm_fll,&grp_id_out);
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO writing fixed variable <%s> from ",prg_nm_get(),var_trv.nm_fll);        
+        (void)nco_prt_grp_nm_fll(grp_id_in);
+        (void)fprintf(stdout," to ");   
+        (void)nco_prt_grp_nm_fll(grp_id_out);
+        (void)fprintf(stdout,"\n");
+      } /* endif dbg */       
+
+      /* Copy variable data */
+      (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,(nco_bool)False,&var_trv);  
+
+    } /* If object is a fixed variable... */ 
+  } /* Loop table */
+
+#else /* ! USE_TRV_API */
 
   /* Copy variable data for non-processed variables */
   (void)nco_msa_var_val_cpy(in_id_1,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
@@ -835,6 +861,17 @@ main(int argc,char **argv)
 #pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
+
+    /* Note: Using object 2 from table 1, only one table built, assumes same structure for file 1 and 2 */
+
+    int grp_id_1;      /* [ID] Group ID */
+    int grp_id_2;      /* [ID] Group ID */
+    int grp_out_id;    /* [ID] Group ID (output) */
+    int var_out_id;    /* [ID] Variable ID (output) */
+
+    trv_sct *var_trv_1;/* [sct] Variable GTT object */
+    trv_sct *var_trv_2;/* [sct] Variable GTT object */
+
     if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
     if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
@@ -843,10 +880,21 @@ main(int argc,char **argv)
 
     var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
     
-
-
 #ifdef USE_TRV_API
+    /* Obtain variable GTT object using full variable name */
+    var_trv_1=trv_tbl_var_nm_fll(var_prc_1[idx]->nm_fll,trv_tbl);
+    var_trv_2=trv_tbl_var_nm_fll(var_prc_2[idx]->nm_fll,trv_tbl);
 
+    assert(var_trv_1);
+    assert(var_trv_2);
+
+    /* Obtain group ID using full group name */
+    (void)nco_inq_grp_full_ncid(in_id_1,var_trv_1->grp_nm_fll,&grp_id_1);
+    (void)nco_inq_grp_full_ncid(in_id_2,var_trv_2->grp_nm_fll,&grp_id_2);
+
+    /* Read */
+    (void)nco_msa_var_get_trv(grp_id_1,var_prc_1[idx],var_trv_1);
+    (void)nco_msa_var_get_trv(grp_id_2,var_prc_2[idx],var_trv_2);
 
 #else /* ! USE_TRV_API */
 
@@ -886,15 +934,35 @@ main(int argc,char **argv)
     /* Re-cast output variable to original type */
     var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);
 
+
+#ifdef USE_TRV_API
+    /* Obtain output group ID using full group name */
+    (void)nco_inq_grp_full_ncid(out_id,var_trv_1->grp_nm_fll,&grp_out_id);
+
+    /* Get variable ID */
+    (void)nco_inq_varid(grp_out_id,var_trv_1->nm,&var_out_id);
+
+    /* Store the output variable ID */
+    var_prc_out[idx]->id=var_out_id;
+
+#else /* ! USE_TRV_API */
+
+    grp_out_id=out_id;
+
+#endif /* ! USE_TRV_API */
+
+
+
+
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
     { /* begin OpenMP critical */
       /* Copy interpolations to output file */
       if(var_prc_out[idx]->nbr_dim == 0){
-        (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
+        (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
       }else{ /* end if variable is scalar */
-        (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
+        (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_2[idx]->val.vp,var_prc_2[idx]->type);
       } /* end else */
     } /* end OpenMP critical */
 
@@ -905,10 +973,6 @@ main(int argc,char **argv)
 
   } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
-
-#ifdef USE_TRV_API
-out:
-#endif
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
