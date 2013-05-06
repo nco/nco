@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.220 2013-05-06 20:46:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.221 2013-05-06 21:15:00 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.220 2013-05-06 20:46:24 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.220 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.221 2013-05-06 21:15:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.221 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -702,9 +702,10 @@ main(int argc,char **argv)
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
-
 #ifdef USE_TRV_API
 
+  /* Define dimensions, extracted groups, variables, and attributes in output file */
+  (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,(gpe_sct *)NULL,True,True,(char *)NULL,trv_tbl);   
 
 #else /* ! USE_TRV_API */
 
@@ -733,6 +734,8 @@ main(int argc,char **argv)
   } /* hdr_pad */
 
 #ifdef USE_TRV_API
+
+  goto out;
 
 
 #else /* ! USE_TRV_API */
@@ -902,6 +905,10 @@ main(int argc,char **argv)
 
   } /* end (OpenMP parallel for) loop over idx */
   if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
+
+#ifdef USE_TRV_API
+out:
+#endif
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);

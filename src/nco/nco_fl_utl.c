@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.210 2013-04-24 08:30:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.211 2013-05-06 21:15:00 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -491,13 +491,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
  nco_bool * const FL_RTR_RMT_LCN) /* O [flg] File was retrieved from remote location */
 {
   /* Purpose: Locate input file, retrieve it from remote storage system if necessary,
-     create local storage directory if neccessary, check file for read-access,
-     return name of file on local system */
+  create local storage directory if neccessary, check file for read-access,
+  return name of file on local system */
 
 #ifdef _MSC_VER
   /* TODO nco1068 The stat function retuns -1 for large files; assume success */
-  return fl_nm;
   *FL_RTR_RMT_LCN=False;
+  return fl_nm;
 #endif
 
   FILE *fp_in;
@@ -546,8 +546,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
   if(FTP_OR_SFTP_URL){
     /* If FTP  rearrange fl_nm_lcl to remove  ftp://hostname  part, and
-       if SFTP rearrange fl_nm_lcl to remove sftp://hostname: part,
-       then search for file on local disk */
+    if SFTP rearrange fl_nm_lcl to remove sftp://hostname: part,
+    then search for file on local disk */
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
     fl_nm_lcl_tmp=fl_nm_lcl;
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
@@ -561,9 +561,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     int in_id; /* [id] Temporary input file ID */
 
     /* Attempt nc_open() on HTTP protocol files. Success means DAP found file
-       Do not worry about NC_DISKLESS here since any file will be immediately closed */
+    Do not worry about NC_DISKLESS here since any file will be immediately closed */
     rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
-    
+
     if(rcd == NC_NOERR){
       int prg_id; /* Program ID */
       prg_id=prg_get(); /* [enm] Program ID */
@@ -572,14 +572,14 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       switch(prg_id){
       case ncatted:
       case ncrename:
-	(void)fprintf(stderr,"%s: ERROR %s reminds you that ncatted and ncrename must process truly local (i.e., not read via DAP) files (fxm TODO nco664)\n",prg_nm_get(),fnc_nm);
-	nco_exit(EXIT_FAILURE);
-	break;
+        (void)fprintf(stderr,"%s: ERROR %s reminds you that ncatted and ncrename must process truly local (i.e., not read via DAP) files (fxm TODO nco664)\n",prg_nm_get(),fnc_nm);
+        nco_exit(EXIT_FAILURE);
+        break;
       default:
-	/* All other operators work correctly with DAP */
-	break;
+        /* All other operators work correctly with DAP */
+        break;
       } /* end switch */
-      
+
       /* Close file to prevent accumulating dangling open files on DAP server */
       rcd=nco_close(in_id);
 
@@ -589,7 +589,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s successfully accessed this file using the DAP protocol\n",prg_nm_get(),fnc_nm);
 
       /* 20120728: Set rcd_stt=0 to mimic successful stat() return so rest of function treats file as local
-	 (DAP treats HTTP protocol files as local files) */
+      (DAP treats HTTP protocol files as local files) */
       rcd_stt=0;
 
     }else{ /* DAP-access failed */
@@ -608,21 +608,21 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     if(DAP_URL == False){ /* DAP access to http:// file failed */
       /* Attempt to retrieve URLs directly when DAP access fails. Tests:
-	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
-	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
-	 ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget
-	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
-	 ncks -O -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc # DAP
-	 ncks -O -v one -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc ~/foo.nc # DAP */
+      ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
+      ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
+      ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget
+      ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
+      ncks -O -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc # DAP
+      ncks -O -v one -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc ~/foo.nc # DAP */
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find file on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
-      
+
       /* DAP cannot open file so leave DAP_URL=FALSE and set HTTP_URL=True
-	 Later we will attempt to wget file to local system */
+      Later we will attempt to wget file to local system */
       HTTP_URL=True;
       url_sng_lng=strlen(http_url_sng);
 
       /* If HTTP then rearrange fl_nm_lcl to remove http://hostname part
-	 before searching for file on local disk */
+      before searching for file on local disk */
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
       fl_nm_lcl_tmp=fl_nm_lcl;
       fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
@@ -633,20 +633,20 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
-       Colon separates machine name from filename in rcp, scp, and sftp requests
-       However, colon is also legal in _any_ UNIX filename
-       Thus whether colon signifies rcp or scp request is somewhat ambiguous
-       NCO treats names with more than one colon as regular filenames
-       In order for colon to be interpreted as machine name delimiter,
-       it must be preceded by period within three or four spaces, e.g., uci.edu: */
+    Colon separates machine name from filename in rcp, scp, and sftp requests
+    However, colon is also legal in _any_ UNIX filename
+    Thus whether colon signifies rcp or scp request is somewhat ambiguous
+    NCO treats names with more than one colon as regular filenames
+    In order for colon to be interpreted as machine name delimiter,
+    it must be preceded by period within three or four spaces, e.g., uci.edu: */
     if(((cln_ptr-4 >= fl_nm_lcl) && *(cln_ptr-4) == '.') ||
-       ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
-      /* Rearrange fl_nm_lcl to remove hostname: part */
-      fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
-      fl_nm_lcl_tmp=fl_nm_lcl;
-      fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
-      (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
-      fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
+      ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
+        /* Rearrange fl_nm_lcl to remove hostname: part */
+        fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
+        fl_nm_lcl_tmp=fl_nm_lcl;
+        fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
+        (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
+        fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
     } /* endif period is three or four characters from colon */
   } /* end if */
 
@@ -662,8 +662,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     } /* end if */
     if(rcd_stt == 0){
       /* NB: Adding one to filename pointer is like deleting initial slash on filename
-	 Then free(fl_nm_lcl) would miss this initial byte (memory is lost)
-	 Hence must copy new name into its own memory space */
+      Then free(fl_nm_lcl) would miss this initial byte (memory is lost)
+      Hence must copy new name into its own memory space */
       fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
       fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
       fl_nm_lcl=fl_nm_lcl_tmp;
@@ -672,10 +672,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   } /* end if */
 
   /* Finally, check if file exists locally in directory for remotely retrieved files
-     This occurs when previous program invocations have already retrieved some files */
+  This occurs when previous program invocations have already retrieved some files */
   if(rcd_stt == -1){
     /* Where does filename stub begin? 
-       NB: Assume local filename has a slash (because remote file system always has a slash) */
+    NB: Assume local filename has a slash (because remote file system always has a slash) */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
 
     /* Construct local filename from user-supplied local file path and existing file stub */
@@ -721,357 +721,357 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       synchronous, /* Syncronous transfer */
       asynchronous}; /* Asynchronous transfer */
 
-    enum{ /* [enm] File order */
-      lcl_rmt, /* Local file argument before remote file argument */
-      rmt_lcl}; /* Remote file argument before local file argument */
+      enum{ /* [enm] File order */
+        lcl_rmt, /* Local file argument before remote file argument */
+        rmt_lcl}; /* Remote file argument before local file argument */
 
-    size_t fl_pth_lcl_lng=size_t_CEWI; /* CEWI */
+        size_t fl_pth_lcl_lng=size_t_CEWI; /* CEWI */
 
-    rmt_fch_cmd_sct *rmt_cmd=NULL;
-    /* fxm: Initialize structure contents as const */
-    rmt_fch_cmd_sct hsiget={"hsi get %s : %s",4,synchronous,lcl_rmt};
-    /* rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};*/ /* Deprecated 20110419 */
-    /* rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};*/ /* Deprecated 20110419 */
-    /* rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};*/ /* Deprecated 20110419 */
-    /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/ /* Deprecated ~2000 */
-    /* wget -p: fxm (and enables clobber)
-       wget -r: Turn on recursive retrieving (and enables clobber)
-       wget --tries: Set number of retries. Default is 20. */
-    rmt_fch_cmd_sct http={"wget --tries=1 --output-document=%s %s",4,synchronous,lcl_rmt};
-    rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
-    rmt_fch_cmd_sct sftp={"sftp %s %s",4,synchronous,rmt_lcl};
-    /* Fill-in ftp structure fmt element dynamically later */
-    rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
+        rmt_fch_cmd_sct *rmt_cmd=NULL;
+        /* fxm: Initialize structure contents as const */
+        rmt_fch_cmd_sct hsiget={"hsi get %s : %s",4,synchronous,lcl_rmt};
+        /* rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};*/ /* Deprecated 20110419 */
+        /* rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};*/ /* Deprecated 20110419 */
+        /* rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};*/ /* Deprecated 20110419 */
+        /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/ /* Deprecated ~2000 */
+        /* wget -p: fxm (and enables clobber)
+        wget -r: Turn on recursive retrieving (and enables clobber)
+        wget --tries: Set number of retries. Default is 20. */
+        rmt_fch_cmd_sct http={"wget --tries=1 --output-document=%s %s",4,synchronous,lcl_rmt};
+        rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
+        rmt_fch_cmd_sct sftp={"sftp %s %s",4,synchronous,rmt_lcl};
+        /* Fill-in ftp structure fmt element dynamically later */
+        rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
 
-    /* Why did stat() command fail? */
-    /* (void)perror(prg_nm_get());*/
+        /* Why did stat() command fail? */
+        /* (void)perror(prg_nm_get());*/
 
-    /* Remote filename is input filename by definition */
-    fl_nm_rmt=fl_nm;
+        /* Remote filename is input filename by definition */
+        fl_nm_rmt=fl_nm;
 
-    /* URL specifier in filename unambiguously signals to use FTP */
-    if(rmt_cmd == NULL){
-      if(FTP_URL){
-	/* fxm: use autoconf HAVE_XXX rather than WIN32 token TODO nco292 */
+        /* URL specifier in filename unambiguously signals to use FTP */
+        if(rmt_cmd == NULL){
+          if(FTP_URL){
+            /* fxm: use autoconf HAVE_XXX rather than WIN32 token TODO nco292 */
 #ifdef WIN32
-/* #ifndef HAVE_NETWORK fxm */
-	/* I have no idea how networking calls work in MS Windows, so just exit */
-	(void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported by this operating system\n",prg_nm_get(),fl_nm_rmt);
-	nco_exit(EXIT_FAILURE);
+            /* #ifndef HAVE_NETWORK fxm */
+            /* I have no idea how networking calls work in MS Windows, so just exit */
+            (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported by this operating system\n",prg_nm_get(),fl_nm_rmt);
+            nco_exit(EXIT_FAILURE);
 #else /* !WIN32 */
-	char *usr_nm;
-	char *host_nm_lcl;
-	char *host_nm_rmt;
-	char *usr_email=NULL; /* CEWI */
-	char *fl_nm_netrc;
+            char *usr_nm;
+            char *host_nm_lcl;
+            char *host_nm_rmt;
+            char *usr_email=NULL; /* CEWI */
+            char *fl_nm_netrc;
 
-	const char fl_stb_netrc[]="/.netrc";
-	const char ftp_cmd_anonymous[]="/usr/bin/ftp -i -p -n"; /* -n turns off using .netrc */
-	const char ftp_cmd_netrc[]="/usr/bin/ftp -i -p"; /* Allow FTP to use .netrc */
-	const char fmt_ftp_anonymous_tpl[]="%s %s << END\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
-	const char fmt_ftp_netrc_tpl[]="%s %s << END\nbin\nget %s %s\nquit\nEND";
+            const char fl_stb_netrc[]="/.netrc";
+            const char ftp_cmd_anonymous[]="/usr/bin/ftp -i -p -n"; /* -n turns off using .netrc */
+            const char ftp_cmd_netrc[]="/usr/bin/ftp -i -p"; /* Allow FTP to use .netrc */
+            const char fmt_ftp_anonymous_tpl[]="%s %s << END\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
+            const char fmt_ftp_netrc_tpl[]="%s %s << END\nbin\nget %s %s\nquit\nEND";
 
-	struct passwd *usr_pwd;
+            struct passwd *usr_pwd;
 
-	uid_t usr_uid;
+            uid_t usr_uid;
 
-	rmt_cmd=&ftp;
+            rmt_cmd=&ftp;
 
-	/* Get UID to get password structure which contains home directory, login name
-	   Home directory needed to search for .netrc
-	   Login name used to construct e-mail address for anonymous FTP */
-	usr_uid=getuid();
-	usr_pwd=getpwuid(usr_uid);
-	usr_nm=usr_pwd->pw_name;
+            /* Get UID to get password structure which contains home directory, login name
+            Home directory needed to search for .netrc
+            Login name used to construct e-mail address for anonymous FTP */
+            usr_uid=getuid();
+            usr_pwd=getpwuid(usr_uid);
+            usr_nm=usr_pwd->pw_name;
 
-	/* Construct remote hostname and filename now since:
-	   1. .netrc, if any, will soon be searched for remote hostname
-	   2. Remote hostname and filename always needed for remote retrieval */
+            /* Construct remote hostname and filename now since:
+            1. .netrc, if any, will soon be searched for remote hostname
+            2. Remote hostname and filename always needed for remote retrieval */
 
-	/* Remote hostname begins directly after "[s]ftp://" */
-	host_nm_rmt=fl_nm_rmt+url_sng_lng;
-	/* Filename begins after slash */
-	fl_nm_rmt=strstr(fl_nm_rmt+url_sng_lng,"/")+1UL;
-	/* NUL-terminate hostname by overwriting colon in hostname:/filename syntax */
-	*(fl_nm_rmt-1)='\0';
+            /* Remote hostname begins directly after "[s]ftp://" */
+            host_nm_rmt=fl_nm_rmt+url_sng_lng;
+            /* Filename begins after slash */
+            fl_nm_rmt=strstr(fl_nm_rmt+url_sng_lng,"/")+1UL;
+            /* NUL-terminate hostname by overwriting colon in hostname:/filename syntax */
+            *(fl_nm_rmt-1)='\0';
 
-	/* Use anonymous FTP unless .netrc file exists on local system */
-	fl_nm_netrc=(char *)strdup(usr_pwd->pw_dir);
-	/* Create space for full path to ${HOME}/.netrc */
-	fl_nm_netrc=(char *)nco_realloc(fl_nm_netrc,(strlen(fl_nm_netrc)+strlen(fl_stb_netrc)+2UL)*sizeof(char));
-	fl_nm_netrc=(char *)strcat(fl_nm_netrc,fl_stb_netrc);
-	rcd_stt=stat(fl_nm_netrc,&stat_sct);
-	if(!rcd_stt){
-	  /* Search .netrc file for remote host name */
-	  char *host_nm_rmt_psn;
-	  char *fl_netrc_bfr;
-	  FILE *fp_netrc; /* [fl] .netrc inpu file handle */
-	  if((fp_netrc=fopen(fl_nm_netrc,"r")) == NULL){
-	    (void)fprintf(stderr,"%s: ERROR unable to open user's .netrc file %s\n",prg_nm_get(),fl_nm_netrc);
-	    /* Why did fopen() command fail? */
-	    (void)perror(prg_nm_get());
-	    nco_exit(EXIT_FAILURE);
-	  } /* end if */
-	  /* Add one for NUL-terminator */
-	  fl_netrc_bfr=(char *)nco_malloc((1UL+stat_sct.st_size)*sizeof(char));
-	  /* NUL-terminate buffer */
-	  fl_netrc_bfr[stat_sct.st_size]='\0';
-	  rcd_frd=fread((void *)fl_netrc_bfr,stat_sct.st_size,1,fp_netrc);
-	  if(rcd_frd <= 0){
-	    (void)fprintf(stderr,"%s: ERROR reading %s\n",prg_nm_get(),fl_nm_netrc);
-	    /* Why did fread() command fail? */
-	    (void)perror(prg_nm_get());
-	    /* Check for feof() vs. ferror() here? */
-	    rcd_frd=fclose(fp_netrc);
-	    nco_exit(EXIT_FAILURE);
-	  } /* end if */
-	  rcd_frd=fclose(fp_netrc);
-	  host_nm_rmt_psn=strstr(fl_netrc_bfr,host_nm_rmt);
-	  if(host_nm_rmt_psn){
-	    FTP_NETRC=True;
-	    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will use .netrc file at %s instead of anonymous FTP\n",prg_nm_get(),fnc_nm,fl_nm_netrc);
-	  } /* endif host_nm_rmt_psn */
-	  fl_netrc_bfr=(char *)nco_free(fl_netrc_bfr);
-	} /* endif rcd_stt */
+            /* Use anonymous FTP unless .netrc file exists on local system */
+            fl_nm_netrc=(char *)strdup(usr_pwd->pw_dir);
+            /* Create space for full path to ${HOME}/.netrc */
+            fl_nm_netrc=(char *)nco_realloc(fl_nm_netrc,(strlen(fl_nm_netrc)+strlen(fl_stb_netrc)+2UL)*sizeof(char));
+            fl_nm_netrc=(char *)strcat(fl_nm_netrc,fl_stb_netrc);
+            rcd_stt=stat(fl_nm_netrc,&stat_sct);
+            if(!rcd_stt){
+              /* Search .netrc file for remote host name */
+              char *host_nm_rmt_psn;
+              char *fl_netrc_bfr;
+              FILE *fp_netrc; /* [fl] .netrc inpu file handle */
+              if((fp_netrc=fopen(fl_nm_netrc,"r")) == NULL){
+                (void)fprintf(stderr,"%s: ERROR unable to open user's .netrc file %s\n",prg_nm_get(),fl_nm_netrc);
+                /* Why did fopen() command fail? */
+                (void)perror(prg_nm_get());
+                nco_exit(EXIT_FAILURE);
+              } /* end if */
+              /* Add one for NUL-terminator */
+              fl_netrc_bfr=(char *)nco_malloc((1UL+stat_sct.st_size)*sizeof(char));
+              /* NUL-terminate buffer */
+              fl_netrc_bfr[stat_sct.st_size]='\0';
+              rcd_frd=fread((void *)fl_netrc_bfr,stat_sct.st_size,1,fp_netrc);
+              if(rcd_frd <= 0){
+                (void)fprintf(stderr,"%s: ERROR reading %s\n",prg_nm_get(),fl_nm_netrc);
+                /* Why did fread() command fail? */
+                (void)perror(prg_nm_get());
+                /* Check for feof() vs. ferror() here? */
+                rcd_frd=fclose(fp_netrc);
+                nco_exit(EXIT_FAILURE);
+              } /* end if */
+              rcd_frd=fclose(fp_netrc);
+              host_nm_rmt_psn=strstr(fl_netrc_bfr,host_nm_rmt);
+              if(host_nm_rmt_psn){
+                FTP_NETRC=True;
+                if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will use .netrc file at %s instead of anonymous FTP\n",prg_nm_get(),fnc_nm,fl_nm_netrc);
+              } /* endif host_nm_rmt_psn */
+              fl_netrc_bfr=(char *)nco_free(fl_netrc_bfr);
+            } /* endif rcd_stt */
 
-	if(!FTP_NETRC){
-	  /* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but
-	     MAXHOSTNAMELEN isn't in there on Solaris */
-	  host_nm_lcl=(char *)nco_malloc((256UL+1UL)*sizeof(char));
-	  (void)gethostname(host_nm_lcl,256UL+1UL);
-	  /* fxm: move to gethostbyname() next */
-	  if(strchr(host_nm_lcl,'.') == NULL){
-/* #ifdef HAVE_RES_ */
-	    /* Returned hostname did not include fully qualified Internet domain name (FQDN) */
-	    (void)res_init();
-	    (void)strcat(host_nm_lcl,".");
-	    (void)strcat(host_nm_lcl,_res.defdname);
-/* #endif HAVE_RES_ */
-	  } /* end if */
+            if(!FTP_NETRC){
+              /* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but
+              MAXHOSTNAMELEN isn't in there on Solaris */
+              host_nm_lcl=(char *)nco_malloc((256UL+1UL)*sizeof(char));
+              (void)gethostname(host_nm_lcl,256UL+1UL);
+              /* fxm: move to gethostbyname() next */
+              if(strchr(host_nm_lcl,'.') == NULL){
+                /* #ifdef HAVE_RES_ */
+                /* Returned hostname did not include fully qualified Internet domain name (FQDN) */
+                (void)res_init();
+                (void)strcat(host_nm_lcl,".");
+                (void)strcat(host_nm_lcl,_res.defdname);
+                /* #endif HAVE_RES_ */
+              } /* end if */
 
-	  /* Add one for joining "@" and one for NUL byte */
-	  usr_email=(char *)nco_malloc((strlen(usr_nm)+1UL+strlen(host_nm_lcl)+1UL)*sizeof(char));
-	  (void)sprintf(usr_email,"%s@%s",usr_nm,host_nm_lcl);
-	  /* Free hostname space */
-	  host_nm_lcl=(char *)nco_free(host_nm_lcl);
-	} /* FTP_NETRC */
+              /* Add one for joining "@" and one for NUL byte */
+              usr_email=(char *)nco_malloc((strlen(usr_nm)+1UL+strlen(host_nm_lcl)+1UL)*sizeof(char));
+              (void)sprintf(usr_email,"%s@%s",usr_nm,host_nm_lcl);
+              /* Free hostname space */
+              host_nm_lcl=(char *)nco_free(host_nm_lcl);
+            } /* FTP_NETRC */
 
-	if(FTP_NETRC){
-	  /* Subtract four characters for two "percent s" formats replaced by new strings, add one for NUL byte */
-	  fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_netrc_tpl)+strlen(ftp_cmd_netrc)+strlen(host_nm_rmt)-4UL+1UL)*sizeof(char));
-	  (void)sprintf(fmt_ftp,fmt_ftp_netrc_tpl,ftp_cmd_netrc,host_nm_rmt,"%s","%s");
-	}else{
-	  /* Subtract six characters for three "percent s" formats replaced by new strings, add one for NUL byte */
-	  fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_anonymous_tpl)+strlen(ftp_cmd_anonymous)+strlen(host_nm_rmt)+strlen(usr_email)-6UL+1UL)*sizeof(char));
-	  (void)sprintf(fmt_ftp,fmt_ftp_anonymous_tpl,ftp_cmd_anonymous,host_nm_rmt,usr_email,"%s","%s");
-	} /* !FTP_NETRC */
-	rmt_cmd->fmt=fmt_ftp;
-	/* Free space, if any, holding user's E-mail address */
-	if(!FTP_NETRC) usr_email=(char *)nco_free(usr_email);
-	/* Always free .netrc filename space */
-	fl_nm_netrc=(char *)nco_free(fl_nm_netrc);
+            if(FTP_NETRC){
+              /* Subtract four characters for two "percent s" formats replaced by new strings, add one for NUL byte */
+              fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_netrc_tpl)+strlen(ftp_cmd_netrc)+strlen(host_nm_rmt)-4UL+1UL)*sizeof(char));
+              (void)sprintf(fmt_ftp,fmt_ftp_netrc_tpl,ftp_cmd_netrc,host_nm_rmt,"%s","%s");
+            }else{
+              /* Subtract six characters for three "percent s" formats replaced by new strings, add one for NUL byte */
+              fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_anonymous_tpl)+strlen(ftp_cmd_anonymous)+strlen(host_nm_rmt)+strlen(usr_email)-6UL+1UL)*sizeof(char));
+              (void)sprintf(fmt_ftp,fmt_ftp_anonymous_tpl,ftp_cmd_anonymous,host_nm_rmt,usr_email,"%s","%s");
+            } /* !FTP_NETRC */
+            rmt_cmd->fmt=fmt_ftp;
+            /* Free space, if any, holding user's E-mail address */
+            if(!FTP_NETRC) usr_email=(char *)nco_free(usr_email);
+            /* Always free .netrc filename space */
+            fl_nm_netrc=(char *)nco_free(fl_nm_netrc);
 #endif /* !WIN32 */
-      } /* end if FTP_URL */
-    } /* end if rmt_cmd */
+          } /* end if FTP_URL */
+        } /* end if rmt_cmd */
 
-    /* Currently, sftp transfers are indicated by FTP-style URLs
-       NB: Unlike FTP, SFTP does not have a recognized URL format
-       Hence actual transfer via SFTP uses scp syntax (for single files)
-       Multiple file transfer via SFTP can use FTP-like scripts, requires more work
-       NCO SFTP file specification must have colon separating hostname from filename */
-    if(rmt_cmd == NULL){
-      if(SFTP_URL){
-	/* Remote filename begins after URL but includes hostname */
-	fl_nm_rmt+=url_sng_lng;
-	/* Make sure that SFTP hostname looks like a hostname */
-	if((cln_ptr=strchr(fl_nm_rmt,':'))){
-	  if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
-	     ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.')){
-	    rmt_cmd=&sftp;
-	  } /* end if */
-	} /* end if colon */
-      } /* end if SFTP */
-    } /* end if rmt_cmd */
+        /* Currently, sftp transfers are indicated by FTP-style URLs
+        NB: Unlike FTP, SFTP does not have a recognized URL format
+        Hence actual transfer via SFTP uses scp syntax (for single files)
+        Multiple file transfer via SFTP can use FTP-like scripts, requires more work
+        NCO SFTP file specification must have colon separating hostname from filename */
+        if(rmt_cmd == NULL){
+          if(SFTP_URL){
+            /* Remote filename begins after URL but includes hostname */
+            fl_nm_rmt+=url_sng_lng;
+            /* Make sure that SFTP hostname looks like a hostname */
+            if((cln_ptr=strchr(fl_nm_rmt,':'))){
+              if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
+                ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.')){
+                  rmt_cmd=&sftp;
+              } /* end if */
+            } /* end if colon */
+          } /* end if SFTP */
+        } /* end if rmt_cmd */
 
-    /* Attempt wget on files that contain http:// prefix and are not accessible via DAP */
-    if(rmt_cmd == NULL){
-      if(HTTP_URL){
-	rmt_cmd=&http;
-	(void)fprintf(stderr,"%s: INFO Will now attempt wget on the full filepath. wget will fail if the file is \"hidden\" behind a DAP server. Unfortunately, failed wget attempts creates rather long pathnames in the current directory. fxm TODO nco970, nco971. On the other hand, wget should succeed if the file is stored in any publicly-accessible web location.\n",prg_nm_get());
-      } /* end if HTTP */
-    } /* end if rmt_cmd */
+        /* Attempt wget on files that contain http:// prefix and are not accessible via DAP */
+        if(rmt_cmd == NULL){
+          if(HTTP_URL){
+            rmt_cmd=&http;
+            (void)fprintf(stderr,"%s: INFO Will now attempt wget on the full filepath. wget will fail if the file is \"hidden\" behind a DAP server. Unfortunately, failed wget attempts creates rather long pathnames in the current directory. fxm TODO nco970, nco971. On the other hand, wget should succeed if the file is stored in any publicly-accessible web location.\n",prg_nm_get());
+          } /* end if HTTP */
+        } /* end if rmt_cmd */
 
-    /* Otherwise, single colon preceded by period in filename signals rcp or scp
-       Determining whether to try scp instead of rcp is difficult
-       Ideally, NCO would test remote machine for rcp/scp priveleges with system command like, e.g., "ssh echo ok"
-       To start we use scp which has its own fall-through to rcp */
-    if(rmt_cmd == NULL){
-      if((cln_ptr=strchr(fl_nm_rmt,':'))){
-	if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
-	   ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.')){
-	  rmt_cmd=&scp;
-	} /* end if */
-      } /* end if colon */
-    } /* end if rmt_cmd */
+        /* Otherwise, single colon preceded by period in filename signals rcp or scp
+        Determining whether to try scp instead of rcp is difficult
+        Ideally, NCO would test remote machine for rcp/scp priveleges with system command like, e.g., "ssh echo ok"
+        To start we use scp which has its own fall-through to rcp */
+        if(rmt_cmd == NULL){
+          if((cln_ptr=strchr(fl_nm_rmt,':'))){
+            if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
+              ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.')){
+                rmt_cmd=&scp;
+            } /* end if */
+          } /* end if colon */
+        } /* end if rmt_cmd */
 
 #if 0
-    /* NB: MSS commands deprecated 20110419 */
-    if(rmt_cmd == NULL){
-      /* Does msrcp command exist on local system? */
-      rcd_stt=stat("/usr/local/bin/msrcp",&stat_sct); /* SCD Dataproc, Ouray */
-      if(rcd_stt != 0) rcd_stt=stat("/usr/bin/msrcp",&stat_sct); /* ACD Linux */
-      if(rcd_stt != 0) rcd_stt=stat("/opt/local/bin/msrcp",&stat_sct); /* CGD */
-      if(rcd_stt != 0) rcd_stt=stat("/usr/local/dcs/bin/msrcp",&stat_sct); /* ACD */
-      if(rcd_stt == 0) rmt_cmd=&msrcp;
-    } /* end if */
+        /* NB: MSS commands deprecated 20110419 */
+        if(rmt_cmd == NULL){
+          /* Does msrcp command exist on local system? */
+          rcd_stt=stat("/usr/local/bin/msrcp",&stat_sct); /* SCD Dataproc, Ouray */
+          if(rcd_stt != 0) rcd_stt=stat("/usr/bin/msrcp",&stat_sct); /* ACD Linux */
+          if(rcd_stt != 0) rcd_stt=stat("/opt/local/bin/msrcp",&stat_sct); /* CGD */
+          if(rcd_stt != 0) rcd_stt=stat("/usr/local/dcs/bin/msrcp",&stat_sct); /* ACD */
+          if(rcd_stt == 0) rmt_cmd=&msrcp;
+        } /* end if */
 
-    if(rmt_cmd == NULL){
-      /* Does msread command exist on local system? */
-      rcd_stt=stat("/usr/local/bin/msread",&stat_sct);
-      if(rcd_stt == 0) rmt_cmd=&msread;
-    } /* end if */
+        if(rmt_cmd == NULL){
+          /* Does msread command exist on local system? */
+          rcd_stt=stat("/usr/local/bin/msread",&stat_sct);
+          if(rcd_stt == 0) rmt_cmd=&msread;
+        } /* end if */
 
-    if(rmt_cmd == NULL){
-      /* Does nrnet command exist on local system? */
-      rcd_stt=stat("/usr/local/bin/nrnet",&stat_sct);
-      if(rcd_stt == 0) rmt_cmd=&nrnet;
-    } /* end if */
+        if(rmt_cmd == NULL){
+          /* Does nrnet command exist on local system? */
+          rcd_stt=stat("/usr/local/bin/nrnet",&stat_sct);
+          if(rcd_stt == 0) rmt_cmd=&nrnet;
+        } /* end if */
 
-    /* Before we look for file on remote system, make sure
-       filename has correct syntax to exist on remote system */
-    if(rmt_cmd == &msread || rmt_cmd == &nrnet || rmt_cmd == &msrcp){
-      if (fl_nm_rmt[0] != '/' || fl_nm_rmt[1] < 'A' || fl_nm_rmt[1] > 'Z'){
-	(void)fprintf(stderr,"%s: ERROR %s is not on local filesystem and is not a syntactically valid filename on remote file system\n",prg_nm_get(),fl_nm_rmt);
-	nco_exit(EXIT_FAILURE);
-      } /* end if */
-    } /* end if */
+        /* Before we look for file on remote system, make sure
+        filename has correct syntax to exist on remote system */
+        if(rmt_cmd == &msread || rmt_cmd == &nrnet || rmt_cmd == &msrcp){
+          if (fl_nm_rmt[0] != '/' || fl_nm_rmt[1] < 'A' || fl_nm_rmt[1] > 'Z'){
+            (void)fprintf(stderr,"%s: ERROR %s is not on local filesystem and is not a syntactically valid filename on remote file system\n",prg_nm_get(),fl_nm_rmt);
+            nco_exit(EXIT_FAILURE);
+          } /* end if */
+        } /* end if */
 #endif /* endif False */
 
-    /* NB: HPSS commands replaced MSS commands in NCO 4.0.8 in 201104 */
-    if(rmt_cmd == NULL){
-      /* Does hsi command exist on local system? */
-      rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire default */
-      if(rcd_stt != 0) rcd_stt=stat("/opt/hpss/bin/hsi",&stat_sct); /* CISL alternate */
-      if(rcd_stt == 0) rmt_cmd=&hsiget;
-    } /* end if */
+        /* NB: HPSS commands replaced MSS commands in NCO 4.0.8 in 201104 */
+        if(rmt_cmd == NULL){
+          /* Does hsi command exist on local system? */
+          rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire default */
+          if(rcd_stt != 0) rcd_stt=stat("/opt/hpss/bin/hsi",&stat_sct); /* CISL alternate */
+          if(rcd_stt == 0) rmt_cmd=&hsiget;
+        } /* end if */
 
-    if(rmt_cmd == NULL){
-      (void)fprintf(stderr,"%s: ERROR file %s neither exists locally nor matches remote filename patterns\n",prg_nm_get(),fl_nm_rmt);
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
+        if(rmt_cmd == NULL){
+          (void)fprintf(stderr,"%s: ERROR file %s neither exists locally nor matches remote filename patterns\n",prg_nm_get(),fl_nm_rmt);
+          nco_exit(EXIT_FAILURE);
+        } /* end if */
 
-    if(fl_pth_lcl == NULL){
-      /* Derive path for storing local file from remote filename */
-      (void)fprintf(stderr,"%s: INFO deriving local filepath from remote filename\n",prg_nm_get());
-      fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
-      if(HTTP_URL){
-	/* Strip leading slash from fl_nm_lcl for HTTP files so, e.g., 
-	   http://dust.ess.uci.edu/nco/in.nc produces local path "nco" not "/nco" */
-	fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
-	fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
-	fl_nm_lcl=fl_nm_lcl_tmp;
-      } /* !HTTP_URL */
-      /* Construct local storage filepath name */
-      fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1UL;
-      /* Allocate enough room for terminating NUL */
-      fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1UL)*sizeof(char));
-      (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
-      fl_pth_lcl_tmp[fl_pth_lcl_lng]='\0';
-      /* Tell user what local filepath was derived */
-      (void)fprintf(stderr,"%s: INFO Retrieved files will be stored in derived directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
-    }else{
-      /* Copy user-specified local path to unite following code in terms of fl_pth_lcl_tmp */
-      fl_pth_lcl_tmp=(char *)strdup(fl_pth_lcl);
-    } /* fl_pth_lcl */
-    
-    /* Does local filepath exist already on local system? */
-    rcd_stt=stat(fl_pth_lcl_tmp,&stat_sct);
-    /* If not, then create local filepath */
-    if(rcd_stt != 0){
-      /* Allocate enough room for joining space ' ' and terminating NUL */
-      cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_lng+2UL)*sizeof(char));
-      (void)strcpy(cmd_sys,cmd_mkdir);
-      (void)strcat(cmd_sys," ");
-      (void)strcat(cmd_sys,fl_pth_lcl_tmp);
-      rcd_sys=system(cmd_sys);
-      if(rcd_sys != 0){
-	(void)fprintf(stderr,"%s: ERROR Unable to create local directory %s\n",prg_nm_get(),fl_pth_lcl_tmp);
-	if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: HINT Use -l option\n",prg_nm_get());
-	nco_exit(EXIT_FAILURE);
-      } /* end if */
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Created local directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
-      /* Free local command space */
-      cmd_sys=(char *)nco_free(cmd_sys);
-    } /* end if */
+        if(fl_pth_lcl == NULL){
+          /* Derive path for storing local file from remote filename */
+          (void)fprintf(stderr,"%s: INFO deriving local filepath from remote filename\n",prg_nm_get());
+          fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
+          if(HTTP_URL){
+            /* Strip leading slash from fl_nm_lcl for HTTP files so, e.g., 
+            http://dust.ess.uci.edu/nco/in.nc produces local path "nco" not "/nco" */
+            fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
+            fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
+            fl_nm_lcl=fl_nm_lcl_tmp;
+          } /* !HTTP_URL */
+          /* Construct local storage filepath name */
+          fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1UL;
+          /* Allocate enough room for terminating NUL */
+          fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1UL)*sizeof(char));
+          (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
+          fl_pth_lcl_tmp[fl_pth_lcl_lng]='\0';
+          /* Tell user what local filepath was derived */
+          (void)fprintf(stderr,"%s: INFO Retrieved files will be stored in derived directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
+        }else{
+          /* Copy user-specified local path to unite following code in terms of fl_pth_lcl_tmp */
+          fl_pth_lcl_tmp=(char *)strdup(fl_pth_lcl);
+        } /* fl_pth_lcl */
 
-    /* Free local path space, if any */
-    fl_pth_lcl_tmp=(char *)nco_free(fl_pth_lcl_tmp);
+        /* Does local filepath exist already on local system? */
+        rcd_stt=stat(fl_pth_lcl_tmp,&stat_sct);
+        /* If not, then create local filepath */
+        if(rcd_stt != 0){
+          /* Allocate enough room for joining space ' ' and terminating NUL */
+          cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_lng+2UL)*sizeof(char));
+          (void)strcpy(cmd_sys,cmd_mkdir);
+          (void)strcat(cmd_sys," ");
+          (void)strcat(cmd_sys,fl_pth_lcl_tmp);
+          rcd_sys=system(cmd_sys);
+          if(rcd_sys != 0){
+            (void)fprintf(stderr,"%s: ERROR Unable to create local directory %s\n",prg_nm_get(),fl_pth_lcl_tmp);
+            if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: HINT Use -l option\n",prg_nm_get());
+            nco_exit(EXIT_FAILURE);
+          } /* end if */
+          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Created local directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
+          /* Free local command space */
+          cmd_sys=(char *)nco_free(cmd_sys);
+        } /* end if */
 
-    /* Allocate enough room for joining space ' ' and terminating NUL */
-    cmd_sys=(char *)nco_malloc((strlen(rmt_cmd->fmt)-rmt_cmd->fmt_chr_nbr+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
-    if(rmt_cmd->file_order == lcl_rmt){
-      (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_lcl,fl_nm_rmt);
-    }else{
-      (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_rmt,fl_nm_lcl);
-    } /* end else */
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Retrieving file from remote location with command:\n%s\n",prg_nm_get(),cmd_sys);
-    (void)fflush(stderr);
-    /* Fetch file from remote file system */
-    rcd_sys=system(cmd_sys);
-    /* Free local command space */
-    cmd_sys=(char *)nco_free(cmd_sys);
+        /* Free local path space, if any */
+        fl_pth_lcl_tmp=(char *)nco_free(fl_pth_lcl_tmp);
 
-    /* Free dynamically allocated FTP script memory */
-    if(rmt_cmd == &ftp) fmt_ftp=(char *)nco_free(fmt_ftp);
+        /* Allocate enough room for joining space ' ' and terminating NUL */
+        cmd_sys=(char *)nco_malloc((strlen(rmt_cmd->fmt)-rmt_cmd->fmt_chr_nbr+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
+        if(rmt_cmd->file_order == lcl_rmt){
+          (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_lcl,fl_nm_rmt);
+        }else{
+          (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_rmt,fl_nm_lcl);
+        } /* end else */
+        if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Retrieving file from remote location with command:\n%s\n",prg_nm_get(),cmd_sys);
+        (void)fflush(stderr);
+        /* Fetch file from remote file system */
+        rcd_sys=system(cmd_sys);
+        /* Free local command space */
+        cmd_sys=(char *)nco_free(cmd_sys);
 
-    if(rmt_cmd->transfer_mode == synchronous){
-      if(rcd_sys != 0){
-	(void)fprintf(stderr,"%s: ERROR Synchronous fetch command failed\n",prg_nm_get());
-	nco_exit(EXIT_FAILURE);
-      } /* end if */
-    }else{
-      /* This is appropriate place to insert invocation of shell command
-	 to retrieve file asynchronously and then to return status to NCO synchronously. */
+        /* Free dynamically allocated FTP script memory */
+        if(rmt_cmd == &ftp) fmt_ftp=(char *)nco_free(fmt_ftp);
 
-      int fl_sz_crr=-2;
-      int fl_sz_ntl=-1;
-      int tm_nbr=100; /* Maximum number of sleep periods before error exit */
-      int tm_idx;
-      int tm_sleep_scn=10; /* [s] Seconds per stat() check for successful return */
+        if(rmt_cmd->transfer_mode == synchronous){
+          if(rcd_sys != 0){
+            (void)fprintf(stderr,"%s: ERROR Synchronous fetch command failed\n",prg_nm_get());
+            nco_exit(EXIT_FAILURE);
+          } /* end if */
+        }else{
+          /* This is appropriate place to insert invocation of shell command
+          to retrieve file asynchronously and then to return status to NCO synchronously. */
+
+          int fl_sz_crr=-2;
+          int fl_sz_ntl=-1;
+          int tm_nbr=100; /* Maximum number of sleep periods before error exit */
+          int tm_idx;
+          int tm_sleep_scn=10; /* [s] Seconds per stat() check for successful return */
 #ifdef _MSC_VER
-      /* MSVC NB: Win32 Sleep() function measured in milliseconds, Linux sleep() function measured in seconds */
-      int tm_sleep_ms=tm_sleep_scn*1000; /* [ms] Milliseconds per stat() check for successful return */
+          /* MSVC NB: Win32 Sleep() function measured in milliseconds, Linux sleep() function measured in seconds */
+          int tm_sleep_ms=tm_sleep_scn*1000; /* [ms] Milliseconds per stat() check for successful return */
 #endif /* !_MSC_VER */
 
-      /* Asynchronous retrieval uses sleep-and-poll technique */
-      for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
-	rcd_stt=stat(fl_nm_lcl,&stat_sct);
-	if(rcd_stt == 0){
-	  /* What is current size of file? */
-	  fl_sz_ntl=fl_sz_crr;
-	  fl_sz_crr=stat_sct.st_size;
-	  /* If file size does not change during entire sleep period, assume
-	     file is completely retrieved. */
-	  if(fl_sz_ntl == fl_sz_crr){
-	    break;
-	  } /* end if */
-	} /* end if */
-	/* Sleep for specified time */
+          /* Asynchronous retrieval uses sleep-and-poll technique */
+          for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
+            rcd_stt=stat(fl_nm_lcl,&stat_sct);
+            if(rcd_stt == 0){
+              /* What is current size of file? */
+              fl_sz_ntl=fl_sz_crr;
+              fl_sz_crr=stat_sct.st_size;
+              /* If file size does not change during entire sleep period, assume
+              file is completely retrieved. */
+              if(fl_sz_ntl == fl_sz_crr){
+                break;
+              } /* end if */
+            } /* end if */
+            /* Sleep for specified time */
 #ifdef _MSC_VER
-	(void)Sleep((unsigned)tm_sleep_ms);
+            (void)Sleep((unsigned)tm_sleep_ms);
 #else /* !_MSC_VER */
-	(void)sleep((unsigned)tm_sleep_scn);
+            (void)sleep((unsigned)tm_sleep_scn);
 #endif /* !_MSC_VER */
-	if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,".");
-	(void)fflush(stderr);
-      } /* end for */
-      if(tm_idx == tm_nbr){
-	(void)fprintf(stderr,"%s: ERROR Maximum time (%d seconds = %.1f minutes) for asynchronous file retrieval exceeded.\n",prg_nm_get(),tm_nbr*tm_sleep_scn,tm_nbr*tm_sleep_scn/60.0);
-	nco_exit(EXIT_FAILURE);
-      } /* end if */
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",prg_nm_get(),tm_idx,tm_sleep_scn,tm_idx*tm_sleep_scn/60.0);
-    } /* end else transfer mode is asynchronous */
-    *FL_RTR_RMT_LCN=True;
+            if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,".");
+            (void)fflush(stderr);
+          } /* end for */
+          if(tm_idx == tm_nbr){
+            (void)fprintf(stderr,"%s: ERROR Maximum time (%d seconds = %.1f minutes) for asynchronous file retrieval exceeded.\n",prg_nm_get(),tm_nbr*tm_sleep_scn,tm_nbr*tm_sleep_scn/60.0);
+            nco_exit(EXIT_FAILURE);
+          } /* end if */
+          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",prg_nm_get(),tm_idx,tm_sleep_scn,tm_idx*tm_sleep_scn/60.0);
+        } /* end else transfer mode is asynchronous */
+        *FL_RTR_RMT_LCN=True;
   }else{ /* end if input file did not exist locally */
     *FL_RTR_RMT_LCN=False;
   } /* end if file was already on the local system */
@@ -1088,18 +1088,18 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     }else{
       (void)fclose(fp_in);
     } /* end else */
-    
-      /* For local files, perform optional file diagnostics */
+
+    /* For local files, perform optional file diagnostics */
     if(dbg_lvl_get() >= nco_dbg_std){
       char *fl_nm_cnc=NULL; /* [sng] Canonical file name */
       /* Determine canonical filename and properties */
       fl_nm_cnc=nco_fl_info_get(fl_nm_lcl);
       if(fl_nm_cnc) fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
     } /* endif dbg */
-    
+
   } /* end if file is truly local */
-  
-    /* Free input filename space */
+
+  /* Free input filename space */
   fl_nm=(char *)nco_free(fl_nm);
 
   /* Return local filename */
