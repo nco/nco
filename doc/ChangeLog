@@ -1,22 +1,24 @@
+2013-05-06  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.2 release procedure:
+ 	Changes since nco-4_3_1: -X aux,
+	cd ~/nco;cvs tag -d nco-4_3_2;cvs tag -d nco-4_3_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
+	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
+
 2013-05-06 Pedro Vicente  <pvicente@uci.edu>
 
-        * nco_fll_var_trv() Fill-in variable structure list for all extracted variables 
+        * nco_fll_var_trv() Fill-in variable structure list for all extracted variables
 
 2013-05-03 Pedro Vicente  <pvicente@uci.edu>
 
-        * nco_bld_aux_crd() Parse auxiliary coordinates 
+        * nco_bld_aux_crd() Parse auxiliary coordinates
 
         * ncks test #69 Parse auxiliary coordinates
 
 2013-05-01  Charlie Zender  <zender@uci.edu>
 
 	* Add byte arrays to in.cdl
-
-	* NCO 4.3.2 release procedure:
- 	Changes since nco-4_3_1: fxm
-	cd ~/nco;cvs tag -d nco-4_3_2;cvs tag -d nco-4_3_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
-	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
 
 	* NCO 4.3.1 release procedure:
  	Changes since nco-4_3_0: ncbo -G, --unn, symmetric, grp_brd

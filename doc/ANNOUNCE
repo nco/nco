@@ -1,13 +1,14 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.571 2013-05-01 18:22:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.572 2013-05-06 21:55:26 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release solidifies group support in ncbo and makes
-group-related features consistent across ncbo, ncecat, and ncks.
-These three operators fully support group hierarchies.
+This release implements group support in ncflint and makes
+group-related features consistent across
+Now four operators fully support group hierarchies: ncbo, ncecat,
+ncflint, and ncks.
 
 Work on NCO 4.3.2 is underway and includes improved netCDF4 support
 for more NCO operators, and better support for Windows builds
