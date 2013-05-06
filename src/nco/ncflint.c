@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.222 2013-05-06 21:52:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.223 2013-05-06 22:23:38 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -95,7 +95,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
-  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.222 2013-05-06 21:52:22 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.222 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.223 2013-05-06 22:23:38 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.223 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1032,9 +1032,11 @@ main(int argc,char **argv)
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
+#ifndef USE_TRV_API
     /* Free dimension lists */
     if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
     if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
+#endif
     /* Free variable lists */
     /* ncflint free()s _prc variables at end of main loop */
     var=(var_sct **)nco_free(var);
