@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.218 2013-05-06 19:51:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.219 2013-05-06 20:23:01 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -87,6 +87,7 @@ main(int argc,char **argv)
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
   nco_bool MUST_CONFORM=False; /* Must nco_var_cnf_dmn() find truly conforming variables? */
@@ -99,6 +100,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char **ntp_lst_in;
+  char **grp_lst_in=NULL_CEWI;
   char **var_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
@@ -116,9 +118,10 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.218 2013-05-06 19:51:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.218 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.219 2013-05-06 20:23:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.219 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -161,7 +164,6 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int has_mss_val=False;
   int idx;
-  int jdx;
   int in_id_1;  
   int in_id_2;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -179,13 +181,15 @@ main(int argc,char **argv)
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
+  int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
+#ifndef USE_TRV_API
   lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
-
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
+#endif
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -381,6 +385,13 @@ main(int argc,char **argv)
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
+    case 'g': /* Copy group argument for later processing */
+      /* Replace commas with hashes when within braces (convert back later) */
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_rx_comma2hash(optarg_lcl);
+      grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+      break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
@@ -527,14 +538,13 @@ main(int argc,char **argv)
 
   (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
   (void)nco_inq_format(in_id_2,&fl_in_fmt_2);
-
  
 #ifdef USE_TRV_API
 
   trv_tbl_init(&trv_tbl);
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
+  (void)nco_bld_trv_tbl(in_id_1,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -549,15 +559,23 @@ main(int argc,char **argv)
   if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
 
   /* Extract coordinates associated with extracted variables */
-  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id_1,trv_tbl);
 
   /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
   if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
     /* Implement CF "coordinates" and "bounds" conventions */
-    (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
-    (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
+    (void)nco_xtr_cf_add(in_id_1,"coordinates",trv_tbl);
+    (void)nco_xtr_cf_add(in_id_1,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
+
+  /* Fill-in variable structure list for all extracted variables */
+  var=nco_fll_var_trv(in_id_1,&xtr_nbr,trv_tbl);
+
+  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+    var_out[var_idx]=nco_var_dpl(var[var_idx]);
+  }
 
 #else
 
@@ -650,6 +668,12 @@ main(int argc,char **argv)
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
+
+#ifdef USE_TRV_API
+
+
+#else /* ! USE_TRV_API */
+
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
@@ -658,6 +682,10 @@ main(int argc,char **argv)
 
   /* Set chunksize parameters */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+
+#endif /* ! USE_TRV_API */
+
+
 
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -670,11 +698,19 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
+#ifdef USE_TRV_API
+
+
+#else /* ! USE_TRV_API */
+
   /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
   /* Copy variable data for non-processed variables */
   (void)nco_msa_var_val_cpy(in_id_1,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
+
+
+#endif /* ! USE_TRV_API */
 
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
@@ -771,9 +807,18 @@ main(int argc,char **argv)
     var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
     (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
 
+
+#ifdef USE_TRV_API
+
+
+#else /* ! USE_TRV_API */
+
+
     /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
     (void)nco_msa_var_get(in_id_1,var_prc_1[idx],lmt_all_lst,nbr_dmn_fl);
     (void)nco_msa_var_get(in_id_2,var_prc_2[idx],lmt_all_lst,nbr_dmn_fl);
+
+#endif /* ! USE_TRV_API */
 
     /* Set var_prc_1 and var_prc_2 to correct size */
     var_prc_1[idx]->sz=var_prc_out[idx]->sz;       
@@ -846,12 +891,16 @@ main(int argc,char **argv)
     if(wgt_out_1) wgt_out_1=(var_sct *)nco_var_free(wgt_out_1);
     if(wgt_out_2) wgt_out_2=(var_sct *)nco_var_free(wgt_out_2);
 
+
+#ifndef USE_TRV_API
     /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
     for(idx=0;idx<nbr_dmn_fl;idx++)
-      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+      for(int jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
 
     if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl); 
+#endif /* ! USE_TRV_API */
+
     lmt=(lmt_sct**)nco_free(lmt); 
 
     /* NCO-generic clean-up */
