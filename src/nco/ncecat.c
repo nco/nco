@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.311 2013-05-06 19:51:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.312 2013-05-06 20:46:24 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.311 2013-05-06 19:51:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.311 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.312 2013-05-06 20:46:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.312 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -576,7 +576,8 @@ main(int argc,char **argv)
 
       /* Mark fixed/processed flag in table for "var_nm_fll" */
       (void)trv_tbl_mrk_prc_fix(var_prc[var_idx]->nm_fll,prc_typ,trv_tbl);
-    }
+
+    } /* Store processed variables info into table */
 
     /* Store fixed variables info into table */
     for(var_idx=0;var_idx<nbr_var_fix;var_idx++){
@@ -589,7 +590,8 @@ main(int argc,char **argv)
 
       /* Mark fixed/processed flag in table for "var_nm_fll" */
       (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
-    }
+
+    } /* Store fixed variables info into table */
 
   
   } /* !RECORD_AGGREGATE */

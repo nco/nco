@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.219 2013-05-06 20:23:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.220 2013-05-06 20:46:24 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,9 +120,9 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.219 2013-05-06 20:23:01 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.219 $";
-  const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRt:v:X:xw:-:";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.220 2013-05-06 20:46:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.220 $";
+  const char * const opt_sht_lst="346ACcD:d:Fg:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -261,6 +261,8 @@ main(int argc,char **argv)
     {"dmn",required_argument,0,'d'},
     {"fortran",no_argument,0,'F'},
     {"ftn",no_argument,0,'F'},
+    {"group",required_argument,0,'g'},
+    {"grp",required_argument,0,'g'},
     {"history",no_argument,0,'h'},
     {"hst",no_argument,0,'h'},
     {"interpolate",required_argument,0,'i'},
@@ -651,6 +653,38 @@ main(int argc,char **argv)
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
 
+#ifdef USE_TRV_API
+
+  /* Store processed variables info into table */
+  for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
+    trv_sct *var_trv;
+
+    /* Obtain variable GTT object using full variable name */
+    var_trv=trv_tbl_var_nm_fll(var_prc_1[var_idx]->nm_fll,trv_tbl);
+
+    assert(var_trv);
+
+    /* Mark fixed/processed flag in table for "var_nm_fll" */
+    (void)trv_tbl_mrk_prc_fix(var_prc_1[var_idx]->nm_fll,prc_typ,trv_tbl);
+
+  } /* Store processed variables info into table */
+
+  /* Store fixed variables info into table */
+  for(int var_idx=0;var_idx<nbr_var_fix;var_idx++){
+    trv_sct *var_trv;
+
+    /* Obtain variable GTT object using full variable name */
+    var_trv=trv_tbl_var_nm_fll(var_fix[var_idx]->nm_fll,trv_tbl);
+
+    assert(var_trv);
+
+    /* Mark fixed/processed flag in table for "var_nm_fll" */
+    (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
+
+  } /* Store fixed variables info into table */
+
+#endif /* ! USE_TRV_API */
+
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt_1;
 
@@ -805,7 +839,7 @@ main(int argc,char **argv)
     in_id_2=in_id_2_arr[omp_get_thread_num()];
 
     var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
-    (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
+    
 
 
 #ifdef USE_TRV_API
@@ -813,6 +847,7 @@ main(int argc,char **argv)
 
 #else /* ! USE_TRV_API */
 
+    (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
 
     /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
     (void)nco_msa_var_get(in_id_1,var_prc_1[idx],lmt_all_lst,nbr_dmn_fl);
