@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.262 2013-05-03 22:03:43 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.263 2013-05-07 20:47:43 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -866,6 +866,10 @@ print "\n";
 #####################
     $opr_nm='ncflint';
 ####################
+
+#ncflint #1
+
+
     $tst_cmd[0]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 3,-2 -v one $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v one %tmp_fl_00%";
     $dsc_sng="identity weighting";
@@ -874,6 +878,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+    
+#ncflint #2    
     
     if ($dodap eq "FALSE"){
 	$tst_cmd[0]="ncrename -h -O $nco_D_flg -v zero,foo $in_pth_arg in.nc %tmp_fl_01%";
@@ -888,6 +894,8 @@ print "\n";
 	$#tst_cmd=0; # Reset array
     }
     
+#ncflint #3
+    
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,1 -v mss_val $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,0 -v mss_val $in_pth_arg in.nc %tmp_fl_02%";
     $tst_cmd[2]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5 %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
@@ -899,6 +907,8 @@ print "\n";
     $tst_cmd[7]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+    
+#ncflint #4    
 
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v pck_3 $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -v pck_5 $in_pth_arg in.nc %tmp_fl_02%";
@@ -910,6 +920,27 @@ print "\n";
     $tst_cmd[6]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+   
+# NCO 4.3.2 ncflint -- groups   
+    
+# ncflint -h -O -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc out.nc
+# ncks  -H -C -O -d time,9 -v one_dmn_rec_var  out.nc
+ 
+#ncflint #5
+
+    $dsc_sng="Group weight 1D -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc";
+    $tst_cmd[0]="ncflint $nco_D_flg -h -O -v one_dmn_rec_var -w 1,1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks  -H -C -O -d time,9 -v one_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[2]="time[9]=10 one_dmn_rec_var[9]=20";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			    
+
     
 ####################
 #### ncks tests #### OK !

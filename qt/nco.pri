@@ -31,6 +31,7 @@ win32{
  # gsl
  INCLUDEPATH += $(HEADER_GSL)
  DEFINES += ENABLE_GSL
+ DEFINES += ENABLE_DAP
 }
 
 win32{
