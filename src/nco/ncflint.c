@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.223 2013-05-06 22:23:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.224 2013-05-07 18:16:51 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.223 2013-05-06 22:23:38 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.223 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.224 2013-05-07 18:16:51 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.224 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1046,7 +1046,9 @@ main(int argc,char **argv)
     if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
 
     /* Free traversal table */
-    trv_tbl_free(trv_tbl);  
+#ifdef USE_TRV_API
+    trv_tbl_free(trv_tbl); 
+#endif
   } /* !flg_cln */
 
   /* End timer */ 
