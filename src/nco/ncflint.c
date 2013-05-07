@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.227 2013-05-07 22:25:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.228 2013-05-07 22:33:18 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -87,7 +87,6 @@ main(int argc,char **argv)
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
-  nco_bool GROUP_AGGREGATE=False; /* Option G */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
@@ -121,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.227 2013-05-07 22:25:43 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.227 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.228 2013-05-07 22:33:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.228 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -398,7 +397,6 @@ main(int argc,char **argv)
       gpe=nco_gpe_prs_arg(optarg);
       grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
       grp_out_lng=gpe->lng_cnn;
-      GROUP_AGGREGATE=True;
       break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
