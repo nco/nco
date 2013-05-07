@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.226 2013-05-07 21:53:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.227 2013-05-07 22:25:43 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -87,6 +87,7 @@ main(int argc,char **argv)
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GROUP_AGGREGATE=False; /* Option G */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
@@ -120,9 +121,9 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.226 2013-05-07 21:53:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.226 $";
-  const char * const opt_sht_lst="346ACcD:d:Fg:hi:L:l:Oo:p:rRt:v:X:xw:-:";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.227 2013-05-07 22:25:43 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.227 $";
+  const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -210,6 +211,10 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
+  char *grp_out=NULL; /* [sng] Group name */
+  size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -386,6 +391,14 @@ main(int argc,char **argv)
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
+      break;
+    case 'G': /* Apply Group Path Editing (GPE) to output group */
+      /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it
+      http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
+      gpe=nco_gpe_prs_arg(optarg);
+      grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
+      grp_out_lng=gpe->lng_cnn;
+      GROUP_AGGREGATE=True;
       break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -705,7 +718,7 @@ main(int argc,char **argv)
 #ifdef USE_TRV_API
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,(gpe_sct *)NULL,True,True,(char *)NULL,trv_tbl);   
+  (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl);   
 
 #else /* ! USE_TRV_API */
 
@@ -1050,6 +1063,7 @@ main(int argc,char **argv)
 #ifdef USE_TRV_API
     trv_tbl_free(trv_tbl); 
 #endif
+    if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
   } /* !flg_cln */
 
   /* End timer */ 

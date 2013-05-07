@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.263 2013-05-07 20:47:43 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.264 2013-05-07 22:25:43 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -923,15 +923,15 @@ print "\n";
    
 # NCO 4.3.2 ncflint -- groups   
     
-# ncflint -h -O -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc out.nc
-# ncks  -H -C -O -d time,9 -v one_dmn_rec_var  out.nc
+# ncflint -h -O -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc out.nc
+# ncks  -H -C -O -g g4  -d time,9 -v one_dmn_rec_var  out.nc
  
 #ncflint #5
 
-    $dsc_sng="Group weight 1D -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc";
+    $dsc_sng="Group weight 1D -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -h -O -v one_dmn_rec_var -w 1,1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks  -H -C -O -d time,9 -v one_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[1]="ncks  -H -C -O -g g4 -d time,9 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="time[9]=10 one_dmn_rec_var[9]=20";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
