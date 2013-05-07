@@ -1,14 +1,19 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.572 2013-05-06 21:55:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.573 2013-05-07 21:53:28 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release implements group support in ncflint and makes
-group-related features consistent across
-Now four operators fully support group hierarchies: ncbo, ncecat,
-ncflint, and ncks.
+This release implements group support in ncflint. Now four operators
+fully support group hierarchies: ncbo, ncecat, ncflint, and ncks.
+More importantly, it solidifies support for the Group Broadcasting
+(GB) feature. We have big plans for GB though for now it suffices
+to say that GB helps automate evaluation of multiple models by
+observations. This first version of GB automatically duplicates a file 
+whose metadata properties show it is intended for arithmetic comparison 
+to a given file. GB helps shift data analysis from file-oriented to
+group-oriented semantics. 
 
 Work on NCO 4.3.2 is underway and includes improved netCDF4 support
 for more NCO operators, and better support for Windows builds
@@ -21,23 +26,24 @@ Charlie
 
 NEW FEATURES:
 
-A. ncbo now supports Group Path Editing (GPE) and list unions.
-   These are the same options already supported by ncks and ncecat. 
-   They are invoked with -G and with --union, respectively.
-   ncbo -g g1 -v v1 --union -G dude -O -p ~/nco/data in_grp.nc in_grp.nc ~/foo.nc
+A. ncflint now supports groups, Group Path Editing (GPE) and list
+   unions, the same options supported by ncbo, ncecat, and ncks. 
+   Features are controlled by -g, -G and --union, respectively.
+   ncflint -g g1 -v v1 --union -G dude -w 0.5 -O -p ~/nco/data in_grp.nc in_grp.nc ~/foo.nc
+   http://nco.sf.net/nco.html#ncflint
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
 
-B. ncbo now always works when input files are interchanged, i.e.,
-   (ncbo fl_1.nc fl_2.nc) = -(ncbo fl_2.nc fl_1.nc).
-   Formerly, ncbo broadcast variables in fl_2 to match the rank of
+A. ncflint now always works when input files are interchanged, i.e.,
+   (ncflint fl_1.nc fl_2.nc) = -(ncflint fl_2.nc fl_1.nc).
+   Formerly, ncflint broadcast variables in fl_2 to match the rank of
    variables in fl_1 when necessary, but would fail rather than 
    broadcast in the opposite direction. Hence one could subtract zonal
-   averages, e.g., from full fields but not the reverse. Now ncbo
+   averages, e.g., from full fields but not the reverse. Now ncflint
    broadcasts variables both ways. If v1 is larger rank in fl_1 than
    in fl_2 then both these work:
-   ncbo -v v1 fl_1.nc fl_2.nc out.nc # Now works too!
-   ncbo -v v1 fl_2.nc fl_1.nc out.nc # Always worked
+   ncflint -v v1 fl_1.nc fl_2.nc out.nc # Now works too!
+   ncflint -v v1 fl_2.nc fl_1.nc out.nc # Always worked
 
 C. ncecat now supports Record AGgregation (RAG) mode for netCDF4.
    Most people have always used RAG mode, the default for ncecat. 
@@ -57,23 +63,12 @@ C. ncecat now supports Record AGgregation (RAG) mode for netCDF4.
 
 BUG FIXES:
 
-A. Fixed ncbo bug introduced in version 4.3.0 where some special
-   exceptions (a subset of http://nco.sf.net/nco.html#prc_xcp) 
-   to variable list processing were inadvertently always turned off.
-   This may cause some grid-related variables (e.g., ntrm and nbdate)
-   and some non-grid variables (e.g., ORO and gw) to be subtracted
-   even when that makes no physical sense in the CF context.
-   http://nco.sf.net#bug_ncbo_ccm_ccsm_cf
-
-B. Fixed ncatted bug where leaving the attribute field blank in
-   attribute edit mode structures could trigger a segfault on netCDF4
-   files. Bug identified and fix provided by Etienne Tourigny.
-   http://nco.sf.net#bug_ncatted_strcmp
-
-C. Fixed ncrcat bug that falsely warned of non-monotonicity in input
-   files with multiple variables treated as record coordinates.
-
-D. Fixed ncbo bug where history attribute was not appended.
+A. Fixed ncks auxiliary coordinates (-X) bug introduced in ~4.2.0.  
+   Auxiliary coordinates do not work in ncks versions 4.2.0-4.3.1,
+   though they do work in the other hyperslabbing NCO operators.
+   Auxiliary coordinates now also work in netCDF4 group files.
+   ncks -O -X 0.,180.,-30.,30. -v gds_3dvar ~/nco/data/in.nc ~/foo.nc
+   http://nco.sf.net#bug_aux
 
 KNOWN BUGS NOT YET FIXED:
 
@@ -137,42 +132,6 @@ D. NOT YET FIXED (requires change to DAP protocol)
    20120801: Verified problem still exists
    Bug report not filed
    Cause: DAP translates scalar characters into 64-element, NUL-terminated strings so MD5 agreement fails
-
-E. NOT YET FIXED
-   netCDF4 library can create dimensions with duplicate IDs if
-   dimension with same name defined in a group and its ancestor group.
-   Problem with HDF5 or with netCDF4 library implementation?
-
-   Demonstration:
-   ncks -O -v two_dmn_rec_var ~/nco/data/in_grp.nc ~/foo.nc
-   ncks -m ~/foo.nc
-
-   20130328: Verified problem still exists
-   (This may be fixed in the netCDF 4.3.0 release...will check again then)
-   Bug report filed 20120312: netCDF #SHH-257980: Re: [netcdfgroup] Dimensions IDs
-
-F. NOT YET FIXED
-   ncdump is unable to dump the NCO test file in_grp.nc
-   This is not an NCO problem per se, but may indicate a deeper netCDF bug that affects NCO.
-   Unclear whether problem with ncdump, HDF5, or with netCDF4 library implementation.
-
-   Demonstration:
-   ncdump ~/nco/data/in_grp.nc # breaks with "NetCDF: Invalid argument
-   	  Location: file dumplib.c; line 970"
-
-   20130319: Verified
-   Bug report not yet filed
-
-G. NOT YET FIXED
-   Auxiliary coordinates do not work in ncks versions 4.2.0-4.3.1.
-   This is an NCO problem discovered just before release.
-
-   Demonstration:
-   ncks -O -X 0.,180.,-30.,30. -v gds_3dvar ~/nco/data/in.nc ~/foo.nc
-
-   20130428: Verified
-   This is our top priority to fix in version 4.3.2.
-   The workaround is to use NCO 4.1.9 or earlier.
 
 "Sticky" reminders:
 
