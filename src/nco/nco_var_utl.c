@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.300 2013-05-08 00:40:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.301 2013-05-08 19:48:13 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1063,6 +1063,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
   for(idx=0;idx<nbr_var;idx++){
 
+    /* Obtain netCDF type to define variable from NCO program ID */
     typ_out=nco_get_typ(var[idx]);
 
     /* Is requested variable already in output file? */
@@ -2247,7 +2248,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
 nc_type
 nco_get_typ                           /* [fnc] Obtain netCDF type to define variable from NCO program ID */
-(const var_sct * const var)           /* I [sct] Variables to be defined in output file */
+(const var_sct * const var)           /* I [sct] Variable to be defined in output file */
 {
   int prg_id; /* [enm] Program ID */
 

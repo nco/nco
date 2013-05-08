@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.229 2013-05-08 00:40:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.230 2013-05-08 19:48:13 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.229 2013-05-08 00:40:31 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.229 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.230 2013-05-08 19:48:13 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.230 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -714,6 +714,19 @@ main(int argc,char **argv)
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
 #ifdef USE_TRV_API
+
+  /* Transfer variable information to table */
+  for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
+
+    nc_type typ_out; /* [enm] Type in output file */
+
+     /* Obtain netCDF type to define variable from NCO program ID */
+    typ_out=nco_get_typ(var[idx]);
+ 
+    /* Mark output type in table for "var_nm_fll" */
+    (void)trv_tbl_mrk_typ(var_prc_1[var_idx]->nm_fll,typ_out,trv_tbl);
+
+  } /* Store processed variables info into table */
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl);   
