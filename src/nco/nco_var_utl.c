@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.301 2013-05-08 19:48:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.302 2013-05-08 20:17:21 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1931,9 +1931,21 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* Loop dimensions */
   } /* Insert extra "record" dimension in dimension array */
 
+  /* Some operators change the output netCDF variable type */
+  if (prg_id == ncflint){
 
-  /* Define variable in output file */
-  (void)nco_def_var(grp_out_id,var_nm,var_typ,nbr_dmn_var,dmn_out_id,&var_out_id);
+    nc_type typ_out; /* [enm] Type in output file */ 
+
+    if( var_trv->var_typ_out != -1 ) typ_out=var_trv->var_typ_out; else typ_out=var_typ;
+
+    /* Define variable in output file */
+    (void)nco_def_var(grp_out_id,var_nm,typ_out,nbr_dmn_var,dmn_out_id,&var_out_id);
+
+  } else {
+
+    /* Define variable in output file */
+    (void)nco_def_var(grp_out_id,var_nm,var_typ,nbr_dmn_var,dmn_out_id,&var_out_id);
+  }
 
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -2248,7 +2260,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
 nc_type
 nco_get_typ                           /* [fnc] Obtain netCDF type to define variable from NCO program ID */
-(const var_sct * const var)           /* I [sct] Variable to be defined in output file */
+(var_sct *var)                        /* I [sct] Variable to be defined in output file */
 {
   int prg_id; /* [enm] Program ID */
 

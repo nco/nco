@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.94 2013-05-08 19:48:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.95 2013-05-08 20:17:21 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -185,7 +185,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
 nc_type
 nco_get_typ                           /* [fnc] Obtain netCDF type to define variable from NCO program ID */
-(const var_sct * const var);          /* I [sct] Variable to be defined in output file */
+(var_sct *var);                       /* I [sct] Variable to be defined in output file */
 
   
 #ifdef __cplusplus
