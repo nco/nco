@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.228 2013-05-07 22:33:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.229 2013-05-08 00:40:31 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -38,7 +38,7 @@
    ncdiff -O ~/foo.nc /data/zender/arese/clm/951030_0900_arese_clm.nc foo2.nc;ncks -H foo2.nc | m
  */
 
-#if 1 
+#if 1
 #define USE_TRV_API
 #endif
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.228 2013-05-07 22:33:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.228 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.229 2013-05-08 00:40:31 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.229 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -901,7 +901,10 @@ main(int argc,char **argv)
     var_trv_2=trv_tbl_var_nm_fll(var_prc_2[idx]->nm_fll,trv_tbl);
 
     assert(var_trv_1);
-    assert(var_trv_2);
+    if(var_trv_2 == NULL){
+      (void)fprintf(stdout,"%s: ERROR Variable <%s> is not present in second input file. ncflint assumes same file structure for both input files\n",prg_nm_get(),var_trv_1->nm_fll);
+      nco_exit(EXIT_FAILURE);
+    }
 
     /* Obtain group ID using full group name */
     (void)nco_inq_grp_full_ncid(in_id_1,var_trv_1->grp_nm_fll,&grp_id_1);

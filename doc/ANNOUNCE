@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.574 2013-05-08 00:21:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.575 2013-05-08 00:40:30 pvicente Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.2 are ready. 
 
@@ -28,8 +28,8 @@ NEW FEATURES:
 
 A. NCO takes advantage of improved Windows support in netCDF 4.3.0+.
    NCO executables built with Visual Studio on Windows now support
-   Udunits and DAP. Formerly it was much more difficult to obtain
-   Udunits and DAP support on MS Windows.
+   OPenDAP. Formerly it was much more difficult to obtain
+   OPenDAP support on MS Windows.
    http://nco.sf.net/nco.html#wnd
 
 A. ncflint now supports groups, Group Path Editing (GPE) and list
