@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.573 2013-05-07 21:53:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.574 2013-05-08 00:21:25 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.2 are ready. 
 
@@ -26,6 +26,12 @@ Charlie
 
 NEW FEATURES:
 
+A. NCO takes advantage of improved Windows support in netCDF 4.3.0+.
+   NCO executables built with Visual Studio on Windows now support
+   Udunits and DAP. Formerly it was much more difficult to obtain
+   Udunits and DAP support on MS Windows.
+   http://nco.sf.net/nco.html#wnd
+
 A. ncflint now supports groups, Group Path Editing (GPE) and list
    unions, the same options supported by ncbo, ncecat, and ncks. 
    Features are controlled by -g, -G and --union, respectively.
@@ -35,40 +41,38 @@ A. ncflint now supports groups, Group Path Editing (GPE) and list
    http://nco.sf.net/nco.html#union
 
 A. ncflint now always works when input files are interchanged, i.e.,
-   (ncflint fl_1.nc fl_2.nc) = -(ncflint fl_2.nc fl_1.nc).
+   (ncflint -w 0.5 fl_1.nc fl_2.nc) = (ncflint -w 0.5 fl_2.nc fl_1.nc).
    Formerly, ncflint broadcast variables in fl_2 to match the rank of
    variables in fl_1 when necessary, but would fail rather than 
-   broadcast in the opposite direction. Hence one could subtract zonal
-   averages, e.g., from full fields but not the reverse. Now ncflint
-   broadcasts variables both ways. If v1 is larger rank in fl_1 than
-   in fl_2 then both these work:
-   ncflint -v v1 fl_1.nc fl_2.nc out.nc # Now works too!
-   ncflint -v v1 fl_2.nc fl_1.nc out.nc # Always worked
+   broadcast in the opposite direction. Hence one could interpolate
+   zonal averages, e.g., to full fields but not the reverse. Now
+   ncflint broadcasts variables both ways. If v1 is larger rank in
+   fl_1 than in fl_2 then both these work:
+   ncflint -v v1 -w 0.5 fl_1.nc fl_2.nc out.nc # Now works too!
+   ncflint -v v1 -w 0.5 fl_2.nc fl_1.nc out.nc # Always worked
 
-C. ncecat now supports Record AGgregation (RAG) mode for netCDF4.
-   Most people have always used RAG mode, the default for ncecat. 
-   RAG mode glues files together with a new record dimension. 
-   Group AGgregation (GAG) mode, by contrast, is specified with --gag,
-   andwas introduced in NCO 4.2.2 to glue files together by placing
-   them in distinct groups in a netCDF4 output file. 
-   GAG mode always worked for both netCDF3 and netCDF4 input files,
-   but RAG mode only worked for netCDF3/classic input files.
-   Now RAG mode works for netCDF4 files too. And it is the default.
-   Existing record dimensions in input netCDF4 files are preserved,
-   and a single glue record dimension is placed in the root group.
-   ncecat -O in_grp.nc in_grp.nc foo.nc 
-   http://nco.sf.net/nco.html#ncecat
-   http://nco.sf.net/nco.html#rag
-   http://nco.sf.net/nco.html#gag
+A. ncbo and ncflint support elementary Group Broadcasting (GB).
+   Group broadcasting means processing data based on group patterns in
+   the input file(s) and automatically transferring or transforming
+   groups to the output file. Consider a file_1 that contains multiple
+   groups each with the variable v1, while file_2 contains v1 only in
+   its top-level (i.e., root) group. Then GB in ncbo and ncflint 
+   will replicate the group structure of file_1 in the output file,
+   file_3. Each group in file_3 contains the output of the
+   corresponding group in file_1 operating on the data in the single
+   group in file_2. 
+   ncbo -O cmip5.nc obs.nc bias.nc
+   ncflint -O -w 0.5 cmip5.nc obs.nc half_model_half_obs.nc
+   http://nco.sf.net/nco.html#gb
 
 BUG FIXES:
 
-A. Fixed ncks auxiliary coordinates (-X) bug introduced in ~4.2.0.  
+A. Fixed ncks auxiliary coordinate (-X) bug introduced in ~4.2.0.  
    Auxiliary coordinates do not work in ncks versions 4.2.0-4.3.1,
    though they do work in the other hyperslabbing NCO operators.
    Auxiliary coordinates now also work in netCDF4 group files.
    ncks -O -X 0.,180.,-30.,30. -v gds_3dvar ~/nco/data/in.nc ~/foo.nc
-   http://nco.sf.net#bug_aux
+   http://nco.sf.net#bug_ncks_aux
 
 KNOWN BUGS NOT YET FIXED:
 

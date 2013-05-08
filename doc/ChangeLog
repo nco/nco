@@ -1,14 +1,16 @@
-2013-05-07 Pedro Vicente  <pvicente@uci.edu>
-
-        * ncflint test #5 Group weight 1D variable
-
-2013-05-06  Charlie Zender  <zender@uci.edu>
+2013-05-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.2 release procedure:
- 	Changes since nco-4_3_1: -X aux,
+ 	Changes since nco-4_3_1: -X aux, ncflint -g -G --unn
 	cd ~/nco;cvs tag -d nco-4_3_2;cvs tag -d nco-4_3_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
 	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
+
+	* Document new ncflint, ncbo capabilities
+
+2013-05-07 Pedro Vicente  <pvicente@uci.edu>
+
+        * ncflint test #5 Group weight 1D variable
 
 2013-05-06 Pedro Vicente  <pvicente@uci.edu>
 

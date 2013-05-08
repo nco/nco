@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.788 2013-05-01 20:40:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.789 2013-05-08 00:21:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.2
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 1 May 2013
+@set update-date 7 May 2013
 @set update-month May 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -3449,11 +3449,11 @@ build time.
 @cindex @code{--union}
 @cartouche
 Options @code{--unn}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncks}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncflint}, @command{ncks}@*
 Short options: @*
 Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncks}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncflint}, @command{ncks}@*
 Short options: @samp{-g}@*
 Long options: @samp{--grp} and @samp{--group}@*
 Options @code{-v @var{var}} and @code{-x}@*
@@ -3855,7 +3855,7 @@ convention described in @ref{CF Conventions}.
 @cindex @code{--gpe @var{gpe_dsc}}
 @cartouche
 Options @code{-G @var{gpe_dsc}}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncks}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncflint}, @command{ncks}@*
 Short options: @samp{-G}@*
 Long options: @samp{--gpe}@*
 @end cartouche
@@ -10905,9 +10905,10 @@ SYNTAX
 ncbo [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
-[-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] [-O] [-o @var{file_3}] [-p @var{path}] 
-[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
+[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+[-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -11138,6 +11139,8 @@ albeit in a more convoluted way than @command{ncbo}.
 
 @html
 <a name="brd_grp"></a> <!-- http://nco.sf.net/nco.html#brd_grp -->
+<a name="gb"></a> <!-- http://nco.sf.net/nco.html#gb -->
+<a name="GB"></a> <!-- http://nco.sf.net/nco.html#GB -->
 @end html
 @cindex broadcasting groups
 Beginning with @acronym{NCO} version 4.3.1 (May, 2013), @command{ncbo} 
@@ -11712,10 +11715,10 @@ SYNTAX
 ncflint [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
-[-F] [--fix_rec_crd] [-h] [--hdr_pad @var{nbr}] 
+[-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
 [-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all] 
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-X ...] [-x]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -11820,8 +11823,8 @@ and @code{NC_BYTE}.
 This behavior is hardcoded.
 
 By default @command{ncflint} interpolates or multiplies record
-coordinate variables (e.g., @code{time} is often a record coordinate)
-but not other coordinate variables (e.g., latitude and longitude).
+coordinate variables (e.g., time is often stored as a record coordinate) 
+but not other coordinate variables (e.g., latitude and longitude). 
 This is because @command{ncflint} is often used to time-interpolate
 between existing files, but is rarely used to spatially interpolate.
 Sometimes however, users wish to multiply entire files by a constant
@@ -11829,7 +11832,7 @@ that does not multiply any coordinate variables.
 The @samp{--fix_rec_crd} switch was implemented for this purpose
 in @acronym{NCO} version 4.2.6 (March, 2013).
 It prevents @command{ncflint} from multiplying or interpolating any
-coordinate variable, including record coordinate variables. 
+coordinate variables, including record coordinate variables. 
 
 @cindex missing values
 @cindex @code{_FillValue}

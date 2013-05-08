@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.785 2013-05-02 00:46:10 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.786 2013-05-08 00:21:25 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -600,6 +600,7 @@ Optimize diskless files?;
 <tt>ncrename -g</tt>?;</li>
 <li><b>NCO 4.3.2</b>: (<i>In Progress, features completed or being worked on include</i>)
 Windows DAP &amp; UDUnits?;
+<tt>ncflint -g -G --unn</tt>;
 <tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>?;</li>
 <li><b>NCO 4.3.1</b>: (<i>Current Stable Release</i>)
 <tt>ncbo</tt> symmetry, group broadcasting;
@@ -1643,6 +1644,7 @@ No known platform-specific problems with recent releases.
 Problems with older releases:
 
 <ul><b>Older Generic Run-time Problems:</b>
+
 <!-- http://nco.sf.net#bug_hyp_dgn -->
 <a name="bug_hyp_dgn"></a>
 <li><i>Degenerate hyperslabbing bug:</i>
@@ -1699,6 +1701,19 @@ these versions of NCO.
 </ul>
 
 <ul><b>Older Operator-specific Run-time Problems:</b>
+
+<!-- http://nco.sf.net#bug_ncks_aux -->
+<a name="bug_ncks_aux"></a>
+<li><i><tt>ncks</tt> bug with auxiliary coordinates:</i>
+Versions 4.2.x&ndash;4.3.1 of <tt>ncks</tt> did not correctly 
+support auxiliary coordinates (specified with <tt>-X</tt>). 
+Auxiliary coordinates continued to work with the other hyperslabbing
+NCO operators. Auxiliary coordinates once again work in all
+hyperslabbing operators, including on netCDF4 group files in operators
+that support them.
+Fixed in version 4.3.2.
+</li>
+
 <!-- http://nco.sf.net#bug_ncatted_strcmp -->
 <a name="bug_ncatted_strcmp"></a>
 <li><i><tt>ncatted</tt> bug on implicit attribute names:</i>
