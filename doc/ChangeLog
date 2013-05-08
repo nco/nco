@@ -1,3 +1,7 @@
+2013-05-08 Pedro Vicente  <pvicente@uci.edu>
+
+        * trv_tbl_mrk_typ() Mark output netCDF type in GTT
+        
 2013-05-07 Pedro Vicente  <pvicente@uci.edu>
 
         * ncflint test #5 Group weight 1D variable

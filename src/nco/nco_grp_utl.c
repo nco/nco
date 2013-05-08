@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.711 2013-05-06 19:51:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.712 2013-05-08 19:42:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1821,6 +1821,7 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
   trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;/* [enm] (For variables only) NetCDF type  */  
   trv_tbl->lst[idx].enm_prc_typ=err_typ;          /* [enm] (For variables only) Processing type enumerator  */  
+  trv_tbl->lst[idx].var_typ_out=err_typ;          /* [enm] (For variables only) NetCDF type in output file (used by ncflint)  */  
 
 
   /* Variable dimensions  */
@@ -1908,7 +1909,8 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
     trv_tbl->lst[idx].is_crd_var=False;             
     trv_tbl->lst[idx].is_rec_var=False; 
     trv_tbl->lst[idx].var_typ=var_typ; 
-    trv_tbl->lst[idx].enm_prc_typ=err_typ;              
+    trv_tbl->lst[idx].enm_prc_typ=err_typ;
+    trv_tbl->lst[idx].var_typ_out=err_typ; 
 
     /* Variable dimensions */
     for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.312 2013-04-24 18:31:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.313 2013-05-08 19:42:38 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -719,6 +719,7 @@ extern "C" {
     nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr;                 /* [flg] Extract object */ 
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator (Used by ncecat) */
+    nc_type var_typ_out;              /* [enm] (For variables only) NetCDF type in output file (used by ncflint)  */  
    } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists
