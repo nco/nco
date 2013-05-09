@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.302 2013-05-08 20:17:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.303 2013-05-09 18:50:47 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1681,10 +1681,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   /* File format needed for decision tree and to enable netCDF4 features */
   rcd=nco_inq_format(grp_out_id,&fl_fmt);
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stderr,"%s: %s reports starting to define dimensions for variable %s\n",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-  }
-
   /* Get input and set output dimension sizes and names */
   for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
     char *grp_out_fll;               /* [sng] Group name of dimension in output */
@@ -1720,11 +1716,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Get unique dimension object from unique dimension ID, in input list */
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: INFO %s obtained unique dimension #%d <%s>\n",prg_nm_get(),fnc_nm,
-        var_dim_id,dmn_trv->nm_fll);
-    }
-
     /* Test group existence before testing dimension existence */
 
     /* Determine where to place new dimension in output file */
@@ -1735,27 +1726,15 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       grp_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
     } /* gpe */
 
-
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: INFO %s to be defined in <%s>\n",prg_nm_get(),fnc_nm,
-        grp_out_fll);
-    }
-
     /* Test existence of group and create if not existent */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_dmn_out_id)){
       nco_def_grp_full(nc_out_id,grp_out_fll,&grp_dmn_out_id);
     } 
 
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: INFO %s OUTPUT group ",prg_nm_get(),fnc_nm);
-      (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
-      (void)fprintf(stdout,"\n");
-    }
-
     /* Inquire if dimension defined in output using obtained group ID (return value not used in the logic) */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,&dmn_id_out);
 
-    if(dbg_lvl_get() >= nco_dbg_dev){
+    if(dbg_lvl_get() == nco_dbg_old){
       if (rcd_lcl == NC_NOERR) 
         (void)fprintf(stdout,"%s: INFO %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
@@ -1768,19 +1747,11 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Check output group (only) dimensions  */
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
 
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: INFO %s OUTPUT group with dimension IDS/names = \n",prg_nm_get(),fnc_nm);
-    }
-
     /* Loop group defined dimensions */
     for(int dmn_idx_grp=0;dmn_idx_grp<nbr_dmn_out_grp;dmn_idx_grp++){
 
       /* Get dimension name and size from ID */
       (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,&dmn_sz_grp);
-
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"#%d '%s' size=%li\n",dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,dmn_sz_grp);
-      }
 
       /* A relative name for variable and group exists for this group...the dimension is already defined */
       if(strcmp(dmn_nm_grp,dmn_nm) == 0){
@@ -1790,9 +1761,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         /* Assign the defined ID to the dimension ID array for the variable */
         dmn_out_id[dmn_idx]=dmn_out_id_grp[dmn_idx_grp];
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"No need to define '%s'\n",dmn_nm_grp);
-        }
       }
     } /* Loop group defined dimensions */
 
@@ -1899,7 +1867,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   } /* end loop over dimensions */
 
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
+  if(dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: INFO %s DEFINING variable <%s> with dimension IDS = ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
       dmn_trv_sct *dmn_trv;            /* [sct] Unique dimension object */   
@@ -1937,6 +1905,11 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     nc_type typ_out; /* [enm] Type in output file */ 
 
     if( var_trv->var_typ_out != -1 ) typ_out=var_trv->var_typ_out; else typ_out=var_typ;
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: INFO %s DEFINING variable <%s> with type %s\n",prg_nm_get(),fnc_nm,
+        var_trv->nm_fll,nco_typ_sng(typ_out));
+    }
 
     /* Define variable in output file */
     (void)nco_def_var(grp_out_id,var_nm,typ_out,nbr_dmn_var,dmn_out_id,&var_out_id);
