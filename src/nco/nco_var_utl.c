@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.303 2013-05-09 18:50:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.304 2013-05-09 21:30:19 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1108,6 +1108,11 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
         } /* end loop over dmn */
         (void)fprintf(stdout,"\n");
       } /* endif dbg */
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s DEFINING variable <%s> with type %s\n",prg_nm_get(),fnc_nm,
+          var[idx]->nm,nco_typ_sng(typ_out));
+      }
 
       /* The all-important variable definition call itself... */
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
