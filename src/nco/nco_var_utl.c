@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.306 2013-05-09 22:42:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.307 2013-05-09 23:03:05 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2131,6 +2131,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   var->id=var_id;
   var->nc_id=grp_id;
   var->is_crd_var=var_trv->is_crd_var;
+  var->is_rec_var=var_trv->is_rec_var;
 
   /* Get type and number of dimensions and attributes for variable */
   (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
