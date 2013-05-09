@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.232 2013-05-09 18:07:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.233 2013-05-09 21:48:23 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.232 2013-05-09 18:07:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.232 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.233 2013-05-09 21:48:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.233 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -715,16 +715,17 @@ main(int argc,char **argv)
 
 #ifdef USE_TRV_API
 
-  /* Transfer variable information to table */
-  for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
+  /* Transfer variable information to table. Using var_out/xtr_nbr containing all variables (processed, fixed) */
+  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
 
     nc_type typ_out; /* [enm] Type in output file */
+    var_sct *var=var_out[idx];
 
      /* Obtain netCDF type to define variable from NCO program ID */
-    typ_out=nco_get_typ(var_prc_1[idx]);
+    typ_out=nco_get_typ(var);
  
     /* Mark output type in table for "var_nm_fll" */
-    (void)trv_tbl_mrk_typ(var_prc_1[var_idx]->nm_fll,typ_out,trv_tbl);
+    (void)trv_tbl_mrk_typ(var_out[var_idx]->nm_fll,typ_out,trv_tbl);
 
   } /* Store processed variables info into table */
 
@@ -743,8 +744,6 @@ main(int argc,char **argv)
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
 #endif /* ! USE_TRV_API */
-
-
 
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
