@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.231 2013-05-08 20:17:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.232 2013-05-09 18:07:18 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.231 2013-05-08 20:17:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.231 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.232 2013-05-09 18:07:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.232 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -975,6 +975,11 @@ main(int argc,char **argv)
 
     /* Store the output variable ID */
     var_prc_out[idx]->id=var_out_id;
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv_1->nm_fll);
+    }
+
 
 #else /* ! USE_TRV_API */
 
