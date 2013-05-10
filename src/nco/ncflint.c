@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.235 2013-05-09 22:42:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.236 2013-05-10 00:57:43 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.235 2013-05-09 22:42:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.235 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.236 2013-05-10 00:57:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.236 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -146,6 +146,7 @@ main(int argc,char **argv)
   /* Using naked stdin/stdout/stderr in parallel region generates warning
   Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
+  FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
   int *in_id_1_arr;
   int *in_id_2_arr;
@@ -923,7 +924,7 @@ main(int argc,char **argv)
 
     assert(var_trv_1);
     if(var_trv_2 == NULL){
-      (void)fprintf(stdout,"%s: ERROR Variable <%s> is not present in second input file. ncflint assumes same file structure for both input files\n",prg_nm_get(),var_trv_1->nm_fll);
+      (void)fprintf(fp_stdout,"%s: ERROR Variable <%s> is not present in second input file. ncflint assumes same file structure for both input files\n",prg_nm_get(),var_trv_1->nm_fll);
       nco_exit(EXIT_FAILURE);
     }
 
@@ -985,7 +986,7 @@ main(int argc,char **argv)
     var_prc_out[idx]->id=var_out_id;
 
     if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv_1->nm_fll);
+      (void)fprintf(fp_stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv_1->nm_fll);
     }
 
 
