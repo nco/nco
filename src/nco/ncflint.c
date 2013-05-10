@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.237 2013-05-10 18:30:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.238 2013-05-10 19:36:08 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.237 2013-05-10 18:30:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.237 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.238 2013-05-10 19:36:08 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.238 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -823,22 +823,68 @@ main(int argc,char **argv)
     val_gnr_unn.d=ntp_val_out; /* Generic container for arrival point or weight */
     ntp_var_out=scl_mk_var(val_gnr_unn,NC_DOUBLE);
 
+#ifdef USE_TRV_API
+
+    int grp_id_1;      /* [ID] Group ID */
+    int grp_id_2;      /* [ID] Group ID */
+    int xtr_nbr_ntp_1;
+    int xtr_nbr_ntp_2;
+   
+    trv_sct *var_trv_1;/* [sct] Variable GTT object */
+    trv_sct *var_trv_2;/* [sct] Variable GTT object */
+
+    var_sct ** var_ntp_1;
+    var_sct ** var_ntp_2; 
+
+    /* Fill-in variable structure list for all variables named "ntp_nm" NOTE: using table from file 1 */
+    var_ntp_1=nco_var_trv(in_id_1,ntp_nm,&xtr_nbr_ntp_1,trv_tbl);
+    var_ntp_2=nco_var_trv(in_id_2,ntp_nm,&xtr_nbr_ntp_2,trv_tbl);
+
+    if (xtr_nbr_ntp_1) ntp_1=var_ntp_1[0];
+    if (xtr_nbr_ntp_2) ntp_2=var_ntp_2[0];
+
+    if(xtr_nbr_ntp_1 == 0 || xtr_nbr_ntp_2 == 0){
+      (void)fprintf(fp_stdout,"%s: ERROR Variable <%s> is not present in input file. ncflint assumes same file structure for both input files\n",prg_nm_get(),ntp_nm);
+      nco_exit(EXIT_FAILURE);
+    }
+
+     /* Obtain variable GTT object using full variable name */
+    var_trv_1=trv_tbl_var_nm_fll(ntp_1->nm_fll,trv_tbl);
+    var_trv_2=trv_tbl_var_nm_fll(ntp_2->nm_fll,trv_tbl);
+
+    assert(var_trv_1);
+    assert(var_trv_2);
+    
+    /* Obtain group ID using full group name */
+    (void)nco_inq_grp_full_ncid(in_id_1,var_trv_1->grp_nm_fll,&grp_id_1);
+    (void)nco_inq_grp_full_ncid(in_id_2,var_trv_2->grp_nm_fll,&grp_id_2);
+
+    /* Read */
+    (void)nco_msa_var_get_trv(grp_id_1,ntp_1,var_trv_1);
+    (void)nco_msa_var_get_trv(grp_id_2,ntp_2,var_trv_2);
+
+
+#else /* ! USE_TRV_API */
+
     rcd=nco_inq_varid(in_id_1,ntp_nm,&ntp_id_1);
     rcd=nco_inq_varid(in_id_2,ntp_nm,&ntp_id_2);
 
     ntp_1=nco_var_fll(in_id_1,ntp_id_1,ntp_nm,dim,nbr_dmn_xtr);
-    ntp_2=nco_var_fll(in_id_2,ntp_id_2,ntp_nm,dim,nbr_dmn_xtr);
+    ntp_2=nco_var_fll(in_id_2,ntp_id_2,ntp_nm,dim,nbr_dmn_xtr);  
+
+    /* Retrieve interpolation variable */
+    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+    (void)nco_var_get(in_id_1,ntp_1);
+    (void)nco_var_get(in_id_2,ntp_2);
+
+#endif /* ! USE_TRV_API */
+
 
     /* Currently, only support scalar variables */
     if(ntp_1->sz > 1 || ntp_2->sz > 1){
       (void)fprintf(stdout,"%s: ERROR interpolation variable %s must be scalar\n",prg_nm_get(),ntp_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-
-    /* Retrieve interpolation variable */
-    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-    (void)nco_var_get(in_id_1,ntp_1);
-    (void)nco_var_get(in_id_2,ntp_2);
 
     /* Weights must be NC_DOUBLE */
     ntp_1=nco_var_cnf_typ((nc_type)NC_DOUBLE,ntp_1);
@@ -863,8 +909,16 @@ main(int argc,char **argv)
     (void)nco_var_dvd(wgt_1->type,wgt_1->sz,wgt_1->has_mss_val,wgt_1->mss_val,ntp_2->val,wgt_1->val);
     (void)nco_var_dvd(wgt_2->type,wgt_2->sz,wgt_2->has_mss_val,wgt_2->mss_val,ntp_2->val,wgt_2->val);
 
+#ifdef USE_TRV_API
+
+    for(idx=0;idx<xtr_nbr_ntp_1;idx++) var_ntp_1[idx]=nco_var_free(var_ntp_1[idx]);
+    for(idx=0;idx<xtr_nbr_ntp_2;idx++) var_ntp_2[idx]=nco_var_free(var_ntp_2[idx]);
+    var_ntp_1=(var_sct **)nco_free(var_ntp_1);
+    var_ntp_2=(var_sct **)nco_free(var_ntp_2);
+#else
     if(ntp_1) ntp_1=nco_var_free(ntp_1);
     if(ntp_2) ntp_2=nco_var_free(ntp_2);
+#endif
     if(ntp_var_out) ntp_var_out=nco_var_free(ntp_var_out);
   } /* end if CMD_LN_NTP_VAR */
 
