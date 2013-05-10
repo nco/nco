@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.272 2013-05-06 19:51:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.273 2013-05-10 18:30:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -367,6 +367,13 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 var_sct **                            /* O [sct] Variable list */  
 nco_fll_var_trv                       /* [fnc] Fill-in variable structure list for all extracted variables */
 (const int nc_id,                     /* I [id] netCDF file ID */
+ int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+var_sct **                            /* O [sct] Variable list */  
+nco_var_trv                           /* [fnc] Fill-in variable structure list for all variables named "var_nm" */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const var_nm,           /* I [sng] Variable name (relative) */
  int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 

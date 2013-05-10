@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.236 2013-05-10 00:57:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.237 2013-05-10 18:30:21 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.236 2013-05-10 00:57:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.236 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.237 2013-05-10 18:30:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.237 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -726,10 +726,8 @@ main(int argc,char **argv)
   /* Transfer variable information to table. Using var/xtr_nbr containing all variables (processed, fixed) */
   for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
 
-    nc_type typ_out;      /* [enm] Type in output file */
-    var_sct *v=var[idx];  /* [sct] Current variable */
-
-    assert(v);
+    nc_type typ_out;         /* [enm] Type in output file */
+    var_sct *v=var[var_idx]; /* [sct] Current variable */
 
     /* Obtain netCDF type to define variable from NCO program ID */
     typ_out=nco_get_typ(v);

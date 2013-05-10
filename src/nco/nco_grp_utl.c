@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.712 2013-05-08 19:42:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.713 2013-05-10 18:30:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3531,3 +3531,63 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
 
 } /* nco_fll_var_trv() */
 
+
+var_sct **                            /* O [sct] Variable list */  
+nco_var_trv                           /* [fnc] Fill-in variable structure list for all variables named "var_nm" */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const var_nm,           /* I [sng] Variable name (relative) */
+ int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  int var_idx;
+  int nbr_xtr;
+
+  var_sct **var=NULL;
+
+  nbr_xtr=0;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Filter variables to extract  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
+      nbr_xtr++;
+    } /* Filter variables  */
+  } /* Loop table */
+
+  /* Fill-in variable structure list for all extracted variables */
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+
+  var_idx=0;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+
+    /* Filter variables  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
+      trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
+
+      int grp_id; /* [ID] Group ID */
+      int var_id; /* [ID] Variable ID */
+
+      /* Obtain group ID from API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+
+      /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
+      var[var_idx]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
+
+      /* Store full name as key for GTT search */
+      var[var_idx]->nm_fll=strdup(var_trv.nm_fll);
+
+      var_idx++;
+
+    } /* Filter variables  */
+  } /* Loop table */
+
+
+  *xtr_nbr=nbr_xtr;
+  return var;
+
+} /* nco_var_trv() */
