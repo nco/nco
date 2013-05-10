@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.265 2013-05-09 23:03:05 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.266 2013-05-10 04:13:24 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -922,17 +922,51 @@ print "\n";
     $#tst_cmd=0; # Reset array
    
 # NCO 4.3.2 ncflint -- groups   
-    
+ 
+#ncflint #5  
 # ncflint -h -O -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc out.nc
 # ncks  -H -C -O -g g4  -d time,9 -v one_dmn_rec_var  out.nc
- 
-#ncflint #5
 
     $dsc_sng="Group weight 1D -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -h -O -v one_dmn_rec_var -w 1,1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks  -H -C -O -g g4 -d time,9 -v one_dmn_rec_var %tmp_fl_00%";
     $tst_cmd[2]="time[9]=20 one_dmn_rec_var[9]=20";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			   
+
+#ncflint #6   
+# ncflint -4 -O  -w 0.8,0.0 in.nc in.nc out.nc
+# ncks -H -C -v time  -d time,9,9,1 out.nc
+
+    $dsc_sng="-w 0.8,0.0 in.nc in.nc";
+    $tst_cmd[0]="ncflint $nco_D_flg -4 -O  -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks  -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
+    $tst_cmd[2]="time[9]=8";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+
+#ncflint #7    
+# ncflint -4 -O  -w 0.8,0.0 in.nc in.nc out.nc
+# ncks -H -C -v time  -d time,9,9,1 out.nc
+# --fix_rec_crd prevents ncflint from multiplying or interpolating any coordinate variables, including record coordinate variables
+
+    $dsc_sng="--fix_rec_crd -w 0.8,0.0 in.nc in.nc";
+    $tst_cmd[0]="ncflint $nco_D_flg -4 -O --fix_rec_crd -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks  -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
+    $tst_cmd[2]="time[9]=10";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 

@@ -1,3 +1,7 @@
+2013-05-09 Pedro Vicente  <pvicente@uci.edu>
+
+        * ncflint test #6,7 --fix_rec_crd
+        
 2013-05-08 Pedro Vicente  <pvicente@uci.edu>
 
         * trv_tbl_mrk_typ() Mark output netCDF type in GTT
