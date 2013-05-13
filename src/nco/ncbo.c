@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.248 2013-05-03 22:03:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.249 2013-05-13 21:41:25 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.248 2013-05-03 22:03:43 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.248 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.249 2013-05-13 21:41:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.249 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -270,6 +270,8 @@ main(int argc,char **argv)
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
       {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
+      {"grp",required_argument,0,'g'},
+      {"group",required_argument,0,'g'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */

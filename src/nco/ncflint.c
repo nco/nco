@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.238 2013-05-10 19:36:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.239 2013-05-13 21:41:25 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.238 2013-05-10 19:36:08 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.238 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.239 2013-05-13 21:41:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.239 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -266,8 +266,9 @@ main(int argc,char **argv)
     {"dmn",required_argument,0,'d'},
     {"fortran",no_argument,0,'F'},
     {"ftn",no_argument,0,'F'},
-    {"group",required_argument,0,'g'},
+    {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
     {"grp",required_argument,0,'g'},
+    {"group",required_argument,0,'g'},
     {"history",no_argument,0,'h'},
     {"hst",no_argument,0,'h'},
     {"interpolate",required_argument,0,'i'},
@@ -591,7 +592,7 @@ main(int argc,char **argv)
     var_out[var_idx]=nco_var_dpl(var[var_idx]);
   }
 
-#else
+#else /* ! USE_TRV_API */
 
   /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id_1,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
