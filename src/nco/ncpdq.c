@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.203 2013-05-13 21:41:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.204 2013-05-14 22:24:18 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.203 2013-05-13 21:41:25 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.203 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.204 2013-05-14 22:24:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.204 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -215,6 +215,10 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
+  char *grp_out=NULL; /* [sng] Group name */
+  size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -401,6 +405,20 @@ main(int argc,char **argv)
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
+    case 'G': /* Apply Group Path Editing (GPE) to output group */
+      /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it
+      http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
+      gpe=nco_gpe_prs_arg(optarg);
+      grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
+      grp_out_lng=gpe->lng_cnn;
+      break;
+    case 'g': /* Copy group argument for later processing */
+      /* Replace commas with hashes when within braces (convert back later) */
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_rx_comma2hash(optarg_lcl);
+      grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+      break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
@@ -530,6 +548,14 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
+  /* Fill-in variable structure list for all extracted variables */
+  var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
+
+  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+    var_out[var_idx]=nco_var_dpl(var[var_idx]);
+  }
+
 #else /* ! USE_TRV_API */
 
   /* Parse auxiliary coordinates */
@@ -574,8 +600,6 @@ main(int argc,char **argv)
   lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
   /* Initialize lmt_msa_sct's */ 
   (void)nco_msa_lmt_all_ntl(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
-
-#endif /* ! USE_TRV_API */
 
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,xtr_nbr,&nbr_dmn_xtr);
@@ -680,6 +704,8 @@ main(int argc,char **argv)
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
 
+#endif /* ! USE_TRV_API */
+
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
@@ -708,6 +734,40 @@ main(int argc,char **argv)
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
+#ifdef USE_TRV_API
+
+  /* Store processed variables info into table */
+  for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
+    trv_sct *var_trv;
+
+    /* Obtain variable GTT object using full variable name */
+    var_trv=trv_tbl_var_nm_fll(var_prc[var_idx]->nm_fll,trv_tbl);
+
+    assert(var_trv);
+
+    /* Mark fixed/processed flag in table for "var_nm_fll" */
+    (void)trv_tbl_mrk_prc_fix(var_prc[var_idx]->nm_fll,prc_typ,trv_tbl);
+
+  } /* Store processed variables info into table */
+
+  /* Store fixed variables info into table */
+  for(int var_idx=0;var_idx<nbr_var_fix;var_idx++){
+    trv_sct *var_trv;
+
+    /* Obtain variable GTT object using full variable name */
+    var_trv=trv_tbl_var_nm_fll(var_fix[var_idx]->nm_fll,trv_tbl);
+
+    assert(var_trv);
+
+    /* Mark fixed/processed flag in table for "var_nm_fll" */
+    (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
+
+  } /* Store fixed variables info into table */
+
+#endif /* ! USE_TRV_API */
+
+
+#ifndef USE_TRV_API
   /* If re-ordering, then in files with record dimension... */
   if(dmn_rdr_nbr > 0 && rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
     /* ...which, if any, output dimension structure currently holds record dimension? */
@@ -880,12 +940,38 @@ main(int argc,char **argv)
       } /* endif packing */
     } /* end loop over var_prc */
   } /* nco_pck_plc == nco_pck_plc_nil */
+#endif /* USE_TRV_API */
+
+
+
+#ifdef USE_TRV_API
+
+  /* Transfer variable information to table. Using var/xtr_nbr containing all variables (processed, fixed) */
+  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+
+    nc_type typ_out;         /* [enm] Type in output file */
+    var_sct *v=var[var_idx]; /* [sct] Current variable */
+
+    /* Obtain netCDF type to define variable from NCO program ID */
+    typ_out=nco_get_typ(v);
+
+    /* Mark output type in table for "var_nm_fll" */
+    (void)trv_tbl_mrk_typ(v->nm_fll,typ_out,trv_tbl);
+
+  } /* Store processed variables info into table */
+
+  /* Define dimensions, extracted groups, variables, and attributes in output file */
+  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl);   
+
+#else /* ! USE_TRV_API */
 
   /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_map,nco_pck_plc,dfl_lvl);
 
   /* Set chunksize parameters */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+
+#endif /* ! USE_TRV_API */
 
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -1112,6 +1198,13 @@ main(int argc,char **argv)
     var_prc_out=(var_sct **)nco_free(var_prc_out);
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
+
+    /* Free traversal table */
+#ifdef USE_TRV_API
+    trv_tbl_free(trv_tbl); 
+#endif
+    if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
+
   } /* !flg_cln */
 
   /* End timer */ 
