@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.206 2013-05-15 19:22:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.207 2013-05-15 23:09:53 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.206 2013-05-15 19:22:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.206 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.207 2013-05-15 23:09:53 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.207 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -621,6 +621,10 @@ main(int argc,char **argv)
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
 
+#endif /* ! USE_TRV_API */
+
+
+
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
     if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
@@ -633,6 +637,8 @@ main(int argc,char **argv)
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
+
+#ifndef USE_TRV_API
   if(dmn_rdr_nbr > 0 ){
     /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
     /* Make list of user-specified dimension re-orders */
@@ -1003,6 +1009,8 @@ main(int argc,char **argv)
   /* Close first input netCDF file */
   nco_close(in_id);
 
+
+#ifndef USE_TRV_API
   /* Refresh var_prc with dim_out data */
   for(idx=0;idx<nbr_var_prc;idx++){
     long sz;
@@ -1024,6 +1032,7 @@ main(int argc,char **argv)
     var_tmp->sz=sz; 
     var_tmp->sz_rec=sz_rec;
   } /* end loop over idx */
+#endif /* ! USE_TRV_API */
 
   /* Loop over input files (not currently used, fl_nbr == 1) */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
@@ -1052,9 +1061,30 @@ main(int argc,char **argv)
       if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
       if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
+      int grp_id;        /* [ID] Group ID */
+      int grp_out_id;    /* [ID] Group ID (output) */
+      int var_out_id;    /* [ID] Variable ID (output) */
+
+#ifdef USE_TRV_API
+      trv_sct *var_trv;  /* [sct] Variable GTT object */
+
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+
+      /* Obtain group ID using full group name */
+      (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+
+      /* Read */
+      (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
+
+#else /* ! USE_TRV_API */
+
       /* Retrieve variable from disk into memory */
       /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
       (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
+
+#endif /* ! USE_TRV_API */
+
       if(dmn_rdr_nbr > 0){
         if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
           (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
@@ -1077,15 +1107,36 @@ main(int argc,char **argv)
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif dmn_rdr_nbr > 0 */
 
+
+#ifdef USE_TRV_API
+      /* Obtain output group ID using full group name */
+      (void)nco_inq_grp_full_ncid(out_id,var_trv->grp_nm_fll,&grp_out_id);
+
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+      /* Store the output variable ID */
+      var_prc_out[idx]->id=var_out_id;
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(fp_stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv->nm_fll);
+      }
+#else /* ! USE_TRV_API */
+
+      grp_out_id=out_id;
+
+#endif /* ! USE_TRV_API */
+
+
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
       { /* begin OpenMP critical */
         /* Copy variable to output file then free value buffer */
         if(var_prc_out[idx]->nbr_dim == 0){
-          (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+          (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
         }else{ /* end if variable is scalar */
-          (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+          (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
         } /* end if variable is array */
       } /* end OpenMP critical */
       /* Free current output buffer */
