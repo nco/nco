@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.206 2013-04-23 18:03:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.207 2013-05-15 19:08:48 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1785,7 +1785,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   Routine copies variable-by-variable, old-style, used only by ncks 
 
   "GTT" changes from the original nco_cpy_var_val_mlt_lmt():
-  1) Object to write (variable) is passed as parameter
+   Object to write (variable) is passed as parameter
   */
 
   char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 

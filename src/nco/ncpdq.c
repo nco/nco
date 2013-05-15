@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.204 2013-05-14 22:24:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.205 2013-05-15 19:08:48 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.204 2013-05-14 22:24:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.204 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.205 2013-05-15 19:08:48 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.205 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -987,8 +987,18 @@ main(int argc,char **argv)
   /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
+
+#ifdef USE_TRV_API
+
+  /* Copy variable data for non-processed variables */
+  (void)nco_cpy_fix_var_trv(in_id_1,out_id,trv_tbl);  
+
+#else /* ! USE_TRV_API */
+
   /* Copy variable data for non-processed variables */
   (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
+
+#endif /* ! USE_TRV_API */
 
   /* Close first input netCDF file */
   nco_close(in_id);

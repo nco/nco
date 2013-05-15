@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.714 2013-05-15 19:08:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.715 2013-05-15 19:13:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3626,6 +3626,6 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
     } /* If object is a fixed variable... */ 
   } /* Loop table */
 
-} /* nco_bld_aux_crd() */
+} /* nco_cpy_fix_var_trv() */
 
 
