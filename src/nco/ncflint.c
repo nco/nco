@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.240 2013-05-14 22:24:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.241 2013-05-15 19:08:47 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.240 2013-05-14 22:24:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.240 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.241 2013-05-15 19:08:47 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.241 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -771,33 +771,7 @@ main(int argc,char **argv)
 #ifdef USE_TRV_API
 
   /* Copy variable data for non-processed variables */
-
-  /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct var_trv=trv_tbl->lst[uidx];
-
-    /* If object is a fixed variable... */ 
-    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.enm_prc_typ == fix_typ){
-      int grp_id_in;  /* [ID] Group ID */
-      int grp_id_out; /* [ID] Group ID */
-
-      /* Obtain group IDs using full group name */
-      (void)nco_inq_grp_full_ncid(in_id_1,var_trv.grp_nm_fll,&grp_id_in);
-      (void)nco_inq_grp_full_ncid(out_id,var_trv.grp_nm_fll,&grp_id_out);
-
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO writing fixed variable <%s> from ",prg_nm_get(),var_trv.nm_fll);        
-        (void)nco_prt_grp_nm_fll(grp_id_in);
-        (void)fprintf(stdout," to ");   
-        (void)nco_prt_grp_nm_fll(grp_id_out);
-        (void)fprintf(stdout,"\n");
-      } /* endif dbg */       
-
-      /* Copy variable data */
-      (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,(nco_bool)False,&var_trv);  
-
-    } /* If object is a fixed variable... */ 
-  } /* Loop table */
+  (void)nco_cpy_fix_var_trv(in_id_1,out_id,trv_tbl);  
 
 #else /* ! USE_TRV_API */
 

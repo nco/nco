@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.313 2013-05-07 21:53:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.314 2013-05-15 19:08:47 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.313 2013-05-07 21:53:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.313 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.314 2013-05-15 19:08:47 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.314 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -671,33 +671,7 @@ main(int argc,char **argv)
     (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
     /* Copy variable data for non-processed variables */
-
-    /* Loop table */
-    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      trv_sct var_trv=trv_tbl->lst[uidx];
-
-      /* If object is a fixed variable... */ 
-      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.enm_prc_typ == fix_typ){
-        int grp_id_in;  /* [ID] Group ID */
-        int grp_id_out; /* [ID] Group ID */
-
-        /* Obtain group IDs using full group name */
-        (void)nco_inq_grp_full_ncid(in_id,var_trv.grp_nm_fll,&grp_id_in);
-        (void)nco_inq_grp_full_ncid(out_id,var_trv.grp_nm_fll,&grp_id_out);
-
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: INFO writing fixed variable <%s> from ",prg_nm_get(),var_trv.nm_fll);        
-          (void)nco_prt_grp_nm_fll(grp_id_in);
-          (void)fprintf(stdout," to ");   
-          (void)nco_prt_grp_nm_fll(grp_id_out);
-          (void)fprintf(stdout,"\n");
-        } /* endif dbg */       
-
-        /* Copy variable data */
-        (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,(nco_bool)False,&var_trv);  
-
-      } /* If object is a fixed variable... */ 
-    } /* Loop table */
+    (void)nco_cpy_fix_var_trv(in_id,out_id,trv_tbl);  
 
     /* Close first input netCDF file */
     (void)nco_close(in_id);
