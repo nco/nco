@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.308 2013-05-16 20:57:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.309 2013-05-16 21:13:09 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2178,6 +2178,11 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->dim[dmn_idx]->is_rec_dmn=dmn_trv->is_rec_dmn;
     var->dim[dmn_idx]->sz=dmn_trv->sz;
     var->dim[dmn_idx]->nm=strdup(dmn_trv->nm);
+
+    /* 20130516 Store ID; needed for ncppdq fxm check */
+    var->dim[dmn_idx]->id=var->dmn_id[dmn_idx];
+
+
   }
 
 
