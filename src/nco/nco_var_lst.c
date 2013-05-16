@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.143 2013-04-23 18:50:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.144 2013-05-16 20:57:54 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -915,7 +915,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
         /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
         for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
           for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
-            if(var[idx]->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
+            if(var[idx]->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id){
+              break;
+            }
           } /* end loop over idx_xcl */
           if(idx_xcl != nbr_dmn_xcl){
             var_op_typ[idx]=prc_typ;

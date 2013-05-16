@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.209 2013-05-16 20:15:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.210 2013-05-16 20:57:54 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.209 2013-05-16 20:15:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.209 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.210 2013-05-16 20:57:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.210 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -706,7 +706,18 @@ main(int argc,char **argv)
 
   } /* dmn_rdr_nbr <= 0 */
 
-#ifndef USE_TRV_API
+
+#ifdef USE_TRV_API
+ /* Fill-in variable structure list for all extracted variables */
+  var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
+
+  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+    var_out[var_idx]=nco_var_dpl(var[var_idx]);
+  }
+
+#else /* ! USE_TRV_API */
+
   /* Fill-in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
@@ -716,13 +727,14 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
+
+#endif /* ! USE_TRV_API */
+
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
 
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
-
-#endif /* ! USE_TRV_API */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.307 2013-05-09 23:03:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.308 2013-05-16 20:57:54 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1979,7 +1979,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 
   /* Fill-in known fields */
   /* Make sure var_free() frees names when variable is destroyed */
-  var->nm_fll=(char *)strdup(var_nm);
+  var->nm_fll=NULL;
   var->nm=(char *)strdup(var_nm);
   var->id=var_id;
   var->nc_id=nc_id;
@@ -2127,7 +2127,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Fill-in known fields */
   var->nm=(char *)strdup(var_trv->nm);
-  var->nm_fll=(char *)strdup(var_trv->nm);
+  var->nm_fll=(char *)strdup(var_trv->nm_fll);
   var->id=var_id;
   var->nc_id=grp_id;
   var->is_crd_var=var_trv->is_crd_var;
