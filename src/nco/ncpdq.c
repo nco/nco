@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.207 2013-05-15 23:09:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.208 2013-05-16 19:02:07 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -38,7 +38,7 @@
    ncpdq -O -D 3 -P xst_new ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc */
 
-#if 0
+#if 0 
 #define USE_TRV_API
 #endif
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.207 2013-05-15 23:09:53 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.207 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.208 2013-05-16 19:02:07 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.208 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -197,12 +197,13 @@ main(int argc,char **argv)
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
+#ifndef USE_TRV_API
   lmt_msa_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
+#endif  
 
   nm_id_sct *dmn_lst;
   nm_id_sct *dmn_rdr_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */ 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
@@ -601,6 +602,16 @@ main(int argc,char **argv)
   /* Initialize lmt_msa_sct's */ 
   (void)nco_msa_lmt_all_ntl(in_id,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
 
+#endif /* ! USE_TRV_API */
+
+
+#ifdef USE_TRV_API
+
+  /* Convert extraction list from traversal table to nm_id_sct format to re-use old code */
+  xtr_lst=nco_trv_tbl_nm_id(in_id,&xtr_nbr,trv_tbl);
+
+#endif /* ! USE_TRV_API */
+
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,xtr_nbr,&nbr_dmn_xtr);
 
@@ -618,9 +629,9 @@ main(int argc,char **argv)
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   } /* end loop over idx */
 
+#ifndef USE_TRV_API
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
-
 #endif /* ! USE_TRV_API */
 
 
@@ -638,7 +649,7 @@ main(int argc,char **argv)
   } /* end if */
 
 
-#ifndef USE_TRV_API
+
   if(dmn_rdr_nbr > 0 ){
     /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
     /* Make list of user-specified dimension re-orders */
@@ -695,6 +706,7 @@ main(int argc,char **argv)
 
   } /* dmn_rdr_nbr <= 0 */
 
+#ifndef USE_TRV_API
   /* Fill-in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
@@ -1219,11 +1231,13 @@ main(int argc,char **argv)
       } /* nco_pck_plc == nco_pck_plc_upk */
     } /* nco_pck_plc == nco_pck_plc_nil */
 
+#ifndef USE_TRV_API
     /* NB: lmt now referenced within lmt_all_lst[idx]  */
     for(idx=0;idx<nbr_dmn_fl;idx++)
       for(jdx=0;jdx< lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);   
+    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl); 
+#endif
     lmt=(lmt_sct**)nco_free(lmt); 
 
     /* NCO-generic clean-up */
