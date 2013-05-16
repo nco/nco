@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.208 2013-05-16 19:02:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.209 2013-05-16 20:15:34 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -38,7 +38,7 @@
    ncpdq -O -D 3 -P xst_new ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc */
 
-#if 0 
+#if 0
 #define USE_TRV_API
 #endif
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.208 2013-05-16 19:02:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.208 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.209 2013-05-16 20:15:34 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.209 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -607,7 +607,7 @@ main(int argc,char **argv)
 
 #ifdef USE_TRV_API
 
-  /* Convert extraction list from traversal table to nm_id_sct format to re-use old code */
+  /* Convert extraction list from traversal table to nm_id_sct format */
   xtr_lst=nco_trv_tbl_nm_id(in_id,&xtr_nbr,trv_tbl);
 
 #endif /* ! USE_TRV_API */
@@ -785,7 +785,7 @@ main(int argc,char **argv)
 #endif /* ! USE_TRV_API */
 
 
-#ifndef USE_TRV_API
+
   /* If re-ordering, then in files with record dimension... */
   if(dmn_rdr_nbr > 0 && rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
     /* ...which, if any, output dimension structure currently holds record dimension? */
@@ -958,7 +958,7 @@ main(int argc,char **argv)
       } /* endif packing */
     } /* end loop over var_prc */
   } /* nco_pck_plc == nco_pck_plc_nil */
-#endif /* USE_TRV_API */
+
 
 
 
