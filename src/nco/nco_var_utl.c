@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.309 2013-05-16 21:13:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.310 2013-05-16 22:33:18 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2100,7 +2100,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
  const trv_sct * const var_trv,       /* I [sct] Object to write (variable) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: nco_malloc() and return a completed var_sct */
+  /* Purpose: nco_malloc() and return a completed var_sct; same as nco_var_fll() */
 
   char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name  */  
 
@@ -2179,11 +2179,11 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->dim[dmn_idx]->sz=dmn_trv->sz;
     var->dim[dmn_idx]->nm=strdup(dmn_trv->nm);
 
-    /* 20130516 Store ID; needed for ncppdq fxm check */
+    /* 20130516 Store ID, end; needed for ncppdq fxm check */
     var->dim[dmn_idx]->id=var->dmn_id[dmn_idx];
+    var->dim[dmn_idx]->end=dmn_trv->sz-1L;
 
-
-  }
+  } /* Get input and set output dimension sizes and names */
 
 
   /* Type in memory begins as same type as on disk */
@@ -2206,14 +2206,20 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Size defaults to 1 in var_dfl_set(), and set to 1 here for extra safety */
   var->sz=1L; 
-  for(int idx=0;idx<var->nbr_dim;idx++){
+  for(int dmn_idx=0;dmn_idx<var->nbr_dim;dmn_idx++){
 
-    (void)nco_inq_dimname(grp_id,var->dmn_id[idx],dmn_nm);
+    (void)nco_inq_dimname(grp_id,var->dmn_id[dmn_idx],dmn_nm);
 
-    var->cnt[idx]=cnt[idx];
-    var->srt[idx]=0L;
-    var->srd[idx]=1L;
-    var->sz*=var->cnt[idx];
+    var->cnt[dmn_idx]=cnt[dmn_idx];
+    var->srt[dmn_idx]=0L;
+    var->srd[dmn_idx]=1L;
+    var->sz*=var->cnt[dmn_idx];
+
+    /* 20130516 Store extra "dim" members; needed for ncppdq fxm check */
+    var->dim[dmn_idx]->cnt=var->cnt[dmn_idx];
+    var->dim[dmn_idx]->srt=var->srt[dmn_idx];
+    var->dim[dmn_idx]->srd=var->srd[dmn_idx];
+
   } /* end loop over dim */
 
   /* Variables associated with "bounds" and "coordinates" attributes should, in most cases, be treated as coordinates */
