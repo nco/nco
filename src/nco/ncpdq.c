@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.212 2013-05-16 22:33:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.213 2013-05-17 00:37:19 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.212 2013-05-16 22:33:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.212 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.213 2013-05-17 00:37:19 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.213 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -549,14 +549,6 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
-  /* Fill-in variable structure list for all extracted variables */
-  var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
-
-  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
-    var_out[var_idx]=nco_var_dpl(var[var_idx]);
-  }
-
 #else /* ! USE_TRV_API */
 
   /* Parse auxiliary coordinates */
@@ -707,7 +699,20 @@ main(int argc,char **argv)
   } /* dmn_rdr_nbr <= 0 */
 
 
-#ifndef USE_TRV_API
+#ifdef USE_TRV_API
+  /* Fill-in variable structure list for all extracted variables */
+  var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
+
+  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+    var_out[var_idx]=nco_var_dpl(var[var_idx]);
+
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
+  }
+
+
+#else
   /* Fill-in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));

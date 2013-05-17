@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.76 2013-03-26 14:42:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.77 2013-05-17 00:37:19 pvicente Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -392,73 +392,73 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
  nco_bool * const dmn_rvr_in) /* O [idx] Reverse dimension */
 {
   /* Purpose: Re-order dimensions in a given variable
-     dmn_rdr contains new dimension order for dimensions
-     Currently routine allows only dimension permutations, i.e., 
-     re-arranging dimensions without changing their number (variable rank).
+  dmn_rdr contains new dimension order for dimensions
+  Currently routine allows only dimension permutations, i.e., 
+  re-arranging dimensions without changing their number (variable rank).
 
-     Routine keeps track of two variables var_* whose abbreviations are:
-     in: Input variable (already hyperslabbed) with old dimension ordering
-     rdr: User-specified re-ordered dimension list. Possibly subset of dmn_in
-     out: Output (re-ordered) dimensionality specific to each variable
+  Routine keeps track of two variables var_* whose abbreviations are:
+  in: Input variable (already hyperslabbed) with old dimension ordering
+  rdr: User-specified re-ordered dimension list. Possibly subset of dmn_in
+  out: Output (re-ordered) dimensionality specific to each variable
 
-     At first it seemed this routine could re-order input variable in place without copying it
-     Multiple constraints keep this from being practical
-     Constraints are dictated by the architectural decision to call nco_var_dmn_rdr_mtd() twice
-     Decision to call nco_var_dmn_rdr_mtd() twice is based on:
-     1. Want to parallelize loop over variables to increase throughput
-        Parallel writes to output file only possible if output file is defined in shape, order
-	Output file only definable once variable shapes, i.e., re-ordered dimensions known
-	Alternatives to calling nco_var_dmn_rdr_mtd() twice:
-	A. Each thread enters redefine() mode and adds its variable to output file
-           Internal data re-copying would be expensive and unnecessary
-	   Hence Alternative A is not viable
-        B. Perform output file definition and all writes after all variable re-ordering
-	   Memory consumption would increase to O(fl_in_sz) to keep all re-ordered data in memory
-	   Hence Alternative B is not viable
-     2. The two calls to nco_var_dmn_rdr_mtd() accomplish the following
-        A. First call: Create var_out->dim for call to nco_var_dfn() 
-	   Main thread makes first call in serial mode just prior to nco_var_dfn() 
-	   No input data (AOT metadata) have been allocated or read in at this point
-	   Routine exits after modifying var_out metadata for new dimension geometry
-	B. Second call: Re-order var_in->val data and place in var_out
-           Although var_out->dmn is retained between calls, intermediate information such as
-	   in_out dimension mapping arrays are lost and must be re-created
-	   Hence second call must re-do most of first call, then begin re-ordering
-     Routine must access un-touched var_in->dim input structure during both parts of second call
-     Hence var_in must be unmodified between first and second call
+  At first it seemed this routine could re-order input variable in place without copying it
+  Multiple constraints keep this from being practical
+  Constraints are dictated by the architectural decision to call nco_var_dmn_rdr_mtd() twice
+  Decision to call nco_var_dmn_rdr_mtd() twice is based on:
+  1. Want to parallelize loop over variables to increase throughput
+  Parallel writes to output file only possible if output file is defined in shape, order
+  Output file only definable once variable shapes, i.e., re-ordered dimensions known
+  Alternatives to calling nco_var_dmn_rdr_mtd() twice:
+  A. Each thread enters redefine() mode and adds its variable to output file
+  Internal data re-copying would be expensive and unnecessary
+  Hence Alternative A is not viable
+  B. Perform output file definition and all writes after all variable re-ordering
+  Memory consumption would increase to O(fl_in_sz) to keep all re-ordered data in memory
+  Hence Alternative B is not viable
+  2. The two calls to nco_var_dmn_rdr_mtd() accomplish the following
+  A. First call: Create var_out->dim for call to nco_var_dfn() 
+  Main thread makes first call in serial mode just prior to nco_var_dfn() 
+  No input data (AOT metadata) have been allocated or read in at this point
+  Routine exits after modifying var_out metadata for new dimension geometry
+  B. Second call: Re-order var_in->val data and place in var_out
+  Although var_out->dmn is retained between calls, intermediate information such as
+  in_out dimension mapping arrays are lost and must be re-created
+  Hence second call must re-do most of first call, then begin re-ordering
+  Routine must access un-touched var_in->dim input structure during both parts of second call
+  Hence var_in must be unmodified between first and second call
 
-     dmn_rdr is user-specified list of dimensions to be re-arranged 
-     User specifies all or only a subset of all dimensions in input file
-     For example, say user specifies -d lat,lon
-     This ensures lat precedes lon in all variables in output file
-     In this case dmn_rdr is (user-specified) list [lat,lon]
-     Input 0-D variables dimensioned [] output with dmn_out=[] (unaltered)
-     Input 1-D variables dimensioned [lat] output with dmn_out=[lat] (unaltered)
-     Input 2-D variables dimensioned [lat,lon] output with dmn_out=[lat,lon] (unaltered)
-     Input 2-D variables dimensioned [time,lev] output with dmn_out=[time,lev] (unaltered)
-     Input 2-D variables dimensioned [lon,lat] output with dmn_out=[lon,lat] (transposed)
-     Input 3-D variables dimensioned [lon,lat,time] output with dmn_out=[lat,lon,time]
-     Input 3-D variables dimensioned [time,lon,lat] output with dmn_out=[time,lat,lon]
-     Input 3-D variables dimensioned [lon,lev,lat] output with dmn_out=[lat,lev,lon]
-     Input 4-D variables dimensioned [lon,lev,lat,time] output with dmn_out=[lat,lev,lon,time]
-     Hence output dimension dmn_out list depends on each particular variable 
-     Some, or even all, dimensions in dmn_rdr may not be in dmn_in
-     Re-ordering is only necessary for variables where dmn_in and dmn_rdr share at least two dimensions
-     
-     Dimension reversal:
-     Users specify dimension reversal by prefixing dimension name with negative sign
-     Host routine passes dimension reversing flags in dmn_rvr_rdr
-     Dimensions may be re-ordered, reversed, or both */
-  
+  dmn_rdr is user-specified list of dimensions to be re-arranged 
+  User specifies all or only a subset of all dimensions in input file
+  For example, say user specifies -d lat,lon
+  This ensures lat precedes lon in all variables in output file
+  In this case dmn_rdr is (user-specified) list [lat,lon]
+  Input 0-D variables dimensioned [] output with dmn_out=[] (unaltered)
+  Input 1-D variables dimensioned [lat] output with dmn_out=[lat] (unaltered)
+  Input 2-D variables dimensioned [lat,lon] output with dmn_out=[lat,lon] (unaltered)
+  Input 2-D variables dimensioned [time,lev] output with dmn_out=[time,lev] (unaltered)
+  Input 2-D variables dimensioned [lon,lat] output with dmn_out=[lon,lat] (transposed)
+  Input 3-D variables dimensioned [lon,lat,time] output with dmn_out=[lat,lon,time]
+  Input 3-D variables dimensioned [time,lon,lat] output with dmn_out=[time,lat,lon]
+  Input 3-D variables dimensioned [lon,lev,lat] output with dmn_out=[lat,lev,lon]
+  Input 4-D variables dimensioned [lon,lev,lat,time] output with dmn_out=[lat,lev,lon,time]
+  Hence output dimension dmn_out list depends on each particular variable 
+  Some, or even all, dimensions in dmn_rdr may not be in dmn_in
+  Re-ordering is only necessary for variables where dmn_in and dmn_rdr share at least two dimensions
+
+  Dimension reversal:
+  Users specify dimension reversal by prefixing dimension name with negative sign
+  Host routine passes dimension reversing flags in dmn_rvr_rdr
+  Dimensions may be re-ordered, reversed, or both */
+
   /* 20070509 CEWI RUVICFFU: dmn_idx_rdr_in */
 
   const char fnc_nm[]="nco_var_dmn_rdr_mtd()"; /* [sng] Function name */
-  
+
   char *rec_dmn_nm_out=NULL; /* [sng] Name of record dimension, if any, required by re-order */
 
   dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
-  
+
   int dmn_idx_in_shr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->share Purely diagnostic */
   int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
   int dmn_idx_in_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->re-order NB: Purely diagnostic */
@@ -475,10 +475,10 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   int dmn_rdr_idx; /* [idx] Counting index for dmn_rdr */
   int dmn_shr_idx; /* [idx] Counting index for dmn_shr */
   int idx_err=-99999; /* [idx] Invalid index for debugging */
-  
+
   /* Initialize variables to reduce indirection */
   /* NB: Number of input and output dimensions are equal for pure re-orders
-     However, keep dimension numbers in separate variables to ease relax this rule in future */
+  However, keep dimension numbers in separate variables to ease relax this rule in future */
   dmn_in_nbr=var_in->nbr_dim;
   dmn_out_nbr=var_out->nbr_dim;
 
@@ -487,7 +487,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
       dmn_idx_out_in[dmn_out_idx]=idx_err;
     /* for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++)
-       dmn_idx_rdr_in[dmn_rdr_idx]=idx_err; */
+    dmn_idx_rdr_in[dmn_rdr_idx]=idx_err; */
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
       dmn_idx_in_shr[dmn_in_idx]=idx_err;
       dmn_idx_in_rdr[dmn_in_idx]=idx_err;
@@ -496,7 +496,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
       dmn_idx_shr_out[dmn_in_idx]=idx_err; /* fxm: initialize up to dmn_shr_nbr which is currently unknown */
     } /* end loop over dmn_in */
   } /* end if dbg */
-  
+
   /* Initialize default correspondence and record dimension in case early return desired */
   if(var_out->is_rec_var) rec_dmn_nm_out=var_in->dim[0]->nm;
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
@@ -506,10 +506,10 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
 
   /* Scalars are never altered by dimension re-ordering or reversal */
   if(dmn_in_nbr < 1) return rec_dmn_nm_out;
-  
+
   /* On entry to this section of code, we assume:
-     1. var_out duplicates var_in */
-  
+  1. var_out duplicates var_in */
+
   /* Create complete 1-to-1 ordered list of dimensions in new output variable */
   /* For each dimension in re-ordered dimension list... */
   for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++){
@@ -517,26 +517,26 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
       /* ...by comparing names, not dimension IDs... */
       if(!strcmp(var_in->dim[dmn_in_idx]->nm,dmn_rdr[dmn_rdr_idx]->nm)){
-	dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_idx;
-	/* dmn_idx_rdr_in[dmn_rdr_idx]=dmn_in_idx; */
-	dmn_idx_shr_rdr[dmn_shr_nbr]=dmn_rdr_idx;
-	dmn_idx_shr_in[dmn_shr_nbr]=dmn_in_idx;
-	dmn_idx_in_shr[dmn_in_idx]=dmn_shr_nbr;
-	dmn_shr_nbr++; /* dmn_in and dmn_rdr share this dimension */
-	break;
+        dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_idx;
+        /* dmn_idx_rdr_in[dmn_rdr_idx]=dmn_in_idx; */
+        dmn_idx_shr_rdr[dmn_shr_nbr]=dmn_rdr_idx;
+        dmn_idx_shr_in[dmn_shr_nbr]=dmn_in_idx;
+        dmn_idx_in_shr[dmn_in_idx]=dmn_shr_nbr;
+        dmn_shr_nbr++; /* dmn_in and dmn_rdr share this dimension */
+        break;
       } /* endif */
     } /* end loop over dmn_in */
   } /* end loop over dmn_rdr */
-  
+
   /* Map permanent list of reversed dimensions to input variable */
   for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
     dmn_rvr_in[dmn_idx_shr_in[dmn_shr_idx]]=dmn_rvr_rdr[dmn_idx_shr_rdr[dmn_shr_idx]];
 
   /* No dimension re-ordering is necessary if dmn_in and dmn_rdr share fewer than two dimensions
-     Dimension reversal must be done with even one shared dimension
-     Single dimension reversal, however, uses default dimension maps and return values */
+  Dimension reversal must be done with even one shared dimension
+  Single dimension reversal, however, uses default dimension maps and return values */
   if(dmn_shr_nbr < 2) return rec_dmn_nm_out;
-  
+
   /* dmn_idx_shr_out is sorted version of dmn_idx_shr_in */
   (void)memcpy((void *)(dmn_idx_shr_out),(void *)(dmn_idx_shr_in),dmn_shr_nbr*sizeof(dmn_idx_shr_in[0]));
   qsort(dmn_idx_shr_out,(size_t)dmn_shr_nbr,sizeof(dmn_idx_shr_out[0]),nco_cmp_int);
@@ -548,8 +548,8 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   /* Splice-in re-ordered dimension location for each shared dimension */
   for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
     dmn_idx_in_out[dmn_idx_shr_in[dmn_shr_idx]]=dmn_idx_shr_out[dmn_shr_idx];
-  
-  if(dbg_lvl_get() > 3){
+
+  if(dbg_lvl_get() > nco_dbg_scl){
     (void)fprintf(stdout,"%s: DEBUG %s variable %s shares %d of its %d dimensions with the %d dimensions in the re-order list\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_shr_nbr,var_in->nbr_dim,dmn_rdr_nbr);
     (void)fprintf(stdout,"shr_idx\tshr_rdr\tshr_in\tshr_out\n");
     for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
@@ -562,46 +562,53 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   /* Create reverse correspondence */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
     dmn_idx_out_in[dmn_idx_in_out[dmn_in_idx]]=dmn_in_idx;
-  
+
   /* Create full dmn_out list */
   dmn_in=var_in->dim;
   dmn_out=(dmn_sct **)nco_malloc(dmn_out_nbr*sizeof(dmn_sct *));
-  
+
   /* Assign dimension structures to new dimension list in correct order
-     Remember: dmn_in has dimension IDs relative to input file 
-     Copy dmn_in->xrf to get dimension IDs relative to output file (once they are defined) 
-     Oh come on, it only seems like cheating! */
-  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
+  Remember: dmn_in has dimension IDs relative to input file 
+  Copy dmn_in->xrf to get dimension IDs relative to output file (once they are defined) 
+  Oh come on, it only seems like cheating! */
+  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
+
+     if(dbg_lvl_get() >= nco_dbg_dev){
+       (void)fprintf(stdout,"%s: DEBUG %s variable %s dimension [%d] %s %d\n",prg_nm_get(),fnc_nm,
+         var_in->nm,dmn_out_idx,dmn_in[dmn_out_idx]->nm,dmn_idx_out_in[dmn_out_idx]);  
+     }
+
     dmn_out[dmn_out_idx]=dmn_in[dmn_idx_out_in[dmn_out_idx]]->xrf;
+  }
 
   /* Re-ordered output dimension list dmn_out now comprises correctly ordered but 
-     otherwise verbatim copies of dmn_out structures in calling routine */
-  
+  otherwise verbatim copies of dmn_out structures in calling routine */
+
   /* Free var_out's old dimension list */
   var_out->dim=(dmn_sct **)nco_free(var_out->dim);
   /* Replace old with new dimension list */
   var_out->dim=dmn_out;
-  
+
   /* NB: var_out is now in an inconsistent state 
-     var_out->dim refers to re-ordered dimensions 
-     However, var_out->dmn_id,cnt,srt,end,srd refer still duplicate var_in members
-     They refer to old dimension ordering in input file
-     nco_cnf_dmn_rdr_mtd() implicitly assumes that only nco_cnf_dmn_rdr_mtd() modifies var_out 
-     Call to nco_cnf_dmn_rdr_val() for this variable performs actual re-ordering
-     The interim inconsistent state is required for dimension IDs because 
-     output dimension IDs are not known until nco_dmn_dfn() which cannot 
-     (or, at least, should not) occur until output record dimension is known.
-     Interim modifications of var_out by any other routine are dangerous! */
+  var_out->dim refers to re-ordered dimensions 
+  However, var_out->dmn_id,cnt,srt,end,srd refer still duplicate var_in members
+  They refer to old dimension ordering in input file
+  nco_cnf_dmn_rdr_mtd() implicitly assumes that only nco_cnf_dmn_rdr_mtd() modifies var_out 
+  Call to nco_cnf_dmn_rdr_val() for this variable performs actual re-ordering
+  The interim inconsistent state is required for dimension IDs because 
+  output dimension IDs are not known until nco_dmn_dfn() which cannot 
+  (or, at least, should not) occur until output record dimension is known.
+  Interim modifications of var_out by any other routine are dangerous! */
 
   /* This is clear at date written (20040727), but memories are short
-     Hence we modify var_out->dmn_id,cnt,srt,end,srd to contain re-ordered values now
-     This makes it safer to var_out->dmn_id,cnt,srt,end,srd before second call to nco_cnf_dmn_rdr()
-     If dmn_out->id does depend on record dimension identity, then this update will do no good
-     Hence, we must re-update dmn_out->id after nco_dmn_dfn() in nco_cnf_dmn_rdr_val()
-     Structures should be completely consistent at that point
-     Not updating these structures (at least dmn_out->id) is equivalent to assuming that
-     dmn_out->id does not depend on record dimension identity, which is an ASSUMPTION
-     that may currently be true, but netCDF API does not guarantee as always true. */
+  Hence we modify var_out->dmn_id,cnt,srt,end,srd to contain re-ordered values now
+  This makes it safer to var_out->dmn_id,cnt,srt,end,srd before second call to nco_cnf_dmn_rdr()
+  If dmn_out->id does depend on record dimension identity, then this update will do no good
+  Hence, we must re-update dmn_out->id after nco_dmn_dfn() in nco_cnf_dmn_rdr_val()
+  Structures should be completely consistent at that point
+  Not updating these structures (at least dmn_out->id) is equivalent to assuming that
+  dmn_out->id does not depend on record dimension identity, which is an ASSUMPTION
+  that may currently be true, but netCDF API does not guarantee as always true. */
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
     /* NB: Change dmn_id,cnt,srt,end,srd together to minimize chances of forgetting one */
     var_out->dmn_id[dmn_out_idx]=dmn_out[dmn_out_idx]->id;
@@ -610,7 +617,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     var_out->end[dmn_out_idx]=dmn_out[dmn_out_idx]->end;
     var_out->srd[dmn_out_idx]=dmn_out[dmn_out_idx]->srd;
   } /* end loop over dmn_out */
-  
+
   if(var_out->is_rec_var){
     /* Which dimension in output dimension list is scheduled to be record dimension? */
     for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
@@ -622,11 +629,11 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
       if(dbg_lvl_get() >= nco_dbg_scl && dmn_idx_rec_out != 0) (void)fprintf(stdout,"%s: INFO %s for variable %s reports old input record dimension %s is now ordinal dimension %d, new record dimension must be %s\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_out[dmn_idx_rec_out]->nm,dmn_idx_rec_out,dmn_out[0]->nm);
     }else{
       /* 20121009: 
-	 This block only reached by variables that will change from record in input file to fixed in output file
-	 Leave is_rec_var as True here for those variables
-	 Change is_rec_var to false in "if(REDEFINED_RECORD_DIMENSION)" block of ncpdq.c instead
-	 Yes, this leaves the metadata in an inconsistent state 
-	 However, changing all these flags in one place in ncpdq.c main() is clearer */
+      This block only reached by variables that will change from record in input file to fixed in output file
+      Leave is_rec_var as True here for those variables
+      Change is_rec_var to false in "if(REDEFINED_RECORD_DIMENSION)" block of ncpdq.c instead
+      Yes, this leaves the metadata in an inconsistent state 
+      However, changing all these flags in one place in ncpdq.c main() is clearer */
       ;
     } /* end else */
   } /* endif record variable */
@@ -635,7 +642,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
       (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,unknown)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx]);
   } /* endif dbg */
-  
+
   return rec_dmn_nm_out;
 } /* end nco_var_dmn_rdr_mtd() */ 
 
