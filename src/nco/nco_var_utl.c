@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.310 2013-05-16 22:33:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.311 2013-05-17 20:33:19 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2100,7 +2100,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
  const trv_sct * const var_trv,       /* I [sct] Object to write (variable) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: nco_malloc() and return a completed var_sct; same as nco_var_fll() */
+  /* Purpose: nco_malloc() and return a completed var_sct; traversal version of nco_var_fll() */
 
   char dmn_nm[NC_MAX_NAME];      /* [sng] Dimension name  */  
 
@@ -2114,7 +2114,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   var_sct *var;                  /* [sct] Variable structure (output) */   
 
-  dmn_trv_sct *dmn_trv;          /* [sct] Unique dimension object */   
+  dmn_trv_sct *dmn_trv;          /* [sct] GTT unique dimension object */   
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
@@ -2174,14 +2174,20 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
     assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
 
-    var->dim[dmn_idx]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
-    var->dim[dmn_idx]->is_rec_dmn=dmn_trv->is_rec_dmn;
-    var->dim[dmn_idx]->sz=dmn_trv->sz;
-    var->dim[dmn_idx]->nm=strdup(dmn_trv->nm);
+    /* Define a "dmn_sct" from "dmn_trv" */
 
+    dmn_sct *dim; /* [sct] Dimension object */   
+
+    dim=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+ 
+    dim->is_rec_dmn=dmn_trv->is_rec_dmn;
+    dim->sz=dmn_trv->sz;
+    dim->nm=strdup(dmn_trv->nm);
     /* 20130516 Store ID, end; needed for ncppdq fxm check */
-    var->dim[dmn_idx]->id=var->dmn_id[dmn_idx];
-    var->dim[dmn_idx]->end=dmn_trv->sz-1L;
+    dim->id=var->dmn_id[dmn_idx];
+    dim->end=dmn_trv->sz-1L;
+
+    var->dim[dmn_idx]=dim;
 
   } /* Get input and set output dimension sizes and names */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.215 2013-05-17 19:06:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.216 2013-05-17 20:33:19 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.215 2013-05-17 19:06:57 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.215 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.216 2013-05-17 20:33:19 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.216 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -172,7 +172,9 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
+#ifndef USE_TRV_API
   int jdx=int_CEWI;
+#endif
   int idx_rdr=int_CEWI;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -706,11 +708,21 @@ main(int argc,char **argv)
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
-    var_out[var_idx]=nco_var_dpl(var[var_idx]);
+  for(int idx_var=0;idx_var<xtr_nbr;idx_var++){
+    var_out[idx_var]=nco_var_dpl(var[idx_var]);
 
-    (void)nco_xrf_var(var[var_idx],var_out[var_idx]);
-    (void)nco_xrf_dmn(var_out[var_idx]);
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG variable <%s>: ",prg_nm_get(),var_out[idx_var]->nm_fll);
+      for(int idx_dmn=0;idx_dmn<var_out[idx_var]->nbr_dim;idx_dmn++){
+        (void)fprintf(stdout,"[%d]%s ",idx_dmn,var_out[idx_var]->dim[idx_dmn]->nm);
+      }
+      (void)fprintf(stdout,"\n");
+    } /* endif dbg */       
+
+    (void)nco_xrf_var(var[idx_var],var_out[idx_var]);
+    (void)nco_xrf_dmn(var_out[idx_var]);
+  
+   
   }
 #else
   /* Fill-in variable structure list for all extracted variables */
@@ -762,30 +774,30 @@ main(int argc,char **argv)
 #ifdef USE_TRV_API
 
   /* Store processed variables info into table */
-  for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
+  for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
     trv_sct *var_trv;
 
     /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var_prc[var_idx]->nm_fll,trv_tbl);
+    var_trv=trv_tbl_var_nm_fll(var_prc[idx_var]->nm_fll,trv_tbl);
 
     assert(var_trv);
 
     /* Mark fixed/processed flag in table for "var_nm_fll" */
-    (void)trv_tbl_mrk_prc_fix(var_prc[var_idx]->nm_fll,prc_typ,trv_tbl);
+    (void)trv_tbl_mrk_prc_fix(var_prc[idx_var]->nm_fll,prc_typ,trv_tbl);
 
   } /* Store processed variables info into table */
 
   /* Store fixed variables info into table */
-  for(int var_idx=0;var_idx<nbr_var_fix;var_idx++){
+  for(int idx_var=0;idx_var<nbr_var_fix;idx_var++){
     trv_sct *var_trv;
 
     /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var_fix[var_idx]->nm_fll,trv_tbl);
+    var_trv=trv_tbl_var_nm_fll(var_fix[idx_var]->nm_fll,trv_tbl);
 
     assert(var_trv);
 
     /* Mark fixed/processed flag in table for "var_nm_fll" */
-    (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
+    (void)trv_tbl_mrk_prc_fix(var_fix[idx_var]->nm_fll,fix_typ,trv_tbl);
 
   } /* Store fixed variables info into table */
 
@@ -975,10 +987,10 @@ main(int argc,char **argv)
 #ifdef USE_TRV_API
 
   /* Transfer variable information to table. Using var/xtr_nbr containing all variables (processed, fixed) */
-  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+  for(int idx_var=0;idx_var<xtr_nbr;idx_var++){
 
     nc_type typ_out;         /* [enm] Type in output file */
-    var_sct *v=var[var_idx]; /* [sct] Current variable */
+    var_sct *v=var[idx_var]; /* [sct] Current variable */
 
     /* Obtain netCDF type to define variable from NCO program ID */
     typ_out=nco_get_typ(v);
