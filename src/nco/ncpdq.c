@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.213 2013-05-17 00:37:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.214 2013-05-17 01:47:28 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.213 2013-05-17 00:37:19 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.213 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.214 2013-05-17 01:47:28 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.214 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -189,7 +189,9 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
+#ifndef USE_TRV_API
   int rec_dmn_id_in=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
+#endif
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
@@ -710,8 +712,6 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   }
-
-
 #else
   /* Fill-in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
@@ -794,7 +794,11 @@ main(int argc,char **argv)
 
 
   /* If re-ordering, then in files with record dimension... */
+#ifndef USE_TRV_API
   if(dmn_rdr_nbr > 0 && rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
+#else
+  if(dmn_rdr_nbr > 0){
+#endif
     /* ...which, if any, output dimension structure currently holds record dimension? */
     for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_out;dmn_out_idx++)
       if(dmn_out[dmn_out_idx]->is_rec_dmn) break;
@@ -946,13 +950,10 @@ main(int argc,char **argv)
     } /* end loop over var_prc */
   } /* !REDEFINED_RECORD_DIMENSION */
 
-
-
 #ifndef USE_TRV_API
   /* Once new record dimension, if any, is known, define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 #endif /* ! USE_TRV_API */
-
 
   /* Alter metadata for variables that will be packed */
   if(nco_pck_plc != nco_pck_plc_nil){
@@ -970,9 +971,6 @@ main(int argc,char **argv)
       } /* endif packing */
     } /* end loop over var_prc */
   } /* nco_pck_plc == nco_pck_plc_nil */
-
-
-
 
 #ifdef USE_TRV_API
 
