@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.312 2013-05-20 22:12:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.313 2013-05-20 23:37:20 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2178,16 +2178,23 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
     /* Define a "dmn_sct" from "dmn_trv" */
 
-    dmn_sct *dim; /* [sct] Dimension object */   
+    dmn_sct *dim; /* [sct] Dimension object */  
+    int dmn_id;   /* [nbr] Dimension ID */
 
-    dim=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+    dmn_id=var->dmn_id[dmn_idx];
+
+    /* Return a completed dmn_sct, use dimension ID and name from TRV object */
+    dim=nco_dmn_fll(grp_id,dmn_id,dmn_trv->nm);
  
+    /* is_rec_dmn special case for netCDF4, use info from GTT dimension */
     dim->is_rec_dmn=dmn_trv->is_rec_dmn;
-    dim->sz=dmn_trv->sz;
-    dim->nm=strdup(dmn_trv->nm);
-    /* 20130516 Store ID, end; needed for ncppdq fxm check */
-    dim->id=var->dmn_id[dmn_idx];
-    dim->end=dmn_trv->sz-1L;
+#ifdef NCO_SANITY_CHECK
+    /* The rest must match info from GTT dimension */
+    assert(dim->sz == dmn_trv->sz);
+    assert(strcmp(dim->nm,dmn_trv->nm) == 0);
+    assert(dim->id == var->dmn_id[dmn_idx]);
+    assert(dim->end == dmn_trv->sz-1L);
+#endif
 
     var->dim[dmn_idx]=dim;
 
@@ -2223,10 +2230,13 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->srd[dmn_idx]=1L;
     var->sz*=var->cnt[dmn_idx];
 
-    /* 20130516 Store extra "dim" members; needed for ncppdq fxm check */
+    /* 20130516 Store extra "dim" members; needed for ncppdq  */
     var->dim[dmn_idx]->cnt=var->cnt[dmn_idx];
-    var->dim[dmn_idx]->srt=var->srt[dmn_idx];
-    var->dim[dmn_idx]->srd=var->srd[dmn_idx];
+#ifdef NCO_SANITY_CHECK
+    /* These were set above with */
+    assert(var->dim[dmn_idx]->srt == var->srt[dmn_idx]);
+    assert(var->dim[dmn_idx]->srd == var->srd[dmn_idx]);
+#endif
 
   } /* end loop over dim */
 
