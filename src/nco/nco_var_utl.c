@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.311 2013-05-17 20:33:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.312 2013-05-20 22:12:14 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -889,7 +889,9 @@ nco_xrf_dmn /* [fnc] Switch pointers to dimension structures so var->dim points 
      Routine makes dim element of variable structure from nco_var_dpl() refer to counterparts
      of dimensions directly associated with variable it was duplicated from */
   int idx;
-  for(idx=0;idx<var->nbr_dim;idx++) var->dim[idx]=var->dim[idx]->xrf;
+  for(idx=0;idx<var->nbr_dim;idx++){
+    var->dim[idx]=var->dim[idx]->xrf;
+  }
 } /* end nco_xrf_dmn() */
 
 void

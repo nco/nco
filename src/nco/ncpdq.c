@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.218 2013-05-20 21:45:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.219 2013-05-20 22:12:14 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.218 2013-05-20 21:45:39 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.218 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.219 2013-05-20 22:12:14 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.219 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -708,24 +708,24 @@ main(int argc,char **argv)
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-  for(int idx_var=0;idx_var<xtr_nbr;idx_var++){
-    var_out[idx_var]=nco_var_dpl(var[idx_var]);
+  for(idx=0;idx<xtr_nbr;idx++){
+    var_out[idx]=nco_var_dpl(var[idx]);
 
     if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG variable <%s>: ",prg_nm_get(),var_out[idx_var]->nm_fll);
-      for(int idx_dmn=0;idx_dmn<var_out[idx_var]->nbr_dim;idx_dmn++){
-        (void)fprintf(stdout,"[%d]%s ",idx_dmn,var_out[idx_var]->dim[idx_dmn]->nm);
+      (void)fprintf(stdout,"%s: DEBUG variable <%s>: ",prg_nm_get(),var_out[idx]->nm_fll);
+      for(int idx_dmn=0;idx_dmn<var_out[idx]->nbr_dim;idx_dmn++){
+        (void)fprintf(stdout,"[%d]%s ",idx_dmn,var_out[idx]->dim[idx_dmn]->nm);
       }
       (void)fprintf(stdout,"\n");
     } /* endif dbg */       
 
-    (void)nco_xrf_var(var[idx_var],var_out[idx_var]);
-    (void)nco_xrf_dmn(var_out[idx_var]);
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
 
     if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG variable <%s>: ",prg_nm_get(),var_out[idx_var]->nm_fll);
-      for(int idx_dmn=0;idx_dmn<var_out[idx_var]->nbr_dim;idx_dmn++){
-        (void)fprintf(stdout,"[%d]%s ",idx_dmn,var_out[idx_var]->dim[idx_dmn]->nm);
+      (void)fprintf(stdout,"%s: DEBUG variable <%s>: ",prg_nm_get(),var_out[idx]->nm_fll);
+      for(int idx_dmn=0;idx_dmn<var_out[idx]->nbr_dim;idx_dmn++){
+        (void)fprintf(stdout,"[%d]%s ",idx_dmn,var_out[idx]->dim[idx_dmn]->nm);
       }
       (void)fprintf(stdout,"\n");
     } /* endif dbg */       
