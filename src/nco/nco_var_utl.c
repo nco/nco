@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.314 2013-05-21 07:44:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.315 2013-05-21 22:31:56 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1563,13 +1563,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   Routine was based on nco_cpy_var_dfn_lmt(), and differed trivially from it
   Now merged into one call that always takes limit information?
   Routine truncates dimensions in variable definition in output file according to user-specified limits
-  Routine copies_variable by variable, old-style, used only by ncks
+  Routine copies_variable by variable
   20130126: csz 
   Behavior until today required rec_dmn_nm even if not changing it
   As of today, rec_dmn_nm passed only when user-specified
   Otherwise, re-use old record dimension name
   20130222: csz
-  Unify nco_cpy_var_dfn() and nco_cpy_var_dfn_lmt_trv()
   Same routine is called with or without limits
   Routine works with GTT instead of plain names */
 
@@ -1660,7 +1659,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* Does variable contain requested record dimension? */
       for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
         if(dmn_in_id_var[dmn_idx] == rec_dmn_id_dmy){
-          if(dbg_lvl_get() >= 13) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+          if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
           break;
         } /* endif */
       } /* end loop over dmn_idx */
@@ -1903,7 +1902,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
     nc_type typ_out; /* [enm] Type in output file */ 
 
-    if( var_trv->var_typ_out != -1 ) typ_out=var_trv->var_typ_out; else typ_out=var_typ;
+    if( var_trv->var_typ_out != err_typ ) typ_out=var_trv->var_typ_out; else typ_out=var_typ;
 
     if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s DEFINING variable <%s> with type %s\n",prg_nm_get(),fnc_nm,
