@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.221 2013-05-21 07:44:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.222 2013-05-21 23:25:00 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.221 2013-05-21 07:44:10 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.221 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.222 2013-05-21 23:25:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.222 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1024,6 +1024,38 @@ main(int argc,char **argv)
     (void)trv_tbl_mrk_typ(v->nm_fll,typ_out,trv_tbl);
 
   } /* Store processed variables info into table */
+
+
+#ifdef NCO_DIM_RDR
+  /* If re-ordering, insert re-ordering dimension array into GTT; later used by nco_xtr_dfn() */
+  if(dmn_rdr_nbr > 0){
+
+    /* For all processsed variables (re-ordering was done for them only) */
+    for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
+      trv_sct *var_trv;
+
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var_prc[idx_var]->nm_fll,trv_tbl);
+
+      assert(var_trv);
+      assert(var_trv->nbr_dmn == var_prc[idx_var]->nbr_dim);
+
+      if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(fp_stdout,"%s: DEBUG reorder variable dimensions for <%s>: ",prg_nm_get(),var_trv->nm_fll);
+
+      /* Loop dimensions for this variable */
+      for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(fp_stdout,"[%d]->[%d]: ",idx_dmn,dmn_idx_out_in[idx_var][idx_dmn]);
+
+        /* Store re-ordering dimension array for this GTT object */
+        var_trv->dmn_idx_out_in[idx_dmn]=dmn_idx_out_in[idx_var][idx_dmn];
+
+      } /* Loop dimensions for this variable */
+
+      if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(fp_stdout,"\n");
+
+    } /* For all processsed variables */
+  } /* If re-ordering */
+#endif /* NCO_DIM_RDR */
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl);   

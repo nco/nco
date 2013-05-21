@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.313 2013-05-08 19:42:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.314 2013-05-21 23:25:00 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -151,6 +151,7 @@ extern "C" {
 
   /* Call assert() in form assert(expected==) */
 #define NCO_SANITY_CHECK
+#define NCO_DIM_RDR /* Test dimension re-ordering in GTT */
 
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
@@ -669,7 +670,7 @@ extern "C" {
     int dmn_id; /* [ID] Unique ID for dimension; same as "dmn_trv_sct.id", obtained from API "nc_inq_vardimid" */
   } var_dmn_sct; 
 
-  /* Processing type enumerator. Currently used by ncbo, ncecat */
+  /* Processing type enumerator */
   typedef enum {
     err_typ=-1,             /* -1 [enm] Invalid type for initialization */
     fix_typ,                /*  0 [enm] Fixed variable (operator alters neither data nor metadata) */
@@ -690,6 +691,9 @@ extern "C" {
     nco_obj_typ nco_typ;              /* [enm] netCDF4 object type: group or variable */
     char *nm_fll;                     /* [sng] Fully qualified name (path) */
     var_dmn_sct var_dmn[NC_MAX_DIMS]; /* [sct] (For variables only) Dimensions for variable object */
+#ifdef NCO_DIM_RDR
+    int dmn_idx_out_in[NC_MAX_DIMS];  /* [idx] (For variables only) Dimension correspondence for reordered dimensions, (ncpdq) */
+#endif
     nco_bool is_crd_var;              /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
     nco_bool is_rec_var;              /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
     nc_type var_typ;                  /* [enm] (For variables only) NetCDF type  */  
