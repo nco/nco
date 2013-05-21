@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.220 2013-05-21 00:08:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.221 2013-05-21 07:44:10 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.220 2013-05-21 00:08:53 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.220 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.221 2013-05-21 07:44:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.221 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -707,7 +707,7 @@ main(int argc,char **argv)
   /* Fill-in variable structure list for all extracted variables */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
-  /* This piece of code replicates the "xrf" transfer (in the original nco_var_fll(), var->dim is setup with main "dim" array */ 
+  /* This piece of code replicates the "xrf" transfer; in the original nco_var_fll(), var->dim is setup with main "dim" array */ 
   for(idx=0;idx<xtr_nbr;idx++){
     for(int idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
       (void)nco_dmn_xrf(var[idx]->dim[idx_dmn],dmn_out[idx_dmn]);

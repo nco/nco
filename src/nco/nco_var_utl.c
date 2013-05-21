@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.313 2013-05-20 23:37:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.314 2013-05-21 07:44:10 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1826,33 +1826,25 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
       } /* !rec_dmn_nm */ 
 
-      /* Does dimension have user-specified limits?
-      Following line is only difference between defining a variable with and without limits */
-      if(var_trv->var_dmn[dmn_idx].is_crd_var){
-        dmn_sz=var_trv->var_dmn[dmn_idx].crd->lmt_msa.dmn_cnt;
-      }else {
-        dmn_sz=var_trv->var_dmn[dmn_idx].ncd->lmt_msa.dmn_cnt;
-      }
-
       /* At long last ... */
+
+      /* Define dimension size */
       if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
+        dmn_sz=NC_UNLIMITED;
+      }else{
+        /* Get size from GTT */
+        if(var_trv->var_dmn[dmn_idx].is_crd_var){
+          dmn_sz=var_trv->var_dmn[dmn_idx].crd->lmt_msa.dmn_cnt;
+        }else {
+          dmn_sz=var_trv->var_dmn[dmn_idx].ncd->lmt_msa.dmn_cnt;
+        }
+      } /* Define dimension size */
 
-        /* Define dimension and obtain dimension ID */
-        (void)nco_def_dim(grp_dmn_out_id,dmn_nm,NC_UNLIMITED,&dmn_id_out);
+      /* Define dimension and obtain dimension ID */
+      (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);
 
-        /* Assign the defined ID to the dimension ID array for the variable */
-        dmn_out_id[dmn_idx]=dmn_id_out;
-
-        rec_dmn_out_id=dmn_id_out;
-      }else{ /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
-
-        /* Define dimension and obtain dimension ID */
-        (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);
-
-        /* Assign the defined ID to the dimension ID array for the variable */
-        dmn_out_id[dmn_idx]=dmn_id_out;
-
-      } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
+      /* Assign the defined ID to the dimension ID array for the variable */
+      dmn_out_id[dmn_idx]=dmn_id_out;
 
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s defining dimension #%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
