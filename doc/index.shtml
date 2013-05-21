@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.786 2013-05-08 00:21:25 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.787 2013-05-21 08:00:29 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -599,15 +599,15 @@ netCDF4 compound types?;
 Optimize diskless files?;
 <tt>ncrename -g</tt>?;</li>
 <li><b>NCO 4.3.2</b>: (<i>In Progress, features completed or being worked on include</i>)
-Windows DAP &amp; UDUnits?;
 <tt>ncflint -g -G --unn</tt>;
-<tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>?;</li>
+<tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>;</li>
 <li><b>NCO 4.3.1</b>: (<i>Current Stable Release</i>)
 <tt>ncbo</tt> symmetry, group broadcasting;
 <tt>ncbo -G --unn</tt>;
 <tt>ncecat</tt> <a href="http://nco.sf.net/nco.html#rag">RAG</a>;
 <tt>ncbo</tt> CF <a href="#bug_ncbo_ccm_ccsm_cf">bugfix</a>;
-<tt>ncatted</tt> <a href="#bug_ncatted_strcmp">bugfix</a>;</li>
+<tt>ncatted</tt> <a href="#bug_ncatted_strcmp">bugfix</a>;
+Windows DAP;</li>
 <li><b>NCO 4.3.0</b>: 
 <tt>ncbo -g</tt>;
 <tt>ncatted</tt> NULs;
