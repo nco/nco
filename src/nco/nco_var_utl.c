@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.316 2013-05-22 00:30:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.317 2013-05-22 19:07:14 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1687,8 +1687,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   /* File format needed for decision tree and to enable netCDF4 features */
   rcd=nco_inq_format(grp_out_id,&fl_fmt);
 
+  int idx_dmn;     /* [nbr] Dimension iterator index for variable object  */ 
+  int idx_dmn_rdr; /* [nbr] Re-ordered dimension index in ncpdq (equal to iterator index for non re-order) */ 
+  int idx_dmn_grp; /* [nbr] Dimension iterator index for group  */ 
+
   /* Get input and set output dimension sizes and names */
-  for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+  for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
     char *grp_out_fll;               /* [sng] Group name of dimension in output */
     char dmn_nm[NC_MAX_NAME];        /* [sng] Dimension names  */
     char dmn_nm_grp[NC_MAX_NAME];    /* [sng] Dimension names for group */  
@@ -1699,7 +1703,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     int dmn_out_id_grp[NC_MAX_DIMS]; /* [id] Dimension IDs array in output group */ 
     int dmn_id_out;                  /* [id] Dimension ID defined in outout group */  
     int nbr_dmn_out_grp;             /* [id] Number of dimensions in group */ 
-    int dmn_idx;                     /* [nbr] The "real" dimension index (equal to iterator index for non re-order) */  
 
     long dmn_sz;                     /* [sng] Dimension size  */  
     long dmn_sz_grp;                 /* [sng] Dimension size for group  */  
@@ -1714,8 +1717,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Dimension needs to be defined in *this* group? Assume yes... */
     need_to_define_dim=True;
 
-    /* The "real" dimension index (equal to iterator index for non re-order) */  
-    dmn_idx=idx_dmn;
+    /* Re-ordered dimension index equal to iterator index for non re-order */  
+    idx_dmn_rdr=idx_dmn;
 
     /* Is there a dimension re-ordering? (ncpdq) */
     if (prg_id == ncpdq){
@@ -1727,15 +1730,15 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       }
 
       /* Dimension correspondence for reordered dimensions, (ncpdq); initialized with ordered index, changed in ncpdq */
-      dmn_idx=var_trv->dmn_idx_out_in[idx_dmn];  
+      idx_dmn_rdr=var_trv->dmn_idx_out_in[idx_dmn];  
 #endif
     }
 
     /* Get dimension name and size from ID in *input* group */
-    (void)nco_inq_dim(grp_in_id,dmn_in_id_var[dmn_idx],dmn_nm,&dmn_sz);
+    (void)nco_inq_dim(grp_in_id,dmn_in_id_var[idx_dmn_rdr],dmn_nm,&dmn_sz);
 
     /* Dimension ID for variable, used to get dimension object in input list  */
-    var_dim_id=dmn_in_id_var[dmn_idx];
+    var_dim_id=dmn_in_id_var[idx_dmn_rdr];
 
     /* Get unique dimension object from unique dimension ID, in input list */
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
@@ -1758,7 +1761,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Inquire if dimension defined in output using obtained group ID (return value not used in the logic) */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,&dmn_id_out);
 
-    if(dbg_lvl_get() == nco_dbg_old){
+    if(dbg_lvl_get() >= nco_dbg_dev){
       if (rcd_lcl == NC_NOERR) 
         (void)fprintf(stdout,"%s: INFO %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
@@ -1772,10 +1775,10 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
 
     /* Loop group defined dimensions */
-    for(int dmn_idx_grp=0;dmn_idx_grp<nbr_dmn_out_grp;dmn_idx_grp++){
+    for(idx_dmn_grp=0;idx_dmn_grp<nbr_dmn_out_grp;idx_dmn_grp++){
 
       /* Get dimension name and size from ID */
-      (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[dmn_idx_grp],dmn_nm_grp,&dmn_sz_grp);
+      (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[idx_dmn_grp],dmn_nm_grp,&dmn_sz_grp);
 
       /* A relative name for variable and group exists for this group...the dimension is already defined */
       if(strcmp(dmn_nm_grp,dmn_nm) == 0){
@@ -1783,7 +1786,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         need_to_define_dim=False;
 
         /* Assign the defined ID to the dimension ID array for the variable */
-        dmn_out_id[dmn_idx]=dmn_out_id_grp[dmn_idx_grp];
+        dmn_out_id[idx_dmn_rdr]=dmn_out_id_grp[idx_dmn_grp];
 
       }
     } /* Loop group defined dimensions */
@@ -1850,24 +1853,23 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         dmn_sz=NC_UNLIMITED;
       }else{
         /* Get size from GTT */
-        if(var_trv->var_dmn[dmn_idx].is_crd_var){
-          dmn_sz=var_trv->var_dmn[dmn_idx].crd->lmt_msa.dmn_cnt;
+        if(var_trv->var_dmn[idx_dmn_rdr].is_crd_var){
+          dmn_sz=var_trv->var_dmn[idx_dmn_rdr].crd->lmt_msa.dmn_cnt;
         }else {
-          dmn_sz=var_trv->var_dmn[dmn_idx].ncd->lmt_msa.dmn_cnt;
+          dmn_sz=var_trv->var_dmn[idx_dmn_rdr].ncd->lmt_msa.dmn_cnt;
         }
       } /* Define dimension size */
 
       /* Define dimension and obtain dimension ID */
       (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);
 
-      /* Assign the defined ID to the dimension ID array for the variable */
-      dmn_out_id[dmn_idx]=dmn_id_out;
+      /* Assign the defined ID to the dimension ID array for the variable. NB: use iterator definition index */
+      dmn_out_id[idx_dmn]=dmn_id_out;
 
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: INFO %s defining dimension #%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
-          dmn_id_out,dmn_idx,dmn_trv->nm_fll,dmn_sz);
+          dmn_id_out,idx_dmn,dmn_trv->nm_fll,dmn_sz);
       } /* endif dbg */
-
 
       /* Memory management after defining current output dimension */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
@@ -1875,23 +1877,25 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* end if dimension is not yet defined */
 
     /* Die informatively if record dimension is not first dimension */
-    if(dmn_idx > 0 && dmn_out_id[dmn_idx] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4){
-      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",prg_nm_get(),rec_dmn_nm,var_nm,dmn_idx+1);  
+    if(idx_dmn_rdr > 0 && dmn_out_id[idx_dmn_rdr] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4){
+      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx_dmn_rdr+1);  
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
   } /* end loop over dimensions */
 
-
-  if(dbg_lvl_get() == nco_dbg_old){
+  if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: INFO %s DEFINING variable <%s> with dimension IDS = ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
-      dmn_trv_sct *dmn_trv;            /* [sct] Unique dimension object */   
+    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+      dmn_trv_sct *dmn_trv;            /* [sct] Unique dimension object */  
+
+      /* Dimension correspondence for reordered dimensions, (ncpdq); initialized with ordered index, changed in ncpdq */
+      idx_dmn_rdr=var_trv->dmn_idx_out_in[idx_dmn];  
 
       /* Get unique dimension object from unique dimension ID (using input IDs to get object), in input list */
-      dmn_trv=nco_dmn_trv_sct(dmn_in_id_var[dmn_idx],trv_tbl);
+      dmn_trv=nco_dmn_trv_sct(dmn_in_id_var[idx_dmn_rdr],trv_tbl);
 
-      (void)fprintf(stdout,"#%d <%s> : ",dmn_out_id[dmn_idx],dmn_trv->nm_fll);
+      (void)fprintf(stdout,"#%d <%s> : ",dmn_out_id[idx_dmn_rdr],dmn_trv->nm_fll);
     }
     (void)fprintf(stdout,"\n");
   } /* endif dbg */
@@ -1899,7 +1903,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   /* Insert extra "record" dimension in dimension array. NB: done only for processed variables  */
   if (rec_dmn_nm && prg_id == ncecat && var_trv->enm_prc_typ == prc_typ){
     int dmn_tmp_id[NC_MAX_DIMS];
-    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++) dmn_tmp_id[dmn_idx]=dmn_out_id[dmn_idx];
+    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) dmn_tmp_id[idx_dmn]=dmn_out_id[idx_dmn];
 
     /* Increment number of dimensions for this variable */
     nbr_dmn_var++;
@@ -1908,9 +1912,9 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     dmn_out_id[0]=rec_id_out;
 
     /* Loop dimensions */
-    for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
-      dmn_out_id[dmn_idx+1]=dmn_tmp_id[dmn_idx];
+      dmn_out_id[idx_dmn+1]=dmn_tmp_id[idx_dmn];
 
     } /* Loop dimensions */
   } /* Insert extra "record" dimension in dimension array */
