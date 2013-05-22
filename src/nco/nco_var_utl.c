@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.317 2013-05-22 19:07:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.318 2013-05-22 19:27:26 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1884,21 +1884,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   } /* end loop over dimensions */
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO %s DEFINING variable <%s> with dimension IDS = ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-      dmn_trv_sct *dmn_trv;            /* [sct] Unique dimension object */  
-
-      /* Dimension correspondence for reordered dimensions, (ncpdq); initialized with ordered index, changed in ncpdq */
-      idx_dmn_rdr=var_trv->dmn_idx_out_in[idx_dmn];  
-
-      /* Get unique dimension object from unique dimension ID (using input IDs to get object), in input list */
-      dmn_trv=nco_dmn_trv_sct(dmn_in_id_var[idx_dmn_rdr],trv_tbl);
-
-      (void)fprintf(stdout,"#%d <%s> : ",dmn_out_id[idx_dmn_rdr],dmn_trv->nm_fll);
-    }
-    (void)fprintf(stdout,"\n");
-  } /* endif dbg */
 
   /* Insert extra "record" dimension in dimension array. NB: done only for processed variables  */
   if (rec_dmn_nm && prg_id == ncecat && var_trv->enm_prc_typ == prc_typ){
@@ -1918,6 +1903,26 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
     } /* Loop dimensions */
   } /* Insert extra "record" dimension in dimension array */
+
+
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s DEFINING variable <%s> with dimensions: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+      dmn_trv_sct *dmn_trv;
+      int var_dim_id;
+
+      /* Dimension ID for variable, used to get dimension object in input list  */
+      var_dim_id=dmn_out_id[idx_dmn];
+
+      /* Get unique dimension object from unique dimension ID, in input list */
+      dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
+
+      (void)fprintf(stdout,"#%d <%s> : ",dmn_out_id[idx_dmn],dmn_trv->nm_fll);
+    }
+    (void)fprintf(stdout,"\n");
+  }
+
 
   /* Some operators change the output netCDF variable type */
   if (prg_id == ncflint){
