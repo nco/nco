@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.715 2013-05-15 19:13:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.716 2013-05-22 00:30:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1942,6 +1942,10 @@ nco_grp_itr /* [fnc] Populate traversal table by examining, recursively, subgrou
         (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension #%d'%s'\n",prg_nm_get(),fnc_nm,
           var_nm_fll,dmn_id_var[dmn_idx_var],dmn_nm_var);
       }
+#ifdef NCO_DIM_RDR
+      /* Dimension correspondence for reordered dimensions, (ncpdq); initialize with ordered index (no re-order) */
+      trv_tbl->lst[idx].dmn_idx_out_in[dmn_idx_var]=dmn_idx_var;  
+#endif
     }
  
     /* Free constructed name */

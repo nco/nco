@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.315 2013-05-21 22:31:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.316 2013-05-22 00:30:25 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1688,7 +1688,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   rcd=nco_inq_format(grp_out_id,&fl_fmt);
 
   /* Get input and set output dimension sizes and names */
-  for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+  for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
     char *grp_out_fll;               /* [sng] Group name of dimension in output */
     char dmn_nm[NC_MAX_NAME];        /* [sng] Dimension names  */
     char dmn_nm_grp[NC_MAX_NAME];    /* [sng] Dimension names for group */  
@@ -1698,7 +1698,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     int var_dim_id;                  /* [id] Variable dimension ID */  
     int dmn_out_id_grp[NC_MAX_DIMS]; /* [id] Dimension IDs array in output group */ 
     int dmn_id_out;                  /* [id] Dimension ID defined in outout group */  
-    int nbr_dmn_out_grp;             /* [id] Number of dimensions in group */  
+    int nbr_dmn_out_grp;             /* [id] Number of dimensions in group */ 
+    int dmn_idx;                     /* [nbr] The "real" dimension index (equal to iterator index for non re-order) */  
 
     long dmn_sz;                     /* [sng] Dimension size  */  
     long dmn_sz_grp;                 /* [sng] Dimension size for group  */  
@@ -1712,6 +1713,23 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
     /* Dimension needs to be defined in *this* group? Assume yes... */
     need_to_define_dim=True;
+
+    /* The "real" dimension index (equal to iterator index for non re-order) */  
+    dmn_idx=idx_dmn;
+
+    /* Is there a dimension re-ordering? (ncpdq) */
+    if (prg_id == ncpdq){
+
+#ifdef NCO_DIM_RDR
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s reorder variable dimensions for <%s> index: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+        (void)fprintf(stdout,"[%d]->[%d]\n",idx_dmn,var_trv->dmn_idx_out_in[idx_dmn]);
+      }
+
+      /* Dimension correspondence for reordered dimensions, (ncpdq); initialized with ordered index, changed in ncpdq */
+      dmn_idx=var_trv->dmn_idx_out_in[idx_dmn];  
+#endif
+    }
 
     /* Get dimension name and size from ID in *input* group */
     (void)nco_inq_dim(grp_in_id,dmn_in_id_var[dmn_idx],dmn_nm,&dmn_sz);
