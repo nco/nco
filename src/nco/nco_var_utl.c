@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.318 2013-05-22 19:27:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.319 2013-05-22 23:05:55 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1588,6 +1588,9 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   int rcd=NC_NOERR;                /* [rcd] Return code */
   int prg_id;                      /* [enm] Program ID */
   int rec_id_out;                  /* [id] Dimension ID for ncecat "record" dimension */  
+  int idx_dmn;                     /* [nbr] Dimension iterator index for variable object  */ 
+  int idx_dmn_rdr;                 /* [nbr] Re-ordered dimension index in ncpdq (equal to iterator index for non re-order) */ 
+  int idx_dmn_grp;                 /* [nbr] Dimension iterator index for group  */ 
 
   nc_type var_typ;                 /* [enm] netCDF type */
 
@@ -1685,11 +1688,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   } /* !rec_dmn_nm */
 
   /* File format needed for decision tree and to enable netCDF4 features */
-  rcd=nco_inq_format(grp_out_id,&fl_fmt);
-
-  int idx_dmn;     /* [nbr] Dimension iterator index for variable object  */ 
-  int idx_dmn_rdr; /* [nbr] Re-ordered dimension index in ncpdq (equal to iterator index for non re-order) */ 
-  int idx_dmn_grp; /* [nbr] Dimension iterator index for group  */ 
+  (void)nco_inq_format(grp_out_id,&fl_fmt);
 
   /* Get input and set output dimension sizes and names */
   for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
@@ -1723,22 +1722,24 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Is there a dimension re-ordering? (ncpdq) */
     if (prg_id == ncpdq){
 
+      /* Dimension correspondence for reordered dimensions; initialized with ordered index, changed in ncpdq */
+      idx_dmn_rdr=var_trv->dmn_idx_out_in[idx_dmn];  
+
 #ifdef NCO_DIM_RDR
       if(dbg_lvl_get() >= nco_dbg_dev){
+        dmn_trv=nco_dmn_trv_sct(dmn_in_id_var[idx_dmn],trv_tbl);
+        dmn_trv_sct *dmn_trv_rdr=nco_dmn_trv_sct(dmn_in_id_var[idx_dmn_rdr],trv_tbl);
         (void)fprintf(stdout,"%s: DEBUG %s reorder variable dimensions for <%s> index: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-        (void)fprintf(stdout,"[%d]->[%d]\n",idx_dmn,var_trv->dmn_idx_out_in[idx_dmn]);
+        (void)fprintf(stdout,"[%d]%s->[%d]%s\n",idx_dmn,dmn_trv->nm_fll,idx_dmn_rdr,dmn_trv_rdr->nm_fll);
       }
-
-      /* Dimension correspondence for reordered dimensions, (ncpdq); initialized with ordered index, changed in ncpdq */
-      idx_dmn_rdr=var_trv->dmn_idx_out_in[idx_dmn];  
 #endif
     }
 
-    /* Get dimension name and size from ID in *input* group */
-    (void)nco_inq_dim(grp_in_id,dmn_in_id_var[idx_dmn_rdr],dmn_nm,&dmn_sz);
-
     /* Dimension ID for variable, used to get dimension object in input list  */
     var_dim_id=dmn_in_id_var[idx_dmn_rdr];
+
+    /* Get dimension name and size from ID in *input* group */
+    (void)nco_inq_dim(grp_in_id,var_dim_id,dmn_nm,&dmn_sz);
 
     /* Get unique dimension object from unique dimension ID, in input list */
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
@@ -1877,8 +1878,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* end if dimension is not yet defined */
 
     /* Die informatively if record dimension is not first dimension */
-    if(idx_dmn_rdr > 0 && dmn_out_id[idx_dmn_rdr] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4){
-      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx_dmn_rdr+1);  
+    if(idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4){
+      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx_dmn+1);  
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
@@ -1909,16 +1910,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s DEFINING variable <%s> with dimensions: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-      dmn_trv_sct *dmn_trv;
-      int var_dim_id;
-
-      /* Dimension ID for variable, used to get dimension object in input list  */
-      var_dim_id=dmn_out_id[idx_dmn];
-
-      /* Get unique dimension object from unique dimension ID, in input list */
-      dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
-
-      (void)fprintf(stdout,"#%d <%s> : ",dmn_out_id[idx_dmn],dmn_trv->nm_fll);
+      (void)fprintf(stdout,"#%d: ",dmn_out_id[idx_dmn]);
     }
     (void)fprintf(stdout,"\n");
   }
