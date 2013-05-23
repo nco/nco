@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.227 2013-05-23 22:09:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.228 2013-05-23 22:38:53 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.227 2013-05-23 22:09:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.227 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.228 2013-05-23 22:38:53 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.228 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -709,15 +709,32 @@ main(int argc,char **argv)
 
   /* "xrf" transfer; in the original nco_var_fll(), var->dim is setup with main "dim" array */ 
   for(idx=0;idx<xtr_nbr;idx++){
+
+    /* Loop variable dimensions */
     for(int idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
-      (void)nco_dmn_xrf(var[idx]->dim[idx_dmn],dmn_out[idx_dmn]);
+
+      /* Find the right "dim" using "nm_fll", since "dim" is global, loop "dim" with jdx_dmn/nbr_dmn_xtr  */
+      dmn_sct *dim_xrf=NULL;
+
+      /* Loop extract dimensions */
+      for(int jdx_dmn=0;jdx_dmn<nbr_dmn_xtr;jdx_dmn++){
+        /* Match name */
+        if (strcmp(var[idx]->dim[idx_dmn]->nm,dim[jdx_dmn]->nm) == 0){
+          dim_xrf=dim[jdx_dmn];
+          break;
+        } /* Match name */
+      }/* Loop extract dimensions */
+
+      assert(dim_xrf);
+
+      (void)nco_dmn_xrf(var[idx]->dim[idx_dmn],dim_xrf);
 
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG variable <%s>: ",prg_nm_get(),var[idx]->nm_fll);
         (void)fprintf(stdout,"[%d]%s xrf->%s \n",idx_dmn,var[idx]->dim[idx_dmn]->nm,var[idx]->dim[idx_dmn]->xrf->nm);     
       }    
 
-    } 
+    } /* Loop variable dimensions */
   } /* "xrf" transfer */
 
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
