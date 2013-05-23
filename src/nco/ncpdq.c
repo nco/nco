@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.226 2013-05-23 21:52:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.227 2013-05-23 22:09:00 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.226 2013-05-23 21:52:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.226 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.227 2013-05-23 22:09:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.227 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -707,12 +707,18 @@ main(int argc,char **argv)
   /* Fill-in variable structure list for all extracted variables */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
-  /* This piece of code replicates the "xrf" transfer; in the original nco_var_fll(), var->dim is setup with main "dim" array */ 
+  /* "xrf" transfer; in the original nco_var_fll(), var->dim is setup with main "dim" array */ 
   for(idx=0;idx<xtr_nbr;idx++){
     for(int idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
       (void)nco_dmn_xrf(var[idx]->dim[idx_dmn],dmn_out[idx_dmn]);
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG variable <%s>: ",prg_nm_get(),var[idx]->nm_fll);
+        (void)fprintf(stdout,"[%d]%s xrf->%s \n",idx_dmn,var[idx]->dim[idx_dmn]->nm,var[idx]->dim[idx_dmn]->xrf->nm);     
+      }    
+
     } 
-  }
+  } /* "xrf" transfer */
 
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
   for(idx=0;idx<xtr_nbr;idx++){
@@ -734,6 +740,15 @@ main(int argc,char **argv)
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
   for(idx=0;idx<xtr_nbr;idx++){
     var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      for(int idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
+        (void)fprintf(stdout,"%s: DEBUG variable <%s>: ",prg_nm_get(),var[idx]->nm);
+        (void)fprintf(stdout,"[%d]%s xrf->%s \n",idx_dmn,var[idx]->dim[idx_dmn]->nm,var[idx]->dim[idx_dmn]->xrf->nm);  
+      }
+    }    
+
+
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
