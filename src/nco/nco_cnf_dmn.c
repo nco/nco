@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.77 2013-05-17 00:37:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.78 2013-05-23 02:04:08 pvicente Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -573,12 +573,12 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   Oh come on, it only seems like cheating! */
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
 
-     if(dbg_lvl_get() >= nco_dbg_dev){
-       (void)fprintf(stdout,"%s: DEBUG %s variable %s dimension [%d] %s %d\n",prg_nm_get(),fnc_nm,
-         var_in->nm,dmn_out_idx,dmn_in[dmn_out_idx]->nm,dmn_idx_out_in[dmn_out_idx]);  
-     }
-
     dmn_out[dmn_out_idx]=dmn_in[dmn_idx_out_in[dmn_out_idx]]->xrf;
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s variable %s dimension [%d]%s\n",prg_nm_get(),fnc_nm,
+        var_in->nm,dmn_out_idx,dmn_out[dmn_out_idx]->nm);  
+    }
   }
 
   /* Re-ordered output dimension list dmn_out now comprises correctly ordered but 
@@ -621,7 +621,9 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   if(var_out->is_rec_var){
     /* Which dimension in output dimension list is scheduled to be record dimension? */
     for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
-      if(dmn_out[dmn_out_idx]->is_rec_dmn) break;
+      if(dmn_out[dmn_out_idx]->is_rec_dmn){
+        break;
+      }
     if(dmn_out_idx != dmn_out_nbr){
       dmn_idx_rec_out=dmn_out_idx;
       /* Request that first dimension be record dimension */
