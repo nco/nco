@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.223 2013-05-23 02:04:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.224 2013-05-23 19:20:13 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.223 2013-05-23 02:04:08 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.223 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.224 2013-05-23 19:20:13 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.224 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -844,6 +844,13 @@ main(int argc,char **argv)
       dmn_idx_out_in[idx]=(int *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(int));
       dmn_rvr_in[idx]=(nco_bool *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(nco_bool));
       /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG variable %s ",prg_nm_get(),var_prc[idx]->nm);
+        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"[%d]%s: ",idx_dmn,dmn_rdr[idx_dmn]->nm);
+        (void)fprintf(stdout,"\n");
+      }
+
       rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
       /* If record dimension required by current variable re-order...
       ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
