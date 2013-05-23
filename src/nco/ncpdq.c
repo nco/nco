@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.228 2013-05-23 22:38:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.229 2013-05-23 23:46:15 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.228 2013-05-23 22:38:53 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.228 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.229 2013-05-23 23:46:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.229 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -172,9 +172,6 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
-#ifndef USE_TRV_API
-  int jdx=int_CEWI;
-#endif
   int idx_rdr=int_CEWI;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -702,7 +699,6 @@ main(int argc,char **argv)
 
   } /* dmn_rdr_nbr <= 0 */
 
-
 #ifdef USE_TRV_API
   /* Fill-in variable structure list for all extracted variables */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
@@ -764,7 +760,6 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"[%d]%s xrf->%s \n",idx_dmn,var[idx]->dim[idx_dmn]->nm,var[idx]->dim[idx_dmn]->xrf->nm);  
       }
     }    
-
 
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
@@ -1087,8 +1082,17 @@ main(int argc,char **argv)
         var_trv->dmn_idx_out_in[idx_dmn]=dmn_idx_out_in[idx_var][idx_dmn];
 
         /* Store re-ordering dimension "is record" flag array for this GTT object */
-        var_trv->dmn_is_rec[idx_dmn]=dmn_out[idx_dmn]->is_rec_dmn;
 
+        /* Find the right "dmn_out", since "dmn_out" is global, loop "dmn_out" with jdx_dmn/nbr_dmn_xtr  */
+ 
+        /* Loop extract dimensions */
+        for(int jdx_dmn=0;jdx_dmn<nbr_dmn_xtr;jdx_dmn++){
+          /* Match name */
+          if (strcmp(var_trv->var_dmn[idx_dmn].dmn_nm,dmn_out[jdx_dmn]->nm) == 0){
+            var_trv->dmn_out[idx_dmn]=dmn_out[jdx_dmn];
+            break;
+          } /* Match name */
+        }/* Loop extract dimensions */
       } /* Loop dimensions for this variable */
 
       if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(fp_stdout,"\n");
@@ -1141,7 +1145,7 @@ main(int argc,char **argv)
   nco_close(in_id);
 
 
-#ifndef USE_TRV_API
+
   /* Refresh var_prc with dim_out data */
   for(idx=0;idx<nbr_var_prc;idx++){
     long sz;
@@ -1152,7 +1156,7 @@ main(int argc,char **argv)
     (void)nco_xrf_dmn(var_prc[idx]);
     var_tmp=var_prc[idx];
 
-    for(jdx=0;jdx<var_tmp->nbr_dim;jdx++){
+    for(int jdx=0;jdx<var_tmp->nbr_dim;jdx++){
       var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
       var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
       var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
@@ -1163,7 +1167,7 @@ main(int argc,char **argv)
     var_tmp->sz=sz; 
     var_tmp->sz_rec=sz_rec;
   } /* end loop over idx */
-#endif /* ! USE_TRV_API */
+
 
   /* Loop over input files (not currently used, fl_nbr == 1) */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
@@ -1353,7 +1357,7 @@ main(int argc,char **argv)
 #ifndef USE_TRV_API
     /* NB: lmt now referenced within lmt_all_lst[idx]  */
     for(idx=0;idx<nbr_dmn_fl;idx++)
-      for(jdx=0;jdx< lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
+      for(int jdx=0;jdx< lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
     if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl); 
 #endif
