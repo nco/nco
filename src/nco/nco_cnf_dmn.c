@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.79 2013-05-23 21:25:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.80 2013-05-24 17:52:42 pvicente Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -621,7 +621,9 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     var_out->srd[dmn_out_idx]=dmn_out[dmn_out_idx]->srd;
   } /* end loop over dmn_out */
 
+#ifdef REMOVE_ME /* 20130523 fxm pvn "is_rec_var" in var_sct */
   if(var_out->is_rec_var){
+#endif 
     /* Which dimension in output dimension list is scheduled to be record dimension? */
     for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
       if(dmn_out[dmn_out_idx]->is_rec_dmn){
@@ -641,7 +643,9 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
       However, changing all these flags in one place in ncpdq.c main() is clearer */
       ;
     } /* end else */
+#ifdef REMOVE_ME
   } /* endif record variable */
+#endif
 
   if(dbg_lvl_get() > nco_dbg_var){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)

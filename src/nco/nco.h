@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.317 2013-05-23 23:46:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.318 2013-05-24 17:52:42 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -772,6 +772,7 @@ extern "C" {
     var_dmn_sct var_dmn[NC_MAX_DIMS]; /* [sct] (For variables only) Dimensions for variable object */
 #ifdef NCO_DIM_RDR
     int dmn_idx_out_in[NC_MAX_DIMS];  /* [nbr] (For variables only) Reordered dimensions correspondence (ncpdq) */
+    nco_bool is_rec_dmn_out[NC_MAX_DIMS]; /* [nbr] (For variables only) Reordered dimensions record dimensions flag (ncpdq) */ 
     dmn_sct *dmn_out[NC_MAX_DIMS];    /* [nbr] (For variables only) Reordered dimensions (ncpdq) */
 #endif
     nco_bool is_crd_var;              /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */

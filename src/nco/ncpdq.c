@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.230 2013-05-24 02:51:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.231 2013-05-24 17:52:42 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.230 2013-05-24 02:51:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.230 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.231 2013-05-24 17:52:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.231 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1095,6 +1095,11 @@ main(int argc,char **argv)
         var_trv->dmn_idx_out_in[idx_dmn]=dmn_idx_out_in[idx_var][idx_dmn];
 
         /* Store re-ordering dimension "is record" flag array for this GTT object */
+        var_trv->is_rec_dmn_out[idx_dmn]=var_prc_out[idx_var]->dim[idx_dmn]->is_rec_dmn;
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(fp_stdout,"is_rec_dmn_out[%d]=%d ",idx_dmn,var_trv->is_rec_dmn_out[idx_dmn]);
+        }
 
         /* Find the right "dmn_out", since "dmn_out" is global, loop "dmn_out" with jdx_dmn/nbr_dmn_xtr  */
  
