@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.231 2013-05-24 17:52:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.232 2013-05-24 18:29:40 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.231 2013-05-24 17:52:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.231 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.232 2013-05-24 18:29:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.232 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -792,8 +792,11 @@ main(int argc,char **argv)
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   if(dbg_lvl >= nco_dbg_dev){
-    for(idx=0;idx<nbr_var_prc;idx++){
-      (void)fprintf(stderr,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d\n",idx,var_prc_out[idx]->nm,var_prc_out[idx]->is_rec_var);
+    for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
+      (void)fprintf(fp_stdout,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx_var,var_prc_out[idx_var]->nm,var_prc_out[idx_var]->is_rec_var);
+      for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var]->nbr_dim;idx_dmn++)
+        (void)fprintf(fp_stdout,"is_rec_dmn[%d]%s=%d ",
+        idx_dmn,var_prc_out[idx_var]->dim[idx_dmn]->nm,var_prc_out[idx_var]->dim[idx_dmn]->is_rec_dmn);
     }
   } 
 
@@ -1051,6 +1054,15 @@ main(int argc,char **argv)
       } /* endif packing */
     } /* end loop over var_prc */
   } /* nco_pck_plc == nco_pck_plc_nil */
+
+ if(dbg_lvl >= nco_dbg_dev){
+    for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
+      (void)fprintf(stderr,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx_var,var_prc_out[idx_var]->nm,var_prc_out[idx_var]->is_rec_var);
+      for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var]->nbr_dim;idx_dmn++)
+        (void)fprintf(fp_stdout,"is_rec_dmn[%d]%s=%d ",
+        idx_dmn,var_prc_out[idx_var]->dim[idx_dmn]->nm,var_prc_out[idx_var]->dim[idx_dmn]->is_rec_dmn);
+    }
+  } 
 
 #ifdef USE_TRV_API
 
