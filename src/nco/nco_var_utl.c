@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.320 2013-05-29 04:04:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.321 2013-05-29 05:26:37 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1594,9 +1594,10 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   nc_type var_typ;                 /* [enm] netCDF type */
 
-  nco_bool CRR_DMN_IS_REC_IN_INPUT; /* [flg] Current dimension of variable is record dimension of variable in input file/group */
+  nco_bool CRR_DMN_IS_REC_IN_INPUT;      /* [flg] Current dimension of variable is record dimension of variable in input file/group */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
-  nco_bool FIX_REC_DMN=False; /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
+  nco_bool FIX_REC_DMN=False;            /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
+  nco_bool DMN_RDR=False;                /* [flg] Is there dimension re-ordering (ncpdq only) */
 
   rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
@@ -1689,6 +1690,22 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   /* File format needed for decision tree and to enable netCDF4 features */
   (void)nco_inq_format(grp_out_id,&fl_fmt);
+
+
+  /* Is there dimension re-ordering (ncpdq only) */
+  for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+
+    /* Dimension correspondence for reordered dimensions; initialized with ordered index, changed in ncpdq */
+    idx_dmn_rdr=var_trv->dmn_idx_out_in[idx_dmn];  
+
+    /* Indices differ, there is a re-order */
+    if (idx_dmn_rdr!=idx_dmn){
+      assert(prg_id == ncpdq);
+      DMN_RDR=True; 
+      break;
+    } /* Indices differ, there is a re-order */
+  }/* Is there dimension re-ordering (ncpdq only) */
+
 
   /* Get input and set output dimension sizes and names */
   for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
@@ -1849,7 +1866,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* At long last ... */
 
       /* Is there a record dimension re-ordering? (ncpdq) */
-      if (prg_id == ncpdq){
+      if (prg_id == ncpdq && DMN_RDR){
 
         /* Use info stored in ncpdq main. NB: use iterator definition index */
         DFN_CRR_DMN_AS_REC_IN_OUTPUT=var_trv->is_rec_dmn_out[idx_dmn]; 
