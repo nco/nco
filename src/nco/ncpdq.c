@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.232 2013-05-24 18:29:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.233 2013-05-29 01:00:36 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.232 2013-05-24 18:29:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.232 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.233 2013-05-29 01:00:36 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.233 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -801,11 +801,6 @@ main(int argc,char **argv)
   } 
 
   /* We now have final list of variables to extract. Phew. */
-  if(dbg_lvl >= nco_dbg_var){
-    for(idx=0;idx<xtr_nbr;idx++) (void)fprintf(stderr,"var[%d]->nm = %s, ->id=[%d]\n",idx,var[idx]->nm,var[idx]->id);
-    for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stderr,"var_fix[%d]->nm = %s, ->id=[%d]\n",idx,var_fix[idx]->nm,var_fix[idx]->id);
-    for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
-  } /* end if */
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
@@ -889,16 +884,21 @@ main(int argc,char **argv)
       /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG variable %s ",prg_nm_get(),var_prc[idx]->nm);
+        (void)fprintf(stderr,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx,var_prc_out[idx]->nm,var_prc_out[idx]->is_rec_var);
         for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"rdr[%d]%s: ",idx_dmn,dmn_rdr[idx_dmn]->nm);
+        (void)fprintf(stdout,"\n");
+        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"is_rec_dmn[%d]%s=%d ",idx_dmn,var_prc_out[idx]->dim[idx_dmn]->nm,var_prc_out[idx]->dim[idx_dmn]->is_rec_dmn);
         (void)fprintf(stdout,"\n");
       }
 
+      /* Change dimension ordering of variable. NB: "is record" dimension is not changed */
       rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG variable %s ",prg_nm_get(),var_prc[idx]->nm);
-        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"[%d]->[%d]: ",idx_dmn,dmn_idx_out_in[idx][idx_dmn]);
+        (void)fprintf(stderr,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx,var_prc_out[idx]->nm,var_prc_out[idx]->is_rec_var);
+        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"rdr[%d]%s: ",idx_dmn,dmn_rdr[idx_dmn]->nm);
+        (void)fprintf(stdout,"\n");
+        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"is_rec_dmn[%d]%s=%d ",idx_dmn,var_prc_out[idx]->dim[idx_dmn]->nm,var_prc_out[idx]->dim[idx_dmn]->is_rec_dmn);
         (void)fprintf(stdout,"\n");
       }
 
