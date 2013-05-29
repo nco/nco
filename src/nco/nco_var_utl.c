@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.319 2013-05-22 23:05:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.320 2013-05-29 04:04:29 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1733,7 +1733,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         (void)fprintf(stdout,"[%d]%s->[%d]%s\n",idx_dmn,dmn_trv->nm_fll,idx_dmn_rdr,dmn_trv_rdr->nm_fll);
       }
 #endif
-    }
+    } /* Is there a dimension re-ordering? (ncpdq) */
 
     /* Dimension ID for variable, used to get dimension object in input list  */
     var_dim_id=dmn_in_id_var[idx_dmn_rdr];
@@ -1797,8 +1797,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     if (need_to_define_dim == True){
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s defining dimension '%s' in ",prg_nm_get(),fnc_nm,
-          dmn_nm);        
+        (void)fprintf(stdout,"%s: INFO %s defining dimension '%s' in ",prg_nm_get(),fnc_nm,dmn_nm);        
         (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
         (void)fprintf(stdout,"\n");
       } /* endif dbg */
@@ -1849,6 +1848,20 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
       /* At long last ... */
 
+      /* Is there a record dimension re-ordering? (ncpdq) */
+      if (prg_id == ncpdq){
+
+        /* Use info stored in ncpdq main. NB: use iterator definition index */
+        DFN_CRR_DMN_AS_REC_IN_OUTPUT=var_trv->is_rec_dmn_out[idx_dmn]; 
+
+#ifdef NCO_DIM_RDR
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"DFN_CRR_DMN_AS_REC_IN_OUTPUT=%d %s\n",
+            DFN_CRR_DMN_AS_REC_IN_OUTPUT,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
+        }
+#endif
+      }/* Is there a record dimension re-ordering? (ncpdq) */
+
       /* Define dimension size */
       if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
         dmn_sz=NC_UNLIMITED;
@@ -1865,9 +1878,9 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);
 
       /* Assign the defined ID to the dimension ID array for the variable. NB: use iterator definition index */
-      dmn_out_id[idx_dmn]=dmn_id_out;
+      dmn_out_id[idx_dmn]=dmn_id_out; 
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() >= nco_dbg_var){
         (void)fprintf(stdout,"%s: INFO %s defining dimension #%d index [%d]:<%s> with size=%li\n",prg_nm_get(),fnc_nm,
           dmn_id_out,idx_dmn,dmn_trv->nm_fll,dmn_sz);
       } /* endif dbg */

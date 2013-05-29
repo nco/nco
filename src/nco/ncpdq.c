@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.234 2013-05-29 02:40:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.235 2013-05-29 04:04:30 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.234 2013-05-29 02:40:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.234 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.235 2013-05-29 04:04:30 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.235 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1183,7 +1183,7 @@ main(int argc,char **argv)
   nco_close(in_id);
 
 
-
+#ifndef USE_TRV_API
   /* Refresh var_prc with dim_out data */
   for(idx=0;idx<nbr_var_prc;idx++){
     long sz;
@@ -1205,7 +1205,7 @@ main(int argc,char **argv)
     var_tmp->sz=sz; 
     var_tmp->sz_rec=sz_rec;
   } /* end loop over idx */
-
+#endif /* USE_TRV_API */
 
   /* Loop over input files (not currently used, fl_nbr == 1) */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
