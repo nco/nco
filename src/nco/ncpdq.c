@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.236 2013-05-29 10:05:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.237 2013-05-29 10:21:50 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.236 2013-05-29 10:05:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.236 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.237 2013-05-29 10:21:50 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.237 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1124,18 +1124,6 @@ main(int argc,char **argv)
         if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(fp_stdout,"is_rec_dmn_out[%d]=%d ",idx_dmn,var_trv->is_rec_dmn_out[idx_dmn]);
         }
-
-        /* Find the right "dmn_out", since "dmn_out" is global, loop "dmn_out" with jdx_dmn/nbr_dmn_xtr  */
- 
-        /* Loop extract dimensions */
-        for(int jdx_dmn=0;jdx_dmn<nbr_dmn_xtr;jdx_dmn++){
-          /* Match name */
-          if (strcmp(var_trv->var_dmn[idx_dmn].dmn_nm,dmn_out[jdx_dmn]->nm) == 0){
-            var_trv->dmn_out[idx_dmn]=dmn_out[jdx_dmn];
-            break;
-          } /* Match name */
-        }/* Loop extract dimensions */
-      } /* Loop dimensions for this variable */
 
       if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(fp_stdout,"\n");
 
