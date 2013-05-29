@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.235 2013-05-29 04:04:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.236 2013-05-29 10:05:34 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.235 2013-05-29 04:04:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.235 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.236 2013-05-29 10:05:34 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.236 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -622,7 +622,11 @@ main(int argc,char **argv)
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   } /* end loop over idx */
 
-#ifndef USE_TRV_API
+#ifdef USE_TRV_API
+  /* Merge hyperslab limit information into dimension structures */
+  (void)nco_dmn_mrg_trv(dmn_out,nbr_dmn_xtr,trv_tbl);
+
+#else /* ! USE_TRV_API */
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
 #endif /* ! USE_TRV_API */
@@ -714,7 +718,7 @@ main(int argc,char **argv)
 
       /* Loop extract dimensions */
       for(int jdx_dmn=0;jdx_dmn<nbr_dmn_xtr;jdx_dmn++){
-        /* Match name */
+        /* Match name. 20130529 fxm pvn: add full name */
         if (strcmp(var[idx]->dim[idx_dmn]->nm,dim[jdx_dmn]->nm) == 0){
           dim_xrf=dim[jdx_dmn];
           break;

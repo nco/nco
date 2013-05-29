@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.43 2013-03-24 21:55:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.44 2013-05-29 10:05:34 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -76,15 +76,6 @@ nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension struct
  CST_X_PTR_CST_PTR_CST_Y(lmt_sct,lmt), /* I [sct] Dimension limit information */
  const int lmt_nbr); /* I [nbr] Number of dimensions with user-specified limits */
 
-
-void
-nco_dmn_lmt_all_mrg /* [fnc] Merge limit structure information into dimension structures */
-(dmn_sct ** const dmn, /* I [sct] Dimension structures to modify */
- const int nbr_dmn, /* I [nbr] Number of dimension structures in structure list */
- CST_X_PTR_CST_PTR_CST_Y(lmt_msa_sct,lmt_all_lst), /* I [sct] Dimension limit information */
- const int lmt_nbr); /* I [nbr] Number of dimensions with user-specified limits */
-
-
 dmn_sct ** /* O [sct] Pointer to free'd structure list */
 nco_dmn_lst_free /* [fnc] Free memory associated with dimension structure list */
 (dmn_sct **dmn_lst, /* I/O [sct] Dimension structure list to free */
@@ -123,6 +114,19 @@ nco_dmn_sct_cmp /* [fnc] Check that dims in list 2 are a subset of list 1 and th
  const int nbr_dmn_2, /* I [nbr] Number of dimension structures in structure list */
  const char *const fl_sng_1, /* I [sng] Name of first file */
  const char *fl_sng_2); /* I [sng] Name of second file */
+
+void
+nco_dmn_lmt_all_mrg /* [fnc] Merge limit structure information into dimension structures */
+(dmn_sct ** const dmn, /* I [sct] Dimension structures to modify */
+ const int nbr_dmn, /* I [nbr] Number of dimension structures in structure list */
+ CST_X_PTR_CST_PTR_CST_Y(lmt_msa_sct,lmt_all_lst), /* I [sct] Dimension limit information */
+ const int lmt_nbr); /* I [nbr] Number of dimensions with user-specified limits */
+
+void
+nco_dmn_mrg_trv                       /* [fnc] Merge limit structure information into dimension structures */
+(dmn_sct ** const dmn,                /* I [sct] Dimension structures to modify */
+ const int nbr_dmn,                   /* I [nbr] Number of dimension structures in structure list */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 
 #ifdef __cplusplus
