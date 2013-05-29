@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.233 2013-05-29 01:00:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.234 2013-05-29 02:40:05 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.233 2013-05-29 01:00:36 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.233 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.234 2013-05-29 02:40:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.234 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -884,7 +884,7 @@ main(int argc,char **argv)
       /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stderr,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx,var_prc_out[idx]->nm,var_prc_out[idx]->is_rec_var);
+        (void)fprintf(stdout,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx,var_prc_out[idx]->nm,var_prc_out[idx]->is_rec_var);
         for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"rdr[%d]%s: ",idx_dmn,dmn_rdr[idx_dmn]->nm);
         (void)fprintf(stdout,"\n");
         for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"is_rec_dmn[%d]%s=%d ",idx_dmn,var_prc_out[idx]->dim[idx_dmn]->nm,var_prc_out[idx]->dim[idx_dmn]->is_rec_dmn);
@@ -895,7 +895,7 @@ main(int argc,char **argv)
       rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stderr,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx,var_prc_out[idx]->nm,var_prc_out[idx]->is_rec_var);
+        (void)fprintf(stdout,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx,var_prc_out[idx]->nm,var_prc_out[idx]->is_rec_var);
         for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"rdr[%d]%s: ",idx_dmn,dmn_rdr[idx_dmn]->nm);
         (void)fprintf(stdout,"\n");
         for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"is_rec_dmn[%d]%s=%d ",idx_dmn,var_prc_out[idx]->dim[idx_dmn]->nm,var_prc_out[idx]->dim[idx_dmn]->is_rec_dmn);
@@ -919,6 +919,11 @@ main(int argc,char **argv)
             /* ...and set new and un-set old record dimensions... */
             var_prc_out[idx]->dim[0]->is_rec_dmn=True;
             dmn_out[dmn_out_idx_rec_in]->is_rec_dmn=False;
+
+#ifdef USE_TRV_API
+            var_prc_out[idx]->dim[dmn_out_idx_rec_in]->is_rec_dmn=False;
+#endif
+
             /* ...and set flag that record dimension has been re-defined... */
             REDEFINED_RECORD_DIMENSION=True;
           } /* !REDEFINED_RECORD_DIMENSION */
@@ -968,7 +973,9 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Search all dimensions in variable for new record dimension */
       for(dmn_out_idx=0;dmn_out_idx<var_prc_out[idx]->nbr_dim;dmn_out_idx++)
-        if(!strcmp(var_prc_out[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)) break;
+        if(!strcmp(var_prc_out[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
+          break;
+        }
       /* ...Will variable be record variable in output file?... */
       if(dmn_out_idx == var_prc_out[idx]->nbr_dim){
         /* ...No. Variable will be non-record---does this change its status?... */
@@ -1061,6 +1068,7 @@ main(int argc,char **argv)
       for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var]->nbr_dim;idx_dmn++)
         (void)fprintf(fp_stdout,"is_rec_dmn[%d]%s=%d ",
         idx_dmn,var_prc_out[idx_var]->dim[idx_dmn]->nm,var_prc_out[idx_var]->dim[idx_dmn]->is_rec_dmn);
+      (void)fprintf(stdout,"\n");
     }
   } 
 
