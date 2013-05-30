@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.60 2013-05-30 22:24:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.61 2013-05-30 23:20:34 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -473,16 +473,26 @@ nco_dmn_mrg_trv                       /* [fnc] Merge limit structure information
 {
   /* Purpose: Merge limit structure information into dimension structures. Based in nco_dmn_lmt_all_mrg() but for GTT */
 
-  int nbr_var_dmn;
-  int dmn_id[NC_MAX_DIMS];
-
-  long dmn_sz;              /* [sng] Dimension size  */  
-
+  const char fnc_nm[]="nco_dmn_mrg_trv()"; /* [sng] Function name */
   char dmn_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
 
+  int nbr_var_dmn;
+  int dmn_id[NC_MAX_DIMS];
+ 
+  long dmn_sz;              /* [nbr] Dimension size  */ 
+  long nbr_elm=1L;          /* [nbr] Number of elements  */ 
+
   dmn_trv_sct *dmn_trv;     /* [sct] GTT dimension object */  
   trv_sct *var_trv;         /* [sct] GTT varible object */  
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s input dimensions:",prg_nm_get(),fnc_nm);
+    for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+      (void)fprintf(stdout,"[%d]%s size=%ld : ",idx_dmn,dmn[idx_dmn]->nm,dmn[idx_dmn]->sz);
+    }
+    (void)fprintf(stdout,"\n");
+  }
 
   /* Loop variables */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
@@ -514,12 +524,19 @@ nco_dmn_mrg_trv                       /* [fnc] Merge limit structure information
           dmn_trv=nco_dmn_trv_sct(dim_id,trv_tbl);
 
           assert(dmn_trv);
+          assert(strcmp(dmn_trv->nm,dmn[idx_dmn]->nm) == 0);
 
           /* Get size from GTT */
           if(var_trv->var_dmn[idx_dmn_var].is_crd_var){
             dmn_sz=var_trv->var_dmn[idx_dmn_var].crd->lmt_msa.dmn_cnt;
           }else {
             dmn_sz=var_trv->var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_cnt;
+          }
+        
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            nbr_elm*=dmn_sz;
+            (void)fprintf(stdout,"%s: DEBUG %s storing dimension [%d]%s size=%ld #elements=%d\n",prg_nm_get(),fnc_nm,
+              idx_dmn,dmn[idx_dmn]->nm,dmn_sz,nbr_elm);
           }
 
           /* Store the obtained size in input/output dimension list */

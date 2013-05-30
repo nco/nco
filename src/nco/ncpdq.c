@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.239 2013-05-30 22:01:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.240 2013-05-30 23:20:34 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.239 2013-05-30 22:01:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.239 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.240 2013-05-30 23:20:34 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.240 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -782,8 +782,10 @@ main(int argc,char **argv)
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
  
+#ifndef USE_TRV_API
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
+#endif
 
 
   if(dbg_lvl >= nco_dbg_dev){
