@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.59 2013-05-30 22:01:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.60 2013-05-30 22:24:30 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -476,16 +476,27 @@ nco_dmn_mrg_trv                       /* [fnc] Merge limit structure information
   int nbr_var_dmn;
   int dmn_id[NC_MAX_DIMS];
 
+  long dmn_sz;              /* [sng] Dimension size  */  
+
   char dmn_nm[NC_MAX_NAME];
   char var_nm[NC_MAX_NAME];
 
-  dmn_trv_sct *dmn_trv;     /* [sct] Unique dimension object */   
+  dmn_trv_sct *dmn_trv;     /* [sct] GTT dimension object */  
+  trv_sct *var_trv;         /* [sct] GTT varible object */  
 
   /* Loop variables */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
 
+    /* Get the GTT variable object (where limits are stored). Key here is full variable name */
+    var_trv=trv_tbl_var_nm_fll(var[idx_var].var_nm_fll,trv_tbl);
+
+    assert(var_trv);
+
     /* ...and searching each dimension of each variable... */
     (void)nco_inq_var(nc_id,var[idx_var].id,var_nm,(nc_type *)NULL,&nbr_var_dmn,dmn_id,(int *)NULL);
+
+    assert(nbr_var_dmn == var_trv->nbr_dmn);
+    assert(strcmp(var_trv->nm_fll,var[idx_var].var_nm_fll) == 0);
 
     /* Loop input dimensions */
     for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
@@ -504,11 +515,19 @@ nco_dmn_mrg_trv                       /* [fnc] Merge limit structure information
 
           assert(dmn_trv);
 
-          /* Get the GTT variable object (where limits are stored). Key here is full variable name */
+          /* Get size from GTT */
+          if(var_trv->var_dmn[idx_dmn_var].is_crd_var){
+            dmn_sz=var_trv->var_dmn[idx_dmn_var].crd->lmt_msa.dmn_cnt;
+          }else {
+            dmn_sz=var_trv->var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_cnt;
+          }
 
-
-
-
+          /* Store the obtained size in input/output dimension list */
+          dmn[idx_dmn]->cnt=dmn_sz;
+          dmn[idx_dmn]->srt=0;
+          dmn[idx_dmn]->end=dmn_sz-1;
+          dmn[idx_dmn]->srd=1L;
+          break;
 
         } /* Match input dimension ID with variable dimension ID */
       } /* Loop dimensions */
