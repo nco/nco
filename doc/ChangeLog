@@ -1,3 +1,7 @@
+2013-05-29 Pedro Vicente  <pvicente@uci.edu>
+
+        * Add data/in_1.cdl, data/in_2.cdl CDL files to test 2 input file operators 
+        
 2013-05-15 Pedro Vicente  <pvicente@uci.edu>
 
         * nco_cpy_fix_var_trv() Copy processing type fixed variables from input to output file 
