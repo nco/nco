@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.241 2013-05-15 19:08:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.242 2013-05-30 00:23:01 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.241 2013-05-15 19:08:47 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.241 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.242 2013-05-30 00:23:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.242 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -133,8 +133,10 @@ main(int argc,char **argv)
   ddra_info_sct ddra_info={.flg_ddra=False};
 #endif /* !__cplusplus */
 
+#ifndef USE_TRV_API
   dmn_sct **dim;
   dmn_sct **dmn_out;
+#endif
 
   double ntp_val_out=double_CEWI; /* Option i */
   double wgt_val_1=0.5; /* Option w */
@@ -170,7 +172,9 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
+#ifndef USE_TRV_API
   int nbr_dmn_xtr;
+#endif
   int nbr_ntp;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
@@ -787,9 +791,6 @@ main(int argc,char **argv)
   /* ncflint-specific stuff: */
   /* Find the weighting variable in input file */
   if(CMD_LN_NTP_VAR){
-    int ntp_id_1;
-    int ntp_id_2;
-
     var_sct *ntp_1;
     var_sct *ntp_2;
     var_sct *ntp_var_out;
@@ -840,6 +841,8 @@ main(int argc,char **argv)
 
 
 #else /* ! USE_TRV_API */
+    int ntp_id_1;
+    int ntp_id_2;
 
     rcd=nco_inq_varid(in_id_1,ntp_nm,&ntp_id_1);
     rcd=nco_inq_varid(in_id_2,ntp_nm,&ntp_id_2);
@@ -926,7 +929,7 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
 
-    /* Note: Using object 2 from table 1, only one table built, assumes same structure for file 1 and 2 */
+    /* Note: Using object 2 from table 1, only one table built, assumes same structure for processed objects in both files */
 
     int grp_id_1;      /* [ID] Group ID */
     int grp_id_2;      /* [ID] Group ID */
@@ -951,7 +954,7 @@ main(int argc,char **argv)
 
     assert(var_trv_1);
     if(var_trv_2 == NULL){
-      (void)fprintf(fp_stdout,"%s: ERROR Variable <%s> is not present in second input file. ncflint assumes same file structure for both input files\n",prg_nm_get(),var_trv_1->nm_fll);
+      (void)fprintf(fp_stdout,"%s: ERROR Variable <%s> is not present in second input file. ncflint assumes same structure for processed objects in both files\n",prg_nm_get(),var_trv_1->nm_fll);
       nco_exit(EXIT_FAILURE);
     }
 
@@ -977,6 +980,7 @@ main(int argc,char **argv)
     var_prc_1[idx]->sz=var_prc_out[idx]->sz;       
     var_prc_2[idx]->sz=var_prc_out[idx]->sz;  
 
+    /* Stretch second variable to match dimensions of first variable */
     wgt_out_1=nco_var_cnf_dmn(var_prc_out[idx],wgt_1,wgt_out_1,MUST_CONFORM,&DO_CONFORM);
     wgt_out_2=nco_var_cnf_dmn(var_prc_out[idx],wgt_2,wgt_out_2,MUST_CONFORM,&DO_CONFORM);
 

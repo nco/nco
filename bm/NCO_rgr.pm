@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.267 2013-05-29 05:26:37 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.268 2013-05-30 00:23:01 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -974,6 +974,27 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
+    
+#ncflint #8
+#files are interchanged, i.e.,(ncflint -w 0.5 fl_1.nc fl_2.nc) = (ncflint -w 0.5 fl_2.nc fl_1.nc).
+#in_1.nc: float var1(lat1,lon1);
+#in_2.nc: float var1(lon1);
+#ncflint -O -v var1 -w 0.5 in_1.nc in_2.nc out.nc
+#lat1[1] lon1[3] var1[7]=0.5
+
+    $dsc_sng="interchanged files -w 0.5 in_1.nc in_2.nc";
+    $tst_cmd[0]="ncflint $nco_D_flg -O -v var1 -w 0.5 $in_pth_arg in_1.nc in_2.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks %tmp_fl_00%";
+    $tst_cmd[2]="lat1[1] lon1[3] var1[7]=0.5";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			    
+    
 
     
 ####################

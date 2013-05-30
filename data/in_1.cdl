@@ -1,0 +1,14 @@
+// Purpose: Pair of (different) files for 2 input file operators; pair of files are in_1.cdl and in_2.cdl
+// Generate netCDF files with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/in_1.nc ~/nco/data/in_1.cdl
+// ncgen -k netCDF-4 -b -o ~/nco/data/in_2.nc ~/nco/data/in_2.cdl
+
+netcdf in_1 {
+  dimensions:
+  lat1=2;
+  lon1=4;
+  variables:
+  float var1(lat1,lon1);
+  data:
+  var1=1,1,1,1,1,1,1,1;
+} // end root group
