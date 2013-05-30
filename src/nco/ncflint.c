@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.243 2013-05-30 07:32:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.244 2013-05-30 18:34:55 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.243 2013-05-30 07:32:49 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.243 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.244 2013-05-30 18:34:55 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.244 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -954,6 +954,8 @@ main(int argc,char **argv)
     /* Obtain group ID using full group name */
     (void)nco_inq_grp_full_ncid(in_id_1,var_trv_1->grp_nm_fll,&grp_id_1);
     (void)nco_inq_grp_full_ncid(in_id_2,var_trv_2->grp_nm_fll,&grp_id_2);
+
+    (void)nco_var_mtd_refresh(grp_id_2,var_prc_2[idx]);
 
     /* Read */
     (void)nco_msa_var_get_trv(grp_id_1,var_prc_1[idx],var_trv_1);
