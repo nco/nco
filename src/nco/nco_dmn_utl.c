@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.57 2013-05-29 10:21:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.58 2013-05-30 19:08:50 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -450,13 +450,13 @@ nco_dmn_lmt_all_mrg /* [fnc] Merge limit structure information into dimension st
     /* Does this dimension have user-specified limits? */
     for(lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
       /* 20050707: Match on name not ID so nco_dmn_lmt_mrg() works with single
-	 limit list applied to any input file */
+      limit list applied to any input file */
       if(!strcmp(lmt_all_lst[lmt_idx]->dmn_nm,dmn[dmn_idx]->nm)){
-	dmn[dmn_idx]->cnt=lmt_all_lst[lmt_idx]->dmn_cnt;
-	dmn[dmn_idx]->srt=0;
-	dmn[dmn_idx]->end=lmt_all_lst[lmt_idx]->dmn_cnt-1;
-	dmn[dmn_idx]->srd=1L;
-	break;
+        dmn[dmn_idx]->cnt=lmt_all_lst[lmt_idx]->dmn_cnt;
+        dmn[dmn_idx]->srt=0;
+        dmn[dmn_idx]->end=lmt_all_lst[lmt_idx]->dmn_cnt-1;
+        dmn[dmn_idx]->srd=1L;
+        break;
       } /* end if */
     } /* end loop over lmt_idx */
   } /* end loop over dmn */
@@ -470,6 +470,18 @@ nco_dmn_mrg_trv                       /* [fnc] Merge limit structure information
 {
   /* Purpose: Merge limit structure information into dimension structures. Based in nco_dmn_lmt_all_mrg() but for GTT */
 
+  dmn_trv_sct *dmn_trv;            /* [sct] Unique dimension object */   
 
+  /* Loop input dimensions */
+  for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
 
+    /* Dimension ID, used to get dimension object */
+    int dim_id=dmn[dmn_idx]->id;
+
+    /* Get unique dimension object from unique dimension ID */
+    dmn_trv=nco_dmn_trv_sct(dim_id,trv_tbl);
+
+    assert(dmn_trv);
+
+  } /* Loop input dimensions */
 } /* nco_dmn_mrg_trv() */
