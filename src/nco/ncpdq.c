@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.238 2013-05-30 19:08:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.239 2013-05-30 22:01:05 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.238 2013-05-30 19:08:50 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.238 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.239 2013-05-30 22:01:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.239 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -624,7 +624,7 @@ main(int argc,char **argv)
 
 #ifdef USE_TRV_API
   /* Merge hyperslab limit information into dimension structures */
-  (void)nco_dmn_mrg_trv(dmn_out,nbr_dmn_xtr,trv_tbl);
+  (void)nco_dmn_mrg_trv(in_id,xtr_lst,xtr_nbr,dmn_out,nbr_dmn_xtr,trv_tbl);
 
 #else /* ! USE_TRV_API */
   /* Merge hyperslab limit information into dimension structures */
@@ -1251,6 +1251,25 @@ main(int argc,char **argv)
 
 #endif /* ! USE_TRV_API */
 
+#ifdef USE_TRV_API
+      /* Obtain output group ID using full group name */
+      (void)nco_inq_grp_full_ncid(out_id,var_trv->grp_nm_fll,&grp_out_id);
+
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+      /* Store the output variable ID */
+      var_prc_out[idx]->id=var_out_id;
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(fp_stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv->nm_fll);
+      }
+#else /* ! USE_TRV_API */
+
+      grp_out_id=out_id;
+
+#endif /* ! USE_TRV_API */
+
       if(dmn_rdr_nbr > 0){
         if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
           (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
@@ -1272,26 +1291,6 @@ main(int argc,char **argv)
         /* (Un-)Pack variable according to packing specification */
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif dmn_rdr_nbr > 0 */
-
-
-#ifdef USE_TRV_API
-      /* Obtain output group ID using full group name */
-      (void)nco_inq_grp_full_ncid(out_id,var_trv->grp_nm_fll,&grp_out_id);
-
-      /* Get variable ID */
-      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
-
-      /* Store the output variable ID */
-      var_prc_out[idx]->id=var_out_id;
-
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(fp_stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv->nm_fll);
-      }
-#else /* ! USE_TRV_API */
-
-      grp_out_id=out_id;
-
-#endif /* ! USE_TRV_API */
 
 
 #ifdef _OPENMP

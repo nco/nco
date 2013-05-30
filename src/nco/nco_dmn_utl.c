@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.58 2013-05-30 19:08:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.59 2013-05-30 22:01:05 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -464,24 +464,54 @@ nco_dmn_lmt_all_mrg /* [fnc] Merge limit structure information into dimension st
 
 void
 nco_dmn_mrg_trv                       /* [fnc] Merge limit structure information into dimension structures */
-(dmn_sct ** const dmn,                /* I/O [sct] Dimension structures to modify */
+(const int nc_id,                     /* I [id] netCDF input-file ID */
+ const nm_id_sct * const var,         /* I [sct] Variable list */
+ const int nbr_var,                   /* I [nbr] Number of variables in list */
+ dmn_sct ** const dmn,                /* I/O [sct] Dimension structures to modify */
  const int nbr_dmn,                   /* I [nbr] Number of dimension structures in structure list */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Merge limit structure information into dimension structures. Based in nco_dmn_lmt_all_mrg() but for GTT */
 
-  dmn_trv_sct *dmn_trv;            /* [sct] Unique dimension object */   
+  int nbr_var_dmn;
+  int dmn_id[NC_MAX_DIMS];
 
-  /* Loop input dimensions */
-  for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
+  char dmn_nm[NC_MAX_NAME];
+  char var_nm[NC_MAX_NAME];
 
-    /* Dimension ID, used to get dimension object */
-    int dim_id=dmn[dmn_idx]->id;
+  dmn_trv_sct *dmn_trv;     /* [sct] Unique dimension object */   
 
-    /* Get unique dimension object from unique dimension ID */
-    dmn_trv=nco_dmn_trv_sct(dim_id,trv_tbl);
+  /* Loop variables */
+  for(int idx_var=0;idx_var<nbr_var;idx_var++){
 
-    assert(dmn_trv);
+    /* ...and searching each dimension of each variable... */
+    (void)nco_inq_var(nc_id,var[idx_var].id,var_nm,(nc_type *)NULL,&nbr_var_dmn,dmn_id,(int *)NULL);
 
-  } /* Loop input dimensions */
+    /* Loop input dimensions */
+    for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+
+      /* Dimension ID, key used to get dimension object, stored in dimension list */
+      int dim_id=dmn[idx_dmn]->id;
+
+      /* Loop variable dimensions */
+      for(int idx_dmn_var=0;idx_dmn_var<nbr_var_dmn;idx_dmn_var++){
+
+        /* Match input dimension ID with variable dimension ID */
+        if (dim_id == dmn_id[idx_dmn_var]){
+
+          /* Get unique dimension object from unique dimension ID */
+          dmn_trv=nco_dmn_trv_sct(dim_id,trv_tbl);
+
+          assert(dmn_trv);
+
+          /* Get the GTT variable object (where limits are stored). Key here is full variable name */
+
+
+
+
+
+        } /* Match input dimension ID with variable dimension ID */
+      } /* Loop dimensions */
+    } /* Loop variable dimensions */
+  } /* Loop variables */
 } /* nco_dmn_mrg_trv() */

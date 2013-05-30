@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.45 2013-05-29 10:21:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.46 2013-05-30 22:01:05 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -124,7 +124,10 @@ nco_dmn_lmt_all_mrg /* [fnc] Merge limit structure information into dimension st
 
 void
 nco_dmn_mrg_trv                       /* [fnc] Merge limit structure information into dimension structures */
-(dmn_sct ** const dmn,                /* I/O [sct] Dimension structures to modify */
+(const int nc_id,                     /* I [id] netCDF input-file ID */
+ const nm_id_sct * const var,         /* I [sct] Variable list */
+ const int nbr_var,                   /* I [nbr] Number of variables in list */
+ dmn_sct ** const dmn,                /* I/O [sct] Dimension structures to modify */
  const int nbr_dmn,                   /* I [nbr] Number of dimension structures in structure list */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
