@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.242 2013-05-31 02:36:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.243 2013-05-31 04:49:42 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.242 2013-05-31 02:36:25 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.242 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.243 2013-05-31 04:49:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.243 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -782,11 +782,8 @@ main(int argc,char **argv)
   /* Extraction list no longer needed */
   xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
  
-#ifndef USE_TRV_API
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
-#endif
-
 
   if(dbg_lvl >= nco_dbg_dev){
     for(idx=0;idx<xtr_nbr;idx++){
@@ -1162,7 +1159,6 @@ main(int argc,char **argv)
   nco_close(in_id);
 
 
-#ifndef USE_TRV_API
   /* Refresh var_prc with dim_out data */
   for(idx=0;idx<nbr_var_prc;idx++){
     long sz;
@@ -1184,7 +1180,7 @@ main(int argc,char **argv)
     var_tmp->sz=sz; 
     var_tmp->sz_rec=sz_rec;
   } /* end loop over idx */
-#endif /* USE_TRV_API */
+
 
   /* Loop over input files (not currently used, fl_nbr == 1) */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
@@ -1279,8 +1275,11 @@ main(int argc,char **argv)
         var_sct *va=var_prc_out[idx];
         (void)fprintf(stdout,"%s: DEBUG variable to write <%s>#%d: ",prg_nm_get(),va->nm,va->id);
         for(int idx_dmn=0;idx_dmn<va->nbr_dim;idx_dmn++){
-          (void)fprintf(fp_stdout,"[%d]%s srt=%d dim_srt=%d cnt=%d dim_cnt=%d : ",
-            idx_dmn,va->dim[idx_dmn]->nm,va->srt[idx_dmn],va->dim[idx_dmn]->srt,va->cnt[idx_dmn],va->dim[idx_dmn]->cnt);     
+          (void)fprintf(fp_stdout,"[%d]%s srt=%d dsrt=%d cnt=%d dcnt=%d end=%d dend=%d :",
+            idx_dmn,va->dim[idx_dmn]->nm,
+            va->srt[idx_dmn],va->dim[idx_dmn]->srt,
+            va->cnt[idx_dmn],va->dim[idx_dmn]->cnt,
+            va->end[idx_dmn],va->dim[idx_dmn]->end);     
         } 
         (void)fprintf(stdout,"\n");
       }
