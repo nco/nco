@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.240 2013-05-30 23:20:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.241 2013-05-31 01:05:17 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.240 2013-05-30 23:20:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.240 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.241 2013-05-31 01:05:17 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.241 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -803,6 +803,7 @@ main(int argc,char **argv)
       for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var]->nbr_dim;idx_dmn++)
         (void)fprintf(fp_stdout,"is_rec_dmn[%d]%s=%d ",
         idx_dmn,var_prc_out[idx_var]->dim[idx_dmn]->nm,var_prc_out[idx_var]->dim[idx_dmn]->is_rec_dmn);
+      (void)fprintf(fp_stdout,"\n");
     }
   } 
 
@@ -889,25 +890,8 @@ main(int argc,char **argv)
       dmn_rvr_in[idx]=(nco_bool *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(nco_bool));
       /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx,var_prc_out[idx]->nm,var_prc_out[idx]->is_rec_var);
-        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"rdr[%d]%s: ",idx_dmn,dmn_rdr[idx_dmn]->nm);
-        (void)fprintf(stdout,"\n");
-        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"is_rec_dmn[%d]%s=%d ",idx_dmn,var_prc_out[idx]->dim[idx_dmn]->nm,var_prc_out[idx]->dim[idx_dmn]->is_rec_dmn);
-        (void)fprintf(stdout,"\n");
-      }
-
       /* Change dimension ordering of variable. NB: "is record" dimension is not changed */
       rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
-
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx,var_prc_out[idx]->nm,var_prc_out[idx]->is_rec_var);
-        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"rdr[%d]%s: ",idx_dmn,dmn_rdr[idx_dmn]->nm);
-        (void)fprintf(stdout,"\n");
-        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++)(void)fprintf(stdout,"is_rec_dmn[%d]%s=%d ",idx_dmn,var_prc_out[idx]->dim[idx_dmn]->nm,var_prc_out[idx]->dim[idx_dmn]->is_rec_dmn);
-        (void)fprintf(stdout,"\n");
-      }
-
 
       /* If record dimension required by current variable re-order...
       ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
@@ -1263,9 +1247,6 @@ main(int argc,char **argv)
       /* Store the output variable ID */
       var_prc_out[idx]->id=var_out_id;
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(fp_stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv->nm_fll);
-      }
 #else /* ! USE_TRV_API */
 
       grp_out_id=out_id;
@@ -1294,6 +1275,14 @@ main(int argc,char **argv)
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif dmn_rdr_nbr > 0 */
 
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        var_sct *va=var_prc_out[idx];
+        (void)fprintf(stdout,"%s: DEBUG variable to write <%s>: ",prg_nm_get(),va->nm_fll);
+        for(int idx_dmn=0;idx_dmn<va->nbr_dim;idx_dmn++){
+          (void)fprintf(fp_stdout,"[%d]%s srt=%d cnt=%d : ",idx_dmn,va->dim[idx_dmn]->nm,va->dim[idx_dmn]->srt,va->dim[idx_dmn]->cnt);     
+        } 
+        (void)fprintf(stdout,"\n");
+      }
 
 #ifdef _OPENMP
 #pragma omp critical
