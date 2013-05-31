@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.190 2013-05-08 20:17:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.191 2013-05-31 23:39:05 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -9,13 +9,19 @@
 /* Testing:
    ncks -D 1 ~/nco/data/in_grp.nc */
 
+/* This file contains the API for low level group data structures:
+   Group Traversal Table (GTT): functions prefixed with "trv_tbl_"
+   Group Dimension Map (GDM): functions prefixed with "trv_map_"
+   It does not include any netCDF API calls   
+   */
+
+
 #include "nco_grp_trv.h" /* Group traversal */
-#include "nco_lmt.h" /* Hyperslab limits */
-#include "nco_cnf_dmn.h" /* Conform dimensions */
+
 
 void                          
-trv_tbl_init
-(trv_tbl_sct **tbl) /* I/O [sct] Traversal table */
+trv_tbl_init                           /* [fnc] GTT initialize */
+(trv_tbl_sct **tbl)                    /* I/O [sct] Traversal table */
 {
   trv_tbl_sct *tb=(trv_tbl_sct *)nco_malloc(sizeof(trv_tbl_sct));
 
@@ -34,8 +40,8 @@ trv_tbl_init
 
  
 void 
-trv_tbl_free
-(trv_tbl_sct *tbl) /* I [sct] Traversal table */
+trv_tbl_free                           /* [fnc] GTT free memory */
+(trv_tbl_sct *tbl)                     /* I [sct] Traversal table */
 {
   unsigned int idx;
 
@@ -211,10 +217,10 @@ trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for
 
 
 void
-trv_tbl_mrk_prc_fix                   /* [fnc] Mark fixed/processed flag in table for "var_nm_fll" */
-(const char * const var_nm_fll,       /* I [sng] Variable name to find */
- prc_typ_enm prc_typ,                 /* I [enm] Processing type */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in table for "var_nm_fll" */
+(const char * const var_nm_fll,        /* I [sng] Variable name to find */
+ prc_typ_enm prc_typ,                  /* I [enm] Processing type */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(!strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)){
@@ -228,10 +234,10 @@ trv_tbl_mrk_prc_fix                   /* [fnc] Mark fixed/processed flag in tabl
 
 
 void
-trv_tbl_mrk_typ                       /* [fnc] Mark output netCDF type */
-(const char * const var_nm_fll,       /* I [sng] Variable full name to find */
- nc_type typ_out,                     /* I [nbr] netCDF type for output file */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+trv_tbl_mrk_typ                        /* [fnc] Mark output netCDF type */
+(const char * const var_nm_fll,        /* I [sng] Variable full name to find */
+ nc_type typ_out,                      /* I [nbr] netCDF type for output file */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(!strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)){
@@ -243,12 +249,10 @@ trv_tbl_mrk_typ                       /* [fnc] Mark output netCDF type */
   assert(0);
 } /* trv_tbl_mrk_typ() */
 
-
-
 void 
-trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal table */
-(const trv_tbl_sct * const trv_tbl,  /* I [sct] Traversal table */
- const char * const fnc_nm)          /* I [sng] Function name of the calling function */
+trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of traversal table */
+(const trv_tbl_sct * const trv_tbl,    /* I [sct] Traversal table */
+ const char * const fnc_nm)            /* I [sng] Function name of the calling function */
 {
   int idx=0;
   int nbr_flg=0;
@@ -269,10 +273,10 @@ trv_tbl_prn_xtr                      /* [fnc] Print extraction flag of traversal
 
 } /* end trv_tbl_prn_xtr() */
 
-int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
-nco_cmp_trv_tbl_nm_fll  /* [fnc] Compare two trv_sct's by full name member */
-(const void *val_1, /* I [sct] trv_sct to compare */
- const void *val_2) /* I [sct] trv_sct to compare */
+static int                             /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+trv_tbl_cmp_nm_fll                     /* [fnc] Compare two trv_sct's by full name member */
+(const void *val_1,                    /* I [sct] trv_sct to compare */
+ const void *val_2)                    /* I [sct] trv_sct to compare */
 {
   /* Purpose: Compare two trv_sct's by name structure member
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h
@@ -281,12 +285,12 @@ nco_cmp_trv_tbl_nm_fll  /* [fnc] Compare two trv_sct's by full name member */
 } /* end nco_cmp_trv_tbl_nm() */
 
 void 
-trv_tbl_srt /* [fnc] Sort traversal table */
-(trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+trv_tbl_srt                            /* [fnc] Sort traversal table */
+(trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
   /* Purpose: Alphabetize list by object full name
      This produces easy-to-search variable name screen output with ncks */
-  qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),nco_cmp_trv_tbl_nm_fll);
+  qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),trv_tbl_cmp_nm_fll);
 } /* end trv_tbl_srt() */
 
 void                          
@@ -441,7 +445,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   } /* end if */
 
   /* Print list */
-  if(dbg_lvl_get() >= nco_dbg_var) (void)nco_cmn_nm_prt(*cmn_lst,idx_lst);
+  if(dbg_lvl_get() >= nco_dbg_var) (void)trv_tbl_cmn_nm_prt(*cmn_lst,idx_lst);
 
   /* Export number of entries */
   *nbr_cmn_nm=idx_lst;
@@ -450,7 +454,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
 
 void                          
-nco_cmn_nm_prt                         /* [fnc] Print list of common objects (same absolute path) */
+trv_tbl_cmn_nm_prt                         /* [fnc] Print list of common objects (same absolute path) */
 (const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm)                 /* I [nbr] Number of common names entries */
 {
@@ -465,494 +469,7 @@ nco_cmn_nm_prt                         /* [fnc] Print list of common objects (sa
   } /* end loop over idx */
   (void)fprintf(stdout,"\n");
 
-} /* cmn_nm_prt() */
-
-
-void                          
-trv_tbl_prc                            /* [fnc] Process objects (ncbo only) */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_id_2,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_sct * trv_1,                      /* I [sct] Table object */
- trv_sct * trv_2,                      /* I [sct] Table object */
- const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
- nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
- const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
-{
-  const char fnc_nm[]="trv_tbl_prc()"; /* [sng] Function name */
-  char *grp_out_fll;             /* [sng] Group name */
-
-  int fl_fmt;                    /* [enm] netCDF file format */
-  int grp_id_1;                  /* [id] Group ID in input file */
-  int grp_id_2;                  /* [id] Group ID in input file */
-  int grp_out_id;                /* [id] Group ID in output file */ 
-  int prg_id;                    /* [enm] Program ID */
-  int var_id_1;                  /* [id] Variable ID in input file */
-  int var_id_2;                  /* [id] Variable ID in input file */
-  int var_out_id;                /* [id] Variable ID in output file */
-
-  var_sct *var_prc_1;            /* [sct] Variable to process in file 1 */
-  var_sct *var_prc_2;            /* [sct] Variable to process in file 2 */
-  var_sct *var_prc_out;          /* [sct] Variable to process in output */
-  var_sct *var_prc_gtr;          /* [sct] Greater rank variable to process */
-  var_sct *var_prc_lsr;          /* [sct] Lesser  rank variable to process */
-
-  nco_bool RNK_1_GTR;            /* [flg] Rank of variable in file 1 variable greater than or equal to file 2 */
-
-  prc_typ_enm prc_typ_1;         /* [enm] Processing type */
-  prc_typ_enm prc_typ_2;         /* [enm] Processing type */
-
-  trv_sct *rnk_gtr;              /* [sct] Object of greater or equal rank */
-
-  assert(trv_1->nco_typ == nco_obj_typ_var);
-  assert(trv_1->flg_xtr == True);
-
-  assert(trv_2->nco_typ == nco_obj_typ_var);
-  assert(trv_2->flg_xtr == True);
-
-  /* Get Program ID */
-  prg_id=prg_get(); 
-
-  /* Get output file format */
-  (void)nco_inq_format(nc_out_id,&fl_fmt);
-
-  /* Edit group name for output */
-  if (flg_grp_1){
-    if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1->grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1->grp_nm_fll);
-  } else {
-    if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_2->grp_nm_fll); else grp_out_fll=(char *)strdup(trv_2->grp_nm_fll);
-  }
-
-  /* Obtain group ID using full group name */
-  (void)nco_inq_grp_full_ncid(nc_id_1,trv_1->grp_nm_fll,&grp_id_1);
-  (void)nco_inq_grp_full_ncid(nc_id_2,trv_2->grp_nm_fll,&grp_id_2);
-
-  /* Get variable ID */
-  (void)nco_inq_varid(grp_id_1,trv_1->nm,&var_id_1);
-  (void)nco_inq_varid(grp_id_2,trv_2->nm,&var_id_2);
-
-  /* Allocate variable structure and fill with metadata */
-  var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1,trv_tbl_1);     
-  var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,trv_2,trv_tbl_2);
-
-  if(var_prc_1->nbr_dim >= var_prc_2->nbr_dim) RNK_1_GTR=True; else RNK_1_GTR=False;
-  rnk_gtr = (RNK_1_GTR) ? trv_1 : trv_2;
-  var_prc_gtr= (RNK_1_GTR) ? var_prc_1 : var_prc_2;
-  var_prc_lsr= (RNK_1_GTR) ? var_prc_2 : var_prc_1;
-  var_prc_out= (RNK_1_GTR) ? nco_var_dpl(var_prc_1) : nco_var_dpl(var_prc_2);
-
-  /* Get processing type */
-  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
-  (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
-
-  /* Conform type and rank for process variables */
-  if(prc_typ_1 == prc_typ && prc_typ_2 == prc_typ){
-
-    int dmn_idx_gtr;
-    int dmn_idx_lsr;
-
-    /* Check that all dims in var_prc_lsr are in var_prc_gtr */
-    for(dmn_idx_lsr=0;dmn_idx_lsr<var_prc_lsr->nbr_dim;dmn_idx_lsr++){
-      for(dmn_idx_gtr=0;dmn_idx_gtr<var_prc_gtr->nbr_dim;dmn_idx_gtr++)  
-        if(!strcmp(var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->dim[dmn_idx_gtr]->nm)){
-          break;
-        }
-        if(dmn_idx_gtr == var_prc_gtr->nbr_dim){
-          (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->nm);
-          nco_exit(EXIT_FAILURE);
-        } /* endif error */
-    } /* end loop over idx */
-
-    /* Read */
-    (void)nco_msa_var_get_trv(grp_id_1,var_prc_1,trv_1);
-    (void)nco_msa_var_get_trv(grp_id_2,var_prc_2,trv_2);
-
-    nc_type typ_hgh;
-    typ_hgh=ncap_typ_hgh(var_prc_1->type,var_prc_2->type);
-
-    /* Make sure variables conform in type */
-    if(var_prc_1->type != var_prc_2->type){
-      if(dbg_lvl_get() >= nco_dbg_std && flg_def){
-        (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",prg_nm_get(),
-		      var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(typ_hgh));
-      } /* endif dbg */
-    } /* endif type */
-
-    typ_hgh=ncap_var_retype(var_prc_1,var_prc_2);
-    trv_1->var_typ=trv_2->var_typ=typ_hgh;
-
-    /* Broadcast lesser to greater variable. NB: Pointers may change so _gtr, _lsr not valid */
-    if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
-
-    /* var1 and var2 now conform in size and type to eachother and are in memory */
-
-    assert(var_prc_1->type == var_prc_2->type);
-    assert(trv_1->var_typ == trv_2->var_typ);
-    assert(trv_1->var_typ == var_prc_1->type);
-
-  } /* Conform type and rank for process variables */
-
-  /* Define mode */
-  if(flg_def){  
-    char *rec_dmn_nm=NULL;    /* [sng] Record dimension name */
-
-    nm_tbl_sct *rec_dmn_nm_1=NULL; /* [sct] Record dimension names array */
-    nm_tbl_sct *rec_dmn_nm_2=NULL; /* [sct] Record dimension names array */
-
-    nco_bool PCK_ATT_CPY;    /* [flg] Copy attributes "scale_factor", "add_offset" */
-
-    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc_1);
-
-    /* If output group does not exist, create it */
-    if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
-
-    /* Detect duplicate GPE names in advance, then exit with helpful error */
-    if(gpe) (void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);  
-
-    /* Get array of record names for object */
-    (void)nco_get_rec_dmn_nm(trv_1,trv_tbl_1,&rec_dmn_nm_1);               
-    (void)nco_get_rec_dmn_nm(trv_2,trv_tbl_2,&rec_dmn_nm_2);    
-
-    /* Use for record dimension name the first in array */
-    if(rec_dmn_nm_1->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_1->lst[0].nm);
-    if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
-
-    /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
-
-    /* Set chunksize parameters */
-    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,rnk_gtr);
-
-    /* Copy variable's attributes */
-    if(RNK_1_GTR) (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); else (void)nco_att_cpy(grp_id_2,grp_out_id,var_id_2,var_out_id,PCK_ATT_CPY);
-
-    /* Memory management for record dimension names */
-    if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm);
-    if(rec_dmn_nm_1){
-      for(int idx=0;idx<rec_dmn_nm_1->nbr;idx++) rec_dmn_nm_1->lst[idx].nm=(char *)nco_free(rec_dmn_nm_1->lst[idx].nm);
-      rec_dmn_nm_1=(nm_tbl_sct *)nco_free(rec_dmn_nm_1);
-    }
-    if(rec_dmn_nm_2){
-      for(int idx=0;idx<rec_dmn_nm_2->nbr;idx++) rec_dmn_nm_2->lst[idx].nm=(char *)nco_free(rec_dmn_nm_2->lst[idx].nm);
-      rec_dmn_nm_2=(nm_tbl_sct *)nco_free(rec_dmn_nm_2);
-    }
-
-  }else{ /* Write mode */
-
-    int has_mss_val;      /* [flg] Variable has missing value */
-
-    ptr_unn mss_val;      /* [sct] Missing value */
-
-    /* Get group ID */
-    (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
-
-    /* Get variable ID */
-    (void)nco_inq_varid(grp_out_id,trv_1->nm,&var_out_id);         
-
-    if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
-
-    /* Non-processed variable */
-    if(prc_typ_1 == fix_typ || prc_typ_2 == fix_typ){
-      if(RNK_1_GTR) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_2);
-    } /* endif fix */
-
-    /* Processed variable */
-    if(prc_typ_1 == prc_typ && prc_typ_2 == prc_typ){
-
-      var_prc_out->id=var_out_id;
-
-      /* fxm: gtr or lsr? */
-      var_prc_out->srt=var_prc_gtr->srt;
-      var_prc_out->cnt=var_prc_gtr->cnt;
-
-      /* Set missing value */
-      has_mss_val=var_prc_gtr->has_mss_val;
-
-      /* Change missing_value, if any, of lesser rank to missing_value, if any, of greater rank */
-      if(RNK_1_GTR) has_mss_val=nco_mss_val_cnf(var_prc_1,var_prc_2); else has_mss_val=nco_mss_val_cnf(var_prc_2,var_prc_1);
-
-      /* mss_val of larger rank, if any, overrides mss_val of smaller rank */
-      if(has_mss_val) mss_val= (RNK_1_GTR) ? var_prc_1->mss_val : var_prc_2->mss_val;
-
-      /* Perform specified binary operation */
-      switch(nco_op_typ){
-      case nco_op_add: /* [enm] Add file_1 to file_2 */
-        (void)nco_var_add(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
-      case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
-        (void)nco_var_mlt(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
-      case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
-        (void)nco_var_dvd(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
-      case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
-        (void)nco_var_sbt(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
-      default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbo() */
-        (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm_get());
-        nco_exit(EXIT_FAILURE);
-        break;
-      } /* end case */
-
-      /* Copy result to output file and free workspace buffer. NB. use grp_out_id */
-      if(var_prc_1->nbr_dim == 0){
-        (void)nco_put_var1(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_1->val.vp,var_prc_1->type);
-      }else{ /* end if variable is scalar */
-        (void)nco_put_vara(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_out->cnt,var_prc_1->val.vp,var_prc_1->type);
-      } /* end else */
-
-    } /* Processed variable */
-  } /* Write mode */
-
-  /* Free allocated variable structures */
-  var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
-  var_prc_2->val.vp=nco_free(var_prc_2->val.vp);
-  var_prc_1=(var_sct *)nco_free(var_prc_1);
-  var_prc_2=(var_sct *)nco_free(var_prc_2);
-  var_prc_out=(var_sct *)nco_free(var_prc_out);
-
-  /* Free output path name */
-  grp_out_fll=(char *)nco_free(grp_out_fll);
-
-
-} /* trv_tbl_prc() */
-
-void                          
-trv_tbl_fix                            /* [fnc] Copy processing type fixed object (ncbo only) */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
- const trv_sct * const trv_1,          /* I [sct] Table object */
- const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
-{
-  char *grp_out_fll;             /* [sng] Group name */
-
-  int fl_fmt;                    /* [enm] netCDF file format */
-  int grp_id_1;                  /* [id] Group ID in input file */
-  int grp_out_id;                /* [id] Group ID in output file */  
-  int prg_id;                    /* [enm] Program ID */
-  int var_id_1;                  /* [id] Variable ID in input file */
-  int var_out_id;                /* [id] Variable ID in output file */
-
-  var_sct *var_prc_1;            /* [sct] Variable to process in file 1 */
-  var_sct *var_prc_out;          /* [sct] Variable to process in output */
-
-  prc_typ_enm prc_typ_1; /* [enm] Processing type */
-
-  assert(trv_1->nco_typ == nco_obj_typ_var);
-  assert(trv_1->flg_xtr == True);
-
-  /* Get Program ID */
-  prg_id=prg_get(); 
-
-  /* Get output file format */
-  (void)nco_inq_format(nc_out_id,&fl_fmt);
-
-  /* Edit group name for output */
-  if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1->grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1->grp_nm_fll);
-
-  /* Obtain group ID using full group name */
-  (void)nco_inq_grp_full_ncid(nc_id_1,trv_1->grp_nm_fll,&grp_id_1);
-
-  /* Get variable ID */
-  (void)nco_inq_varid(grp_id_1,trv_1->nm,&var_id_1);
-
-  /* Allocate variable structure and fill with metadata */
-  var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1,trv_tbl_1);     
-
-  var_prc_out= nco_var_dpl(var_prc_1);
-  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
-
-  if(prc_typ_1 != fix_typ){
-    var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
-    var_prc_1=(var_sct *)nco_free(var_prc_1);
-    var_prc_out=(var_sct *)nco_free(var_prc_out);
-    grp_out_fll=(char *)nco_free(grp_out_fll);
-    return;
-  }
-
-  /* Define mode */
-  if(flg_def){  
-
-    nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
-
-    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc_1);
-
-    /* If output group does not exist, create it */
-    if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
-
-    /* Detect duplicate GPE names in advance, then exit with helpful error */
-    if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
-
-    /* Define variable in output file. */
-    var_out_id= nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
-
-    /* Set chunksize parameters */
-    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,trv_1);
-
-    /* Copy variable's attributes */
-    (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); 
-
-  }else{ /* Write mode */
-
-    /* Get group ID */
-    (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
-
-    /* Get variable ID */
-    (void)nco_inq_varid(grp_out_id,trv_1->nm,&var_out_id);         
-
-    /* Copy non-processed variable */
-    (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_1); 
-  
-  } /* Write mode */
-
-  /* Free allocated variable structures */
-  var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
-  var_prc_1=(var_sct *)nco_free(var_prc_1);
-  var_prc_out=(var_sct *)nco_free(var_prc_out);
-
-  /* Free output path name */
-  grp_out_fll=(char *)nco_free(grp_out_fll);
-
-
-} /* trv_tbl_fix() */
-
-nco_bool                               /* O [flg] Copy packing attributes */
-nco_pck_cpy_att                        /* [fnc] Inquire about copying packing attributes  */
-(const int prg_id,                     /* I [enm] Program ID */
- const int nco_pck_plc,                /* I [enm] Packing policy */
- const var_sct * const var_prc)        /* I [sct] Variable */
-{
-  nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
-
-  /* Copy all attributes except in cases where packing/unpacking is involved
-  0. Variable is unpacked on input, unpacked on output
-  --> Copy all attributes
-  1. Variable is packed on input, is not altered, and remains packed on output
-  --> Copy all attributes
-  2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
-  --> Copy all attributes except scale_factor and add_offset
-  3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
-  --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
-  4. Variable is not packed on input, packing is performed, and output is packed
-  --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
-
-  /* Do not copy packing attributes "scale_factor" and "add_offset" 
-  if variable is packed in input file and unpacked in output file 
-  Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
-  Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
-  /* Copy exising packing attributes, if any, unless... */
-  if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
-    prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
-    !var_prc->is_fix_var && /* ...and variable is processed (not fixed)... */
-    var_prc->pck_dsk) /* ...and variable is packed in input file... */
-    PCK_ATT_CPY=False;
-
-  /* Do not copy packing attributes when unpacking variables 
-  ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
-  if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
-    PCK_ATT_CPY=False;  
-
-  return PCK_ATT_CPY;
-
-} /* nco_pck_cpy_att() */
-
-nco_bool                               /* O [flg] True for match found */
-trv_tbl_rel_mch                        /* [fnc] Relative match of object in table 1 to table 2  */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
- const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
- nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
- nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
- const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
- const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
-{
-  nco_bool rel_mch; /* [flg] A match was found */
-
-  rel_mch=False;
-
-  if (flg_tbl_1 == True ){
-
-    /* Loop table 2 */
-    for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
-
-      /* A relative match was found */
-      if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)) {
-
-        trv_sct *trv_2=&trv_tbl_2->lst[uidx];
-
-        rel_mch=True;
-
-        /* Process common object */
-        (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_def);
-
-      } /* A relative match was found */
-    } /* Loop table 2 */
-
-  } else if (flg_tbl_1 == False ){
-
-    /* Loop table 1 */
-    for(unsigned uidx=0;uidx<trv_tbl_1->nbr;uidx++){
-
-      /* A relative match was found */
-      if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)) {
-
-        trv_sct *trv_1=&trv_tbl_1->lst[uidx];
-
-        rel_mch=True;
-
-        /* Process common object */
-        (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_def);
-
-      } /* A relative match was found */
-    } /* Loop table 2 */
-
-  }
-
-  return rel_mch;
-
-} /* trv_tbl_rel_mch() */
-
+} /* trv_tbl_cmn_nm_prt() */
 
 int                                    /* O [nbr] Number of depth 1 groups (root = 0) */             
 trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups */
@@ -977,130 +494,4 @@ trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups 
   return nbr_grp_dpt;
 
 } /* trv_tbl_inq_dpt() */
-
-void                          
-nco_prc_cmn_nm                         /* [fnc] Process common objects from a common mames list (ncbo only) */
-(const int nc_id_1,                    /* I [id] netCDF input-file ID */
- const int nc_id_2,                    /* I [id] netCDF input-file ID */
- const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,            /* I [sct] GPE structure */
- gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
- int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
- const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
- trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
- const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
- const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
- const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
-{
- 
-  const char fnc_nm[]="nco_prc_cmn_nm()"; /* [sng] Function name */
-
-  int nbr_grp_dpt_1; /* [nbr] Number of depth 1 groups (root = 0)  */
-  int nbr_grp_dpt_2; /* [nbr] Number of depth 1 groups (root = 0)  */
-
-  nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
-  nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
-
-  /* Process objects in list */
-  for(int idx=0;idx<nbr_cmn_nm;idx++){
-
-    trv_sct *trv_1;    /* [sct] Table object */
-    trv_sct *trv_2;    /* [sct] Table object */
-
-    nco_bool has_mch;  /* [flg] A relative match was found in file 1 or 2 */
-
-    trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
-    trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
-
-    /* Both objects exist in the 2 files, both objects are to extract */
-    if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
-
-      if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
-
-      /* Process common object */
-      (void)trv_tbl_prc(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_def);
-
-    } /* Both objects exist in the 2 files, both objects are to extract */
-
-
-    /* Object exists only in one file and is to extract */
-    else {
-
-      /* Number of depth 1 groups in file 1 greater (typically model file) */
-      if (nbr_grp_dpt_1 > nbr_grp_dpt_2){
-
-        /* Object exists only in file 1 and is to extract */
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
-
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
-
-          /* Try a relative match in file 2 */
-          has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_def);
-
-          /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
-          if(has_mch == False) (void)trv_tbl_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
-
-        } /* Object exists only in file 1 and is to extract */
-
-        /* Object exists only in file 2 and is to extract */
-        else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
-
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
-
-          /* Try a relative match in file 1 */
-          has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_def);
-
-          /* A match was not found in file 2, copy instead object from file 2 as fixed to output */
-          if(has_mch == False) (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
-
-        } /* Object exists only in file 2 and is to extract */ 
-
-
-      } else { /* Number of depth 1 groups in file 2 greater */
-
-
-        /* Object exists only in file 1 and is to extract */
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
-
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
-
-          /* Try a relative match in file 2 */
-          has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_def);
-
-          /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
-          if(has_mch == False) (void)trv_tbl_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
-
-        } /* Object exists only in file 1 and is to extract */
-
-        /* Object exists only in file 2 and is to extract */
-        else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
-
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
-
-          /* Try a relative match in file 1 */
-          has_mch=trv_tbl_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_def);
-
-          /* A match was not found in file 2, copy instead object from file 2 as fixed to output */
-          if(has_mch == False) (void)trv_tbl_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
-
-        } /* Object exists only in file 2 and is to extract */ 
-
-      } /* Number of depth 1 groups in file 2 greater */
-
-    } /* Object exists only in one file and is to extract */
-
-  } /* Process objects in list */
-
-} /* nco_prc_cmn_nm() */
 

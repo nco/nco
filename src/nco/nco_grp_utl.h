@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.274 2013-05-15 19:08:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.275 2013-05-31 23:39:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -180,7 +180,7 @@ nco_prn_xtr_dfn                       /* [fnc] Print variable metadata (called w
 
 
 void 
-xtr_lst_prn                            /* [fnc] Print name-ID structure list */
+nco_xtr_lst_prn                        /* [fnc] Print name-ID structure list */
 (nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
  const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
 
@@ -251,12 +251,11 @@ nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 
-int                                   /* O [rcd] Return code */
-nco_grp_itr                           /* [fnc] Populate traversal table by examining, recursively, subgroups of parent  */
-(const int grp_id,                    /* I [id] Group ID */
- char * const grp_pth,                /* I [sng] Absolute group path */
- trv_tbl_sct *trv_tbl);               /* I/O [sct] Group traversal table  */
-
+int                                    /* [rcd] Return code */
+nco_grp_itr                            /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */
+(const int grp_id,                     /* I [ID] Group ID */
+ char * const grp_nm_fll,              /* I [sng] Absolute group name (path) */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 void
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
@@ -382,6 +381,112 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int out_id,                    /* I [ID] netCDF output file ID */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
+void                          
+nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ int cnk_map,                          /* I [enm] Chunking map */
+ int cnk_plc,                          /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_sct * trv_1,                      /* I [sct] Table object */
+ trv_sct * trv_2,                      /* I [sct] Table object */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
+ nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+
+void                          
+nco_cpy_fix                            /* [fnc] Copy processing type fixed object (ncbo only) */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ int cnk_map,                          /* I [enm] Chunking map */
+ int cnk_plc,                          /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
+ const trv_sct * const trv_1,          /* I [sct] Table object */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+
+nco_bool                               /* O [flg] Copy packing attributes */
+nco_pck_cpy_att                        /* [fnc] Inquire about copying packing attributes  */
+(const int prg_id,                     /* I [enm] Program ID */
+ const int nco_pck_plc,                /* I [enm] Packing policy */
+ const var_sct * const var_prc);       /* I [sct] Variable */
+
+nco_bool                               /* O [flg] True for match found */
+nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ int cnk_map,                          /* I [enm] Chunking map */
+ int cnk_plc,                          /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
+ nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
+ nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
+ const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
+ const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+
+void                          
+nco_prc_cmn_nm                         /* [fnc] Process common objects from a common mames list  */
+(const int nc_id_1,                    /* I [id] netCDF input-file ID */
+ const int nc_id_2,                    /* I [id] netCDF input-file ID */
+ const int nc_out_id,                  /* I [id] netCDF output-file ID */
+ int cnk_map,                          /* I [enm] Chunking map */
+ int cnk_plc,                          /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,            /* I [sct] GPE structure */
+ gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
+ int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
+ const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
+ const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+ const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
+ const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

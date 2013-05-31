@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.320 2013-05-31 01:05:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.321 2013-05-31 23:39:05 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -685,7 +685,15 @@ extern "C" {
     prc_typ                 /*  1 [enm] Process variable (operator may alter data and metadata) */
   } prc_typ_enm; 
 
- 
+
+  /* Map (associative array) a dimension ID to a dimension index */
+  typedef struct {
+    int id_key;        /* [nbr] Dimension ID ( map key ) */
+    int idx_val;       /* [nbr] Dimension index ( map value ) */
+    char *nm_fll;      /* [sng] Dimension full name ( human helpful information ) */
+  } trv_map_dmn_id_t;
+
+
   /* GTT Object structure 
      Information for each object/node in traversal tree
      Contains basic information about this object/node needed by traversal algorithm
