@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.241 2013-05-31 01:05:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.242 2013-05-31 02:36:25 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.241 2013-05-31 01:05:17 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.241 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.242 2013-05-31 02:36:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.242 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1277,9 +1277,10 @@ main(int argc,char **argv)
 
       if(dbg_lvl_get() >= nco_dbg_dev){
         var_sct *va=var_prc_out[idx];
-        (void)fprintf(stdout,"%s: DEBUG variable to write <%s>: ",prg_nm_get(),va->nm_fll);
+        (void)fprintf(stdout,"%s: DEBUG variable to write <%s>#%d: ",prg_nm_get(),va->nm,va->id);
         for(int idx_dmn=0;idx_dmn<va->nbr_dim;idx_dmn++){
-          (void)fprintf(fp_stdout,"[%d]%s srt=%d cnt=%d : ",idx_dmn,va->dim[idx_dmn]->nm,va->dim[idx_dmn]->srt,va->dim[idx_dmn]->cnt);     
+          (void)fprintf(fp_stdout,"[%d]%s srt=%d dim_srt=%d cnt=%d dim_cnt=%d : ",
+            idx_dmn,va->dim[idx_dmn]->nm,va->srt[idx_dmn],va->dim[idx_dmn]->srt,va->cnt[idx_dmn],va->dim[idx_dmn]->cnt);     
         } 
         (void)fprintf(stdout,"\n");
       }
