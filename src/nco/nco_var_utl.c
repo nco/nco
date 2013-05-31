@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.322 2013-05-31 04:49:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.323 2013-05-31 05:08:43 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2294,11 +2294,13 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
 
 
+
+
+
   if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with dimensions: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with NEW dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-      dmn_trv=nco_dmn_trv_sct(dmn_out_id[idx_dmn],trv_tbl);
-      (void)fprintf(stdout,"#%d(%s): ",dmn_out_id[idx_dmn],dmn_trv->nm_fll);
+      (void)fprintf(stdout,"#%d: ",dmn_out_id[idx_dmn]);
     }
     (void)fprintf(stdout,"\n");
   }
