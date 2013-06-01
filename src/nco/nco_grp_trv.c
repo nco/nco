@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.191 2013-05-31 23:39:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.192 2013-06-01 00:51:55 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -495,3 +495,63 @@ trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups 
 
 } /* trv_tbl_inq_dpt() */
 
+
+
+void 
+trv_map_dmn_init                       /* [fnc] Dimension map initialize */
+(trv_map_dmn_id_t *map)                /* I/O [sct] Dimension map */
+{
+  int idx;
+
+  for(idx=0;idx<TRV_MAP_SIZE;idx++){
+    map[idx].nm_fll=NULL;
+    map[idx].idx_val=err_typ;
+    map[idx].id_key=err_typ;
+  }
+
+} /* trv_map_dmn_init() */
+
+void 
+trv_map_dmn_free                       /* [fnc] Dimension map free memory */
+(trv_map_dmn_id_t *map)                /* I [sct] Dimension map */
+{
+  int idx;
+
+  for(idx=0;idx<TRV_MAP_SIZE;idx++){
+    free(map[idx].nm_fll);
+  }
+
+} /* trv_map_dmn_free() */
+
+void 
+trv_map_dmn_set                        /* [fnc] Dimension map set values */
+(int id_key,                           /* I [nbr] Dimension ID  (key) */
+ int idx_val,                          /* I [nbr] Dimension index (value) */
+ const char * const nm_fll,            /* I [sng] Dimension full name */
+ trv_map_dmn_id_t *map)                /* I/O [sct] Dimension map */
+{
+  map[idx_val].id_key=id_key;
+  map[idx_val].idx_val=idx_val;
+  map[idx_val].nm_fll=strdup(nm_fll);
+
+} /* trv_map_dmn_set() */
+
+
+int                                    /* O [nbr] Dimension index (value) */
+trv_map_dmn_get                        /* [fnc] Dimension map get values */
+(int id_key,                           /* I [nbr] Dimension ID (key) */
+ const trv_map_dmn_id_t * const map)   /* I [sct] Dimension map */
+{
+  int idx;
+
+  for(idx=0;idx<TRV_MAP_SIZE;idx++){
+    if (id_key == map[idx].id_key){
+      printf("value for key %d is %d %s\n",id_key, map[idx].idx_val, map[idx].nm_fll);
+      return map[idx].idx_val;
+    }
+  }
+
+  printf("value for key %d not found\n",id_key);
+  return err_typ;
+
+} /* trv_map_dmn_get() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.321 2013-05-31 23:39:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.322 2013-06-01 00:51:55 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -324,6 +324,8 @@ extern "C" {
 #ifndef EXIT_FAILURE /* Most likely this is a SUN4 machine */
 # define EXIT_FAILURE 1
 #endif /* SUN4 */
+
+#define TRV_MAP_SIZE NC_MAX_DIMS
 
   enum prg{ /* [enm] Key value for all netCDF operators */
     ncap,
