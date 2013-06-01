@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.82 2013-06-01 00:51:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.83 2013-06-01 08:15:29 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -123,14 +123,14 @@ trv_map_dmn_free                       /* [fnc] Dimension map free memory */
 
 void 
 trv_map_dmn_set                        /* [fnc] Dimension map set values */
-(int id_key,                           /* I [nbr] Dimension ID  (key) */
- int idx_val,                          /* I [nbr] Dimension index (value) */
+(int key_idx,                          /* I [nbr] Key: dimension index (map key) */
+ int val_id,                           /* I [nbr] Value: dimension ID (map value) */
  const char * const nm_fll,            /* I [sng] Dimension full name */
  trv_map_dmn_id_t *map);               /* I/O [sct] Dimension map */
 
-int                                    /* O [nbr] Dimension index (value) */
+int                                    /* O [nbr] Value: dimension ID (map value) */
 trv_map_dmn_get                        /* [fnc] Dimension map get values */
-(int id_key,                           /* I [nbr] Dimension ID (key) */
+(int key_idx,                          /* I [nbr] Key: dimension index (map key) */
  const trv_map_dmn_id_t * const map);  /* I [sct] Dimension map */
 
 

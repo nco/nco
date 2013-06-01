@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.326 2013-06-01 04:43:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.327 2013-06-01 08:15:29 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1960,7 +1960,9 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   int rcd_lcl;                           /* [rcd] Return code */
   int var_dim_id;                        /* [id] Variable dimension ID */   
   int dmn_id_out;                        /* [id] Dimension ID defined in outout group */  
-  int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */ 
+  int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */
+  int key_idx;                           /* [nbr] Key: dimension index ( map key ) */
+  int val_id;                            /* [nbr] Value: dimension ID ( map value ) */
 
   long dmn_sz;                           /* [sng] Dimension size  */  
   long dmn_sz_grp;                       /* [sng] Dimension size for group  */  
@@ -2253,12 +2255,14 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* Assign the defined ID to the dimension ID array for the variable. NB: use iterator definition index */
       dmn_out_id[idx_dmn]=dmn_id_out; 
 
-      /* New ID...insert it in the variable object map *output* dimension ID */
+      /* New output dimension ID (map value) ...insert it in the table map (index,ID) */
 #ifdef NCO_DIM_RDR
-      (void)trv_map_dmn_set(dmn_id_out,idx_dmn,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll,var_trv->map_dmn_id);
+      key_idx=idx_dmn_rdr;
+      val_id=dmn_id_out;
+      (void)trv_map_dmn_set(key_idx,val_id,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll,var_trv->map_dmn_id);
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s NEW ID #%d at [%d] for <%s> inserted in table\n",prg_nm_get(),fnc_nm,
-          dmn_id_out,idx_dmn,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
+        (void)fprintf(stdout,"%s: DEBUG %s NEW ID insert in table key[%d]->value#%d <%s>\n",prg_nm_get(),fnc_nm,
+          key_idx,val_id,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
       }
 #endif
 
@@ -2329,17 +2333,16 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   */
 
 
-
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with NEW dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)(void)fprintf(stdout,"#%d: ",dmn_out_id[idx_dmn]);
     (void)fprintf(stdout,"\n");
 #ifdef NCO_DIM_RDR
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with MAP dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-    int id_key=dmn_out_id[idx_dmn_rdr];
-    int idx_val=trv_map_dmn_get(id_key,var_trv->map_dmn_id);
-    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)(void)fprintf(stdout,"#%d MAP [%d] : ",
-      id_key,idx_val);
+    key_idx=idx_dmn_rdr;
+    val_id=trv_map_dmn_get(key_idx,var_trv->map_dmn_id);
+    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)(void)fprintf(stdout,"key[%d]->value#%d : ",
+      idx_dmn,val_id);
       (void)fprintf(stdout,"\n");
 #endif
   }

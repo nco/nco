@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.719 2013-06-01 03:18:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.720 2013-06-01 08:15:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1631,7 +1631,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
     if(trv_tbl->lst[var_idx].nco_typ == nco_obj_typ_var){
       trv_sct var_trv=trv_tbl->lst[var_idx];   
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
         (void)fprintf(stdout,"%s:",var_trv.nm_fll); 
         (void)fprintf(stdout," %d dimensions:\n",var_trv.nbr_dmn);
@@ -1645,7 +1645,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dmn_id,trv_tbl);
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
+        if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"[%d]%s#%d ",dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm,var_dmn_id);    
           (void)fprintf(stdout,"<%s>\n",dmn_trv->nm_fll);
         }
@@ -3251,7 +3251,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       for(int dmn_idx_var=0;dmn_idx_var<var_trv.nbr_dmn;dmn_idx_var++) {
         if(trv_tbl->lst[var_idx].var_dmn[dmn_idx_var].is_crd_var == nco_obj_typ_err) {
 
-          if(dbg_lvl_get() >= nco_dbg_dev ){
+          if(dbg_lvl_get() == nco_dbg_old ){
             (void)fprintf(stdout,"%s: OOPSY %s reports variable <%s> with NOT filled dimension [%d]%s\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll);        
           } /* endif dbg */
@@ -3625,7 +3625,7 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id_in);
       (void)nco_inq_grp_full_ncid(out_id,var_trv.grp_nm_fll,&grp_id_out);
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO writing fixed variable <%s> from ",prg_nm_get(),var_trv.nm_fll);        
         (void)nco_prt_grp_nm_fll(grp_id_in);
         (void)fprintf(stdout," to ");   

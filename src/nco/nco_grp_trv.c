@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.194 2013-06-01 04:43:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.195 2013-06-01 08:15:29 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -474,7 +474,6 @@ int                                    /* O [nbr] Number of depth 1 groups (root
 trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups */
 (const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */           
 {
-
   int nbr_grp_dpt; /* [nbr] Number of depth 1 groups (root = 0) */       
 
   nbr_grp_dpt=0;
@@ -495,7 +494,6 @@ trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups 
 } /* trv_tbl_inq_dpt() */
 
 
-
 void 
 trv_map_dmn_init                       /* [fnc] Dimension map initialize */
 (trv_map_dmn_id_t *map)                /* I/O [sct] Dimension map */
@@ -504,8 +502,8 @@ trv_map_dmn_init                       /* [fnc] Dimension map initialize */
 
   for(idx=0;idx<TRV_MAP_SIZE;idx++){
     map[idx].nm_fll=NULL;
-    map[idx].idx_val=err_typ;
-    map[idx].id_key=err_typ;
+    map[idx].key_idx=err_typ;
+    map[idx].val_id=err_typ;
   }
 
 } /* trv_map_dmn_init() */
@@ -524,31 +522,60 @@ trv_map_dmn_free                       /* [fnc] Dimension map free memory */
 
 void 
 trv_map_dmn_set                        /* [fnc] Dimension map set values */
-(int id_key,                           /* I [nbr] Dimension ID  (key) */
- int idx_val,                          /* I [nbr] Dimension index (value) */
+(int key_idx,                          /* I [nbr] Key: dimension index (map key) */
+ int val_id,                           /* I [nbr] Value: dimension ID (map value) */
  const char * const nm_fll,            /* I [sng] Dimension full name */
  trv_map_dmn_id_t *map)                /* I/O [sct] Dimension map */
 {
-  map[idx_val].id_key=id_key;
-  map[idx_val].idx_val=idx_val;
-  map[idx_val].nm_fll=strdup(nm_fll);
+  /* Purpose: Set the map value and key pair */
+  map[key_idx].key_idx=key_idx;
+  map[key_idx].val_id=val_id;
+  map[key_idx].nm_fll=strdup(nm_fll);
 
 } /* trv_map_dmn_set() */
 
 
-int                                    /* O [nbr] Dimension index (value) */
+int                                    /* O [nbr] Value: dimension ID (map value) */
 trv_map_dmn_get                        /* [fnc] Dimension map get values */
-(int id_key,                           /* I [nbr] Dimension ID (key) */
+(int key_idx,                          /* I [nbr] Key: dimension index (map key) */
  const trv_map_dmn_id_t * const map)   /* I [sct] Dimension map */
 {
+  /* Purpose: Return the map value upon map key input */
   int idx;
 
   for(idx=0;idx<TRV_MAP_SIZE;idx++){
-    if (id_key == map[idx].id_key){
-      return map[idx].idx_val;
+    if (key_idx == map[idx].key_idx){
+      return map[idx].val_id;
     }
   }
 
   return err_typ;
 
 } /* trv_map_dmn_get() */
+
+void trv_map_dmn_tst()
+{
+  int val;
+  int key;
+
+  trv_map_dmn_id_t map[TRV_MAP_SIZE];
+
+  (void)trv_map_dmn_init(map);
+
+  key=1;
+  val=10;
+
+  (void)trv_map_dmn_set(key, val, "value_10", map);
+
+  val=trv_map_dmn_get(key, map);
+
+  printf("key=%d has a value=%d %s\n", key, val, map[key].nm_fll);
+
+  key=2;
+
+  val=trv_map_dmn_get(key, map);
+
+  printf("key=%d has a value=%d %s\n", key, val, map[key].nm_fll);
+
+  (void)trv_map_dmn_free(map);
+}

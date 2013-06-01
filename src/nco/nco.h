@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.324 2013-06-01 03:18:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.325 2013-06-01 08:15:29 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -688,10 +688,12 @@ extern "C" {
   } prc_typ_enm; 
 
 
-  /* Map (associative array) a dimension ID to a dimension index */
+  /* Map (associative array) a dimension ID to a dimension index; 
+     lookup for the dimension ID (map value) associated with the dimension index (map key)
+     Needed for dimension permutations */
   typedef struct {
-    int id_key;        /* [nbr] Dimension ID ( map key ) */
-    int idx_val;       /* [nbr] Dimension index ( map value ) */
+    int key_idx;       /* [nbr] Key: dimension index ( map key ) */
+    int val_id;        /* [nbr] Value: dimension ID ( map value ) */
     char *nm_fll;      /* [sng] Dimension full name ( human helpful information ) */
   } trv_map_dmn_id_t;
 
