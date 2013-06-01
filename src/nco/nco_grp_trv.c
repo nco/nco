@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.192 2013-06-01 00:51:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.193 2013-06-01 02:31:17 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -50,15 +50,14 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   for(idx=0;idx<tbl->nbr;idx++){
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
-
-    if (tbl->lst[idx].nco_typ == nco_obj_typ_var){
-      int nbr_dmn=tbl->lst[idx].nbr_dmn;
-      for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-        tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll);
-        tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
-        tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
-      }
+    for(int dmn_idx=0;dmn_idx<tbl->lst[idx].nbr_dmn;dmn_idx++){
+      tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll);
+      tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
+      tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
     }
+#ifdef NCO_DIM_RDR
+    (void)trv_map_dmn_init(tbl->lst[idx].map_dmn_id);
+#endif
   } 
 
   tbl->lst=(trv_sct *)nco_free(tbl->lst);
@@ -518,7 +517,7 @@ trv_map_dmn_free                       /* [fnc] Dimension map free memory */
   int idx;
 
   for(idx=0;idx<TRV_MAP_SIZE;idx++){
-    free(map[idx].nm_fll);
+    map[idx].nm_fll=(char *)nco_free(map[idx].nm_fll);
   }
 
 } /* trv_map_dmn_free() */

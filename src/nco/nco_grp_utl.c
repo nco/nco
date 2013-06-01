@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.717 2013-05-31 23:39:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.718 2013-06-01 02:31:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1843,7 +1843,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].ncd=NULL;
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_id=nco_obj_typ_err;
   }
-  
+
 
   /* Iterate variables for this group */
   for(int var_idx=0;var_idx<nbr_var;var_idx++){
@@ -1932,34 +1932,34 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_id=nco_obj_typ_err;
     }
 
-     /* Variable dimensions; store what we know at this time: relative name and ID */
+    /* Variable dimensions; store what we know at this time: relative name and ID */
     for(int dmn_idx_var=0;dmn_idx_var<nbr_dmn_var;dmn_idx_var++){
 
       char dmn_nm_var[NC_MAX_NAME+1]; /* [sng] Dimension name */
       long dmn_sz_var;                /* [nbr] Dimension size */ 
 
-      /* Get dimension name 
-      nc_inq_dimname() currently returns only a simple dimension
-      name, without a prefix identifying the group it came from.
-      */
+      /* Get dimension name; netCDF nc_inq_dimname() currently relative name */
       (void)nco_inq_dim(grp_id,dmn_id_var[dmn_idx_var],dmn_nm_var,&dmn_sz_var);
 
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_id=dmn_id_var[dmn_idx_var];
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with dimension #%d'%s'\n",prg_nm_get(),fnc_nm,
-          var_nm_fll,dmn_id_var[dmn_idx_var],dmn_nm_var);
-      }
 #ifdef NCO_DIM_RDR
       /* Dimension correspondence for reordered dimensions, (ncpdq); initialize with ordered index (no re-order) */
-      trv_tbl->lst[idx].dmn_idx_out_in[dmn_idx_var]=dmn_idx_var;  
+      trv_tbl->lst[idx].dmn_idx_out_in[dmn_idx_var]=dmn_idx_var; 
+      /* Reordered dimensions record dimensions flag (ncpdq) */ 
+      trv_tbl->lst[idx].is_rec_dmn_out[dmn_idx_var]=err_typ;
 #endif
-    }
- 
+    } /* Variable dimensions; store what we know at this time: relative name and ID */
+
+#ifdef NCO_DIM_RDR
+    (void)trv_map_dmn_init(trv_tbl->lst[idx].map_dmn_id);
+#endif
+
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
-  } /* end loop over variables */
+
+  } /* Iterate variables for this group */
 
   /* Add dimension objects */ 
 

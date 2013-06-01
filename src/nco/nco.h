@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.322 2013-06-01 00:51:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.323 2013-06-01 02:31:17 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -709,10 +709,6 @@ extern "C" {
     nco_obj_typ nco_typ;              /* [enm] netCDF4 object type: group or variable */
     char *nm_fll;                     /* [sng] Fully qualified name (path) */
     var_dmn_sct var_dmn[NC_MAX_DIMS]; /* [sct] (For variables only) Dimensions for variable object */
-#ifdef NCO_DIM_RDR
-    int dmn_idx_out_in[NC_MAX_DIMS];  /* [nbr] (For variables only) Reordered dimensions correspondence (ncpdq) */
-    nco_bool is_rec_dmn_out[NC_MAX_DIMS]; /* [nbr] (For variables only) Reordered dimensions record dimensions flag (ncpdq) */ 
-#endif
     nco_bool is_crd_var;              /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
     nco_bool is_rec_var;              /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
     nc_type var_typ;                  /* [enm] (For variables only) NetCDF type  */  
@@ -741,8 +737,16 @@ extern "C" {
     nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */
     nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr;                 /* [flg] Extract object */ 
-    prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator (Used by ncecat) */
-    nc_type var_typ_out;              /* [enm] (For variables only) NetCDF type in output file (used by ncflint)  */  
+
+    /* Following are members only used by transformation operators (non ncks) */
+
+    prc_typ_enm enm_prc_typ;                  /* [enm] (For variables only) Processing type enumerator (ncecat) */
+    nc_type var_typ_out;                      /* [enm] (For variables only) NetCDF type in output file (ncflint)  */  
+#ifdef NCO_DIM_RDR
+    int dmn_idx_out_in[NC_MAX_DIMS];          /* [nbr] (For variables only) Reordered dimensions correspondence (ncpdq) */
+    nco_bool is_rec_dmn_out[NC_MAX_DIMS];     /* [nbr] (For variables only) Reordered dimensions record dimensions flag (ncpdq) */ 
+    trv_map_dmn_id_t map_dmn_id[TRV_MAP_SIZE];/* [sct] (For variables only) Map dimension ID to variable dimension index (ncpdq)*/
+#endif
    } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists
