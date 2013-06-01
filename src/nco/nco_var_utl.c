@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.323 2013-05-31 05:08:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.324 2013-06-01 03:18:53 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1917,7 +1917,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
  const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,         /* I [sct] GPE structure */
  const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
- const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
+ trv_sct *var_trv,                  /* I/O [sct] Object to write (variable) trv_map_dmn_set() is O */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
@@ -2138,10 +2138,10 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
     if(dbg_lvl_get() >= nco_dbg_dev){
       if (rcd_lcl == NC_NOERR) 
-        (void)fprintf(stdout,"%s: INFO %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: DEBUG %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
       else
-        (void)fprintf(stdout,"%s: INFO %s dimension is NOT visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: DEBUG %s dimension is NOT visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);        
     } /* endif dbg */
 
@@ -2171,7 +2171,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     if (NEED_TO_DEFINE_DIM == True){
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: INFO %s defining dimension '%s' in ",prg_nm_get(),fnc_nm,dmn_nm);        
+        (void)fprintf(stdout,"%s: DEBUG %s defining dimension '%s' in ",prg_nm_get(),fnc_nm,dmn_nm);        
         (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
         (void)fprintf(stdout,"\n");
       } /* endif dbg */
@@ -2229,8 +2229,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         DFN_CRR_DMN_AS_REC_IN_OUTPUT=var_trv->is_rec_dmn_out[idx_dmn]; 
 
 #ifdef NCO_DIM_RDR
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"DFN_CRR_DMN_AS_REC_IN_OUTPUT=%d %s\n",
+        if(dbg_lvl_get() >= nco_dbg_dev){   
+          (void)fprintf(stdout,"%s: DEBUG %s DFN_CRR_DMN_AS_REC_IN_OUTPUT=%d %s\n",prg_nm_get(),fnc_nm,dmn_nm,
             DFN_CRR_DMN_AS_REC_IN_OUTPUT,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
         }
 #endif
@@ -2253,6 +2253,16 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
       /* Assign the defined ID to the dimension ID array for the variable. NB: use iterator definition index */
       dmn_out_id[idx_dmn]=dmn_id_out; 
+
+      /* New ID...insert it in the variable object map *output* dimension ID */
+#ifdef NCO_DIM_RDR
+      (void)trv_map_dmn_set(dmn_id_out,idx_dmn,var_trv->var_dmn[idx_dmn].dmn_nm_fll,var_trv->map_dmn_id);
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s NEW ID #%d at [%d] for <%s> inserted in table\n",prg_nm_get(),fnc_nm,
+          dmn_id_out,idx_dmn,var_trv->var_dmn[idx_dmn].dmn_nm_fll);
+      }
+#endif
+
 
       if(dbg_lvl_get() >= nco_dbg_var){
         (void)fprintf(stdout,"%s: INFO %s defining dimension #%d [%d]:<%s> size=%li\n",prg_nm_get(),fnc_nm,

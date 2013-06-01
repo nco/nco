@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.323 2013-06-01 02:31:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.324 2013-06-01 03:18:53 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -745,7 +745,7 @@ extern "C" {
 #ifdef NCO_DIM_RDR
     int dmn_idx_out_in[NC_MAX_DIMS];          /* [nbr] (For variables only) Reordered dimensions correspondence (ncpdq) */
     nco_bool is_rec_dmn_out[NC_MAX_DIMS];     /* [nbr] (For variables only) Reordered dimensions record dimensions flag (ncpdq) */ 
-    trv_map_dmn_id_t map_dmn_id[TRV_MAP_SIZE];/* [sct] (For variables only) Map dimension ID to variable dimension index (ncpdq)*/
+    trv_map_dmn_id_t map_dmn_id[TRV_MAP_SIZE];/* [sct] (For variables only) Map *output* dimension ID to variable dimension index (ncpdq)*/
 #endif
    } trv_sct;
  

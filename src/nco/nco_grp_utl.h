@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.275 2013-05-31 23:39:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.276 2013-06-01 03:18:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -425,7 +425,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
- const trv_sct * const trv_1,          /* I [sct] Table object */
+ trv_sct *trv_1,                       /* I/O [sct] Table object */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 

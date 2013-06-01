@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.96 2013-05-09 21:48:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.97 2013-06-01 03:18:53 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -164,7 +164,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
  const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,         /* I [sct] GPE structure */
  const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
- const trv_sct * const var_trv,     /* I [sct] Object to write (variable) */
+ trv_sct *var_trv,                  /* I/O [sct] Object to write (variable) */
  const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
 
 
