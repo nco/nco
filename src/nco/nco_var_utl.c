@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.328 2013-06-01 09:13:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.329 2013-06-01 18:24:09 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2242,7 +2242,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         /* Use info stored in ncpdq main. NB: use iterator definition index */
         DFN_CRR_DMN_AS_REC_IN_OUTPUT=var_trv->is_rec_dmn_out[idx_dmn]; 
 
-        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: DEBUG %s DFN_CRR_DMN_AS_REC_IN_OUTPUT=%d %s\n",prg_nm_get(),fnc_nm,dmn_nm,
+        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: DEBUG %s DFN_CRR_DMN_AS_REC_IN_OUTPUT=%d %s\n",prg_nm_get(),fnc_nm,
           DFN_CRR_DMN_AS_REC_IN_OUTPUT,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
 #endif
       }/* Is there a record dimension re-ordering? (ncpdq) */
@@ -2265,11 +2265,14 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* Assign the defined ID to the dimension ID array for the variable. */
       dmn_out_id[idx_dmn]=dmn_id_out; 
 
-      /* New output dimension ID (map value) ...insert it in the table map (index,ID) */
+      /* New output dimension ID (map value) ...insert it in the table map (index,ID) 
+      Use LOOP INDEX (idx_dmn) for key
+      Use RE-ORDERED INDEX (idx_dmn_rdr) for name store, that contains the name in the INPUT table */
 #ifdef NCO_DIM_RDR
-      key_idx=idx_dmn_rdr;
+      key_idx=idx_dmn;
       val_id=dmn_id_out;
       (void)trv_map_dmn_set(key_idx,val_id,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll,var_trv->map_dmn_id);
+
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s NEW ID insert in table key[%d]->value#%d <%s>\n",prg_nm_get(),fnc_nm,
           key_idx,val_id,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
@@ -2292,7 +2295,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
-  } /* End of the very important dimension loop... */
+  } /* End of the very important dimension loop...At this point RE-ORDERED index (idx_dmn_rdr) is gone */
 
 
   /* Insert extra "record" dimension in dimension array. NB: done only for processed variables  */
@@ -2348,11 +2351,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     (void)fprintf(stdout,"\n");
 #ifdef NCO_DIM_RDR
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with MAP dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-    key_idx=idx_dmn_rdr;
-    val_id=trv_map_dmn_get(key_idx,var_trv->map_dmn_id);
-    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)(void)fprintf(stdout,"key[%d]->value#%d : ",
-      idx_dmn,val_id);
-      (void)fprintf(stdout,"\n");
+    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+      key_idx=idx_dmn;
+      val_id=trv_map_dmn_get(key_idx,var_trv->map_dmn_id);
+      (void)fprintf(stdout,"key[%d]->value#%d : ",idx_dmn,val_id);
+    }
+    (void)fprintf(stdout,"\n");
 #endif
   }
 

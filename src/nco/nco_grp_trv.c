@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.195 2013-06-01 08:15:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.196 2013-06-01 18:24:09 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -498,6 +498,9 @@ void
 trv_map_dmn_init                       /* [fnc] Dimension map initialize */
 (trv_map_dmn_id_t *map)                /* I/O [sct] Dimension map */
 {
+  /* Pupose: Map initializatin. Implementation is done with a direct addressing into an array: the value for a given 
+  key is stored at the array cell map[key] */
+
   int idx;
 
   for(idx=0;idx<TRV_MAP_SIZE;idx++){
@@ -527,7 +530,7 @@ trv_map_dmn_set                        /* [fnc] Dimension map set values */
  const char * const nm_fll,            /* I [sng] Dimension full name */
  trv_map_dmn_id_t *map)                /* I/O [sct] Dimension map */
 {
-  /* Purpose: Set the map value and key pair */
+  /* Purpose: add a new (key, value) pair to the collection, binding the new key to its new value */
   map[key_idx].key_idx=key_idx;
   map[key_idx].val_id=val_id;
   map[key_idx].nm_fll=strdup(nm_fll);
@@ -540,7 +543,7 @@ trv_map_dmn_get                        /* [fnc] Dimension map get values */
 (int key_idx,                          /* I [nbr] Key: dimension index (map key) */
  const trv_map_dmn_id_t * const map)   /* I [sct] Dimension map */
 {
-  /* Purpose: Return the map value upon map key input */
+  /* Purpose: find the value (if any) that is bound to a given key */
   int idx;
 
   for(idx=0;idx<TRV_MAP_SIZE;idx++){
