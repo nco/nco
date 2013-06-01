@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.324 2013-06-01 03:18:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.325 2013-06-01 03:43:00 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1965,7 +1965,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   long dmn_sz;                           /* [sng] Dimension size  */  
   long dmn_sz_grp;                       /* [sng] Dimension size for group  */  
 
-  nc_type var_typ;                       /* [enm] netCDF type */
+  nc_type var_typ;                       /* [enm] netCDF type in input variable (usually same as output) */
+  nc_type var_typ_out;                   /* [enm] netCDF type in output variable (usually same as input) */ 
 
   nco_bool CRR_DMN_IS_REC_IN_INPUT;      /* [flg] Current dimension of variable is record dimension of variable in input file/group */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
@@ -2302,6 +2303,18 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* Loop dimensions */
   } /* Insert extra "record" dimension in dimension array */
 
+  /* netCDF type in output variable (usually same as input) */ 
+  var_typ_out=var_typ;
+
+  /* But...some operators change the output netCDF variable type */
+  if (prg_id == ncflint){
+    if( var_trv->var_typ_out != err_typ ) var_typ_out=var_trv->var_typ_out; else var_typ_out=var_typ;
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with output type type %s\n",prg_nm_get(),fnc_nm,
+        var_trv->nm_fll,nco_typ_sng(var_typ_out));
+    }
+  } /* But...some operators change the output netCDF variable type */
+
 
 
 
@@ -2309,33 +2322,13 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with NEW dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-      (void)fprintf(stdout,"#%d: ",dmn_out_id[idx_dmn]);
-    }
+    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)(void)fprintf(stdout,"#%d: ",dmn_out_id[idx_dmn]);
     (void)fprintf(stdout,"\n");
   }
 
+  /* Finally... define variable in output file */
+  (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var,dmn_out_id,&var_out_id);
 
-  /* Some operators change the output netCDF variable type */
-  if (prg_id == ncflint){
-
-    nc_type typ_out; /* [enm] Type in output file */ 
-
-    if( var_trv->var_typ_out != err_typ ) typ_out=var_trv->var_typ_out; else typ_out=var_typ;
-
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with type %s\n",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,nco_typ_sng(typ_out));
-    }
-
-    /* Define variable in output file */
-    (void)nco_def_var(grp_out_id,var_nm,typ_out,nbr_dmn_var,dmn_out_id,&var_out_id);
-
-  } else {
-
-    /* Define variable in output file */
-    (void)nco_def_var(grp_out_id,var_nm,var_typ,nbr_dmn_var,dmn_out_id,&var_out_id);
-  }
 
   /* Duplicate netCDF4 settings when possible */
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
