@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.327 2013-06-01 08:15:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.328 2013-06-01 09:13:03 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2152,7 +2152,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Check output group (only) dimensions  */
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
 
-    /* Loop group defined dimensions */
+    /* Loop *output* group defined dimensions to check if dimension is already defined */
     for(idx_dmn_grp=0;idx_dmn_grp<nbr_dmn_out_grp;idx_dmn_grp++){
 
       /* Get dimension name and size from ID */
@@ -2166,6 +2166,16 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         /* Assign the defined ID to the dimension ID array for the variable */
         dmn_out_id[idx_dmn_rdr]=dmn_out_id_grp[idx_dmn_grp];
 
+        /* New output dimension ID (map value) ...insert it in the table map (index,ID) */
+#ifdef NCO_DIM_RDR
+        key_idx=idx_dmn_rdr;
+        val_id=dmn_out_id[idx_dmn_rdr];
+        (void)trv_map_dmn_set(key_idx,val_id,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll,var_trv->map_dmn_id);
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s DEFINED ID insert in table key[%d]->value#%d <%s>\n",prg_nm_get(),fnc_nm,
+            key_idx,val_id,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
+        }
+#endif
       } /* A relative name match */
     } /* Loop group defined dimensions */
 
@@ -2252,7 +2262,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* Define dimension and obtain dimension ID */
       (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);
 
-      /* Assign the defined ID to the dimension ID array for the variable. NB: use iterator definition index */
+      /* Assign the defined ID to the dimension ID array for the variable. */
       dmn_out_id[idx_dmn]=dmn_id_out; 
 
       /* New output dimension ID (map value) ...insert it in the table map (index,ID) */
@@ -2265,7 +2275,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
           key_idx,val_id,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
       }
 #endif
-
 
       if(dbg_lvl_get() >= nco_dbg_var){
         (void)fprintf(stdout,"%s: INFO %s defining dimension #%d [%d]:<%s> size=%li\n",prg_nm_get(),fnc_nm,
@@ -2327,7 +2336,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   [] for index
   <> for name 
 
-  Logic for ncpdq dimension reording
+  Logic for ncpdq dimension reordering
   Check dimension indices for loop (idx_dmn) and re-order (idx_dmn_rdr) 
 
   */
