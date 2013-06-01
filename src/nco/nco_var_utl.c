@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.325 2013-06-01 03:43:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.326 2013-06-01 04:43:37 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2226,14 +2226,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* Is there a record dimension re-ordering? (ncpdq) */
       if (prg_id == ncpdq && HAS_DMN_RDR){
 
+#ifdef NCO_DIM_RDR
         /* Use info stored in ncpdq main. NB: use iterator definition index */
         DFN_CRR_DMN_AS_REC_IN_OUTPUT=var_trv->is_rec_dmn_out[idx_dmn]; 
 
-#ifdef NCO_DIM_RDR
-        if(dbg_lvl_get() >= nco_dbg_dev){   
-          (void)fprintf(stdout,"%s: DEBUG %s DFN_CRR_DMN_AS_REC_IN_OUTPUT=%d %s\n",prg_nm_get(),fnc_nm,dmn_nm,
-            DFN_CRR_DMN_AS_REC_IN_OUTPUT,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
-        }
+        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: DEBUG %s DFN_CRR_DMN_AS_REC_IN_OUTPUT=%d %s\n",prg_nm_get(),fnc_nm,dmn_nm,
+          DFN_CRR_DMN_AS_REC_IN_OUTPUT,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
 #endif
       }/* Is there a record dimension re-ordering? (ncpdq) */
 
@@ -2257,10 +2255,10 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
       /* New ID...insert it in the variable object map *output* dimension ID */
 #ifdef NCO_DIM_RDR
-      (void)trv_map_dmn_set(dmn_id_out,idx_dmn,var_trv->var_dmn[idx_dmn].dmn_nm_fll,var_trv->map_dmn_id);
+      (void)trv_map_dmn_set(dmn_id_out,idx_dmn,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll,var_trv->map_dmn_id);
       if(dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s NEW ID #%d at [%d] for <%s> inserted in table\n",prg_nm_get(),fnc_nm,
-          dmn_id_out,idx_dmn,var_trv->var_dmn[idx_dmn].dmn_nm_fll);
+          dmn_id_out,idx_dmn,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
       }
 #endif
 
@@ -2310,7 +2308,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   if (prg_id == ncflint){
     if( var_trv->var_typ_out != err_typ ) var_typ_out=var_trv->var_typ_out; else var_typ_out=var_typ;
     if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with output type type %s\n",prg_nm_get(),fnc_nm,
+      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with output type %s\n",prg_nm_get(),fnc_nm,
         var_trv->nm_fll,nco_typ_sng(var_typ_out));
     }
   } /* But...some operators change the output netCDF variable type */
@@ -2318,12 +2316,32 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
 
 
+  /* NOTE: UNDER CONSTRUCTION
+
+  Convention for debug messages:
+  # stands for ID
+  [] for index
+  <> for name 
+
+  Logic for ncpdq dimension reording
+  Check dimension indices for loop (idx_dmn) and re-order (idx_dmn_rdr) 
+
+  */
+
 
 
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with NEW dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)(void)fprintf(stdout,"#%d: ",dmn_out_id[idx_dmn]);
     (void)fprintf(stdout,"\n");
+#ifdef NCO_DIM_RDR
+    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with MAP dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+    int id_key=dmn_out_id[idx_dmn_rdr];
+    int idx_val=trv_map_dmn_get(id_key,var_trv->map_dmn_id);
+    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)(void)fprintf(stdout,"#%d MAP [%d] : ",
+      id_key,idx_val);
+      (void)fprintf(stdout,"\n");
+#endif
   }
 
   /* Finally... define variable in output file */

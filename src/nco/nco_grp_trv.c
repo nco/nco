@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.193 2013-06-01 02:31:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.194 2013-06-01 04:43:37 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -545,12 +545,10 @@ trv_map_dmn_get                        /* [fnc] Dimension map get values */
 
   for(idx=0;idx<TRV_MAP_SIZE;idx++){
     if (id_key == map[idx].id_key){
-      printf("value for key %d is %d %s\n",id_key, map[idx].idx_val, map[idx].nm_fll);
       return map[idx].idx_val;
     }
   }
 
-  printf("value for key %d not found\n",id_key);
   return err_typ;
 
 } /* trv_map_dmn_get() */

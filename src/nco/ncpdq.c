@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.243 2013-05-31 04:49:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.244 2013-06-01 04:43:37 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.243 2013-05-31 04:49:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.243 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.244 2013-06-01 04:43:37 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.244 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -785,24 +785,8 @@ main(int argc,char **argv)
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
 
-  if(dbg_lvl >= nco_dbg_dev){
-    for(idx=0;idx<xtr_nbr;idx++){
-      (void)fprintf(stderr,"var_out[%d]->nm = %s, ->is_rec_var=%d\n",idx,var_out[idx]->nm,var_out[idx]->is_rec_var);
-    }
-  } 
-
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
-
-  if(dbg_lvl >= nco_dbg_dev){
-    for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
-      (void)fprintf(fp_stdout,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx_var,var_prc_out[idx_var]->nm,var_prc_out[idx_var]->is_rec_var);
-      for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var]->nbr_dim;idx_dmn++)
-        (void)fprintf(fp_stdout,"is_rec_dmn[%d]%s=%d ",
-        idx_dmn,var_prc_out[idx_var]->dim[idx_dmn]->nm,var_prc_out[idx_var]->dim[idx_dmn]->is_rec_dmn);
-      (void)fprintf(fp_stdout,"\n");
-    }
-  } 
 
   /* We now have final list of variables to extract. Phew. */
 
@@ -1049,15 +1033,6 @@ main(int argc,char **argv)
     } /* end loop over var_prc */
   } /* nco_pck_plc == nco_pck_plc_nil */
 
- if(dbg_lvl >= nco_dbg_dev){
-    for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
-      (void)fprintf(stderr,"var_prc_out[%d]->nm = %s, ->is_rec_var=%d: ",idx_var,var_prc_out[idx_var]->nm,var_prc_out[idx_var]->is_rec_var);
-      for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var]->nbr_dim;idx_dmn++)
-        (void)fprintf(fp_stdout,"is_rec_dmn[%d]%s=%d ",
-        idx_dmn,var_prc_out[idx_var]->dim[idx_dmn]->nm,var_prc_out[idx_var]->dim[idx_dmn]->is_rec_dmn);
-      (void)fprintf(stdout,"\n");
-    }
-  } 
 
 #ifdef USE_TRV_API
 
