@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.325 2013-06-01 08:15:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.326 2013-06-02 00:52:02 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -689,7 +689,7 @@ extern "C" {
 
 
   /* Map (associative array) a dimension ID to a dimension index; 
-     lookup for the dimension ID (map value) associated with the dimension index (map key)
+     Lookup for the dimension ID (map value) associated with the dimension index (map key)
      Needed for dimension permutations */
   typedef struct {
     int key_idx;       /* [nbr] Key: dimension index ( map key ) */
@@ -740,14 +740,15 @@ extern "C" {
     nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr;                 /* [flg] Extract object */ 
 
-    /* Following are members only used by transformation operators (non ncks) */
+    /* Following are members only used by transformation operators (non ncks) (For variables only) */
 
-    prc_typ_enm enm_prc_typ;                  /* [enm] (For variables only) Processing type enumerator (ncecat) */
-    nc_type var_typ_out;                      /* [enm] (For variables only) NetCDF type in output file (ncflint)  */  
+    prc_typ_enm enm_prc_typ;                  /* [enm] Processing type enumerator (ncecat) */
+    nc_type var_typ_out;                      /* [enm] NetCDF type in output file (ncflint)  */  
 #ifdef NCO_DIM_RDR
-    int dmn_idx_out_in[NC_MAX_DIMS];          /* [nbr] (For variables only) Reordered dimensions correspondence (ncpdq) */
-    nco_bool is_rec_dmn_out[NC_MAX_DIMS];     /* [nbr] (For variables only) Reordered dimensions record dimensions flag (ncpdq) */ 
-    trv_map_dmn_id_t map_dmn_id[TRV_MAP_SIZE];/* [sct] (For variables only) Map *output* dimension ID to variable dimension index (ncpdq)*/
+    nco_bool flg_rdr;                         /* [flg] Variable needs dimension re-order (ncpdq)  */ 
+    int dmn_idx_out_in[NC_MAX_DIMS];          /* [nbr] Reordered dimensions correspondence (ncpdq) */
+    nco_bool is_rec_dmn_out[NC_MAX_DIMS];     /* [nbr] Reordered dimensions record dimensions flag (ncpdq) */ 
+    trv_map_dmn_id_t map_dmn_id[TRV_MAP_SIZE];/* [sct] Map *output* dimension ID to variable dimension index (ncpdq)*/
 #endif
    } trv_sct;
  

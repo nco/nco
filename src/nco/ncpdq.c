@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.244 2013-06-01 04:43:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.245 2013-06-02 00:52:02 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.244 2013-06-01 04:43:37 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.244 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.245 2013-06-02 00:52:02 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.245 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -549,6 +549,12 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
+
+
+  /* Store the variables that need re-order in GTT (set boolean flag) */
+  (void)nco_trv_flg_rdr(dmn_rdr_lst_in,dmn_rdr_nbr,trv_tbl);
+
+  
 
 #else /* ! USE_TRV_API */
 
