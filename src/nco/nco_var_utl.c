@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.331 2013-06-02 00:52:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.332 2013-06-02 01:09:35 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2074,7 +2074,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
 #ifdef NCO_DIM_RDR
   /* Is there dimension re-ordering (ncpdq only) */
-  if (var_trv->flg_rdr){
+  if (prg_id == ncpdq){ 
     /* Loop dimensions */
     for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
@@ -2083,7 +2083,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
       /* Indices differ, there is a re-order */
       if (idx_dmn_rdr!=idx_dmn){
-        assert(prg_id == ncpdq);
         HAS_DMN_RDR=True; 
         break;
       } /* Indices differ, there is a re-order */
@@ -2107,7 +2106,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
 #ifdef NCO_DIM_RDR
     /* Is there a dimension re-ordering? (ncpdq) */
-    if (var_trv->flg_rdr){
+    if (prg_id == ncpdq){ 
 
       /* Dimension correspondence for reordered dimensions; initialized with ordered index, changed in ncpdq */
       idx_dmn_rdr=var_trv->dmn_idx_out_in[idx_dmn];  
@@ -2248,7 +2247,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
 #ifdef NCO_DIM_RDR
       /* Is there a record dimension re-ordering? (ncpdq) */
-      if (var_trv->flg_rdr){
+      if (prg_id == ncpdq){ 
 
         assert(prg_id == ncpdq);
 
@@ -2365,7 +2364,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   /* Use the GTT dimension map (index,ID) to define the new output dimension IDs (ncpdq) */
 
   /* Is there a dimension re-ordering? (ncpdq) */
-  if (var_trv->flg_rdr){
+  if (prg_id == ncpdq){ 
 
     if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with MAP dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
 
