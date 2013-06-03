@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.333 2013-06-03 21:43:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.334 2013-06-03 22:28:08 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2176,9 +2176,11 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         /* Assign the defined ID to the dimension ID array for the variable */
         dmn_out_id[idx_dmn_rdr]=dmn_id_out;
 
-        /* New output dimension ID (map value) ...insert it in the table map (index,ID) */
+        /* New output dimension ID (map value) ...insert it in the table map (index,ID) 
+        Use LOOP INDEX (idx_dmn) for key
+        Use RE-ORDERED INDEX (idx_dmn_rdr) for name store, that contains the name in the INPUT table */
 #ifdef NCO_DIM_RDR
-        key_idx=idx_dmn_rdr;
+        key_idx=idx_dmn;
         val_id=dmn_id_out;
         (void)trv_map_dmn_set(key_idx,val_id,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll,var_trv->map_dmn_id);
         if(dbg_lvl_get() >= nco_dbg_dev){
