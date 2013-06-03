@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.332 2013-06-02 01:09:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.333 2013-06-03 21:43:58 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2246,16 +2246,18 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* At long last ... */
 
 #ifdef NCO_DIM_RDR
-      /* Is there a record dimension re-ordering? (ncpdq) */
-      if (prg_id == ncpdq){ 
+      /* Is there a record dimension re-ordering? (ncpdq) ...  
+      ... and variable is processing type (only stored for these )
+      */
+      if (prg_id == ncpdq && var_trv->enm_prc_typ == prc_typ){ 
 
-        assert(prg_id == ncpdq);
-
-        /* Use info stored in ncpdq main. NB: use iterator definition index */
+        /* Use info stored in ncpdq main. */
         DFN_CRR_DMN_AS_REC_IN_OUTPUT=var_trv->is_rec_dmn_out[idx_dmn]; 
 
+        assert(DFN_CRR_DMN_AS_REC_IN_OUTPUT != err_typ);
+
         if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: DEBUG %s DFN_CRR_DMN_AS_REC_IN_OUTPUT=%d %s\n",prg_nm_get(),fnc_nm,
-          DFN_CRR_DMN_AS_REC_IN_OUTPUT,var_trv->var_dmn[idx_dmn_rdr].dmn_nm_fll);
+          DFN_CRR_DMN_AS_REC_IN_OUTPUT,var_trv->var_dmn[idx_dmn].dmn_nm_fll);
       }/* Is there a record dimension re-ordering? (ncpdq) */
 #endif
 
@@ -2310,8 +2312,14 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   } /* End of the very important dimension loop...At this point RE-ORDERED index (idx_dmn_rdr) is gone */
 
 
-  /* Insert extra "record" dimension in dimension array. NB: done only for processed variables  */
-  if (rec_dmn_nm && prg_id == ncecat && var_trv->enm_prc_typ == prc_typ){
+  /* Insert extra "record" dimension in dimension array if...  
+  ... is ncecat
+  ... and user requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially
+  ... and variable is processing type
+  */
+  if (prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
+
+    /* Temporary store for old IDs */
     int dmn_tmp_id[NC_MAX_DIMS];
     for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) dmn_tmp_id[idx_dmn]=dmn_out_id[idx_dmn];
 
