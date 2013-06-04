@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.246 2013-06-03 21:43:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.247 2013-06-04 04:56:53 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -126,8 +126,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.246 2013-06-03 21:43:58 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.246 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.247 2013-06-04 04:56:53 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.247 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1254,15 +1254,23 @@ main(int argc,char **argv)
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif dmn_rdr_nbr > 0 */
 
+#ifdef USE_TRV_API
+      var_sct *va=var_prc_out[idx];
+      for(int idx_dmn=0;idx_dmn<va->nbr_dim;idx_dmn++){
+        int idx_dmn_rdr=var_trv->dmn_idx_out_in[idx_dmn]; 
+        assert(strcmp(var_trv->var_dmn[idx_dmn_rdr].dmn_nm,va->dim[idx_dmn]->nm) == 0);
+        assert(va->srt[idx_dmn] == va->dim[idx_dmn]->srt);
+        assert(va->srt[idx_dmn] == va->dim[idx_dmn]->srt);
+        assert(va->cnt[idx_dmn] == va->dim[idx_dmn]->cnt);
+        assert(va->end[idx_dmn] == va->dim[idx_dmn]->end);     
+      } 
+#endif /* USE_TRV_API */
+
       if(dbg_lvl_get() >= nco_dbg_dev){
         var_sct *va=var_prc_out[idx];
         (void)fprintf(stdout,"%s: DEBUG variable to write <%s>#%d: ",prg_nm_get(),va->nm,va->id);
         for(int idx_dmn=0;idx_dmn<va->nbr_dim;idx_dmn++){
-          (void)fprintf(fp_stdout,"[%d]%s srt=%d dsrt=%d cnt=%d dcnt=%d end=%d dend=%d :",
-            idx_dmn,va->dim[idx_dmn]->nm,
-            va->srt[idx_dmn],va->dim[idx_dmn]->srt,
-            va->cnt[idx_dmn],va->dim[idx_dmn]->cnt,
-            va->end[idx_dmn],va->dim[idx_dmn]->end);     
+          (void)fprintf(stdout,"[%d]%s size=%d :",idx_dmn,va->dim[idx_dmn]->nm,va->dim[idx_dmn]->cnt);     
         } 
         (void)fprintf(stdout,"\n");
       }
