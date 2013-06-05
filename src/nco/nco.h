@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.327 2013-06-05 04:02:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.328 2013-06-05 04:33:50 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -697,13 +697,6 @@ extern "C" {
     char *nm_fll;      /* [sng] Dimension full name ( human helpful information ) */
   } trv_map_dmn_id_t;
 
-
-  /* Structure that contains only start and count of hyperslabled dimensions, used in ncpdq to transfer sizes */
-  typedef struct {
-    long cnt;         /* [nbr] Length of hyperslab */
-    long srt;         /* [nbr] Start of hyperslab */
-  } dmn_srt_cnt_t;
-
   /* GTT Object structure 
      Information for each object/node in traversal tree
      Contains basic information about this object/node needed by traversal algorithm
@@ -755,7 +748,6 @@ extern "C" {
     int dmn_idx_out_in[NC_MAX_DIMS];          /* [nbr] Reordered dimensions correspondence (ncpdq) */
     nco_bool is_rec_dmn_out[NC_MAX_DIMS];     /* [nbr] Reordered dimensions record dimensions flag (ncpdq) */ 
     trv_map_dmn_id_t map_dmn_id[TRV_MAP_SIZE];/* [sct] Map *output* dimension ID to variable dimension index (ncpdq)*/
-    dmn_srt_cnt_t dmn_srt_cnt[NC_MAX_DIMS];   /* [nbr] Start and count of hyperslabled dimensions (ncpdq) */
 #endif
    } trv_sct;
  
