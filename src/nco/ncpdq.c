@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.251 2013-06-05 05:16:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.252 2013-06-05 19:00:36 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.251 2013-06-05 05:16:49 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.251 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.252 2013-06-05 19:00:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.252 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1478,7 +1478,7 @@ void nco_prt_dmn_var( var_sct *va )
 {
   (void)fprintf(stdout,"%s: DEBUG variable <%s> has dimensions: ",prg_nm_get(),va->nm);
   for(int idx_dmn=0;idx_dmn<va->nbr_dim;idx_dmn++){
-    (void)fprintf(stdout,"[%d]%s srt=%d cnt=%d :",idx_dmn,va->dim[idx_dmn]->nm,va->srt[idx_dmn], va->cnt[idx_dmn]); 
+    (void)fprintf(stdout,"[%d]%s srt=%ld cnt=%ld :",idx_dmn,va->dim[idx_dmn]->nm,va->srt[idx_dmn], va->cnt[idx_dmn]); 
     assert(va->cnt[idx_dmn] == va->dim[idx_dmn]->cnt);
     assert(va->srt[idx_dmn] == va->dim[idx_dmn]->srt);
   } 

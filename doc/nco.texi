@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.789 2013-05-08 00:21:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.790 2013-06-05 19:00:28 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.2
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 7 May 2013
+@set update-date 26 May 2013
 @set update-month May 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -116,11 +116,13 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c @smallbook
 @c Merge function index into concept index
 @syncodeindex fn cp
-@c end of header
 
-@c 20090226 Add bibliography capabilities
+@c 20090226 Add bibliography capabilities as per
+@c http://lists.gnu.org/archive/html//help-texinfo/2004-12/txtPW9h_VG8ez.txt
 @include my-bib-macros.texi
 @mybibuselist{References}
+
+@c end of header
 
 @c TeXInfo macros may not appear before TeXInfo @setfilename header
 @c [idx] Index
@@ -374,17 +376,17 @@ Charlie Zender
 @end ifinfo
 
 @menu
-* Foreword::                    
-* Summary::                     
-* Introduction::                
-* Strategies::                  
-* Common features::             
-* Operator Reference Manual::   
-* Contributing::                
-* CMIP5 Example::               
-* CCSM Example::                
-* mybibnode::                   
-* General Index::               
+* Foreword::
+* Summary::
+* Introduction::
+* Strategies::
+* Common features::
+* Operator Reference Manual::
+* Contributing::
+* CMIP5 Example::
+* CCSM Example::
+* mybibnode::
+* General Index::
 @end menu
 
 @html
@@ -516,12 +518,12 @@ netCDF itself.
 @cindex introduction
 
 @menu
-* Availability::                
-* Compatability::               
-* Symbolic Links::              
-* Libraries::                   
-* netCDF2/3/4 and HDF4/5 Support::  
-* Help Requests and Bug Reports::  
+* Availability::
+* Compatability::
+* Symbolic Links::
+* Libraries::
+* netCDF2/3/4 and HDF4/5 Support::
+* Help Requests and Bug Reports::
 @end menu
 
 @node Availability, Compatability, Introduction, Introduction
@@ -577,10 +579,11 @@ However, some of the complex mathematical expressions needed to describe
 A complete list of papers and publications on/about @acronym{NCO} 
 is available on the @acronym{NCO} homepage.
 Most of these are freely available. 
-@c fxm query replace mybibnode with @mybibnode{}
-@c The primary refereed publications are @mybibcite{ZeM06} and
-@c @mybibcite{Zen07}. 
-The primary refereed publications are fxm ZeM06 and fxm Zen07. 
+@c 20130526 fxm Replace mybibnode with @mybibnode{}
+@c 20130526 Doing so, unfortunately, produces error "TeX capacity exceeded, sorry [input stack size=5000]."
+@c 20130526 Denude document of @mybibcite{} until it works
+@c The primary refereed publications are @mybibcite{ZeM06} and @mybibcite{Zen08}. 
+The primary refereed publications are ZeM06 and Zen08. 
 These contain copyright restrictions which limit their redistribution,
 but they are freely available in preprint form from the @acronym{NCO}.
 
@@ -825,7 +828,7 @@ platform, and the change in the wallclock time for execution.}.
 @end ignore
 
 @menu
-* Windows Operating System::    
+* Windows Operating System::
 @end menu
 
 @html
@@ -1306,16 +1309,16 @@ differences between these files and your own.
 @chapter Operator Strategies
 
 @menu
-* Philosophy::                  
-* Climate Model Paradigm::      
-* Temporary Output Files::      
-* Appending Variables::         
-* Simple Arithmetic and Interpolation::  
-* Averaging vs. Concatenating::  
-* Large Numbers of Files::      
-* Large Datasets::              
-* Memory Requirements::         
-* Performance::                 
+* Philosophy::
+* Climate Model Paradigm::
+* Temporary Output Files::
+* Appending Variables::
+* Simple Arithmetic and Interpolation::
+* Averaging vs. Concatenating::
+* Large Numbers of Files::
+* Large Datasets::
+* Memory Requirements::
+* Performance::
 @end menu
 
 @html
@@ -1637,9 +1640,9 @@ averaging options---including weighting, masking, and broadcasting.}.
 First, let's describe the concatenators, then the averagers. 
 
 @menu
-* Concatenation::               
-* Averaging::                   
-* Interpolating::               
+* Concatenation::
+* Averaging::
+* Interpolating::
 @end menu
 
 @html
@@ -2027,8 +2030,8 @@ Memory consumption patterns of all operators are similar, with
 the exception of @command{ncap2}.
 
 @menu
-* Single and Multi-file Operators::  
-* Memory for ncap2::            
+* Single and Multi-file Operators::
+* Memory for ncap2::
 @end menu
 
 @node Single and Multi-file Operators, Memory for ncap2, Memory Requirements, Memory Requirements
@@ -2150,7 +2153,7 @@ Zender, C. S. (2008),
 ``Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO)'',
 Environ. Modell. Softw., doi:10.1016/j.envsoft.2008.03.004.
 This paper is also available at
-@url{http://dust.ess.uci.edu/ppr/ppr_Zen08_ems.pdf}.
+@url{http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf}.
 
 @cindex scaling
 @cindex performance
@@ -2161,7 +2164,7 @@ Zender, C. S., and H. J. Mangalam (2007),
 Int. @w{J. High} Perform. Comput. Appl., 21(4), 485-498,
 doi:10.1177/1094342007083802. 
 This paper is also available at
-@url{http://dust.ess.uci.edu/ppr/ppr_ZeM07_ijhpca.pdf}.
+@url{http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf}.
 
 It is helpful to be aware of the aspects of @acronym{NCO} design 
 that can limit its performance:
@@ -2224,44 +2227,44 @@ If no ``key switches'' are listed for a feature, then that particular
 feature is automatic and cannot be controlled by the user. 
 
 @menu
-* Internationalization::        
-* Metadata Optimization::       
-* OpenMP Threading::            
-* Command Line Options::        
-* Specifying Input Files::      
-* Specifying Output Files::     
-* Remote storage::              
-* Retaining Retrieved Files::   
-* Selecting Output File Format::  
-* Large File Support::          
-* Subsetting Files::            
-* Subsetting Coordinate Variables::  
-* Group Path Editing::          
-* C and Fortran Index Conventions::  
-* Hyperslabs::                  
-* Stride::                      
-* Record Appending::            
-* Duration::                    
-* Multislabs::                  
-* Wrapped Coordinates::         
-* Auxiliary Coordinates::       
-* UDUnits Support::             
-* Rebasing Time Coordinate::    
-* Missing Values::              
-* Chunking::                    
-* Deflation::                   
-* MD5 digests::                 
-* Buffer sizes::                
-* RAM disks::                   
-* Packed data::                 
-* Operation Types::             
-* Type Conversion::             
-* Batch Mode::                  
-* History Attribute::           
-* File List Attributes::        
-* CF Conventions::              
-* ARM Conventions::             
-* Operator Version::            
+* Internationalization::
+* Metadata Optimization::
+* OpenMP Threading::
+* Command Line Options::
+* Specifying Input Files::
+* Specifying Output Files::
+* Remote storage::
+* Retaining Retrieved Files::
+* Selecting Output File Format::
+* Large File Support::
+* Subsetting Files::
+* Subsetting Coordinate Variables::
+* Group Path Editing::
+* C and Fortran Index Conventions::
+* Hyperslabs::
+* Stride::
+* Record Appending::
+* Duration::
+* Multislabs::
+* Wrapped Coordinates::
+* Auxiliary Coordinates::
+* UDUnits Support::
+* Rebasing Time Coordinate::
+* Missing Values::
+* Chunking::
+* Deflation::
+* MD5 digests::
+* Buffer sizes::
+* RAM disks::
+* Packed data::
+* Operation Types::
+* Type Conversion::
+* Batch Mode::
+* History Attribute::
+* File List Attributes::
+* CF Conventions::
+* ARM Conventions::
+* Operator Version::
 @end menu
 
 @html
@@ -2939,7 +2942,7 @@ Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
 syntactically more clear.
 
 @menu
-* OPeNDAP::                     
+* OPeNDAP::
 @end menu
 
 @html
@@ -4672,7 +4675,7 @@ ranges.
 This works on datasets that associate coordinate variables to
 grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})   
 @code{coordinates} and @code{standard_name} attributes described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system, here}. 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-system, here}. 
 Currently, @acronym{NCO} understands auxiliary coordinate variables 
 pointed to by the @code{standard_name} attributes for @var{latitude} and 
 @var{longitude}.   
@@ -6310,8 +6313,8 @@ Most type conversion happens automatically, yet there are situations in
 which manual type conversion is advantageous.
 
 @menu
-* Automatic type conversion::   
-* Manual type conversion::      
+* Automatic type conversion::
+* Manual type conversion::
 @end menu
 
 @node Automatic type conversion, Manual type conversion, Type Conversion, Type Conversion
@@ -6725,7 +6728,7 @@ or alter the @code{Conventions} attribute.
 As of @acronym{NCO} version 4.0.8 (April, 2011), @acronym{NCO} 
 supports the @acronym{CF} @code{bounds} convention for cell boundaries
 described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries, here}.
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries, here}.
 This convention allows coordinate variables
 (including multidimensional coordinates) to describe the boundaries of
 their cells.
@@ -6753,7 +6756,7 @@ Hence the subsets will themselves be @acronym{CF}-compliant.
 @cindex @code{--crd}
 As of @acronym{NCO} version 3.9.6 (January, 2009), @acronym{NCO}
 supports the @acronym{CF} @code{coordinates} convention described 
-@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system, here}. 
+@uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#coordinate-system, here}. 
 This convention allows variables to specify additional coordinates
 (including multidimensional coordinates) in a space-separated string
 attribute named @code{coordinates}. 
@@ -6863,18 +6866,18 @@ Only options specific to, or most useful with, a particular operator are
 described in any detail in the sections below.  
 
 @menu
-* ncap2 netCDF Arithmetic Processor::  
-* ncatted netCDF Attribute Editor::  
-* ncbo netCDF Binary Operator::  
-* ncea netCDF Ensemble Averager::  
-* ncecat netCDF Ensemble Concatenator::  
-* ncflint netCDF File Interpolator::  
-* ncks netCDF Kitchen Sink::    
-* ncpdq netCDF Permute Dimensions Quickly::  
-* ncra netCDF Record Averager::  
-* ncrcat netCDF Record Concatenator::  
-* ncrename netCDF Renamer::     
-* ncwa netCDF Weighted Averager::  
+* ncap2 netCDF Arithmetic Processor::
+* ncatted netCDF Attribute Editor::
+* ncbo netCDF Binary Operator::
+* ncea netCDF Ensemble Averager::
+* ncecat netCDF Ensemble Concatenator::
+* ncflint netCDF File Interpolator::
+* ncks netCDF Kitchen Sink::
+* ncpdq netCDF Permute Dimensions Quickly::
+* ncra netCDF Record Averager::
+* ncrcat netCDF Record Concatenator::
+* ncrename netCDF Renamer::
+* ncwa netCDF Weighted Averager::
 @end menu
 
 @page
@@ -6959,33 +6962,33 @@ already contain the appended dimensions.
 @c @subsection Scripting Mathematical Processing with @command{ncap2}
 
 @menu
-* Syntax of ncap2 statements::  
-* Expressions::                 
-* Dimensions::                  
-* Left hand casting::           
-* Arrays and hyperslabs::       
-* Attributes::                  
-* Number literals::             
-* if statement::                
-* print statement::             
-* Missing values ncap2::        
-* Methods and functions::       
-* RAM variables::               
-* Where statement::             
-* Loops::                       
-* Include files::               
-* Sort methods::                
-* Irregular grids::             
-* Bilinear interpolation::      
-* GSL special functions::       
-* GSL interpolation::           
-* GSL least-squares fitting::   
-* GSL statistics::              
-* GSL random number generation::  
-* Examples ncap2::              
-* Intrinsic mathematical methods::  
-* Operator precedence and associativity ::  
-* ID Quoting::                  
+* Syntax of ncap2 statements::
+* Expressions::
+* Dimensions::
+* Left hand casting::
+* Arrays and hyperslabs::
+* Attributes::
+* Number literals::
+* if statement::
+* print statement::
+* Missing values ncap2::
+* Methods and functions::
+* RAM variables::
+* Where statement::
+* Loops::
+* Include files::
+* Sort methods::
+* Irregular grids::
+* Bilinear interpolation::
+* GSL special functions::
+* GSL interpolation::
+* GSL least-squares fitting::
+* GSL statistics::
+* GSL random number generation::
+* Examples ncap2::
+* Intrinsic mathematical methods::
+* Operator precedence and associativity ::
+* ID Quoting::
 @end menu
 
 @html
@@ -12377,7 +12380,7 @@ Also @samp{--units}.
 <a name="flt"></a> <!-- http://nco.sf.net/nco.html#flt -->
 @end html
 @menu
-* Filters for @command{ncks}::  
+* Filters for @command{ncks}::
 @end menu
 
 @node Filters for @command{ncks},  , ncks netCDF Kitchen Sink, ncks netCDF Kitchen Sink
@@ -13812,8 +13815,8 @@ The mathematical definition of operations involving rank reduction
 is given above (@pxref{Operation Types}).
 
 @menu
-* Mask condition::              
-* Normalization and Integration::  
+* Mask condition::
+* Normalization and Integration::
 @end menu
 
 @html
@@ -14211,8 +14214,8 @@ So you could be the third!
 <a name="ppl"></a> <!-- http://nco.sf.net/nco.html#ppl -->
 @end html
 @menu
-* Contributors::                
-* Proposals for Institutional Funding::  
+* Contributors::
+* Proposals for Institutional Funding::
 @end menu
 
 @node Contributors, Proposals for Institutional Funding, Contributing, Contributing

@@ -1,11 +1,21 @@
+2013-06-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.2 release procedure:
+ 	Changes since nco-4_3_1: -X aux, ncflint -g -G --unn
+	cd ~/nco;cvs tag -d nco-4_3_2;cvs tag -d nco-4_3_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
+	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
+
+	* Tidy/fix ncflint OpenMP build. Tidy ncpdq.
+
 2013-05-29 Pedro Vicente  <pvicente@uci.edu>
 
-        * Add data/in_1.cdl, data/in_2.cdl CDL files to test 2 input file operators 
-        
+        * Add data/in_1.cdl, data/in_2.cdl CDL files to test 2 input file operators
+
 2013-05-15 Pedro Vicente  <pvicente@uci.edu>
 
-        * nco_cpy_fix_var_trv() Copy processing type fixed variables from input to output file 
-        
+        * nco_cpy_fix_var_trv() Copy fixed variables from input to output file
+
 2013-05-08 Pedro Vicente  <pvicente@uci.edu>
 
         * nco_var_trv() Fill-in variable structure for a named GTT variable
@@ -25,12 +35,6 @@
         * nco_get_typ() Obtain netCDF type to define variable from NCO program ID
 
 2013-05-07  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.3.2 release procedure:
- 	Changes since nco-4_3_1: -X aux, ncflint -g -G --unn
-	cd ~/nco;cvs tag -d nco-4_3_2;cvs tag -d nco-4_3_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
-	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
 
 	* Document new ncflint, ncbo capabilities
 

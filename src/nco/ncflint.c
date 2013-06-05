@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.244 2013-05-30 18:34:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.245 2013-06-05 19:00:36 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.244 2013-05-30 18:34:55 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.244 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.245 2013-06-05 19:00:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.245 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -218,7 +218,6 @@ main(int argc,char **argv)
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
   char *grp_out=NULL; /* [sng] Group name */
-  size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -402,7 +401,6 @@ main(int argc,char **argv)
       http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
       gpe=nco_gpe_prs_arg(optarg);
       grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
-      grp_out_lng=gpe->lng_cnn;
       break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -915,7 +913,7 @@ main(int argc,char **argv)
   shared(): msk and wgt are not altered within loop
   private(): wgt_avg does not need initialization */
 # ifdef USE_TRV_API
-#  pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,nbr_dmn_fl,trv_tbl)
+#  pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,nbr_dmn_fl,trv_tbl)
 # else
 #  pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 # endif
@@ -1026,7 +1024,7 @@ main(int argc,char **argv)
     if(dbg_lvl_get() >= nco_dbg_dev){
       var_sct *v=var_prc_out[idx];
       for(int idx_dmn=0;idx_dmn<v->nbr_dim;idx_dmn++){
-        (void)fprintf(stdout,"%s: DEBUG output count for dim %d=%d\n",prg_nm_get(),idx_dmn,v->cnt[idx_dmn]);     
+        (void)fprintf(fp_stdout,"%s: DEBUG output count for dim %d=%ld\n",prg_nm_get(),idx_dmn,v->cnt[idx_dmn]);     
       } 
     }
 

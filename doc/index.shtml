@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.787 2013-05-21 08:00:29 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.788 2013-06-05 19:00:28 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -344,16 +344,17 @@ As described in the proposal, the responsibilities of positions are
 roughly segregated as follows: 
 The 
 <a href="http://dust.ess.uci.edu/hire/prg_anl_05_adv.pdf">programmer</a> 
-will re-factor the code-base to support groups (70%),
-support NASA ESDSWG activities (20%), and
-improve the NCO build system and user support (10%).
+is re-factoring the code-base to support groups and to improve the NCO
+build system and user support (10%). 
 The 
 <a href="http://dust.ess.uci.edu/hire/sdn_grd_03_adv.pdf">graduate student researcher</a> 
-analyze and intercompare snow cover and snow albedo datasets from
-NASA MODIS and MISR datasets (in HDF-EOS format) and NCAR CESM
-simulations (in netCDF format). 
-The analysis will inform the development of wrappers for NCO
-commands to analyze HDF-EOS datasets.</p> 
+is analyzing and intercomparing snow cover and snow albedo datasets
+from NASA MODIS and MISR datasets (in HDF-EOS format) and CMIP5
+simulations (in netCDF format).  
+Her analysis informs the development of NCO commands and wrappers for
+HDF-EOS2 datasets so that we solve the most important problems
+real-world researchers encounter in evaluating GCMs against NASA
+data.</p> 
 
 <p>We continue to encourage you to e-mail NCO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
@@ -474,9 +475,12 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <h2>Publications and Presentations</h2>
 <ul>
 
+<li><!-- ZVW13 --> <a name="ZVW13"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
+Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2013): <i>The Future of Model Evaluation</i>. Presented to the Chapman University Symposium on Big Data and Analytics: 44th Symposium on the Interface of Computing Science and Statistics, Chapman University, Orange,&nbsp;CA, April 4&ndash;6, 2013. <a href="http://dust.ess.uci.edu/smn/smn_nco_chapman_201304.pdf">PDF</a> (&copy;&nbsp;2013 by me)</a></li>
+
 <li><!-- ZVW12 --> <a name="ZVW12"></a> <!--http://www.ess.uci.edu/~zender#ZVW12 -->
 Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2012): <i>NCO: Simpler and faster model evaluation by NASA satellite data via unified file-level netCDF and HDF-EOS data post-processing tools.</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 3&ndash;7, 2012. <i>Eos Trans. AGU</i>, <b>93</b>(53), Fall Meet. Suppl., Abstract IN34A-07.
-<a href="http://dust.ess.uci.edu/ppr/smn_nco_ag_201212.pdf">PDF</a> (&copy;&nbsp;2012 by me)</a></li>
+<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201212.pdf">PDF</a> (&copy;&nbsp;2012 by me)</a></li>
 
 <li><!-- ZVW12 --> <a name="ZVW12"></a> <!--http://www.ess.uci.edu/~zender#ZVW12 -->
 Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2012): <i>Simplifying and accelerating model evaluation by NASA satellite data.</i>. Presented to the Earth Science Data Systems Working Group (ESDSWG) Meeting, Annapolis&nbsp;MD, November 13&ndash;15, 2012.
@@ -600,6 +604,7 @@ Optimize diskless files?;
 <tt>ncrename -g</tt>?;</li>
 <li><b>NCO 4.3.2</b>: (<i>In Progress, features completed or being worked on include</i>)
 <tt>ncflint -g -G --unn</tt>;
+<tt>ncpdq -g -G --unn</tt>;
 <tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>;</li>
 <li><b>NCO 4.3.1</b>: (<i>Current Stable Release</i>)
 <tt>ncbo</tt> symmetry, group broadcasting;
