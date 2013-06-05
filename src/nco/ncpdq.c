@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.248 2013-06-05 01:16:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.249 2013-06-05 04:02:17 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.248 2013-06-05 01:16:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.248 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.249 2013-06-05 04:02:17 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.249 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -870,6 +870,8 @@ main(int argc,char **argv)
     } /* end else */
   } /* end if file contains record dimension */
 
+  if(dbg_lvl_get() >= nco_dbg_dev) for(idx=0;idx<nbr_var_prc;idx++) (void)nco_prt_dmn_var(var_prc_out[idx]);
+
   /* If re-ordering, determine and set new dimensionality in metadata of each re-ordered variable */
   if(dmn_rdr_nbr > 0){
     dmn_idx_out_in=(int **)nco_malloc(nbr_var_prc*sizeof(int *));
@@ -1018,6 +1020,9 @@ main(int argc,char **argv)
       } /* endif variable will be record variable */
     } /* end loop over var_prc */
   } /* !REDEFINED_RECORD_DIMENSION */
+
+
+  if(dbg_lvl_get() >= nco_dbg_dev) for(idx=0;idx<nbr_var_prc;idx++) (void)nco_prt_dmn_var(var_prc_out[idx]);
 
 #ifndef USE_TRV_API
   /* Once new record dimension, if any, is known, define dimensions in output file */
@@ -1246,7 +1251,7 @@ main(int argc,char **argv)
         /* Change dimensionionality of values */
         rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
 
-        if(dbg_lvl_get() >= nco_dbg_dev)nco_prt_dmn_var(var_prc_out[idx]);
+        if(dbg_lvl_get() >= nco_dbg_dev) (void)nco_prt_dmn_var(var_prc_out[idx]);
 
         /* Re-ordering required two value buffers, time to free input buffer */
         var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
@@ -1273,6 +1278,35 @@ main(int argc,char **argv)
         assert(va->cnt[idx_dmn] == va->dim[idx_dmn]->cnt);
         assert(va->end[idx_dmn] == va->dim[idx_dmn]->end);     
       } 
+#endif /* USE_TRV_API */
+
+
+#ifdef USE_TRV_API
+      /* Transfer new sizes set in nco_cpy_var_dfn() to var_prc_out */
+      for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
+        trv_sct *var_trv;
+
+        if(dbg_lvl_get() >= nco_dbg_dev) (void)nco_prt_dmn_var(var_prc_out[idx_var]);
+
+        /* Obtain variable GTT object using full variable name */
+        var_trv=trv_tbl_var_nm_fll(var_prc_out[idx_var]->nm_fll,trv_tbl);
+
+        assert(var_trv);
+        assert(var_trv->nco_typ == nco_obj_typ_var);
+        assert(var_trv->flg_xtr);
+        assert(var_trv->nbr_dmn == var_prc_out[idx_var]->nbr_dim);
+
+        for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var]->nbr_dim;idx_dmn++){
+          int idx_dmn_rdr=var_trv->dmn_idx_out_in[idx_dmn]; 
+          assert(strcmp(var_trv->var_dmn[idx_dmn_rdr].dmn_nm,var_prc_out[idx_var]->dim[idx_dmn]->nm) == 0);
+
+          /* These are set in nco_cpy_var_dfn() for ncpdq only  */
+          var_prc_out[idx_var]->cnt[idx_dmn]=var_trv->dmn_srt_cnt[idx_dmn].cnt;
+          var_prc_out[idx_var]->srt[idx_dmn]=var_trv->dmn_srt_cnt[idx_dmn].srt;
+        }
+
+        if(dbg_lvl_get() >= nco_dbg_dev) (void)nco_prt_dmn_var(var_prc_out[idx_var]);
+      }
 #endif /* USE_TRV_API */
 
       

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.334 2013-06-03 22:28:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.335 2013-06-05 04:02:15 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -2274,6 +2274,16 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
           dmn_sz=var_trv->var_dmn[idx_dmn_rdr].ncd->lmt_msa.dmn_cnt;
         }
       } /* Define dimension size */
+
+
+      /* Is there a record dimension re-ordering? (ncpdq) ...  
+      ... and variable is processing type 
+      ... then store the new dimension size to use for ncpdq var_prc_out* main array
+      */
+      if (prg_id == ncpdq && var_trv->enm_prc_typ == prc_typ){ 
+        var_trv->dmn_srt_cnt[idx_dmn_rdr].cnt=dmn_sz;
+        var_trv->dmn_srt_cnt[idx_dmn_rdr].srt=0;
+      }
 
       /* Define dimension and obtain dimension ID */
       (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);

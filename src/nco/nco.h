@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.326 2013-06-02 00:52:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.327 2013-06-05 04:02:15 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -698,6 +698,12 @@ extern "C" {
   } trv_map_dmn_id_t;
 
 
+  /* Structure that contains only start and count of hyperslabled dimensions, used in ncpdq to transfer sizes */
+  typedef struct {
+    long cnt;         /* [nbr] Length of hyperslab */
+    long srt;         /* [nbr] Start of hyperslab */
+  } dmn_srt_cnt_t;
+
   /* GTT Object structure 
      Information for each object/node in traversal tree
      Contains basic information about this object/node needed by traversal algorithm
@@ -742,13 +748,14 @@ extern "C" {
 
     /* Following are members only used by transformation operators (non ncks) (For variables only) */
 
-    prc_typ_enm enm_prc_typ;                  /* [enm] Processing type enumerator (ncecat) */
+    prc_typ_enm enm_prc_typ;                  /* [enm] Processing type enumerator */
     nc_type var_typ_out;                      /* [enm] NetCDF type in output file (ncflint)  */  
 #ifdef NCO_DIM_RDR
     nco_bool flg_rdr;                         /* [flg] Variable needs dimension re-order (ncpdq)  */ 
     int dmn_idx_out_in[NC_MAX_DIMS];          /* [nbr] Reordered dimensions correspondence (ncpdq) */
     nco_bool is_rec_dmn_out[NC_MAX_DIMS];     /* [nbr] Reordered dimensions record dimensions flag (ncpdq) */ 
     trv_map_dmn_id_t map_dmn_id[TRV_MAP_SIZE];/* [sct] Map *output* dimension ID to variable dimension index (ncpdq)*/
+    dmn_srt_cnt_t dmn_srt_cnt[NC_MAX_DIMS];   /* [nbr] Start and count of hyperslabled dimensions (ncpdq) */
 #endif
    } trv_sct;
  
