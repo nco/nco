@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.247 2013-06-04 04:56:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.248 2013-06-05 01:16:29 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -70,6 +70,8 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
+void nco_prt_dmn_var( var_sct *va );
+
 int 
 main(int argc,char **argv)
 {
@@ -126,8 +128,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.247 2013-06-04 04:56:53 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.247 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.248 2013-06-05 01:16:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.248 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1237,8 +1239,15 @@ main(int argc,char **argv)
           (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
           nco_exit(EXIT_FAILURE); 
         } /* endif err */
+
+
+        if(dbg_lvl_get() >= nco_dbg_dev) (void)nco_prt_dmn_var(var_prc_out[idx]);
+
         /* Change dimensionionality of values */
         rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
+
+        if(dbg_lvl_get() >= nco_dbg_dev)nco_prt_dmn_var(var_prc_out[idx]);
+
         /* Re-ordering required two value buffers, time to free input buffer */
         var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
         /* Free current dimension correspondence */
@@ -1266,14 +1275,7 @@ main(int argc,char **argv)
       } 
 #endif /* USE_TRV_API */
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        var_sct *va=var_prc_out[idx];
-        (void)fprintf(stdout,"%s: DEBUG variable to write <%s>#%d: ",prg_nm_get(),va->nm,va->id);
-        for(int idx_dmn=0;idx_dmn<va->nbr_dim;idx_dmn++){
-          (void)fprintf(stdout,"[%d]%s size=%d :",idx_dmn,va->dim[idx_dmn]->nm,va->dim[idx_dmn]->cnt);     
-        } 
-        (void)fprintf(stdout,"\n");
-      }
+      
 
 #ifdef _OPENMP
 #pragma omp critical
@@ -1425,3 +1427,13 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
+
+
+void nco_prt_dmn_var( var_sct *va )
+{
+  (void)fprintf(stdout,"%s: DEBUG variable <%s> has dimensions: ",prg_nm_get(),va->nm);
+  for(int idx_dmn=0;idx_dmn<va->nbr_dim;idx_dmn++){
+    (void)fprintf(stdout,"[%d]%s size=%d :",idx_dmn,va->dim[idx_dmn]->nm,va->dim[idx_dmn]->cnt);     
+  } 
+  (void)fprintf(stdout,"\n");
+}
