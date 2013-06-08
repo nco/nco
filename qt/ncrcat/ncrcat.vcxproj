@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7F27A65D-81A7-3051-BE75-A8DB5284C7B2}</ProjectGuid>
+    <ProjectGuid>{2A149B3A-F723-323D-BAB2-F7E0E30A8F4F}</ProjectGuid>
     <RootNamespace>ncrcat</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
   </PropertyGroup>
@@ -66,7 +66,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NEED_STRCASECMP;NEED_STRCASESTR;ENABLE_GSL;ENABLE_NETCDF4;HAVE_NETCDF4_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NEED_STRCASECMP;NEED_STRCASESTR;ENABLE_GSL;ENABLE_DAP;ENABLE_NETCDF4;HAVE_NETCDF4_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -76,7 +76,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>../libnco/debug/libnco.lib;$(LIB_GSL);$(LIB_NETCDF);$(LIB_DISPATCH);$(LIB_NETCDF4);$(LIB_HDF5);$(LIB_HDF5_HL);$(LIB_ZLIB);$(LIB_SZIP);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../libnco/debug/libnco.lib;$(LIB_NETCDF);$(LIB_DISPATCH);$(LIB_NETCDF4);$(LIB_HDF5);$(LIB_HDF5_HL);$(LIB_ZLIB);$(LIB_SZIP);$(LIB_GSL);$(LIB_CURL);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -93,7 +93,7 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NEED_STRCASECMP;NEED_STRCASESTR;ENABLE_GSL;ENABLE_NETCDF4;HAVE_NETCDF4_H;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NEED_STRCASECMP;NEED_STRCASESTR;ENABLE_GSL;ENABLE_DAP;ENABLE_NETCDF4;HAVE_NETCDF4_H;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -107,7 +107,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NEED_STRCASECMP;NEED_STRCASESTR;ENABLE_GSL;ENABLE_NETCDF4;HAVE_NETCDF4_H;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NEED_STRCASECMP;NEED_STRCASESTR;ENABLE_GSL;ENABLE_DAP;ENABLE_NETCDF4;HAVE_NETCDF4_H;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -117,7 +117,7 @@
       <WarningLevel>Level3</WarningLevel>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>../libnco/release/libnco.lib;$(LIB_GSL);$(LIB_NETCDF);$(LIB_DISPATCH);$(LIB_NETCDF4);$(LIB_HDF5);$(LIB_HDF5_HL);$(LIB_ZLIB);$(LIB_SZIP);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>../libnco/release/libnco.lib;$(LIB_NETCDF);$(LIB_DISPATCH);$(LIB_NETCDF4);$(LIB_HDF5);$(LIB_HDF5_HL);$(LIB_ZLIB);$(LIB_SZIP);$(LIB_GSL);$(LIB_CURL);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -135,7 +135,7 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NEED_STRCASECMP;NEED_STRCASESTR;ENABLE_GSL;ENABLE_NETCDF4;HAVE_NETCDF4_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CONSOLE;UNICODE;WIN32;QT_LARGEFILE_SUPPORT;_CRT_SECURE_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;NEED_STRCASECMP;NEED_STRCASESTR;ENABLE_GSL;ENABLE_DAP;ENABLE_NETCDF4;HAVE_NETCDF4_H;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
