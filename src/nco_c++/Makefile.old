@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.103 2013-06-08 06:31:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.104 2013-06-08 06:36:57 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -372,6 +372,7 @@ endif # end
 ifneq (${UDUNITS_LIB},${NETCDF_LIB})
  NC_LDFLAGS += -L${UDUNITS_LIB}
 endif # end if
+ifeq (${UDUNITS2},Y)
 # 20130607: -lexpat needed on .deb systems, not on RPM systems
 UDUNITS_RPM_DRC := /usr/include/udunits2
 UDUNITS_RPM_TST := $(shell ls ${UDUNITS_RPM_DRC}/udunits2.h)
