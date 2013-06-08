@@ -1,14 +1,16 @@
+2013-06-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.2 release procedure:
+ 	Changes since nco-4_3_1: -X aux, ncflint/ncpdq -g -G --unn
+	cd ~/nco;cvs tag -d nco-4_3_2;cvs tag -d nco-4_3_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
+	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
+
 2013-06-07  Charlie Zender  <zender@uci.edu>
 
 	* Changes for Fedora Core 18 RPM compatibility
 
 2013-06-05  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.3.2 release procedure:
- 	Changes since nco-4_3_1: -X aux, ncflint -g -G --unn
-	cd ~/nco;cvs tag -d nco-4_3_2;cvs tag -d nco-4_3_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
-	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
 
 	* Tidy/fix ncflint OpenMP build. Tidy ncpdq.
 
