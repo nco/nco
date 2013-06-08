@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.390 2013-05-08 00:21:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.391 2013-06-08 21:34:11 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -794,7 +794,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Je veux manger cassoulet et crême brulée\n";
+  return "Aprés prp_axs\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

@@ -2,7 +2,7 @@
 #define INC_ncoLexer_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (20120518): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
+/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
 #include <antlr/CommonToken.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>
@@ -10,7 +10,7 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.103 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.104 2013-06-08 21:34:11 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 

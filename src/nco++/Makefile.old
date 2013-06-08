@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.122 2013-06-08 06:31:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco++/Makefile.old,v 1.123 2013-06-08 21:34:11 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for NCO C++ directory nco++
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -95,7 +95,12 @@ ifndef ${ABI}
  ABI := 64
 endif # endif ABI
 ifndef ANTLR
- ANTLR := runantlr
+ ANTLR_WHICH := $(notdir $(shell which antlr))
+ ifeq (${ANTLR_WHICH},antlr)
+  ANTLR := antlr
+ else
+  ANTLR := runantlr
+ endif 
 endif # endif ANTLR
 ifndef ANTLR_ROOT
  ANTLR_ROOT := /usr/local

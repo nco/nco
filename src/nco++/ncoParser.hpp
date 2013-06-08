@@ -2,7 +2,7 @@
 #define INC_ncoParser_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (20120518): "ncoGrammer.g" -> "ncoParser.hpp"$ */
+/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoParser.hpp"$ */
 #include <antlr/TokenStream.hpp>
 #include <antlr/TokenBuffer.hpp>
 #include "ncoParserTokenTypes.hpp"
@@ -10,7 +10,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.100 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoParser.hpp,v 1.101 2013-06-08 21:34:11 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
