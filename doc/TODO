@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1238 2013-04-29 03:12:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1239 2013-06-08 06:31:40 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -169,20 +169,11 @@ nco148. Put in more useful error diagnostics for Schweitzer's data holes
         ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 nco149. Add ncks hyperslab tests to nco_tst.pl to catch inconsistencies like #148
 nco151. Dynamically modify web pages so files with changing version numbers can be directly linked
-nco154. Add mirror capability to web pages
 nco158. Add policy for hyperslabbing single level values to User's Guide
         Multi-file operators with record coordinate
         treat single point hyperslabs differently than single file operators 
         or than any operators with single point cuts on non-record coordinates.
         See explanatory notes in nco_lmt_evl().
-nco159. Add capability to handle superfluous intermediate files to ncra,
-        ncrcat when lmt_typ = dim_idx.
-        This would allow these multifile operators to handle hyperslabs where,
-        for example, every other file was not needed. This capability is already
-        implemented for lmt_typ = crd_val. 
-        This is an issue only when stride is non-unity.
-        Does MSA multislabbing algorithm fix this?
-nco162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?)
 nco166. Document 'make test' so people know it exists and use it
 nco173. Add switch to ncra which allows user to remove degenerate time dimension from result
 nco174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call

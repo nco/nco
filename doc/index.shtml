@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.788 2013-06-05 19:00:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.789 2013-06-08 06:31:40 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -143,6 +143,7 @@ and
 
 <ul>
 <li>2013 Jun&nbsp;??: NCO 4.3.2</li>
+<li>2011 Jun&nbsp;03: Submitted NASA ACCESS 2013 <a href="http://dust.ess.uci.edu/prp/prp_axs/prp_axs.pdf">proposal</a></li>
 <li>2013 May&nbsp;01: NCO 4.3.1 (Group broadcasting)</li>
 <li>2013 Mar&nbsp;28: NCO 4.3.0 (<tt>ncbo</tt> Groups)</li>
 <li>2013 Mar&nbsp;19: NCO 4.2.6</li>
@@ -153,10 +154,10 @@ and
 <li>2012 Oct&nbsp;29: NCO 4.2.2 (<tt>ncks, ncecat</tt> Groups)</li>
 <li>2012 Aug&nbsp;02: NCO 4.2.1 (RAM disks)</li>
 <li>2012 Jun&nbsp;12: NCO 4.2.0 (Windows support)</li>
-<li>2012 Apr&nbsp;23: Received funding for NASA <a href="#prp_access">ACCESS Project</a></li>
+<li>2012 Apr&nbsp;23: Received funding for NASA ACCESS 2011 <a href="#prp_access">project</a></li>
 <li>2012 Mar&nbsp;29: NCO 4.1.0 (MD5 support, MM3)</li>
 <li>2012 Feb&nbsp;13: NCO 4.0.9</li>
-<li>2011 Jun&nbsp;03: Submit NASA ACCESS <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">proposal</a></li>
+<li>2011 Jun&nbsp;03: Submitted NASA ACCESS 2011 <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">proposal</a></li>
 <li>2011 Apr&nbsp;28: NCO 4.0.8 (HPSS support, NOFILL workaround, <i>upgrade recommended</i>)</li>
 <li>2011 Feb&nbsp;21: NCO 4.0.7 (<i>upgrade recommended</i>)</li>
 <li>2011 Jan&nbsp;15: NCO 4.0.6</li>
@@ -313,15 +314,15 @@ The National Aeronautics and Space Administration Cooperative Agreement (CA)
 funded our
 <a href="http://dust.ess.uci.edu/prp/prp_access/prp_access.pdf">ACCESS Project</a>,
 &ldquo;Simplifying and accelerating model evaluation by NASA satellite data&rdquo;
-from 20120401&ndash;20140331 as part of the 
+from 20120208&ndash;20140207 as part of the 
 <a href="http://science.nasa.gov/earth-science/earth-science-data/access">Advancing Collaborative Connections for Earth System Science (ACCESS)</a> program.
 We appreciate the proposal reviewers for and the staff of the 
 <a href="http://science.nasa.gov/researchers/sara/division-corner/earth-science-division-corner">Earth Science Division (ESD) Research and Analysis (R\&A)</a>
 in the 
 <a href="http://science.nasa.gov/about-us/organization-and-leadership">Science Mission Directorate (SMD)</a>.
-NCO development has been completely voluntary and without
-institutional support since August, 2008.
-This NASA support dramatically changes the scale and pace of NCO development. 
+NCO development was completely voluntary and without
+institutional support from August, 2008&ndash;February, 2012.
+This NASA support dramatically changed the scale and pace of NCO development. 
 This URL,
 <a href="http://nco.sf.net#prp_access"><tt>http://nco.sf.net#prp_access</tt></a>,
 points to the most up-to-date information on the ACCESS proposal.</p> 
@@ -344,17 +345,16 @@ As described in the proposal, the responsibilities of positions are
 roughly segregated as follows: 
 The 
 <a href="http://dust.ess.uci.edu/hire/prg_anl_05_adv.pdf">programmer</a> 
-is re-factoring the code-base to support groups and to improve the NCO
-build system and user support (10%). 
+is re-factoring the code-base to support groups, writing wrappers for
+NCO, an improving the build system (e.g., now we have native Windows builds!).
 The 
 <a href="http://dust.ess.uci.edu/hire/sdn_grd_03_adv.pdf">graduate student researcher</a> 
 is analyzing and intercomparing snow cover and snow albedo datasets
-from NASA MODIS and MISR datasets (in HDF-EOS format) and CMIP5
-simulations (in netCDF format).  
+from NASA MODIS and MISR datasets (in HDF format) and CMIP5
+simulations (in netCDF format).
 Her analysis informs the development of NCO commands and wrappers for
-HDF-EOS2 datasets so that we solve the most important problems
-real-world researchers encounter in evaluating GCMs against NASA
-data.</p> 
+HDF atasets so that we solve the most important problems real-world
+researchers encounter in evaluating GCMs against NASA data.</p> 
 
 <p>We continue to encourage you to e-mail NCO endorsements to
 <a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>

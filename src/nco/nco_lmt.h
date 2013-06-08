@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.65 2013-04-16 05:21:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.66 2013-06-08 06:31:40 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -48,7 +48,6 @@ enum lmt_typ{ /* [enm] Limit type */
  lmt_udu_sng /* 2, UDUnits string */
 }; /* end lmt_typ enum */
 
-
 void
 nco_lmt_init /* [fnc] Initialize limit to NULL/default values */
 (lmt_sct *lmt); /* I/O [sct] Limit structure to initialize */
@@ -61,7 +60,6 @@ void
 nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
 (const lmt_sct * const lmt1, /* I [sct] Limit structure to copy */
  lmt_sct *lmt2);/* O [sct] New limit structure */
-
 
 void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */

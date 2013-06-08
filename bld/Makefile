@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.638 2013-05-30 00:23:00 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.639 2013-06-08 06:31:40 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -35,6 +35,7 @@
 # Usage (Compilation):
 # cd ~/nco/qt;qmake;make;cd -        # Qt
 # cd ~/nco/bld;make;cd -             # Default build
+# cd ~/nco/bld;make UDUNITS_INC='/usr/include/udunits2';cd - # Fedora build
 # cd ~/nco/bld;make cln bin_cln;cd - # Clean all dependencies for fresh build
 # cd ~/nco/bld;make dir all; cd -    # Create target directories then build
 # cd ~/nco/bld;make dbg;cd -         # Print make diagnostics
@@ -478,7 +479,17 @@ ifneq (${UDUNITS_LIB},${NETCDF_LIB})
  NC_LDFLAGS += -L${UDUNITS_LIB}
 endif # end if
 ifeq (${UDUNITS2},Y)
+# 20130607: -lexpat needed on .deb systems, not on RPM systems
+UDUNITS_RPM_DRC := /usr/include/udunits2
+UDUNITS_RPM_TST := $(shell ls ${UDUNITS_RPM_DRC}/udunits2.h)
+ifeq (${UDUNITS_RPM_TST},${UDUNITS_RPM_DRC}/udunits2.h)
+ NETCDF_INC += -I${UDUNITS_RPM_DRC}
+endif # end if
+ifneq (${UDUNITS_RPM_TST},${UDUNITS_RPM_DRC}/udunits2.h)
  NC_LIBS += -ludunits2 -lexpat
+else # end if UDUNITS2 Fedora
+ NC_LIBS += -ludunits2
+endif # end if UDUNITS2 Fedora
 else
  NC_LIBS += -ludunits
 endif # end if UDUNITS2
