@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.255 2013-06-09 04:56:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.256 2013-06-09 06:22:11 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -87,7 +87,10 @@ main(int argc,char **argv)
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool IS_REORDER=False; /* Re-order mode */
+  nco_bool IS_PACK=False; /* Pack mode */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
   nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
@@ -95,8 +98,7 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
-  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
-
+  
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
@@ -127,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.255 2013-06-09 04:56:38 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.255 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.256 2013-06-09 06:22:11 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.256 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -498,6 +500,22 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
+  /* No re-order dimensions specified implies packing request */
+  if(dmn_rdr_nbr == 0){
+    IS_PACK=True;
+    if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
+  } else {
+    IS_REORDER=True;
+  }/* endif */
+
+  /* From this point forward, assume ncpdq operator packs or re-orders, not both */
+  if(dmn_rdr_nbr > 0 && nco_pck_plc != nco_pck_plc_nil){
+    (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",prg_nm,prg_nm,prg_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+
+
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
@@ -584,18 +602,6 @@ main(int argc,char **argv)
 
   /* Merge hyperslab limit information into dimension structures */
   if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
-
-  /* No re-order dimensions specified implies packing request */
-  if(dmn_rdr_nbr == 0){
-    if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
-  } /* endif */
-
-  /* From this point forward, assume ncpdq operator packs or re-orders, not both */
-  if(dmn_rdr_nbr > 0 && nco_pck_plc != nco_pck_plc_nil){
-    (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",prg_nm,prg_nm,prg_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
 
   if(dmn_rdr_nbr > 0 ){
     /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
