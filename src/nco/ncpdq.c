@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.256 2013-06-09 06:22:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.257 2013-06-09 06:30:07 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.256 2013-06-09 06:22:11 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.256 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.257 2013-06-09 06:30:07 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.257 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -515,6 +515,23 @@ main(int argc,char **argv)
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
+  /* Create reversed dimension list */
+  if(dmn_rdr_nbr > 0 ){
+    /* Create reversed dimension list */
+    dmn_rvr_rdr=(nco_bool *)nco_malloc(dmn_rdr_nbr*sizeof(nco_bool));
+    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
+      if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
+        dmn_rvr_rdr[idx_rdr]=True;
+        /* Copy string to new memory one past negative sign to avoid losing byte */
+        optarg_lcl=dmn_rdr_lst_in[idx_rdr];
+        dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
+        optarg_lcl=(char *)nco_free(optarg_lcl);
+      }else{
+        dmn_rvr_rdr[idx_rdr]=False;
+      } /* end else */
+    } /* end loop over idx_rdr */
+  } /* Create reversed dimension list */
+
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -606,20 +623,6 @@ main(int argc,char **argv)
   if(dmn_rdr_nbr > 0 ){
     /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
     /* Make list of user-specified dimension re-orders */
-
-    /* Create reversed dimension list */
-    dmn_rvr_rdr=(nco_bool *)nco_malloc(dmn_rdr_nbr*sizeof(nco_bool));
-    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
-      if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
-        dmn_rvr_rdr[idx_rdr]=True;
-        /* Copy string to new memory one past negative sign to avoid losing byte */
-        optarg_lcl=dmn_rdr_lst_in[idx_rdr];
-        dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
-        optarg_lcl=(char *)nco_free(optarg_lcl);
-      }else{
-        dmn_rvr_rdr[idx_rdr]=False;
-      } /* end else */
-    } /* end loop over idx_rdr */
 
     /* Create structured list of re-ordering dimension names and IDs */
     dmn_rdr_lst=nco_dmn_lst_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr);
