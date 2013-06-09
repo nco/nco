@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.253 2013-06-09 03:29:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.254 2013-06-09 04:20:48 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -37,6 +37,10 @@
    ncpdq -O -D 3 -P all_xst ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P xst_new ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc */
+
+#if 0
+#define USE_TRV_API
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -91,11 +95,13 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
 
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
   char **var_lst_in=NULL_CEWI;
+  char **grp_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
   char *cnk_arg[NC_MAX_DIMS];
@@ -118,10 +124,12 @@ main(int argc,char **argv)
 
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+  char trv_pth[]="/"; /* [sng] Root path of traversal tree */
+  char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.253 2013-06-09 03:29:38 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.253 $";
-  const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:Rrt:v:UxZ-:";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.254 2013-06-09 04:20:48 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.254 $";
+  const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -186,6 +194,7 @@ main(int argc,char **argv)
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
+  int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
@@ -198,6 +207,7 @@ main(int argc,char **argv)
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
+  size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */
 
   var_sct **var;
   var_sct **var_fix;
@@ -206,6 +216,10 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
 
+  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
+  
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
@@ -258,6 +272,9 @@ main(int argc,char **argv)
     {"dmn",required_argument,0,'d'},
     {"fortran",no_argument,0,'F'},
     {"ftn",no_argument,0,'F'},
+    {"gpe",required_argument,0,'G'}, /* [sng] Group Path Edit (GPE) */
+    {"grp",required_argument,0,'g'},
+    {"group",required_argument,0,'g'},
     {"history",no_argument,0,'h'},
     {"hst",no_argument,0,'h'},
     {"dfl_lvl",required_argument,0,'L'}, /* [enm] Deflate level */
@@ -387,6 +404,20 @@ main(int argc,char **argv)
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
+      break;
+    case 'G': /* Apply Group Path Editing (GPE) to output group */
+      /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it
+      http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
+      gpe=nco_gpe_prs_arg(optarg);
+      grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
+      grp_out_lng=gpe->lng_cnn;
+      break;
+    case 'g': /* Copy group argument for later processing */
+      /* Replace commas with hashes when within braces (convert back later) */
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_rx_comma2hash(optarg_lcl);
+      grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
