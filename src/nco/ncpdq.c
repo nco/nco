@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.257 2013-06-09 06:30:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.258 2013-06-09 07:30:35 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.257 2013-06-09 06:30:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.257 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.258 2013-06-09 07:30:35 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.258 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -551,6 +551,9 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
+  /* Get file format */
+  (void)nco_inq_format(in_id,&fl_in_fmt);
+
 #ifndef USE_TRV_API
 
   /* Make uniform list of user-specified dimension limits */
@@ -571,7 +574,6 @@ main(int argc,char **argv)
 
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id_in);
-  (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
@@ -1070,6 +1072,53 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
+
+
+  /* Fill var_sct vectors "a la ncflint". 
+  1) Do not use "xrf" dimensions 
+  2) GTT version for nco_fll_var_trv()
+  */
+
+  /* Fill-in variable structure list for all extracted variables */
+  var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
+
+  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+    var_out[var_idx]=nco_var_dpl(var[var_idx]);
+  }
+
+  /* GTT needed:
+
+  1) Form list of re-ordering dimensions from extracted input dimensions
+  2) Divide variable lists into lists of fixed variables and variables to be processed
+
+  */
+
+
+
+
+
+  /* We now have final list of variables to extract. Phew. */
+  
+
+  /* Make output and input files consanguinous */
+  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+
+  /* Verify output file format supports requested actions */
+  (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
+
+  /* Open output file */
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
+
+  /* Copy global attributes */
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+
+  /* Catenate time-stamped command line to "history" global attribute */
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+
 
 #endif /* USE_TRV_API */
 
