@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.254 2013-06-09 04:20:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.255 2013-06-09 04:56:38 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.254 2013-06-09 04:20:48 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.254 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.255 2013-06-09 04:56:38 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.255 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -308,6 +308,9 @@ main(int argc,char **argv)
     {0,0,0,0}
   }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
+
+  /* Initialize traversal table */ 
+  trv_tbl_init(&trv_tbl);
 
   /* Start timer and save command line */ 
   ddra_info.tmr_flg=nco_tmr_srt;
@@ -501,9 +504,6 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
-  /* Make uniform list of user-specified dimension limits */
-  lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
@@ -515,6 +515,11 @@ main(int argc,char **argv)
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
+
+#ifndef USE_TRV_API
+
+  /* Make uniform list of user-specified dimension limits */
+  lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
@@ -1026,6 +1031,39 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
+#endif /* USE_TRV_API */
+
+
+#ifdef USE_TRV_API
+
+  /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+  (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
+
+  /* Get number of variables, dimensions, and global attributes in file, file format */
+  (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
+
+  /* Check -v and -g input names and create extraction list */
+  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
+
+  /* Change included variables to excluded variables */
+  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
+
+  /* Add all coordinate variables to extraction list */
+  if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
+
+  /* Extract coordinates associated with extracted variables */
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
+
+  /* Is this a CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+    /* Implement CF "coordinates" and "bounds" conventions */
+    (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
+    (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
+  } /* CNV_CCM_CCSM_CF */
+
+#endif /* USE_TRV_API */
+
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncpdq-specific memory cleanup */
@@ -1095,6 +1133,10 @@ main(int argc,char **argv)
     var_prc_out=(var_sct **)nco_free(var_prc_out);
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
+
+    /* Free traversal table */
+    trv_tbl_free(trv_tbl); 
+    if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
   } /* !flg_cln */
 
   /* End timer */ 
