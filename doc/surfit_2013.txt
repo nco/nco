@@ -2,6 +2,12 @@
 # (Summer Undergraduate Research Fellowships in Information Technologies)
 # Submitted to Stu Ross 20130228
 
+(20130520: Notes on future SURFIT ads:
+1. Make first affiliation CS not ESS to get more CS applicants
+2. Format ads so Windows line-breaking won't create widows/orphans
+3. Prerequisites: Good programming skills at the level of third year
+computer science. Proficiency with C and a scripting language.)
+
 Optimized Storage Shapes for Multi-dimensional Gridded Datasets
 
 PI: Prof. Charlie Zender

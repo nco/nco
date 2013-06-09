@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.790 2013-06-05 19:00:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.791 2013-06-09 17:08:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4323,7 +4323,7 @@ Long options:
 @samp{--rec_apn}, @samp{--record_append}@*
 @end cartouche
 As of version 4.2.6 (March, 2013), @acronym{NCO} allows both
-Multi-File, Multi-Record operators, @command{ncra} and @command{ncrcat},
+Multi-File, Multi-Record operators (@command{ncra} and @command{ncrcat})
 to append their output directly to the end of an existing file.
 This feature useful when a target file is to be augmented, rather than
 constructed from scratch. 
@@ -4333,14 +4333,14 @@ This switch enables an optimization that significantly speeds writing
 in such cases.
 
 Consider the use case where wants to preserve the contents of
-@file{fl_1.nc}, and add to them the new records contained in
+@file{fl_1.nc}, and add to them new records contained in
 @file{fl_2.nc}. 
 Previously the output had to be placed in a third file, @file{fl_3.nc}
-(which could safely be named @file{fl_2.nc}), via
+(which could also safely be named @file{fl_2.nc}), via
 @example
 ncrcat -O fl_1.nc fl_2.nc fl_3.nc
 @end example
-Under the hood this operation copies all of the information in
+Under the hood this operation copies all information in
 @file{fl_1.nc} and @file{fl_2.nc} not once but twice.
 The first copy is performed through the netCDF interface, as all
 data from @file{fl_1.nc} and @file{fl_2.nc} are extracted and placed in
