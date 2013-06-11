@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.260 2013-06-11 08:27:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.261 2013-06-11 15:08:01 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.260 2013-06-11 08:27:22 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.260 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.261 2013-06-11 15:08:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.261 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1089,7 +1089,7 @@ main(int argc,char **argv)
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   /* Special ncpdq only version of nco_var_lst_dvd() */
-  (void)nco_var_lst_dvd_rdr_trv(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc,trv_tbl);
+  (void)nco_var_lst_dvd_rdr_trv(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr_lst_in,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc,trv_tbl);
 
 
 

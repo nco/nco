@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.68 2013-06-11 08:27:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.69 2013-06-11 15:08:01 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -151,8 +151,8 @@ nco_var_lst_dvd_rdr_trv                      /* [fnc] Divide input lists into ou
  const nco_bool FIX_REC_CRD,                 /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_pck_map,                      /* I [enm] Packing map */
  const int nco_pck_plc,                      /* I [enm] Packing policy */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl,                      /* I [nbr] Number of altered dimensions */
+ char **dmn_rdr_lst_in,                      /* I [sct] Input dimensions (-a)  */
+ const int nbr_dmn,                          /* I [nbr] Number of input dimensions */
  var_sct *** const var_fix_ptr,              /* O [sct] Fixed-variables (input file) */
  var_sct *** const var_fix_out_ptr,          /* O [sct] Fixed-variables (output file) */
  int * const nbr_var_fix,                    /* O [nbr] Number of fixed variables */
