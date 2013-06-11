@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.278 2013-06-11 03:51:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.279 2013-06-11 08:27:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -492,11 +492,6 @@ nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-
  const int nbr_dmn,                   /* I [nbr] Total number of dimensions in list */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
-void
-nco_trv_dmn_rdr                       /* [fnc] Form list of re-ordering dimensions from extracted input dimensions (ncpdq only) */
-(char **dmn_lst_in,                   /* I [sng] User-specified list of dimension names */
- const int nbr_dmn,                   /* I [nbr] Total number of dimensions in list */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
