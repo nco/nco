@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.328 2013-06-05 04:33:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.329 2013-06-11 23:00:04 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -743,13 +743,18 @@ extern "C" {
 
     prc_typ_enm enm_prc_typ;                  /* [enm] Processing type enumerator */
     nc_type var_typ_out;                      /* [enm] NetCDF type in output file (ncflint)  */  
+
+    nco_bool dmn_rvr_rdr[NC_MAX_DIMS];       /* [flg] Reverse dimension (ncpdq) */
+
+    /* Below: In construction ncpdq marked NCO_DIM_RDR subject to removal */
+
 #ifdef NCO_DIM_RDR
     nco_bool flg_rdr;                         /* [flg] Variable needs dimension re-order (ncpdq)  */ 
     int dmn_idx_out_in[NC_MAX_DIMS];          /* [nbr] Reordered dimensions correspondence (ncpdq) */
     nco_bool is_rec_dmn_out[NC_MAX_DIMS];     /* [nbr] Reordered dimensions record dimensions flag (ncpdq) */ 
     trv_map_dmn_id_t map_dmn_id[TRV_MAP_SIZE];/* [sct] Map *output* dimension ID to variable dimension index (ncpdq)*/
 #endif
-   } trv_sct;
+  } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)

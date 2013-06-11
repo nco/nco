@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.724 2013-06-11 16:39:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.725 2013-06-11 23:00:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4259,7 +4259,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 
 void
 nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-order in GTT (ncpdq only) */
-(char **dmn_lst_in,                   /* I [sng] User-specified list of dimension names */
+(char **dmn_rdr_lst_in,               /* I [sng] User-specified list of dimension names */
  const int nbr_dmn,                   /* I [nbr] Total number of dimensions in list */
  const var_sct *var,                  /* I [sct] Variable  */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
@@ -4278,20 +4278,33 @@ nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-
       /* Loop variable dimension (relative) names  */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
-        /* Loop input dimension (relative) names  */
-        for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+        /* Loop input (-a) dimension (relative) names  */
+        for(int idx_dmn_rdr=0;idx_dmn_rdr<nbr_dmn;idx_dmn_rdr++){
 
           /* Match relative name */ 
-          if(strcmp(dmn_lst_in[idx_dmn],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
+          if(strcmp(dmn_rdr_lst_in[idx_dmn_rdr],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
 
             /* Process the variable containing an altered (averaged, re-ordered, reversed) dimension 
             This loop is about the variable list to be processed/fixed 
-            A second relative match name must be made*/
+            A second relative match name must be made */
             for(int idx_dmn_prc=0;idx_dmn_prc<var->nbr_dim;idx_dmn_prc++){
 
               /* Match relative name */ 
               if(strcmp(var_trv.var_dmn[idx_var_dmn].dmn_nm,var->dim[idx_dmn_prc]->nm) == 0){
 
+                /* Create reversed dimension list */
+
+                /* NOTE: Indices
+                idx_var -> for GTT variable; 
+                idx_dmn_rdr -> for input name dimension list 
+                idx_var_dmn -> for variable dimension name list 
+                */
+
+                if(dmn_rdr_lst_in[idx_dmn_rdr][0] == '-'){
+                  trv_tbl->lst[idx_var].dmn_rvr_rdr[idx_var_dmn]=True;
+                }else {
+                  trv_tbl->lst[idx_var].dmn_rvr_rdr[idx_var_dmn]=False;
+                }
 
                 /* Mark the variable to re-order dimensions */
                 trv_tbl->lst[idx_var].flg_rdr == True;
