@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.258 2013-06-09 07:30:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.259 2013-06-11 03:51:48 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.258 2013-06-09 07:30:35 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.258 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.259 2013-06-11 03:51:48 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.259 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1095,6 +1095,8 @@ main(int argc,char **argv)
   */
 
 
+  /* Form list of re-ordering dimensions from extracted input dimensions */
+  (void)nco_trv_dmn_rdr(dmn_rdr_lst_in,dmn_rdr_nbr_in,trv_tbl);
 
 
 
