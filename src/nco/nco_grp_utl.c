@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.723 2013-06-11 08:27:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.724 2013-06-11 16:39:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4261,6 +4261,7 @@ void
 nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-order in GTT (ncpdq only) */
 (char **dmn_lst_in,                   /* I [sng] User-specified list of dimension names */
  const int nbr_dmn,                   /* I [nbr] Total number of dimensions in list */
+ const var_sct *var,                  /* I [sct] Variable  */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Store the variables that need re-order in GTT (set boolean flag) */
@@ -4280,13 +4281,24 @@ nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-
         /* Loop input dimension (relative) names  */
         for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
 
-          /* Match relative name */
+          /* Match relative name */ 
           if(strcmp(dmn_lst_in[idx_dmn],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
 
-            /* Mark the variable to re-order dimensions */
-            trv_tbl->lst[idx_var].flg_rdr == True;
-            break;
+            /* Process the variable containing an altered (averaged, re-ordered, reversed) dimension 
+            This loop is about the variable list to be processed/fixed 
+            A second relative match name must be made*/
+            for(int idx_dmn_prc=0;idx_dmn_prc<var->nbr_dim;idx_dmn_prc++){
 
+              /* Match relative name */ 
+              if(strcmp(var_trv.var_dmn[idx_var_dmn].dmn_nm,var->dim[idx_dmn_prc]->nm) == 0){
+
+
+                /* Mark the variable to re-order dimensions */
+                trv_tbl->lst[idx_var].flg_rdr == True;
+                break;
+
+              } /* Match relative name */ 
+            } /* Process the variable containing an altered (averaged, re-ordered, reversed) dimension  */
           } /* Match relative name */
         } /* Loop input dimension (relative) names  */
       } /* Loop variable dimension (relative) names  */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.148 2013-06-11 15:08:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.149 2013-06-11 16:39:56 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1435,12 +1435,9 @@ nco_var_lst_dvd_rdr_trv                      /* [fnc] Divide input lists into ou
 
         /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
         for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
-          
 
-
-
-
-
+          /* Store the variables that need re-order in GTT (ncpdq only) */
+          (void)nco_trv_flg_rdr(dmn_rdr_lst_in,nbr_dmn,var[idx],trv_tbl);      
 
         } /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */       
       } /* endif averaging or re-ordering */
