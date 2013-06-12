@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.726 2013-06-12 03:48:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.727 2013-06-12 18:24:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4323,5 +4323,20 @@ nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-
 
   return;
 } /* end nco_trv_flg_rdr() */
+
+
+void
+nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable (ncpdq only) */
+(const var_sct * const var_in,        /* I [ptr] Variable with metadata and data in original order */
+ var_sct * const var_out,             /* I/O [ptr] Variable whose metadata will be re-ordered */
+ int * const dmn_idx_out_in,          /* O [idx] Dimension correspondence, output->input */
+ const nco_bool * const dmn_rvr_rdr,  /* I [idx] Reverse dimension */
+ nco_bool * const dmn_rvr_in,         /* O [idx] Reverse dimension */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */ 
+{
+
+
+
+}
 
 
