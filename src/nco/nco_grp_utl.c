@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.727 2013-06-12 18:24:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.728 2013-06-12 20:23:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4337,6 +4337,11 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 
 
-}
+
+
+
+
+
+} /* nco_var_dmn_rdr_mtd_trv() */
 
 
