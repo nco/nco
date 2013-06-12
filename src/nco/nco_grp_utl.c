@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.728 2013-06-12 20:23:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.729 2013-06-12 23:29:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4334,6 +4334,20 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  nco_bool * const dmn_rvr_in,         /* O [idx] Reverse dimension */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */ 
 {
+  /* Purpose: Re-order dimensions in a given variable. 
+  GTT version of nco_var_dmn_rdr_mtd() */
+
+  assert(prg_get() == ncpdq);
+
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+
+    /* If object is an extractable variable  */
+    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_var].flg_xtr){
+      trv_sct var_trv=trv_tbl->lst[idx_var]; 
+
+      /* Loop variable dimension (relative) names  */
+      for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
 
 
@@ -4341,7 +4355,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 
 
-
+      } /* Loop variable dimension (relative) names  */
+    } /* If object is an extractable variable  */
+  } /* Loop table */
 } /* nco_var_dmn_rdr_mtd_trv() */
 
 
