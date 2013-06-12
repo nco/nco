@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.725 2013-06-11 23:00:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.726 2013-06-12 03:48:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4307,7 +4307,10 @@ nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-
                 }
 
                 /* Mark the variable to re-order dimensions */
-                trv_tbl->lst[idx_var].flg_rdr == True;
+                trv_tbl->lst[idx_var].flg_rdr=True;
+
+                /* Mark the variable as to process */
+                trv_tbl->lst[idx_var].enm_prc_typ=prc_typ;
                 break;
 
               } /* Match relative name */ 
