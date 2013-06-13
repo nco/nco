@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.81 2013-06-12 07:28:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.82 2013-06-13 22:49:17 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -498,7 +498,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   } /* end if dbg */
 
   /* Initialize default correspondence and record dimension in case early return desired */
-  if(var_out->is_rec_var) rec_dmn_nm_out=var_in->dim[0]->nm;
+  if(var_out->is_rec_var) rec_dmn_nm_out=var_in->dim[0]->nm; /* 20130613: if netCDF3 _only_! */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
     dmn_idx_out_in[dmn_in_idx]=dmn_in_idx;
     dmn_rvr_in[dmn_in_idx]=False;
@@ -716,7 +716,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   
   /* As explained in nco_var_dmn_rdr_mtd(),
      "Hence, we must re-update dmn_out->id after nco_dmn_dfn() in nco_cnf_dmn_rdr_val()
-     Structures should be completely consisten at that point
+     Structures should be completely consistent at that point
      Not updating these structures (at least dmn_out->id) is equivalent to assuming that
      dmn_out->id does not depend on record dimension identity, which is an ASSUMPTION
      that may currently be true, but is not guaranteed by the netCDF API to always be true." */
