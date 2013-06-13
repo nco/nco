@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.264 2013-06-12 20:23:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.265 2013-06-13 08:15:56 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.264 2013-06-12 20:23:55 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.264 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.265 2013-06-13 08:15:56 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.265 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1118,7 +1118,7 @@ main(int argc,char **argv)
     for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
 
       /* If re-ordering, determine and set new dimensionality in metadata of each re-ordered variable */
-      (void)nco_var_dmn_rdr_mtd_trv(var[idx_var],var_out[idx_var],dmn_idx_out_in[idx_var],dmn_rvr_rdr,dmn_rvr_in[idx_var],trv_tbl);
+      (void)nco_var_dmn_rdr_mtd_trv(var[idx_var],var_out[idx_var],trv_tbl);
     
     } /* Loop processed variables */
   } /* Re-order case */

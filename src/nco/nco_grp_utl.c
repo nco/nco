@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.730 2013-06-13 04:43:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.731 2013-06-13 08:15:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4059,7 +4059,7 @@ nco_pck_cpy_att                        /* [fnc] Inquire about copying packing at
 } /* nco_pck_cpy_att() */
 
 nco_bool                               /* O [flg] True for match found */
-nco_rel_mch                        /* [fnc] Relative match of object in table 1 to table 2  */
+nco_rel_mch                            /* [fnc] Relative match of object in table 1 to table 2  */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
  const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
@@ -4272,12 +4272,11 @@ nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
-    /* If object is 
-    1) variable 
-    2) to extract 
-    3) not a scalar (scalars are never altered by dimension re-ordering or reversal)
-    */
-    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr && (var_trv.nbr_dmn > 1) ){
+    /* If GTT variable object is : */
+    if(var_trv.nco_typ == nco_obj_typ_var /* Variable */
+      && var_trv.flg_xtr /* To extract  */
+      && (var_trv.nbr_dmn > 1) /* Not a scalar (scalars are never altered by dimension re-ordering or reversal) */
+      && (strcmp(var_trv.nm_fll,var->nm_fll) == 0)){ /* Same input variable var_sct */
 
       /* Loop variable dimension (relative) names  */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -4293,7 +4292,7 @@ nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-
             A second relative match name must be made */
             for(int idx_dmn_prc=0;idx_dmn_prc<var->nbr_dim;idx_dmn_prc++){
 
-              /* Match relative name */ 
+              /* Do a second name match relative name */ 
               if(strcmp(var_trv.var_dmn[idx_var_dmn].dmn_nm,var->dim[idx_dmn_prc]->nm) == 0){
 
                 /* Create reversed dimension list */
@@ -4333,9 +4332,6 @@ void
 nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable (ncpdq only) */
 (const var_sct * const var_in,        /* I [ptr] Variable with metadata and data in original order */
  var_sct * const var_out,             /* I/O [ptr] Variable whose metadata will be re-ordered */
- int * const dmn_idx_out_in,          /* O [idx] Dimension correspondence, output->input */
- const nco_bool * const dmn_rvr_rdr,  /* I [idx] Reverse dimension */
- nco_bool * const dmn_rvr_in,         /* O [idx] Reverse dimension */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */ 
 {
   /* Purpose: Re-order dimensions in a given variable. 
@@ -4349,10 +4345,15 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
     /* If object is an re-ordered variable, marked in nco_trv_flg_rdr() */
     if(var_trv.flg_rdr){
-      
-      /* Loop variable dimension (relative) names  */
+
+      /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
+        /* Initialize default correspondence  */
+        trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]=idx_var_dmn;
+        trv_tbl->lst[idx_var].dmn_rvr_in[idx_var_dmn]=False;
+
+        /* Create complete 1-to-1 ordered list of dimensions in new output variable */
 
 
 
