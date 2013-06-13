@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.729 2013-06-12 23:29:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.730 2013-06-13 04:43:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4264,16 +4264,20 @@ nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-
  const var_sct *var,                  /* I [sct] Variable  */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Store the variables that need re-order in GTT (set boolean flag) */
+  /* Purpose: Store re-order information in GTT (ncpdq only) */
 
   assert(prg_get() == ncpdq);
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
 
-    /* If object is an extractable variable  */
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_var].flg_xtr){
-      trv_sct var_trv=trv_tbl->lst[idx_var]; 
+    /* If object is 
+    1) variable 
+    2) to extract 
+    3) not a scalar (scalars are never altered by dimension re-ordering or reversal)
+    */
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr && (var_trv.nbr_dmn > 1) ){
 
       /* Loop variable dimension (relative) names  */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -4341,13 +4345,16 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var]; 
 
-    /* If object is an extractable variable  */
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_var].flg_xtr){
-      trv_sct var_trv=trv_tbl->lst[idx_var]; 
-
+    /* If object is an re-ordered variable, marked in nco_trv_flg_rdr() */
+    if(var_trv.flg_rdr){
+      
       /* Loop variable dimension (relative) names  */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
+
+
+
 
 
 
