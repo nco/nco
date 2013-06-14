@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.331 2013-06-14 02:56:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.332 2013-06-14 09:55:46 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -671,13 +671,13 @@ extern "C" {
   /* GTT Variable dimensions:
      A dimension has a name and a size, but it can have an associated variable (coordinate variable) */
   typedef struct{ 
-    char *dmn_nm_fll; /* [sng] Full dimension name  */
-    char *dmn_nm; /* [sng] Dimension name */
-    char *grp_nm_fll; /* [sng] Full group where dimension is located  */   
-    nco_bool is_crd_var; /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
-    crd_sct *crd; /* [sct] Pointer to *coordinate variable* if coordinate variable */
-    dmn_trv_sct *ncd; /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
-    int dmn_id; /* [ID] Unique ID for dimension; same as "dmn_trv_sct.id", obtained from API "nc_inq_vardimid" */
+    char *dmn_nm_fll;        /* [sng] Full dimension name  */
+    char *dmn_nm;            /* [sng] Dimension name */
+    char *grp_nm_fll;        /* [sng] Full group where dimension is located  */   
+    nco_bool is_crd_var;     /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
+    crd_sct *crd;            /* [sct] Pointer to *coordinate variable* if coordinate variable */
+    dmn_trv_sct *ncd;        /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
+    int dmn_id;              /* [ID] Unique ID for dimension; same as "dmn_trv_sct.id", obtained from API "nc_inq_vardimid" */
   } var_dmn_sct; 
 
   /* Processing type enumerator */

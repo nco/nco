@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.733 2013-06-14 08:33:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.734 2013-06-14 09:55:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4257,19 +4257,20 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 } /* nco_prc_cmn_nm() */
 
 
-
 void
-nco_nbr_dmn_xtr_trv                    /* [fnc] Find number of dimensions associated with variables to be extracted  (ncpdq only) */
+nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
 (char **dmn_rdr_lst_in,                /* I [sng] User-specified list of dimension names (-a) */
  const int dmn_rdr_nbr,                /* I [nbr] Total number of dimensions in list (-a) */
  trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
  int * const nbr_dmn_xtr)              /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
 {
-  /* Purpose: Find number of dimensions associated with variables to be extracted (ncpdq only) */
+  /* Purpose: Find number of dimensions associated with variables to be extracted (ncpdq only)
+  Create list of all dimensions associated with input variable list */
 
   int nbr_dmn; /* [nbr] Number of dimensions associated with variables to be extracted */
 
   assert(prg_get() == ncpdq);
+
 
 
   return;
