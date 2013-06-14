@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.734 2013-06-14 09:55:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.735 2013-06-14 11:00:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4267,11 +4267,44 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
   /* Purpose: Find number of dimensions associated with variables to be extracted (ncpdq only)
   Create list of all dimensions associated with input variable list */
 
+  const char fnc_nm[]="nco_dmn_lst_ass_var_trv()"; /* [sng] Function name */
+
   int nbr_dmn; /* [nbr] Number of dimensions associated with variables to be extracted */
 
   assert(prg_get() == ncpdq);
 
+  /* Traverse table and match relative dimension names */
+  
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
 
+    /* If GTT variable object is to extract */
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
+
+      /* Loop variable dimension (relative) names  */
+      for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
+
+        /* Loop input (-a) dimension (relative) names  */
+        for(int idx_dmn_rdr=0;idx_dmn_rdr<nbr_dmn;idx_dmn_rdr++){
+
+          /* Match relative name */ 
+          if(strcmp(dmn_rdr_lst_in[idx_dmn_rdr],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
+
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s <%s> match dimension <%s>\n",prg_nm_get(),fnc_nm,
+                var_trv.nm_fll,dmn_rdr_lst_in[idx_dmn_rdr]);        
+            } /* endif dbg */
+
+
+            break;
+
+
+          } /* Match relative name  */
+        } /* Loop input dimension (relative) names  */
+      } /* Loop variable dimension (relative) names  */
+    } /* Filter variables  */
+  } /* Loop table */
 
   return;
-} /* end nco_nbr_dmn_xtr_trv() */
+} /* end nco_dmn_lst_ass_var_trv() */
