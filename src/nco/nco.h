@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.330 2013-06-13 08:15:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.331 2013-06-14 02:56:14 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -743,11 +743,6 @@ extern "C" {
 
     prc_typ_enm enm_prc_typ;                  /* [enm] Processing type enumerator */
     nc_type var_typ_out;                      /* [enm] NetCDF type in output file (ncflint)  */  
-
-    /* ncpdq only members */
-
-    nco_bool dmn_rvr_rdr[NC_MAX_DIMS];        /* [flg] Reverse dimension (ncpdq) */
-    nco_bool dmn_rvr_in[NC_MAX_DIMS];         /* [flg] Reverse dimension (ncpdq) */
 
     /* Below: In construction ncpdq marked NCO_DIM_RDR subject to removal */
 

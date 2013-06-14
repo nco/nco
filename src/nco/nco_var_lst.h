@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.69 2013-06-11 15:08:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.70 2013-06-14 02:56:14 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -142,24 +142,6 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
  prc_typ_enm *prc);                          /* O [enm] Processing type */
 
 
-void
-nco_var_lst_dvd_rdr_trv                      /* [fnc] Divide input lists into output lists (ncpdq only) */
-(var_sct * const * const var,                /* I [sct] Variable list (input file) */
- var_sct * const * const var_out,            /* I [sct] Variable list (output file) */
- const int nbr_var,                          /* I [nbr] Number of variables */
- const nco_bool CNV_CCM_CCSM_CF,             /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const nco_bool FIX_REC_CRD,                 /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
- const int nco_pck_map,                      /* I [enm] Packing map */
- const int nco_pck_plc,                      /* I [enm] Packing policy */
- char **dmn_rdr_lst_in,                      /* I [sct] Input dimensions (-a)  */
- const int nbr_dmn,                          /* I [nbr] Number of input dimensions */
- var_sct *** const var_fix_ptr,              /* O [sct] Fixed-variables (input file) */
- var_sct *** const var_fix_out_ptr,          /* O [sct] Fixed-variables (output file) */
- int * const nbr_var_fix,                    /* O [nbr] Number of fixed variables */
- var_sct *** const var_prc_ptr,              /* O [sct] Processed-variables (input file) */
- var_sct *** const var_prc_out_ptr,          /* O [sct] Processed-variables (output file) */
- int * const nbr_var_prc,                    /* O [nbr] Number of processed variables */
- trv_tbl_sct * const trv_tbl);               /* I/O [sct] GTT (Group Traversal Table) */
 
 
 

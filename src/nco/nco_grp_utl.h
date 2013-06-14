@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.283 2013-06-13 08:15:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.284 2013-06-14 02:56:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -485,19 +485,6 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
-
-void
-nco_trv_flg_rdr                       /* [fnc] Store the variables that need re-order in GTT (ncpdq only) */
-(char **dmn_rdr_lst_in,               /* I [sng] User-specified list of dimension names */
- const int nbr_dmn,                   /* I [nbr] Total number of dimensions in list */
- const var_sct *var,                  /* I [sct] Variable  */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
-
-void
-nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable (ncpdq only) */
-(const var_sct * const var_in,        /* I [ptr] Variable with metadata and data in original order */
- var_sct * const var_out,             /* I/O [ptr] Variable whose metadata will be re-ordered */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */ 
 
 
 #ifdef __cplusplus
