@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.735 2013-06-14 11:00:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.736 2013-06-14 22:54:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4257,24 +4257,27 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 } /* nco_prc_cmn_nm() */
 
 
+
 void
-nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
-(char **dmn_rdr_lst_in,                /* I [sng] User-specified list of dimension names (-a) */
+nco_dmn_lst_ass_var_nbr_trv            /* [fnc] Find number of dimensions associated with variables to be extracted (ncpdq only) */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ char **dmn_rdr_lst_in,                /* I [sng] User-specified list of dimension names (-a) */
  const int dmn_rdr_nbr,                /* I [nbr] Total number of dimensions in list (-a) */
  trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
  int * const nbr_dmn_xtr)              /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
 {
-  /* Purpose: Find number of dimensions associated with variables to be extracted (ncpdq only)
-  Create list of all dimensions associated with input variable list */
+  /* Purpose: Find number of dimensions associated with variables to be extracted (ncpdq only) */
+ 
+  const char fnc_nm[]="nco_dmn_lst_ass_var_nbr_trv()"; /* [sng] Function name */
 
-  const char fnc_nm[]="nco_dmn_lst_ass_var_trv()"; /* [sng] Function name */
-
-  int nbr_dmn; /* [nbr] Number of dimensions associated with variables to be extracted */
+  int nbr_dmn;  /* [nbr] Number of dimensions associated with variables to be extracted */
 
   assert(prg_get() == ncpdq);
 
+  nbr_dmn=0;
+
   /* Traverse table and match relative dimension names */
-  
+
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
@@ -4286,7 +4289,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
         /* Loop input (-a) dimension (relative) names  */
-        for(int idx_dmn_rdr=0;idx_dmn_rdr<nbr_dmn;idx_dmn_rdr++){
+        for(int idx_dmn_rdr=0;idx_dmn_rdr<dmn_rdr_nbr;idx_dmn_rdr++){
 
           /* Match relative name */ 
           if(strcmp(dmn_rdr_lst_in[idx_dmn_rdr],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
@@ -4296,9 +4299,103 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
                 var_trv.nm_fll,dmn_rdr_lst_in[idx_dmn_rdr]);        
             } /* endif dbg */
 
+            nbr_dmn++;
 
             break;
 
+          } /* Match relative name  */
+        } /* Loop input dimension (relative) names  */
+      } /* Loop variable dimension (relative) names  */
+    } /* Filter variables  */
+  } /* Loop table */
+
+  /* Export */
+  *nbr_dmn_xtr=nbr_dmn;
+
+  return;
+} /* end nco_dmn_lst_ass_var_trv() */
+
+
+
+
+void
+nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ char **dmn_rdr_lst_in,                /* I [sng] User-specified list of dimension names (-a) */
+ const int dmn_rdr_nbr,                /* I [nbr] Total number of dimensions in list (-a) */
+ trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
+ int * const nbr_dmn_xtr,              /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
+ dmn_sct ***dmn)                       /* O [sct] Array of dimensions associated associated with variables to be extracted  */
+{
+  /* Purpose: Create list of all dimensions associated with input variable list */
+
+  const char fnc_nm[]="nco_dmn_lst_ass_var_trv()"; /* [sng] Function name */
+
+  int nbr_dmn;  /* [nbr] Number of dimensions associated with variables to be extracted */
+
+  long dmn_sz;  /* [nbr] *Hyperslabbed* size of dimension */  
+
+  assert(prg_get() == ncpdq);
+
+  nbr_dmn=0;
+
+  /* Traverse table and match relative dimension names */
+
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    /* If GTT variable object is to extract */
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
+
+      /* Loop variable dimension (relative) names  */
+      for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
+
+        /* Loop input (-a) dimension (relative) names  */
+        for(int idx_dmn_rdr=0;idx_dmn_rdr<dmn_rdr_nbr;idx_dmn_rdr++){
+
+          /* Match relative name */ 
+          if(strcmp(dmn_rdr_lst_in[idx_dmn_rdr],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
+
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s <%s> match dimension <%s>\n",prg_nm_get(),fnc_nm,
+                var_trv.nm_fll,dmn_rdr_lst_in[idx_dmn_rdr]);        
+            } /* endif dbg */
+
+            /* Get unique dimension object from unique dimension ID */
+            dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_trv.var_dmn[idx_var_dmn].dmn_id,trv_tbl);
+
+            assert(dmn_trv);
+            assert(strcmp(dmn_trv->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0);
+
+            /* Get size from GTT */
+            if(var_trv.var_dmn[idx_dmn_rdr].is_crd_var){
+              dmn_sz=var_trv.var_dmn[idx_dmn_rdr].crd->lmt_msa.dmn_cnt;
+            }else {
+              dmn_sz=var_trv.var_dmn[idx_dmn_rdr].ncd->lmt_msa.dmn_cnt;
+            }
+
+            /* Add one more element to array (nco_realloc nicely handles first time/not first time insertions) */
+            (*dmn)[nbr_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+
+            (*dmn)[nbr_dmn]->nm=(char *)strdup(var_trv.var_dmn[idx_var_dmn].dmn_nm);
+            (*dmn)[nbr_dmn]->nm_fll=(char *)strdup(var_trv.var_dmn[idx_var_dmn].dmn_nm_fll);
+            (*dmn)[nbr_dmn]->id=var_trv.var_dmn[idx_var_dmn].dmn_id;
+            (*dmn)[nbr_dmn]->nc_id=nc_id;
+            (*dmn)[nbr_dmn]->xrf=NULL;
+            (*dmn)[nbr_dmn]->val.vp=NULL;
+            (*dmn)[nbr_dmn]->is_crd_dmn=False;
+            (*dmn)[nbr_dmn]->cid=-1; 
+            (*dmn)[nbr_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
+            (*dmn)[nbr_dmn]->cnk_sz=0L;
+            (*dmn)[nbr_dmn]->cnt=dmn_sz;
+            (*dmn)[nbr_dmn]->srt=0L;
+            (*dmn)[nbr_dmn]->end=dmn_sz-1L;
+            (*dmn)[nbr_dmn]->srd=1L;
+
+            nbr_dmn++;
+
+            break;
 
           } /* Match relative name  */
         } /* Loop input dimension (relative) names  */

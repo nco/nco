@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.332 2013-06-14 09:55:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.333 2013-06-14 22:54:19 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -799,6 +799,7 @@ extern "C" {
      deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
   /* Dimension structure */
   typedef struct dmn_sct_tag{ /* dmn_sct */
+    char *nm_fll; /* [sng] Full dimension name */
     char *nm; /* [sng] Dimension name */
     char fmt[5]; /* [sng] Hint for printf()-style formatting */
     int cid; /* [id] Variable ID of associated coordinate, if any */
