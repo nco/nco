@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.336 2013-06-05 04:33:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.337 2013-06-15 22:51:58 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1706,13 +1706,17 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   int dmn_in_id_var[NC_MAX_DIMS];/* [id] Dimension IDs array for variable */
   int var_dim_id;                /* [id] Variable dimension ID */ 
   int prg_id;                    /* [enm] Program ID */
+  int dmn_id;                    /* [nbr] Dimension ID */
   
   long cnt[NC_MAX_DIMS];         /* [nbr] Count array */
   long dmn_sz;                   /* [nbr] Dimension size  */  
 
   var_sct *var;                  /* [sct] Variable structure (output) */   
-
-  dmn_trv_sct *dmn_trv;          /* [sct] GTT unique dimension object */   
+  dmn_trv_sct *dmn_trv;          /* [sct] GTT unique dimension object */ 
+  dmn_sct *dim;                  /* [sct] Dimension structure */  
+   
+  /* Get Program ID */
+  prg_id=prg_get(); 
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
@@ -1721,7 +1725,9 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Allocate space for variable structure */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
-  (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+
+  /* Set defaults for each member of variable structure */
+  (void)var_dfl_set(var); 
 
   /* Fill-in known fields */
   var->nm=(char *)strdup(var_trv->nm);
@@ -1734,10 +1740,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Get type and number of dimensions and attributes for variable */
   (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
 
-  /* Get Program ID */
-  prg_id=prg_get(); 
-
   if (prg_id == ncks) assert(var->typ_dsk == var_trv->var_typ);
+
   assert(var->nbr_dim == var_trv->nbr_dmn);
   assert(var->nbr_att == var_trv->nbr_att);
 
@@ -1773,10 +1777,6 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
 
     /* Define a "dmn_sct" from "dmn_trv" */
-
-    dmn_sct *dim; /* [sct] Dimension object */  
-    int dmn_id;   /* [nbr] Dimension ID */
-
     dmn_id=var->dmn_id[dmn_idx];
 
     /* Return a completed dmn_sct, use dimension ID and name from TRV object */
@@ -1784,23 +1784,31 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
  
     /* is_rec_dmn special case for netCDF4, use info from GTT dimension */
     dim->is_rec_dmn=dmn_trv->is_rec_dmn;
-#ifdef NCO_SANITY_CHECK
+
     /* The rest must match info from GTT dimension */
     assert(dim->sz == dmn_trv->sz);
     assert(strcmp(dim->nm,dmn_trv->nm) == 0);
     assert(dim->id == var->dmn_id[dmn_idx]);
     assert(dim->end == dmn_trv->sz-1L);
-#endif
 
-    var->dim[dmn_idx]=dim;
-
+    var->dim[dmn_idx]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+    var->dim[dmn_idx]->nm=(char *)strdup(dim->nm);
+    var->dim[dmn_idx]->id=dim->id;
+    var->dim[dmn_idx]->cnk_sz=dim->cnk_sz;
+    var->dim[dmn_idx]->srt=dim->srt;
+    var->dim[dmn_idx]->end=dim->end;
+    var->dim[dmn_idx]->srd=dim->srd;
+    var->dim[dmn_idx]->cnt=dim->cnt;
   } /* Get input and set output dimension sizes and names */
 
 
   /* Type in memory begins as same type as on disk */
-  var->type=var->typ_dsk; /* [enm] Type of variable in RAM */
+  /* Type of variable in RAM */
+  var->type=var->typ_dsk; 
+
   /* Type of packed data on disk */
-  var->typ_pck=var->type;  /* [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+  /* Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+  var->typ_pck=var->type;  
 
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
@@ -1826,13 +1834,11 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->srd[dmn_idx]=1L;
     var->sz*=var->cnt[dmn_idx];
 
-    /* 20130516 Store extra "dim" members; needed for ncppdq  */
     var->dim[dmn_idx]->cnt=var->cnt[dmn_idx];
-#ifdef NCO_SANITY_CHECK
-    /* These were set above with */
+
+    /* These were set above */
     assert(var->dim[dmn_idx]->srt == var->srt[dmn_idx]);
     assert(var->dim[dmn_idx]->srd == var->srd[dmn_idx]);
-#endif
 
   } /* end loop over dim */
 

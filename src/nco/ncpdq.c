@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.273 2013-06-15 21:38:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.274 2013-06-15 22:51:58 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.273 2013-06-15 21:38:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.273 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.274 2013-06-15 22:51:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.274 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1106,9 +1106,9 @@ main(int argc,char **argv)
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
-  } 
+  }
 
-
+ 
 
 
 
