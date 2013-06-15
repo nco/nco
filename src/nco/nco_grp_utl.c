@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.736 2013-06-14 22:54:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.737 2013-06-15 17:08:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4315,9 +4315,6 @@ nco_dmn_lst_ass_var_nbr_trv            /* [fnc] Find number of dimensions associ
   return;
 } /* end nco_dmn_lst_ass_var_trv() */
 
-
-
-
 void
 nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
 (const int nc_id,                      /* I [id] netCDF file ID */
@@ -4368,15 +4365,17 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
             assert(dmn_trv);
             assert(strcmp(dmn_trv->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0);
 
+            /* Add one more element to array */
+            (*dmn)[nbr_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+
             /* Get size from GTT */
             if(var_trv.var_dmn[idx_dmn_rdr].is_crd_var){
               dmn_sz=var_trv.var_dmn[idx_dmn_rdr].crd->lmt_msa.dmn_cnt;
+              (*dmn)[nbr_dmn]->is_crd_dmn=True;
             }else {
               dmn_sz=var_trv.var_dmn[idx_dmn_rdr].ncd->lmt_msa.dmn_cnt;
+              (*dmn)[nbr_dmn]->is_crd_dmn=False;
             }
-
-            /* Add one more element to array (nco_realloc nicely handles first time/not first time insertions) */
-            (*dmn)[nbr_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
 
             (*dmn)[nbr_dmn]->nm=(char *)strdup(var_trv.var_dmn[idx_var_dmn].dmn_nm);
             (*dmn)[nbr_dmn]->nm_fll=(char *)strdup(var_trv.var_dmn[idx_var_dmn].dmn_nm_fll);
@@ -4384,7 +4383,6 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
             (*dmn)[nbr_dmn]->nc_id=nc_id;
             (*dmn)[nbr_dmn]->xrf=NULL;
             (*dmn)[nbr_dmn]->val.vp=NULL;
-            (*dmn)[nbr_dmn]->is_crd_dmn=False;
             (*dmn)[nbr_dmn]->cid=-1; 
             (*dmn)[nbr_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
             (*dmn)[nbr_dmn]->cnk_sz=0L;
