@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.287 2013-06-14 22:54:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.288 2013-06-15 18:31:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -504,6 +504,20 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
  trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
  int * const nbr_dmn_xtr,              /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
  dmn_sct ***dim);                      /* O [sct] Array of dimensions associated associated with variables to be extracted  */
+
+
+void
+nco_dmn_rdr_xtr                        /* [fnc] Form list of re-ordering dimensions from extracted input dimensions (ncpdq only) */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ char **dmn_rdr_lst_in,                /* I [sng] User-specified list of dimension names (-a) */
+ int dmn_rdr_nbr,                      /* I [nbr] Total number of dimensions in list (-a) */
+ const int nbr_dmn_xtr,                /* I [nbr] Number of dimensions associated associated with variables to be extracted  */
+ dmn_sct **dim,                        /* I [sct] Array of dimensions associated associated with variables to be extracted  */
+ dmn_sct ***dmn_rdr,                   /* O [sct] Dimension structures to be re-ordered */
+ int *dmn_rdr_nbr_utl,                 /* O [nbr] Number of dimension to re-order, utilized */
+ int *dmn_rdr_nbr_out);                /* O [nbr] Total number of dimensions to re-order */
+
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

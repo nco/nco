@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.737 2013-06-15 17:08:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.738 2013-06-15 18:31:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4403,3 +4403,79 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 
   return;
 } /* end nco_dmn_lst_ass_var_trv() */
+
+
+
+void
+nco_dmn_rdr_xtr                        /* [fnc] Form list of re-ordering dimensions from extracted input dimensions (ncpdq only) */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ char **dmn_rdr_lst_in,                /* I [sng] User-specified list of dimension names (-a) */
+ int dmn_rdr_nbr,                      /* I [nbr] Total number of dimensions in list (-a) */
+ const int nbr_dmn_xtr,                /* I [nbr] Number of dimensions associated associated with variables to be extracted  */
+ dmn_sct **dim,                        /* I [sct] Array of dimensions associated associated with variables to be extracted  */
+ dmn_sct ***dmn_rdr,                   /* O [sct] Dimension structures to be re-ordered */
+ int *dmn_rdr_nbr_utl,                 /* O [nbr] Number of dimension to re-order, utilized */
+ int *dmn_rdr_nbr_out)                 /* O [nbr] Total number of dimensions to re-order */
+{
+  /* Purpose: Form list of re-ordering dimensions from extracted input dimensions (ncpdq only) */
+
+  const char fnc_nm[]="nco_dmn_rdr_xtr()"; /* [sng] Function name */
+
+  nm_id_sct *dmn_rdr_lst;  /* [sct] Structured list of re-ordering dimension names and IDs  */
+
+  int idx_rdr;
+  int idx;
+
+  assert(prg_get() == ncpdq);
+
+  /* Make list of user-specified dimension re-orders */
+
+  /* Create structured list of re-ordering dimension names and IDs */
+  dmn_rdr_lst=nco_dmn_lst_mk(nc_id,dmn_rdr_lst_in,dmn_rdr_nbr);
+
+  /* Form list of re-ordering dimensions from extracted input dimensions */
+  *dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
+
+  /* Loop over original number of re-order dimensions */
+  for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
+    for(idx=0;idx<nbr_dmn_xtr;idx++){
+      if(!strcmp(dmn_rdr_lst[idx_rdr].nm,dim[idx]->nm)){
+        break;
+      }
+    } /* end loop over idx_rdr */
+    if(idx != nbr_dmn_xtr) (*dmn_rdr)[(*dmn_rdr_nbr_utl)++]=dim[idx]; 
+    else if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",fnc_nm,dmn_rdr_lst[idx_rdr].nm);
+  } /* end loop over idx_rdr */
+
+  *dmn_rdr_nbr_out=*dmn_rdr_nbr_utl;
+
+  /* Collapse extra dimension structure space to prevent accidentally using it */
+  *dmn_rdr=(dmn_sct **)nco_realloc(*dmn_rdr,dmn_rdr_nbr*sizeof(dmn_sct *));
+
+  /* Dimension list in name-ID format is no longer needed */
+  dmn_rdr_lst=nco_nm_id_lst_free(dmn_rdr_lst,dmn_rdr_nbr);
+
+  /* Make sure re-ordering dimensions are specified no more than once */
+  for(idx=0;idx<dmn_rdr_nbr;idx++){
+    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
+      if(idx_rdr != idx){
+        if(( (*dmn_rdr)[idx]->id == (*dmn_rdr)[idx_rdr]->id) ){
+          (void)fprintf(stdout,"%s: ERROR %s specified more than once in reducing list\n",fnc_nm,(*dmn_rdr)[idx]->nm);
+          nco_exit(EXIT_FAILURE);
+        } /* end if */
+      } /* end if */
+    } /* end loop over idx_rdr */
+  } /* end loop over idx */
+
+  /* 20121009: fxm users should be allowed to sloppily specify more re-order than extracted dimensions */
+  if(dmn_rdr_nbr > nbr_dmn_xtr){
+    (void)fprintf(stdout,"%s: ERROR More re-ordering dimensions than extracted dimensions\n",fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+
+
+  return;
+} /* end nco_dmn_rdr_xtr() */
+
+
+
