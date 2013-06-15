@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.270 2013-06-14 22:54:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.271 2013-06-15 00:49:18 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.270 2013-06-14 22:54:19 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.270 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.271 2013-06-15 00:49:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.271 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1081,7 +1081,7 @@ main(int argc,char **argv)
   /* Allocate array  */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
 
-  /* Create list of all dimensions associated with input variable list */
+  /* Find dimensions associated with variables to be extracted */
   (void)nco_dmn_lst_ass_var_trv(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,trv_tbl,&nbr_dmn_xtr,&dim);
 
   if(dbg_lvl_get() >= nco_dbg_dev){
@@ -1090,14 +1090,13 @@ main(int argc,char **argv)
     }
   } /* endif dbg */
 
-
-
-  /* Find dimensions associated with variables to be extracted */
-  /* Fill-in dimension structure for all extracted dimensions */
-
-  /* These 2 steps above are condensed into 1 GTT function; purpose is conversion from GTT to dmn_sct* */
-
   /* Duplicate input dimension structures for output dimension structures */
+  /* Nothing new here (GTT new) ... move on */
+  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_xtr;idx++){
+    dmn_out[idx]=nco_dmn_dpl(dim[idx]);
+    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
+  } /* end loop over idx */
 
   /* Create structured list of re-ordering dimension names and IDs */
 
