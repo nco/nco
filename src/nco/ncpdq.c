@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.272 2013-06-15 18:31:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.273 2013-06-15 21:38:13 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.272 2013-06-15 18:31:46 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.272 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.273 2013-06-15 21:38:13 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.273 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1084,36 +1084,32 @@ main(int argc,char **argv)
   /* Find dimensions associated with variables to be extracted */
   (void)nco_dmn_lst_ass_var_trv(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,trv_tbl,&nbr_dmn_xtr,&dim);
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    for(int idx_dmn_rdr=0;idx_dmn_rdr<dmn_rdr_nbr;idx_dmn_rdr++){
-      (void)fprintf(stdout,"%s: DEBUG dimension to re-order <%s>\n",prg_nm_get(),dim[idx_dmn_rdr]->nm_fll); 
-    }
-  } /* endif dbg */
-
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
-  } /* end loop over idx */
+  } 
  
   /* If re-order */
   if(IS_REORDER){
-
     /* Form list of re-ordering dimensions from extracted input dimensions */
     (void)nco_dmn_rdr_xtr(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,nbr_dmn_xtr,dim,&dmn_rdr,&dmn_rdr_nbr_utl,&dmn_rdr_nbr);              
+  } 
 
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      for(int idx_dmn_rdr=0;idx_dmn_rdr<dmn_rdr_nbr;idx_dmn_rdr++){
-        (void)fprintf(stdout,"%s: DEBUG dimension to re-order <%s>\n",prg_nm_get(),dmn_rdr[idx_dmn_rdr]->nm_fll);
-      }
-    }
+  /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
+  var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
-  } /* If re-order */
+  /* Duplicate to output array */
+  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  for(idx=0;idx<xtr_nbr;idx++){
+    var_out[idx]=nco_var_dpl(var[idx]);
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
+  } 
 
-  /* Fill-in variable structure list for all extracted variables */
 
-  /* Divide variable lists into lists of fixed variables and variables to be processed */
+
 
 
 
