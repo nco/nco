@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.337 2013-06-15 22:51:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.338 2013-06-16 05:48:57 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1774,8 +1774,6 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     /* Get unique dimension object from unique dimension ID, in input list */
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
-    assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
-
     /* Define a "dmn_sct" from "dmn_trv" */
     dmn_id=var->dmn_id[dmn_idx];
 
@@ -1786,6 +1784,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     dim->is_rec_dmn=dmn_trv->is_rec_dmn;
 
     /* The rest must match info from GTT dimension */
+    assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
     assert(dim->sz == dmn_trv->sz);
     assert(strcmp(dim->nm,dmn_trv->nm) == 0);
     assert(dim->id == var->dmn_id[dmn_idx]);
@@ -1799,6 +1798,17 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->dim[dmn_idx]->end=dim->end;
     var->dim[dmn_idx]->srd=dim->srd;
     var->dim[dmn_idx]->cnt=dim->cnt;
+
+    dim->xrf=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+    dim->xrf->nm=(char *)strdup(dim->nm);
+    dim->xrf->id=dim->id;
+    dim->xrf->cnk_sz=dim->cnk_sz;
+    dim->xrf->srt=dim->srt;
+    dim->xrf->end=dim->end;
+    dim->xrf->srd=dim->srd;
+    dim->xrf->cnt=dim->cnt;
+
+    var->dim[dmn_idx]->xrf=dim->xrf;
   } /* Get input and set output dimension sizes and names */
 
 
