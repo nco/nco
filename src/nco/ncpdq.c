@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.275 2013-06-16 05:48:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.276 2013-06-16 06:09:01 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.275 2013-06-16 05:48:57 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.275 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.276 2013-06-16 06:09:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.276 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1110,6 +1110,34 @@ main(int argc,char **argv)
 
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
+
+  /* Divide variable lists into lists of fixed variables and variables to be processed */
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+
+  /* We now have final list of variables to extract. Phew. */
+  if(dbg_lvl >= nco_dbg_var){
+    for(idx=0;idx<xtr_nbr;idx++) (void)fprintf(stdout,"var[%d]->nm = %s\n",idx,var[idx]->nm);
+    for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stdout,"var_fix[%d]->nm = %s\n",idx,var_fix[idx]->nm);
+    for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stdout,"var_prc[%d]->nm = %s\n",idx,var_prc[idx]->nm);
+  } 
+
+  /* Make output and input files consanguinous */
+  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+
+  /* Verify output file format supports requested actions */
+  (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
+
+  /* Open output file */
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
+
+  /* Copy global attributes */
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+
+  /* Catenate time-stamped command line to "history" global attribute */
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
 
 
