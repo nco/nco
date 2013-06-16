@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.276 2013-06-16 06:09:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.277 2013-06-16 06:57:32 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.276 2013-06-16 06:09:01 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.276 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.277 2013-06-16 06:57:32 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.277 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1091,7 +1091,7 @@ main(int argc,char **argv)
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   } 
  
-  /* If re-order */
+  /* If re-ordering */
   if(IS_REORDER){
     /* Form list of re-ordering dimensions from extracted input dimensions */
     (void)nco_dmn_rdr_xtr(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,nbr_dmn_xtr,dim,&dmn_rdr,&dmn_rdr_nbr_utl,&dmn_rdr_nbr);              
@@ -1113,6 +1113,9 @@ main(int argc,char **argv)
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+
+  /* Store processed and fixed variables info into GTT */
+  (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc,nbr_var_fix,var_fix,trv_tbl);
 
   /* We now have final list of variables to extract. Phew. */
   if(dbg_lvl >= nco_dbg_var){
@@ -1138,6 +1141,40 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+
+
+  /* If re-ordering, determine and set new dimensionality in metadata of each re-ordered variable */
+  if(IS_REORDER){
+    dmn_idx_out_in=(int **)nco_malloc(nbr_var_prc*sizeof(int *));
+    dmn_rvr_in=(nco_bool **)nco_malloc(nbr_var_prc*sizeof(nco_bool *));
+    for(idx=0;idx<nbr_var_prc;idx++){
+      dmn_idx_out_in[idx]=(int *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(int));
+      dmn_rvr_in[idx]=(nco_bool *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(nco_bool));
+      /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
+      rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
+      /* If record dimension required by current variable re-order...
+      ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
+      if(rec_dmn_nm_out_crr && var_prc_out[idx]->nbr_dim > 1){
+        /* ...differs from input and current output record dimension(s)... */
+        if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_in) && strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
+          /* ...and current output record dimension already differs from input record dimension... */
+          if(REDEFINED_RECORD_DIMENSION){
+            /* ...then requested re-order requires multiple record dimensions... */
+            if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
+            break;
+          }else{ /* !REDEFINED_RECORD_DIMENSION */
+            /* ...otherwise, update output record dimension name... */
+            rec_dmn_nm_out=rec_dmn_nm_out_crr;
+            /* ...and set new and un-set old record dimensions... */
+            var_prc_out[idx]->dim[0]->is_rec_dmn=True;
+            dmn_out[dmn_out_idx_rec_in]->is_rec_dmn=False;
+            /* ...and set flag that record dimension has been re-defined... */
+            REDEFINED_RECORD_DIMENSION=True;
+          } /* !REDEFINED_RECORD_DIMENSION */
+        } /* endif new and old record dimensions differ */
+      } /* endif current variable is record variable */
+    } /* end loop over var_prc */
+  } /* endif IS_REORDER */
 
 
 

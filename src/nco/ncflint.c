@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.245 2013-06-05 19:00:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.246 2013-06-16 06:57:32 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.245 2013-06-05 19:00:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.245 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.246 2013-06-16 06:57:32 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.246 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -670,33 +670,8 @@ main(int argc,char **argv)
 
 #ifdef USE_TRV_API
 
-  /* Store processed variables info into table */
-  for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
-    trv_sct *var_trv;
-
-    /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var_prc_1[var_idx]->nm_fll,trv_tbl);
-
-    assert(var_trv);
-
-    /* Mark fixed/processed flag in table for "var_nm_fll" */
-    (void)trv_tbl_mrk_prc_fix(var_prc_1[var_idx]->nm_fll,prc_typ,trv_tbl);
-
-  } /* Store processed variables info into table */
-
-  /* Store fixed variables info into table */
-  for(int var_idx=0;var_idx<nbr_var_fix;var_idx++){
-    trv_sct *var_trv;
-
-    /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var_fix[var_idx]->nm_fll,trv_tbl);
-
-    assert(var_trv);
-
-    /* Mark fixed/processed flag in table for "var_nm_fll" */
-    (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
-
-  } /* Store fixed variables info into table */
+  /* Store processed and fixed variables info into GTT */
+  (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc_1,nbr_var_fix,var_fix,trv_tbl);
 
 #endif /* ! USE_TRV_API */
 

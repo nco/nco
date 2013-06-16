@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.738 2013-06-15 18:31:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.739 2013-06-16 06:57:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4478,4 +4478,44 @@ nco_dmn_rdr_xtr                        /* [fnc] Form list of re-ordering dimensi
 } /* end nco_dmn_rdr_xtr() */
 
 
+void
+nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
+(const int nbr_var_prc,                /* I [nbr] Number of processed variables */
+ var_sct **var_prc,                    /* I [sct] Array of processed variables */
+ const int nbr_var_fix,                /* I [nbr] Number of fixed variables */
+ var_sct **var_fix,                    /* I [sct] Array of fixed variables */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+{
+  /* Purpose: Store processed and fixed variables info into GTT */
 
+  /* Store processed variables info into table */
+  for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
+    trv_sct *var_trv;
+
+    /* Obtain variable GTT object using full variable name */
+    var_trv=trv_tbl_var_nm_fll(var_prc[var_idx]->nm_fll,trv_tbl);
+
+    assert(var_trv);
+
+    /* Mark fixed/processed flag in table for "var_nm_fll" */
+    (void)trv_tbl_mrk_prc_fix(var_prc[var_idx]->nm_fll,prc_typ,trv_tbl);
+
+  } /* Store processed variables info into table */
+
+  /* Store fixed variables info into table */
+  for(int var_idx=0;var_idx<nbr_var_fix;var_idx++){
+    trv_sct *var_trv;
+
+    /* Obtain variable GTT object using full variable name */
+    var_trv=trv_tbl_var_nm_fll(var_fix[var_idx]->nm_fll,trv_tbl);
+
+    assert(var_trv);
+
+    /* Mark fixed/processed flag in table for "var_nm_fll" */
+    (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
+
+  } /* Store fixed variables info into table */
+
+  return;
+
+} /* end nco_var_prc_fix_trv() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.288 2013-06-15 18:31:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.289 2013-06-16 06:57:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -516,6 +516,14 @@ nco_dmn_rdr_xtr                        /* [fnc] Form list of re-ordering dimensi
  dmn_sct ***dmn_rdr,                   /* O [sct] Dimension structures to be re-ordered */
  int *dmn_rdr_nbr_utl,                 /* O [nbr] Number of dimension to re-order, utilized */
  int *dmn_rdr_nbr_out);                /* O [nbr] Total number of dimensions to re-order */
+
+void
+nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
+(const int nbr_var_prc,                /* I [nbr] Number of processed variables */
+ var_sct **var_prc,                    /* I [sct] Array of processed variables */
+ const int nbr_var_fix,                /* I [nbr] Number of fixed variables */
+ var_sct **var_fix,                    /* I [sct] Array of fixed variables */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 
 
