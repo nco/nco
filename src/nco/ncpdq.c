@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.277 2013-06-16 06:57:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.278 2013-06-16 07:21:18 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.277 2013-06-16 06:57:32 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.277 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.278 2013-06-16 07:21:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.278 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1177,8 +1177,10 @@ main(int argc,char **argv)
   } /* endif IS_REORDER */
 
 
+  /* Transfer variable type to table. Using var/xtr_nbr containing all variables (processed, fixed) */
+  (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);         
 
-
+  
 
 
 

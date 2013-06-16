@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.739 2013-06-16 06:57:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.740 2013-06-16 07:21:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4515,6 +4515,38 @@ nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variab
     (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
 
   } /* Store fixed variables info into table */
+
+  return;
+
+} /* end nco_var_prc_fix_trv() */
+
+
+
+void
+nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT */
+(const int xtr_nbr,                    /* I [nbr] Number of extracted variables */
+ var_sct **var,                        /* I [sct] Array of extracted variables */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+{
+  /* Purpose: Transfer variable type to table. Using var/xtr_nbr containing all variables (processed, fixed) */
+
+  /* Transfer variable information to table. Using var/xtr_nbr containing all variables (processed, fixed) */
+  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+
+    nc_type typ_out;         /* [enm] Type in output file */
+    var_sct *v=var[var_idx]; /* [sct] Current variable */
+
+    /* Obtain netCDF type to define variable from NCO program ID */
+    typ_out=nco_get_typ(v);
+
+    /* Mark output type in table for "v->nm_fll" */
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      if(strcmp(v->nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
+        trv_tbl->lst[uidx].var_typ_out=typ_out;
+        break;
+      }
+    }
+  } 
 
   return;
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.83 2013-06-01 08:15:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.84 2013-06-16 07:21:18 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -80,11 +80,6 @@ trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in tab
  prc_typ_enm prc_typ,                  /* I [enm] Processing type */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
-void
-trv_tbl_mrk_typ                        /* [fnc] Mark output netCDF type */
-(const char * const var_nm_fll,        /* I [sng] Variable full name to find */
- nc_type typ_out,                      /* I [nbr] netCDF type for output file */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 void 
 trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of traversal table */

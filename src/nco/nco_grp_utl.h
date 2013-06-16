@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.289 2013-06-16 06:57:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.290 2013-06-16 07:21:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -523,6 +523,12 @@ nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variab
  var_sct **var_prc,                    /* I [sct] Array of processed variables */
  const int nbr_var_fix,                /* I [nbr] Number of fixed variables */
  var_sct **var_fix,                    /* I [sct] Array of fixed variables */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+
+void
+nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT */
+(const int xtr_nbr,                    /* I [nbr] Number of extracted variables */
+ var_sct **var,                        /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 
