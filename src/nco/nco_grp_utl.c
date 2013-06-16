@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.740 2013-06-16 07:21:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.741 2013-06-16 20:21:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1726,40 +1726,38 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
   const char fnc_nm[]="nco_grp_itr()"; /* [sng] Function name */
 
-  const char sls_sng[]="/"; /* [sng] Slash string */
+  const char sls_sng[]="/";        /* [sng] Slash string */
 
-  char grp_nm[NC_MAX_NAME+1]; /* [sng] Group name */
-  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name */ 
-  char dmn_nm[NC_MAX_NAME+1]; /* [sng] Dimension name */ 
-  char rec_nm[NC_MAX_NAME+1]; /* [sng] Record dimension name */ 
+  char grp_nm[NC_MAX_NAME+1];      /* [sng] Group name */
+  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name */ 
+  char dmn_nm[NC_MAX_NAME+1];      /* [sng] Dimension name */ 
+  char rec_nm[NC_MAX_NAME+1];      /* [sng] Record dimension name */ 
 
-  char *var_nm_fll;           /* [sng] Full path for variable */
-  char *dmn_nm_fll;           /* [sng] Full path for dimension */
-  char *sls_psn; /* [sng] Current position of group path search */
+  char *var_nm_fll;                /* [sng] Full path for variable */
+  char *dmn_nm_fll;                /* [sng] Full path for dimension */
+  char *sls_psn;                   /* [sng] Current position of group path search */
 
-  const int flg_prn=0; /* [flg] All the dimensions in all parent groups will also be retrieved */    
+  const int flg_prn=0;             /* [flg] All the dimensions in all parent groups will also be retrieved */    
 
-  int dmn_ids_grp[NC_MAX_DIMS]; /* [ID]  Dimension IDs array for group */ 
+  int dmn_ids_grp[NC_MAX_DIMS];    /* [ID]  Dimension IDs array for group */ 
   int dmn_ids_grp_ult[NC_MAX_DIMS];/* [ID] Unlimited (record) dimensions IDs array for group */
-  int dmn_id_var[NC_MAX_DIMS]; /* [ID] Dimensions IDs array for variable */
+  int dmn_id_var[NC_MAX_DIMS];     /* [ID] Dimensions IDs array for variable */
+  int *grp_ids;                    /* [ID] Sub-group IDs array */  
+  int grp_dpt=0;                   /* [nbr] Depth of group (root = 0) */
+  int nbr_att;                     /* [nbr] Number of attributes */
+  int nbr_dmn_grp;                 /* [nbr] Number of dimensions for group */
+  int nbr_dmn_var;                 /* [nbr] Number of dimensions for variable */
+  int nbr_grp;                     /* [nbr] Number of sub-groups in this group */
+  int nbr_rec;                     /* [nbr] Number of record dimensions in this group */
+  int nbr_var;                     /* [nbr] Number of variables */
+  int rcd=NC_NOERR;                /* [rcd] Return code */
 
-  int *grp_ids; /* [ID] Sub-group IDs array */  
+  long dmn_sz;                     /* [nbr] Dimension size */ 
+  long rec_sz;                     /* [nbr] Record dimension size */ 
 
-  int grp_dpt=0; /* [nbr] Depth of group (root = 0) */
-  int nbr_att; /* [nbr] Number of attributes */
-  int nbr_dmn_grp; /* [nbr] Number of dimensions for group */
-  int nbr_dmn_var; /* [nbr] Number of dimensions for variable */
-  int nbr_grp; /* [nbr] Number of sub-groups in this group */
-  int nbr_rec; /* [nbr] Number of record dimensions in this group */
-  int nbr_var; /* [nbr] Number of variables */
-  int rcd=NC_NOERR; /* [rcd] Return code */
+  nc_type var_typ;                 /* O [enm] NetCDF type */
 
-  long dmn_sz;                /* [nbr] Dimension size */ 
-  long rec_sz;                /* [nbr] Record dimension size */ 
-
-  nc_type var_typ; /* O [enm] NetCDF type */
-
-  nco_obj_typ obj_typ; /* [enm] Object type (group or variable) */
+  nco_obj_typ obj_typ;             /* [enm] Object type (group or variable) */
 
   /* Get all information for this group */
 
@@ -1815,8 +1813,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_vsg=False;                /* [flg] Variable selected because group matches */
   trv_tbl->lst[idx].flg_xcl=False;                /* [flg] Object matches exclusion criteria */
   trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
+#ifdef NCO_DIM_RDR
   trv_tbl->lst[idx].flg_rdr=False;                /* [flg] Variable needs dimension re-order (ncpdq)  */
-  
+#endif    
 
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
   trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err;    /* [id] Group ID in input file */
@@ -1905,8 +1904,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_vfp=False; 
     trv_tbl->lst[idx].flg_vsg=False; 
     trv_tbl->lst[idx].flg_xcl=False; 
-    trv_tbl->lst[idx].flg_xtr=False; 
-    trv_tbl->lst[idx].flg_rdr=False;                
+    trv_tbl->lst[idx].flg_xtr=False;
+#ifdef NCO_DIM_RDR
+    trv_tbl->lst[idx].flg_rdr=False;
+#endif
 
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
     trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err; 
