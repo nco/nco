@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.745 2013-06-17 05:24:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.746 2013-06-17 18:30:54 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5028,8 +5028,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     } /* ncecat */
   } /* Is requested record dimension in input file? */
 
-  
-
   /* The very important dimension loop... */
   for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
@@ -5195,6 +5193,21 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   } /* End of the very important dimension loop...At this point RE-ORDERED index (idx_dmn_rdr) is gone */
 
+#if 0
+  /* ncpdq */
+  int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
+  int dmn_out_id_tmp[NC_MAX_DIMS]; /* [idx] Copy of dmn_out_id */
+  if(prg == ncpdq){
+    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
+      dmn_idx_in_out[dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
+
+    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
+      dmn_out_id_tmp[dmn_out_idx]=dmn_out_id[dmn_out_idx];
+
+    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
+      dmn_out_id[dmn_idx_in_out[dmn_out_idx]]=dmn_out_id_tmp[dmn_out_idx];
+  } /* ncpdq */
+#endif
 
   /* Insert extra "record" dimension in dimension array if...  
   ... is ncecat
