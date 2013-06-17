@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.743 2013-06-17 04:08:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.744 2013-06-17 04:58:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4545,10 +4545,12 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
 void
 nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
 (const int dmn_rdr_nbr,                /* I [nbr] Number of dimension to re-order */
- var_sct **dmn_rdr,                    /* I [sct] Dimension structures to be re-ordered */
+ dmn_sct **dmn_rdr,                    /* I [sct] Dimension structures to be re-ordered */
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
   /* Purpose: Transfer dimension structures to be re-ordered (ncpdq) into GTT */
+
+  const char fnc_nm[]="nco_dmn_rdr_trv()"; /* [sng] Function name */
 
   /* Loop input dimensions */
   for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++){
@@ -4563,11 +4565,25 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
         /* Loop variable dimensions  */
         for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
-          /* Match ID */
+          /* Match ID. ID is unique for dimensions */
+          if(dmn_rdr[idx_dmn]->id == var_trv.var_dmn[idx_var_dmn].dmn_id){
 
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s transfering variable <%s> dimension ID=%d nm=%s cnt=%ld\n",prg_nm_get(),fnc_nm,
+                var_trv.nm_fll,dmn_rdr[idx_dmn]->id,dmn_rdr[idx_dmn]->nm,dmn_rdr[idx_dmn]->cnt);        
+            } 
 
+            /* Transfer */
+            trv_tbl->lst[idx_var].dmn_rdr[idx_var_dmn].cnt=dmn_rdr[idx_dmn]->cnt;
+            trv_tbl->lst[idx_var].dmn_rdr[idx_var_dmn].srt=dmn_rdr[idx_dmn]->srt;
+            trv_tbl->lst[idx_var].dmn_rdr[idx_var_dmn].nm=strdup(dmn_rdr[idx_dmn]->nm);
+   
 
+            /* Mark re-order flag */
+            trv_tbl->lst[idx_var].flg_rdr=True;
+            break;
 
+          } /* Match ID. ID is unique for dimensions */
         } /* Loop variable dimensions */
       } /* If GTT variable object is to extract */
     } /* Loop table */

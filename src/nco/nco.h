@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.336 2013-06-17 04:08:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.337 2013-06-17 04:58:12 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -601,7 +601,7 @@ extern "C" {
      deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
   /* Dimension structure */
   typedef struct dmn_sct_tag{ /* dmn_sct */
-    char *nm_fll; /* [sng] Full dimension name. NOTE Introduced fro GTT match */
+    char *nm_fll; /* [sng] Full dimension name. NOTE Introduced for GTT information */
     char *nm; /* [sng] Dimension name */
     char fmt[5]; /* [sng] Hint for printf()-style formatting */
     int cid; /* [id] Variable ID of associated coordinate, if any */
@@ -774,6 +774,7 @@ extern "C" {
 #ifdef NCO_DIM_RDR
     dmn_sct dmn_rdr[NC_MAX_DIMS];     /* [sct] Dimension structures to be re-ordered (ncpdq) */
     int dmn_rdr_nbr;                  /* [nbr] Number of dimension to re-order (ncpdq) */
+    nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
 #endif
 
   } trv_sct;

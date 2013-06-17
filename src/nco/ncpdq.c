@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.280 2013-06-17 02:45:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.281 2013-06-17 04:58:12 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.280 2013-06-17 02:45:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.280 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.281 2013-06-17 04:58:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.281 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1187,11 +1187,13 @@ main(int argc,char **argv)
     for(int idx_var=0;idx_var<xtr_nbr;idx_var++) (void)dbg_var_dim_sct("var",idx_var,var[idx_var]);
     for(int idx_var=0;idx_var<nbr_var_prc;idx_var++) (void)dbg_var_dim_sct("var_prc_out",idx_var,var_prc_out[idx_var]);
     for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++){
-      (void)fprintf(stdout,"dmn_rdr[%d]->nm=%s cnt=%ld sz=%ld\n",idx_dmn,
-        dmn_rdr[idx_dmn]->nm,dmn_rdr[idx_dmn]->cnt,dmn_rdr[idx_dmn]->sz);
+      (void)fprintf(stdout,"dmn_rdr[%d]->nm=%s id=%d cnt=%ld sz=%ld\n",idx_dmn,
+        dmn_rdr[idx_dmn]->nm,dmn_rdr[idx_dmn]->id,dmn_rdr[idx_dmn]->cnt,dmn_rdr[idx_dmn]->sz);
     }
   } 
 
+  /* Transfer dimension structures to be re-ordered into GTT */
+  (void)nco_dmn_rdr_trv(dmn_rdr_nbr,dmn_rdr,trv_tbl);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl);   
@@ -1293,6 +1295,6 @@ void dbg_var_dim_sct(const char* str, const int idx_var, var_sct *var)
   (void)fprintf(stdout,"%s[%d]->nm=%s\n",str,idx_var,var->nm);
   for(int idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
     dmn_sct *dim=var->dim[idx_dmn];
-    (void)fprintf(stdout,"dim[%d]->nm=%s cnt=%ld sz=%ld\n",idx_dmn,dim->nm,dim->cnt,dim->sz);
+    (void)fprintf(stdout,"dim[%d]->nm=%s ID=%d cnt=%ld sz=%ld\n",idx_dmn,dim->nm,dim->id,dim->cnt,dim->sz);
   }
 }
