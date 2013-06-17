@@ -1,3 +1,7 @@
+2013-06-17  Charlie Zender  <zender@uci.edu>
+
+	* Include <unistd.h> in nco_mmr.h for accessing sysconf() to get page size
+
 2013-06-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.2 release procedure:

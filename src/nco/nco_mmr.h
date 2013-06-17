@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.32 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.33 2013-06-17 23:48:27 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -27,6 +27,9 @@
 #ifdef HAVE_GETRUSAGE
 # include <sys/resource.h> /* Resource usage and limits */
 #endif /* !HAVE_GETRUSAGE */
+#ifndef _MSC_VER
+# include <unistd.h> /* POSIX stuff */
+#endif /* !_MSC_VER */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
