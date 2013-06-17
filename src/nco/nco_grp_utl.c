@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.747 2013-06-17 23:37:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.748 2013-06-17 23:58:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1901,8 +1901,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_vsg=False;                /* [flg] Variable selected because group matches */
   trv_tbl->lst[idx].flg_xcl=False;                /* [flg] Object matches exclusion criteria */
   trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
+  trv_tbl->lst[idx].flg_rdr=False;                /* [flg] Variable has dimensions to re-order (ncpdq) */
    
-
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
   trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err;    /* [id] Group ID in input file */
   trv_tbl->lst[idx].grp_id_out=nco_obj_typ_err;   /* [id] Group ID in output file */
@@ -1919,7 +1919,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].enm_prc_typ=err_typ;          /* [enm] (For variables only) Processing type enumerator  */  
   trv_tbl->lst[idx].var_typ_out=err_typ;          /* [enm] (For variables only) NetCDF type in output file (used by ncflint)  */  
 
-
   /* Variable dimensions  */
   for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm_fll=NULL;
@@ -1930,7 +1929,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].ncd=NULL;
     trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_id=nco_obj_typ_err;
   }
-
 
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
@@ -1991,7 +1989,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_vsg=False; 
     trv_tbl->lst[idx].flg_xcl=False; 
     trv_tbl->lst[idx].flg_xtr=False;
-
+    trv_tbl->lst[idx].flg_rdr=False;
 
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
     trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err; 
@@ -2033,7 +2031,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_id=dmn_id_var[dmn_idx_var];
 
     } /* Variable dimensions; store what we know at this time: relative name and ID */
-
 
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
@@ -4929,6 +4926,9 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   int idx_dmn_grp;                       /* [nbr] Dimension iterator index for group  */ 
   int idx_dmn;                           /* [nbr] Dimension iterator index for variable object  */ 
 
+  int dmn_idx_in_out[NC_MAX_DIMS];      /* [idx] Dimension correspondence, input->output (ncpdq) */
+  int dmn_out_id_tmp[NC_MAX_DIMS];      /* [idx] Copy of dmn_out_id (ncpdq) */
+
   long dmn_sz;                           /* [sng] Dimension size  */  
   long dmn_sz_grp;                       /* [sng] Dimension size for group  */  
 
@@ -4942,8 +4942,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   nco_bool NEED_TO_DEFINE_DIM;           /* [flg] Dimension needs to be defined in *this* group */  
 
   dmn_trv_sct *dmn_trv;                  /* [sct] Unique dimension object */
-
-
 
   rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
@@ -5044,7 +5042,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     /* Initialize dimension ID to be obtained */
     dmn_id_out=nco_obj_typ_err;
 
-
     /* Dimension ID for variable, used to get dimension object in input list  */
     var_dim_id=dmn_in_id_var[idx_dmn];
 
@@ -5101,10 +5098,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         /* Assign the defined ID to the dimension ID array for the variable */
         dmn_out_id[idx_dmn]=dmn_id_out;
 
-   
       } /* A relative name match */
     } /* Loop group defined dimensions */
-
 
     /* Define dimension in output file if necessary */
     if (NEED_TO_DEFINE_DIM == True){
@@ -5162,7 +5157,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* At long last ... */
 
 
-
       /* Define dimension size */
       if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
         dmn_sz=NC_UNLIMITED;
@@ -5181,7 +5175,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* Assign the defined ID to the dimension ID array for the variable. */
       dmn_out_id[idx_dmn]=dmn_id_out; 
 
-
       if(dbg_lvl_get() >= nco_dbg_var){
         (void)fprintf(stdout,"%s: INFO %s defining dimension #%d [%d]:<%s> size=%li\n",prg_nm_get(),fnc_nm,
           dmn_id_out,idx_dmn,dmn_trv->nm_fll,dmn_sz);
@@ -5198,22 +5191,26 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
-  } /* End of the very important dimension loop...At this point RE-ORDERED index (idx_dmn_rdr) is gone */
+  } /* End of the very important dimension loop */
 
-#if 0
-  /* ncpdq */
-  int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
-  int dmn_out_id_tmp[NC_MAX_DIMS]; /* [idx] Copy of dmn_out_id */
-  if(prg == ncpdq){
-    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
-      dmn_idx_in_out[dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
+#ifdef NCO_DIM_RDR
 
-    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
+  /* If variable needs dimension re-ordering */
+  if (var_trv->flg_rdr){
+
+    /* Must be ncpdq */
+    assert(prg_id == ncpdq);
+
+    for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
+      dmn_idx_in_out[var_trv->dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
+
+    for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
       dmn_out_id_tmp[dmn_out_idx]=dmn_out_id[dmn_out_idx];
 
-    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
+    for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
       dmn_out_id[dmn_idx_in_out[dmn_out_idx]]=dmn_out_id_tmp[dmn_out_idx];
-  } /* ncpdq */
+
+  } /* If variable needs dimension re-ordering */
 #endif
 
   /* Insert extra "record" dimension in dimension array if...  
