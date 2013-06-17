@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.741 2013-06-16 20:21:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.742 2013-06-17 00:10:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1813,9 +1813,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_vsg=False;                /* [flg] Variable selected because group matches */
   trv_tbl->lst[idx].flg_xcl=False;                /* [flg] Object matches exclusion criteria */
   trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
-#ifdef NCO_DIM_RDR
-  trv_tbl->lst[idx].flg_rdr=False;                /* [flg] Variable needs dimension re-order (ncpdq)  */
-#endif    
+   
 
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
   trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err;    /* [id] Group ID in input file */
@@ -1905,9 +1903,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_vsg=False; 
     trv_tbl->lst[idx].flg_xcl=False; 
     trv_tbl->lst[idx].flg_xtr=False;
-#ifdef NCO_DIM_RDR
-    trv_tbl->lst[idx].flg_rdr=False;
-#endif
+
 
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
     trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err; 
@@ -1948,17 +1944,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[dmn_idx_var].dmn_id=dmn_id_var[dmn_idx_var];
 
-#ifdef NCO_DIM_RDR
-      /* Dimension correspondence for reordered dimensions, (ncpdq); initialize with ordered index (no re-order) */
-      trv_tbl->lst[idx].dmn_idx_out_in[dmn_idx_var]=dmn_idx_var; 
-      /* Reordered dimensions record dimensions flag (ncpdq) */ 
-      trv_tbl->lst[idx].is_rec_dmn_out[dmn_idx_var]=err_typ;
-#endif
     } /* Variable dimensions; store what we know at this time: relative name and ID */
 
-#ifdef NCO_DIM_RDR
-    (void)trv_map_dmn_init(trv_tbl->lst[idx].map_dmn_id);
-#endif
 
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
