@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.742 2013-06-17 00:10:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.743 2013-06-17 04:08:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4477,30 +4477,30 @@ nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variab
   /* Purpose: Store processed and fixed variables info into GTT */
 
   /* Store processed variables info into table */
-  for(int var_idx=0;var_idx<nbr_var_prc;var_idx++){
+  for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
     trv_sct *var_trv;
 
     /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var_prc[var_idx]->nm_fll,trv_tbl);
+    var_trv=trv_tbl_var_nm_fll(var_prc[idx_var]->nm_fll,trv_tbl);
 
     assert(var_trv);
 
     /* Mark fixed/processed flag in table for "var_nm_fll" */
-    (void)trv_tbl_mrk_prc_fix(var_prc[var_idx]->nm_fll,prc_typ,trv_tbl);
+    (void)trv_tbl_mrk_prc_fix(var_prc[idx_var]->nm_fll,prc_typ,trv_tbl);
 
   } /* Store processed variables info into table */
 
   /* Store fixed variables info into table */
-  for(int var_idx=0;var_idx<nbr_var_fix;var_idx++){
+  for(int idx_var=0;idx_var<nbr_var_fix;idx_var++){
     trv_sct *var_trv;
 
     /* Obtain variable GTT object using full variable name */
-    var_trv=trv_tbl_var_nm_fll(var_fix[var_idx]->nm_fll,trv_tbl);
+    var_trv=trv_tbl_var_nm_fll(var_fix[idx_var]->nm_fll,trv_tbl);
 
     assert(var_trv);
 
     /* Mark fixed/processed flag in table for "var_nm_fll" */
-    (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
+    (void)trv_tbl_mrk_prc_fix(var_fix[idx_var]->nm_fll,fix_typ,trv_tbl);
 
   } /* Store fixed variables info into table */
 
@@ -4519,10 +4519,10 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
   /* Purpose: Transfer variable type to table. Using var/xtr_nbr containing all variables (processed, fixed) */
 
   /* Transfer variable information to table. Using var/xtr_nbr containing all variables (processed, fixed) */
-  for(int var_idx=0;var_idx<xtr_nbr;var_idx++){
+  for(int idx_var=0;idx_var<xtr_nbr;idx_var++){
 
     nc_type typ_out;         /* [enm] Type in output file */
-    var_sct *v=var[var_idx]; /* [sct] Current variable */
+    var_sct *v=var[idx_var]; /* [sct] Current variable */
 
     /* Obtain netCDF type to define variable from NCO program ID */
     typ_out=nco_get_typ(v);
@@ -4538,4 +4538,41 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
 
   return;
 
-} /* end nco_var_prc_fix_trv() */
+} /* end nco_var_typ_trv() */
+
+
+
+void
+nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
+(const int dmn_rdr_nbr,                /* I [nbr] Number of dimension to re-order */
+ var_sct **dmn_rdr,                    /* I [sct] Dimension structures to be re-ordered */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+{
+  /* Purpose: Transfer dimension structures to be re-ordered (ncpdq) into GTT */
+
+  /* Loop input dimensions */
+  for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++){
+
+    /* Loop table */
+    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+      trv_sct var_trv=trv_tbl->lst[idx_var];
+
+      /* If GTT variable object is to extract */
+      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
+
+        /* Loop variable dimensions  */
+        for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
+
+          /* Match ID */
+
+
+
+
+        } /* Loop variable dimensions */
+      } /* If GTT variable object is to extract */
+    } /* Loop table */
+  } /* Loop input dimensions */
+
+  return;
+
+} /* end nco_dmn_rdr_trv() */

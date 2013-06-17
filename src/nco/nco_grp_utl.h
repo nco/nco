@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.290 2013-06-16 07:21:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.291 2013-06-17 04:08:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -531,6 +531,11 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
  var_sct **var,                        /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
+void
+nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
+(const int dmn_rdr_nbr,                /* I [nbr] Number of dimension to re-order */
+ var_sct **dmn_rdr,                    /* I [sct] Dimension structures to be re-ordered */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 
 #ifdef __cplusplus
