@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.79 2013-02-27 05:43:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.80 2013-06-17 05:24:33 pvicente Exp $ */
 
 /* Purpose: List utilities */
 
@@ -182,92 +182,7 @@ nco_lst_rx_search /* [fnc] Search for pattern matches in list of objects (groups
 } /* end nco_lst_rx_search() */
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
-int /* O [nbr] Number of matches to current rx */
-nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
-(const char * const rx_sng, /* I [sng] Regular expression pattern */
- const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
- trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
-{
-  /* Purpose: Set flags indicating whether each list member matches given regular expression
-     NB: This function only writes True to the match flag, it never writes False.
-     Input flags are assumed to be statefull, and may contain Trues from previous calls */
 
-  char *sng2mch; /* [sng] String to match to regular expression */
-  const char sls_chr='/'; /* [chr] Slash character */
-
-  int mch_nbr=0;
-#ifndef NCO_HAVE_REGEX_FUNCTIONALITY
-  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),rx_sng);
-  nco_exit(EXIT_FAILURE);
-#else /* NCO_HAVE_REGEX_FUNCTIONALITY */
-  int err_id;
-  int flg_cmp; /* Comparison flags */
-  int flg_exe; /* Execution flages */
-  
-  regmatch_t *result;
-  regex_t *rx;
-
-  size_t obj_idx;
-  size_t rx_prn_sub_xpr_nbr;
-
-  rx=(regex_t *)nco_malloc(sizeof(regex_t));
-
-  /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
-  flg_cmp=(REG_EXTENDED | REG_NEWLINE);
-  /* Set execution flags */
-  flg_exe=0;
-
-  /* Compile regular expression */
-  if((err_id=regcomp(rx,rx_sng,flg_cmp))){ /* Compile regular expression */
-    char const * rx_err_sng;  
-    /* POSIX regcomp return error codes */
-    switch(err_id){
-    case REG_BADPAT: rx_err_sng="Invalid pattern"; break;  
-    case REG_ECOLLATE: rx_err_sng="Not implemented"; break;
-    case REG_ECTYPE: rx_err_sng="Invalid character class name"; break;
-    case REG_EESCAPE: rx_err_sng="Trailing backslash"; break;
-    case REG_ESUBREG: rx_err_sng="Invalid back reference"; break;
-    case REG_EBRACK: rx_err_sng="Unmatched left bracket"; break;
-    case REG_EPAREN: rx_err_sng="Parenthesis imbalance"; break;
-    case REG_EBRACE: rx_err_sng="Unmatched {"; break;
-    case REG_BADBR: rx_err_sng="Invalid contents of { }"; break;
-    case REG_ERANGE: rx_err_sng="Invalid range end"; break;
-    case REG_ESPACE: rx_err_sng="Ran out of memory"; break;
-    case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
-    default: rx_err_sng="Invalid pattern"; break;  
-    } /* end switch */
-    (void)fprintf(stdout,"%s: ERROR nco_trv_rx_search() error in regular expression \"%s\" %s\n",prg_nm_get(),rx_sng,rx_err_sng); 
-    nco_exit(EXIT_FAILURE);
-  } /* end if err */
-
-  rx_prn_sub_xpr_nbr=rx->re_nsub+1L; /* Number of parenthesized sub-expressions */
-
-  /* Search string */
-  result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*rx_prn_sub_xpr_nbr);
-
-  /* Check each object string for match to rx */
-  for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){  
-    /* Check apples against apples and oranges against oranges */
-    if(trv_tbl->lst[obj_idx].nco_typ == obj_typ){
-      /* NB: Here is where match flag would be set to False if input were stateless */
-      /* Regular expressions embedded in simple strings (without forward slashes) apply to stubs
-	 Presence of slash indicates that regular expression applies to full pathname */
-      if(strchr(rx_sng,sls_chr)) sng2mch=trv_tbl->lst[obj_idx].nm_fll; else sng2mch=trv_tbl->lst[obj_idx].nm; 
-      if(!regexec(rx,sng2mch,rx_prn_sub_xpr_nbr,result,flg_exe)){
-        trv_tbl->lst[obj_idx].flg_mch=True;
-        trv_tbl->lst[obj_idx].flg_xtr=True;
-        mch_nbr++;
-      } /* end if match */
-    } /* end if obj_typ */
-  } /* end loop over variables */
-
-  regfree(rx); /* Free regular expression data structure */
-  rx=(regex_t *)nco_free(rx);
-  result=(regmatch_t *)nco_free(result);
-#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
-
-  return mch_nbr;
-} /* end nco_trv_rx_search() */
 
 void 
 nco_srt_ntg /* [fnc] Sort array of integers */

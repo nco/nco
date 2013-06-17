@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.292 2013-06-17 04:58:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.293 2013-06-17 05:24:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -217,6 +217,11 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
+int /* O [nbr] Number of matches to current rx */
+nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
+(const char * const rx_sng, /* I [sng] Regular expression pattern */
+ const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
+ trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 void
 nco_xtr_dfn                           /* [fnc] Define extracted groups, variables, and attributes in output file */
@@ -537,6 +542,26 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
  dmn_sct **dmn_rdr,                    /* I [sct] Dimension structures to be re-ordered */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
+
+
+var_sct *                             /* O [sct] Variable structure */
+nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const int var_id,                    /* I [id] Variable ID */
+ const trv_sct * const var_trv,       /* I [sct] Object to write (variable) */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
+int                                 /* O [id] Output file variable ID */
+nco_cpy_var_dfn                     /* [fnc] Define specified variable in output file */
+(const int nc_id,                   /* I [ID] netCDF input file ID */
+ const int nc_out_id,               /* I [ID] netCDF output file ID */ 
+ const int grp_in_id,               /* I [id] netCDF input group ID */
+ const int grp_out_id,              /* I [id] netCDF output group ID */
+ const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
+ const gpe_sct * const gpe,         /* I [sct] GPE structure */
+ const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
+ trv_sct *var_trv,                  /* I/O [sct] Object to write (variable) */
+ const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */

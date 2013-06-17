@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.97 2013-06-01 03:18:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.98 2013-06-17 05:24:33 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -155,17 +155,7 @@ nco_xrf_var /* [fnc] Make xrf elements of variable structures point to eachother
 (var_sct * const var_1, /* I/O [sct] Variable */
  var_sct * const var_2); /* I/O [sct] Related variable */
 
-int                                 /* O [id] Output file variable ID */
-nco_cpy_var_dfn                     /* [fnc] Define specified variable in output file */
-(const int nc_id,                   /* I [ID] netCDF input file ID */
- const int nc_out_id,               /* I [ID] netCDF output file ID */ 
- const int grp_in_id,               /* I [id] netCDF input group ID */
- const int grp_out_id,              /* I [id] netCDF output group ID */
- const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
- const gpe_sct * const gpe,         /* I [sct] GPE structure */
- const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
- trv_sct *var_trv,                  /* I/O [sct] Object to write (variable) */
- const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
+
 
 
 var_sct *                             /* O [sct] Variable structure */
@@ -175,13 +165,6 @@ nco_var_fll                           /* [fnc] Allocate variable structure and f
  const char * const var_nm,           /* I [sng] Variable name */
  dmn_sct * const * const dim,         /* I [sct] Dimensions available to variable */
  const int nbr_dim);                  /* I [nbr] Number of dimensions in list */
-
-var_sct *                             /* O [sct] Variable structure */
-nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const int var_id,                    /* I [id] Variable ID */
- const trv_sct * const var_trv,       /* I [sct] Object to write (variable) */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 nc_type
 nco_get_typ                           /* [fnc] Obtain netCDF type to define variable from NCO program ID */
