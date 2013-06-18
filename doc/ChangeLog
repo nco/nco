@@ -1,3 +1,7 @@
+2013-05-29 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncpdq test #10 Re-order 2D variable (no -C , no MSA)
+        
 2013-06-17  Charlie Zender  <zender@uci.edu>
 
 	* Implement robust Linux memory usage by polling /proc/self/stat with ncks --sysconf
