@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.283 2013-06-18 00:51:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.284 2013-06-18 01:54:37 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.283 2013-06-18 00:51:25 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.283 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.284 2013-06-18 01:54:37 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.284 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1250,11 +1250,113 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
 
+  /* Loop over input files (not currently used, fl_nbr == 1) */
+  for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
+
+    /* Parse filename */
+    if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
+
+    /* Make sure file is on local system and is readable or die trying */
+    if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+    if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+
+    /* Open file once per thread to improve caching */
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
+
+    /* Timestamp end of metadata setup and disk layout */
+    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+    ddra_info.tmr_flg=nco_tmr_rgl;
+
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#endif /* !_OPENMP */
+
+    /* Process all variables in current file */
+    for(idx=0;idx<nbr_var_prc;idx++){ 
+
+      int grp_id;        /* [ID] Group ID */
+      int grp_out_id;    /* [ID] Group ID (output) */
+      int var_out_id;    /* [ID] Variable ID (output) */
+      trv_sct *var_trv;  /* [sct] Variable GTT object */
+
+      in_id=in_id_arr[omp_get_thread_num()];
+      var_prc[idx]->nc_id=in_id; 
+
+      if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+
+      /* Obtain group ID using full group name */
+      (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+
+      /* Retrieve variable from disk into memory */
+      (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
+
+      /* If re-ordering */
+      if(IS_REORDER){
+        if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
+          (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+          nco_exit(EXIT_FAILURE); 
+        } /* endif err */
+
+        /* Change dimensionionality of values */
+        rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
+
+        /* Re-ordering required two value buffers, time to free input buffer */
+        var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+
+        /* Free current dimension correspondence */
+        dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
+        dmn_rvr_in[idx]=(nco_bool *)nco_free(dmn_rvr_in[idx]);
+      } /* IS_REORDER */
+
+     
+      /* Obtain output group ID using full group name */
+      (void)nco_inq_grp_full_ncid(out_id,var_trv->grp_nm_fll,&grp_out_id);
+
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+      /* Store the output variable ID */
+      var_prc_out[idx]->id=var_out_id;
+
+
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
+      { /* begin OpenMP critical */
+        /* Copy variable to output file then free value buffer */
+        if(var_prc_out[idx]->nbr_dim == 0){
+          (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+        }else{ /* end if variable is scalar */
+          (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+        } /* end if variable is array */
+      } /* end OpenMP critical */
+      /* Free current output buffer */
+      var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
+
+    } /* end (OpenMP parallel for) loop over idx */
+
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\n");
+
+   
 
 
 
+    /* Close input netCDF file */
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
 
+    /* Remove local copy of file */
+    if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
+  } /* end loop over fl_idx */
+
+  /* Close output file and move it from temporary to permanent location */
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
 #endif /* USE_TRV_API */
 
