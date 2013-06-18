@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.44 2013-06-17 23:48:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.45 2013-06-18 02:59:04 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -311,15 +311,23 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
   /* Purpose: Track memory statistics */
 
   /* Routine is intended to be purely diagnostic.
-     Currently only accessed by ncap when compiled with NCO_RUSAGE_DBG */
+     Currently only accessed with ncks --sysconf */
 
   /* 20130617: Remik Ziemlinski's ncx has _SC_PAGE_SIZE example in ezNcUtil.hpp */ 
 
   const char fnc_nm[]="nco_mmr_rusage_prn()"; /* [sng] Function name */
+  const char fl_prc[]="/proc/self/stat"; /* [sng] Process status pseudo-file name */
+
+  FILE *fp_prc=NULL; /* [fl] Process status file handle */
 
   /* NB: As of kernel 2.6.9, Linux only maintains rusage fields ru_utime, ru_stime, ru_minflt, ru_majflt, and ru_nswap */
-  int rcd;
+  int rcd_sys;
   int sz_pg; /* [B] Page size in Bytes */
+
+#ifndef __GNUG__
+  extern int errno; /* [enm] Error code in errno.h */
+#endif /* __GNUG__ */
+
 #ifdef HAVE_GETRUSAGE
   struct rusage usg;
 #endif /* !HAVE_GETRUSAGE */
@@ -327,7 +335,28 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
   /* Get page size. NECSX does not have getpagesize(). */
 #ifdef HAVE_GETPAGESIZE
   // sz_pg=getpagesize(); // Deprecate 20130617 in favor of sysconf()
-  sz_pg=sysconf(_SC_PAGE_SIZE);
+# ifdef PAGESIZE
+  sz_pg=PAGESIZE
+# else /* !PAGESIZE */
+  sz_pg=sysconf(_SC_PAGESIZE);
+#  ifndef __GNUG__
+  if(sz_pg < 0) (void)fprintf(stdout,"%s: sysconf() error is \"%s\"\n",prg_nm_get(),strerror(errno));
+#  endif /* __GNUG__ */
+  if(sz_pg < 0) nco_exit(EXIT_FAILURE);
+# endif /* !PAGESIZE */
+  /* Definitions found by reading man 5 proc */
+  int pid,ppid,pgrp,session,tty_nr,tpgid;
+  char *comm[100];
+  char state;
+  unsigned int flags ;
+  long int utime,stime,cutime,cstime,priority,nice,num_threads;
+  unsigned long int minflt,cminflt,majflt,cmajflt,itrealvalue,vsize,rss;
+  unsigned long long int starttime;
+  if((fp_prc=fopen(fl_prc,"r")) == NULL){
+    fscanf(fp_prc,"%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %ld %lu %llu %lu %lu",pid,comm,state,ppid,pgrp,session,tty_nr,tpgid,flags,minflt,cminflt,majflt,cmajflt,utime,stime,cutime,cstime,priority,nice,num_threads,itrealvalue,starttime,vsize,rss);
+  } /* !fl_prc */
+  rcd_sys=fclose(fp_prc);
+  (void)fprintf(stdout,"%s: INFO %s polled %s and found rss = %lu B = %lu kB = %lu MB.\n",prg_nm_get(),fnc_nm,fl_prc,rss,rss/1024,rss/(1024*1024));
 #else /* !HAVE_GETPAGESIZE */
   /* CEWI */
   sz_pg=rusage_who;
@@ -370,9 +399,9 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
 #endif /* !SUNMP */
 
   /* fxm: CEWI, not necessary */
-  rcd=rusage_who;
+  rcd_sys=rusage_who;
   /* fxm: use input argument rusage_who instead or RUSAGE_SELF */
-  rcd=0*rcd+getrusage(RUSAGE_SELF,&usg);
+  rcd_sys=0*rcd_sys+getrusage(RUSAGE_SELF,&usg);
   (void)fprintf(stdout,"%s: INFO %s() reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",prg_nm_get(),fnc_nm,usg.ru_utime.tv_sec,usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
 
   return (long)usg.ru_maxrss; /* [B] Maximum resident set size */
