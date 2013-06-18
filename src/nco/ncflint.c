@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.247 2013-06-16 07:21:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.248 2013-06-18 10:11:57 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.247 2013-06-16 07:21:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.247 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.248 2013-06-18 10:11:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.248 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -946,16 +946,19 @@ main(int argc,char **argv)
 
     /* Allocate and, if necesssary, initialize space for processed variable */
     var_prc_out[idx]->sz=var_prc_1[idx]->sz;
+
     /* NB: must not try to free() same tally buffer twice */
-    /*    var_prc_out[idx]->tally=var_prc_1[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long int));*/
+    /* var_prc_out[idx]->tally=var_prc_1[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long int));*/
     var_prc_out[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long int));
     (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
 
     /* Weight variable by taking product of weight with variable */
     (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,wgt_out_1->val,var_prc_1[idx]->val);
     (void)nco_var_mlt(var_prc_2[idx]->type,var_prc_2[idx]->sz,var_prc_2[idx]->has_mss_val,var_prc_2[idx]->mss_val,wgt_out_2->val,var_prc_2[idx]->val);
+
     /* Change missing_value of var_prc_2, if any, to missing_value of var_prc_1, if any */
     has_mss_val=nco_mss_val_cnf(var_prc_1[idx],var_prc_2[idx]);
+
     /* NB: fxm: use tally to determine when to "unweight" answer? TODO  */
     (void)nco_var_add_tll_ncflint(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
 
@@ -977,13 +980,11 @@ main(int argc,char **argv)
       (void)fprintf(fp_stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv_1->nm_fll);
     }
 
-
 #else /* ! USE_TRV_API */
 
     grp_out_id=out_id;
 
 #endif /* ! USE_TRV_API */
-
 
     if(dbg_lvl_get() >= nco_dbg_dev){
       var_sct *v=var_prc_out[idx];

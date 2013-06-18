@@ -1,8 +1,19 @@
-2013-05-29 Pedro Vicente  <pvicente@uci.edu>
+2013-06-18 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #10  Re-order 2D variable (no -C , no MSA) -v two_dmn_var -a lev,lat
 	* Add ncpdq test #11  Re-order 2D variable (-C , MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1
 	* Add ncpdq test #12  Re-order 2D variable (no -C , MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1
+  
+	*nco_var_prc_msa_trv() Transfer MSA sizes from GTT to processed variables 
+  
+	*nco_dmn_rdr_trv() Transfer dimension structures to be re-ordered (ncpdq) into GTT 
+
+	*nco_dmn_rdr_xtr() Form list of re-ordering dimensions from extracted input dimensions (ncpdq)
+
+	*nco_dmn_lst_ass_var_trv() Create list of all dimensions associated with input variable list  (ncpdq only)
+
+	*nco_dmn_lst_ass_var_nbr_trv() Find number of dimensions associated with variables to be extracted (ncpdq only)
+  
         
 2013-06-17  Charlie Zender  <zender@uci.edu>
 

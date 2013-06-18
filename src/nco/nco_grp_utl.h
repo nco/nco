@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.294 2013-06-17 23:37:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.295 2013-06-18 10:11:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -536,14 +536,6 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
  var_sct **var,                        /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
-void
-nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
-(int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
- const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
- var_sct **var_prc_out,                /* I [sct] Processed variables */
- trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
-
-
 var_sct *                              /* O [sct] Variable structure */
 nco_var_fll_trv                        /* [fnc] Allocate variable structure and fill with metadata */
 (const int nc_id,                      /* I [id] netCDF file ID */
@@ -562,6 +554,19 @@ nco_cpy_var_dfn                        /* [fnc] Define specified variable in out
  const char * const rec_dmn_nm_cst,    /* I [sng] User-specified record dimension, if any, to create or fix in output file */
  trv_sct *var_trv,                     /* I/O [sct] Object to write (variable) */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+
+void
+nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
+(int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
+ const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
+ var_sct **var_prc_out,                /* I [sct] Processed variables */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+
+void
+nco_var_prc_msa_trv                    /* [fnc] Transfer MSA sizes from GTT to processed variables */
+(const int nbr_var_prc,                /* I [nbr] Number of processed variables */
+ var_sct **var_prc,                    /* I/O [sct] Processed variables */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
