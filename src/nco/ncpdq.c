@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.285 2013-06-18 07:17:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.286 2013-06-18 07:58:48 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.285 2013-06-18 07:17:36 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.285 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.286 2013-06-18 07:58:48 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.286 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -541,6 +541,9 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
+  /* Make uniform list of user-specified dimension limits */
+  lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
+
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
@@ -557,9 +560,6 @@ main(int argc,char **argv)
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
 #ifndef USE_TRV_API
-
-  /* Make uniform list of user-specified dimension limits */
-  lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
 
   /* Parse auxiliary coordinates */
   if(aux_nbr > 0){
