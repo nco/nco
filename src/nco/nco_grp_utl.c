@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.750 2013-06-18 00:51:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.751 2013-06-18 07:17:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4362,14 +4362,14 @@ nco_dmn_lst_ass_var_nbr_trv            /* [fnc] Find number of dimensions associ
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
         /* Loop input (-a) dimension (relative) names  */
-        for(int idx_dmn_rdr=0;idx_dmn_rdr<dmn_rdr_nbr;idx_dmn_rdr++){
+        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++){
 
           /* Match relative name */ 
-          if(strcmp(dmn_rdr_lst_in[idx_dmn_rdr],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
+          if(strcmp(dmn_rdr_lst_in[idx_dmn],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
 
             if(dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"%s: DEBUG %s <%s> match dimension <%s>\n",prg_nm_get(),fnc_nm,
-                var_trv.nm_fll,dmn_rdr_lst_in[idx_dmn_rdr]);        
+                var_trv.nm_fll,dmn_rdr_lst_in[idx_dmn]);        
             } /* endif dbg */
 
             nbr_dmn++;
@@ -4418,18 +4418,18 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
     /* If GTT variable object is to extract */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
 
-      /* Loop variable dimension (relative) names  */
+      /* Loop variable dimensions  */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
-        /* Loop input (-a) dimension (relative) names  */
-        for(int idx_dmn_rdr=0;idx_dmn_rdr<dmn_rdr_nbr;idx_dmn_rdr++){
+        /* Loop input (-a) dimensions  */
+        for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++){
 
-          /* Match relative name */ 
-          if(strcmp(dmn_rdr_lst_in[idx_dmn_rdr],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
+          /* Match relative names */ 
+          if(strcmp(dmn_rdr_lst_in[idx_dmn],var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
 
             if(dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"%s: DEBUG %s <%s> match dimension <%s>\n",prg_nm_get(),fnc_nm,
-                var_trv.nm_fll,dmn_rdr_lst_in[idx_dmn_rdr]);        
+                var_trv.nm_fll,dmn_rdr_lst_in[idx_dmn]);        
             } /* endif dbg */
 
             /* Get unique dimension object from unique dimension ID */
@@ -4441,12 +4441,12 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
             /* Add one more element to array */
             (*dmn)[nbr_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
 
-            /* Get size from GTT */
-            if(var_trv.var_dmn[idx_dmn_rdr].is_crd_var){
-              dmn_sz=var_trv.var_dmn[idx_dmn_rdr].crd->lmt_msa.dmn_cnt;
+            /* Get size from GTT. NOTE use index idx_var_dmn */
+            if(var_trv.var_dmn[idx_var_dmn].is_crd_var){
+              dmn_sz=var_trv.var_dmn[idx_var_dmn].crd->lmt_msa.dmn_cnt;
               (*dmn)[nbr_dmn]->is_crd_dmn=True;
             }else {
-              dmn_sz=var_trv.var_dmn[idx_dmn_rdr].ncd->lmt_msa.dmn_cnt;
+              dmn_sz=var_trv.var_dmn[idx_var_dmn].ncd->lmt_msa.dmn_cnt;
               (*dmn)[nbr_dmn]->is_crd_dmn=False;
             }
 

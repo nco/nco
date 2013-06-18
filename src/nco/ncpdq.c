@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.284 2013-06-18 01:54:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.285 2013-06-18 07:17:36 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -38,7 +38,7 @@
    ncpdq -O -D 3 -P xst_new ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc */
 
-#if 0
+#if 0 
 #define USE_TRV_API
 #endif
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.284 2013-06-18 01:54:37 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.284 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.285 2013-06-18 07:17:36 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.285 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
