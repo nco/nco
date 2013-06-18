@@ -1,6 +1,8 @@
 2013-05-29 Pedro Vicente  <pvicente@uci.edu>
 
-	* Add ncpdq test #10 Re-order 2D variable (no -C , no MSA)
+	* Add ncpdq test #10  Re-order 2D variable (no -C , no MSA) -v two_dmn_var -a lev,lat
+	* Add ncpdq test #11  Re-order 2D variable (-C , MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1
+	* Add ncpdq test #12  Re-order 2D variable (no -C , MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1
         
 2013-06-17  Charlie Zender  <zender@uci.edu>
 
