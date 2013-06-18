@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.82 2013-06-13 22:49:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.83 2013-06-18 22:27:50 pvicente Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -571,18 +571,19 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   Remember: dmn_in has dimension IDs relative to input file 
   Copy dmn_in->xrf to get dimension IDs relative to output file (once they are defined) 
   Oh come on, it only seems like cheating! */
-
-  if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable %s: ",prg_nm_get(),fnc_nm,var_in->nm);  
-
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
-
-    if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"[%d]->[%d] ",dmn_out_idx,dmn_idx_out_in[dmn_out_idx]);  
-
     dmn_out[dmn_out_idx]=dmn_in[dmn_idx_out_in[dmn_out_idx]]->xrf;
-
-    if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: ",dmn_out[dmn_out_idx]->nm);  
   }
-  if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"\n");  
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s variable %s: ",prg_nm_get(),fnc_nm,var_in->nm);
+    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
+      (void)fprintf(stdout,"[%d]->[%d] ",dmn_out_idx,dmn_idx_out_in[dmn_out_idx]); 
+      (void)fprintf(stdout,"%s: ",dmn_out[dmn_out_idx]->nm); 
+    }
+    (void)fprintf(stdout,"\n");  
+  }
+
 
   /* Re-ordered output dimension list dmn_out now comprises correctly ordered but 
   otherwise verbatim copies of dmn_out structures in calling routine */
