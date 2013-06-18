@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.748 2013-06-17 23:58:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.749 2013-06-18 00:34:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4651,6 +4651,9 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
         /* Match by full variable name  */
         if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
 
+          /* Mark re-order flag */
+          trv_tbl->lst[idx_var].flg_rdr=True;
+
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s transfering variable <%s>\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll);        
@@ -4669,17 +4672,13 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
                 var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
             } 
 
-            /* Mark re-order flag */
-            trv_tbl->lst[idx_var].flg_rdr=True;
-            break;
 
-          }
 
-        } /* Match ID. ID is unique for dimensions */
-
+          } /* Loop variable dimensions */
+        } /* Match by full variable name  */
       } /* If GTT variable object is to extract */
     } /* Loop table */
-  } /* Loop input dimensions */
+  } /* Loop processed variables */
 
   return;
 
