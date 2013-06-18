@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.749 2013-06-18 00:34:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.750 2013-06-18 00:51:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4671,8 +4671,6 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
               (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,
                 var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
             } 
-
-
 
           } /* Loop variable dimensions */
         } /* Match by full variable name  */

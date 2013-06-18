@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.282 2013-06-17 23:37:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.283 2013-06-18 00:51:25 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.282 2013-06-17 23:37:41 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.282 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.283 2013-06-18 00:51:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.283 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1196,7 +1196,60 @@ main(int argc,char **argv)
   (void)nco_dmn_rdr_trv(dmn_idx_out_in,nbr_var_prc,var_prc_out,trv_tbl);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl);   
+  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl); 
+
+  /* Alter metadata for variables that will be packed */
+
+
+
+
+
+  /* Set chunksize parameters */
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+
+  /* Turn off default filling behavior to enhance efficiency */
+  nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+
+  /* Take output file out of define mode */
+  if(hdr_pad == 0UL){
+    (void)nco_enddef(out_id);
+  }else{
+    (void)nco__enddef(out_id,hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+  } /* hdr_pad */
+
+  /* Assign zero to start and unity to stride vectors in output variables */
+  (void)nco_var_srd_srt_set(var_out,xtr_nbr);
+
+  /* Copy variable data for non-processed variables */
+  (void)nco_cpy_fix_var_trv(in_id,out_id,trv_tbl);  
+
+  /* Close first input netCDF file */
+  nco_close(in_id);
+
+  /* Refresh var_prc with dim_out data */
+  for(idx=0;idx<nbr_var_prc;idx++){
+    long sz;
+    long sz_rec;
+    sz=1;
+    sz_rec=1;
+    var_sct *var_tmp;
+    (void)nco_xrf_dmn(var_prc[idx]);
+    var_tmp=var_prc[idx];
+
+    for(jdx=0;jdx<var_tmp->nbr_dim;jdx++){
+      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
+      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
+      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
+      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
+      sz*=var_tmp->dim[jdx]->cnt;
+      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
+    } /* end loop over jdx */
+    var_tmp->sz=sz; 
+    var_tmp->sz_rec=sz_rec;
+  } /* end loop over idx */
+
+
 
 
 
