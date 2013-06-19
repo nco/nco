@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.293 2013-06-19 07:31:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.294 2013-06-19 08:03:34 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.293 2013-06-19 07:31:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.293 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.294 2013-06-19 08:03:34 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.294 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1254,7 +1254,18 @@ main(int argc,char **argv)
 
 
   /* Transfer MSA sizes from GTT to processed variables */
-  (void)nco_var_prc_msa_trv(nbr_var_prc,var_prc,trv_tbl);   
+  (void)nco_var_prc_msa_trv(nbr_var_prc,var_prc,trv_tbl); 
+
+  /* Transfer hyperslabed sizes */
+  for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
+    var_prc_out[idx_var]->sz=var_prc[idx_var]->sz;
+    for(int idx_dmn=0;idx_dmn<var_prc[idx_var]->nbr_dim;idx_dmn++){
+      var_prc_out[idx_var]->srt[idx_dmn]=var_prc[idx_var]->srt[idx_dmn]; 
+      var_prc_out[idx_var]->end[idx_dmn]=var_prc[idx_var]->end[idx_dmn];
+      var_prc_out[idx_var]->cnt[idx_dmn]=var_prc[idx_var]->cnt[idx_dmn];
+      var_prc_out[idx_var]->srd[idx_dmn]=var_prc[idx_var]->srd[idx_dmn];
+    }
+  }
 
   /* Loop over input files (not currently used, fl_nbr == 1) */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
@@ -1335,10 +1346,6 @@ main(int argc,char **argv)
         /* Copy input variable buffer to processed variable buffer */
         /* fxm: this is dangerous and leads to double free()'ing variable buffer */
         var_prc_out[idx]->val=var_prc[idx]->val;
-
-        /* Transfer the total hyperslabled size */
-        var_prc_out[idx]->sz=var_prc[idx]->sz;
-
         /* (Un-)Pack variable according to packing specification */
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif nco_pck_plc != nco_pck_plc_nil */
