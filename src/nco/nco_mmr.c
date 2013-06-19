@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.45 2013-06-18 02:59:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.46 2013-06-19 21:31:48 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -43,7 +43,7 @@ nco_calloc /* [fnc] Wrapper for calloc() */
   
   ptr=calloc(lmn_nbr,lmn_sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_calloc() unable to allocate %lu elements of %lu bytes = %lu bytes\n",prg_nm_get(),(unsigned long)lmn_nbr,(unsigned long)lmn_sz,(unsigned long)(lmn_nbr*lmn_sz));
+    (void)fprintf(stdout,"%s: ERROR nco_calloc() unable to allocate %lu elements of %lu bytes each totaling %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),(unsigned long)lmn_nbr,(unsigned long)lmn_sz,(unsigned long)(lmn_nbr*lmn_sz),(unsigned long)(lmn_nbr*lmn_sz)/1024UL,(unsigned long)(lmn_nbr*lmn_sz)/(1024UL*1024UL),(unsigned long)(lmn_nbr*lmn_sz)/(1024UL*1024UL*1024UL));
     nco_exit(EXIT_FAILURE);
   } /* endif */
 #ifdef NCO_MMR_DBG
@@ -84,7 +84,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
   
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %lu bytes\n",prg_nm_get(),(unsigned long)sz);
+    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),(unsigned long)sz,(unsigned long)sz/1024UL,(unsigned long)sz/(1024UL*1024UL),(unsigned long)sz/(1024UL*1024UL*1024UL));
     (void)nco_malloc_err_hnt_prn();
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
@@ -116,7 +116,7 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), forgives ENOMEM errors */
   
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: WARNING nco_malloc_flg() unable to allocate %lu bytes\n",prg_nm_get(),(unsigned long)sz);
+    (void)fprintf(stdout,"%s: ERROR nco_malloc_flg() unable to allocate %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),(unsigned long)sz,(unsigned long)sz/1024UL,(unsigned long)sz/(1024UL*1024UL),(unsigned long)sz/(1024UL*1024UL*1024UL));
 #ifndef __GNUG__
     /* 20051205: Triggers G++ error: undefined reference to `__errno_location()' */
     (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
@@ -157,7 +157,7 @@ nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnosti
   
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR malloc() returns error on %s request for %lu bytes\n",prg_nm_get(),fnc_nm,(unsigned long)sz);
+    (void)fprintf(stdout,"%s: ERROR malloc() returns error on %s request for %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),fnc_nm,(unsigned long)sz,(unsigned long)sz/1024UL,(unsigned long)sz/(1024UL*1024UL),(unsigned long)sz/(1024UL*1024UL*1024UL));
 #ifndef __GNUG__
     /* 20051205: Triggers G++ error: undefined reference to `__errno_location()' */
     (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
@@ -344,17 +344,19 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
 #  endif /* __GNUG__ */
   if(sz_pg < 0) nco_exit(EXIT_FAILURE);
 # endif /* !PAGESIZE */
-  /* Definitions found by reading man 5 proc */
+  /* Contents of /proc/self/stat defined in man 5 proc */
   int pid,ppid,pgrp,session,tty_nr,tpgid;
-  char *comm[100];
+  char *comm;
   char state;
   unsigned int flags ;
   long int utime,stime,cutime,cstime,priority,nice,num_threads;
   unsigned long int minflt,cminflt,majflt,cmajflt,itrealvalue,vsize,rss;
   unsigned long long int starttime;
+  comm=(char *)nco_malloc(100L*sizeof(char));
   if((fp_prc=fopen(fl_prc,"r")) == NULL){
-    fscanf(fp_prc,"%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %ld %lu %llu %lu %lu",pid,comm,state,ppid,pgrp,session,tty_nr,tpgid,flags,minflt,cminflt,majflt,cmajflt,utime,stime,cutime,cstime,priority,nice,num_threads,itrealvalue,starttime,vsize,rss);
+    fscanf(fp_prc,"%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %ld %lu %llu %lu %lu",&pid,comm,&state,&ppid,&pgrp,&session,&tty_nr,&tpgid,&flags,&minflt,&cminflt,&majflt,&cmajflt,&utime,&stime,&cutime,&cstime,&priority,&nice,&num_threads,&itrealvalue,&starttime,&vsize,&rss);
   } /* !fl_prc */
+  if(comm) comm=(char *)nco_free(comm);
   rcd_sys=fclose(fp_prc);
   (void)fprintf(stdout,"%s: INFO %s polled %s and found rss = %lu B = %lu kB = %lu MB.\n",prg_nm_get(),fnc_nm,fl_prc,rss,rss/1024,rss/(1024*1024));
 #else /* !HAVE_GETPAGESIZE */
