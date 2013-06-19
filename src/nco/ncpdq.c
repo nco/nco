@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.292 2013-06-19 05:50:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.293 2013-06-19 07:31:29 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.292 2013-06-19 05:50:50 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.292 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.293 2013-06-19 07:31:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.293 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1203,7 +1203,6 @@ main(int argc,char **argv)
   /* Transfer dimension re-order structures (index map) into GTT */
   if(IS_REORDER) (void)nco_dmn_rdr_trv(dmn_idx_out_in,nbr_var_prc,var_prc_out,trv_tbl);
 
-
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl); 
 
@@ -1254,8 +1253,6 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
 
-  /* GTT only step. Update processed variables with hyperslabed dimensions; needed for nco_var_dmn_rdr_val(); 
-  should be done in nco_msa_var_get_trv() */
   /* Transfer MSA sizes from GTT to processed variables */
   (void)nco_var_prc_msa_trv(nbr_var_prc,var_prc,trv_tbl);   
 
@@ -1338,6 +1335,10 @@ main(int argc,char **argv)
         /* Copy input variable buffer to processed variable buffer */
         /* fxm: this is dangerous and leads to double free()'ing variable buffer */
         var_prc_out[idx]->val=var_prc[idx]->val;
+
+        /* Transfer the total hyperslabled size */
+        var_prc_out[idx]->sz=var_prc[idx]->sz;
+
         /* (Un-)Pack variable according to packing specification */
         nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif nco_pck_plc != nco_pck_plc_nil */
