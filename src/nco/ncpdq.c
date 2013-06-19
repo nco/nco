@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.289 2013-06-19 02:20:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.290 2013-06-19 05:00:59 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -92,7 +92,6 @@ main(int argc,char **argv)
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool IS_REORDER=False; /* Re-order mode */
-  nco_bool IS_PACK=False; /* Pack mode */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
   nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
@@ -131,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.289 2013-06-19 02:20:47 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.289 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.290 2013-06-19 05:00:59 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.290 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -502,20 +501,20 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
+  /* Set re-order flag */
+  if(dmn_rdr_nbr > 0 ) IS_REORDER=True; 
+
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
-    IS_PACK=True;
     if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
     if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
-  } else {
-    IS_REORDER=True;
-  }/* endif */
+  }
 
   /* From this point forward, assume ncpdq operator packs or re-orders, not both */
   if(dmn_rdr_nbr > 0 && nco_pck_plc != nco_pck_plc_nil){
     (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",prg_nm,prg_nm,prg_nm);
     nco_exit(EXIT_FAILURE);
-  } /* end if */
+  } 
 
   /* Create reversed dimension list */
   if(dmn_rdr_nbr > 0 ){
@@ -1195,14 +1194,12 @@ main(int argc,char **argv)
   /* Transfer dimension re-order structures (index map) into GTT */
   (void)nco_dmn_rdr_trv(dmn_idx_out_in,nbr_var_prc,var_prc_out,trv_tbl);
 
+
+  
+
+
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl); 
-
-  /* Alter metadata for variables that will be packed */
-
-
-
-
 
   /* Set chunksize parameters */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
@@ -1331,6 +1328,8 @@ main(int argc,char **argv)
       var_prc_out[idx]->id=var_out_id;
 
 
+     
+
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
@@ -1349,8 +1348,7 @@ main(int argc,char **argv)
 
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\n");
 
-   
-
+    
 
 
     /* Close input netCDF file */
