@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.752 2013-06-18 10:11:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.753 2013-06-19 02:48:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4864,7 +4864,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   int dmn_id_out;                        /* [id] Dimension ID defined in outout group */  
   int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */
   int idx_dmn_grp;                       /* [nbr] Dimension iterator index for group  */ 
-  int idx_dmn;                           /* [nbr] Dimension iterator index for variable object  */ 
+  int idx_dmn;                           /* [nbr] Dimension iterator index for variable object  */
 
   int dmn_idx_in_out[NC_MAX_DIMS];      /* [idx] Dimension correspondence, input->output (ncpdq) */
   int dmn_out_id_tmp[NC_MAX_DIMS];      /* [idx] Copy of dmn_out_id (ncpdq) */
@@ -5096,10 +5096,33 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
       /* At long last ... */
 
+      /* Define current index dimension size */
 
-      /* Define dimension size */
+      /* If current dimension is to be defined as record dimension in output file */
       if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
-        dmn_sz=NC_UNLIMITED;
+
+        /* If variable needs dimension re-ordering
+        ...and file is netCDF3 
+        ...and current dimension is the first 
+        ...then use the hyperslabed size 
+        ...else define the dimension as record */
+        if (var_trv->flg_rdr && idx_dmn==0 && ( fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
+
+          /* Must be ncpdq */
+          assert(prg_id == ncpdq);
+
+          /* Get size from GTT */
+          if(var_trv->var_dmn[idx_dmn].is_crd_var){
+            dmn_sz=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+          }else {
+            dmn_sz=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+          }
+
+          /* ..else define the dimension as record */
+        }else {
+          dmn_sz=NC_UNLIMITED;
+        }
+        /* ! DFN_CRR_DMN_AS_REC_IN_OUTPUT */
       }else{
         /* Get size from GTT */
         if(var_trv->var_dmn[idx_dmn].is_crd_var){
@@ -5133,7 +5156,6 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
 
   } /* End of the very important dimension loop */
 
-#ifdef NCO_DIM_RDR
 
   /* If variable needs dimension re-ordering */
   if (var_trv->flg_rdr){
@@ -5151,7 +5173,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       dmn_out_id[dmn_idx_in_out[dmn_out_idx]]=dmn_out_id_tmp[dmn_out_idx];
 
   } /* If variable needs dimension re-ordering */
-#endif
+
 
   /* Insert extra "record" dimension in dimension array if...  
   ... is ncecat

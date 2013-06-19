@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.338 2013-06-17 23:37:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.339 2013-06-19 02:48:29 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -151,8 +151,6 @@ extern "C" {
 
   /* Call assert() in form assert(expected==) */
 #define NCO_SANITY_CHECK
-#define NCO_DIM_RDR /* Test dimension re-ordering in GTT */
-
 
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
@@ -768,13 +766,8 @@ extern "C" {
 
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint)  */  
-
-    /* Below: In construction ncpdq marked NCO_DIM_RDR */
-
-#ifdef NCO_DIM_RDR
     int dmn_idx_out_in[NC_MAX_DIMS];  /* [nbr] Dimension correspondence, output->input (ncpdq); output of nco_var_dmn_rdr_mtd() */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
-#endif
 
   } trv_sct;
  
