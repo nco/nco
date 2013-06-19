@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.755 2013-06-19 07:31:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.756 2013-06-19 23:54:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5322,7 +5322,7 @@ nco_var_prc_msa_trv                    /* [fnc] Transfer MSA sizes from GTT to p
   const char fnc_nm[]="nco_var_prc_msa_trv()"; /* [sng] Function name */
 
   long dmn_cnt; /* [nbr] *Hyperslabbed* size of dimension */  
-  long sz;      /* [nbr] Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
+  long sz;      /* [nbr] Total number of elements in hyperslabs */
 
   sz=1;
 
@@ -5358,7 +5358,10 @@ nco_var_prc_msa_trv                    /* [fnc] Transfer MSA sizes from GTT to p
 
             /* Transfer hyperslabed size for each dimension */
             var_prc[idx_var_prc]->cnt[idx_var_dmn]=dmn_cnt;
+            var_prc[idx_var_prc]->end[idx_var_dmn]=dmn_cnt-1;
+
             var_prc[idx_var_prc]->dim[idx_var_dmn]->cnt=dmn_cnt;
+            var_prc[idx_var_prc]->dim[idx_var_dmn]->end=dmn_cnt-1;
             sz*=dmn_cnt;
 
           } /* Loop variable dimensions */
