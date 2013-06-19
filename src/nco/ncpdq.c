@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.294 2013-06-19 08:03:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.295 2013-06-19 22:19:42 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.294 2013-06-19 08:03:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.294 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.295 2013-06-19 22:19:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.295 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1074,8 +1074,6 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
-  /* Some of the following functions are equivalents of the original functions adapted for GTT; they have the suffix "_trv" */
-
   /* Find number of dimensions associated with variables to be extracted  */
   (void)nco_dmn_lst_ass_var_nbr_trv(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,trv_tbl,&nbr_dmn_xtr);
 
@@ -1119,11 +1117,6 @@ main(int argc,char **argv)
   (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc,nbr_var_fix,var_fix,trv_tbl);
 
   /* We now have final list of variables to extract. Phew. */
-  if(dbg_lvl >= nco_dbg_var){
-    for(idx=0;idx<xtr_nbr;idx++) (void)fprintf(stdout,"var[%d]->nm = %s\n",idx,var[idx]->nm);
-    for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stdout,"var_fix[%d]->nm = %s\n",idx,var_fix[idx]->nm);
-    for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stdout,"var_prc[%d]->nm = %s\n",idx,var_prc[idx]->nm);
-  } 
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
@@ -1229,7 +1222,6 @@ main(int argc,char **argv)
   /* Close first input netCDF file */
   nco_close(in_id);
 
-  /* REMOVE */
   /* Refresh var_prc with dim_out data */
   for(idx=0;idx<nbr_var_prc;idx++){
     long sz;
@@ -1251,7 +1243,6 @@ main(int argc,char **argv)
     var_tmp->sz=sz; 
     var_tmp->sz_rec=sz_rec;
   } /* end loop over idx */
-
 
   /* Transfer MSA sizes from GTT to processed variables */
   (void)nco_var_prc_msa_trv(nbr_var_prc,var_prc,trv_tbl); 
