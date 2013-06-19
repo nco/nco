@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.290 2013-06-19 05:00:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.291 2013-06-19 05:26:43 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.290 2013-06-19 05:00:59 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.290 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.291 2013-06-19 05:26:43 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.291 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1178,24 +1178,30 @@ main(int argc,char **argv)
   } /* endif IS_REORDER */
 
 
+
+  /* Alter metadata for variables that will be packed */
+  if(nco_pck_plc != nco_pck_plc_nil){
+    if(nco_pck_plc != nco_pck_plc_upk){
+      /* Allocate attribute list container for maximum number of entries */
+      aed_lst_add_fst=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
+      aed_lst_scl_fct=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
+    } /* endif packing */
+    for(idx=0;idx<nbr_var_prc;idx++){
+      nco_pck_mtd(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc);
+      if(nco_pck_plc != nco_pck_plc_upk){
+        /* Use same copy of attribute name for all edits */
+        aed_lst_add_fst[idx].att_nm=add_fst_sng;
+        aed_lst_scl_fct[idx].att_nm=scl_fct_sng;
+      } /* endif packing */
+    } /* end loop over var_prc */
+  } /* nco_pck_plc == nco_pck_plc_nil */
+   
+
   /* Transfer variable type to table. Using var/xtr_nbr containing all variables (processed, fixed) */
-  (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);     
-
-
-  if(dbg_lvl >= nco_dbg_dev){
-    for(int idx_var=0;idx_var<xtr_nbr;idx_var++) (void)dbg_var_dim_sct("var",idx_var,var[idx_var]);
-    for(int idx_var=0;idx_var<nbr_var_prc;idx_var++) (void)dbg_var_dim_sct("var_prc_out",idx_var,var_prc_out[idx_var]);
-    for(int idx_dmn=0;idx_dmn<dmn_rdr_nbr;idx_dmn++){
-      (void)fprintf(stdout,"dmn_rdr[%d]->nm=%s id=%d cnt=%ld sz=%ld\n",idx_dmn,
-        dmn_rdr[idx_dmn]->nm,dmn_rdr[idx_dmn]->id,dmn_rdr[idx_dmn]->cnt,dmn_rdr[idx_dmn]->sz);
-    }
-  } 
+  (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);    
 
   /* Transfer dimension re-order structures (index map) into GTT */
   (void)nco_dmn_rdr_trv(dmn_idx_out_in,nbr_var_prc,var_prc_out,trv_tbl);
-
-
-  
 
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
@@ -1328,7 +1334,13 @@ main(int argc,char **argv)
       var_prc_out[idx]->id=var_out_id;
 
 
-     
+      if(nco_pck_plc != nco_pck_plc_nil){
+        /* Copy input variable buffer to processed variable buffer */
+        /* fxm: this is dangerous and leads to double free()'ing variable buffer */
+        var_prc_out[idx]->val=var_prc[idx]->val;
+        /* (Un-)Pack variable according to packing specification */
+        nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
+      } /* endif nco_pck_plc != nco_pck_plc_nil */
 
 #ifdef _OPENMP
 #pragma omp critical
@@ -1348,7 +1360,38 @@ main(int argc,char **argv)
 
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\n");
 
-    
+    /* Write/overwrite packing attributes for newly packed and re-packed variables 
+    Logic here should nearly mimic logic in nco_var_dfn() */
+    if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){
+      /* ...put file in define mode to allow metadata writing... */
+      (void)nco_redef(out_id);
+      /* ...loop through all variables that may have been packed... */
+      for(idx=0;idx<nbr_var_prc;idx++){
+        /* nco_var_dfn() pre-defined dummy packing attributes in output file 
+        only for input variables considered "packable" */
+        if(nco_pck_plc_typ_get(nco_pck_map,var_prc[idx]->typ_upk,(nc_type *)NULL)){
+          /* Verify input variable was newly packed by this operator
+          Writing pre-existing (non-re-packed) attributes here would fail because
+          nco_pck_dsk_inq() never fills in var->scl_fct.vp and var->add_fst.vp
+          Logic is same as in nco_var_dfn() (except var_prc[] instead of var[])
+          If operator newly packed this particular variable... */
+          if(
+            /* ...either because operator newly packs all variables... */
+            (nco_pck_plc == nco_pck_plc_all_new_att) ||
+            /* ...or because operator newly packs un-packed variables like this one... */
+            (nco_pck_plc == nco_pck_plc_all_xst_att && !var_prc[idx]->pck_ram) ||
+            /* ...or because operator re-packs packed variables like this one... */
+            (nco_pck_plc == nco_pck_plc_xst_new_att && var_prc[idx]->pck_ram)
+            ){
+              /* Replace dummy packing attributes with final values, or delete them */
+              if(dbg_lvl >= nco_dbg_io) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
+              (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
+              (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
+          } /* endif variable is newly packed by this operator */
+        } /* !nco_pck_plc_alw */
+      } /* end loop over var_prc */
+      (void)nco_enddef(out_id);
+    } /* nco_pck_plc == nco_pck_plc_nil || nco_pck_plc == nco_pck_plc_upk */
 
 
     /* Close input netCDF file */

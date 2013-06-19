@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.753 2013-06-19 02:48:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.754 2013-06-19 05:26:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1917,7 +1917,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
   trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;/* [enm] (For variables only) NetCDF type  */  
   trv_tbl->lst[idx].enm_prc_typ=err_typ;          /* [enm] (For variables only) Processing type enumerator  */  
-  trv_tbl->lst[idx].var_typ_out=err_typ;          /* [enm] (For variables only) NetCDF type in output file (used by ncflint)  */  
+  trv_tbl->lst[idx].var_typ_out=err_typ;          /* [enm] (For variables only) NetCDF type in output file (used by ncflint, ncpdq)  */  
 
   /* Variable dimensions  */
   for(int dmn_idx_var=0;dmn_idx_var<NC_MAX_DIMS;dmn_idx_var++){
@@ -5204,10 +5204,17 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   var_typ_out=var_typ;
 
   /* But...some operators change the output netCDF variable type */
-  if (prg_id == ncflint){
-    if( var_trv->var_typ_out != err_typ ) var_typ_out=var_trv->var_typ_out; else var_typ_out=var_typ;
+  if (prg_id == ncflint || prg_id == ncpdq){
+
+    /* If the initialization value was changed, then set output type to the new type */
+    if( var_trv->var_typ_out != err_typ ){
+      var_typ_out=var_trv->var_typ_out;
+    } else {
+      var_typ_out=var_typ;
+    }
+
     if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with output type %s\n",prg_nm_get(),fnc_nm,
+      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with new output type %s\n",prg_nm_get(),fnc_nm,
         var_trv->nm_fll,nco_typ_sng(var_typ_out));
     }
   } /* But...some operators change the output netCDF variable type */

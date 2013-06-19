@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.339 2013-06-19 02:48:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.340 2013-06-19 05:26:43 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -765,7 +765,7 @@ extern "C" {
     /* Following are members only used by transformation operators (non ncks) (For variables only) */
 
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
-    nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint)  */  
+    nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  
     int dmn_idx_out_in[NC_MAX_DIMS];  /* [nbr] Dimension correspondence, output->input (ncpdq); output of nco_var_dmn_rdr_mtd() */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
 
