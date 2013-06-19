@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.274 2013-06-18 20:49:02 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.275 2013-06-19 03:52:46 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2173,7 +2173,7 @@ print "\n";
     
 #NEW NCO 4.3.2
 #ncpdq #8
-# two_dmn_var (lat,lev) no MSA, no change, (no associated coordinates)
+# two_dmn_var (lat,lev) no change
 # ncpdq -O -C -a lat,lev -v two_dmn_var in.nc out.nc
 # ncks  -d lat,1,1 -d lev,1,1 out.nc
 
@@ -2187,7 +2187,7 @@ print "\n";
     
 #NEW NCO 4.3.2
 #ncpdq #9
-# two_dmn_var (lat,lev) no MSA (no associated coordinates)
+# two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -v two_dmn_var in.nc out.nc
 # ncks  -d lat,1,1 -d lev,1,1 out.nc
 
@@ -2216,7 +2216,7 @@ print "\n";
 
 #NEW NCO 4.3.2
 #ncpdq #11
-# two_dmn_var (lat,lev) MSA (no associated coordinates)
+# two_dmn_var (lat,lev) -C, MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc out.nc
 # ncks out.nc
 
@@ -2254,7 +2254,50 @@ print "\n";
   $tst_cmd[2]="lev[1] time[1] two_dmn_rec_var[11]=2.1 watt meter-2";
   $tst_cmd[3]="SS_OK";
   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+  $#tst_cmd=0; # Reset array  
+
+
+#NEW NCO 4.3.2
+#ncpdq #14
+# two_dmn_rec_var(time,lev) 2D variable with record  (no MSA)
+# ncpdq -O -a lev,time -v two_dmn_rec_var in.nc out.nc
+# ncks  -d time,1,1 -d lev,1,1 out.nc
+
+  $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,time -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+  $tst_cmd[1]="ncks -v two_dmn_rec_var -d time,1,1 -d lev,1,1 %tmp_fl_00%";
+  $dsc_sng="Re-order 2D variable with record (no -C , no MSA) -v two_dmn_rec_var -a lev,time";
+  $tst_cmd[2]="lev[1]=500 time[1]=2 two_dmn_rec_var[11]=2.1 watt meter-2";
+  $tst_cmd[3]="SS_OK";
+  if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+  $#tst_cmd=0; # Reset array  
+
+#NEW NCO 4.3.2
+#ncpdq #15
+# two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
+# ncpdq -O -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in.nc out.nc
+# ncks  out.nc
+
+  $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+  $tst_cmd[1]="ncks -v two_dmn_rec_var %tmp_fl_00%";
+  $dsc_sng="Re-order 2D variable with record (-C , MSA) -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var";
+  $tst_cmd[2]="lev[0] time[0] two_dmn_rec_var[0]=2.1 watt meter-2";
+  $tst_cmd[3]="SS_OK";
+  if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
   $#tst_cmd=0; # Reset array   
+  
+#NEW NCO 4.3.2
+#ncpdq #16
+# two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
+# ncpdq -O -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in.nc out.nc
+# ncks  out.nc
+
+  $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+  $tst_cmd[1]="ncks -v two_dmn_rec_var %tmp_fl_00%";
+  $dsc_sng="Re-order 2D variable with record (no -C , MSA) -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var";
+  $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
+  $tst_cmd[3]="SS_OK";
+  if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+  $#tst_cmd=0; # Reset array     
   
     
 #####################

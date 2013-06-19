@@ -1,6 +1,9 @@
 2013-06-18 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #13  Re-order 2D variable with record (-C , no MSA) -v two_dmn_rec_var -C -a lev,time
+	* Add ncpdq test #14  Re-order 2D variable with record (no -C , no MSA) -v two_dmn_rec_var -a lev,time
+	* Add ncpdq test #15  Re-order 2D variable with record (-C , MSA) -v two_dmn_rec_var -a lev,time
+	* Add ncpdq test #16  Re-order 2D variable with record (no -C , MSA) -v two_dmn_rec_var -a lev,time  
 
 2013-06-17 Pedro Vicente  <pvicente@uci.edu>
 
