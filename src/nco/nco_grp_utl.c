@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.757 2013-06-20 00:34:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.758 2013-06-20 18:48:33 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5106,7 +5106,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         ...and current dimension is the first 
         ...then use the hyperslabed size 
         ...else define the dimension as record */
-        if (var_trv->flg_rdr && idx_dmn==0 && ( fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
+        if (var_trv->flg_rdr && idx_dmn==0 && fl_fmt != NC_FORMAT_NETCDF4){
 
           /* Must be ncpdq */
           assert(prg_id == ncpdq);

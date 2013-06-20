@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.296 2013-06-20 00:34:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.297 2013-06-20 18:48:33 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.296 2013-06-20 00:34:10 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.296 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.297 2013-06-20 18:48:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.297 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1198,7 +1198,7 @@ main(int argc,char **argv)
   if(IS_REORDER) (void)nco_dmn_rdr_trv(dmn_idx_out_in,nbr_var_prc,var_prc_out,trv_tbl);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl); 
+  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,rec_dmn_nm_out,trv_tbl); 
 
   /* Set chunksize parameters */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
