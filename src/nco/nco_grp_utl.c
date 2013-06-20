@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.759 2013-06-20 19:37:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.760 2013-06-20 20:40:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2174,7 +2174,7 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
             /* If the group dimension is a record dimension then the variable is a record variable */
             trv_tbl->lst[idx_var].is_rec_var=dmn_trv.is_rec_dmn;
 
-            if(dbg_lvl_get() == nco_dbg_old){
+            if(dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"%s: INFO %s <%s> is ",prg_nm_get(),fnc_nm,var_trv.nm_fll);
               if (dmn_trv.is_rec_dmn) (void)fprintf(stdout,"(record) ");
               (void)fprintf(stdout,"coordinate\n");
@@ -3567,6 +3567,8 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
  int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
+  int grp_id; /* [ID] Group ID */
+  int var_id; /* [ID] Variable ID */
   int idx_var;
   int nbr_xtr;
 
@@ -3593,9 +3595,6 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
     /* Filter variables  */
     if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
       trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
-
-      int grp_id; /* [ID] Group ID */
-      int var_id; /* [ID] Variable ID */
 
       /* Obtain group ID from API using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);

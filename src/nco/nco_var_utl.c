@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.340 2013-06-17 05:24:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.341 2013-06-20 20:40:46 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1648,7 +1648,11 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     var->end[idx]=dim[dmn_idx]->end;
     var->srd[idx]=dim[dmn_idx]->srd;
 
-    if(var->dmn_id[idx] == rec_dmn_id) var->is_rec_var=True; else var->sz_rec*=var->cnt[idx];
+    if(var->dmn_id[idx] == rec_dmn_id){
+      var->is_rec_var=True;
+    }else{
+      var->sz_rec*=var->cnt[idx];
+    }
 
     /* NB: dim[idx]->cid will be uninitialized unless dim[idx] is a coordinate 
     Hence divide this into to sequential if statements so valgrind does not
