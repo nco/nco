@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.760 2013-06-20 20:40:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.761 2013-06-20 20:47:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4669,7 +4669,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   var->id=var_id;
   var->nc_id=grp_id;
   var->is_crd_var=var_trv->is_crd_var;
-  var->is_rec_var=var_trv->is_rec_var;
+  
 
   /* Get type and number of dimensions and attributes for variable */
   (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
@@ -4716,6 +4716,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
  
     /* is_rec_dmn special case for netCDF4, use info from GTT dimension */
     dim->is_rec_dmn=dmn_trv->is_rec_dmn;
+
+    if (dmn_trv->is_rec_dmn) var->is_rec_var=True;
 
     /* The rest must match info from GTT dimension */
     assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
