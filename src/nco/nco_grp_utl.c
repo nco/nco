@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.761 2013-06-20 20:47:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.762 2013-06-20 23:51:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4714,8 +4714,11 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     /* Return a completed dmn_sct, use dimension ID and name from TRV object */
     dim=nco_dmn_fll(grp_id,dmn_id,dmn_trv->nm);
  
-    /* is_rec_dmn special case for netCDF4, use info from GTT dimension */
+    /* Use info from GTT unique dimension */
     dim->is_rec_dmn=dmn_trv->is_rec_dmn;
+
+    /* Use info from GTT variable dimension */
+    dim->is_crd_dmn=var_trv->var_dmn[dmn_idx].is_crd_var;
 
     if (dmn_trv->is_rec_dmn) var->is_rec_var=True;
 
@@ -4734,6 +4737,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->dim[dmn_idx]->end=dim->end;
     var->dim[dmn_idx]->srd=dim->srd;
     var->dim[dmn_idx]->cnt=dim->cnt;
+    var->dim[dmn_idx]->is_rec_dmn=dim->is_rec_dmn;
+    var->dim[dmn_idx]->is_crd_dmn=dim->is_crd_dmn;
 
     dim->xrf=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     dim->xrf->nm=(char *)strdup(dim->nm);
@@ -4743,6 +4748,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     dim->xrf->end=dim->end;
     dim->xrf->srd=dim->srd;
     dim->xrf->cnt=dim->cnt;
+    dim->xrf->is_rec_dmn=dim->is_rec_dmn;
+    dim->xrf->is_crd_dmn=dim->is_crd_dmn;
 
     var->dim[dmn_idx]->xrf=dim->xrf;
   } /* Get input and set output dimension sizes and names */
