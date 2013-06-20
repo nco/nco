@@ -1,3 +1,8 @@
+2013-06-19 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncpdq test #6 Re-order 3D variable with MSA -C -a lat,lon,time -v three_dmn_var_dbl 
+	* Add ncpdq test #7 Re-order 3D variable with MSA (stride) -a lat,lon,time -v three_dmn_var_dbl
+
 2013-06-19  Charlie Zender  <zender@uci.edu>
 
 	* Fix /proc/self/stat read types and add human-readable sizes for failed memory requests
