@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.756 2013-06-19 23:54:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.757 2013-06-20 00:34:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4601,9 +4601,9 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
  var_sct **var,                        /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
-  /* Purpose: Transfer variable type to table. Using var/xtr_nbr containing all variables (processed, fixed) */
+  /* Purpose: Transfer variable type to table */
 
-  /* Transfer variable information to table. Using var/xtr_nbr containing all variables (processed, fixed) */
+  /* Transfer variable information to table. */
   for(int idx_var=0;idx_var<xtr_nbr;idx_var++){
 
     nc_type typ_out;         /* [enm] Type in output file */

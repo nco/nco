@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.248 2013-06-18 10:11:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.249 2013-06-20 00:34:10 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.248 2013-06-18 10:11:57 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.248 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.249 2013-06-20 00:34:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.249 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -694,7 +694,7 @@ main(int argc,char **argv)
 
 #ifdef USE_TRV_API
 
-  /* Transfer variable type to table. Using var/xtr_nbr containing all variables (processed, fixed) */
+  /* Transfer variable type to table. NOTE: Using var/xtr_nbr containing all variables (processed, fixed) */
   (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);         
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */

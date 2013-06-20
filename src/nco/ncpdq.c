@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.295 2013-06-19 22:19:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.296 2013-06-20 00:34:10 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.295 2013-06-19 22:19:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.295 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.296 2013-06-20 00:34:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.296 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1187,11 +1187,12 @@ main(int argc,char **argv)
         aed_lst_scl_fct[idx].att_nm=scl_fct_sng;
       } /* endif packing */
     } /* end loop over var_prc */
+
+    /* Transfer variable type to table. NOTE: Using processed variables set with the nerw type  */
+    (void)nco_var_typ_trv(xtr_nbr,var_prc_out,trv_tbl);    
+
   } /* nco_pck_plc == nco_pck_plc_nil */
    
-
-  /* Transfer variable type to table. Using var/xtr_nbr containing all variables (processed, fixed) */
-  (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);    
 
   /* Transfer dimension re-order structures (index map) into GTT */
   if(IS_REORDER) (void)nco_dmn_rdr_trv(dmn_idx_out_in,nbr_var_prc,var_prc_out,trv_tbl);
