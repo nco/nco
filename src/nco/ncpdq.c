@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.297 2013-06-20 18:48:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.298 2013-06-20 21:02:16 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.297 2013-06-20 18:48:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.297 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.298 2013-06-20 21:02:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.298 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1135,6 +1135,28 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+
+  if (fl_in_fmt != NC_FORMAT_NETCDF4) {
+    /* Get record dimension ID of input file */
+    (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id_in);
+  }
+
+  /* If re-ordering, then in files with record dimension... */
+  if(IS_REORDER && rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
+    nbr_dmn_out=nbr_dmn_xtr;
+    /* ...which, if any, output dimension structure currently holds record dimension? */
+    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_out;dmn_out_idx++)
+      if(dmn_out[dmn_out_idx]->is_rec_dmn){
+        break;
+      }
+    if(dmn_out_idx != nbr_dmn_out){
+      dmn_out_idx_rec_in=dmn_out_idx;
+      /* Initialize output record dimension to input record dimension */
+      rec_dmn_nm_in=rec_dmn_nm_out=dmn_out[dmn_out_idx_rec_in]->nm;
+    }else{
+      dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED;
+    } /* end else */
+  } /* end if file contains record dimension */
 
 
   /* If re-ordering, determine and set new dimensionality in metadata of each re-ordered variable */
