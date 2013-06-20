@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.758 2013-06-20 18:48:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.759 2013-06-20 19:37:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5099,29 +5099,8 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* Define current index dimension size */
 
       /* If current dimension is to be defined as record dimension in output file */
-      if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
-
-        /* If variable needs dimension re-ordering
-        ...and file is netCDF3 
-        ...and current dimension is the first 
-        ...then use the hyperslabed size 
-        ...else define the dimension as record */
-        if (var_trv->flg_rdr && idx_dmn==0 && fl_fmt != NC_FORMAT_NETCDF4){
-
-          /* Must be ncpdq */
-          assert(prg_id == ncpdq);
-
-          /* Get size from GTT */
-          if(var_trv->var_dmn[idx_dmn].is_crd_var){
-            dmn_sz=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
-          }else {
-            dmn_sz=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
-          }
-
-          /* ..else define the dimension as record */
-        }else {
-          dmn_sz=NC_UNLIMITED;
-        }
+      if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){    
+        dmn_sz=NC_UNLIMITED;
         /* ! DFN_CRR_DMN_AS_REC_IN_OUTPUT */
       }else{
         /* Get size from GTT */
