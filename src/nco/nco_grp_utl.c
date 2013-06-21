@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.763 2013-06-21 01:58:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.764 2013-06-21 06:56:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5232,9 +5232,11 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 
   const char fnc_nm[]="nco_dmn_lst_ass_var_trv()"; /* [sng] Function name */
 
-  int nbr_dmn;  /* [nbr] Number of dimensions associated with variables to be extracted */
+  int nbr_dmn;      /* [nbr] Number of dimensions associated with variables to be extracted */
 
-  long dmn_cnt; /* [nbr] *Hyperslabbed* size of dimension */  
+  long dmn_cnt;     /* [nbr] *Hyperslabbed* size of dimension */  
+
+  nco_bool dmn_flg; /* [flg] Is dimension already inserted in output array  */  
 
   assert(prg_get() == ncpdq);
 
@@ -5257,6 +5259,8 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
       /* Loop variable dimensions  */
       for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++){
 
+        dmn_flg=False;
+
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_trv.var_dmn[idx_dmn_var].dmn_id,trv_tbl);
 
@@ -5273,38 +5277,43 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
               (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> already inserted\n",prg_nm_get(),fnc_nm,
                 var_trv.var_dmn[idx_dmn_var].dmn_id,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
             } 
+            
+            dmn_flg=True;
             break;
           }  /* Match by ID */
         } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
-        /* Add one more element to array */
-        (*dmn)[nbr_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+        /* If this dimension is not in output array */
+        if (dmn_flg == False){
 
-        /* Get size from GTT. NOTE use index idx_dmn_var */
-        if(var_trv.var_dmn[idx_dmn_var].is_crd_var){
-          dmn_cnt=var_trv.var_dmn[idx_dmn_var].crd->lmt_msa.dmn_cnt;
-          (*dmn)[nbr_dmn]->is_crd_dmn=True;
-        }else {
-          dmn_cnt=var_trv.var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_cnt;
-          (*dmn)[nbr_dmn]->is_crd_dmn=False;
-        }
+          /* Add one more element to array  */
+          (*dmn)[nbr_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
 
-        (*dmn)[nbr_dmn]->nm=(char *)strdup(var_trv.var_dmn[idx_dmn_var].dmn_nm);
-        (*dmn)[nbr_dmn]->nm_fll=(char *)strdup(var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);
-        (*dmn)[nbr_dmn]->id=var_trv.var_dmn[idx_dmn_var].dmn_id;
-        (*dmn)[nbr_dmn]->nc_id=nc_id;
-        (*dmn)[nbr_dmn]->xrf=NULL;
-        (*dmn)[nbr_dmn]->val.vp=NULL;
-        (*dmn)[nbr_dmn]->cid=-1; 
-        (*dmn)[nbr_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
-        (*dmn)[nbr_dmn]->cnk_sz=0L;
-        (*dmn)[nbr_dmn]->cnt=dmn_cnt;
-        (*dmn)[nbr_dmn]->srt=0L;
-        (*dmn)[nbr_dmn]->end=dmn_cnt-1L;
-        (*dmn)[nbr_dmn]->srd=1L;
+          /* Get size from GTT. NOTE use index idx_dmn_var */
+          if(var_trv.var_dmn[idx_dmn_var].is_crd_var){
+            dmn_cnt=var_trv.var_dmn[idx_dmn_var].crd->lmt_msa.dmn_cnt;
+            (*dmn)[nbr_dmn]->is_crd_dmn=True;
+          }else {
+            dmn_cnt=var_trv.var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_cnt;
+            (*dmn)[nbr_dmn]->is_crd_dmn=False;
+          }
 
-        nbr_dmn++;
+          (*dmn)[nbr_dmn]->nm=(char *)strdup(var_trv.var_dmn[idx_dmn_var].dmn_nm);
+          (*dmn)[nbr_dmn]->nm_fll=(char *)strdup(var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);
+          (*dmn)[nbr_dmn]->id=var_trv.var_dmn[idx_dmn_var].dmn_id;
+          (*dmn)[nbr_dmn]->nc_id=nc_id;
+          (*dmn)[nbr_dmn]->xrf=NULL;
+          (*dmn)[nbr_dmn]->val.vp=NULL;
+          (*dmn)[nbr_dmn]->cid=-1; 
+          (*dmn)[nbr_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
+          (*dmn)[nbr_dmn]->cnk_sz=0L;
+          (*dmn)[nbr_dmn]->cnt=dmn_cnt;
+          (*dmn)[nbr_dmn]->srt=0L;
+          (*dmn)[nbr_dmn]->end=dmn_cnt-1L;
+          (*dmn)[nbr_dmn]->srd=1L;
 
+          nbr_dmn++;
+        }  /* If this dimension is not in output array */
       } /* Loop variable dimensions  */
     } /* Filter variables  */
   } /* Loop table */
