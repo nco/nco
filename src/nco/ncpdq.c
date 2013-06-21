@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.302 2013-06-21 10:01:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.303 2013-06-21 23:28:22 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.302 2013-06-21 10:01:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.302 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.303 2013-06-21 23:28:22 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.303 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1097,8 +1097,31 @@ main(int argc,char **argv)
   /* If re-ordering */
   if(IS_REORDER){
 
+    /* Create structured list of re-ordering dimension names and IDs */
+    dmn_rdr_lst=nco_dmn_lst_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr);
+
     /* Form list of re-ordering dimensions from extracted input dimensions */
-    (void)nco_dmn_rdr_xtr(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,nbr_dmn_xtr,dim,&dmn_rdr,&dmn_rdr_nbr_utl,&dmn_rdr_nbr); 
+    dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
+    /* Loop over original number of re-order dimensions */
+    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
+      for(idx=0;idx<nbr_dmn_xtr;idx++){
+        if(!strcmp(dmn_rdr_lst[idx_rdr].nm,dim[idx]->nm)){
+          break;
+        }
+      } /* end loop over idx_rdr */
+      if(idx != nbr_dmn_xtr){
+        dmn_rdr[dmn_rdr_nbr_utl++]=dim[idx];
+      }else {
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
+      }
+    } /* end loop over idx_rdr */
+    dmn_rdr_nbr=dmn_rdr_nbr_utl;
+
+    /* Collapse extra dimension structure space to prevent accidentally using it */
+    dmn_rdr=(dmn_sct **)nco_realloc(dmn_rdr,dmn_rdr_nbr*sizeof(dmn_sct *));
+
+    /* Dimension list in name-ID format is no longer needed */
+    dmn_rdr_lst=nco_nm_id_lst_free(dmn_rdr_lst,dmn_rdr_nbr);
 
     /* Make sure re-ordering dimensions are specified no more than once */
     for(idx=0;idx<dmn_rdr_nbr;idx++){

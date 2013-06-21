@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.296 2013-06-21 01:58:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.297 2013-06-21 23:28:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -491,16 +491,6 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
-void
-nco_dmn_rdr_xtr                        /* [fnc] Form list of re-ordering dimensions from extracted input dimensions (ncpdq only) */
-(const int nc_id,                      /* I [id] netCDF file ID */
- char **dmn_rdr_lst_in,                /* I [sng] User-specified list of dimension names (-a) */
- int dmn_rdr_nbr,                      /* I [nbr] Total number of dimensions in list (-a) */
- const int nbr_dmn_xtr,                /* I [nbr] Number of dimensions associated associated with variables to be extracted  */
- dmn_sct **dim,                        /* I [sct] Array of dimensions associated associated with variables to be extracted  */
- dmn_sct ***dmn_rdr,                   /* O [sct] Dimension structures to be re-ordered */
- int *dmn_rdr_nbr_utl,                 /* O [nbr] Number of dimension to re-order, utilized */
- int *dmn_rdr_nbr_out);                /* O [nbr] Total number of dimensions to re-order */
 
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
