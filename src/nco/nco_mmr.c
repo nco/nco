@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.46 2013-06-19 21:31:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.47 2013-06-21 15:41:09 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -262,7 +262,12 @@ nco_mmr_stt /* [fnc] Track memory statistics */
 (const nco_mmr_typ_enm nco_mmr_typ, /* I [enm] Memory management type */
  const size_t sz) /* I [B] Bytes allocated, deallocated, or reallocated */
 {
-  /* Purpose: Track memory statistics */
+  /* Purpose: Track memory statistics
+     20130618: Maing problem with this is the nco_free() and nco_realloc() do 
+     not provide sufficent information to adjust the total.
+     Workarounds are to poll /proc/self/stat here, or to modify nco_free() and
+     nco_realloc() to optionally propagate net memory used or freed. */
+
   static long mll_nbr=0L; /* [nbr] Number of malloc() invocations */
   static long fre_nbr=0L; /* [nbr] Number of free() invocations */
   static long mmr_mll_ttl=0L; /* [B] Total memory malloc()'d */
@@ -352,7 +357,7 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
   long int utime,stime,cutime,cstime,priority,nice,num_threads;
   unsigned long int minflt,cminflt,majflt,cmajflt,itrealvalue,vsize,rss;
   unsigned long long int starttime;
-  comm=(char *)nco_malloc(100L*sizeof(char));
+  comm=(char *)nco_malloc(100UL*sizeof(char));
   if((fp_prc=fopen(fl_prc,"r")) == NULL){
     fscanf(fp_prc,"%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %ld %lu %llu %lu %lu",&pid,comm,&state,&ppid,&pgrp,&session,&tty_nr,&tpgid,&flags,&minflt,&cminflt,&majflt,&cmajflt,&utime,&stime,&cutime,&cstime,&priority,&nice,&num_threads,&itrealvalue,&starttime,&vsize,&rss);
   } /* !fl_prc */
