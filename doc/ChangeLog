@@ -3,6 +3,8 @@
 	* Add ncpdq test #19 Reverse/Re-order 3D variable -a -lat,-time -v three_dmn_var_dbl
 	* Add ncpdq test #20 Re-order several variables -a lat,time -v ty,three_dmn_rec_var (no MSA) Test 1
 	* Add ncpdq test #21 Re-order several variables -a lat,time -v ty,three_dmn_rec_var (no MSA) Test 2  
+	* Add ncpdq test #22 Re-order several variables -a lat,time -v ty,three_dmn_rec_var (MSA) Test 1 
+	* Add ncpdq test #23 Re-order several variables -a lat,time -v ty,three_dmn_rec_var (MSA) Test 2 
   
 2013-06-19 Pedro Vicente  <pvicente@uci.edu>
 
