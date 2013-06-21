@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.280 2013-06-21 08:08:35 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.281 2013-06-21 20:32:02 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2345,15 +2345,31 @@ print "\n";
     
 #NEW NCO 4.3.2
 #ncpdq #20
-#ncpdq -h -O -a lat,time -d time,1,1 -d lat,1,1 in.nc out.nc
+#three_dmn_rec_var(time,lat,lon);
+#ty(time,lat);
+#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc out.nc
     
-    $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,time -d time,1,1 -d lat,1,1 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks  -H -C -v three_dmn_var_dbl -d lon,3,3 %tmp_fl_00%";
-    $dsc_sng="Re-order all variables -a lat,time (MSA)";
-    $tst_cmd[2]="lat[0]=90 time[0]=2 lon[3]=270 three_dmn_var_dbl[3]=16";
+    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -v ty -d time,1,1 -d lat,1,1 %tmp_fl_00%";
+    $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var (no MSA) Test1";
+    $tst_cmd[2]="lat[1]=90 time[1]=2 ty[11]=4";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0; # Reset array          
+    $#tst_cmd=0; # Reset array   
+
+#NEW NCO 4.3.2
+#ncpdq #21 (same run as #20)
+#three_dmn_rec_var(time,lat,lon);
+#ty(time,lat);
+#ncpdq -h -O -a lat,time -v ty,three_dmn_rec_var in.nc out.nc
+    
+    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v ty,three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -v three_dmn_rec_var -d time,1,1 -d lat,1,1 -d lon,1,1 %tmp_fl_00%";
+    $dsc_sng="Re-order several variables -a lat,time -v ty,three_dmn_rec_var (no MSA) Test2";
+    $tst_cmd[2]="lat[1]=90 time[1]=2 lon[1]=90 three_dmn_rec_var[45]=14";
+    $tst_cmd[3]="SS_OK";
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    $#tst_cmd=0; # Reset array         
   
     
 #####################
