@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.63 2013-06-17 05:24:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.64 2013-06-21 23:07:12 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -55,7 +55,6 @@ nco_dmn_dpl /* [fnc] Duplicate input dimension structure */
 
   /* Make sure dmn_free() frees names when dimension is destructed */
   if(dmn->nm) dmn_cpy->nm=(char *)strdup(dmn->nm);
-  if(dmn->nm_fll) dmn_cpy->nm_fll=(char *)strdup(dmn->nm_fll);
 
   return dmn_cpy;
 } /* end nco_dmn_dpl() */
@@ -91,7 +90,6 @@ nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
   dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
   
   dmn->nm=(char *)strdup(dmn_nm);
-  dmn->nm_fll=NULL;
   dmn->id=dmn_id;
   dmn->nc_id=nc_id;
   dmn->xrf=NULL;

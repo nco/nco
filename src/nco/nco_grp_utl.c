@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.764 2013-06-21 06:56:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.765 2013-06-21 23:07:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2174,7 +2174,7 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
             /* If the group dimension is a record dimension then the variable is a record variable */
             trv_tbl->lst[idx_var].is_rec_var=dmn_trv.is_rec_dmn;
 
-            if(dbg_lvl_get() >= nco_dbg_dev){
+            if(dbg_lvl_get() == nco_dbg_old){
               (void)fprintf(stdout,"%s: INFO %s <%s> is ",prg_nm_get(),fnc_nm,var_trv.nm_fll);
               if (dmn_trv.is_rec_dmn) (void)fprintf(stdout,"(record) ");
               (void)fprintf(stdout,"coordinate\n");
@@ -5251,11 +5251,6 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
     /* If GTT variable object is to extract */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s transfering variable <%s>\n",prg_nm_get(),fnc_nm,
-          var_trv.nm_fll);        
-      } 
-
       /* Loop variable dimensions  */
       for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++){
 
@@ -5274,10 +5269,11 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
           if(var_trv.var_dmn[idx_dmn_var].dmn_id==(*dmn)[idx_dmn_out]->id){
 
             if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
               (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> already inserted\n",prg_nm_get(),fnc_nm,
                 var_trv.var_dmn[idx_dmn_var].dmn_id,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
             } 
-            
+
             dmn_flg=True;
             break;
           }  /* Match by ID */
@@ -5299,7 +5295,6 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
           }
 
           (*dmn)[nbr_dmn]->nm=(char *)strdup(var_trv.var_dmn[idx_dmn_var].dmn_nm);
-          (*dmn)[nbr_dmn]->nm_fll=(char *)strdup(var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);
           (*dmn)[nbr_dmn]->id=var_trv.var_dmn[idx_dmn_var].dmn_id;
           (*dmn)[nbr_dmn]->nc_id=nc_id;
           (*dmn)[nbr_dmn]->xrf=NULL;
@@ -5311,6 +5306,13 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
           (*dmn)[nbr_dmn]->srt=0L;
           (*dmn)[nbr_dmn]->end=dmn_cnt-1L;
           (*dmn)[nbr_dmn]->srd=1L;
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
+            (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> inserted\n",prg_nm_get(),fnc_nm,
+              var_trv.var_dmn[idx_dmn_var].dmn_id,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
+          } 
+
 
           nbr_dmn++;
         }  /* If this dimension is not in output array */
