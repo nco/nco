@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.301 2013-06-21 08:08:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.302 2013-06-21 10:01:05 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.301 2013-06-21 08:08:35 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.301 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.302 2013-06-21 10:01:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.302 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -776,7 +776,9 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_fix;idx++){
       /* Search all dimensions in variable for new record dimension */
       for(dmn_out_idx=0;dmn_out_idx<var_fix[idx]->nbr_dim;dmn_out_idx++)
-        if(!strcmp(var_fix[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)) break;
+        if(!strcmp(var_fix[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
+          break;
+        }
       /* ...Will variable be record variable in output file?... */
       if(dmn_out_idx == var_fix[idx]->nbr_dim){
         /* ...No. Variable will be non-record---does this change its status?... */
@@ -798,7 +800,9 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Search all dimensions in variable for new record dimension */
       for(dmn_out_idx=0;dmn_out_idx<var_prc_out[idx]->nbr_dim;dmn_out_idx++)
-        if(!strcmp(var_prc_out[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)) break;
+        if(!strcmp(var_prc_out[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
+          break;
+        }
       /* ...Will variable be record variable in output file?... */
       if(dmn_out_idx == var_prc_out[idx]->nbr_dim){
         /* ...No. Variable will be non-record---does this change its status?... */
@@ -1092,9 +1096,28 @@ main(int argc,char **argv)
  
   /* If re-ordering */
   if(IS_REORDER){
+
     /* Form list of re-ordering dimensions from extracted input dimensions */
-    (void)nco_dmn_rdr_xtr(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,nbr_dmn_xtr,dim,&dmn_rdr,&dmn_rdr_nbr_utl,&dmn_rdr_nbr);              
-  } 
+    (void)nco_dmn_rdr_xtr(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,nbr_dmn_xtr,dim,&dmn_rdr,&dmn_rdr_nbr_utl,&dmn_rdr_nbr); 
+
+    /* Make sure re-ordering dimensions are specified no more than once */
+    for(idx=0;idx<dmn_rdr_nbr;idx++){
+      for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
+        if(idx_rdr != idx){
+          if(dmn_rdr[idx]->id == dmn_rdr[idx_rdr]->id){
+            (void)fprintf(fp_stdout,"%s: ERROR %s specified more than once in reducing list\n",prg_nm,dmn_rdr[idx]->nm);
+            nco_exit(EXIT_FAILURE);
+          } /* end if */
+        } /* end if */
+      } /* end loop over idx_rdr */
+    } /* end loop over idx */
+
+    /* 20121009: fxm users should be allowed to sloppily specify more re-order than extracted dimensions */
+    if(dmn_rdr_nbr > nbr_dmn_xtr){
+      (void)fprintf(fp_stdout,"%s: ERROR More re-ordering dimensions than extracted dimensions\n",prg_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+  } /* If re-ordering */
 
   /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
@@ -1212,7 +1235,9 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_fix;idx++){
       /* Search all dimensions in variable for new record dimension */
       for(dmn_out_idx=0;dmn_out_idx<var_fix[idx]->nbr_dim;dmn_out_idx++)
-        if(!strcmp(var_fix[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)) break;
+        if(!strcmp(var_fix[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
+          break;
+        }
       /* ...Will variable be record variable in output file?... */
       if(dmn_out_idx == var_fix[idx]->nbr_dim){
         /* ...No. Variable will be non-record---does this change its status?... */
@@ -1234,7 +1259,9 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Search all dimensions in variable for new record dimension */
       for(dmn_out_idx=0;dmn_out_idx<var_prc_out[idx]->nbr_dim;dmn_out_idx++)
-        if(!strcmp(var_prc_out[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)) break;
+        if(!strcmp(var_prc_out[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
+          break;
+        }
       /* ...Will variable be record variable in output file?... */
       if(dmn_out_idx == var_prc_out[idx]->nbr_dim){
         /* ...No. Variable will be non-record---does this change its status?... */
