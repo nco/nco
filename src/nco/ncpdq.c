@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.298 2013-06-20 21:02:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.299 2013-06-21 01:58:27 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.298 2013-06-20 21:02:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.298 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.299 2013-06-21 01:58:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.299 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -712,7 +712,9 @@ main(int argc,char **argv)
   if(dmn_rdr_nbr > 0 && rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
     /* ...which, if any, output dimension structure currently holds record dimension? */
     for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_out;dmn_out_idx++)
-      if(dmn_out[dmn_out_idx]->is_rec_dmn) break;
+      if(dmn_out[dmn_out_idx]->is_rec_dmn){
+        break;
+      }
     if(dmn_out_idx != nbr_dmn_out){
       dmn_out_idx_rec_in=dmn_out_idx;
       /* Initialize output record dimension to input record dimension */
@@ -1074,14 +1076,12 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
-  /* Find number of dimensions associated with variables to be extracted  */
-  (void)nco_dmn_lst_ass_var_nbr_trv(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,trv_tbl,&nbr_dmn_xtr);
 
-  /* Allocate array  */
-  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  /* Allocate array of dimensions associated with variables to be extracted with maximum possible size */
+  dim=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));
 
   /* Find dimensions associated with variables to be extracted */
-  (void)nco_dmn_lst_ass_var_trv(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,trv_tbl,&nbr_dmn_xtr,&dim);
+  (void)nco_dmn_lst_ass_var_trv(in_id,trv_tbl,&nbr_dmn_xtr,&dim);
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));

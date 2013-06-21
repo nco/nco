@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.295 2013-06-18 10:11:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.296 2013-06-21 01:58:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -491,26 +491,6 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
-
-void
-nco_dmn_lst_ass_var_nbr_trv            /* [fnc] Find number of dimensions associated with variables to be extracted (ncpdq only) */
-(const int nc_id,                      /* I [id] netCDF file ID */
- char **dmn_rdr_lst_in,                /* I [sng] User-specified list of dimension names (-a) */
- const int dmn_rdr_nbr,                /* I [nbr] Total number of dimensions in list (-a) */
- trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
- int * const nbr_dmn_xtr);             /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
-
-
-void
-nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
-(const int nc_id,                      /* I [id] netCDF file ID */
- char **dmn_rdr_lst_in,                /* I [sng] User-specified list of dimension names (-a) */
- const int dmn_rdr_nbr,                /* I [nbr] Total number of dimensions in list (-a) */
- trv_tbl_sct * const trv_tbl,          /* I/O [sct] GTT (Group Traversal Table) */
- int * const nbr_dmn_xtr,              /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
- dmn_sct ***dim);                      /* O [sct] Array of dimensions associated associated with variables to be extracted  */
-
-
 void
 nco_dmn_rdr_xtr                        /* [fnc] Form list of re-ordering dimensions from extracted input dimensions (ncpdq only) */
 (const int nc_id,                      /* I [id] netCDF file ID */
@@ -567,6 +547,15 @@ nco_var_prc_msa_trv                    /* [fnc] Transfer MSA sizes from GTT to p
 (const int nbr_var_prc,                /* I [nbr] Number of processed variables */
  var_sct **var_prc,                    /* I/O [sct] Processed variables */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
+
+void
+nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ int *nbr_dmn_xtr,                     /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
+ dmn_sct ***dim);                      /* O [sct] Array of dimensions associated associated with variables to be extracted  */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
