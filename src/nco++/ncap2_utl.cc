@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.148 2013-04-23 07:09:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.149 2013-06-22 01:09:16 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -725,13 +725,6 @@ nco_var_lst_copy      /* [fnc] Purpose: Copy xtr_lst and return new list */
     xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
     xtr_new_lst[idx].id=xtr_lst[idx].id;
 
-    /* netCDF3/netCDF4 compat */
-    xtr_new_lst[idx].grp_nm_fll=(char *)strdup("/");
-    char var_nm_fll[NC_MAX_NAME+1];
-    strcpy(var_nm_fll,"/");
-    strcat(var_nm_fll,xtr_new_lst[idx].nm);
-    xtr_new_lst[idx].var_nm_fll=(char *)strdup(var_nm_fll); 
-
 
   } /* end loop over variable */
   return xtr_new_lst;           
@@ -764,12 +757,6 @@ nco_var_lst_sub
     xtr_new_lst[xtr_nbr_new].nm=(char *)strdup(xtr_lst[idx].nm);
     xtr_new_lst[xtr_nbr_new].id=xtr_lst[idx].id;
 
-    /* netCDF3/netCDF4 compat */
-    xtr_new_lst[xtr_nbr_new].grp_nm_fll=(char *)strdup("/");
-    char var_nm_fll[NC_MAX_NAME+1];
-    strcpy(var_nm_fll,"/");
-    strcat(var_nm_fll,xtr_new_lst[xtr_nbr_new].nm);
-    xtr_new_lst[xtr_nbr_new].var_nm_fll=(char *)strdup(var_nm_fll); 
 
     /* Increment */
     xtr_nbr_new++;
@@ -808,12 +795,6 @@ nco_var_lst_add
       xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
       xtr_new_lst[idx].id=xtr_lst[idx].id;
 
-      /* netCDF3/netCDF4 compat */
-      xtr_new_lst[idx].grp_nm_fll=(char *)strdup("/");
-      char var_nm_fll[NC_MAX_NAME+1];
-      strcpy(var_nm_fll,"/");
-      strcat(var_nm_fll,xtr_new_lst[idx].nm);
-      xtr_new_lst[idx].var_nm_fll=(char *)strdup(var_nm_fll); 
 
     } /* end loop over variables */
   }else{
@@ -830,12 +811,6 @@ nco_var_lst_add
     xtr_new_lst[xtr_nbr_crr].nm=(char *)strdup(xtr_lst_a[idx].nm);
     xtr_new_lst[xtr_nbr_crr].id=xtr_lst_a[idx].id;
 
-    /* netCDF3/netCDF4 compat */
-    xtr_new_lst[xtr_nbr_crr].grp_nm_fll=(char *)strdup("/");
-    char var_nm_fll[NC_MAX_NAME+1];
-    strcpy(var_nm_fll,"/");
-    strcat(var_nm_fll,xtr_new_lst[xtr_nbr_crr].nm);
-    xtr_new_lst[xtr_nbr_crr].var_nm_fll=(char *)strdup(var_nm_fll); 
 
     xtr_nbr_crr++;
 
@@ -863,12 +838,7 @@ nco_dmn_lst /* [fnc] Create list of all dimensions in file  */
     dmn[idx].id=idx;
     dmn[idx].nm=(char *)strdup(dmn_nm);
 
-    /* netCDF3/netCDF4 compat */
-    dmn[idx].grp_nm_fll=(char *)strdup("/");
-    char var_nm_fll[NC_MAX_NAME+1];
-    strcpy(var_nm_fll,"/");
-    strcat(var_nm_fll,dmn[idx].nm);
-    dmn[idx].var_nm_fll=(char *)strdup(var_nm_fll); 
+    
 
   } /* end loop over dmn */
   
@@ -906,14 +876,7 @@ nco_att_lst_mk
       /* fxm mmr TODO 491: memory leak xtr_lst */
       xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(size+1)*sizeof(nm_id_sct));
       xtr_lst[size].id=var_id;
-      xtr_lst[size].nm=(char *)strdup(var_nm);
-
-      /* netCDF3/netCDF4 compat */ 
-      xtr_lst[size].grp_nm_fll=(char *)strdup("/"); 
-      char var_nm_fll[NC_MAX_NAME+1]; 
-      strcpy(var_nm_fll,"/"); 
-      strcat(var_nm_fll, xtr_lst[size].nm); 
-      xtr_lst[size].var_nm_fll=(char *)strdup(var_nm_fll);  
+      xtr_lst[size].nm=(char *)strdup(var_nm); 
 
       /* Increment */
       size++;

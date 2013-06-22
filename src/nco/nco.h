@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.341 2013-06-21 23:07:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.342 2013-06-22 01:09:16 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -495,8 +495,6 @@ extern "C" {
   
   /* Name ID structure */
   typedef struct{ /* nm_id_sct */
-    char *grp_nm_fll; /* Fully qualified group where variable resides */
-    char *var_nm_fll; /* Fully qualified variable name */
     char *nm; /* Variable (stub name) */
     int id; /* [id] Variable ID */
     int grp_id_in; /* [id] Group ID in input file */
@@ -593,29 +591,6 @@ extern "C" {
     size_t sz; /* [nbr] Chunk size */
     nco_bool is_usr_spc_cnk; /* [flg] Chunk size was user-specified */
   } cnk_sct;
-
-  /* Fill actual value of dmn_sct structure in nco_dmn_fll()
-     free() each pointer member of dmn_sct structure in nco_dmn_free()
-     deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
-  /* Dimension structure */
-  typedef struct dmn_sct_tag{ /* dmn_sct */
-    char *nm; /* [sng] Dimension name */
-    char fmt[5]; /* [sng] Hint for printf()-style formatting */
-    int cid; /* [id] Variable ID of associated coordinate, if any */
-    int id; /* [id] Dimension ID */
-    int nc_id; /* [id] File ID */
-    long cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
-    long end; /* [idx] Index to end of hyperslab */
-    long srd; /* [nbr] Stride of hyperslab */
-    long srt; /* [idx] Index to start of hyperslab */
-    long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
-    nc_type type; /* [enm] Type of coordinate, if applicable */
-    ptr_unn val; /* [sct] Buffer to hold hyperslab fxm: is this ever used? */
-    short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
-    short is_rec_dmn; /* [flg] Is this the record dimension? */
-    size_t cnk_sz; /* [nbr] Chunk size */
-    struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
-  } dmn_sct; /* end dmn_sct_tag */
 
   
   /* Group Path Editing (GPE) structure */
@@ -810,7 +785,28 @@ extern "C" {
     not_checked /* 2 */
   } monotonic_direction_enm;
 
-  
+  /* Fill actual value of dmn_sct structure in nco_dmn_fll()
+  free() each pointer member of dmn_sct structure in nco_dmn_free()
+  deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
+  /* Dimension structure */
+  typedef struct dmn_sct_tag{ /* dmn_sct */
+    char *nm; /* [sng] Dimension name */
+    char fmt[5]; /* [sng] Hint for printf()-style formatting */
+    int cid; /* [id] Variable ID of associated coordinate, if any */
+    int id; /* [id] Dimension ID */
+    int nc_id; /* [id] File ID */
+    long cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
+    long end; /* [idx] Index to end of hyperslab */
+    long srd; /* [nbr] Stride of hyperslab */
+    long srt; /* [idx] Index to start of hyperslab */
+    long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
+    nc_type type; /* [enm] Type of coordinate, if applicable */
+    ptr_unn val; /* [sct] Buffer to hold hyperslab fxm: is this ever used? */
+    short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
+    short is_rec_dmn; /* [flg] Is this the record dimension? */
+    size_t cnk_sz; /* [nbr] Chunk size */
+    struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
+  } dmn_sct; /* end dmn_sct_tag */
   
   /* Initialize default value of each member of var_sct structure in var_dfl_set()
      Fill actual value of var_sct structure in nco_var_fll()

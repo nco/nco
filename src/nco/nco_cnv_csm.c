@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.59 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.60 2013-06-22 01:09:16 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -207,11 +207,6 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
 	      xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
 	      xtr_lst[*xtr_nbr].nm=(char *)strdup(crd_lst[idx_crd]);
 	      xtr_lst[*xtr_nbr].id=crd_id;
-        xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
-        char var_nm_fll[NC_MAX_NAME+1];
-        strcpy(var_nm_fll,"/");
-        strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
-        xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
 	      (*xtr_nbr)++; /* NB: Changes size of current loop! */
 	      /* Continue to next coordinate in loop */
 	      continue;

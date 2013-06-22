@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.167 2013-04-29 03:12:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.168 2013-06-22 01:09:16 pvicente Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.167 2013-04-29 03:12:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.167 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.168 2013-06-22 01:09:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.168 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -821,16 +821,8 @@ main(int argc,char **argv)
         xtr_lst[xtr_nbr].nm=(char *)strdup(dmn_item->nm);
         xtr_lst[xtr_nbr].id=dmn_item->cid;
 
-        /* netCDF3/netCDF4 compat */
-        xtr_lst[xtr_nbr].grp_nm_fll=(char *)strdup("/");
-        char var_nm_fll[NC_MAX_NAME+1];
-        strcpy(var_nm_fll,"/");
-        strcat(var_nm_fll,xtr_lst[xtr_nbr].nm);
-        xtr_lst[xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll); 
-
         /* Increment */
         xtr_nbr++;
-
 
       } /* endif */
     } /* end loop over idx */	      

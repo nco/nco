@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.766 2013-06-21 23:28:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.767 2013-06-22 01:09:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1051,9 +1051,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
   nbr_tbl=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr){
-      xtr_lst[nbr_tbl].var_nm_fll=(char *)strdup(trv_tbl->lst[uidx].nm_fll);
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
-      xtr_lst[nbr_tbl].grp_nm_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
       /* 20130213: Necessary to allow MM3->MM4 and MM4->MM3 workarounds
       Store in/out group IDs as determined in nco_xtr_dfn() 
       In MM3/4 cases, either grp_in_id or grp_out_id are always root
@@ -1248,65 +1246,9 @@ nco_xtr_lst_prn                            /* [fnc] Print name-ID structure list
   (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",prg_nm_get(),nm_id_nbr); 
   for(int idx=0;idx<nm_id_nbr;idx++){
     nm_id_sct nm_id=nm_id_lst[idx];
-    (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.var_nm_fll); 
+    (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.nm); 
   } 
 }/* end nco_xtr_lst_prn() */
-
-void 
-nco_nm_id_cmp                         /* [fnc] Compare 2 name-ID structure lists */
-(nm_id_sct * const nm_id_lst1,        /* I [sct] Name-ID structure list */
- const int nm_id_nbr1,                /* I [nbr] Number of name-ID structures in list */
- nm_id_sct * const nm_id_lst2,        /* I [sct] Name-ID structure list */
- const int nm_id_nbr2,                /* I [nbr] Number of name-ID structures in list */
- const nco_bool SAME_ORDER)           /* I [flg] Both lists have the same order */
-{
-  int idx,jdx;
-  assert(nm_id_nbr1 == nm_id_nbr2);
-  if(SAME_ORDER){
-    for(idx=0;idx<nm_id_nbr1;idx++){
-      assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[idx].nm) == 0);
-      assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[idx].grp_nm_fll) == 0);
-      assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[idx].var_nm_fll) == 0);
-    }
-  }else{ /* SAME_ORDER */
-
-    int nm_id_nbr=0;
-    for(idx=0;idx<nm_id_nbr1;idx++){
-      nm_id_sct nm_id_1=nm_id_lst1[idx];
-      for(jdx=0;jdx<nm_id_nbr2;jdx++){
-        nm_id_sct nm_id_2=nm_id_lst2[jdx];
-        if(strcmp(nm_id_1.var_nm_fll,nm_id_2.var_nm_fll) == 0){
-          nm_id_nbr++;
-          assert(strcmp(nm_id_lst1[idx].nm,nm_id_lst2[jdx].nm) == 0);
-          assert(strcmp(nm_id_lst1[idx].grp_nm_fll,nm_id_lst2[jdx].grp_nm_fll) == 0);
-          assert(strcmp(nm_id_lst1[idx].var_nm_fll,nm_id_lst2[jdx].var_nm_fll) == 0);
-        }
-      }/* jdx */
-    }/* idx */
-    assert(nm_id_nbr == nm_id_nbr1);
-  } /* SAME_ORDER */
-} /* end nco_nm_id_cmp() */
-
-void
-nco_trv_tbl_chk                       /* [fnc] Validate trv_tbl_sct from a nm_id_sct input */
-(const int nc_id,                     /* I [id] netCDF file ID */
- nm_id_sct * const xtr_lst,           /* I [sct] Extraction list  */
- const int xtr_nbr,                   /* I [nbr] Number of variables in extraction list */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
- const nco_bool NM_ID_SAME_ORDER)     /* I [flg] Both nm_id_sct have the same order */
-{
-  nm_id_sct *xtr_lst_chk=NULL;
-  int xtr_nbr_chk;
-
-  if(dbg_lvl_get() == nco_dbg_old){
-    (void)nco_xtr_lst_prn(xtr_lst,xtr_nbr);
-    (void)trv_tbl_prn_xtr(trv_tbl,"nco_trv_tbl_chk()");
-  }
-  xtr_lst_chk=nco_trv_tbl_nm_id(nc_id,&xtr_nbr_chk,trv_tbl);
-  (void)nco_nm_id_cmp(xtr_lst_chk,xtr_nbr_chk,xtr_lst,xtr_nbr,NM_ID_SAME_ORDER);
-  if(xtr_lst_chk != NULL)xtr_lst_chk=nco_nm_id_lst_free(xtr_lst_chk,xtr_nbr_chk);
-  return;
-} /* end nco_trv_tbl_chk() */
 
 
 

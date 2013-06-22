@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.64 2013-06-21 23:07:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.65 2013-06-22 01:09:16 pvicente Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -222,13 +222,6 @@ nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
     /* Copy name and then get requested dimension ID from input file */
     dmn_lst[idx].nm=(char *)strdup(dmn_lst_in[idx]);
 
-    /* netCDF3/netCDF4 compat */
-    dmn_lst[idx].grp_nm_fll=(char *)strdup("/");
-    char var_nm_fll[NC_MAX_NAME+1];
-    strcpy(var_nm_fll,"/");
-    strcat(var_nm_fll,dmn_lst[idx].nm);
-    dmn_lst[idx].var_nm_fll=(char *)strdup(var_nm_fll);
-
     (void)nco_inq_dimid(nc_id,dmn_lst[idx].nm,&dmn_lst[idx].id);
   } /* end loop over idx */
   
@@ -407,13 +400,6 @@ nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input
             (void)nco_inq_dimname(nc_id,idx_dmn_in,dmn_nm);
             dmn[*nbr_dmn].id=idx_dmn_in;
             dmn[*nbr_dmn].nm=(char *)strdup(dmn_nm);
-
-            /* netCDF3/netCDF4 compat */
-            dmn[*nbr_dmn].grp_nm_fll=(char *)strdup("/");
-            char var_nm_fll[NC_MAX_NAME+1];
-            strcpy(var_nm_fll,"/");
-            strcat(var_nm_fll,dmn[*nbr_dmn].nm);
-            dmn[*nbr_dmn].var_nm_fll=(char *)strdup(var_nm_fll);
 
             (*nbr_dmn)++;
           } /* end if dimension was not found in current output dimension list */

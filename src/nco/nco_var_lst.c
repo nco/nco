@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.151 2013-06-14 02:56:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.152 2013-06-22 01:09:16 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -39,13 +39,6 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     (void)nco_inq_varname(nc_id,idx,var_nm);
     var_lst_all[idx].nm=(char *)strdup(var_nm);
     var_lst_all[idx].id=idx;
-
-    /* netCDF3/netCDF4 compability */
-    char var_nm_fll[NC_MAX_NAME+1];
-    var_lst_all[idx].grp_nm_fll=(char *)strdup("/");
-    strcpy(var_nm_fll,"/");
-    strcat(var_nm_fll,var_lst_all[idx].nm);
-    var_lst_all[idx].var_nm_fll=(char *)strdup(var_nm_fll);
   } /* end loop over idx */
   
   /* Return all variables if none were specified and not -c ... */
@@ -110,8 +103,6 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     /* Copy variable to extraction list */
     if(var_xtr_rqs[idx]){
       xtr_lst[var_nbr_tmp].nm=(char *)strdup(var_lst_all[idx].nm);
-      xtr_lst[var_nbr_tmp].var_nm_fll=(char *)strdup(var_lst_all[idx].var_nm_fll);
-      xtr_lst[var_nbr_tmp].grp_nm_fll=(char *)strdup(var_lst_all[idx].grp_nm_fll);
       xtr_lst[var_nbr_tmp].id=var_lst_all[idx].id;
       var_nbr_tmp++;
     } /* end if */
@@ -164,11 +155,7 @@ nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
     if(lst_idx == nbr_xcl){
       xtr_lst[*xtr_nbr].nm=(char *)strdup(var_nm);
       xtr_lst[*xtr_nbr].id=idx;
-      xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
-      char var_nm_fll[NC_MAX_NAME+1];
-      strcpy(var_nm_fll,"/");
-      strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
-      xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
+     
       ++*xtr_nbr;
     } /* end if */
   } /* end loop over idx */
@@ -278,11 +265,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
         /*	xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));*/
         xtr_lst[*xtr_nbr].nm=(char *)strdup(crd_nm);
         xtr_lst[*xtr_nbr].id=crd_id;
-        xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
-        char var_nm_fll[NC_MAX_NAME+1];
-        strcpy(var_nm_fll,"/");
-        strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
-        xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
+       
         (*xtr_nbr)++;
       } /* end if */
     } /* end if */
@@ -359,11 +342,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
                 xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
                 xtr_lst[*xtr_nbr].nm=(char *)strdup(crd_lst[idx_crd]);
                 xtr_lst[*xtr_nbr].id=crd_id;
-                xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
-                char var_nm_fll[NC_MAX_NAME+1];
-                strcpy(var_nm_fll,"/");
-                strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
-                xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
+               
                 (*xtr_nbr)++; /* NB: Changes size of current loop! */
                 /* Continue to next coordinate in loop */
                 continue;
@@ -446,11 +425,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
                 xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
                 xtr_lst[*xtr_nbr].nm=(char *)strdup(bnd_lst[idx_bnd]);
                 xtr_lst[*xtr_nbr].id=bnd_id;
-                xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
-                char var_nm_fll[NC_MAX_NAME+1];
-                strcpy(var_nm_fll,"/");
-                strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
-                xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
+               
                 (*xtr_nbr)++; /* NB: Changes size of current loop! */
                 /* Continue to next coordinate in loop */
                 continue;
@@ -524,11 +499,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
             xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
             xtr_lst[*xtr_nbr].nm=(char *)strdup(dmn_nm);
             xtr_lst[*xtr_nbr].id=crd_id;
-            xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
-            char var_nm_fll[NC_MAX_NAME+1];
-            strcpy(var_nm_fll,"/");
-            strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
-            xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
+            
             (*xtr_nbr)++; /* NB: Changes size of current loop! */
             break;
           } /* end if */
@@ -599,11 +570,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
                 xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
                 xtr_lst[*xtr_nbr].nm=(char *)strdup(crd_lst[idx_crd]);
                 xtr_lst[*xtr_nbr].id=crd_id;
-                xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
-                char var_nm_fll[NC_MAX_NAME+1];
-                strcpy(var_nm_fll,"/");
-                strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
-                xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
+               
                 (*xtr_nbr)++; /* NB: Changes size of current loop! */
                 /* Continue to next coordinate in loop */
                 continue;
@@ -680,11 +647,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
                 xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*xtr_nbr+1)*sizeof(nm_id_sct));
                 xtr_lst[*xtr_nbr].nm=(char *)strdup(bnd_lst[idx_bnd]);
                 xtr_lst[*xtr_nbr].id=bnd_id;
-                xtr_lst[*xtr_nbr].grp_nm_fll=(char *)strdup("/");
-                char var_nm_fll[NC_MAX_NAME+1];
-                strcpy(var_nm_fll,"/");
-                strcat(var_nm_fll,xtr_lst[*xtr_nbr].nm);
-                xtr_lst[*xtr_nbr].var_nm_fll=(char *)strdup(var_nm_fll);
+              
                 (*xtr_nbr)++; /* NB: Changes size of current loop! */
                 /* Continue to next coordinate in loop */
                 continue;
