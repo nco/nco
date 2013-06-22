@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.775 2013-06-22 05:27:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.776 2013-06-22 21:21:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5148,3 +5148,43 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 
   return;
 } /* end nco_dmn_lst_ass_var_trv() */
+
+
+void
+nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable */
+(const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
+ const int nbr_var_prc,               /* I [nbr] Number of processed variables */
+ var_sct **var_prc)                   /* I/O [sct] Processed variables */
+{
+  /* Purpose: Determine and set new dimensionality in metadata of each re-ordered variable */
+
+  const char fnc_nm[]="nco_var_dmn_rdr_mtd_trv()"; /* [sng] Function name */
+
+  /* Loop processed variables */
+  for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
+
+    /* Loop table */
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      trv_sct var_trv=trv_tbl->lst[idx_tbl];
+
+      /* Match by full variable name  */
+      if(strcmp(var_prc[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
+
+        assert(var_trv.nco_typ == nco_obj_typ_var);
+        assert(var_trv.flg_xtr); 
+
+
+
+
+
+
+
+      } /* Match by full variable name  */
+    } /* Loop table */
+  } /* Loop processed variables */
+
+  return;
+
+} /* nco_var_dmn_rdr_mtd_trv() */
+
+

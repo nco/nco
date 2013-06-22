@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.299 2013-06-22 05:27:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.300 2013-06-22 21:21:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -524,6 +524,12 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
  int *nbr_dmn_xtr,                     /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
  dmn_sct ***dim);                      /* O [sct] Array of dimensions associated associated with variables to be extracted  */
 
+
+void
+nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable */
+(const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
+ const int nbr_var_prc,               /* I [nbr] Number of processed variables */
+ var_sct **var_prc);                  /* I/O [sct] Processed variables */
 
 #ifdef __cplusplus
 } /* end extern "C" */
