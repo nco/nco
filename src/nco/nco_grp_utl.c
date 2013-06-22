@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.771 2013-06-22 02:26:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.772 2013-06-22 03:14:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4414,7 +4414,14 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Get dimension IDs from input file */
   (void)nco_inq_vardimid(var->nc_id,var->id,var->dmn_id); 
 
-  /* Get input and set output dimension sizes and names */
+  /* Size defaults to 1 in var_dfl_set(), and set to 1 here for extra safety */
+  var->sz=1L;
+  var->sz_rec=1L;
+
+  /* Uninitialized values */ 
+  var->cid=-1;
+
+  /* Loop dimensions */
   for(int idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
 
     /* Dimension ID for variable, used to get dimension object in input list  */
@@ -4431,12 +4438,19 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     assert(dmn_sz == dmn_trv->sz);
     assert(strcmp(dmn_nm,dmn_trv->nm) == 0);
 
-    /* Return a completed dmn_sct, use dimension ID and name from TRV object */
-    dim=nco_dmn_fll(grp_id,dmn_id,dmn_trv->nm);
- 
-    /* Use info from GTT unique dimension */
-    dim->is_rec_dmn=dmn_trv->is_rec_dmn;
+    /* Get hyperslabed count */
+    if(var_trv->var_dmn[idx_dmn].crd){
+      cnt[idx_dmn]=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+    }
+    else if (var_trv->var_dmn[idx_dmn].ncd){
+      cnt[idx_dmn]=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+    }
 
+    var->cnt[idx_dmn]=cnt[idx_dmn];
+    var->srt[idx_dmn]=0L;
+    var->srd[idx_dmn]=1L;
+    var->sz*=var->cnt[idx_dmn];
+    
     /* This definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */
     if (dmn_trv->is_rec_dmn){
       var->is_rec_var=True;
@@ -4444,16 +4458,20 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
       var->sz_rec*=var->cnt[idx_dmn];
     }
 
+    /* Return a completed dmn_sct, use dimension ID and name from TRV object */
+    dim=nco_dmn_fll(grp_id,dmn_id,dmn_trv->nm);
+ 
+    /* Use info from GTT unique dimension */
+    dim->is_rec_dmn=dmn_trv->is_rec_dmn;
+
      /* Use info from GTT variable dimension */
     dim->is_crd_dmn=var_trv->var_dmn[idx_dmn].is_crd_var;
 
-
     /* The rest must match info from GTT dimension */
     assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
-    assert(dim->sz == dmn_trv->sz);
     assert(strcmp(dim->nm,dmn_trv->nm) == 0);
-    assert(dim->id == var->dmn_id[idx_dmn]);
-    assert(dim->end == dmn_trv->sz-1L);
+    assert(dim->sz == dmn_trv->sz);  
+    assert(dim->id == var->dmn_id[idx_dmn]);  
 
     var->dim[idx_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     var->dim[idx_dmn]->nm=(char *)strdup(dim->nm);
@@ -4462,7 +4480,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->dim[idx_dmn]->srt=dim->srt;
     var->dim[idx_dmn]->end=dim->end;
     var->dim[idx_dmn]->srd=dim->srd;
-    var->dim[idx_dmn]->cnt=dim->cnt;
+    var->dim[idx_dmn]->cnt=var->cnt[idx_dmn];
     var->dim[idx_dmn]->is_rec_dmn=dim->is_rec_dmn;
     var->dim[idx_dmn]->is_crd_dmn=dim->is_crd_dmn;
 
@@ -4478,7 +4496,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     dim->xrf->is_crd_dmn=dim->is_crd_dmn;
 
     var->dim[idx_dmn]->xrf=dim->xrf;
-  } /* Get input and set output dimension sizes and names */
+
+  } /* Loop dimensions */
 
 
   /* Type in memory begins as same type as on disk */
@@ -4508,34 +4527,6 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     if(idx_dmn != var->nbr_dim) break;
   } /* Check variable for duplicate dimensions */
 
-  /* Initialize start, count */
-  for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-    if(var_trv->var_dmn[idx_dmn].crd){
-      cnt[idx_dmn]=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
-    }
-    else if (var_trv->var_dmn[idx_dmn].ncd){
-      cnt[idx_dmn]=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
-    }
-  }
-
-  /* Size defaults to 1 in var_dfl_set(), and set to 1 here for extra safety */
-  var->sz=1L; 
-  for(int idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
-
-    (void)nco_inq_dimname(grp_id,var->dmn_id[idx_dmn],dmn_nm);
-
-    var->cnt[idx_dmn]=cnt[idx_dmn];
-    var->srt[idx_dmn]=0L;
-    var->srd[idx_dmn]=1L;
-    var->sz*=var->cnt[idx_dmn];
-
-    var->dim[idx_dmn]->cnt=var->cnt[idx_dmn];
-
-    /* These were set above */
-    assert(var->dim[idx_dmn]->srt == var->srt[idx_dmn]);
-    assert(var->dim[idx_dmn]->srd == var->srd[idx_dmn]);
-
-  } /* end loop over dim */
 
   /* Variables associated with "bounds" and "coordinates" attributes should, in most cases, be treated as coordinates */
   if(nco_is_spc_in_bnd_att(var->nc_id,var->id)) var->is_crd_var=True;
