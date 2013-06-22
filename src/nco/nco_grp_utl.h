@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.298 2013-06-22 01:09:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.299 2013-06-22 05:27:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -515,12 +515,6 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
  const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
  var_sct **var_prc_out,                /* I [sct] Processed variables */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
-
-void
-nco_var_prc_msa_trv                    /* [fnc] Transfer MSA sizes from GTT to processed variables */
-(const int nbr_var_prc,                /* I [nbr] Number of processed variables */
- var_sct **var_prc,                    /* I/O [sct] Processed variables */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 
 void

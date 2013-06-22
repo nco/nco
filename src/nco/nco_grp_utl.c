@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.774 2013-06-22 03:33:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.775 2013-06-22 05:27:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5037,73 +5037,6 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
 
 } /* end nco_dmn_rdr_trv() */
 
-
-void
-nco_var_prc_msa_trv                    /* [fnc] Transfer MSA sizes from GTT to processed variables */
-(const int nbr_var_prc,                /* I [nbr] Number of processed variables */
- var_sct **var_prc,                    /* I/O [sct] Processed variables */
- const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
-{
-  /* Purpose: Transfer MSA sizes from GTT to processed variables */
-
-  const char fnc_nm[]="nco_var_prc_msa_trv()"; /* [sng] Function name */
-
-  long dmn_cnt; /* [nbr] *Hyperslabbed* size of dimension */  
-  long sz;      /* [nbr] Total number of elements in hyperslabs */
-
-  sz=1;
-
-  /* Loop processed variables */
-  for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
-
-    /* Loop table */
-    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-      trv_sct var_trv=trv_tbl->lst[idx_var];
-
-      /* If GTT variable object is to extract */
-      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
-
-        /* Match by full variable name  */
-        if(strcmp(var_prc[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
-
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s transfering variable <%s>\n",prg_nm_get(),fnc_nm,
-              var_trv.nm_fll);        
-          } 
-
-          assert(var_trv.nbr_dmn==var_prc[idx_var_prc]->nbr_dim);
-
-          /* Loop variable dimensions */
-          for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
-
-            /* Get size from GTT. NOTE use index idx_var_dmn */
-            if(var_trv.var_dmn[idx_var_dmn].is_crd_var){
-              dmn_cnt=var_trv.var_dmn[idx_var_dmn].crd->lmt_msa.dmn_cnt;
-            }else {
-              dmn_cnt=var_trv.var_dmn[idx_var_dmn].ncd->lmt_msa.dmn_cnt;
-            }
-
-            /* Transfer hyperslabed size for each dimension */
-            var_prc[idx_var_prc]->cnt[idx_var_dmn]=dmn_cnt;
-            var_prc[idx_var_prc]->end[idx_var_dmn]=dmn_cnt-1;
-
-            var_prc[idx_var_prc]->dim[idx_var_dmn]->cnt=dmn_cnt;
-            var_prc[idx_var_prc]->dim[idx_var_dmn]->end=dmn_cnt-1;
-            sz*=dmn_cnt;
-
-          } /* Loop variable dimensions */
-
-          /* Transfer total hyperslabed size */
-          var_prc[idx_var_prc]->sz=sz;
-
-        } /* Match by full variable name  */
-      } /* If GTT variable object is to extract */
-    } /* Loop table */
-  } /* Loop processed variables */
-
-  return;
-
-} /* end nco_var_prc_msa_trv() */
 
 
 void

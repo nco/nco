@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.303 2013-06-21 23:28:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.304 2013-06-22 05:27:54 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.303 2013-06-21 23:28:22 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.303 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.304 2013-06-22 05:27:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.304 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1401,42 +1401,6 @@ main(int argc,char **argv)
 
   /* Close first input netCDF file */
   nco_close(in_id);
-
-  /* Refresh var_prc with dim_out data */
-  for(idx=0;idx<nbr_var_prc;idx++){
-    long sz;
-    long sz_rec;
-    sz=1;
-    sz_rec=1;
-    var_sct *var_tmp;
-    (void)nco_xrf_dmn(var_prc[idx]);
-    var_tmp=var_prc[idx];
-
-    for(jdx=0;jdx<var_tmp->nbr_dim;jdx++){
-      var_tmp->srt[jdx]=var_tmp->dim[jdx]->srt; 
-      var_tmp->end[jdx]=var_tmp->dim[jdx]->end;
-      var_tmp->cnt[jdx]=var_tmp->dim[jdx]->cnt;
-      var_tmp->srd[jdx]=var_tmp->dim[jdx]->srd;
-      sz*=var_tmp->dim[jdx]->cnt;
-      if(jdx >0) sz_rec*=var_tmp->dim[jdx]->cnt;
-    } /* end loop over jdx */
-    var_tmp->sz=sz; 
-    var_tmp->sz_rec=sz_rec;
-  } /* end loop over idx */
-
-  /* Transfer MSA sizes from GTT to processed variables */
-  (void)nco_var_prc_msa_trv(nbr_var_prc,var_prc,trv_tbl); 
-
-  /* Transfer hyperslabed sizes */
-  for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
-    var_prc_out[idx_var]->sz=var_prc[idx_var]->sz;
-    for(int idx_dmn=0;idx_dmn<var_prc[idx_var]->nbr_dim;idx_dmn++){
-      var_prc_out[idx_var]->srt[idx_dmn]=var_prc[idx_var]->srt[idx_dmn]; 
-      var_prc_out[idx_var]->end[idx_dmn]=var_prc[idx_var]->end[idx_dmn];
-      var_prc_out[idx_var]->cnt[idx_dmn]=var_prc[idx_var]->cnt[idx_dmn];
-      var_prc_out[idx_var]->srd[idx_dmn]=var_prc[idx_var]->srd[idx_dmn];
-    }
-  }
 
   /* Loop over input files (not currently used, fl_nbr == 1) */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
