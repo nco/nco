@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.773 2013-06-22 03:24:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.774 2013-06-22 03:33:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4465,6 +4465,12 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     assert(strcmp(dim->nm,dmn_trv->nm) == 0);
     assert(dim->sz == dmn_trv->sz);  
     assert(dim->id == var->dmn_id[idx_dmn]);  
+
+    /* Set the hyperslabed size for this dimension */
+    dim->cnt=dmn_cnt;
+
+    /* Set the *real* size for this dimension */
+    dim->sz=dmn_sz;
  
     /* Use info from GTT unique dimension */
     dim->is_rec_dmn=dmn_trv->is_rec_dmn;
@@ -4479,7 +4485,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->dim[idx_dmn]->srt=dim->srt;
     var->dim[idx_dmn]->end=dim->end;
     var->dim[idx_dmn]->srd=dim->srd;
-    var->dim[idx_dmn]->cnt=var->cnt[idx_dmn];
+    var->dim[idx_dmn]->cnt=dim->cnt;
+    var->dim[idx_dmn]->sz=dmn_sz;
     var->dim[idx_dmn]->is_rec_dmn=dim->is_rec_dmn;
     var->dim[idx_dmn]->is_crd_dmn=dim->is_crd_dmn;
 
@@ -4491,6 +4498,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     dim->xrf->end=dim->end;
     dim->xrf->srd=dim->srd;
     dim->xrf->cnt=dim->cnt;
+    dim->xrf->sz=dim->sz;
     dim->xrf->is_rec_dmn=dim->is_rec_dmn;
     dim->xrf->is_crd_dmn=dim->is_crd_dmn;
 
