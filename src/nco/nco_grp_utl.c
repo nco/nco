@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.772 2013-06-22 03:14:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.773 2013-06-22 03:24:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4363,7 +4363,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   int prg_id;                    /* [enm] Program ID */
   int dmn_id;                    /* [nbr] Dimension ID */
   
-  long cnt[NC_MAX_DIMS];         /* [nbr] Count array */
+  long dmn_cnt;                  /* [nbr] Dimensio hyperslabed count (size) */
   long dmn_sz;                   /* [nbr] Dimension size  */  
 
   var_sct *var;                  /* [sct] Variable structure (output) */   
@@ -4440,16 +4440,17 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
     /* Get hyperslabed count */
     if(var_trv->var_dmn[idx_dmn].crd){
-      cnt[idx_dmn]=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+      dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
     }
     else if (var_trv->var_dmn[idx_dmn].ncd){
-      cnt[idx_dmn]=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+      dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
     }
 
-    var->cnt[idx_dmn]=cnt[idx_dmn];
+    var->cnt[idx_dmn]=dmn_cnt;
+    var->end[idx_dmn]=dmn_cnt-1;
     var->srt[idx_dmn]=0L;
     var->srd[idx_dmn]=1L;
-    var->sz*=var->cnt[idx_dmn];
+    var->sz*=dmn_cnt;
     
     /* This definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */
     if (dmn_trv->is_rec_dmn){
@@ -4460,18 +4461,16 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
     /* Return a completed dmn_sct, use dimension ID and name from TRV object */
     dim=nco_dmn_fll(grp_id,dmn_id,dmn_trv->nm);
+
+    assert(strcmp(dim->nm,dmn_trv->nm) == 0);
+    assert(dim->sz == dmn_trv->sz);  
+    assert(dim->id == var->dmn_id[idx_dmn]);  
  
     /* Use info from GTT unique dimension */
     dim->is_rec_dmn=dmn_trv->is_rec_dmn;
 
      /* Use info from GTT variable dimension */
-    dim->is_crd_dmn=var_trv->var_dmn[idx_dmn].is_crd_var;
-
-    /* The rest must match info from GTT dimension */
-    assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
-    assert(strcmp(dim->nm,dmn_trv->nm) == 0);
-    assert(dim->sz == dmn_trv->sz);  
-    assert(dim->id == var->dmn_id[idx_dmn]);  
+    dim->is_crd_dmn=var_trv->var_dmn[idx_dmn].is_crd_var; 
 
     var->dim[idx_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     var->dim[idx_dmn]->nm=(char *)strdup(dim->nm);
