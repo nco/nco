@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.767 2013-06-22 01:09:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.768 2013-06-22 01:31:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5102,6 +5102,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
   int nbr_dmn;      /* [nbr] Number of dimensions associated with variables to be extracted */
 
   long dmn_cnt;     /* [nbr] *Hyperslabbed* size of dimension */  
+  long dmn_sz;      /* [nbr] Size of dimension  */  
 
   nco_bool dmn_flg; /* [flg] Is dimension already inserted in output array  */  
 
@@ -5155,9 +5156,11 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
           /* Get size from GTT. NOTE use index idx_dmn_var */
           if(var_trv.var_dmn[idx_dmn_var].is_crd_var){
             dmn_cnt=var_trv.var_dmn[idx_dmn_var].crd->lmt_msa.dmn_cnt;
+            dmn_sz=var_trv.var_dmn[idx_dmn_var].crd->sz;
             (*dmn)[nbr_dmn]->is_crd_dmn=True;
           }else {
             dmn_cnt=var_trv.var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_cnt;
+            dmn_sz=var_trv.var_dmn[idx_dmn_var].ncd->sz;
             (*dmn)[nbr_dmn]->is_crd_dmn=False;
           }
 
@@ -5166,20 +5169,22 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
           (*dmn)[nbr_dmn]->nc_id=nc_id;
           (*dmn)[nbr_dmn]->xrf=NULL;
           (*dmn)[nbr_dmn]->val.vp=NULL;
-          (*dmn)[nbr_dmn]->cid=-1; 
           (*dmn)[nbr_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
-          (*dmn)[nbr_dmn]->cnk_sz=0L;
           (*dmn)[nbr_dmn]->cnt=dmn_cnt;
+          (*dmn)[nbr_dmn]->sz=dmn_sz;
           (*dmn)[nbr_dmn]->srt=0L;
           (*dmn)[nbr_dmn]->end=dmn_cnt-1L;
           (*dmn)[nbr_dmn]->srd=1L;
+
+          (*dmn)[nbr_dmn]->cid=-1;
+          (*dmn)[nbr_dmn]->cnk_sz=0L;
+          (*dmn)[nbr_dmn]->type=-1;
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
             (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> inserted\n",prg_nm_get(),fnc_nm,
               var_trv.var_dmn[idx_dmn_var].dmn_id,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
           } 
-
 
           nbr_dmn++;
         }  /* If this dimension is not in output array */
