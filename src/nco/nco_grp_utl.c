@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.777 2013-06-22 21:56:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.778 2013-06-22 22:43:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5166,6 +5166,8 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 {
   /* Purpose: Determine and set new dimensionality in metadata of each re-ordered variable */
 
+  /* Based in nco_var_dmn_rdr_mtd(). LIMITATION: the first record dimension for the object variable is used */
+
   const char fnc_nm[]="nco_var_dmn_rdr_mtd_trv()"; /* [sng] Function name */
 
   char *rec_dmn_nm_out_crr=NULL;             /* [sng] Name of record dimension, if any, required by re-order */
@@ -5173,6 +5175,8 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   char *rec_dmn_nm_out=NULL;                 /* [sng] Record dimension name, re-ordered */
 
   nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
+
+  nm_tbl_sct *rec_dmn_nm=NULL;               /* [sct] Record dimension names array */
 
   /* Loop processed variables */
   for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
@@ -5187,6 +5191,14 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         assert(var_trv.nco_typ == nco_obj_typ_var);
         assert(var_trv.flg_xtr); 
 
+        /* Get array of record names for object */
+        (void)nco_get_rec_dmn_nm(&var_trv,trv_tbl,&rec_dmn_nm);                
+
+        /* Use for record dimension name the first in array */
+        if(rec_dmn_nm->lst){
+          rec_dmn_nm_in=(char *)strdup(rec_dmn_nm->lst[0].nm);
+          rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
+        }
 
         dmn_idx_out_in[idx_var]=(int *)nco_malloc(var_prc[idx_var]->nbr_dim*sizeof(int));
         dmn_rvr_in[idx_var]=(nco_bool *)nco_malloc(var_prc[idx_var]->nbr_dim*sizeof(nco_bool));
@@ -5194,7 +5206,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var],var_prc_out[idx_var],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx_var],dmn_rvr_rdr,dmn_rvr_in[idx_var]);
         /* If record dimension required by current variable re-order...
         ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
-        if(rec_dmn_nm_out_crr && var_prc_out[idx_var]->nbr_dim > 1){
+        if(rec_dmn_nm_in && rec_dmn_nm_out_crr && var_prc_out[idx_var]->nbr_dim > 1){
           /* ...differs from input and current output record dimension(s)... */
           if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_in) && strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
             /* ...and current output record dimension already differs from input record dimension... */
@@ -5221,6 +5233,17 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 
 
+
+
+
+
+        /* Memory management for record dimension names */
+        if(rec_dmn_nm_in) rec_dmn_nm_in=(char *)nco_free(rec_dmn_nm_in);
+        if(rec_dmn_nm_out) rec_dmn_nm_out=(char *)nco_free(rec_dmn_nm_out);
+        if(rec_dmn_nm){
+          for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
+          rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
+        }
 
       } /* Match by full variable name  */
     } /* Loop table */
