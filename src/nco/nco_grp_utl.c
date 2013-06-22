@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.776 2013-06-22 21:21:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.777 2013-06-22 21:56:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5154,25 +5154,68 @@ void
 nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable */
 (const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
- var_sct **var_prc)                   /* I/O [sct] Processed variables */
+ var_sct **var_prc,                   /* I/O [sct] Processed variables */
+ var_sct **var_prc_out,               /* I/O [sct] Processed variables */
+ int **dmn_idx_out_in,                /* I/O [idx] Dimension correspondence, output->input  */
+ nco_bool **dmn_rvr_in,               /* I/O [flg] Reverse dimension */
+ dmn_sct **dmn_out,                   /* I/O [sct] Output dimension structures */
+ dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
+ const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
+ const nco_bool *dmn_rvr_rdr,         /* I [flg] Reverse dimension */
+ int dmn_out_idx_rec_in)              /* I [idx] Record dimension index in output dimension list, original */
 {
   /* Purpose: Determine and set new dimensionality in metadata of each re-ordered variable */
 
   const char fnc_nm[]="nco_var_dmn_rdr_mtd_trv()"; /* [sng] Function name */
 
+  char *rec_dmn_nm_out_crr=NULL;             /* [sng] Name of record dimension, if any, required by re-order */
+  char *rec_dmn_nm_in=NULL;                  /* [sng] Record dimension name, original */
+  char *rec_dmn_nm_out=NULL;                 /* [sng] Record dimension name, re-ordered */
+
+  nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
+
   /* Loop processed variables */
-  for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
+  for(int idx_var=0;idx_var<nbr_var_prc;idx_var++){
 
     /* Loop table */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
       /* Match by full variable name  */
-      if(strcmp(var_prc[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
+      if(strcmp(var_prc[idx_var]->nm_fll,var_trv.nm_fll) == 0){
 
         assert(var_trv.nco_typ == nco_obj_typ_var);
         assert(var_trv.flg_xtr); 
 
+
+        dmn_idx_out_in[idx_var]=(int *)nco_malloc(var_prc[idx_var]->nbr_dim*sizeof(int));
+        dmn_rvr_in[idx_var]=(nco_bool *)nco_malloc(var_prc[idx_var]->nbr_dim*sizeof(nco_bool));
+        /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
+        rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var],var_prc_out[idx_var],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx_var],dmn_rvr_rdr,dmn_rvr_in[idx_var]);
+        /* If record dimension required by current variable re-order...
+        ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
+        if(rec_dmn_nm_out_crr && var_prc_out[idx_var]->nbr_dim > 1){
+          /* ...differs from input and current output record dimension(s)... */
+          if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_in) && strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
+            /* ...and current output record dimension already differs from input record dimension... */
+            if(REDEFINED_RECORD_DIMENSION){
+              /* ...then requested re-order requires multiple record dimensions... */
+              if(dbg_lvl_get() >= nco_dbg_std){
+                (void)fprintf(stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",
+                  prg_nm_get(),var_prc[idx_var]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
+              }
+              break;
+            }else{ /* !REDEFINED_RECORD_DIMENSION */
+              /* ...otherwise, update output record dimension name... */
+              rec_dmn_nm_out=rec_dmn_nm_out_crr;
+              /* ...and set new and un-set old record dimensions... */
+              var_prc_out[idx_var]->dim[0]->is_rec_dmn=True;
+              dmn_out[dmn_out_idx_rec_in]->is_rec_dmn=False;
+              /* ...and set flag that record dimension has been re-defined... */
+              REDEFINED_RECORD_DIMENSION=True;
+            } /* !REDEFINED_RECORD_DIMENSION */
+          } /* endif new and old record dimensions differ */
+        } /* endif current variable is record variable */
 
 
 

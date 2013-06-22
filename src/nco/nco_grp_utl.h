@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.300 2013-06-22 21:21:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.301 2013-06-22 21:56:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -529,7 +529,15 @@ void
 nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable */
 (const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
- var_sct **var_prc);                  /* I/O [sct] Processed variables */
+ var_sct **var_prc,                   /* I/O [sct] Processed variables */
+ var_sct **var_prc_out,               /* I/O [sct] Processed variables */
+ int **dmn_idx_out_in,                /* I/O [idx] Dimension correspondence, output->input  */
+ nco_bool **dmn_rvr_in,               /* I/O [flg] Reverse dimension */
+ dmn_sct **dmn_out,                   /* I/O [sct] Output dimension structures */
+ dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
+ const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
+ const nco_bool *dmn_rvr_rdr,         /* I [flg] Reverse dimension */
+ int dmn_out_idx_rec_in);             /* I [idx] Record dimension index in output dimension list, original */
 
 #ifdef __cplusplus
 } /* end extern "C" */
