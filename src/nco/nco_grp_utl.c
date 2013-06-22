@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.769 2013-06-22 01:54:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.770 2013-06-22 02:09:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1132,10 +1132,10 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
 
         /* List dimensions */
-        for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
+        for(int idx_dmn=0;idx_dmn<nbr_dmn_grp;idx_dmn++){
 
           /* Get dimension info */
-          (void)nco_inq_dim(grp_id,dmn_id_grp[dmn_idx],dmn_nm_grp,&dmn_sz);
+          (void)nco_inq_dim(grp_id,dmn_id_grp[idx_dmn],dmn_nm_grp,&dmn_sz);
 
           /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
           if(!strcmp(dmn_nm_grp,dmn_nm_var)){
@@ -1178,7 +1178,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
             if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
           } /* end strcmp() */
-        } /* end loop over dmn_idx */
+        } /* end loop over idx_dmn */
 
 
       } /* End loop over idx_var_dim: list dimensions for variable */
@@ -1982,7 +1982,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   /* Add dimension objects */ 
 
   /* Iterate dimensions (for group; dimensions are defined *for* groups) */
-  for(int dmn_idx=0;dmn_idx<nbr_dmn_grp;dmn_idx++){
+  for(int idx_dmn=0;idx_dmn<nbr_dmn_grp;idx_dmn++){
 
     /* Keep the old table dimension size for insertion */
     idx=trv_tbl->nbr_dmn;
@@ -1995,7 +1995,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst_dmn[idx].is_rec_dmn=False;
 
     /* Get dimension name */
-    rcd+=nco_inq_dim(grp_id,dmn_ids_grp[dmn_idx],dmn_nm,&dmn_sz);
+    rcd+=nco_inq_dim(grp_id,dmn_ids_grp[idx_dmn],dmn_nm,&dmn_sz);
 
     /* Iterate unlimited dimensions to detect if dimension is record */
     for(int rec_idx=0;rec_idx<nbr_rec;rec_idx++){
@@ -2042,7 +2042,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst_dmn[idx].lmt_msa.lmt_dmn=NULL;
     trv_tbl->lst_dmn[idx].crd_nbr=0;         
     trv_tbl->lst_dmn[idx].crd=NULL; 
-    trv_tbl->lst_dmn[idx].dmn_id=dmn_ids_grp[dmn_idx];
+    trv_tbl->lst_dmn[idx].dmn_id=dmn_ids_grp[idx_dmn];
     trv_tbl->lst_dmn[idx].has_crd_scp=nco_obj_typ_err;
 
     /* Free constructed name */
@@ -2100,8 +2100,8 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
     if(var_trv.nco_typ == nco_obj_typ_var){
 
       /* Loop unique dimensions list in groups */
-      for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-        dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+      for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+        dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
         /* Is there a variable with this dimension name anywhere? (relative name)  */
         if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
@@ -2145,8 +2145,8 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
   /* Step 1) Find the total number of coordinate variables for every dimension */
 
   /* Loop unique dimensions list in groups */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
     /* Loop all objects */
     for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -2162,7 +2162,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
           if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
             /* Increment the number of coordinate variables for this dimension */
-            trv_tbl->lst_dmn[dmn_idx].crd_nbr++;
+            trv_tbl->lst_dmn[idx_dmn].crd_nbr++;
 
           }/* Is variable in scope of dimension ? */
         } /* Is there a variable with this dimension name anywhere? (relative name)  */
@@ -2173,8 +2173,8 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
   /* Step 2) Allocate coordinate variables array (crd_sct **) for every dimension */
 
   /* Loop unique dimensions list in groups */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
     /* Loop all objects */
     for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -2190,10 +2190,10 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
           if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
             /* Total number of coordinate variables for this dimension */
-            int crd_nbr=trv_tbl->lst_dmn[dmn_idx].crd_nbr;
+            int crd_nbr=trv_tbl->lst_dmn[idx_dmn].crd_nbr;
 
             /* Alloc coordinate array if there are any coordinates */
-            if (crd_nbr) trv_tbl->lst_dmn[dmn_idx].crd=(crd_sct **)nco_malloc(crd_nbr*sizeof(crd_sct *));
+            if (crd_nbr) trv_tbl->lst_dmn[idx_dmn].crd=(crd_sct **)nco_malloc(crd_nbr*sizeof(crd_sct *));
 
           }/* Is variable in scope of dimension ? */
         } /* Is there a variable with this dimension name anywhere? (relative name)  */
@@ -2204,8 +2204,8 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
   /* Step 3) Allocate/Initialize every coordinate variable array for every dimension */
 
   /* Loop unique dimensions list in groups */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
     int crd_idx=0; /* [nbr] Coordinate index for current dimension */
 
@@ -2223,51 +2223,51 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
           if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
             /* Alloc this coordinate */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]=(crd_sct *)nco_malloc(sizeof(crd_sct));
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]=(crd_sct *)nco_malloc(sizeof(crd_sct));
 
             /* The coordinate full name is the variable full name found in scope */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll=strdup(var_trv.nm_fll);
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->crd_nm_fll=strdup(var_trv.nm_fll);
 
             /* The coordinate dimension full name is the dimension full name */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=strdup(dmn_trv.nm_fll);
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->dmn_nm_fll=strdup(dmn_trv.nm_fll);
 
             /* The coordinate ID is the dimension unique ID */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_id=dmn_trv.dmn_id;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->dmn_id=dmn_trv.dmn_id;
 
             /* Full group name where coordinate is located is the variable full group name  */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll=strdup(var_trv.grp_nm_fll);
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->crd_grp_nm_fll=strdup(var_trv.grp_nm_fll);
 
             /* Full group name where dimension of *this* coordinate is located is the full group name of the dimension  */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->dmn_grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
 
             /* Store relative name (same for dimension and variable) */
-            strcpy(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->nm,var_trv.nm);
+            strcpy(trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->nm,var_trv.nm);
 
             /* Is a record dimension(variable) if the dimennsion is a record dimension */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->is_rec_dmn=dmn_trv.is_rec_dmn;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->is_rec_dmn=dmn_trv.is_rec_dmn;
 
             /* Size is size */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->sz=dmn_trv.sz;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->sz=dmn_trv.sz;
 
             /* Type */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->var_typ=var_trv.var_typ;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->var_typ=var_trv.var_typ;
 
             /* Group depth */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->grp_dpt=var_trv.grp_dpt;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->grp_dpt=var_trv.grp_dpt;
 
 
             /* MSA */     
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm=strdup(var_trv.nm);
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_cnt=dmn_trv.sz;
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_sz_org=dmn_trv.sz;
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.WRP=False;
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.BASIC_DMN=True;
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.MSA_USR_RDR=False;  
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr=0;
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_crr=0;
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn=NULL;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.dmn_nm=strdup(var_trv.nm);
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.dmn_cnt=dmn_trv.sz;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.dmn_sz_org=dmn_trv.sz;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.WRP=False;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.BASIC_DMN=True;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.MSA_USR_RDR=False;  
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn_nbr=0;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_crr=0;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn=NULL;
 
-            crd_sct *crd=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx];
+            crd_sct *crd=trv_tbl->lst_dmn[idx_dmn].crd[crd_idx];
             if(dbg_lvl_get() == nco_dbg_old){           
               (void)fprintf(stdout,"%s: INFO %s variable <%s> has coordinate <%s> from dimension <%s>\n",prg_nm_get(),fnc_nm,
                 var_trv.nm_fll,crd->crd_nm_fll,crd->dmn_nm_fll);
@@ -2368,8 +2368,8 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
   nbr_crd_var=0;
   (void)fprintf(stdout,"\n");
   (void)fprintf(stdout,"%s: INFO reports coordinate variables and limits listed by dimension:\n",prg_nm_get());
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
     /* Dimension ID and  full name */
     (void)fprintf(stdout,"(#%d%s)",dmn_trv.dmn_id,dmn_trv.nm_fll);
@@ -2508,8 +2508,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
 
     /* Loop dimensions  */
-    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
       /*  The limits have to be separated to */
 
@@ -2524,7 +2524,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
           if(strcmp(lmt[lmt_idx]->nm,crd->nm) == 0){
 
             /* Increment number of dimension limits this coordinate */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr++;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn_nbr++;
 
           } /* End Match input name to table name */ 
         }/* Loop coordinates */
@@ -2535,7 +2535,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         if(strcmp(lmt[lmt_idx]->nm,dmn_trv.nm) == 0){
 
           /* Increment number of dimension limits for this dimension */
-          trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn_nbr++;
+          trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn_nbr++;
 
         } /* Match input *relative* name to dimension relative name */ 
       } /* b) case of dimension only (there is no coordinate variable for this dimension */
@@ -2546,8 +2546,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   /* Step 2) Initialize MSA for all dimensions, allocate lmt_sct ** */
 
   /* Loop dimensions, that now have already distributed limits and initialize limit information */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx];
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn];
 
     /*  The limits are now separated to */
 
@@ -2559,7 +2559,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         crd_sct *crd=dmn_trv.crd[crd_idx];
 
         /* Alloc limits if there are any */
-        if (crd->lmt_msa.lmt_dmn_nbr) trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(crd->lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
+        if (crd->lmt_msa.lmt_dmn_nbr) trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(crd->lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
 
       }/* Loop coordinates */
     }else{
@@ -2567,7 +2567,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
       /* Alloc limits if there are any */
       if (dmn_trv.lmt_msa.lmt_dmn_nbr){
-        trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
+        trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(dmn_trv.lmt_msa.lmt_dmn_nbr*sizeof(lmt_sct *));
       }
 
     } /* b) case of dimension only (there is no coordinate variable for this dimension */
@@ -2580,8 +2580,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
 
     /* Loop dimensions  */
-    for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
       /*  The limits have to be separated to */
 
@@ -2596,34 +2596,34 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
           if(strcmp(lmt[lmt_idx]->nm,crd->nm) == 0){
 
             /* Limit is same as dimension in input file ? */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.BASIC_DMN=False;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.BASIC_DMN=False;
 
             /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
             (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,lmt[lmt_idx]);
 
             if(dbg_lvl_get() == nco_dbg_old){
               (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
-                prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
+                prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,idx_dmn,dmn_trv.nm_fll);
             }
 
-            /* Current index (lmt_crr) of dimension limits for this (dmn_idx) table dimension  */
-            int lmt_crr=trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_crr;
+            /* Current index (lmt_crr) of dimension limits for this (idx_dmn) table dimension  */
+            int lmt_crr=trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_crr;
 
             /* Increment current index being initialized  */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_crr++;
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_crr++;
 
             /* Alloc this limit */
-            trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 
             /* Initialize this entry */
-            (void)nco_lmt_init(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]);
+            (void)nco_lmt_init(trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]);
 
             /* Store this valid input; deep-copy to table */ 
-            (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]);
+            (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]);
 
             /* Print copy in table */ 
             if(dbg_lvl_get() == nco_dbg_old){
-              (void)nco_lmt_prt(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]);
+              (void)nco_lmt_prt(trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]);
             }
 
           } /* End Match input name to table name */ 
@@ -2635,7 +2635,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         if(strcmp(lmt[lmt_idx]->nm,dmn_trv.nm) == 0){
 
           /* Limit is same as dimension in input file ? */
-          trv_tbl->lst_dmn[dmn_idx].lmt_msa.BASIC_DMN=False;
+          trv_tbl->lst_dmn[idx_dmn].lmt_msa.BASIC_DMN=False;
 
           if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s dimension <%s> found:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
 
@@ -2644,27 +2644,27 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
           if(dbg_lvl_get() == nco_dbg_old){
             (void)fprintf(stdout,"%s: INFO %s dimension [%d]%s done (%li->%li) insert in table at [%d]%s:\n",
-              prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,dmn_idx,dmn_trv.nm_fll);
+              prg_nm_get(),fnc_nm,lmt_idx,lmt[lmt_idx]->nm,lmt[lmt_idx]->min_idx,lmt[lmt_idx]->max_idx,idx_dmn,dmn_trv.nm_fll);
           }
 
-          /* Current index (lmt_crr) of dimension limits for this (dmn_idx) table dimension  */
-          int lmt_crr=trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_crr;
+          /* Current index (lmt_crr) of dimension limits for this (idx_dmn) table dimension  */
+          int lmt_crr=trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_crr;
 
           /* Increment current index being initialized  */
-          trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_crr++;
+          trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_crr++;
 
           /* Alloc this limit */
-          trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+          trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
 
           /* Initialize this entry */
-          (void)nco_lmt_init(trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_crr]);
+          (void)nco_lmt_init(trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn[lmt_crr]);
 
           /* Store this valid input; deep-copy to table */ 
-          (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_crr]);
+          (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn[lmt_crr]);
 
           /* Print copy in table */ 
           if(dbg_lvl_get() == nco_dbg_old){
-            (void)nco_lmt_prt(trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_crr]);
+            (void)nco_lmt_prt(trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn[lmt_crr]);
           }
 
         } /* Match input *relative* name to dimension relative name */ 
@@ -2676,8 +2676,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   /* Step 4) Apply MSA for each Dimension in a new cycle (that now has all its limits in place)  */
 
   /* Loop dimensions  */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
     /*  The limits have to be separated to */
 
@@ -2699,45 +2699,45 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         if(crd->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
 
         /* Split-up wrapped limits. NOTE: using deep copy version nco_msa_wrp_splt_cpy() */   
-        (void)nco_msa_wrp_splt_cpy(&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa);
+        (void)nco_msa_wrp_splt_cpy(&trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa);
 
         /* Wrapped hyperslabs are dimensions broken into the "wrong" order,e.g. from
         -d time,8,2 broken into -d time,8,9 -d time,0,2 
         WRP flag set only when list contains dimensions split as above */
-        if(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.WRP == True){
+        if(trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.WRP == True){
 
           /* Find and store size of output dim */  
-          (void)nco_msa_clc_cnt(&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa); 
+          (void)nco_msa_clc_cnt(&trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa); 
 
           continue;
         } /* End WRP flag set */
 
         /* Single slab---no analysis needed */  
-        if(trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr == 1){
+        if(trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn_nbr == 1){
 
-          (void)nco_msa_clc_cnt(&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa);  
+          (void)nco_msa_clc_cnt(&trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa);  
 
           continue;    
         } /* End Single slab */
 
         /* Does Multi-Slab Algorithm returns hyperslabs in user-specified order ? */
         if(MSA_USR_RDR){
-          trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.MSA_USR_RDR=True;
+          trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.MSA_USR_RDR=True;
 
           /* Find and store size of output dimension */  
-          (void)nco_msa_clc_cnt(&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa);  
+          (void)nco_msa_clc_cnt(&trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa);  
 
           continue;
         } /* End MSA_USR_RDR */
 
         /* Sort limits */
-        (void)nco_msa_qsort_srt(&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa);
+        (void)nco_msa_qsort_srt(&trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa);
 
         /* Check for overlap */
-        flg_ovl=nco_msa_ovl(&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa); 
+        flg_ovl=nco_msa_ovl(&trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa); 
 
         /* Find and store size of output dimension */  
-        (void)nco_msa_clc_cnt(&trv_tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa);
+        (void)nco_msa_clc_cnt(&trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa);
 
         if(dbg_lvl_get() > 1){
           if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",prg_nm_get(),crd->nm); 
@@ -2753,57 +2753,57 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       nco_bool flg_ovl; /* [flg] Limits overlap */
 
       /* GTT: If this dimension has no limits, continue */
-      if (trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn_nbr == 0) continue;
+      if (trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn_nbr == 0) continue;
 
       /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
-      if(trv_tbl->lst_dmn[dmn_idx].is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
+      if(trv_tbl->lst_dmn[idx_dmn].is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
 
       /* Split-up wrapped limits */   
-      (void)nco_msa_wrp_splt_trv(&trv_tbl->lst_dmn[dmn_idx]);
+      (void)nco_msa_wrp_splt_trv(&trv_tbl->lst_dmn[idx_dmn]);
 
       /* Wrapped hyperslabs are dimensions broken into the "wrong" order,e.g. from
       -d time,8,2 broken into -d time,8,9 -d time,0,2 
       WRP flag set only when list contains dimensions split as above */
-      if(trv_tbl->lst_dmn[dmn_idx].lmt_msa.WRP == True){
+      if(trv_tbl->lst_dmn[idx_dmn].lmt_msa.WRP == True){
 
         /* Find and store size of output dim */  
-        (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[dmn_idx]); 
+        (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[idx_dmn]); 
 
         continue;
       } /* End WRP flag set */
 
       /* Single slab---no analysis needed */  
-      if(trv_tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn_nbr == 1){
+      if(trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn_nbr == 1){
 
-        (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[dmn_idx]);  
+        (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[idx_dmn]);  
 
         continue;    
       } /* End Single slab */
 
       /* Does Multi-Slab Algorithm returns hyperslabs in user-specified order ? */
       if(MSA_USR_RDR){
-        trv_tbl->lst_dmn[dmn_idx].lmt_msa.MSA_USR_RDR=True;
+        trv_tbl->lst_dmn[idx_dmn].lmt_msa.MSA_USR_RDR=True;
 
         /* Find and store size of output dimension */  
-        (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[dmn_idx]);  
+        (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[idx_dmn]);  
 
         continue;
       } /* End MSA_USR_RDR */
 
       /* Sort limits */
-      (void)nco_msa_qsort_srt_trv(&trv_tbl->lst_dmn[dmn_idx]);
+      (void)nco_msa_qsort_srt_trv(&trv_tbl->lst_dmn[idx_dmn]);
 
       /* Check for overlap */
-      flg_ovl=nco_msa_ovl_trv(&trv_tbl->lst_dmn[dmn_idx]);  
+      flg_ovl=nco_msa_ovl_trv(&trv_tbl->lst_dmn[idx_dmn]);  
 
-      if(flg_ovl==False) trv_tbl->lst_dmn[dmn_idx].lmt_msa.MSA_USR_RDR=True;
+      if(flg_ovl==False) trv_tbl->lst_dmn[idx_dmn].lmt_msa.MSA_USR_RDR=True;
 
       /* Find and store size of output dimension */  
-      (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[dmn_idx]);
+      (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[idx_dmn]);
 
       if(dbg_lvl_get() > 1){
-        if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[dmn_idx].nm); 
-        else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[dmn_idx].nm); 
+        if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[idx_dmn].nm); 
+        else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[idx_dmn].nm); 
       } 
 
     } /* b) case of dimension only (there is no coordinate variable for this dimension */
@@ -2814,8 +2814,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 #ifdef NCO_SANITY_CHECK
   /* Loop table dimensions */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
     /*  The limits have to be separated to */
 
@@ -2900,8 +2900,8 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
   /* Unique dimension list */
 
   if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO reports dimension information with limits: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
     /* Dimension #/name first */
     if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%d%s\n",dmn_trv.dmn_id,dmn_trv.nm_fll);
@@ -2926,7 +2926,7 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
                 var_trv.nm_fll,dmn_trv.nm_fll);        
             } /* endif dbg */
 
-            trv_tbl->lst_dmn[dmn_idx].has_crd_scp=True;
+            trv_tbl->lst_dmn[idx_dmn].has_crd_scp=True;
 
             /* Built before; variable must be a cordinate */
             assert(var_trv.is_crd_var == True);
@@ -2945,13 +2945,13 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
         dmn_trv.nm_fll);        
     } /* endif dbg */
 
-    trv_tbl->lst_dmn[dmn_idx].has_crd_scp=in_scp;
+    trv_tbl->lst_dmn[idx_dmn].has_crd_scp=in_scp;
 
   } /* Unique dimension list */
 
   /* Unique dimension list */
-  for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_idx]; 
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
     assert(dmn_trv.has_crd_scp != nco_obj_typ_err);
   } /* Unique dimension list */
 
@@ -3060,8 +3060,8 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope *
         */
 
         /* Loop unique dimensions list in groups */
-        for(unsigned dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-          dmn_trv_sct dmn=trv_tbl->lst_dmn[dmn_idx]; 
+        for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+          dmn_trv_sct dmn=trv_tbl->lst_dmn[idx_dmn]; 
           /* Loop all objects */
           for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
             trv_sct var=trv_tbl->lst[idx_var];
@@ -3440,10 +3440,10 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
   }
 
   /* Loop dimensions for object (variable)  */
-  for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++) {
+  for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++) {
 
     /* Get unique dimension object from unique dimension ID, in input list */
-    dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl);
+    dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[idx_dmn].dmn_id,trv_tbl);
 
     /* Dimension is a record dimension */
     if (dmn_trv->is_rec_dmn){
@@ -4415,12 +4415,12 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   (void)nco_inq_vardimid(var->nc_id,var->id,var->dmn_id); 
 
   /* Get input and set output dimension sizes and names */
-  for(int dmn_idx=0;dmn_idx<var->nbr_dim;dmn_idx++){
+  for(int idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
 
     /* Dimension ID for variable, used to get dimension object in input list  */
-    dmn_id=dmn_in_id_var[dmn_idx];
+    dmn_id=dmn_in_id_var[idx_dmn];
 
-    assert(var->dmn_id[dmn_idx] == dmn_id);
+    assert(var->dmn_id[idx_dmn] == dmn_id);
 
     /* Get unique dimension object from unique dimension ID, in input list */
     dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
@@ -4438,7 +4438,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     dim->is_rec_dmn=dmn_trv->is_rec_dmn;
 
     /* Use info from GTT variable dimension */
-    dim->is_crd_dmn=var_trv->var_dmn[dmn_idx].is_crd_var;
+    dim->is_crd_dmn=var_trv->var_dmn[idx_dmn].is_crd_var;
 
     if (dmn_trv->is_rec_dmn) var->is_rec_var=True;
 
@@ -4446,19 +4446,19 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
     assert(dim->sz == dmn_trv->sz);
     assert(strcmp(dim->nm,dmn_trv->nm) == 0);
-    assert(dim->id == var->dmn_id[dmn_idx]);
+    assert(dim->id == var->dmn_id[idx_dmn]);
     assert(dim->end == dmn_trv->sz-1L);
 
-    var->dim[dmn_idx]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
-    var->dim[dmn_idx]->nm=(char *)strdup(dim->nm);
-    var->dim[dmn_idx]->id=dim->id;
-    var->dim[dmn_idx]->cnk_sz=dim->cnk_sz;
-    var->dim[dmn_idx]->srt=dim->srt;
-    var->dim[dmn_idx]->end=dim->end;
-    var->dim[dmn_idx]->srd=dim->srd;
-    var->dim[dmn_idx]->cnt=dim->cnt;
-    var->dim[dmn_idx]->is_rec_dmn=dim->is_rec_dmn;
-    var->dim[dmn_idx]->is_crd_dmn=dim->is_crd_dmn;
+    var->dim[idx_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+    var->dim[idx_dmn]->nm=(char *)strdup(dim->nm);
+    var->dim[idx_dmn]->id=dim->id;
+    var->dim[idx_dmn]->cnk_sz=dim->cnk_sz;
+    var->dim[idx_dmn]->srt=dim->srt;
+    var->dim[idx_dmn]->end=dim->end;
+    var->dim[idx_dmn]->srd=dim->srd;
+    var->dim[idx_dmn]->cnt=dim->cnt;
+    var->dim[idx_dmn]->is_rec_dmn=dim->is_rec_dmn;
+    var->dim[idx_dmn]->is_crd_dmn=dim->is_crd_dmn;
 
     dim->xrf=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     dim->xrf->nm=(char *)strdup(dim->nm);
@@ -4471,7 +4471,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     dim->xrf->is_rec_dmn=dim->is_rec_dmn;
     dim->xrf->is_crd_dmn=dim->is_crd_dmn;
 
-    var->dim[dmn_idx]->xrf=dim->xrf;
+    var->dim[idx_dmn]->xrf=dim->xrf;
   } /* Get input and set output dimension sizes and names */
 
 
@@ -4486,6 +4486,22 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
+  /* Check variable for duplicate dimensions */
+  for(int idx_var=0;idx_var<var->nbr_dim;idx_var++){
+    int idx_dmn;
+    for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
+      if(idx_var != idx_dmn){
+        if(var->dmn_id[idx_var] == var->dmn_id[idx_dmn]){
+          /* Dimensions are duplicated when IDs for different ordinal dimensions are equal */
+          var->has_dpl_dmn=True;
+          break;
+        } /* endif IDs are equal */
+      } /* endif navel gazing */
+    } /* endif inner dimension */
+    /* Found a duplicate, so stop looking */
+    if(idx_dmn != var->nbr_dim) break;
+  } /* Check variable for duplicate dimensions */
+
   /* Initialize start, count */
   for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
     if(var_trv->var_dmn[idx_dmn].crd){
@@ -4498,20 +4514,20 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Size defaults to 1 in var_dfl_set(), and set to 1 here for extra safety */
   var->sz=1L; 
-  for(int dmn_idx=0;dmn_idx<var->nbr_dim;dmn_idx++){
+  for(int idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
 
-    (void)nco_inq_dimname(grp_id,var->dmn_id[dmn_idx],dmn_nm);
+    (void)nco_inq_dimname(grp_id,var->dmn_id[idx_dmn],dmn_nm);
 
-    var->cnt[dmn_idx]=cnt[dmn_idx];
-    var->srt[dmn_idx]=0L;
-    var->srd[dmn_idx]=1L;
-    var->sz*=var->cnt[dmn_idx];
+    var->cnt[idx_dmn]=cnt[idx_dmn];
+    var->srt[idx_dmn]=0L;
+    var->srd[idx_dmn]=1L;
+    var->sz*=var->cnt[idx_dmn];
 
-    var->dim[dmn_idx]->cnt=var->cnt[dmn_idx];
+    var->dim[idx_dmn]->cnt=var->cnt[idx_dmn];
 
     /* These were set above */
-    assert(var->dim[dmn_idx]->srt == var->srt[dmn_idx]);
-    assert(var->dim[dmn_idx]->srd == var->srd[dmn_idx]);
+    assert(var->dim[idx_dmn]->srt == var->srt[idx_dmn]);
+    assert(var->dim[idx_dmn]->srd == var->srd[idx_dmn]);
 
   } /* end loop over dim */
 
@@ -4676,12 +4692,12 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       } /* endif */
 
       /* Does variable contain requested record dimension? */
-      for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
-        if(dmn_in_id_var[dmn_idx] == rec_dmn_id_dmy){
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+        if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
           if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
           break;
         } /* endif */
-      } /* end loop over dmn_idx */
+      } /* end loop over idx_dmn */
 
       /* ncecat */
     }else if (prg_id == ncecat){
