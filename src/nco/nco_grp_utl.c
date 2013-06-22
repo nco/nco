@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.768 2013-06-22 01:31:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.769 2013-06-22 01:54:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4360,7 +4360,6 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   int fl_fmt;                    /* [enm] File format */  
   int dmn_in_id_var[NC_MAX_DIMS];/* [id] Dimension IDs array for variable */
-  int var_dim_id;                /* [id] Variable dimension ID */ 
   int prg_id;                    /* [enm] Program ID */
   int dmn_id;                    /* [nbr] Dimension ID */
   
@@ -4390,8 +4389,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   var->nm_fll=(char *)strdup(var_trv->nm_fll);
   var->id=var_id;
   var->nc_id=grp_id;
-  var->is_crd_var=var_trv->is_crd_var;
-  
+  var->is_crd_var=var_trv->is_crd_var; 
 
   /* Get type and number of dimensions and attributes for variable */
   (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
@@ -4419,19 +4417,19 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Get input and set output dimension sizes and names */
   for(int dmn_idx=0;dmn_idx<var->nbr_dim;dmn_idx++){
 
-    assert(var->dmn_id[dmn_idx] == dmn_in_id_var[dmn_idx]);
-
-    /* Get dimension name and size from ID in *input* group */
-    (void)nco_inq_dim(grp_id,dmn_in_id_var[dmn_idx],dmn_nm,&dmn_sz);
-
     /* Dimension ID for variable, used to get dimension object in input list  */
-    var_dim_id=dmn_in_id_var[dmn_idx];
+    dmn_id=dmn_in_id_var[dmn_idx];
+
+    assert(var->dmn_id[dmn_idx] == dmn_id);
 
     /* Get unique dimension object from unique dimension ID, in input list */
-    dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
+    dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
 
-    /* Define a "dmn_sct" from "dmn_trv" */
-    dmn_id=var->dmn_id[dmn_idx];
+    /* Get dimension name and size from ID in group */
+    (void)nco_inq_dim(grp_id,dmn_id,dmn_nm,&dmn_sz);
+
+    assert(dmn_sz == dmn_trv->sz);
+    assert(strcmp(dmn_nm,dmn_trv->nm) == 0);
 
     /* Return a completed dmn_sct, use dimension ID and name from TRV object */
     dim=nco_dmn_fll(grp_id,dmn_id,dmn_trv->nm);
