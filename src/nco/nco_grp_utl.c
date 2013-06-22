@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.770 2013-06-22 02:09:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.771 2013-06-22 02:26:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4437,10 +4437,16 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     /* Use info from GTT unique dimension */
     dim->is_rec_dmn=dmn_trv->is_rec_dmn;
 
-    /* Use info from GTT variable dimension */
+    /* This definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */
+    if (dmn_trv->is_rec_dmn){
+      var->is_rec_var=True;
+    } else {
+      var->sz_rec*=var->cnt[idx_dmn];
+    }
+
+     /* Use info from GTT variable dimension */
     dim->is_crd_dmn=var_trv->var_dmn[idx_dmn].is_crd_var;
 
-    if (dmn_trv->is_rec_dmn) var->is_rec_var=True;
 
     /* The rest must match info from GTT dimension */
     assert(strcmp(dmn_trv->nm,dmn_nm) == 0);
