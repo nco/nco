@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.786 2013-06-23 02:15:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.787 2013-06-23 03:08:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1845,6 +1845,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
   trv_tbl->lst[idx].flg_rdr=False;                /* [flg] Variable has dimensions to re-order (ncpdq) */
   trv_tbl->lst[idx].flg_rdf_rec=False;            /* [flg] Re-defined record dimension */
+  trv_tbl->lst[idx].rec_dmn_nm_out=NULL;          /* [sng] Record dimension name, re-ordered */
    
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
   trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err;    /* [id] Group ID in input file */
@@ -1934,6 +1935,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_xtr=False;
     trv_tbl->lst[idx].flg_rdr=False;
     trv_tbl->lst[idx].flg_rdf_rec=False;
+    trv_tbl->lst[idx].rec_dmn_nm_out=NULL;                     
 
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
     trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err; 
@@ -5254,6 +5256,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               /* ...and set flag that record dimension has been re-defined... */
               trv_tbl->lst[idx_var].flg_rdf_rec=True;
 
+              /* ...store the name of the record dimension on output... */
+              trv_tbl->lst[idx_var].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);;
+
             } /* !REDEFINED_RECORD_DIMENSION */
           } /* endif new and old record dimensions differ */
         } /* endif current variable is record variable */
@@ -5275,8 +5280,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 
         /* Memory management for record dimension names */
-        if(rec_dmn_nm_in) rec_dmn_nm_in=(char *)nco_free(rec_dmn_nm_in);
-        if(rec_dmn_nm_out) rec_dmn_nm_out=(char *)nco_free(rec_dmn_nm_out);
         if(rec_dmn_nm){
           for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
           rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
@@ -5314,7 +5317,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         if(strcmp(var_fix[idx_var_fix]->nm_fll,var_trv.nm_fll) == 0){
 
           /* Initialize record names for this object */ 
-          rec_dmn_nm_out_crr=rec_dmn_nm_in=rec_dmn_nm_out=NULL;
+          rec_dmn_nm_out_crr=NULL;
+          rec_dmn_nm_in=NULL;
+          rec_dmn_nm_out=NULL;
 
           /* Get array of record names for object (again, not stored) */
           (void)nco_get_rec_dmn_nm(&var_trv,trv_tbl,&rec_dmn_nm);                
@@ -5357,8 +5362,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 
             /* Memory management for record dimension names */
-            if(rec_dmn_nm_in) rec_dmn_nm_in=(char *)nco_free(rec_dmn_nm_in);
-            if(rec_dmn_nm_out) rec_dmn_nm_out=(char *)nco_free(rec_dmn_nm_out);
             if(rec_dmn_nm){
               for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
               rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
@@ -5396,7 +5399,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 
           /* Initialize record names for this object */ 
-          rec_dmn_nm_out_crr=rec_dmn_nm_in=rec_dmn_nm_out=NULL;
+          rec_dmn_nm_out_crr=NULL;
+          rec_dmn_nm_in=NULL;
+          rec_dmn_nm_out=NULL;
 
           /* Get array of record names for object (again, not stored) */
           (void)nco_get_rec_dmn_nm(&var_trv,trv_tbl,&rec_dmn_nm);                
