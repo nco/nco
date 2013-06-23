@@ -1,4 +1,4 @@
-2013-06-17 Pedro Vicente  <pvicente@uci.edu>
+2013-06-23 Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_var_dmn_rdr_mtd_trv() Determine and set new dimensionality in metadata of each re-ordered variable
 
