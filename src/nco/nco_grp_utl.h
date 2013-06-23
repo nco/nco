@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.305 2013-06-23 04:53:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.306 2013-06-23 05:13:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -544,7 +544,6 @@ void
 nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of variable values */
 (const var_sct * const var_in,        /* I [ptr] Variable with metadata and data in original order */
  var_sct * const var_out,             /* I/O [ptr] Variable whose data will be re-ordered */
- const int * const dmn_idx_out_in,    /* I [idx] Dimension correspondence, output->input */
  const nco_bool * const dmn_rvr_in,   /* I [idx] Reverse dimension */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
