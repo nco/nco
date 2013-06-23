@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.791 2013-06-23 04:59:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.792 2013-06-23 05:04:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5502,6 +5502,33 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
   const char fnc_nm[]="nco_var_dmn_rdr_val_trv()"; /* [sng] Function name */
 
+  nco_bool IDENTITY_REORDER=False; /* [flg] User requested identity re-ordering */
+
+  char *val_in_cp;                 /* [ptr] Input data location as char pointer */
+  char *val_out_cp;                /* [ptr] Output data location as char pointer */
+
+  dmn_sct **dmn_out;               /* [sct] List of dimension structures in output order */
+
+  int dmn_idx;                     /* [idx] Index over dimensions */
+  int dmn_in_idx;                  /* [idx] Counting index for dmn_in */
+  int dmn_in_nbr;                  /* [nbr] Number of dimensions in input variable */
+  int dmn_in_nbr_m1;               /* [nbr] Number of dimensions in input variable, less one */
+  int dmn_out_idx;                 /* [idx] Counting index for dmn_out */
+  int dmn_out_nbr;                 /* [nbr] Number of dimensions in output variable */
+  int rcd=0;                       /* [rcd] Return code */
+  int typ_sz;                      /* [B] Size of data element in memory */
+
+  long dmn_in_map[NC_MAX_DIMS];    /* [idx] Map for each dimension of input variable */
+  long dmn_out_map[NC_MAX_DIMS];   /* [idx] Map for each dimension of output variable */
+  long dmn_in_sbs[NC_MAX_DIMS];    /* [idx] Dimension subscripts into N-D input array */
+  long var_in_lmn;                 /* [idx] Offset into 1-D input array */
+  long var_out_lmn;                /* [idx] Offset into 1-D output array */
+  long *var_in_cnt;                /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
+  long var_sz;                     /* [nbr] Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
+
+
+
+
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
@@ -5513,6 +5540,10 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
         (void)fprintf(stdout,"%s: DEBUG %s re-ordering variable <%s>\n",prg_nm_get(),fnc_nm,
           var_trv.nm_fll);        
       } 
+
+      assert(var_trv.nco_typ == nco_obj_typ_var);
+      assert(var_trv.flg_xtr); 
+      assert(var_trv.nbr_dmn==var_out->nbr_dim);
 
 
 
