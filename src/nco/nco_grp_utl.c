@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.793 2013-06-23 05:13:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.794 2013-06-23 05:39:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5180,7 +5180,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  var_sct **var_prc_out,               /* I/O [sct] Processed variables */
  const int nbr_var_fix,               /* I [nbr] Number of processed variables */
  var_sct **var_fix,                   /* I/O [sct] Processed variables */
- nco_bool **dmn_rvr_in,               /* I/O [flg] Reverse dimension */
  dmn_sct **dmn_out,                   /* I/O [sct] Output dimension structures */
  dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
  const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
@@ -5203,7 +5202,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
   nm_tbl_sct *rec_dmn_nm=NULL;               /* [sct] Record dimension names array */
 
-  int dmn_idx_out_in[NC_MAX_DIMS];           /* [idx] Dimension correspondence, output->input  */
+  int dmn_idx_out_in[NC_MAX_DIMS];           /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
+
+  nco_bool dmn_rvr_in[NC_MAX_DIMS];          /* [flg] Reverse dimension  (Stored in GTT ) */
 
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
@@ -5242,9 +5243,8 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         }
 
 
-        dmn_rvr_in[idx_var_prc]=(nco_bool *)nco_malloc(var_prc[idx_var_prc]->nbr_dim*sizeof(nco_bool));
         /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
-        rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in[idx_var_prc]);
+        rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
         /* If record dimension required by current variable re-order...
         ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
         if(rec_dmn_nm_in && rec_dmn_nm_out_crr && var_prc_out[idx_var_prc]->nbr_dim > 1){
@@ -5285,6 +5285,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
           /* Transfer */
           trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]=dmn_idx_out_in[idx_var_dmn];
+          trv_tbl->lst[idx_var].dmn_rvr_in[idx_var_dmn]=dmn_rvr_in[idx_var_dmn];
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,
@@ -5492,7 +5493,6 @@ void
 nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of variable values */
 (const var_sct * const var_in,        /* I [ptr] Variable with metadata and data in original order */
  var_sct * const var_out,             /* I/O [ptr] Variable whose data will be re-ordered */
- const nco_bool * const dmn_rvr_in,   /* I [idx] Reverse dimension */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Re-order values in given variable according to supplied dimension map
@@ -5527,6 +5527,8 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
   int dmn_idx_out_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
 
+  nco_bool dmn_rvr_in[NC_MAX_DIMS];/* [flg] Reverse dimension  (Stored in GTT ) */
+
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
@@ -5551,6 +5553,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
         /* Transfer */
         dmn_idx_out_in[idx_var_dmn]=trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn];
+        dmn_rvr_in[idx_var_dmn]=trv_tbl->lst[idx_var].dmn_rvr_in[idx_var_dmn];
 
         if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,

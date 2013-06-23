@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.315 2013-06-23 05:13:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.316 2013-06-23 05:39:34 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.315 2013-06-23 05:13:25 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.315 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.316 2013-06-23 05:39:34 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.316 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1376,10 +1376,9 @@ main(int argc,char **argv)
         dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED;
       } 
 
-      dmn_rvr_in=(nco_bool **)nco_malloc(nbr_var_prc*sizeof(nco_bool *));
 
       /* Determine and set new dimensionality in metadata of each re-ordered variable */
-      (void)nco_var_dmn_rdr_mtd_trv(trv_tbl,nbr_var_prc,var_prc,var_prc_out,nbr_var_fix,var_fix,dmn_rvr_in,dmn_out,dmn_rdr,dmn_rdr_nbr,dmn_rvr_rdr,dmn_out_idx_rec_in);            
+      (void)nco_var_dmn_rdr_mtd_trv(trv_tbl,nbr_var_prc,var_prc,var_prc_out,nbr_var_fix,var_fix,dmn_out,dmn_rdr,dmn_rdr_nbr,dmn_rvr_rdr,dmn_out_idx_rec_in);            
 
   } /* IS_REORDER */
 
@@ -1491,16 +1490,17 @@ main(int argc,char **argv)
 #ifdef USE_RDR_NETCDF3
         /* Change dimensionionality of values */
         (void)nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
-#else
-        (void)nco_var_dmn_rdr_val_trv(var_prc[idx],var_prc_out[idx],dmn_rvr_in[idx],trv_tbl);
-#endif
-
-        /* Re-ordering required two value buffers, time to free input buffer */
-        var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 
         /* Free current dimension correspondence */
         dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
         dmn_rvr_in[idx]=(nco_bool *)nco_free(dmn_rvr_in[idx]);
+#else
+        (void)nco_var_dmn_rdr_val_trv(var_prc[idx],var_prc_out[idx],trv_tbl);
+#endif
+
+        /* Re-ordering required two value buffers, time to free input buffer */
+        var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+        
       } /* IS_REORDER */
 
 
