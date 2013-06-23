@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.313 2013-06-23 03:46:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.314 2013-06-23 04:53:10 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.313 2013-06-23 03:46:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.313 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.314 2013-06-23 04:53:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.314 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1492,8 +1492,7 @@ main(int argc,char **argv)
         /* Change dimensionionality of values */
         (void)nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
 #else
-
-
+        (void)nco_var_dmn_rdr_val_trv(var_prc[idx],var_prc_out[idx],dmn_rvr_in[idx]);
 #endif
 
         /* Re-ordering required two value buffers, time to free input buffer */

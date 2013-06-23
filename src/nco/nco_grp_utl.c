@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.789 2013-06-23 03:46:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.790 2013-06-23 04:53:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5486,3 +5486,20 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 } /* nco_var_dmn_rdr_mtd_trv() */
 
 
+void
+nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of variable values */
+(const var_sct * const var_in,        /* I [ptr] Variable with metadata and data in original order */
+ var_sct * const var_out,             /* I/O [ptr] Variable whose data will be re-ordered */
+ const int * const dmn_idx_out_in,    /* I [idx] Dimension correspondence, output->input */
+ const nco_bool * const dmn_rvr_in,   /* I [idx] Reverse dimension */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Re-order values in given variable according to supplied dimension map
+  Description of re-ordering concepts is in nco_var_dmn_rdr_mtd()
+  Description of actual re-ordering algorithm is in nco_var_dmn_rdr_val() */
+
+
+
+  return;
+
+} /* nco_var_dmn_rdr_val_trv() */
