@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.316 2013-06-23 05:39:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.317 2013-06-23 06:32:55 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.316 2013-06-23 05:39:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.316 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.317 2013-06-23 06:32:55 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.317 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1364,21 +1364,8 @@ main(int argc,char **argv)
   /* If re-ordering */
   if(IS_REORDER){
 
-    nbr_dmn_out=nbr_dmn_xtr;
-    /* ...which, if any, output dimension structure currently holds record dimension? */
-    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_out;dmn_out_idx++)
-      if(dmn_out[dmn_out_idx]->is_rec_dmn){
-        break;
-      }
-      if(dmn_out_idx != nbr_dmn_out){
-        dmn_out_idx_rec_in=dmn_out_idx;
-      }else{
-        dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED;
-      } 
-
-
-      /* Determine and set new dimensionality in metadata of each re-ordered variable */
-      (void)nco_var_dmn_rdr_mtd_trv(trv_tbl,nbr_var_prc,var_prc,var_prc_out,nbr_var_fix,var_fix,dmn_out,dmn_rdr,dmn_rdr_nbr,dmn_rvr_rdr,dmn_out_idx_rec_in);            
+    /* Determine and set new dimensionality in metadata of each re-ordered variable */
+    (void)nco_var_dmn_rdr_mtd_trv(trv_tbl,nbr_var_prc,var_prc,var_prc_out,nbr_var_fix,var_fix,dmn_rdr,dmn_rdr_nbr,dmn_rvr_rdr);            
 
   } /* IS_REORDER */
 
@@ -1500,7 +1487,7 @@ main(int argc,char **argv)
 
         /* Re-ordering required two value buffers, time to free input buffer */
         var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-        
+
       } /* IS_REORDER */
 
 

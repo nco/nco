@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.307 2013-06-23 05:39:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.308 2013-06-23 06:32:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -532,11 +532,10 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  var_sct **var_prc_out,               /* I/O [sct] Processed variables */
  const int nbr_var_fix,               /* I [nbr] Number of processed variables */
  var_sct **var_fix,                   /* I/O [sct] Processed variables */
- dmn_sct **dmn_out,                   /* I/O [sct] Output dimension structures */
  dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
  const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
- const nco_bool *dmn_rvr_rdr,         /* I [flg] Reverse dimension */
- int dmn_out_idx_rec_in);             /* I [idx] Record dimension index in output dimension list, original */
+ const nco_bool *dmn_rvr_rdr);        /* I [flg] Reverse dimension */
+ 
 
 
 void
