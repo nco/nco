@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.311 2013-06-23 03:20:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.312 2013-06-23 03:26:43 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.311 2013-06-23 03:20:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.311 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.312 2013-06-23 03:26:43 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.312 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1187,28 +1187,6 @@ main(int argc,char **argv)
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
 
-  /* Alter metadata for variables that will be packed */
-  if(nco_pck_plc != nco_pck_plc_nil){
-    if(nco_pck_plc != nco_pck_plc_upk){
-      /* Allocate attribute list container for maximum number of entries */
-      aed_lst_add_fst=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
-      aed_lst_scl_fct=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
-    } /* endif packing */
-    for(idx=0;idx<nbr_var_prc;idx++){
-      nco_pck_mtd(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc);
-      if(nco_pck_plc != nco_pck_plc_upk){
-        /* Use same copy of attribute name for all edits */
-        aed_lst_add_fst[idx].att_nm=add_fst_sng;
-        aed_lst_scl_fct[idx].att_nm=scl_fct_sng;
-      } /* endif packing */
-    } /* end loop over var_prc */
-
-    /* Transfer variable type to table. NOTE: Using processed variables set with the new type  */
-    (void)nco_var_typ_trv(xtr_nbr,var_prc_out,trv_tbl);    
-
-  } /* nco_pck_plc == nco_pck_plc_nil */
-
-
 #ifdef USE_RDR_NETCDF3
 
   if (fl_in_fmt != NC_FORMAT_NETCDF4) {
@@ -1409,7 +1387,26 @@ main(int argc,char **argv)
 
 #endif /* USE_RDR_NETCDF3 */
 
-  
+  /* Alter metadata for variables that will be packed */
+  if(nco_pck_plc != nco_pck_plc_nil){
+    if(nco_pck_plc != nco_pck_plc_upk){
+      /* Allocate attribute list container for maximum number of entries */
+      aed_lst_add_fst=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
+      aed_lst_scl_fct=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
+    } /* endif packing */
+    for(idx=0;idx<nbr_var_prc;idx++){
+      nco_pck_mtd(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_plc);
+      if(nco_pck_plc != nco_pck_plc_upk){
+        /* Use same copy of attribute name for all edits */
+        aed_lst_add_fst[idx].att_nm=add_fst_sng;
+        aed_lst_scl_fct[idx].att_nm=scl_fct_sng;
+      } /* endif packing */
+    } /* end loop over var_prc */
+
+    /* Transfer variable type to table. NOTE: Using processed variables set with the new type. MUST be done befoe definition  */
+    (void)nco_var_typ_trv(xtr_nbr,var_prc_out,trv_tbl);    
+
+  } /* nco_pck_plc == nco_pck_plc_nil */
 
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
