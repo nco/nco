@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.308 2013-06-23 00:08:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.309 2013-06-23 01:53:59 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.308 2013-06-23 00:08:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.308 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.309 2013-06-23 01:53:59 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.309 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1356,6 +1356,9 @@ main(int argc,char **argv)
     } /* end loop over var_prc */
   } /* !REDEFINED_RECORD_DIMENSION */
 
+  /* Transfer dimension re-order structures (index map) into GTT */
+  if(IS_REORDER) (void)nco_dmn_rdr_trv(dmn_idx_out_in,nbr_var_prc,var_prc_out,trv_tbl);
+
 #else /* USE_RDR_NETCDF3 */
 
   /* If re-ordering */
@@ -1408,9 +1411,6 @@ main(int argc,char **argv)
 
   } /* nco_pck_plc == nco_pck_plc_nil */
 
-
-  /* Transfer dimension re-order structures (index map) into GTT */
-  if(IS_REORDER) (void)nco_dmn_rdr_trv(dmn_idx_out_in,nbr_var_prc,var_prc_out,trv_tbl);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,rec_dmn_nm_out,trv_tbl); 
