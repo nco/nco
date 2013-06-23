@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.783 2013-06-23 00:11:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.784 2013-06-23 00:17:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5295,7 +5295,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
           if(dbg_lvl_get() >= nco_dbg_std){
             (void)fprintf(stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF3 allows only one record dimension. Hence %s will make %s record (i.e., least rapidly varying) dimension in all variables that contain it.\n",
-              dbg_lvl_get(),rec_dmn_nm_in,rec_dmn_nm_out,dbg_lvl_get(),rec_dmn_nm_out);
+              prg_nm_get(),rec_dmn_nm_in,rec_dmn_nm_out,prg_nm_get(),rec_dmn_nm_out);
           }
 
           int dmn_out_idx;
@@ -5353,7 +5353,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
           if(dbg_lvl_get() >= nco_dbg_std){
             (void)fprintf(stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF3 allows only one record dimension. Hence %s will make %s record (i.e., least rapidly varying) dimension in all variables that contain it.\n",
-              dbg_lvl_get(),rec_dmn_nm_in,rec_dmn_nm_out,dbg_lvl_get(),rec_dmn_nm_out);
+              prg_nm_get(),rec_dmn_nm_in,rec_dmn_nm_out,prg_nm_get(),rec_dmn_nm_out);
           }
 
 
