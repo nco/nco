@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.787 2013-06-23 03:08:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.788 2013-06-23 03:13:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5257,7 +5257,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               trv_tbl->lst[idx_var].flg_rdf_rec=True;
 
               /* ...store the name of the record dimension on output... */
-              trv_tbl->lst[idx_var].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);;
+              trv_tbl->lst[idx_var].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
 
             } /* !REDEFINED_RECORD_DIMENSION */
           } /* endif new and old record dimensions differ */
@@ -5316,18 +5316,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         /* Match by full variable name  */
         if(strcmp(var_fix[idx_var_fix]->nm_fll,var_trv.nm_fll) == 0){
 
-          /* Initialize record names for this object */ 
-          rec_dmn_nm_out_crr=NULL;
-          rec_dmn_nm_in=NULL;
-          rec_dmn_nm_out=NULL;
+          /* ...get the name of the record dimension on output... stored to GTT in first loop above */
+          rec_dmn_nm_out=(char *)strdup(trv_tbl->lst[idx_var].rec_dmn_nm_out);
 
-          /* Get array of record names for object (again, not stored) */
-          (void)nco_get_rec_dmn_nm(&var_trv,trv_tbl,&rec_dmn_nm);                
-
-          /* Use for record dimension name the first in array */
-          if(rec_dmn_nm->lst){
-            rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
-          }
 
           if(dbg_lvl_get() >= nco_dbg_std){
             (void)fprintf(stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF3 allows only one record dimension. Hence %s will make %s record (i.e., least rapidly varying) dimension in all variables that contain it.\n",
@@ -5360,13 +5351,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               } /* endif status changing from non-record to record */
             } /* endif variable will be record variable */
 
-
-            /* Memory management for record dimension names */
-            if(rec_dmn_nm){
-              for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
-              rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
-            }
-
         } /* Match by full variable name  */
       } /* end loop over var_fix */
 
@@ -5382,6 +5366,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               var_trv.nm_fll);        
           } 
 
+          /* ...get the name of the record dimension on output... stored to GTT in first loop above */
+          rec_dmn_nm_out=(char *)strdup(trv_tbl->lst[idx_var].rec_dmn_nm_out);
+
           /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
 
           /* Loop variable dimensions */
@@ -5395,21 +5382,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                 var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
             } 
           } /* Loop variable dimensions */
-
-
-
-          /* Initialize record names for this object */ 
-          rec_dmn_nm_out_crr=NULL;
-          rec_dmn_nm_in=NULL;
-          rec_dmn_nm_out=NULL;
-
-          /* Get array of record names for object (again, not stored) */
-          (void)nco_get_rec_dmn_nm(&var_trv,trv_tbl,&rec_dmn_nm);                
-
-          /* Use for record dimension name the first in array */
-          if(rec_dmn_nm->lst){
-            rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
-          }
 
           if(dbg_lvl_get() >= nco_dbg_std){
             (void)fprintf(stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF3 allows only one record dimension. Hence %s will make %s record (i.e., least rapidly varying) dimension in all variables that contain it.\n",
@@ -5490,19 +5462,8 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               } /* endif status changing from non-record to record */
             } /* endif variable will be record variable */
 
-
-            /* Memory management for record dimension names */
-            if(rec_dmn_nm_in) rec_dmn_nm_in=(char *)nco_free(rec_dmn_nm_in);
-            if(rec_dmn_nm_out) rec_dmn_nm_out=(char *)nco_free(rec_dmn_nm_out);
-            if(rec_dmn_nm){
-              for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
-              rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
-            }
-
-
         } /* Match by full variable name  */
       } /* end loop over var_prc */
-
 
     } /* Has re-defined record dimension */
   } /* Loop table */
