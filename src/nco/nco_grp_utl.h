@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.303 2013-06-22 23:53:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.304 2013-06-23 02:15:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -510,19 +510,18 @@ nco_cpy_var_dfn                        /* [fnc] Define specified variable in out
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 void
-nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
-(int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
- const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
- var_sct **var_prc_out,                /* I [sct] Processed variables */
- trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
-
-
-void
 nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
 (const int nc_id,                      /* I [id] netCDF file ID */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  int *nbr_dmn_xtr,                     /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
  dmn_sct ***dim);                      /* O [sct] Array of dimensions associated associated with variables to be extracted  */
+
+void
+nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
+(int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
+ const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
+ var_sct **var_prc_out,                /* I [sct] Processed variables */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 
 void
@@ -533,7 +532,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  var_sct **var_prc_out,               /* I/O [sct] Processed variables */
  const int nbr_var_fix,               /* I [nbr] Number of processed variables */
  var_sct **var_fix,                   /* I/O [sct] Processed variables */
- int **dmn_idx_out_in,                /* I/O [idx] Dimension correspondence, output->input  */
  nco_bool **dmn_rvr_in,               /* I/O [flg] Reverse dimension */
  dmn_sct **dmn_out,                   /* I/O [sct] Output dimension structures */
  dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */

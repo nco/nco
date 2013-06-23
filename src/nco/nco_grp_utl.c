@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.785 2013-06-23 01:52:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.786 2013-06-23 02:15:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4984,60 +4984,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   return var_out_id;
 } /* end nco_cpy_var_dfn() */
 
-void
-nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
-(int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
- const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
- var_sct **var_prc_out,                /* I [sct] Processed variables */
- trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
-{
-  /* Purpose: Transfer dimension structures to be re-ordered (ncpdq) into GTT */
 
-  const char fnc_nm[]="nco_dmn_rdr_trv()"; /* [sng] Function name */
-
-  /* Loop processed variables */
-  for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
-
-    /* Loop table */
-    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-      trv_sct var_trv=trv_tbl->lst[idx_var];
-
-      /* If GTT variable object is to extract */
-      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
-
-        /* Match by full variable name  */
-        if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
-
-          /* Mark re-order flag */
-          trv_tbl->lst[idx_var].flg_rdr=True;
-
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s transfering variable <%s>\n",prg_nm_get(),fnc_nm,
-              var_trv.nm_fll);        
-          } 
-
-          assert(var_trv.nbr_dmn==var_prc_out[idx_var_prc]->nbr_dim);
-
-          /* Loop variable dimensions */
-          for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
-
-            /* Transfer */
-            trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]=dmn_idx_out_in[idx_var_prc][idx_var_dmn];
-
-            if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,
-                var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
-            } 
-
-          } /* Loop variable dimensions */
-        } /* Match by full variable name  */
-      } /* If GTT variable object is to extract */
-    } /* Loop table */
-  } /* Loop processed variables */
-
-  return;
-
-} /* end nco_dmn_rdr_trv() */
 
 
 
@@ -5152,6 +5099,65 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 } /* end nco_dmn_lst_ass_var_trv() */
 
 
+
+void
+nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
+(int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
+ const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
+ var_sct **var_prc_out,                /* I [sct] Processed variables */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+{
+  /* Purpose: Transfer dimension structures to be re-ordered (ncpdq) into GTT */
+
+  const char fnc_nm[]="nco_dmn_rdr_trv()"; /* [sng] Function name */
+
+  assert(prg_get() == ncpdq);
+
+  /* Loop processed variables */
+  for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
+
+    /* Loop table */
+    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+      trv_sct var_trv=trv_tbl->lst[idx_var];
+
+      /* If GTT variable object is to extract */
+      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
+
+        /* Match by full variable name  */
+        if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
+
+          /* Mark re-order flag */
+          trv_tbl->lst[idx_var].flg_rdr=True;
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s transfering variable <%s>\n",prg_nm_get(),fnc_nm,
+              var_trv.nm_fll);        
+          } 
+
+          assert(var_trv.nbr_dmn==var_prc_out[idx_var_prc]->nbr_dim);
+
+          /* Loop variable dimensions */
+          for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
+
+            /* Transfer */
+            trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]=dmn_idx_out_in[idx_var_prc][idx_var_dmn];
+
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,
+                var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
+            } 
+
+          } /* Loop variable dimensions */
+        } /* Match by full variable name  */
+      } /* If GTT variable object is to extract */
+    } /* Loop table */
+  } /* Loop processed variables */
+
+  return;
+
+} /* end nco_dmn_rdr_trv() */
+
+
 void
 nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable */
 (trv_tbl_sct * const trv_tbl,         /* I/O [sct] GTT (Group Traversal Table) */
@@ -5160,7 +5166,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  var_sct **var_prc_out,               /* I/O [sct] Processed variables */
  const int nbr_var_fix,               /* I [nbr] Number of processed variables */
  var_sct **var_fix,                   /* I/O [sct] Processed variables */
- int **dmn_idx_out_in,                /* I/O [idx] Dimension correspondence, output->input  */
  nco_bool **dmn_rvr_in,               /* I/O [flg] Reverse dimension */
  dmn_sct **dmn_out,                   /* I/O [sct] Output dimension structures */
  dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
@@ -5176,13 +5181,15 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
   const char fnc_nm[]="nco_var_dmn_rdr_mtd_trv()"; /* [sng] Function name */
 
-  char *rec_dmn_nm_out_crr;                 /* [sng] Name of record dimension, if any, required by re-order */
-  char *rec_dmn_nm_in;                      /* [sng] Record dimension name, original */
-  char *rec_dmn_nm_out;                     /* [sng] Record dimension name, re-ordered */
+  char *rec_dmn_nm_out_crr;                  /* [sng] Name of record dimension, if any, required by re-order */
+  char *rec_dmn_nm_in;                       /* [sng] Record dimension name, original */
+  char *rec_dmn_nm_out;                      /* [sng] Record dimension name, re-ordered */
 
   nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
 
   nm_tbl_sct *rec_dmn_nm=NULL;               /* [sct] Record dimension names array */
+
+  int dmn_idx_out_in[NC_MAX_DIMS];           /* [idx] Dimension correspondence, output->input  */
 
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
@@ -5194,8 +5201,14 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
       /* Match by full variable name  */
       if(strcmp(var_prc[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
 
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s transfering variable <%s>\n",prg_nm_get(),fnc_nm,
+            var_trv.nm_fll);        
+        } 
+
         assert(var_trv.nco_typ == nco_obj_typ_var);
         assert(var_trv.flg_xtr); 
+        assert(var_trv.nbr_dmn==var_prc_out[idx_var_prc]->nbr_dim);
 
         /* Mark re-order flag */
         trv_tbl->lst[idx_var].flg_rdr=True;
@@ -5213,10 +5226,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         }
 
 
-        dmn_idx_out_in[idx_var_prc]=(int *)nco_malloc(var_prc[idx_var_prc]->nbr_dim*sizeof(int));
         dmn_rvr_in[idx_var_prc]=(nco_bool *)nco_malloc(var_prc[idx_var_prc]->nbr_dim*sizeof(nco_bool));
         /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
-        rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx_var_prc],dmn_rvr_rdr,dmn_rvr_in[idx_var_prc]);
+        rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in[idx_var_prc]);
         /* If record dimension required by current variable re-order...
         ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
         if(rec_dmn_nm_in && rec_dmn_nm_out_crr && var_prc_out[idx_var_prc]->nbr_dim > 1){
@@ -5247,6 +5259,21 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         } /* endif current variable is record variable */
 
 
+        /* Transfer dimension structures to be re-ordered into GTT */
+
+        /* Loop variable dimensions */
+        for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
+
+          /* Transfer */
+          trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]=dmn_idx_out_in[idx_var_dmn];
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,
+              var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
+          } 
+        } /* Loop variable dimensions */
+
+
         /* Memory management for record dimension names */
         if(rec_dmn_nm_in) rec_dmn_nm_in=(char *)nco_free(rec_dmn_nm_in);
         if(rec_dmn_nm_out) rec_dmn_nm_out=(char *)nco_free(rec_dmn_nm_out);
@@ -5260,7 +5287,8 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   } /* Loop processed variables */
 
 
-  /* Second loop to deal with REDEFINED_RECORD_DIMENSION */
+
+  /* Loop to deal with REDEFINED_RECORD_DIMENSION */
 
 
   /* Loop table */
@@ -5339,11 +5367,33 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         } /* Match by full variable name  */
       } /* end loop over var_fix */
 
+
       /* Update is_rec_var flag for var_prc */
       for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
 
         /* Match by full variable name  */
         if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s reordering record for variable <%s>\n",prg_nm_get(),fnc_nm,
+              var_trv.nm_fll);        
+          } 
+
+          /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
+
+          /* Loop variable dimensions */
+          for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
+
+            /* Transfer */
+            dmn_idx_out_in[idx_var_dmn]=trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn];
+
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,
+                var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
+            } 
+          } /* Loop variable dimensions */
+
+
 
           /* Initialize record names for this object */ 
           rec_dmn_nm_out_crr=rec_dmn_nm_in=rec_dmn_nm_out=NULL;
@@ -5411,9 +5461,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                   dmn_idx_rec_in=dmn_out_idx;
                   dmn_idx_rec_out=0;
                   /* Swap indices in map */
-                  dmn_idx_swp=dmn_idx_out_in[idx_var_prc][dmn_idx_rec_out];
-                  dmn_idx_out_in[idx_var_prc][dmn_idx_rec_out]=dmn_idx_rec_in;
-                  dmn_idx_out_in[idx_var_prc][dmn_idx_rec_in]=dmn_idx_swp;
+                  dmn_idx_swp=dmn_idx_out_in[dmn_idx_rec_out];
+                  dmn_idx_out_in[dmn_idx_rec_out]=dmn_idx_rec_in;
+                  dmn_idx_out_in[dmn_idx_rec_in]=dmn_idx_swp;
                   /* Swap dimensions in list */
                   dmn_swp=var_prc_out[idx_var_prc]->dim[dmn_idx_rec_out];
                   var_prc_out[idx_var_prc]->dim[dmn_idx_rec_out]=var_prc_out[idx_var_prc]->dim[dmn_idx_rec_in];
