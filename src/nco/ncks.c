@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.615 2013-06-17 23:48:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.616 2013-06-23 19:32:26 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -51,8 +51,8 @@
    ncks -O -G foo ~/nco/data/in.nc ~/foo.nc
    ncks -O -G :-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
-   ncks -O -v time ~/in_grp.nc ~/foo.nc */
-
+   ncks -O -v time ~/in_grp.nc ~/foo.nc
+   ncks -O --sysconf ~/in_grp.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.615 2013-06-17 23:48:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.615 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.616 2013-06-23 19:32:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.616 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -436,7 +436,7 @@ main(int argc,char **argv)
       } /* endif "shh" */
       if(!strcmp(opt_crr,"sysconf")){
 	long maxrss; /* [B] Maximum resident set size */
-	maxrss=nco_mmr_rusage_prn((int)0);
+	maxrss=nco_mmr_usg_prn((int)0);
         nco_exit(EXIT_SUCCESS);
       } /* endif "sysconf" */
       if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;

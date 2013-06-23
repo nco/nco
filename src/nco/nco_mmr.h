@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.33 2013-06-17 23:48:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.34 2013-06-23 19:32:26 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -71,7 +71,7 @@ nco_malloc_err_hnt_prn /* [fnc] Explain meaning and workarounds for malloc() fai
 (void);
 
 long /* O [B] Maximum resident set size */
-nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
+nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
 (const int rusage_who); /* [enm] RUSAGE_SELF, RUSAGE_CHILDREN, RUSAGE_LWP */
 
 long /* O [nbr] Net memory currently allocated */

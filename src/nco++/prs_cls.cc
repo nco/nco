@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.28 2013-01-13 06:07:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.29 2013-06-23 19:32:26 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -507,7 +507,7 @@ prs_cls::ncap_var_write_omp(
     os<<" Writing variable "<<var_nm; <<" to disk.";
     dbg_prn(fnc_nm,os.str());
   }
-  maxrss=nco_mmr_rusage_prn((int)0);
+  maxrss=nco_mmr_usg_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
   
   // save variable to output vector if new

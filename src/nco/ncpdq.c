@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.318 2013-06-23 06:45:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.319 2013-06-23 19:32:26 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.318 2013-06-23 06:45:59 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.318 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.319 2013-06-23 19:32:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.319 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1447,7 +1447,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,trv_tbl,IS_REORDER)
 #endif /* !_OPENMP */
 
     /* Process all variables in current file */

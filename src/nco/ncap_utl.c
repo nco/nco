@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.152 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.153 2013-06-23 19:32:26 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -253,7 +253,7 @@ ncap_var_write
   /* Compile: cd ~/nco/bld;make 'USR_TKN=-DNCO_RUSAGE_DBG';cd - */
   /* Print rusage memory usage statistics */
   if(dbg_lvl_get() >= 0) (void)fprintf(stdout,"%s: INFO ncap_var_write() writing variable %s\n",prg_nm_get(),var->nm);
-  maxrss=nco_mmr_rusage_prn((int)0);
+  maxrss=nco_mmr_usg_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
   
   /* Free varible */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.47 2013-06-21 15:41:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.48 2013-06-23 19:32:26 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -310,17 +310,20 @@ nco_mmr_stt /* [fnc] Track memory statistics */
 } /* nco_mmr_stt() */
 
 long /* O [B] Maximum resident set size */
-nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
+nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
 (const int rusage_who) /* [enm] RUSAGE_SELF, RUSAGE_CHILDREN, RUSAGE_LWP */
 {
   /* Purpose: Track memory statistics */
 
-  /* Routine is intended to be purely diagnostic.
-     Currently only accessed with ncks --sysconf */
+  /* Routine is intended to be purely diagnostic
+     Currently only accessed with ncks --sysconf
+     rss [B] = RSS = Resident Set Size = Portion of process's memory in RAM. Rest is in swap or not loaded.
+     vsize [B] = Virtual Memory Size
+     rsslim [B] = Soft limit on process RSS, as per getrlimit() */
 
   /* 20130617: Remik Ziemlinski's ncx has _SC_PAGE_SIZE example in ezNcUtil.hpp */ 
 
-  const char fnc_nm[]="nco_mmr_rusage_prn()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_mmr_usg_prn()"; /* [sng] Function name */
   const char fl_prc[]="/proc/self/stat"; /* [sng] Process status pseudo-file name */
 
   FILE *fp_prc=NULL; /* [fl] Process status file handle */
@@ -354,16 +357,16 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
   char *comm;
   char state;
   unsigned int flags ;
-  long int utime,stime,cutime,cstime,priority,nice,num_threads;
-  unsigned long int minflt,cminflt,majflt,cmajflt,itrealvalue,vsize,rss;
+  long int utime,stime,cutime,cstime,priority,nice,num_threads,rss;
+  unsigned long int minflt,cminflt,majflt,cmajflt,itrealvalue,vsize,rsslim;
   unsigned long long int starttime;
   comm=(char *)nco_malloc(100UL*sizeof(char));
   if((fp_prc=fopen(fl_prc,"r")) == NULL){
-    fscanf(fp_prc,"%d %s %c %d %d %d %d %d %u %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %ld %lu %llu %lu %lu",&pid,comm,&state,&ppid,&pgrp,&session,&tty_nr,&tpgid,&flags,&minflt,&cminflt,&majflt,&cmajflt,&utime,&stime,&cutime,&cstime,&priority,&nice,&num_threads,&itrealvalue,&starttime,&vsize,&rss);
+    fscanf(fp_prc,"%d (%s) %c %d %d %d %d %d %u %lu %lu %lu %lu %ld %ld %ld %ld %ld %ld %ld %lu %llu %lu %ld %lu",&pid,comm,&state,&ppid,&pgrp,&session,&tty_nr,&tpgid,&flags,&minflt,&cminflt,&majflt,&cmajflt,&utime,&stime,&cutime,&cstime,&priority,&nice,&num_threads,&itrealvalue,&starttime,&vsize,&rss,&rsslim);
   } /* !fl_prc */
   if(comm) comm=(char *)nco_free(comm);
   rcd_sys=fclose(fp_prc);
-  (void)fprintf(stdout,"%s: INFO %s polled %s and found rss = %lu B = %lu kB = %lu MB.\n",prg_nm_get(),fnc_nm,fl_prc,rss,rss/1024,rss/(1024*1024));
+  (void)fprintf(stdout,"%s: INFO %s polled %s and found rsslim = %lu B = %lu kB = %lu MB, rss = %ld B = %ld kB = %ld MB, vsize = %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),fnc_nm,fl_prc,rsslim,rsslim/1024UL,rsslim/(1024UL*1024UL),rss,rss/1024UL,rss/(1024UL*1024UL),vsize,vsize/1024UL,vsize/(1024UL*1024UL),vsize/(1024UL*1024UL*1024UL));
 #else /* !HAVE_GETPAGESIZE */
   /* CEWI */
   sz_pg=rusage_who;
@@ -379,7 +382,7 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
      IRIX uses bytes [B] for size [sz] and 
      ru_maxrss [kB], ru_ixrss [pg tck], ru_idrss [pg], ru_idrss [pg]
 
-     Linux does not implement these fields yet
+     Linux does not implement these fields yet (as of when?)
      ru_maxrss, ru_ixrss, ru_idrss, ru_idrss
 
      Solaris uses pages [pg] for size and ticks [tck] for time: 
@@ -416,4 +419,4 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
   return (long)0; /* [B] Fake return value */
 #endif /* !HAVE_GETRUSAGE */
 
-} /* nco_mmr_rusage_prn() */
+} /* nco_mmr_usg_prn() */
