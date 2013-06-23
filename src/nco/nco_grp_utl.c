@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.788 2013-06-23 03:13:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.789 2013-06-23 03:46:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4684,6 +4684,18 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       rec_dmn_nm=rec_dmn_nm_mlc;
     } /* strncmp() */    
   } /* !rec_dmn_nm_cst */
+
+
+  /* If variable has a re-defined record dimension. NOTE: this implies passing NULL as User-specified record dimension parameter  */
+  if (var_trv->flg_rdf_rec){
+
+    /* Must be ncpdq */
+    assert(prg_id == ncpdq);
+
+    rec_dmn_nm=(char *)strdup(var_trv->rec_dmn_nm_out);
+
+  } /* If variable has a re-defined record dimension */
+
 
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
