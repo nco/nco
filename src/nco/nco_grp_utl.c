@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.790 2013-06-23 04:53:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.791 2013-06-23 04:59:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5228,7 +5228,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         trv_tbl->lst[idx_var].flg_rdr=True;
 
         /* Initialize record names for this object */ 
-        rec_dmn_nm_out_crr=rec_dmn_nm_in=rec_dmn_nm_out=NULL;
+        rec_dmn_nm_out_crr=NULL;
+        rec_dmn_nm_in=NULL;
+        rec_dmn_nm_out=NULL;
 
         /* Get array of record names for object */
         (void)nco_get_rec_dmn_nm(&var_trv,trv_tbl,&rec_dmn_nm);                
@@ -5498,7 +5500,34 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
   Description of re-ordering concepts is in nco_var_dmn_rdr_mtd()
   Description of actual re-ordering algorithm is in nco_var_dmn_rdr_val() */
 
+  const char fnc_nm[]="nco_var_dmn_rdr_val_trv()"; /* [sng] Function name */
 
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    /* Match by full variable name  */
+    if(strcmp(var_out->nm_fll,var_trv.nm_fll) == 0){
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s re-ordering variable <%s>\n",prg_nm_get(),fnc_nm,
+          var_trv.nm_fll);        
+      } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    } /* Match by full variable name  */
+  } /* Loop table */
 
   return;
 
