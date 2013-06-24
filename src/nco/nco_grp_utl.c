@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.798 2013-06-24 10:28:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.799 2013-06-24 18:06:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4882,7 +4882,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       dmn_out_id[idx_dmn]=dmn_id_out; 
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s defined dimension [%d] new #%d:<%s> with size %li\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: DEBUG %s defined dimension [%d] new ##%d:<%s> with size %li\n",prg_nm_get(),fnc_nm,
           idx_dmn,dmn_id_out,dmn_trv->nm_fll,dmn_sz);
       } /* endif dbg */
 
@@ -4966,7 +4966,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with new dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-      (void)fprintf(stdout,"#%d: ",dmn_out_id[idx_dmn]);
+      (void)fprintf(stdout,"##%d: ",dmn_out_id[idx_dmn]);
     }
     (void)fprintf(stdout,"\n");
   }
