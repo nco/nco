@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.795 2013-06-23 06:32:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.796 2013-06-24 00:31:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5194,9 +5194,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   char *rec_dmn_nm_in;                       /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out;                      /* [sng] Record dimension name, re-ordered */
 
-  nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
+  nco_bool REDEFINED_RECORD_DIMENSION;       /* [flg] Re-defined record dimension */
 
-  nm_tbl_sct *rec_dmn_nm=NULL;               /* [sct] Record dimension names array */
+  nm_tbl_sct *rec_dmn_nm;                    /* [sct] Record dimension names array */
 
   int dmn_idx_out_in[NC_MAX_DIMS];           /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
 
@@ -5221,10 +5221,14 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         assert(var_trv.flg_xtr); 
         assert(var_trv.nbr_dmn==var_prc_out[idx_var_prc]->nbr_dim);
 
+        /* Initialize for this variable */
+        REDEFINED_RECORD_DIMENSION=False;
+
         /* Mark re-order flag */
         trv_tbl->lst[idx_var].flg_rdr=True;
 
-        /* Initialize record names for this object */ 
+        /* Initialize record names for this object */
+        rec_dmn_nm=NULL;
         rec_dmn_nm_out_crr=NULL;
         rec_dmn_nm_in=NULL;
         rec_dmn_nm_out=NULL;
@@ -5263,7 +5267,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               /* ...and set flag that record dimension has been re-defined... */
               REDEFINED_RECORD_DIMENSION=True;
 
-              /* ...and set flag that record dimension has been re-defined... */
+              /* ...and set flag that record dimension has been re-defined in GTT ... */
               trv_tbl->lst[idx_var].flg_rdf_rec=True;
 
               /* ...store the name of the record dimension on output... */
