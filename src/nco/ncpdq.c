@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.320 2013-06-24 00:31:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.321 2013-06-24 10:28:56 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.320 2013-06-24 00:31:46 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.320 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.321 2013-06-24 10:28:56 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.321 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1289,7 +1289,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Search all dimensions in variable for new record dimension */
       for(dmn_out_idx=0;dmn_out_idx<var_prc_out[idx]->nbr_dim;dmn_out_idx++)
-        if(!strcmp(var_prc_out[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
+        if(strcmp(var_prc_out[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out) == 0){
           break;
         }
         /* ...Will variable be record variable in output file?... */

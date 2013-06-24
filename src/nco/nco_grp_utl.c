@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.797 2013-06-24 04:05:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.798 2013-06-24 10:28:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1427,7 +1427,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       } /* endif dbg */
 
       /* Define variable in output file */
-      var_out_id=nco_cpy_var_dfn(nc_id,nc_out_id,grp_id,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
+      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,grp_id,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
 
       /* Set chunksize parameters */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&var_trv);
@@ -1687,9 +1687,8 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
         ncks -O  -v two_dmn_rec_var in_grp.nc out.nc
 
-        nco_cpy_var_dfn() defines new dimesions for the file, as
+        nco_cpy_var_dfn_trv() defines new dimesions for the file, as
 
-        ncks: INFO nco_cpy_var_dfn() defining dimensions
         ID=0 index [0]:</time> 
         ID=1 index [1]:</lev> 
         ID=2 index [0]:</g8/lev> 
@@ -3828,7 +3827,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
+    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) 
+      : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,rnk_gtr);
@@ -3940,7 +3940,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
- trv_sct *trv_1,                       /* I/O [sct] Table object (nco_cpy_var_dfn) */
+ trv_sct *trv_1,                       /* I/O [sct] Table object (nco_cpy_var_dfn_trv) */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
@@ -4004,7 +4004,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
 
     /* Define variable in output file. */
-    var_out_id= nco_cpy_var_dfn(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
+    var_out_id= nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,trv_1);
@@ -4566,7 +4566,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
 
 int                                 /* O [id] Output file variable ID */
-nco_cpy_var_dfn                     /* [fnc] Define specified variable in output file */
+nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output file */
 (const int nc_id,                   /* I [ID] netCDF input file ID */
  const int nc_out_id,               /* I [ID] netCDF output file ID */
  const int grp_in_id,               /* I [id] netCDF input group ID */
@@ -4590,7 +4590,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   Same routine is called with or without limits
   Routine works with GTT instead of plain names */
 
-  const char fnc_nm[]="nco_cpy_var_dfn()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_cpy_var_dfn_trv()"; /* [sng] Function name */
 
   char var_nm[NC_MAX_NAME+1];            /* [sng] Variable name (local copy of object name) */ 
   char *rec_dmn_nm=NULL;                 /* [sng] User-specified record dimension name */
@@ -4778,7 +4778,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
         (void)fprintf(stdout,"%s: DEBUG %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
       else
-        (void)fprintf(stdout,"%s: DEBUG %s dimension is NOT visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
+        (void)fprintf(stdout,"%s: DEBUG %s dimension is not visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);        
     } /* endif dbg */
 
@@ -4809,7 +4809,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     if (NEED_TO_DEFINE_DIM == True){
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s defining dimension '%s' in ",prg_nm_get(),fnc_nm,dmn_nm);        
+        (void)fprintf(stdout,"%s: DEBUG %s need to define dimension '%s' in ",prg_nm_get(),fnc_nm,dmn_nm);        
         (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
         (void)fprintf(stdout,"\n");
       } /* endif dbg */
@@ -4881,9 +4881,9 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
       /* Assign the defined ID to the dimension ID array for the variable. */
       dmn_out_id[idx_dmn]=dmn_id_out; 
 
-      if(dbg_lvl_get() >= nco_dbg_var){
-        (void)fprintf(stdout,"%s: INFO %s defining dimension #%d [%d]:<%s> size=%li\n",prg_nm_get(),fnc_nm,
-          dmn_id_out,idx_dmn,dmn_trv->nm_fll,dmn_sz);
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s defined dimension [%d] new #%d:<%s> with size %li\n",prg_nm_get(),fnc_nm,
+          idx_dmn,dmn_id_out,dmn_trv->nm_fll,dmn_sz);
       } /* endif dbg */
 
       /* Memory management after defining current output dimension */
@@ -4957,15 +4957,17 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
     }
 
     if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: INFO %s defining variable <%s> with new output type %s\n",prg_nm_get(),fnc_nm,
+      (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with output type %s\n",prg_nm_get(),fnc_nm,
         var_trv->nm_fll,nco_typ_sng(var_typ_out));
     }
   } /* But...some operators change the output netCDF variable type */
 
 
   if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with NEW dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++)(void)fprintf(stdout,"#%d: ",dmn_out_id[idx_dmn]);
+    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with new dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+      (void)fprintf(stdout,"#%d: ",dmn_out_id[idx_dmn]);
+    }
     (void)fprintf(stdout,"\n");
   }
 
@@ -4996,7 +4998,7 @@ nco_cpy_var_dfn                     /* [fnc] Define specified variable in output
   if(rec_dmn_nm_mlc) rec_dmn_nm_mlc=(char *)nco_free(rec_dmn_nm_mlc);
 
   return var_out_id;
-} /* end nco_cpy_var_dfn() */
+} /* end nco_cpy_var_dfn_trv() */
 
 
 

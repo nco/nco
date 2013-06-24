@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.308 2013-06-23 06:32:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.309 2013-06-24 10:28:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -498,7 +498,7 @@ nco_var_fll_trv                        /* [fnc] Allocate variable structure and 
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 int                                    /* O [id] Output file variable ID */
-nco_cpy_var_dfn                        /* [fnc] Define specified variable in output file */
+nco_cpy_var_dfn_trv                    /* [fnc] Define specified variable in output file */
 (const int nc_id,                      /* I [ID] netCDF input file ID */
  const int nc_out_id,                  /* I [ID] netCDF output file ID */ 
  const int grp_in_id,                  /* I [id] netCDF input group ID */
