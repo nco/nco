@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.249 2013-06-20 00:34:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.250 2013-06-24 22:27:19 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.249 2013-06-20 00:34:10 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.249 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.250 2013-06-24 22:27:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.250 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -684,14 +684,6 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-  /* Copy global attributes */
-  (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-
-  /* Catenate time-stamped command line to "history" global attribute */
-  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
-  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-
 #ifdef USE_TRV_API
 
   /* Transfer variable type to table. NOTE: Using var/xtr_nbr containing all variables (processed, fixed) */
@@ -712,6 +704,12 @@ main(int argc,char **argv)
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
 
 #endif /* ! USE_TRV_API */
+
+  /* Copy global attributes */
+  // (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); // Superceded by nco_xtr_dfn()
+  /* Catenate time-stamped command line to "history" global attribute */
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

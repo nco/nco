@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.799 2013-06-24 18:06:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.800 2013-06-24 22:27:19 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1249,8 +1249,6 @@ nco_xtr_lst_prn                            /* [fnc] Print name-ID structure list
     (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.nm); 
   } 
 }/* end nco_xtr_lst_prn() */
-
-
 
 void
 nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */

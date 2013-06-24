@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.315 2013-06-24 05:13:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.316 2013-06-24 22:27:19 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.315 2013-06-24 05:13:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.315 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.316 2013-06-24 22:27:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.316 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -552,15 +552,11 @@ main(int argc,char **argv)
       (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
     } /* CNV_CCM_CCSM_CF */
 
-
     /* Fill-in variable structure list for all extracted variables */
     var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
     var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-    for(var_idx=0;var_idx<xtr_nbr;var_idx++){
-      var_out[var_idx]=nco_var_dpl(var[var_idx]);
-    }
-
+    for(var_idx=0;var_idx<xtr_nbr;var_idx++) var_out[var_idx]=nco_var_dpl(var[var_idx]);
 
     /* Divide variable lists into lists of fixed variables and variables to be processed */
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
@@ -592,7 +588,6 @@ main(int argc,char **argv)
       (void)trv_tbl_mrk_prc_fix(var_fix[var_idx]->nm_fll,fix_typ,trv_tbl);
 
     } /* Store fixed variables info into table */
-
   
   } /* !RECORD_AGGREGATE */
 
@@ -608,18 +603,7 @@ main(int argc,char **argv)
   /* ncecat-specific operations */
   if(RECORD_AGGREGATE){
 
-    /* Copy global attributes */
-    if(CPY_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
-
-    /* Catenate time-stamped command line to "history" global attribute */
-    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
-    /* Add input file list global attribute */
-    if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
-
     if(rec_dmn_nm == NULL) rec_dmn_nm=(char *)strdup("record"); 
-
-    if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
     /* Prepend record dimension to beginning of all vectors for processed variables */
     for(int idx=0;idx<nbr_var_prc;idx++){
@@ -650,9 +634,16 @@ main(int argc,char **argv)
       var_prc_out[idx]->srt[0]=-1L;
     } /* end loop over idx */
 
-
     /* Define dimensions, extracted groups, variables, and attributes in output file */
-    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,rec_dmn_nm,trv_tbl);   
+    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,rec_dmn_nm,trv_tbl);
+
+    /* Copy global attributes */
+    // if(CPY_GLB_METADATA) (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); // Superceded by nco_xtr_dfn()
+    /* Catenate time-stamped command line to "history" global attribute */
+    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+    /* Add input file list global attribute */
+    if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+    if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
     /* Turn off default filling behavior to enhance efficiency */
     nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -664,7 +655,6 @@ main(int argc,char **argv)
       (void)nco__enddef(out_id,hdr_pad);
       if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
-
 
     /* Assign zero to start and unity to stride vectors in output variables */
     (void)nco_var_srd_srt_set(var_out,xtr_nbr);
