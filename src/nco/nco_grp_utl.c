@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.796 2013-06-24 00:31:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.797 2013-06-24 04:05:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5316,6 +5316,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
     /* Has re-defined record dimension */
     if (trv_tbl->lst[idx_var].flg_rdf_rec){
 
+      /* ...get the name of the record dimension on output... stored to GTT in first loop above */
+      rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;
+
       /* Changing record dimension may invalidate is_rec_var flag
       Updating is_rec_var flag to correct value, even if value is ignored,
       helps keep user appraised of unexpected dimension re-orders.
@@ -5330,10 +5333,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
         /* Match by full variable name  */
         if(strcmp(var_fix[idx_var_fix]->nm_fll,var_trv.nm_fll) == 0){
-
-          /* ...get the name of the record dimension on output... stored to GTT in first loop above */
-          rec_dmn_nm_out=(char *)strdup(trv_tbl->lst[idx_var].rec_dmn_nm_out);
-
 
           if(dbg_lvl_get() >= nco_dbg_std){
             (void)fprintf(stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF3 allows only one record dimension. Hence %s will make %s record (i.e., least rapidly varying) dimension in all variables that contain it.\n",
@@ -5379,10 +5378,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s reordering record for variable <%s>\n",prg_nm_get(),fnc_nm,
               var_trv.nm_fll);        
-          } 
-
-          /* ...get the name of the record dimension on output... stored to GTT in first loop above */
-          rec_dmn_nm_out=(char *)strdup(trv_tbl->lst[idx_var].rec_dmn_nm_out);
+          }        
 
           /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
 
@@ -5476,13 +5472,10 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                 } /* endif multi-dimensional */
               } /* endif status changing from non-record to record */
             } /* endif variable will be record variable */
-
         } /* Match by full variable name  */
       } /* end loop over var_prc */
-
     } /* Has re-defined record dimension */
   } /* Loop table */
-
 
   return;
 
