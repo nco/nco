@@ -16,15 +16,15 @@
 
 // Create 4 GB file with one variable 
 // Expect failure on "small RAM" (< ~4 GB) machines:
-// ncap2 -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0f" -s "wvl_1e1[wvl_1e1]=1.0f" -s "wvl_1e2[wvl_1e2]=1.0f" -s "wvl_1e3[wvl_1e3]=1.0f" -s "wvl_1e4[wvl_1e4]=1.0f" -s "wvl_1e5[wvl_1e5]=1.0f" -s "wvl_1e6[wvl_1e6]=1.0f" -s "wvl_1e7[wvl_1e7]=1.0f" -s "wvl_1e8[wvl_1e8]=1.0f" -s "wvl_1e9[wvl_1e9]=1.0f" ~/nco/data/big.nc ${DATA}/nco_bm/big.nc
+// ncap2 --64 -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0f" -s "wvl_1e1[wvl_1e1]=1.0f" -s "wvl_1e2[wvl_1e2]=1.0f" -s "wvl_1e3[wvl_1e3]=1.0f" -s "wvl_1e4[wvl_1e4]=1.0f" -s "wvl_1e5[wvl_1e5]=1.0f" -s "wvl_1e6[wvl_1e6]=1.0f" -s "wvl_1e7[wvl_1e7]=1.0f" -s "wvl_1e8[wvl_1e8]=1.0f" -s "wvl_1e9[wvl_1e9]=1.0f" ~/nco/data/big.nc ${DATA}/nco_bm/big.nc
 // ls -l ${DATA}/nco_bm/big.nc
 
 // On small-RAM machines, create 4 GB file with multiple variables instead
 // This reduces peak memory usage to ~400 MB, and still tests LFS capability
-// ncap -D 3 -O -s "wvl_1e8[wvl_1e8]=1.0f" ~/nco/data/big.nc ${DATA}/nco_bm/big.nc
-// ncrename -D 3 -d wvl_1e8,wvl big.nc # Rename because ncecat does not do coordinate variables
+// ncap2 --64 -D 3 -O -s "wvl_1e8[wvl_1e8]=1.0f" ~/nco/data/big.nc ${DATA}/nco_bm/big.nc # Data buffer size: 400 MB
+// ncrename -D 3 -d wvl_1e8,wvl ${DATA}/nco_bm/big.nc # Rename because ncecat does not concatenate coordinate variables
 // Aggregate ten files together
-// ncecat -D 3 -O -p ${DATA}/nco_bm big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc ${DATA}/nco_bm/big.nc 
+// ncecat -u time -D 3 -O -p ${DATA}/nco_bm big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc ${DATA}/nco_bm/big.nc 
 // ls -l ${DATA}/nco_bm/big.nc
 
 // Test data access:

@@ -1,8 +1,12 @@
+2013-06-23  Charlie Zender  <zender@uci.edu>
+
+	* Add nco_prc_stt_get() and nco_prc_stm_get() to poll /proc/PID/stat and /proc/PID/statm
+
 2013-06-23 Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_var_dmn_rdr_mtd_trv() Determine and set new dimensionality in metadata of each re-ordered variable
 
-	* nco_var_dmn_rdr_val_trv() Change dimension ordering of variable values 
+	* nco_var_dmn_rdr_val_trv() Change dimension ordering of variable values
 
 2013-06-22 Pedro Vicente  <pvicente@uci.edu>
 
@@ -6888,7 +6892,7 @@
 	Does not help reduce unfree()'d system memory according to
 	valgrind 3.0 development branch. Does not hurt, either.
 	How portable is ctime_r()? SUS, yes, but POSIX?
-	
+
 2005-05-23  Charlie Zender  <zender@uci.edu>
 
 	* Touch parameter rusage_who for CEWI in nco_mmr_rusage_prn()
@@ -7226,7 +7230,7 @@
 	Fixes Mac OS X build for struct rusage
 
 	* Change default printing behavior of ncks again using suggestion
-	of Takeshi Enomoto. 
+	of Takeshi Enomoto.
 	ncks in.nc : Prints all data and metadata
 	ncks -M in.nc : Prints only global metadata
 	ncks -m in.nc : Prints only variable metadata
@@ -7309,7 +7313,7 @@
         sml_stl.cdl       template for a small sat data file
         stl_5km.cdl       template for ~300MB sat data file
         stl_5km.sh        script to generate and ncap the above file
-    
+
 2005-03-24  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_0_0
@@ -7334,21 +7338,21 @@
 
 	* Set NC_NOFILL in ncap_var_write()
 
-	* The call to nco_aed_prc() (a metadata writing call) was 
+	* The call to nco_aed_prc() (a metadata writing call) was
 	un-necessarily late in ncap.c. I moved it to just after
 	nco_var_dfn(). This takes advantage of the netCDF feature that
 	metadata (not data) can be manipulated before it is flushed to
-	disk (with nc_enddef()). You can learn/use a variable's ID 
-	before populating the variable's data section. 
+	disk (with nc_enddef()). You can learn/use a variable's ID
+	before populating the variable's data section.
 	Now ncap ends after writing in data mode and avoids the heavy disk
 	penalty of moving variables to accomodate  the increased metadata from
-	the nco_aed_prc() call. 
+	the nco_aed_prc() call.
 
-	* Turns out the only NC_NOFILL in ncap.c was done in data mode 
-	after the variables were defined. 
+	* Turns out the only NC_NOFILL in ncap.c was done in data mode
+	after the variables were defined.
 	Not sure why this did not cause an error.
 	ncap was probably doing redundant data filling for the non-processed
-	variables defined. 
+	variables defined.
 	Fixed that.
 
 2005-03-20  Charlie Zender  <zender@uci.edu>

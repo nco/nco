@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.576 2013-06-05 19:00:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.577 2013-06-24 05:13:31 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.2 are ready. 
 
@@ -60,6 +60,8 @@ A. Fixed ncks auxiliary coordinate (-X) bug introduced in ~4.2.0.
    Auxiliary coordinates now also work in netCDF4 group files.
    ncks -O -X 0.,180.,-30.,30. -v gds_3dvar ~/nco/data/in.nc ~/foo.nc
    http://nco.sf.net#bug_ncks_aux
+
+A. Global history attribute once again always works in ncecat
 
 KNOWN BUGS NOT YET FIXED:
 

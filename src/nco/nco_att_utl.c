@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.148 2013-04-19 20:43:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.149 2013-06-24 05:13:31 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -266,7 +266,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       (void)memcpy((void *)((char *)att_val_new+att_sz*nco_typ_lng(aed.type)),
 		   (void *)aed.val.vp,
 		   aed.sz*nco_typ_lng(aed.type));
-      (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
+      rcd+=nco_put_att(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
       att_val_new=nco_free(att_val_new);
     }else{
       /* Create new attribute */
@@ -528,6 +528,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   
   int idx;
   int glb_att_nbr;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   long att_sz=0L;
 
@@ -541,7 +542,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   /* NUL-terminate time_stamp_sng */
   time_stamp_sng[TIME_STAMP_SNG_LNG-1]='\0';
   /* Get rid of carriage return in ctime_sng */
-  (void)strncpy(time_stamp_sng,ctime_sng,TIME_STAMP_SNG_LNG-1);
+  (void)strncpy(time_stamp_sng,ctime_sng,TIME_STAMP_SNG_LNG-1UL);
 
   /* Get number of global attributes in file */
   (void)nco_inq(out_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
@@ -556,7 +557,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     /* Global attribute "[hH]istory" does not yet exist */
 
     /* Add 3 for formatting characters */
-    history_new=(char *)nco_malloc((strlen(hst_sng)+strlen(time_stamp_sng)+3)*sizeof(char));
+    history_new=(char *)nco_malloc((strlen(hst_sng)+strlen(time_stamp_sng)+3UL)*sizeof(char));
     (void)sprintf(history_new,"%s: %s",time_stamp_sng,hst_sng);
     /* Set attribute name to default */
     (void)strcpy(att_nm,sng_history);
@@ -582,7 +583,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     (void)sprintf(history_new,"%s: %s\n%s",time_stamp_sng,hst_sng,history_crr);
   } /* endif history global attribute currently exists */
 
-  (void)nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(history_new)+1UL),(void *)history_new);
+  rcd+=nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,(long int)(strlen(history_new)+1UL),(void *)history_new);
 
   history_crr=(char *)nco_free(history_crr);
   history_new=(char *)nco_free(history_new);

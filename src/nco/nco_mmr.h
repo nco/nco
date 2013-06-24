@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.34 2013-06-23 19:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.35 2013-06-24 05:13:31 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -42,6 +42,79 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+  /* http://www.cs.tufts.edu/comp/111/assignments/a3/proc.c */
+
+  /* Number of fields in /proc/PID/stat output, same as
+     Number of elements of prc_stt_sct structure */
+#define PRC_STT_SCT_NBR 42
+  typedef struct{ /* prc_stt_sct */
+    int pid;			// %d Member 01
+    char comm[256];		// %s Member 02
+    char state;			// %c Member 03
+    int ppid;			// %d Member 04
+    int pgrp;			// %d Member 05
+    int session;		// %d Member 06
+    int tty_nr;			// %d Member 07
+    int tpgid;			// %d Member 08
+    unsigned long flags;	// %lu Member 09
+    unsigned long minflt;	// %lu Member 10
+    unsigned long cminflt;	// %lu Member 11
+    unsigned long majflt;	// %lu Member 12
+    unsigned long cmajflt;	// %lu Member 13
+    unsigned long utime;	// %lu Member 14
+    unsigned long stime; 	// %lu Member 15
+    long cutime;		// %ld Member 16
+    long cstime;		// %ld Member 17
+    long priority;		// %ld Member 18
+    long nice;			// %ld Member 19
+    long num_threads;		// %ld Member 20
+    long itrealvalue;		// %ld Member 21
+    unsigned long starttime;	// %lu Member 22
+    unsigned long vsize;	// %lu Member 23
+    long rss;			// %ld Member 24
+    unsigned long rlim;		// %lu Member 25
+    unsigned long startcode;	// %lu Member 26
+    unsigned long endcode;	// %lu Member 27
+    unsigned long startstack;	// %lu Member 28
+    unsigned long kstkesp;	// %lu Member 29
+    unsigned long kstkeip;	// %lu Member 30
+    unsigned long signal;	// %lu Member 31
+    unsigned long blocked;	// %lu Member 32
+    unsigned long sigignore;	// %lu Member 33
+    unsigned long sigcatch;	// %lu Member 34
+    unsigned long wchan;	// %lu Member 35
+    unsigned long nswap;	// %lu Member 36
+    unsigned long cnswap;	// %lu Member 37
+    int exit_signal;		// %d Member 38
+    int processor;		// %d Member 39
+    unsigned long rt_priority;	// %lu Member 40
+    unsigned long policy;	// %lu  Member 41
+    unsigned long long delayacct_blkio_ticks;	// %llu Member 42
+  } prc_stt_sct;
+
+  /* Number of fields in /proc/PID/statm output, same as
+     Number of elements of prc_stm_sct structure */
+#define PRC_STM_SCT_NBR 7
+  typedef struct{ /* prc_stm_sct */
+    unsigned long size;	// %lu Member 1
+    unsigned long resident; // %lu Member 2
+    unsigned long share; // %lu Member 3
+    unsigned long text;	// %lu Member 4
+    unsigned long lib;// %lu Member 5
+    unsigned long data;	// %lu Member 6
+    unsigned long dt; // %lu Member 7
+  } prc_stm_sct;
+
+  int /* Return code */
+  nco_prc_stt_get /* [fnc] Read /proc/PID/stat */
+  (const int pid, /* [enm] Process ID to read */
+   prc_stt_sct *prc_stt); /* [sct] Structure to hold results */
+
+  int /* Return code */
+  nco_prc_stm_get /* [fnc] Read /proc/PID/statm */
+  (const int pid, /* [enm] Process ID to read */
+   prc_stm_sct *prc_stm); /* [sct] Structure to hold results */
 
 void * /* O [ptr] Pointer to calloc'd memory */
 nco_calloc /* [fnc] Wrapper for calloc() */

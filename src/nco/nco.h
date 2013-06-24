@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.345 2013-06-23 05:39:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.346 2013-06-24 05:13:31 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -103,6 +103,11 @@ extern "C" {
 #define short_CEWI 0
 #define size_t_CEWI 0UL
   
+  /* Numeric constants to simplify arithmetic */
+#define NCO_BYT_PER_KB 1024UL
+#define NCO_BYT_PER_MB 1048576UL
+#define NCO_BYT_PER_GB 1073741824UL
+
   /* netcdf.h NC_GLOBAL is, strictly, the variable ID for global attributes
      NCO_REC_DMN_UNDEFINED is dimension ID of record dimension iff record dimension is undefined
      Normally using -1 for this ID is fine, but token makes meaning clearer
@@ -311,12 +316,15 @@ extern "C" {
 # endif
 #endif /* !ENABLE_ZNETCDF */
 
+  /* NB: Use NCO_NOERR and NCO_ERR as return codes to other functions, not to shell (e.g., Bash, Csh)
+     Shell exit codes (where 0 indicates success) are traditionally opposite C exit codes (where 0 indicates failure) */
 /* Internal NCO return code indicating success */
 #define NCO_NOERR 1
 /* Internal NCO return code indicating failure */
 #define NCO_ERR 0
 
-  /* NB: Use EXIT_SUCCESS and EXIT_FAILURE as return codes to shell (e.g., Bash, Csh), not to other functions */
+  /* NB: Use EXIT_SUCCESS and EXIT_FAILURE as return codes to shell (e.g., Bash, Csh), not to other functions
+     Shell exit codes (where 0 indicates success) are traditionally opposite C exit codes (where 0 indicates failure) */
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
 # define EXIT_SUCCESS 0
 #endif /* SUN4 */
@@ -591,7 +599,6 @@ extern "C" {
     size_t sz; /* [nbr] Chunk size */
     nco_bool is_usr_spc_cnk; /* [flg] Chunk size was user-specified */
   } cnk_sct;
-
   
   /* Group Path Editing (GPE) structure */
   typedef struct{ /* gpe_sct */
@@ -605,7 +612,6 @@ extern "C" {
     size_t lng_cnn; /* [nbr] Length of canonicalized user-specified group path */
     size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
   } gpe_sct;
-
 
   /* GTT structure to break a full path name into components  */
   typedef struct{ 
