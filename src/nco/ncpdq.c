@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.324 2013-06-25 18:57:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.325 2013-06-25 21:05:35 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.324 2013-06-25 18:57:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.324 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.325 2013-06-25 21:05:35 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.325 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -771,25 +771,26 @@ main(int argc,char **argv)
     /*  Update is_rec_var flag for var_fix */
     for(idx=0;idx<nbr_var_fix;idx++){
       /* Search all dimensions in variable for new record dimension */
-      for(dmn_out_idx=0;dmn_out_idx<var_fix[idx]->nbr_dim;dmn_out_idx++)
+      for(dmn_out_idx=0;dmn_out_idx<var_fix[idx]->nbr_dim;dmn_out_idx++){
         if(!strcmp(var_fix[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
           break;
         }
-        /* ...Will variable be record variable in output file?... */
-        if(dmn_out_idx == var_fix[idx]->nbr_dim){
-          /* ...No. Variable will be non-record---does this change its status?... */
-          if(dbg_lvl >= nco_dbg_var) if(var_fix[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_fix[idx]->nm);
-          /* Assign record flag dictated by re-order */
-          var_fix[idx]->is_rec_var=False; 
-        }else{ /* ...otherwise variable will be record variable... */
-          /* ...Yes. Variable will be record... */
-          /* ...Will becoming record variable change its status?... */
-          if(var_fix[idx]->is_rec_var == False){
-            if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_fix[idx]->nm);
-            /* Change record flag to status dictated by re-order */
-            var_fix[idx]->is_rec_var=True;
-          } /* endif status changing from non-record to record */
-        } /* endif variable will be record variable */
+      }
+      /* ...Will variable be record variable in output file?... */
+      if(dmn_out_idx == var_fix[idx]->nbr_dim){
+        /* ...No. Variable will be non-record---does this change its status?... */
+        if(dbg_lvl >= nco_dbg_var) if(var_fix[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_fix[idx]->nm);
+        /* Assign record flag dictated by re-order */
+        var_fix[idx]->is_rec_var=False; 
+      }else{ /* ...otherwise variable will be record variable... */
+        /* ...Yes. Variable will be record... */
+        /* ...Will becoming record variable change its status?... */
+        if(var_fix[idx]->is_rec_var == False){
+          if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_fix[idx]->nm);
+          /* Change record flag to status dictated by re-order */
+          var_fix[idx]->is_rec_var=True;
+        } /* endif status changing from non-record to record */
+      } /* endif variable will be record variable */
     } /* end loop over var_fix */
 
     /* Update is_rec_var flag for var_prc */
@@ -1281,71 +1282,72 @@ main(int argc,char **argv)
     /* Update is_rec_var flag for var_prc */
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Search all dimensions in variable for new record dimension */
-      for(dmn_out_idx=0;dmn_out_idx<var_prc_out[idx]->nbr_dim;dmn_out_idx++)
+      for(dmn_out_idx=0;dmn_out_idx<var_prc_out[idx]->nbr_dim;dmn_out_idx++){
         if(strcmp(var_prc_out[idx]->dim[dmn_out_idx]->nm,rec_dmn_nm_out) == 0){
           break;
         }
-        /* ...Will variable be record variable in output file?... */
-        if(dmn_out_idx == var_prc_out[idx]->nbr_dim){
-          /* ...No. Variable will be non-record---does this change its status?... */
-          if(dbg_lvl >= nco_dbg_var) if(var_prc_out[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_prc_out[idx]->nm);
-          /* Assign record flag dictated by re-order */
-          var_prc_out[idx]->is_rec_var=False; 
-        }else{ /* ...otherwise variable will be record variable... */
-          /* ...Yes. Variable will be record... */
-          /* ...must ensure new record dimension is not duplicate dimension... */
-          if(var_prc_out[idx]->has_dpl_dmn){
-            int dmn_dpl_idx;
-            for(dmn_dpl_idx=1;dmn_dpl_idx<var_prc_out[idx]->nbr_dim;dmn_dpl_idx++){ /* NB: loop starts from 1 */
-              if(var_prc_out[idx]->dmn_id[0] == var_prc_out[idx]->dmn_id[dmn_dpl_idx]){
-                (void)fprintf(stdout,"%s: ERROR Requested re-order turns duplicate non-record dimension %s in variable %s into output record dimension. netCDF does not support duplicate record dimensions in a single variable.\n%s: HINT: Exclude variable %s from extraction list with \"-x -v %s\".\n",prg_nm_get(),rec_dmn_nm_out,var_prc_out[idx]->nm,prg_nm_get(),var_prc_out[idx]->nm,var_prc_out[idx]->nm);
-                nco_exit(EXIT_FAILURE);
-              } /* endif err */
-            } /* end loop over dmn_out */
-          } /* endif has_dpl_dmn */
-          /* ...Will becoming record variable change its status?... */
-          if(var_prc_out[idx]->is_rec_var == False){
-            if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_prc_out[idx]->nm);
-            /* Change record flag to status dictated by re-order */
-            var_prc_out[idx]->is_rec_var=True;
-            /* ...Swap dimension information for multi-dimensional variables... */
-            if(var_prc_out[idx]->nbr_dim > 1){
-              /* Swap dimension information when turning multi-dimensional 
-              non-record variable into record variable. 
-              Single dimensional non-record variables that turn into 
-              record variables already have correct dimension information */
-              dmn_sct *dmn_swp; /* [sct] Dimension structure for swapping */
-              int dmn_idx_rec_in; /* [idx] Record dimension index in input variable */
-              int dmn_idx_rec_out; /* [idx] Record dimension index in output variable */
-              int dmn_idx_swp; /* [idx] Dimension index for swapping */
-              /* If necessary, swap new record dimension to first position */
-              /* Label indices with standard names */
-              dmn_idx_rec_in=dmn_out_idx;
-              dmn_idx_rec_out=0;
-              /* Swap indices in map */
-              dmn_idx_swp=dmn_idx_out_in[idx][dmn_idx_rec_out];
-              dmn_idx_out_in[idx][dmn_idx_rec_out]=dmn_idx_rec_in;
-              dmn_idx_out_in[idx][dmn_idx_rec_in]=dmn_idx_swp;
-              /* Swap dimensions in list */
-              dmn_swp=var_prc_out[idx]->dim[dmn_idx_rec_out];
-              var_prc_out[idx]->dim[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_in];
-              var_prc_out[idx]->dim[dmn_idx_rec_in]=dmn_swp;
-              /* NB: Change dmn_id,cnt,srt,end,srd together to minimize chances of forgetting one */
-              /* Correct output variable structure copy of output record dimension information */
-              var_prc_out[idx]->dmn_id[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->id;
-              var_prc_out[idx]->cnt[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->cnt;
-              var_prc_out[idx]->srt[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->srt;
-              var_prc_out[idx]->end[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->end;
-              var_prc_out[idx]->srd[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->srd;
-              /* Correct output variable structure copy of input record dimension information */
-              var_prc_out[idx]->dmn_id[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->id;
-              var_prc_out[idx]->cnt[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->cnt;
-              var_prc_out[idx]->srt[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->srt;
-              var_prc_out[idx]->end[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->end;
-              var_prc_out[idx]->srd[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->srd;
-            } /* endif multi-dimensional */
-          } /* endif status changing from non-record to record */
-        } /* endif variable will be record variable */
+      }
+      /* ...Will variable be record variable in output file?... */
+      if(dmn_out_idx == var_prc_out[idx]->nbr_dim){
+        /* ...No. Variable will be non-record---does this change its status?... */
+        if(dbg_lvl >= nco_dbg_var) if(var_prc_out[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_prc_out[idx]->nm);
+        /* Assign record flag dictated by re-order */
+        var_prc_out[idx]->is_rec_var=False; 
+      }else{ /* ...otherwise variable will be record variable... */
+        /* ...Yes. Variable will be record... */
+        /* ...must ensure new record dimension is not duplicate dimension... */
+        if(var_prc_out[idx]->has_dpl_dmn){
+          int dmn_dpl_idx;
+          for(dmn_dpl_idx=1;dmn_dpl_idx<var_prc_out[idx]->nbr_dim;dmn_dpl_idx++){ /* NB: loop starts from 1 */
+            if(var_prc_out[idx]->dmn_id[0] == var_prc_out[idx]->dmn_id[dmn_dpl_idx]){
+              (void)fprintf(stdout,"%s: ERROR Requested re-order turns duplicate non-record dimension %s in variable %s into output record dimension. netCDF does not support duplicate record dimensions in a single variable.\n%s: HINT: Exclude variable %s from extraction list with \"-x -v %s\".\n",prg_nm_get(),rec_dmn_nm_out,var_prc_out[idx]->nm,prg_nm_get(),var_prc_out[idx]->nm,var_prc_out[idx]->nm);
+              nco_exit(EXIT_FAILURE);
+            } /* endif err */
+          } /* end loop over dmn_out */
+        } /* endif has_dpl_dmn */
+        /* ...Will becoming record variable change its status?... */
+        if(var_prc_out[idx]->is_rec_var == False){
+          if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_prc_out[idx]->nm);
+          /* Change record flag to status dictated by re-order */
+          var_prc_out[idx]->is_rec_var=True;
+          /* ...Swap dimension information for multi-dimensional variables... */
+          if(var_prc_out[idx]->nbr_dim > 1){
+            /* Swap dimension information when turning multi-dimensional 
+            non-record variable into record variable. 
+            Single dimensional non-record variables that turn into 
+            record variables already have correct dimension information */
+            dmn_sct *dmn_swp; /* [sct] Dimension structure for swapping */
+            int dmn_idx_rec_in; /* [idx] Record dimension index in input variable */
+            int dmn_idx_rec_out; /* [idx] Record dimension index in output variable */
+            int dmn_idx_swp; /* [idx] Dimension index for swapping */
+            /* If necessary, swap new record dimension to first position */
+            /* Label indices with standard names */
+            dmn_idx_rec_in=dmn_out_idx;
+            dmn_idx_rec_out=0;
+            /* Swap indices in map */
+            dmn_idx_swp=dmn_idx_out_in[idx][dmn_idx_rec_out];
+            dmn_idx_out_in[idx][dmn_idx_rec_out]=dmn_idx_rec_in;
+            dmn_idx_out_in[idx][dmn_idx_rec_in]=dmn_idx_swp;
+            /* Swap dimensions in list */
+            dmn_swp=var_prc_out[idx]->dim[dmn_idx_rec_out];
+            var_prc_out[idx]->dim[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_in];
+            var_prc_out[idx]->dim[dmn_idx_rec_in]=dmn_swp;
+            /* NB: Change dmn_id,cnt,srt,end,srd together to minimize chances of forgetting one */
+            /* Correct output variable structure copy of output record dimension information */
+            var_prc_out[idx]->dmn_id[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->id;
+            var_prc_out[idx]->cnt[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->cnt;
+            var_prc_out[idx]->srt[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->srt;
+            var_prc_out[idx]->end[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->end;
+            var_prc_out[idx]->srd[dmn_idx_rec_out]=var_prc_out[idx]->dim[dmn_idx_rec_out]->srd;
+            /* Correct output variable structure copy of input record dimension information */
+            var_prc_out[idx]->dmn_id[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->id;
+            var_prc_out[idx]->cnt[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->cnt;
+            var_prc_out[idx]->srt[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->srt;
+            var_prc_out[idx]->end[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->end;
+            var_prc_out[idx]->srd[dmn_idx_rec_in]=var_prc_out[idx]->dim[dmn_idx_rec_in]->srd;
+          } /* endif multi-dimensional */
+        } /* endif status changing from non-record to record */
+      } /* endif variable will be record variable */
     } /* end loop over var_prc */
   } /* !REDEFINED_RECORD_DIMENSION */
 
