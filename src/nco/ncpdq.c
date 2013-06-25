@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.323 2013-06-25 18:55:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.324 2013-06-25 18:57:01 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.323 2013-06-25 18:55:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.323 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.324 2013-06-25 18:57:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.324 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -818,7 +818,7 @@ main(int argc,char **argv)
 	    } /* endif err */
 	  } /* end loop over dmn_out */
 	} /* endif has_dpl_dmn */
-          /* ...Will becoming record variable change its status?... */
+        /* ...Will becoming record variable change its status?... */
 	if(var_prc_out[idx]->is_rec_var == False){
 	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_prc_out[idx]->nm);
 	  /* Change record flag to status dictated by re-order */
