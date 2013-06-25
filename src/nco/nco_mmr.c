@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.50 2013-06-25 19:31:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.51 2013-06-25 20:36:30 pvicente Exp $ */
 
 /* Purpose: Memory management */
 
@@ -80,7 +80,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 
   int ntg_NCO_MMR_DBG=int_CEWI; // [nbr] NCO_MMR_DBG environment variable
 
-  const size_t sz_thr; /* I [B] Bytes to allocate threshold size for reporting */
+  size_t sz_thr; /* I [B] Bytes to allocate threshold size for reporting */
 
   void *ptr; /* [ptr] Pointer to new buffer */
   
