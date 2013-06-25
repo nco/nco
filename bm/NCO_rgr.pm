@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.284 2013-06-24 05:15:46 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.285 2013-06-25 05:53:34 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2427,9 +2427,6 @@ print "\n";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
 
-    
-  
-  
 #NEW NCO 4.3.2
 #ncpdq #26
 #four_dmn_rec_var(time,lat,lev,lon); MSA
@@ -2442,10 +2439,30 @@ print "\n";
     $tst_cmd[2]="lev[0]=500 time[2]=6 lon[0]=90 lat[0]=90 four_dmn_rec_var[2]=138";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0; # Reset array     
+    $#tst_cmd=0; # Reset array  
+
+
+
+#NEW NCO 4.3.2
+#ncpdq #27 : reorder 2 variables with -a lev,time and check a variable that only has 1 (lev)
+##three_dmn_var_crd(lev,lat,lon);
+#ncpdq -h -O -a lat,time -v PS,three_dmn_var_crd -d lev,1,1 -d lat,1,1 -d lon,1,1 -d lev,1,1 in.nc out.nc
+#ncks  -C -H -v three_dmn_var_crd out.nc
+
+    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v PS,three_dmn_var_crd -d lev,1,1 -d lat,1,1 -d lon,1,1 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -C -v three_dmn_var_crd %tmp_fl_00%";
+    $dsc_sng="Re-order 3D variable (only 1 in -a) -a lev,time -three_dmn_var_crd (MSA)";
+    $tst_cmd[2]="lat[0]=90 lev[0]=500 lon[0]=90 three_dmn_var_crd[0]=17";
+    $tst_cmd[3]="SS_OK";
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    $#tst_cmd=0; # Reset array  
+
+
+
+    
   
 #NEW NCO 4.3.2
-#ncpdq #27 
+#ncpdq #28 
 #ncpdq -h -O -a lat,time -d time,1,6,2 -d lat,1,1 in.nc out.nc
 #ncks  -C -H -v -d time,2,2 four_dmn_rec_var out.nc
 
