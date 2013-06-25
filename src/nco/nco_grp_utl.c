@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.803 2013-06-25 04:25:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.804 2013-06-25 04:42:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4635,6 +4635,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
+  /* Debugging convention: <%s> string , #%d, ID, ##%d new ID */
+
   /* File format needed for decision tree and to enable netCDF4 features */
   (void)nco_inq_format(grp_out_id,&fl_fmt);
 
@@ -4974,7 +4976,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with new dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-      (void)fprintf(stdout,"##%d: ",dmn_out_id[idx_dmn]);
+      (void)fprintf(stdout,"##%d<%s> : ",dmn_out_id[idx_dmn],var_trv->var_dmn[dmn_idx_in_out[idx_dmn]].dmn_nm);
     }
     (void)fprintf(stdout,"\n");
   }
