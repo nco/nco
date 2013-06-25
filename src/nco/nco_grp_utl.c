@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.801 2013-06-25 00:10:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.802 2013-06-25 02:59:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4667,6 +4667,16 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* Get dimension IDs for *variable* */
   (void)nco_inq_vardimid(grp_in_id,var_in_id,dmn_in_id_var);
+
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with dimensions: ",prg_nm_get(),fnc_nm,dmn_nm,var_trv->nm_fll);
+    for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+      (void)fprintf(stdout,"#%d<%s> : ",var_trv->var_dmn[idx_dmn].dmn_id,var_trv->var_dmn[idx_dmn].dmn_nm);
+    }
+    (void)fprintf(stdout,"\n");
+  }
+
 
   /* Does user want a record dimension to receive special handling? */
   if(rec_dmn_nm_cst){
