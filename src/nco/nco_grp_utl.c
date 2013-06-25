@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.804 2013-06-25 04:42:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.805 2013-06-25 07:51:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5277,7 +5277,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
             }else{ /* !REDEFINED_RECORD_DIMENSION */
               /* ...otherwise, update output record dimension name... */
               rec_dmn_nm_out=rec_dmn_nm_out_crr;
-              /* ...and set new and un-set old record dimensions... */
+              /* ...and set new dimensions... */
               var_prc_out[idx_var_prc]->dim[0]->is_rec_dmn=True;
 
               /* ...and set flag that record dimension has been re-defined... */
@@ -5494,7 +5494,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   } /* Loop table */
 
 
-  /* Final step: search for all redefined record dimension variables and mark other variables that share the same dimension */
+  /* Final step: search for all redefined record dimension variables and mark other variables */
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
