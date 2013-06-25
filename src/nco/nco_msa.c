@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.207 2013-05-15 19:08:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.208 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -688,7 +688,7 @@ nco_msa_lmt_all_ntl
 
     /* Find and store size of output dimension */  
     (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-    if(dbg_lvl_get() > 1){
+    if(dbg_lvl_get() >= nco_dbg_fl){
       if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
     } /* endif */
 

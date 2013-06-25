@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.805 2013-06-25 07:51:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.806 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2740,7 +2740,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         /* Find and store size of output dimension */  
         (void)nco_msa_clc_cnt(&trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa);
 
-        if(dbg_lvl_get() > 1){
+        if(dbg_lvl_get() >= nco_dbg_fl){
           if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",prg_nm_get(),crd->nm); 
           else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",prg_nm_get(),crd->nm); 
         } 
@@ -2802,7 +2802,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       /* Find and store size of output dimension */  
       (void)nco_msa_clc_cnt_trv(&trv_tbl->lst_dmn[idx_dmn]);
 
-      if(dbg_lvl_get() > 1){
+      if(dbg_lvl_get() >= nco_dbg_fl){
         if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[idx_dmn].nm); 
         else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[idx_dmn].nm); 
       } 
@@ -5668,7 +5668,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
       } /* !IDENTITY_REORDER */
 
       if(IDENTITY_REORDER){
-        if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
+        if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
         /* Copy in one fell swoop then return */
         (void)memcpy((void *)(var_out->val.vp),(void *)(var_in->val.vp),var_out->sz*nco_typ_lng(var_out->type));
         return;

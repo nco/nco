@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.149 2013-06-22 01:09:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.150 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -2085,7 +2085,7 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
   } /* end scope */
  end_var:
   
-  if(dbg_lvl_get() > 2) {
+  if(dbg_lvl_get() >= nco_dbg_scl) {
     std::ostringstream os;
     os<<"creating LHS cast template var->nm " <<var->nm <<" var->nbr_dim " <<var->nbr_dim <<" var->sz " <<var->sz; 
     wrn_prn(fnc_nm,os.str());
@@ -2132,7 +2132,7 @@ ncap_cst_do(
       var=var_tmp;
     }
     
-    if(dbg_lvl_get() > 2){
+    if(dbg_lvl_get() >= nco_dbg_scl){
       std::ostringstream os;
       os<<"Stretching variable "<<var->nm << "with LHS template var->nm "<<var_cst->nm <<"var->nbr_dim " <<var_cst->nbr_dim; 
       os<<" var->sz " <<var_cst->sz;
@@ -2403,7 +2403,7 @@ ncap_get_var_mem(
   char *cp_lcl;
   
   
-  if(dbg_lvl_get() > 2){
+  if(dbg_lvl_get() >= nco_dbg_scl){
     std::ostringstream os;
     os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd;
     dbg_prn(fnc_nm,os.str());
@@ -2567,7 +2567,7 @@ char *cp_out)                   // Slab to be "put"
   char *cp_end;
   
     
-  if(dbg_lvl_get() > 2){
+  if(dbg_lvl_get() >= nco_dbg_scl){
     std::ostringstream os;
     os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd<<" "<<slb_sz<<" nbr_lpp="<<nbr_lpp;
     dbg_prn(fnc_nm,os.str());
@@ -2919,7 +2919,7 @@ int ncap_mpi_srt(
   
   
   // populate exp_vtr;
-  if(dbg_lvl_get() > 0)
+  if(dbg_lvl_get() >= nco_dbg_std)
     dbg_prn(fnc_nm,"Start");
   
   
@@ -3060,7 +3060,7 @@ int ncap_mpi_srt(
       std::cout <<"-------------------------------\n";
     } //end idx
   }
-  if(dbg_lvl_get() > 0) dbg_prn(fnc_nm,"End");       
+  if(dbg_lvl_get() >= nco_dbg_std) dbg_prn(fnc_nm,"End");       
   
   return 0;
 }

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.56 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.57 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -57,7 +57,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   int thr_nbr_rqs=int_CEWI; /* [nbr] Number of threads to request */
 
 #ifndef _OPENMP
-  if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Build compiler lacked (or user turned off) OpenMP support. Code will execute with single thread in Uni-Processor (UP) mode.\n",prg_nm_get());
+  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO Build compiler lacked (or user turned off) OpenMP support. Code will execute with single thread in Uni-Processor (UP) mode.\n",prg_nm_get());
   return (int)1;
 #endif /* !_OPENMP */
 
@@ -75,7 +75,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   } /* endif err */
 
   if(thr_nbr == 0)
-    if(dbg_lvl_get() > 2)
+    if(dbg_lvl_get() >= nco_dbg_scl)
       (void)fprintf(fp_stderr,"%s: INFO User did not specify thread request > 0 on command line. NCO will automatically assign threads based on OMP_NUM_THREADS environment and machine capabilities.\nHINT: Not specifiying any --thr_nbr (or specifying --thr_nbr=0) causes NCO to try to pick the optimal thread number. Specifying --thr_nbr=1 tells NCO to execute in Uni-Processor (UP) (i.e., single-threaded) mode.\n",prg_nm_get());
 
   if(thr_nbr > 0) USR_SPC_THR_RQS=True;
@@ -88,7 +88,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     thr_nbr_max=omp_get_max_threads(); /* [nbr] Maximum number of threads system allows */
   } /* end error */
 
-  if(dbg_lvl_get() > 2){
+  if(dbg_lvl_get() >= nco_dbg_scl){
     if((nvr_OMP_NUM_THREADS=getenv("OMP_NUM_THREADS"))) ntg_OMP_NUM_THREADS=(int)strtol(nvr_OMP_NUM_THREADS,&sng_cnv_rcd,NCO_SNG_CNV_BASE10); /* [sng] Environment variable OMP_NUM_THREADS */
     if(*sng_cnv_rcd) nco_sng_cnv_err(nvr_OMP_NUM_THREADS,"strtol",sng_cnv_rcd);
     (void)fprintf(fp_stderr,"%s: INFO Environment variable OMP_NUM_THREADS ",prg_nm_get());
@@ -101,7 +101,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     /* Always try to honor user-specified thread request... */
     thr_nbr_rqs=thr_nbr; /* [nbr] Number of threads to request */
     /* ...if possible... */
-    if(dbg_lvl_get() > 2) (void)fprintf(fp_stderr,"%s: INFO User command-line-requested %d thread%s\n",prg_nm_get(),thr_nbr,(thr_nbr > 1) ? "s" : "");
+    if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(fp_stderr,"%s: INFO User command-line-requested %d thread%s\n",prg_nm_get(),thr_nbr,(thr_nbr > 1) ? "s" : "");
     if(thr_nbr > thr_nbr_max){
       (void)fprintf(fp_stderr,"%s: WARNING Reducing user-requested thread number = %d to maximum thread number allowed = %d\n",prg_nm_get(),thr_nbr,thr_nbr_max);
       thr_nbr_rqs=thr_nbr_max; /* [nbr] Number of threads to request */
@@ -148,20 +148,20 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     
     /* Automatic algorithm tries to play nice with others */
     (void)omp_set_dynamic(dyn_thr); /* [flg] Allow system to dynamically set number of threads */
-    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO %s OS to dynamically set threads\n",prg_nm_get(),(dyn_thr ? "Allowing" : "Not allowing"));
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO %s OS to dynamically set threads\n",prg_nm_get(),(dyn_thr ? "Allowing" : "Not allowing"));
     dyn_thr=omp_get_dynamic(); /* [flg] Allow system to dynamically set number of threads */
-    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO System will%s utilize dynamic threading\n",prg_nm_get(),(dyn_thr ? "" : " not"));
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO System will%s utilize dynamic threading\n",prg_nm_get(),(dyn_thr ? "" : " not"));
 
     /* Apply program/system limitations */
     if(thr_nbr_max > thr_nbr_max_fsh){
-      if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Reducing default thread number from %d to %d, an operator-dependent \"play-nice\" number set in nco_openmp_ini()\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh);
+      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO Reducing default thread number from %d to %d, an operator-dependent \"play-nice\" number set in nco_openmp_ini()\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh);
       thr_nbr_rqs=thr_nbr_max_fsh; /* [nbr] Number of threads to request */
     } /* endif */      
   } /* !USR_SPC_THR_RQS */
 
 #ifdef ENABLE_NETCDF4
   if(thr_nbr_rqs > 1){
-    if(USR_SPC_THR_RQS && dbg_lvl_get() > 1) (void)fprintf(stdout,"%s: WARNING This is TODO nco939. Requested threading with netCDF4 (HDF5) support. The NCO thread request algorithm considers user-input, environment variables, and software and hardware limitations in determining the number of threads to request, thr_nbr_rqs. At this point NCO would request result %d threads from a netCDF3-based library. However, this NCO was built with netCDF4, which relies on HDF5. netCDF4 is not thread-safe unless HDF5 is configured with the (non-default) --enable-threadsafe option. NCO currently has no way to know whether HDF5 was built thread-safe. Hence, all netCDF4-based operators are currently restricted to a single thread. The program will now automatically set thr_nbr_rqs = 1.\nThis unfortunate limitation is necessary to keep the NCO developers sane. If you want/need threading in netCDF4-based NCO, please politely yet firmly request of the Unidata netCDF developers that better thread support be built into netCDF4, and request of the HDF5 developers that they make the --enable-threadsafe option compatible with all HDF5 libraries and APIs, including Fortran (which, as of HDF5 1.8.0 in 2008, is incompatible with --enable-threadsafe).\n",prg_nm_get(),thr_nbr_rqs);
+    if(USR_SPC_THR_RQS && dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: WARNING This is TODO nco939. Requested threading with netCDF4 (HDF5) support. The NCO thread request algorithm considers user-input, environment variables, and software and hardware limitations in determining the number of threads to request, thr_nbr_rqs. At this point NCO would request result %d threads from a netCDF3-based library. However, this NCO was built with netCDF4, which relies on HDF5. netCDF4 is not thread-safe unless HDF5 is configured with the (non-default) --enable-threadsafe option. NCO currently has no way to know whether HDF5 was built thread-safe. Hence, all netCDF4-based operators are currently restricted to a single thread. The program will now automatically set thr_nbr_rqs = 1.\nThis unfortunate limitation is necessary to keep the NCO developers sane. If you want/need threading in netCDF4-based NCO, please politely yet firmly request of the Unidata netCDF developers that better thread support be built into netCDF4, and request of the HDF5 developers that they make the --enable-threadsafe option compatible with all HDF5 libraries and APIs, including Fortran (which, as of HDF5 1.8.0 in 2008, is incompatible with --enable-threadsafe).\n",prg_nm_get(),thr_nbr_rqs);
     thr_nbr_rqs=1;
   } /* endif */
 #endif /* !ENABLE_NETCDF4 */
@@ -172,19 +172,19 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     nco_exit(EXIT_FAILURE);
   }else{
     (void)omp_set_num_threads(thr_nbr_rqs); 
-    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO omp_set_num_threads() used to set execution environment to spawn teams of %d threads\n",prg_nm_get(),thr_nbr_rqs);
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO omp_set_num_threads() used to set execution environment to spawn teams of %d threads\n",prg_nm_get(),thr_nbr_rqs);
   } /* end error */
 
   thr_nbr_act=omp_get_max_threads();
-  if(dbg_lvl_get() > 2) (void)fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d threads\n",prg_nm_get(),thr_nbr_act);
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d threads\n",prg_nm_get(),thr_nbr_act);
 #ifdef _OPENMP
-  if(dbg_lvl_get() > 2){
+  if(dbg_lvl_get() >= nco_dbg_scl){
 #pragma omp parallel default(none) shared(thr_nbr_act)
     { /* begin OpenMP parallel */
 #pragma omp single nowait
       { /* begin OpenMP single */
 	thr_nbr_act=omp_get_num_threads(); /* [nbr] Number of threads NCO uses */
-	if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Small parallel test region spawned team of %d threads\n",prg_nm_get(),thr_nbr_act);
+	if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO Small parallel test region spawned team of %d threads\n",prg_nm_get(),thr_nbr_act);
       } /* end OpenMP single */
     } /* end OpenMP parallel */
   } /* end dbg */

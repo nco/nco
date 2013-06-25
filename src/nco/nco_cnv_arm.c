@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.31 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.32 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: ARM conventions, e.g., http://www.arm.gov/data/time.stm */
 
@@ -34,7 +34,7 @@ nco_cnv_arm_inq /* O [fnc] Check if file obeys ARM conventions */
   if(rcd != NC_NOERR){
     CNV_ARM=False;
   }else{
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",prg_nm_get()); 
+    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",prg_nm_get()); 
     CNV_ARM=True;
   } /* end else */
 

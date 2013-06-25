@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.153 2013-06-23 19:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.154 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -106,7 +106,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
 	  (void)nco_dmn_xrf(*dim_new,dmn_in);
 	  /* Write new dimension to output file */
 	  (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,dim_new,1);
-	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Found new dimension %s in input variable %s in file %s. Defining dimension %s in output file %s\n",prg_nm_get(),(*dim_new)->nm,var_nm,prs_arg->fl_in,(*dim_new)->nm,prs_arg->fl_out);
+	  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Found new dimension %s in input variable %s in file %s. Defining dimension %s in output file %s\n",prg_nm_get(),(*dim_new)->nm,var_nm,prs_arg->fl_in,(*dim_new)->nm,prs_arg->fl_out);
 	  break;
 	} /* end loop over dimensions in current output dimension list */
       (void)nco_free(dim_id);
@@ -115,7 +115,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
     
   } /* end else */
   
-  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
+  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
   var=nco_var_fll(fl_id,var_id,var_nm,*(prs_arg->dmn_out),*(prs_arg->nbr_dmn_out));
   /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
       (void)strcpy(var->nm,var_nm); */

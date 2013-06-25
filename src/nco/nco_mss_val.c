@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.49 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.50 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -326,7 +326,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
   /* Always warn when NCO looks for _FillValue but file has missing_value, and/or
      always warn when NCO looks for missing_value but file has _FillValue.
      20101129: This is a long warning, only print when dbg_lvl > 0 */
-  if(dbg_lvl_get() > 0 && has_fll_val && !var->has_mss_val && WRN_FIRST){
+  if(dbg_lvl_get() >= nco_dbg_std && has_fll_val && !var->has_mss_val && WRN_FIRST){
     char sa[1000];
     char sa1[1000];
     char sa2[1000]; 

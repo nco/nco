@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.152 2013-06-22 01:09:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.153 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1032,7 +1032,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     /* Warn about any expected weird behavior */
     if(var_op_typ[idx] == prc_typ){
       if(var_typ_fnk && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
-        if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
+        if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
       } /* end if */
     } /* end if prc */
 
@@ -1277,7 +1277,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   /* Warn about any expected weird behavior */
   if(var_op_typ == prc_typ){
     if(var_typ_fnk && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var->nm,nco_typ_sng(var->type));
+      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var->nm,nco_typ_sng(var->type));
     } /* end if */
   } /* end if prc */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.168 2013-06-22 01:09:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.169 2013-06-25 16:56:55 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.168 2013-06-22 01:09:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.168 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.169 2013-06-25 16:56:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.169 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -735,7 +735,7 @@ main(int argc,char **argv)
     if(nbr_spt == 0) err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
 
     /* Print all command-line scripts */
-    if(dbg_lvl_get() > 0){
+    if(dbg_lvl_get() >= nco_dbg_std){
       for(idx=0;idx<nbr_spt;idx++) 
         (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
     } /* endif debug */

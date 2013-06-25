@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.83 2013-06-18 22:27:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.84 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -127,7 +127,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
           (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),wgt->nm,var->nm);
           nco_exit(EXIT_FAILURE);
         }else{
-          if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s and template %s share no dimensions: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,var->nm,wgt->nm,var->nm);
+          if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"\n%s: DEBUG %s and template %s share no dimensions: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,var->nm,wgt->nm,var->nm);
           USE_DUMMY_WGT=True;
         } /* endif */
       }else if(wgt->nbr_dim > var->nbr_dim){
@@ -137,7 +137,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
           (void)fprintf(stdout,"%s: ERROR %s is rank %d but template %s is rank %d: Impossible to broadcast\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim);
           nco_exit(EXIT_FAILURE);
         }else{
-          if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
+          if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
           USE_DUMMY_WGT=True;
         } /* endif */
       }else if(wgt_var_dmn_shr_nbr > 0 && wgt_var_dmn_shr_nbr < wgt->nbr_dim){
@@ -147,7 +147,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
           (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr);
           nco_exit(EXIT_FAILURE);
         }else{
-          if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr,wgt->nm,var->nm);
+          if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr,wgt->nm,var->nm);
           USE_DUMMY_WGT=True;
         } /* endif */
       } /* end if */
@@ -754,7 +754,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   } /* !IDENTITY_REORDER */
 
   if(IDENTITY_REORDER){
-    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
+    if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
     /* Copy in one fell swoop then return */
     (void)memcpy((void *)(var_out->val.vp),(void *)(var_in->val.vp),var_out->sz*nco_typ_lng(var_out->type));
     return rcd;

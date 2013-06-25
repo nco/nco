@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.211 2013-05-06 21:15:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.212 2013-06-25 16:56:55 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -387,7 +387,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	char fmt_sng[10];
 	size_t fl_nm_lng; /* [nbr] Filename length */
 
-	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments. Attempting to read from stdin instead...\n",prg_nm_get());
+	if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments. Attempting to read from stdin instead...\n",prg_nm_get());
 
 	/* Initialize information to read stdin */
 	fl_lst_in_lng=0L; /* [nbr] Number of characters in input file name list */
@@ -421,7 +421,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  fl_nm_lng=strlen(bfr_in);
 	  fl_lst_in_lng+=fl_nm_lng;
 	  (*fl_nbr)++;
-	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long int)fl_nm_lng);
+	  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long int)fl_nm_lng);
 	  /* Increment file number */
 	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
 	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
@@ -435,7 +435,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	/* Discard characters remainining in stdin */
 	char chr_foo;
 	while((chr_foo=getchar()) != '\n' && chr_foo != EOF){
-	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read and discarded \'%c\'\n",prg_nm_get(),chr_foo);
+	  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read and discarded \'%c\'\n",prg_nm_get(),chr_foo);
 	} /* end while */
 #endif /* endif 0 */
 
@@ -447,7 +447,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  nco_exit(EXIT_FAILURE);
 	} /* endif err */
 
-	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)fl_lst_in_lng);
+	if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)fl_lst_in_lng);
 	if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried and failed to get input filenames from stdin\n",prg_nm_get());
 
       } /* endif multi-file operator without positional arguments for fl_in */
@@ -1443,7 +1443,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
 #endif /* !HAVE_MKSTEMP */
     fl_out_hnd=fl_out_hnd; /* Removes compiler warning on SGI */
-    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: %s reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),fnc_nm,(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
+    if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),fnc_nm,(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
     fl_out_tmp_sys=(char *)nco_free(fl_out_tmp_sys);
   } /* endif dbg */
 #endif /* _MSC_VER */ 
@@ -1529,7 +1529,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       /*       fscanf() reads ... */
       /*      while((cnv_nbr=fscanf(stdin,"%9s",usr_rpl)) != EOF) continue;*/
       /*      while((rcd_fgets=fgets(usr_rpl,NCO_USR_RPL_MAX_LNG,stdin)) == NULL){*/
-	/*	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read \"%s\" while waiting for non-NULL on stdin...\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);*/
+	/*	if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read \"%s\" while waiting for non-NULL on stdin...\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);*/
       /*      continue;}*/
 
       /* Ensure last character in input string is \n and replace that with \0 */
