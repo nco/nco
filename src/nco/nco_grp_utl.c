@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.800 2013-06-24 22:27:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.801 2013-06-25 00:10:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5188,6 +5188,10 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
   /* Based in nco_var_dmn_rdr_mtd(). LIMITATION: the first record dimension for the object variable is used */
 
+  /* Test case : ncpdq -O -a lev,time -v two_dmn_rec_var in.nc out.nc */
+
+  /* Mark lev as record and un-mark time as record (by setting the record name as lev) */
+
   const char fnc_nm[]="nco_var_dmn_rdr_mtd_trv()"; /* [sng] Function name */
 
   char *rec_dmn_nm_out_crr;                  /* [sng] Name of record dimension, if any, required by re-order */
@@ -5474,6 +5478,43 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
             } /* endif variable will be record variable */
         } /* Match by full variable name  */
       } /* end loop over var_prc */
+    } /* Has re-defined record dimension */
+  } /* Loop table */
+
+
+  /* Final step: search for all redefined record dimension variables and mark other variables that share the same dimension */
+
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    /* Has re-defined record dimension */
+    if (trv_tbl->lst[idx_var].flg_rdf_rec){
+
+      rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s variable <%s> has re-defined record <%s>\n",prg_nm_get(),fnc_nm,
+          var_trv.nm_fll,rec_dmn_nm_out);  
+      }     
+
+      /* Loop table, search for other variables that share the same dimension name */
+      for(unsigned idx_var_mrk=0;idx_var_mrk<trv_tbl->nbr;idx_var_mrk++){
+        trv_sct var_trv_mrk=trv_tbl->lst[idx_var_mrk];
+
+        /* Avoid same variable ...
+        ...and look for variables only
+        ...and look for extracted variables only */
+        if (strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 && var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
+
+          /* Mark redefine dimension flag in found variable */
+          trv_tbl->lst[idx_var_mrk].flg_rdf_rec=True;
+
+          /* ...store the name of the record dimension on output... */
+          trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
+
+        } /* Avoid same */
+      } /* Loop table */
     } /* Has re-defined record dimension */
   } /* Loop table */
 
