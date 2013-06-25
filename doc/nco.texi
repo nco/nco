@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.791 2013-06-09 17:08:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.792 2013-06-25 15:42:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2044,7 +2044,7 @@ The multi-file operators currently comprise the record operators,
 The record operators require @emph{much less} memory than the ensemble 
 operators. 
 This is because the record operators operate on one single record (i.e.,
-time-slice) at a time, wherease the ensemble operators retrieve the
+time-slice) at a time, whereas the ensemble operators retrieve the
 entire variable into memory. 
 Let @math{MS} be the peak sustained memory demand of an operator,
 @math{FT} be the memory required to store the entire contents of all the 
