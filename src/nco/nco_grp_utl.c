@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.807 2013-06-25 21:05:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.808 2013-06-25 23:14:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1841,7 +1841,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_xcl=False;                /* [flg] Object matches exclusion criteria */
   trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
   trv_tbl->lst[idx].flg_rdr=False;                /* [flg] Variable has dimensions to re-order (ncpdq) */
-  trv_tbl->lst[idx].flg_rdf_rec=False;            /* [flg] Re-defined record dimension */
   trv_tbl->lst[idx].rec_dmn_nm_out=NULL;          /* [sng] Record dimension name, re-ordered */
    
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
@@ -1931,7 +1930,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_xcl=False; 
     trv_tbl->lst[idx].flg_xtr=False;
     trv_tbl->lst[idx].flg_rdr=False;
-    trv_tbl->lst[idx].flg_rdf_rec=False;
     trv_tbl->lst[idx].rec_dmn_nm_out=NULL;                     
 
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
@@ -4697,7 +4695,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
 
   /* If variable has a re-defined record dimension. NOTE: this implies passing NULL as User-specified record dimension parameter  */
-  if (var_trv->flg_rdf_rec){
+  if (var_trv->rec_dmn_nm_out){
 
     /* Must be ncpdq */
     assert(prg_id == ncpdq);
@@ -5283,9 +5281,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               /* ...and set flag that record dimension has been re-defined... */
               REDEFINED_RECORD_DIMENSION=True;
 
-              /* ...and set flag that record dimension has been re-defined in GTT ... */
-              trv_tbl->lst[idx_var].flg_rdf_rec=True;
-
               /* ...store the name of the record dimension on output... */
               trv_tbl->lst[idx_var].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
 
@@ -5520,7 +5515,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
     /* Has re-defined record dimension */
-    if (trv_tbl->lst[idx_var].flg_rdf_rec){
+    if (var_trv.rec_dmn_nm_out){
 
       rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;
 
@@ -5537,9 +5532,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         ...and look for variables only
         ...and look for extracted variables only */
         if (strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 && var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
-
-          /* Mark redefine dimension flag in found variable */
-          trv_tbl->lst[idx_var_mrk].flg_rdf_rec=True;
 
           /* ...store the name of the record dimension on output... */
           trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
