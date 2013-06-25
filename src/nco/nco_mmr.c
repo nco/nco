@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.49 2013-06-24 05:13:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.50 2013-06-25 19:31:46 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -46,9 +46,9 @@ nco_calloc /* [fnc] Wrapper for calloc() */
     (void)fprintf(stdout,"%s: ERROR nco_calloc() unable to allocate %lu elements of %lu bytes each totaling %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),(unsigned long)lmn_nbr,(unsigned long)lmn_sz,(unsigned long)(lmn_nbr*lmn_sz),(unsigned long)(lmn_nbr*lmn_sz)/NCO_BYT_PER_KB,(unsigned long)(lmn_nbr*lmn_sz)/NCO_BYT_PER_MB,(unsigned long)(lmn_nbr*lmn_sz)/NCO_BYT_PER_GB);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-#ifdef NCO_MMR_DBG
+#ifdef NCO_MMR_STT
   (void)nco_mmr_stt(nco_mmr_calloc,lmn_nbr*lmn_sz); /* fxm dbg */
-#endif /* !NCO_MMR_DBG */
+#endif /* !NCO_MMR_STT */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_calloc() */
 
@@ -61,9 +61,9 @@ nco_free /* [fnc] Wrapper for free() */
      Routine does not call free() when vp == NULL
      Usage: vp=nco_free(vp) */
   if(vp) free(vp);
-#ifdef NCO_MMR_DBG
+#ifdef NCO_MMR_STT
   (void)nco_mmr_stt(nco_mmr_free,(size_t)0L); /* fxm dbg */
-#endif /* !NCO_MMR_DBG */
+#endif /* !NCO_MMR_STT */
   return NULL; /* [ptr] Pointer to new buffer */
 } /* nco_free() */
 
@@ -74,6 +74,14 @@ nco_malloc /* [fnc] Wrapper for malloc() */
   /* Purpose: Custom plugin wrapper for malloc()
      Top of nco_mmr.c explains usage of nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg() */
 
+  const char fnc_nm[]="nco_malloc()"; /* [sng] Function name */
+  char *nvr_NCO_MMR_DBG; /* [sng] Environment variable NCO_MMR_DBG */
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+
+  int ntg_NCO_MMR_DBG=int_CEWI; // [nbr] NCO_MMR_DBG environment variable
+
+  const size_t sz_thr; /* I [B] Bytes to allocate threshold size for reporting */
+
   void *ptr; /* [ptr] Pointer to new buffer */
   
   /* malloc(0) is ANSI-legal, albeit unnecessary
@@ -82,16 +90,25 @@ nco_malloc /* [fnc] Wrapper for malloc() */
      So circumvent malloc() calls when sz == 0 */
   if(sz == 0) return NULL;
   
+  /* Only poll memory if debug level set otherwise getenv() would be called on every nco_malloc() reading  */
+  if(dbg_lvl_get() >= nco_dbg_scl){
+    if((nvr_NCO_MMR_DBG=getenv("NCO_MMR_DBG"))) ntg_NCO_MMR_DBG=(int)strtol(nvr_NCO_MMR_DBG,&sng_cnv_rcd,NCO_SNG_CNV_BASE10); /* [sng] Environment variable NCO_MMR_DBG */
+  } /* endif dbg */
+
+  if(ntg_NCO_MMR_DBG && sz > sz_thr){
+    (void)fprintf(stdout,"%s: INFO %s received request to allocate %zu B = %zu kB = %zu MB = %zu GB\n",prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB);
+  } /* endif dbg */
+
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),(unsigned long)sz,(unsigned long)sz/NCO_BYT_PER_KB,(unsigned long)sz/NCO_BYT_PER_MB,(unsigned long)sz/NCO_BYT_PER_GB);
+    (void)fprintf(stdout,"%s: ERROR %s unable to allocate %zu B = %zu kB = %zu MB = %zu GB\n",prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB);
     (void)nco_malloc_err_hnt_prn();
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
   } /* endif */
-#ifdef NCO_MMR_DBG
+#ifdef NCO_MMR_STT
   (void)nco_mmr_stt(nco_mmr_malloc,sz); /* fxm dbg */
-#endif /* !NCO_MMR_DBG */
+#endif /* !NCO_MMR_STT */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_malloc() */
 
@@ -128,9 +145,9 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), forgives ENOMEM errors */
     (void)nco_malloc_err_hnt_prn();
     nco_exit(EXIT_FAILURE);
   } /* endif */
-#ifdef NCO_MMR_DBG
+#ifdef NCO_MMR_STT
   (void)nco_mmr_stt(nco_mmr_malloc,sz); /* fxm dbg */
-#endif /* !NCO_MMR_DBG */
+#endif /* !NCO_MMR_STT */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_malloc_flg() */
 
@@ -166,9 +183,9 @@ nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnosti
     (void)nco_malloc_err_hnt_prn();
     nco_exit(EXIT_FAILURE);
   } /* endif */
-#ifdef NCO_MMR_DBG
+#ifdef NCO_MMR_STT
   (void)nco_mmr_stt(nco_mmr_malloc,sz); /* fxm dbg */
-#endif /* !NCO_MMR_DBG */
+#endif /* !NCO_MMR_STT */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_malloc_dbg() */
 
@@ -251,9 +268,9 @@ nco_realloc /* [fnc] Wrapper for realloc() */
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
   } /* endif */
-#ifdef NCO_MMR_DBG
+#ifdef NCO_MMR_STT
   (void)nco_mmr_stt(nco_mmr_realloc,sz); /* fxm dbg */
-#endif /* !NCO_MMR_DBG */
+#endif /* !NCO_MMR_STT */
   return new_ptr; /* [ptr] Pointer to new buffer */
 } /* nco_realloc() */
 

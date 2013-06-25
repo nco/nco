@@ -1,6 +1,8 @@
 2013-06-25  Charlie Zender  <zender@uci.edu>
 
-	* Replace many hardcode dbg_lvl's with symbolic names
+	* Add NCO_MMR_DBG infrastructure
+
+	* Replace many hardcoded dbg_lvl's with symbolic names
 
 2013-06-24  Charlie Zender  <zender@uci.edu>
 
