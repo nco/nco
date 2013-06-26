@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.812 2013-06-26 09:34:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.813 2013-06-26 10:50:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4913,6 +4913,18 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Must be ncpdq */
     assert(prg_id == ncpdq);
+
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s dimension map: ",prg_nm_get(),fnc_nm);
+      for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+        int idx_map=var_trv->dmn_idx_out_in[idx_dmn];
+        (void)fprintf(stdout,"[%d]<%s>->[%d]<%s> : ",
+          idx_dmn,var_trv->var_dmn[idx_dmn].dmn_nm,idx_map,var_trv->var_dmn[idx_map].dmn_nm);
+      }
+      (void)fprintf(stdout,"\n");
+    }
+
 
     for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
       dmn_idx_in_out[var_trv->dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
