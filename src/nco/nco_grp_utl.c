@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.813 2013-06-26 10:50:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.814 2013-06-26 21:19:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4611,8 +4611,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int var_dim_id;                        /* [id] Variable dimension ID */   
   int dmn_id_out;                        /* [id] Dimension ID defined in outout group */  
   int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */
-  int idx_dmn_grp;                       /* [nbr] Dimension iterator index for group  */ 
-  int idx_dmn;                           /* [nbr] Dimension iterator index for variable object  */
 
   int dmn_idx_in_out[NC_MAX_DIMS];      /* [idx] Dimension correspondence, input->output (ncpdq) */
   int dmn_out_id_tmp[NC_MAX_DIMS];      /* [idx] Copy of dmn_out_id (ncpdq) */
@@ -4746,7 +4744,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   } /* Is requested record dimension in input file? */
 
   /* The very important dimension loop... */
-  for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+  for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
     /* Dimension needs to be defined in *this* group? Assume yes... */
     NEED_TO_DEFINE_DIM=True;   
@@ -4795,7 +4793,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
 
     /* Loop *output* group defined dimensions to check if dimension is already defined */
-    for(idx_dmn_grp=0;idx_dmn_grp<nbr_dmn_out_grp;idx_dmn_grp++){
+    for(int idx_dmn_grp=0;idx_dmn_grp<nbr_dmn_out_grp;idx_dmn_grp++){
 
       /* Get dimension name and size from ID */
       (void)nco_inq_dim(grp_dmn_out_id,dmn_out_id_grp[idx_dmn_grp],dmn_nm_grp,&dmn_sz_grp);
@@ -4917,7 +4915,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: DEBUG %s dimension map: ",prg_nm_get(),fnc_nm);
-      for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
         int idx_map=var_trv->dmn_idx_out_in[idx_dmn];
         (void)fprintf(stdout,"[%d]<%s>->[%d]<%s> : ",
           idx_dmn,var_trv->var_dmn[idx_dmn].dmn_nm,idx_map,var_trv->var_dmn[idx_map].dmn_nm);
@@ -4947,7 +4945,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Temporary store for old IDs */
     int dmn_tmp_id[NC_MAX_DIMS];
-    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) dmn_tmp_id[idx_dmn]=dmn_out_id[idx_dmn];
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) dmn_tmp_id[idx_dmn]=dmn_out_id[idx_dmn];
 
     /* Increment number of dimensions for this variable */
     nbr_dmn_var++;
@@ -4956,7 +4954,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     dmn_out_id[0]=rec_id_out;
 
     /* Loop dimensions */
-    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
       dmn_out_id[idx_dmn+1]=dmn_tmp_id[idx_dmn];
 
@@ -4985,7 +4983,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with new dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-    for(idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
       (void)fprintf(stdout,"##%d<%s> : ",dmn_out_id[idx_dmn],var_trv->var_dmn[dmn_idx_in_out[idx_dmn]].dmn_nm);
     }
     (void)fprintf(stdout,"\n");
