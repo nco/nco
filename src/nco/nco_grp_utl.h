@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.311 2013-06-26 23:11:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.312 2013-06-26 23:31:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -545,7 +545,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 nco_bool                              /* O [flg] Has re-defined dimension */
-nco_had_rdf_dmn_trv                   /* [fnc] Has re-defined dimension */
+nco_has_rdf_dmn_trv                   /* [fnc] Has re-defined dimension */
 (const char * const rec_dmn_nm_out,   /* [sng] Record dimension name, re-ordered */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.818 2013-06-26 23:11:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.819 2013-06-26 23:31:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5346,27 +5346,25 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
-    /* Has REDEFINED_RECORD_DIMENSION */
-    if (var_trv.rec_dmn_nm_out) {
+    /* Changing record dimension may invalidate is_rec_var flag
+    Updating is_rec_var flag to correct value, even if value is ignored,
+    helps keep user appraised of unexpected dimension re-orders.
+    is_rec_var may change both for "fixed" and "processed" variables
+    When is_rec_var changes for processed variables, may also need to change
+    ancillary information and to check for duplicate dimensions.
+    Ancillary information (dmn_idx_out_in) is available only for var_prc!
+    Hence must update is_rec_var flag for var_fix and var_prc separately */
 
-      /* ...get the name of the record dimension on output... stored to GTT in first loop above */
-      rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;
+    /*  Update is_rec_var flag for var_fix */
+    for(int idx_var_fix=0;idx_var_fix<nbr_var_fix;idx_var_fix++){
 
+      /* Match by full variable name  */
+      if(strcmp(var_fix[idx_var_fix]->nm_fll,var_trv.nm_fll) == 0){
 
-      /* Changing record dimension may invalidate is_rec_var flag
-      Updating is_rec_var flag to correct value, even if value is ignored,
-      helps keep user appraised of unexpected dimension re-orders.
-      is_rec_var may change both for "fixed" and "processed" variables
-      When is_rec_var changes for processed variables, may also need to change
-      ancillary information and to check for duplicate dimensions.
-      Ancillary information (dmn_idx_out_in) is available only for var_prc!
-      Hence must update is_rec_var flag for var_fix and var_prc separately */
+        nco_bool REDEFINED_RECORD_DIMENSION=nco_has_rdf_dmn_trv(var_trv.rec_dmn_nm_out,trv_tbl);
 
-      /*  Update is_rec_var flag for var_fix */
-      for(int idx_var_fix=0;idx_var_fix<nbr_var_fix;idx_var_fix++){
-
-        /* Match by full variable name  */
-        if(strcmp(var_fix[idx_var_fix]->nm_fll,var_trv.nm_fll) == 0){
+        /* REDEFINED_RECORD_DIMENSION  */
+        if (REDEFINED_RECORD_DIMENSION) {
 
 
           int dmn_out_idx;
@@ -5395,31 +5393,35 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               var_fix[idx_var_fix]->is_rec_var=True;
             } /* endif status changing from non-record to record */
           } /* endif variable will be record variable */
+        } /* REDEFINED_RECORD_DIMENSION  */
+      } /* Match by full variable name  */
+    } /* end loop over var_fix */
 
-        } /* Match by full variable name  */
-      } /* end loop over var_fix */
+
+    /* Update is_rec_var flag for var_prc */
+    for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
+
+      /* Match by full variable name  */
+      if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s reordering record for variable <%s>\n",prg_nm_get(),fnc_nm,
+            var_trv.nm_fll);        
+        } 
 
 
-      /* Update is_rec_var flag for var_prc */
-      for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
+        nco_bool REDEFINED_RECORD_DIMENSION=nco_has_rdf_dmn_trv(var_trv.rec_dmn_nm_out,trv_tbl);
 
-        /* Match by full variable name  */
-        if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
+        /* REDEFINED_RECORD_DIMENSION  */
+        if (REDEFINED_RECORD_DIMENSION) {
 
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s reordering record for variable <%s>\n",prg_nm_get(),fnc_nm,
-              var_trv.nm_fll);        
-          }      
+          /* ...get the name of the record dimension on output... stored to GTT in first loop above */
+          rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;    
 
           /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
-
-          /* Loop variable dimensions */
           for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
-
-            /* Transfer */
             dmn_idx_out_in[idx_var_dmn]=trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn];
-
-          } /* Loop variable dimensions */
+          } 
 
 
           int dmn_out_idx;
@@ -5529,9 +5531,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               } /* endif multi-dimensional */
             } /* endif status changing from non-record to record */
           } /* endif variable will be record variable */
-        } /* Match by full variable name  */
-      } /* end loop over var_prc */
-    } /* Has REDEFINED_RECORD_DIMENSION */
+        } /* REDEFINED_RECORD_DIMENSION  */
+      } /* Match by full variable name  */
+    } /* end loop over var_prc */
   } /* Loop table */
 
 
@@ -5606,10 +5608,12 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 
 nco_bool                              /* O [flg] Has re-defined dimension */
-nco_had_rdf_dmn_trv                   /* [fnc] Has re-defined dimension */
+nco_has_rdf_dmn_trv                   /* [fnc] Has re-defined dimension */
 (const char * const rec_dmn_nm_out,   /* [sng] Record dimension name, re-ordered */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
+
+  if (rec_dmn_nm_out == NULL) return False;
 
   /* Loop table, search for other variables that share the same dimension name */
   for(unsigned idx_var_mrk=0;idx_var_mrk<trv_tbl->nbr;idx_var_mrk++){
@@ -5630,9 +5634,6 @@ nco_had_rdf_dmn_trv                   /* [fnc] Has re-defined dimension */
           return True;
 
         } /*  Match name */
-
-
-
       } /* Loop variable dimensions */
     } /* Avoid same */
   } /* Loop table */
