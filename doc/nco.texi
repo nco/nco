@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.792 2013-06-25 15:42:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.793 2013-06-26 02:01:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,8 +107,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.2
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 26 May 2013
-@set update-month May 2013
+@set update-date 25 June 2013
+@set update-month June 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -2859,8 +2859,8 @@ of the remote file.
 In this case, @acronym{NCO} attempts to use the Hierarchical Storage
 Interface (@acronym{HSI}) command @command{hsi get}
 @footnote{The @command{hsi} command must be in the user's path in one of
-the following directories: @code{/usr/local/bin} or
-@code{/opt/hpss/bin}. 
+the following directories: @code{/usr/local/bin}, @code{/opt/hpss/bin},
+or @code{/ncar/opt/hpss/hsi}.
 Tell us if the @acronym{HPSS} installation at your site places the
 @command{hsi} command in a different location, and we will add that
 location to the list of acceptable paths to search for @command{hsi}.
@@ -3020,7 +3020,8 @@ The @file{./configure} mechanism automatically enables @acronym{NCO} as
 @acronym{OPeNDAP} libraries
 @footnote{
 The minimal set of libraries required to build @acronym{NCO} as
-@acronym{OPeNDAP} clients are, in link order,
+@acronym{OPeNDAP} clients, where @acronym{OPeNDAP} is supplied as a
+separate library apart from @file{libnetcdf.a}, are, in link order,
 @file{libnc-dap.a}, @file{libdap.a}, and 
 @file{libxml2} and @file{libcurl.a}.}.
  in the usual locations.

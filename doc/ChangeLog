@@ -1,5 +1,7 @@
 2013-06-25  Charlie Zender  <zender@uci.edu>
 
+	* Add Yellowstone default /ncar/opt/hpss/hsi to list of HSI search paths
+
 	* Add NCO_MMR_DBG infrastructure
 
 	* Replace many hardcoded dbg_lvl's with symbolic names
