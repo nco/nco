@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.810 2013-06-26 01:16:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.811 2013-06-26 01:25:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5501,6 +5501,15 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               var_prc_out[idx_var_prc]->srt[dmn_idx_rec_in]=var_prc_out[idx_var_prc]->dim[dmn_idx_rec_in]->srt;
               var_prc_out[idx_var_prc]->end[dmn_idx_rec_in]=var_prc_out[idx_var_prc]->dim[dmn_idx_rec_in]->end;
               var_prc_out[idx_var_prc]->srd[dmn_idx_rec_in]=var_prc_out[idx_var_prc]->dim[dmn_idx_rec_in]->srd;
+
+
+              /* Swap dimensions in GTT */
+
+
+
+
+
+
             } /* endif multi-dimensional */
           } /* endif status changing from non-record to record */
         } /* endif variable will be record variable */
