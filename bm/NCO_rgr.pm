@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.286 2013-06-26 01:16:35 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.287 2013-06-26 05:39:02 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2444,7 +2444,7 @@ print "\n";
 
 
 #NEW NCO 4.3.2
-#ncpdq #27 : reorder 2 variables with -a lev,time and check a variable that only has 1 (lev)
+#ncpdq #27 : reorder 2 variables with -a lat,time and check a variable that only has 1 (lat)
 #PS(time,lat,lon)
 #three_dmn_var_crd(lev,lat,lon);
 #ncpdq -h -O -a lat,time -v PS,three_dmn_var_crd -d lev,1,1 -d lat,1,1 -d lon,1,1 -d lev,1,1 in.nc out.nc
