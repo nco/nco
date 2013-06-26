@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.309 2013-06-24 10:28:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.310 2013-06-26 09:34:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -543,6 +543,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 (const var_sct * const var_in,        /* I [ptr] Variable with metadata and data in original order */
  var_sct * const var_out,             /* I/O [ptr] Variable whose data will be re-ordered */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

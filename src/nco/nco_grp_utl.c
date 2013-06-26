@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.811 2013-06-26 01:25:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.812 2013-06-26 09:34:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5503,13 +5503,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               var_prc_out[idx_var_prc]->srd[dmn_idx_rec_in]=var_prc_out[idx_var_prc]->dim[dmn_idx_rec_in]->srd;
 
 
-              /* Swap dimensions in GTT */
-
-
-
-
-
-
             } /* endif multi-dimensional */
           } /* endif status changing from non-record to record */
         } /* endif variable will be record variable */
@@ -5535,6 +5528,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
           var_trv.nm_fll,rec_dmn_nm_out);  
       }     
 
+
       /* Loop table, search for other variables that share the same dimension name */
       for(unsigned idx_var_mrk=0;idx_var_mrk<trv_tbl->nbr;idx_var_mrk++){
 
@@ -5546,49 +5540,41 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         ...and look for extracted variables only */
         if (strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 && var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
 
-          /* Case of coordinate variable that will be the new record .e.g lev in lev / time switch */
-          if ( (var_trv_mrk.nbr_dmn == 1) && (strcmp(rec_dmn_nm_out,var_trv_mrk.var_dmn[0].dmn_nm) == 0) ){
-
-            /* ...store the name of the record dimension on output... */
-            trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
-
-          } /* Case of coordinate variable only .e.g lev / time switch */
-
-          /* Find if any of the current dimensions is a record */
-
-          nco_bool has_rec=False;
-          dmn_trv_sct *dmn_trv;
-
-          /* Loop *search* variable dimensions */
+          /* Loop dimensions of to search variable  */
           for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
 
-            /* Get unique dimension object from unique dimension ID, in input list */
-            dmn_trv=nco_dmn_trv_sct(var_trv_mrk.var_dmn[idx_dmn].dmn_id,trv_tbl);
+            dmn_trv_sct *dmn_trv;
 
-            if (dmn_trv->is_rec_dmn){
-              has_rec=True;
-            }
-
-          } /* Loop variable dimensions */
-
-          /* A record exists here ... go on */
-          if (has_rec){
-
-            /* Loop variable dimensions */
-            for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
+            /*  Match name */
+            if (strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,rec_dmn_nm_out) == 0){ 
 
               /* ...store the name of the record dimension on output... */
               trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
 
-            } /* Loop variable dimensions */
-          } /* has_rec */
+            } /*  Match name */
 
+            /* Get unique dimension object from unique dimension ID, in input list */
+            dmn_trv=nco_dmn_trv_sct(var_trv_mrk.var_dmn[idx_dmn].dmn_id,trv_tbl);
 
+            /* Is record ? Un-set the old record */
+            if (dmn_trv->is_rec_dmn){
+
+              if(dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: DEBUG %s variable <%s> has record  <%s>, setting with <%s>\n",prg_nm_get(),fnc_nm,
+                  var_trv_mrk.nm_fll,dmn_trv->nm,rec_dmn_nm_out);  
+              }  
+
+              /* ...store the name of the record dimension on output... */
+              trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
+
+            } /* Is record ? */
+
+          } /* Loop variable dimensions */
         } /* Avoid same */
       } /* Loop table */
+
     } /* Has re-defined record dimension */
   } /* Loop table */
-
 
   return;
 
