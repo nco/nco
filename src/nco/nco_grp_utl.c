@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.809 2013-06-26 00:45:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.810 2013-06-26 01:16:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5259,6 +5259,24 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
         /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
         rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
+
+
+        /* Transfer dimension structures to be re-ordered into GTT */
+
+        /* Loop variable dimensions */
+        for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
+
+          /* Transfer */
+          trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]=dmn_idx_out_in[idx_var_dmn];
+          trv_tbl->lst[idx_var].dmn_rvr_in[idx_var_dmn]=dmn_rvr_in[idx_var_dmn];
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,
+              var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
+          } 
+        } /* Loop variable dimensions */
+
+
         /* If record dimension required by current variable re-order...
         ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
         if(rec_dmn_nm_in && rec_dmn_nm_out_crr && var_prc_out[idx_var_prc]->nbr_dim > 1){
@@ -5287,22 +5305,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
             } /* !REDEFINED_RECORD_DIMENSION */
           } /* endif new and old record dimensions differ */
         } /* endif current variable is record variable */
-
-
-        /* Transfer dimension structures to be re-ordered into GTT */
-
-        /* Loop variable dimensions */
-        for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
-
-          /* Transfer */
-          trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]=dmn_idx_out_in[idx_var_dmn];
-          trv_tbl->lst[idx_var].dmn_rvr_in[idx_var_dmn]=dmn_rvr_in[idx_var_dmn];
-
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,
-              var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
-          } 
-        } /* Loop variable dimensions */
 
 
         /* Memory management for record dimension names */
