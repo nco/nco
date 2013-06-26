@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.815 2013-06-26 21:45:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.816 2013-06-26 22:00:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5270,11 +5270,11 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s dimension map for <%s>: ",prg_nm_get(),fnc_nm,var_prc_out[idx_var]->nm);
-          for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var]->nbr_dim;idx_dmn++){
+          (void)fprintf(stdout,"%s: DEBUG %s dimension map for <%s>: ",prg_nm_get(),fnc_nm,var_prc_out[idx_var_prc]->nm);
+          for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var_prc]->nbr_dim;idx_dmn++){
             int idx_map=dmn_idx_out_in[idx_dmn];
             (void)fprintf(stdout,"[%d]<%s>->[%d]<%s> : ",
-              idx_dmn,var_prc_out[idx_var]->dim[idx_dmn]->nm,idx_map,var_prc_out[idx_var]->dim[idx_map]->nm);
+              idx_dmn,var_prc_out[idx_var_prc]->dim[idx_dmn]->nm,idx_map,var_prc_out[idx_var_prc]->dim[idx_map]->nm);
           }
           (void)fprintf(stdout,"\n");
         }
@@ -5491,12 +5491,13 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               dmn_idx_out_in[dmn_idx_rec_in]=dmn_idx_swp;
 
 
+
               if(dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(stdout,"%s: DEBUG %s re-ordering dimension map for <%s>: ",prg_nm_get(),fnc_nm,var_prc_out[idx_var]->nm);
-                for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var]->nbr_dim;idx_dmn++){
+                (void)fprintf(stdout,"%s: DEBUG %s re-ordering dimension map for <%s>: ",prg_nm_get(),fnc_nm,var_prc_out[idx_var_prc]->nm);
+                for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var_prc]->nbr_dim;idx_dmn++){
                   int idx_map=dmn_idx_out_in[idx_dmn];
                   (void)fprintf(stdout,"[%d]<%s>->[%d]<%s> : ",
-                    idx_dmn,var_prc_out[idx_var]->dim[idx_dmn]->nm,idx_map,var_prc_out[idx_var]->dim[idx_map]->nm);
+                    idx_dmn,var_prc_out[idx_var_prc]->dim[idx_dmn]->nm,idx_map,var_prc_out[idx_var_prc]->dim[idx_map]->nm);
                 }
                 (void)fprintf(stdout,"\n");
               }
