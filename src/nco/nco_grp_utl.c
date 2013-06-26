@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.817 2013-06-26 22:35:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.818 2013-06-26 23:11:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5419,16 +5419,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
             /* Transfer */
             dmn_idx_out_in[idx_var_dmn]=trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn];
 
-            if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s dimension <%s> dmn_idx_out_in[%d]=%d\n",prg_nm_get(),fnc_nm,
-                var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
-            } 
           } /* Loop variable dimensions */
-
-          if(dbg_lvl_get() >= nco_dbg_std){
-            (void)fprintf(stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF3 allows only one record dimension. Hence %s will make %s record (i.e., least rapidly varying) dimension in all variables that contain it.\n",
-              prg_nm_get(),rec_dmn_nm_in,rec_dmn_nm_out,prg_nm_get(),rec_dmn_nm_out);
-          }
 
 
           int dmn_out_idx;
@@ -5612,6 +5603,47 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   return;
 
 } /* nco_var_dmn_rdr_mtd_trv() */
+
+
+nco_bool                              /* O [flg] Has re-defined dimension */
+nco_had_rdf_dmn_trv                   /* [fnc] Has re-defined dimension */
+(const char * const rec_dmn_nm_out,   /* [sng] Record dimension name, re-ordered */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+{
+
+  /* Loop table, search for other variables that share the same dimension name */
+  for(unsigned idx_var_mrk=0;idx_var_mrk<trv_tbl->nbr;idx_var_mrk++){
+
+    /* Looking for this variable */
+    trv_sct var_trv_mrk=trv_tbl->lst[idx_var_mrk];
+
+    /* Look for variables only
+    ...and look for extracted variables only */
+    if (var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
+
+      /* Loop dimensions of to search variable  */
+      for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
+
+        /*  Match name */
+        if (strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,rec_dmn_nm_out) == 0){ 
+
+          return True;
+
+        } /*  Match name */
+
+
+
+      } /* Loop variable dimensions */
+    } /* Avoid same */
+  } /* Loop table */
+
+
+  return False;
+
+} /* nco_had_rdf_dmn_trv() */
+
+
+
 
 
 void
