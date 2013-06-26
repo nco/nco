@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.793 2013-06-26 02:01:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.794 2013-06-26 05:04:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2081,6 +2081,20 @@ concatenated, or differenced, contribute to @math{MS}.
 Variables which do not appear in the output file 
 (@pxref{Subsetting Files}) are never read and contribute nothing
 to the memory requirements. 
+
+Further note that some operators perform internal type-promotion on some
+variables prior to arithmetic (@pxref{Type Conversion}).
+For example, @command{ncra} and @command{ncea} both promote integer
+types to double precision floating point prior to arithmetic, then
+perform the arithmetic, then demote back to the original type after
+arithmetic.
+This preserves the on-disk storage type while obtaining the accuracy
+advantages of floating point arithmetic. 
+Single-precision floating point variables however are not promoted to
+double precision prior to arithmetic.
+Hence, the sustained memory required for some variables can be two or
+four-times their on disk sizes if they meet the rules for automatic
+internal promotion.
 
 @html
 <a name="mmr_ncwa"></a> <!-- http://nco.sf.net/nco.html#mmr_ncwa -->
@@ -6329,7 +6343,7 @@ the type it was stored at to some other type.
 Second, the dataset's creator probably had a good reason
 for storing data as, say, @code{NC_FLOAT} rather than @code{NC_DOUBLE}. 
 In a scientific framework there is no reason to store data with more
-precision than the observations were made.  
+precision than the observations merit.
 Thus @acronym{NCO} tries to avoid performing automatic type conversions
 when performing arithmetic. 
 
@@ -6363,7 +6377,7 @@ $32767 = 2^{15}-1$
 }.
 There are valid reasons for expecting this operation to succeed and 
 the @acronym{NCO} philosophy is to make operators do what you want, not
-what is most pure.
+what is purest.
 Thus, unlike C and Fortran, but like many other higher level interpreted
 languages, @acronym{NCO} arithmetic operators will perform automatic type
 conversion when all the following conditions are met
@@ -6386,7 +6400,7 @@ higher precision.
 Type @code{NC_FLOAT} is not type converted because, in our judgement,
 the performance penalty of always doing so would outweigh the potential
 benefits.   
-@c Add NR C citation to bibliography
+@c fxm Add NR C citation to bibliography
 The book Numerical Recipes in C discusses this point.
 @end enumerate
 

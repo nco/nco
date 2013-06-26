@@ -1,8 +1,12 @@
 2013-06-25  Charlie Zender  <zender@uci.edu>
 
+	* Mention implications of type promotion in memory requirements
+
 	* Add Yellowstone default /ncar/opt/hpss/hsi to list of HSI search paths
 
-	* Add NCO_MMR_DBG infrastructure
+	* Add NCO_MMR_DBG infrastructure for nco_malloc()
+	Does not (yet) report requests made with nco_malloc_flg() and nco_malloc_dbg()
+	export NCO_MMR_DBG=1;ncea -O -D 3 -d time,0,2 -p ~ big_bug5.nc ~/big_avg.nc
 
 	* Replace many hardcoded dbg_lvl's with symbolic names
 

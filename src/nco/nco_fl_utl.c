@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.213 2013-06-26 02:01:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.214 2013-06-26 05:04:36 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -952,7 +952,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
           /* Does hsi command exist on local system? */
           rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire default */
           if(rcd_stt != 0) rcd_stt=stat("/opt/hpss/bin/hsi",&stat_sct); /* CISL alternate */
-          if(rcd_stt != 0) rcd_stt=stat("/ncar/opt/hpss/hsi",&stat_sct); /* Yellowstone default */
+          if(rcd_stt != 0) rcd_stt=stat("/ncar/opt/hpss/hsi",&stat_sct); /* Yellowstone default added to NCO 4.3.2 in 201306 */
           if(rcd_stt == 0) rmt_cmd=&hsiget;
         } /* end if */
 

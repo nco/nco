@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.51 2013-06-25 20:36:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.52 2013-06-26 05:04:36 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -18,7 +18,7 @@
    nco_malloc_flg() plug-in replacements are malloc() and nco_malloc() 
    
    nco_malloc_dbg(): Use this for large memory requests when calling routine supplies
-   its name and a useful supplemental error message
+   its name and useful supplemental error message
    nco_malloc_dbg() prints name of calling function, supplemental error message, and then 
    dies and exits for all error conditions.
    nco_malloc_dbg() has no plug-in replacements (since it requires two extra arguments)
@@ -72,7 +72,11 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 (const size_t sz) /* I [B] Bytes to allocate */
 {
   /* Purpose: Custom plugin wrapper for malloc()
-     Top of nco_mmr.c explains usage of nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg() */
+     Top of nco_mmr.c explains usage of nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg()
+     Test memory debugging infrastructure with, e.g.,
+     export NCO_MMR_DBG=1;ncea -O -D 3 -d time,0,2 -p ~ big_bug5.nc ~/big_avg.nc
+     export NCO_MMR_DBG=1;ncrcat -O -D 3 -p ~ big_bug.nc big_bug.nc big_bug.nc big_bug.nc big_bug.nc ~/big_bug5.nc
+     fxm: Infrastucture does not (yet) report requests made with nco_malloc_flg() and nco_malloc_dbg() */
 
   const char fnc_nm[]="nco_malloc()"; /* [sng] Function name */
   char *nvr_NCO_MMR_DBG; /* [sng] Environment variable NCO_MMR_DBG */
@@ -80,7 +84,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 
   int ntg_NCO_MMR_DBG=int_CEWI; // [nbr] NCO_MMR_DBG environment variable
 
-  size_t sz_thr; /* I [B] Bytes to allocate threshold size for reporting */
+  size_t sz_thr=1024UL*1024UL; /* I [B] Bytes to allocate threshold size for reporting */
 
   void *ptr; /* [ptr] Pointer to new buffer */
   
