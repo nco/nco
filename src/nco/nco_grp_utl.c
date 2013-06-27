@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.820 2013-06-27 00:41:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.821 2013-06-27 02:41:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5630,20 +5630,24 @@ nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
 
     /* Avoid same variable ...
     ...and look for variables only
-    ...and look for extracted variables only */
-    if (strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 && var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
+    ...and look for extracted variables only
+    ...and look for variables with dimensions > 1 */
+    if (strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 
+      && var_trv_mrk.nco_typ == nco_obj_typ_var 
+      && var_trv_mrk.flg_xtr
+      && var_trv_mrk.nbr_dmn > 1){
 
-      /* Loop dimensions of to search variable  */
-      for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
+        /* Loop dimensions of to search variable  */
+        for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
 
-        /*  Match name */
-        if (strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,var_trv.rec_dmn_nm_out) == 0){ 
+          /*  Match name */
+          if (strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,var_trv.rec_dmn_nm_out) == 0){ 
 
-          *idx_var_mrk_out=idx_var_mrk;
-          return True;
+            *idx_var_mrk_out=idx_var_mrk;
+            return True;
 
-        } /*  Match name */
-      } /* Loop variable dimensions */
+          } /*  Match name */
+        } /* Loop variable dimensions */
     } /* Avoid same */
   } /* Loop table */
 
