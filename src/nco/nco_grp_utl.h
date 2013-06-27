@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.313 2013-06-27 00:41:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.314 2013-06-27 03:31:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -537,7 +537,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  const nco_bool *dmn_rvr_rdr);        /* I [flg] Reverse dimension */
  
 
-
 void
 nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of variable values */
 (const var_sct * const var_in,        /* I [ptr] Variable with metadata and data in original order */
@@ -549,6 +548,16 @@ nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
 (trv_sct var_trv,                     /* I [sct] varible with record dimension name, re-ordered */
  const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
  int * idx_var_mrk_out);              /* O [nbr] Index in GTT where name was found */
+
+
+nco_bool                              /* [flg] Name was found */
+nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable that matches full name */
+(const char * const var_nm_fll,       /* I [nbr] Full name of variable */
+ var_sct **var_prc_out,               /* I [sct] Processed variables */
+ const int nbr_var_prc,               /* I [nbr] Number of processed variables */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
+ int * var_prc_idx_out);              /* O [nbr] Number of dimension to re-order */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

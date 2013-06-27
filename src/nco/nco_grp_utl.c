@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.823 2013-06-27 03:10:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.824 2013-06-27 03:31:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5450,6 +5450,11 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               /* NEEDS_REORDER */
               if(NEEDS_REORDER){
 
+
+                /* Find the index of processed variables that corresponds to the found GTT variable */
+
+
+
                 /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
                 for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
                   dmn_idx_out_in[idx_var_dmn]=trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn];
@@ -5641,6 +5646,43 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   return;
 
 } /* nco_var_dmn_rdr_mtd_trv() */
+
+
+
+nco_bool                              /* [flg] Name was found */
+nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable that matches full name */
+(const char * const var_nm_fll,       /* I [nbr] Full name of variable */
+ var_sct **var_prc_out,               /* I [sct] Processed variables */
+ const int nbr_var_prc,               /* I [nbr] Number of processed variables */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
+ int * var_prc_idx_out)               /* O [nbr] Number of dimension to re-order */
+{
+
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    /* Loop processed variables  */
+    for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
+
+      /* Match by full variable name  */
+      if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
+
+        *var_prc_idx_out=idx_var_prc;
+
+        return True;
+
+      } /* Match by full variable name  */
+    }  /* Loop processed variables  */
+  } /* Loop table */
+
+  return False;
+
+} /* nco_var_prc_idx_trv() */
+
+
+
+
 
 
 nco_bool                              /* O [flg] Re-define dimension ordering */
