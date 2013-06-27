@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.819 2013-06-26 23:31:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.820 2013-06-27 00:41:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5361,41 +5361,40 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
       /* Match by full variable name  */
       if(strcmp(var_fix[idx_var_fix]->nm_fll,var_trv.nm_fll) == 0){
 
-        nco_bool REDEFINED_RECORD_DIMENSION=nco_has_rdf_dmn_trv(var_trv.rec_dmn_nm_out,trv_tbl);
+        /* ...get the name of the record dimension on output... stored to GTT in first loop above */
+        rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;   
 
-        /* REDEFINED_RECORD_DIMENSION  */
-        if (REDEFINED_RECORD_DIMENSION) {
-
-
-          int dmn_out_idx;
-          /* Search all dimensions in variable for new record dimension */
-          for(dmn_out_idx=0;dmn_out_idx<var_fix[idx_var_fix]->nbr_dim;dmn_out_idx++){
-            if(!strcmp(var_fix[idx_var_fix]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
-              break;
-            }
+        int dmn_out_idx;
+        /* Search all dimensions in variable for new record dimension */
+        for(dmn_out_idx=0;dmn_out_idx<var_fix[idx_var_fix]->nbr_dim;dmn_out_idx++){
+          if(rec_dmn_nm_out && !strcmp(var_fix[idx_var_fix]->dim[dmn_out_idx]->nm,rec_dmn_nm_out)){
+            break;
           }
-          /* ...Will variable be record variable in output file?... */
-          if(dmn_out_idx == var_fix[idx_var_fix]->nbr_dim){
-            /* ...No. Variable will be non-record---does this change its status?... */
-            if(dbg_lvl_get() >= nco_dbg_var){
-              if(var_fix[idx_var_fix]->is_rec_var == True) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",
-                prg_nm_get(),var_fix[idx_var_fix]->nm);
-            }
-            /* Assign record flag dictated by re-order */
-            var_fix[idx_var_fix]->is_rec_var=False; 
-          }else{ /* ...otherwise variable will be record variable... */
-            /* ...Yes. Variable will be record... */
-            /* ...Will becoming record variable change its status?... */
-            if(var_fix[idx_var_fix]->is_rec_var == False){
-              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",
-                prg_nm_get(),var_fix[idx_var_fix]->nm);
-              /* Change record flag to status dictated by re-order */
-              var_fix[idx_var_fix]->is_rec_var=True;
-            } /* endif status changing from non-record to record */
-          } /* endif variable will be record variable */
-        } /* REDEFINED_RECORD_DIMENSION  */
+        }
+        /* ...Will variable be record variable in output file?... */
+        if(dmn_out_idx == var_fix[idx_var_fix]->nbr_dim){
+          /* ...No. Variable will be non-record---does this change its status?... */
+          if(dbg_lvl_get() >= nco_dbg_var){
+            if(var_fix[idx_var_fix]->is_rec_var == True) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",
+              prg_nm_get(),var_fix[idx_var_fix]->nm);
+          }
+          /* Assign record flag dictated by re-order */
+          var_fix[idx_var_fix]->is_rec_var=False; 
+        }else{ /* ...otherwise variable will be record variable... */
+          /* ...Yes. Variable will be record... */
+          /* ...Will becoming record variable change its status?... */
+          if(var_fix[idx_var_fix]->is_rec_var == False){
+            if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",
+              prg_nm_get(),var_fix[idx_var_fix]->nm);
+            /* Change record flag to status dictated by re-order */
+            var_fix[idx_var_fix]->is_rec_var=True;
+          } /* endif status changing from non-record to record */
+        } /* endif variable will be record variable */
+
       } /* Match by full variable name  */
     } /* end loop over var_fix */
+
+
 
 
     /* Update is_rec_var flag for var_prc */
@@ -5409,19 +5408,24 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
             var_trv.nm_fll);        
         } 
 
+        int idx_var_mrk_out;
+        nco_bool NEEDS_REORDER=nco_rdf_dmn_trv(var_trv,trv_tbl,&idx_var_mrk_out);
 
-        nco_bool REDEFINED_RECORD_DIMENSION=nco_has_rdf_dmn_trv(var_trv.rec_dmn_nm_out,trv_tbl);
-
-        /* REDEFINED_RECORD_DIMENSION  */
-        if (REDEFINED_RECORD_DIMENSION) {
+        /* NEEDS_REORDER */
+        if (NEEDS_REORDER) {
 
           /* ...get the name of the record dimension on output... stored to GTT in first loop above */
           rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;    
+
+
+
 
           /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
           for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
             dmn_idx_out_in[idx_var_dmn]=trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn];
           } 
+
+
 
 
           int dmn_out_idx;
@@ -5531,7 +5535,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               } /* endif multi-dimensional */
             } /* endif status changing from non-record to record */
           } /* endif variable will be record variable */
-        } /* REDEFINED_RECORD_DIMENSION  */
+
+        } /* NEEDS_REORDER */
+
       } /* Match by full variable name  */
     } /* end loop over var_prc */
   } /* Loop table */
@@ -5607,13 +5613,14 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 } /* nco_var_dmn_rdr_mtd_trv() */
 
 
-nco_bool                              /* O [flg] Has re-defined dimension */
-nco_has_rdf_dmn_trv                   /* [fnc] Has re-defined dimension */
-(const char * const rec_dmn_nm_out,   /* [sng] Record dimension name, re-ordered */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+nco_bool                              /* O [flg] Re-define dimension ordering */
+nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
+(trv_sct var_trv,                     /* I [sct] varible with record dimension name, re-ordered */
+ const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
+ int * idx_var_mrk_out)               /* O [nbr] Index in GTT where name was found */
 {
 
-  if (rec_dmn_nm_out == NULL) return False;
+  if(var_trv.rec_dmn_nm_out == NULL) return False;
 
   /* Loop table, search for other variables that share the same dimension name */
   for(unsigned idx_var_mrk=0;idx_var_mrk<trv_tbl->nbr;idx_var_mrk++){
@@ -5621,16 +5628,18 @@ nco_has_rdf_dmn_trv                   /* [fnc] Has re-defined dimension */
     /* Looking for this variable */
     trv_sct var_trv_mrk=trv_tbl->lst[idx_var_mrk];
 
-    /* Look for variables only
+    /* Avoid same variable ...
+    ...and look for variables only
     ...and look for extracted variables only */
-    if (var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
+    if (strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 && var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
 
       /* Loop dimensions of to search variable  */
       for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
 
         /*  Match name */
-        if (strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,rec_dmn_nm_out) == 0){ 
+        if (strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,var_trv.rec_dmn_nm_out) == 0){ 
 
+          *idx_var_mrk_out=idx_var_mrk;
           return True;
 
         } /*  Match name */
