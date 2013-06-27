@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.314 2013-06-27 03:31:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.315 2013-06-27 03:56:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -555,7 +555,6 @@ nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable 
 (const char * const var_nm_fll,       /* I [nbr] Full name of variable */
  var_sct **var_prc_out,               /* I [sct] Processed variables */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
  int * var_prc_idx_out);              /* O [nbr] Number of dimension to re-order */
 
 

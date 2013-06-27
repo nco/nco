@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.825 2013-06-27 03:46:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.826 2013-06-27 03:56:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5455,7 +5455,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 
                 /* Find the index of processed variables that corresponds to the found GTT variable */
-                nco_var_prc_idx_trv(var_trv_mrk.nm_fll,var_prc_out,nbr_var_prc,trv_tbl,&var_prc_idx_out);             
+                nco_var_prc_idx_trv(var_trv_mrk.nm_fll,var_prc_out,nbr_var_prc,&var_prc_idx_out);             
 
                 /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
                 for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -5656,34 +5656,24 @@ nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable 
 (const char * const var_nm_fll,       /* I [nbr] Full name of variable */
  var_sct **var_prc_out,               /* I [sct] Processed variables */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
  int * var_prc_idx_out)               /* O [nbr] Number of dimension to re-order */
 {
 
-  /* Loop table */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-    trv_sct var_trv=trv_tbl->lst[idx_var];
+  /* Loop processed variables  */
+  for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
 
-    /* Look variables */
-    if (var_trv.nco_typ == nco_obj_typ_var){
+    /* Match by full variable name  */
+    if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_nm_fll) == 0){
 
-      /* Loop processed variables  */
-      for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
+      *var_prc_idx_out=idx_var_prc;
 
-        /* Match by full variable name  */
-        if(strcmp(var_prc_out[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
+      return True;
 
-          *var_prc_idx_out=idx_var_prc;
+    } /* Match by full variable name  */
+  }  /* Loop processed variables  */
 
-          assert(var_trv.flg_xtr);
 
-          return True;
-
-        } /* Match by full variable name  */
-      }  /* Loop processed variables  */
-    } /* Look variables */
-  } /* Loop table */
-
+  assert(0);
   return False;
 
 } /* nco_var_prc_idx_trv() */
