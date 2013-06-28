@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.288 2013-06-28 08:45:41 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.289 2013-06-28 22:31:31 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2220,7 +2220,7 @@ print "\n";
 #ncpdq #11
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -v two_dmn_var in.nc out.nc
-# ncks  -d lat,1,1 -d lev,1,1 out.nc
+# ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
 
   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -a lev,lat -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
@@ -2518,18 +2518,28 @@ print "\n";
 #ncpdq #11
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -v two_dmn_var in.nc out.nc
-# ncks  -d lat,1,1 -d lev,1,1 out.nc
+# ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
 # $tst_cmd[2]="lev[1] lat[1] two_dmn_var[3]=17.5 fraction";
 
 # same as previous but with group
     
 #NEW NCO 4.3.2
+#ncpdq #32
+# group: g19 { 
+# dimensions:lat=2;lev=3;lon=4;time=unlimited;
 #ncpdq #11
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
 # ncpdq -O -C -g g19g1 -a lev,lat -v two_dmn_var in_grp_3.nc out.nc
-# ncks  -g g19g1 -d lat,1,1 -d lev,1,1 out.nc
+# ncks -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
+# lev[1] lat[1] two_dmn_var[3]=17.5 fraction
 
- 
+   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g1 -a lev,lat -v two_dmn_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
+   $dsc_sng="Re-order 2D variable (-C , no MSA) -v two_dmn_var -a lev,lat";
+   $tst_cmd[2]="lev[1] lat[1] two_dmn_var[3]=17.5 fraction";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array    
  
     
     
