@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.829 2013-06-28 04:25:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.830 2013-06-28 05:27:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6005,4 +6005,4 @@ nco_dmn_lst_mk_trv                  /* [fnc] Attach dimension IDs to dimension l
 
 
   return dmn_lst;
-} /* end nco_dmn_lst_mk() */
+} /* end nco_dmn_lst_mk_trv() */
