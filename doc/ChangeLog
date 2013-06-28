@@ -1,3 +1,11 @@
+2013-06-27  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.2 release procedure:
+ 	Changes since nco-4_3_1: -X aux, ncflint/ncpdq -g -G --unn
+	cd ~/nco;cvs tag -d nco-4_3_2;cvs tag -d nco-4_3_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
+	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
+
 2013-06-25  Charlie Zender  <zender@uci.edu>
 
 	* Mention implications of type promotion in memory requirements
@@ -74,14 +82,6 @@
 	* Implement robust Linux memory usage by polling /proc/self/stat with ncks --sysconf
 
 	* Include <unistd.h> in nco_mmr.h for accessing sysconf() to get page size
-
-2013-06-08  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.3.2 release procedure:
- 	Changes since nco-4_3_1: -X aux, ncflint/ncpdq -g -G --unn
-	cd ~/nco;cvs tag -d nco-4_3_2;cvs tag -d nco-4_3_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
-	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
 
 2013-06-07  Charlie Zender  <zender@uci.edu>
 

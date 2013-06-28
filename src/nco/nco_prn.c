@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.96 2013-03-20 12:57:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.97 2013-06-28 01:17:02 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -705,7 +705,7 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
 
     (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 
-    if(deflate) (void)fprintf(stdout,"%s on-disk compression (Lempel-Ziv %s shuffling) level = %d\n",
+    if(deflate) (void)fprintf(stdout,"%s compression (Lempel-Ziv %s shuffling) level = %d\n",
       var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
     (void)fprintf(stdout,"%s size (RAM) = %s = %li*%lu = %lu bytes\n",
       var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
