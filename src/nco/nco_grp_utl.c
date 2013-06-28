@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.828 2013-06-27 04:28:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.829 2013-06-28 04:25:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1895,7 +1895,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       obj_typ=nco_obj_typ_var;
     }else{ /* > NC_MAX_ATOMIC_TYPE */
       obj_typ=nco_obj_typ_nonatomic_var;
-      if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
+      if(dbg_lvl_get() >= nco_dbg_var){
+        (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",
+          prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
+      }
     } /* > NC_MAX_ATOMIC_TYPE */
 
 
@@ -5943,3 +5946,63 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
   return;
 
 } /* nco_var_dmn_rdr_val_trv() */
+
+
+nm_id_sct *                         /* O [sct] Dimension list */
+nco_dmn_lst_mk_trv                  /* [fnc] Attach dimension IDs to dimension list */
+(char **dmn_lst_in,                 /* I [sng] User-specified list of dimension names */
+ const int nbr_dmn,                 /* I [nbr] Total number of dimensions in list */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Create list of dimension name-ID structures from list of dimension name strings */
+
+  nm_id_sct *dmn_lst;
+
+  int nbr_dmn_out=0;
+  int idx_dmn_out=0;
+
+  /* Loop input dimension name list */
+  for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn;idx_dmn_in++){
+
+    /* Loop unique dimension list */
+    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
+
+      /* Match name  */
+      if(strcmp(dmn_trv.nm,dmn_lst_in[idx_dmn_in]) == 0){
+
+        nbr_dmn_out++;
+      } /* Match name  */
+    } /* Loop unique dimension list */
+  }  /* Loop input dimension name list */
+
+
+
+  dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn_out*sizeof(nm_id_sct));
+
+
+  /* Loop input dimension name list */
+  for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn;idx_dmn_in++){
+
+    /* Loop unique dimension list */
+    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
+
+      /* Match name  */
+      if(strcmp(dmn_trv.nm,dmn_lst_in[idx_dmn_in]) == 0){
+
+        /* Copy name  */
+        dmn_lst[idx_dmn_out].nm=(char *)strdup(dmn_lst_in[idx_dmn_in]);
+
+        /* Copy ID */
+        dmn_lst[idx_dmn_out].id=dmn_trv.dmn_id;
+
+        idx_dmn_out++;
+
+      } /* Match name  */
+    } /* Loop unique dimension list */
+  }  /* Loop input dimension name list */
+
+
+  return dmn_lst;
+} /* end nco_dmn_lst_mk() */

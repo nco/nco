@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.315 2013-06-27 03:56:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.316 2013-06-28 04:25:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -201,11 +201,11 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
  const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
-int /* O [nbr] Number of matches to current rx */
-nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
-(const char * const rx_sng, /* I [sng] Regular expression pattern */
- const nco_obj_typ obj_typ, /* I [enm] Object type (group or variable) */
- trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+int                                   /* O [nbr] Number of matches to current rx */
+nco_trv_rx_search                     /* [fnc] Search for pattern matches in traversal table */
+(const char * const rx_sng,           /* I [sng] Regular expression pattern */
+ const nco_obj_typ obj_typ,           /* I [enm] Object type (group or variable) */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
 nco_xtr_dfn                           /* [fnc] Define extracted groups, variables, and attributes in output file */
@@ -556,6 +556,12 @@ nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable 
  var_sct **var_prc_out,               /* I [sct] Processed variables */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
  int * var_prc_idx_out);              /* O [nbr] Number of dimension to re-order */
+
+nm_id_sct *                         /* O [sct] Dimension list */
+nco_dmn_lst_mk_trv                  /* [fnc] Attach dimension IDs to dimension list */
+(char **dmn_lst_in,                 /* I [sng] User-specified list of dimension names */
+ const int nbr_dmn,                 /* I [nbr] Total number of dimensions in list */
+ const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
 
 
 #ifdef __cplusplus
