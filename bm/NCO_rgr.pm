@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.287 2013-06-26 05:39:02 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.288 2013-06-28 08:45:41 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2222,7 +2222,7 @@ print "\n";
 # ncpdq -O -C -a lev,lat -v two_dmn_var in.nc out.nc
 # ncks  -d lat,1,1 -d lev,1,1 out.nc
 
-  $tst_cmd[0]="ncpdq $omp_flg -O -C $fl_fmt $nco_D_flg -a lev,lat -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
+  $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -a lev,lat -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable (-C , no MSA) -v two_dmn_var -a lev,lat";
   $tst_cmd[2]="lev[1] lat[1] two_dmn_var[3]=17.5 fraction";
@@ -2440,9 +2440,7 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
-
-
-
+    
 #NEW NCO 4.3.2
 #ncpdq #27 : reorder 2 variables with -a lat,time and check a variable that only has 1 (lat)
 #PS(time,lat,lon)
@@ -2452,16 +2450,12 @@ print "\n";
 
     $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -a lat,time -v PS,three_dmn_var_crd -d lev,1,1 -d lat,1,1 -d lon,1,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -C -v three_dmn_var_crd %tmp_fl_00%";
-    $dsc_sng="Re-order 3D variable (only 1 in -a) -a lev,time -three_dmn_var_crd (MSA)";
+    $dsc_sng="Re-order 3D variable (only 1 in -a) -a lat,time -v PS,three_dmn_var_crd (MSA)";
     $tst_cmd[2]="lat[0]=90 lev[0]=500 lon[0]=90 three_dmn_var_crd[0]=17";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array  
-
-
-
-    
-  
+ 
 #NEW NCO 4.3.2
 #ncpdq #28 
 #ncpdq -h -O -a lat,time -d time,1,6,2 -d lat,1,1 in.nc out.nc
@@ -2483,7 +2477,7 @@ print "\n";
 #####################       
     
 
-#ncpdq #28
+#ncpdq #29
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P all_new -v upk $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P upk -v upk %tmp_fl_00% %tmp_fl_00%";
@@ -2494,7 +2488,7 @@ print "\n";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
 
-#ncpdq #29
+#ncpdq #30
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 %tmp_fl_00%";
@@ -2504,7 +2498,7 @@ print "\n";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
 
-#ncpdq #30
+#ncpdq #31
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P all_xst -v three_dmn_var_dbl -d time,0,2 -d time,8,9 -d lon,0 -d lon,1 -d lat,1 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%i' -v three_dmn_var_dbl -d time,2 -d lon,1 -d lat,0 %tmp_fl_00%";
@@ -2518,8 +2512,25 @@ print "\n";
 #####################
 #### ncpdq GROUP tests 
 #####################    
+
+
+#NEW NCO 4.3.2
+#ncpdq #11
+# two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
+# ncpdq -O -C -a lev,lat -v two_dmn_var in.nc out.nc
+# ncks  -d lat,1,1 -d lev,1,1 out.nc
+# $tst_cmd[2]="lev[1] lat[1] two_dmn_var[3]=17.5 fraction";
+
+# same as previous but with group
     
-    
+#NEW NCO 4.3.2
+#ncpdq #11
+# two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
+# ncpdq -O -C -g g19g1 -a lev,lat -v two_dmn_var in_grp_3.nc out.nc
+# ncks  -g g19g1 -d lat,1,1 -d lev,1,1 out.nc
+
+ 
+ 
     
     
     
