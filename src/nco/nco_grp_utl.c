@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.833 2013-06-29 05:30:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.834 2013-06-29 05:46:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6112,8 +6112,8 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
 
 
 
-nco_bool                               /* O [flg] True if variable is in scope of dimension */
-nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope and has dimensions that match unique dimension GTT */
+nco_bool                               /* O [flg] True if variable has dimensions in scope of GTT dimension */
+nco_var_dmn_scp                        /* [fnc] Variable has dimensions in scope of GTT dimension */
 (const trv_sct * const var_trv,        /* I [sct] GTT Object Variable */
  const dmn_trv_sct * const dmn_trv,    /* I [sct] GTT unique dimension */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
@@ -6122,6 +6122,11 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope a
 
   const char fnc_nm[]="nco_var_dmn_scp()";   /* [sng] Function name */
 
+
+  /* Avoid coordinate variables */
+  if (var_trv->is_crd_var){
+    return False;
+  }
 
   /* Loop variable dimensions */
   for(int idx_var_dmn=0;idx_var_dmn<var_trv->nbr_dmn;idx_var_dmn++){
