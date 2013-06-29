@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.834 2013-06-29 05:46:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.835 2013-06-29 06:49:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6041,10 +6041,10 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
         for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
           trv_sct var_trv=trv_tbl->lst[idx_var];
 
-          /* Variable to extract */
-          if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+          /* Variable matches user-specified strings (since comparing with input names) */
+          if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_mch){
 
-            /* Is variable in scope of dimension ? */
+            /* Variable has dimensions in scope of GTT dimension ? */
             if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
               if(dbg_lvl_get() >= nco_dbg_dev){
@@ -6080,10 +6080,10 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
         for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
           trv_sct var_trv=trv_tbl->lst[idx_var];
 
-          /* Variable to extract */
-          if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+          /* Variable matches user-specified strings (since comparing with input names) */
+          if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_mch){
 
-            /* Is variable in scope of dimension ? */
+            /* Variable has dimensions in scope of GTT dimension ? */
             if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
               if(dbg_lvl_get() >= nco_dbg_dev){

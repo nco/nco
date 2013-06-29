@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.317 2013-06-29 04:47:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.318 2013-06-29 06:49:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -561,6 +561,12 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
 (char **dmn_lst_in,                 /* I [sng] User-specified list of dimension names */
  const int nbr_dmn_in,              /* I [nbr] Total number of dimensions in input list */
  const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
+
+nco_bool                               /* O [flg] True if variable is in scope of dimension */
+nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope and has dimensions that match unique dimension GTT */
+(const trv_sct * const var_trv,        /* I [sct] GTT Object Variable */
+ const dmn_trv_sct * const dmn_trv,    /* I [sct] GTT unique dimension */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 
 #ifdef __cplusplus
