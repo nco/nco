@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.832 2013-06-29 05:25:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.833 2013-06-29 05:30:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6063,12 +6063,48 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
 
 
 
+   dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn_out*sizeof(nm_id_sct));
 
 
+   /* Loop input dimension name list */
+  for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
 
+    /* Loop GTT dimensions  */
+    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn];
 
+      /* Match name  */
+      if(strcmp(dmn_trv.nm,dmn_lst_in[idx_dmn_in]) == 0){
 
+        /* Loop variables  */
+        for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+          trv_sct var_trv=trv_tbl->lst[idx_var];
 
+          /* Variable to extract */
+          if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+
+            /* Is variable in scope of dimension ? */
+            if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
+
+              if(dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: DEBUG %s variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
+                  var_trv.nm_fll,dmn_trv.nm);  
+              }  
+
+              /* Copy name  */
+              dmn_lst[idx_dmn_out].nm=(char *)strdup(dmn_lst_in[idx_dmn_in]);
+
+              /* Copy ID */
+              dmn_lst[idx_dmn_out].id=dmn_trv.dmn_id;
+
+              idx_dmn_out++;
+
+            } /* Is variable in scope of dimension ? */
+          } /* Variable to extract */ 
+        } /* Loop variables  */
+      } /* Match name  */
+    } /* Loop GTT dimensions  */
+  } /* Loop input dimension name list */
 
   return dmn_lst;
 
