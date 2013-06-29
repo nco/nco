@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.831 2013-06-29 04:47:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.832 2013-06-29 05:25:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5637,7 +5637,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
             /* Get unique dimension object from unique dimension ID, in input list */
             dmn_trv=nco_dmn_trv_sct(var_trv_mrk.var_dmn[idx_dmn].dmn_id,trv_tbl);
 
-            /* Is record ? Un-set the old record */
+            /* Is record ?  */
             if (dmn_trv->is_rec_dmn){
 
               if(dbg_lvl_get() >= nco_dbg_dev){
@@ -6027,8 +6027,6 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
   int nbr_dmn_out=0;
   int idx_dmn_out=0;
 
-
-
   /* Loop input dimension name list */
   for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
 
@@ -6044,21 +6042,31 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
           trv_sct var_trv=trv_tbl->lst[idx_var];
 
           /* Variable to extract */
-          if (var_trv.var_typ_out == nco_obj_typ_var && var_trv.flg_xtr){
+          if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-           
+            /* Is variable in scope of dimension ? */
+            if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
 
+              if(dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: DEBUG %s variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
+                  var_trv.nm_fll,dmn_trv.nm);  
+              }  
 
+              nbr_dmn_out++;
 
+            } /* Is variable in scope of dimension ? */
           } /* Variable to extract */ 
-
         } /* Loop variables  */
-
       } /* Match name  */
-
     } /* Loop GTT dimensions  */
-
   } /* Loop input dimension name list */
+
+
+
+
+
+
+
 
 
 
@@ -6066,3 +6074,33 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
 
 } /* nco_lst_dmn_mk_trv() */
 
+
+
+nco_bool                               /* O [flg] True if variable is in scope of dimension */
+nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope and has dimensions that match unique dimension GTT */
+(const trv_sct * const var_trv,        /* I [sct] GTT Object Variable */
+ const dmn_trv_sct * const dmn_trv,    /* I [sct] GTT unique dimension */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Find variable in dimension scope and has dimensions that match unique dimension GTT */
+
+  const char fnc_nm[]="nco_var_dmn_scp()";   /* [sng] Function name */
+
+
+  /* Loop variable dimensions */
+  for(int idx_var_dmn=0;idx_var_dmn<var_trv->nbr_dmn;idx_var_dmn++){
+
+    /* Match */
+    if (strcmp(var_trv->var_dmn[idx_var_dmn].dmn_nm_fll,dmn_trv->nm_fll) == 0){
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: INFO %s found absolute dimension match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
+          var_trv->nm_fll,dmn_trv->nm_fll);
+      }
+      return True;
+    } /* Match */
+
+  } /* Loop variable dimensions */
+
+
+  return False;
+} /* nco_crd_var_dmn_scp() */
