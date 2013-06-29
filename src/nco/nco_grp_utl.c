@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.835 2013-06-29 06:49:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.836 2013-06-29 09:20:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6010,108 +6010,6 @@ nco_dmn_lst_mk_trv                  /* [fnc] Attach dimension IDs to dimension l
 } /* end nco_dmn_lst_mk_trv() */
 
 
-
-
-nm_id_sct *                         /* O [sct] Dimension list */
-nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dimension names */
-(char **dmn_lst_in,                 /* I [sng] User-specified list of dimension names */
- const int nbr_dmn_in,              /* I [nbr] Total number of dimensions in input list */
- const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
-{
-  /* Purpose: Create list of dimension name-ID structures from list of dimension name strings */
-
-  const char fnc_nm[]="nco_lst_dmn_mk_trv()"; /* [sng] Function name  */
-
-  nm_id_sct *dmn_lst=NULL;
-
-  int nbr_dmn_out=0;
-  int idx_dmn_out=0;
-
-  /* Loop input dimension name list */
-  for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
-
-    /* Loop GTT dimensions  */
-    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
-      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn];
-
-      /* Match name  */
-      if(strcmp(dmn_trv.nm,dmn_lst_in[idx_dmn_in]) == 0){
-
-        /* Loop variables  */
-        for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-          trv_sct var_trv=trv_tbl->lst[idx_var];
-
-          /* Variable matches user-specified strings (since comparing with input names) */
-          if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_mch){
-
-            /* Variable has dimensions in scope of GTT dimension ? */
-            if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
-
-              if(dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(stdout,"%s: DEBUG %s variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
-                  var_trv.nm_fll,dmn_trv.nm);  
-              }  
-
-              nbr_dmn_out++;
-
-            } /* Is variable in scope of dimension ? */
-          } /* Variable to extract */ 
-        } /* Loop variables  */
-      } /* Match name  */
-    } /* Loop GTT dimensions  */
-  } /* Loop input dimension name list */
-
-
-
-   dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn_out*sizeof(nm_id_sct));
-
-
-   /* Loop input dimension name list */
-  for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
-
-    /* Loop GTT dimensions  */
-    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
-      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn];
-
-      /* Match name  */
-      if(strcmp(dmn_trv.nm,dmn_lst_in[idx_dmn_in]) == 0){
-
-        /* Loop variables  */
-        for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-          trv_sct var_trv=trv_tbl->lst[idx_var];
-
-          /* Variable matches user-specified strings (since comparing with input names) */
-          if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_mch){
-
-            /* Variable has dimensions in scope of GTT dimension ? */
-            if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
-
-              if(dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(stdout,"%s: DEBUG %s variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
-                  var_trv.nm_fll,dmn_trv.nm);  
-              }  
-
-              /* Copy name  */
-              dmn_lst[idx_dmn_out].nm=(char *)strdup(dmn_lst_in[idx_dmn_in]);
-
-              /* Copy ID */
-              dmn_lst[idx_dmn_out].id=dmn_trv.dmn_id;
-
-              idx_dmn_out++;
-
-            } /* Is variable in scope of dimension ? */
-          } /* Variable to extract */ 
-        } /* Loop variables  */
-      } /* Match name  */
-    } /* Loop GTT dimensions  */
-  } /* Loop input dimension name list */
-
-  return dmn_lst;
-
-} /* nco_lst_dmn_mk_trv() */
-
-
-
 nco_bool                               /* O [flg] True if variable has dimensions in scope of GTT dimension */
 nco_var_dmn_scp                        /* [fnc] Variable has dimensions in scope of GTT dimension */
 (const trv_sct * const var_trv,        /* I [sct] GTT Object Variable */
@@ -6121,12 +6019,6 @@ nco_var_dmn_scp                        /* [fnc] Variable has dimensions in scope
   /* Purpose: Find variable in dimension scope and has dimensions that match unique dimension GTT */
 
   const char fnc_nm[]="nco_var_dmn_scp()";   /* [sng] Function name */
-
-
-  /* Avoid coordinate variables */
-  if (var_trv->is_crd_var){
-    return False;
-  }
 
   /* Loop variable dimensions */
   for(int idx_var_dmn=0;idx_var_dmn<var_trv->nbr_dmn;idx_var_dmn++){
@@ -6142,6 +6034,112 @@ nco_var_dmn_scp                        /* [fnc] Variable has dimensions in scope
 
   } /* Loop variable dimensions */
 
-
   return False;
 } /* nco_crd_var_dmn_scp() */
+
+
+
+nm_id_sct *                         /* O [sct] Dimension list */
+nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dimension names */
+(char **dmn_lst_in,                 /* I [sng] User-specified list of dimension names */
+ const int nbr_dmn_in,              /* I [nbr] Total number of dimensions in input list */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Create list of dimension name-ID structures from list of dimension name strings */
+
+  const char fnc_nm[]="nco_lst_dmn_mk_trv()"; /* [sng] Function name  */
+
+  nm_id_sct *dmn_lst=NULL;
+
+  int nbr_dmn_fl;
+  int nbr_dmn_out=0;
+  int idx_dmn_out=0;
+
+  /* Get number of variables, dimensions, and global attributes in file, file format */
+  (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,trv_tbl);
+
+   dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn_fl*sizeof(nm_id_sct));
+
+   /* Loop input dimension name list */
+  for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
+
+    /* Loop GTT dimensions  */
+    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn];
+
+      /* Match name  */
+      if(strcmp(dmn_trv.nm,dmn_lst_in[idx_dmn_in]) == 0){
+
+        /* Loop variables  */
+        for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+          trv_sct var_trv=trv_tbl->lst[idx_var];
+
+          /* Variable to extract */
+          if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+
+            /* Variable has dimensions in scope of GTT dimension ? */
+            if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
+
+              if(dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: DEBUG %s variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
+                  var_trv.nm_fll,dmn_trv.nm);  
+              }  
+
+              /* First item */
+              if (nbr_dmn_out == 0){
+
+                /* Copy name  */
+                dmn_lst[idx_dmn_out].nm=(char *)strdup(dmn_lst_in[idx_dmn_in]);
+
+                /* Copy ID */
+                dmn_lst[idx_dmn_out].id=dmn_trv.dmn_id;
+
+                idx_dmn_out++;
+
+                nbr_dmn_out++;
+
+                /* ! First item */
+              } else  {
+
+                nco_bool flg_has_id=False;
+
+                /* Avoid duplicate by IDs */
+
+                /* Look all IDs */
+                for(int idx_dmn_out_dpl=0;idx_dmn_out_dpl<nbr_dmn_out;idx_dmn_out_dpl++){
+
+                  /* Match ID  */
+                  if(dmn_trv.dmn_id == dmn_lst[idx_dmn_out_dpl].id){
+                    flg_has_id=True;
+                  } /* Match ID  */
+                } /* Look all IDs */
+
+                /* ID not found */
+                if (flg_has_id == False ){
+
+                  /* Copy name  */
+                  dmn_lst[idx_dmn_out].nm=(char *)strdup(dmn_lst_in[idx_dmn_in]);
+
+                  /* Copy ID */
+                  dmn_lst[idx_dmn_out].id=dmn_trv.dmn_id;
+
+                  idx_dmn_out++;
+
+                  nbr_dmn_out++;
+
+                } /* ID not found */
+
+              } /* ! First item */
+            } /* Is variable in scope of dimension ? */
+          } /* Variable to extract */ 
+        } /* Loop variables  */
+      } /* Match name  */
+    } /* Loop GTT dimensions  */
+  } /* Loop input dimension name list */
+
+  dmn_lst=(nm_id_sct *)nco_realloc(dmn_lst,nbr_dmn_out*sizeof(nm_id_sct));
+
+  assert(nbr_dmn_in == nbr_dmn_out);
+  return dmn_lst;
+
+} /* nco_lst_dmn_mk_trv() */
