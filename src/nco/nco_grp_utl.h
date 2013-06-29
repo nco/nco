@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.316 2013-06-28 04:25:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.317 2013-06-29 04:47:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -234,10 +234,11 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
 
 nco_bool                              /* O [flg] True if in scope */ 
-nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope */
+nco_crd_var_dmn_scp                   /* [fnc] Is coordinate variable in dimension scope */
 (const trv_sct * const var_trv,       /* I [sct] GTT Object Variable */
  const dmn_trv_sct * const dmn_trv,   /* I [sct] GTT unique dimension */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
 
 
 int                                    /* [rcd] Return code */
@@ -271,14 +272,6 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 (const int nc_id,                    /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
-void
-nco_bld_lmt_trv                       /* [fnc] Assign user specified dimension limits to traversal table dimensions   */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
@@ -561,6 +554,12 @@ nm_id_sct *                         /* O [sct] Dimension list */
 nco_dmn_lst_mk_trv                  /* [fnc] Attach dimension IDs to dimension list */
 (char **dmn_lst_in,                 /* I [sng] User-specified list of dimension names */
  const int nbr_dmn,                 /* I [nbr] Total number of dimensions in list */
+ const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
+
+nm_id_sct *                         /* O [sct] Dimension list */
+nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dimension names */
+(char **dmn_lst_in,                 /* I [sng] User-specified list of dimension names */
+ const int nbr_dmn_in,              /* I [nbr] Total number of dimensions in input list */
  const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
 
 
