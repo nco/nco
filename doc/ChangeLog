@@ -1,12 +1,16 @@
+2013-06-29  Charlie Zender  <zender@uci.edu>
+
+	* Add -G, --gpe, --unn to ncpdq documentation
+
 2013-06-28 Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_lst_dmn_mk_trv() Build Name-ID array from input dimension names
-  
+
 	* nco_var_dmn_scp() Variable has dimensions in scope of GTT dimension
 
 2013-06-27 Pedro Vicente  <pvicente@uci.edu>
 
-	* Add ncpdq test #24 
+	* Add ncpdq test #24
 
 2013-06-27 Pedro Vicente  <pvicente@uci.edu>
 

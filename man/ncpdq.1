@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.24 2012-09-02 20:06:20 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.25 2013-06-30 05:15:16 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncpdq 
 .\" Usage:
 .\" nroff -man ~/nco/man/ncpdq.1 | less
@@ -15,7 +15,10 @@ ncpdq [\-3] [\-4] [\-6] [\-A] [\-a
 .IR dim ,[
 .IR min ][,[
 .IR max ]]]
-[\-F]
+[\-F] [\-G
+.IR gpe_dsc ]
+[\-g  
+.IR grp [,...]]
 [\-h] [\-\-hdr_pad
 .IR sz ]
 [\-L 
@@ -32,7 +35,7 @@ ncpdq [\-3] [\-4] [\-6] [\-A] [\-a
 .IR path ]
 [\-R] [\-r] [\-\-ram_all] [\-t 
 .IR thr_nbr ] 
-[\-v 
+[\--unn] [\-v 
 .IR var [,...]]
 [\-X 
 .IR box ] 
@@ -106,7 +109,7 @@ The specified re-ordering will fail if it requires creating more than
 one record dimension amongst all the output variables.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.24 2012-09-02 20:06:20 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.25 2013-06-30 05:15:16 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

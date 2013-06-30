@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.794 2013-06-26 05:04:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.795 2013-06-30 05:15:15 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.2
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 25 June 2013
+@set update-date 29 June 2013
 @set update-month June 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -2086,15 +2086,15 @@ Further note that some operators perform internal type-promotion on some
 variables prior to arithmetic (@pxref{Type Conversion}).
 For example, @command{ncra} and @command{ncea} both promote integer
 types to double precision floating point prior to arithmetic, then
-perform the arithmetic, then demote back to the original type after
-arithmetic.
+perform the arithmetic, then demote back to the original integer type
+after arithmetic.
 This preserves the on-disk storage type while obtaining the accuracy
 advantages of floating point arithmetic. 
 Single-precision floating point variables however are not promoted to
 double precision prior to arithmetic.
-Hence, the sustained memory required for some variables can be two or
-four-times their on disk sizes if they meet the rules for automatic
-internal promotion.
+Hence, the sustained memory required for integer variables are two or 
+four-times their on-disk, uncompressed, unpacked sizes if they meet the
+rules for automatic internal promotion.
 
 @html
 <a name="mmr_ncwa"></a> <!-- http://nco.sf.net/nco.html#mmr_ncwa -->
@@ -3467,11 +3467,13 @@ build time.
 @cindex @code{--union}
 @cartouche
 Options @code{--unn}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncflint}, @command{ncks}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncflint},
+@command{ncks}, @command{ncpdq}@*
 Short options: @*
 Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncflint}, @command{ncks}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncflint},
+@command{ncks}, @command{ncpdq}@*
 Short options: @samp{-g}@*
 Long options: @samp{--grp} and @samp{--group}@*
 Options @code{-v @var{var}} and @code{-x}@*
@@ -3873,7 +3875,8 @@ convention described in @ref{CF Conventions}.
 @cindex @code{--gpe @var{gpe_dsc}}
 @cartouche
 Options @code{-G @var{gpe_dsc}}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncflint}, @command{ncks}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncflint},
+@command{ncks}, @command{ncpdq}@*
 Short options: @samp{-G}@*
 Long options: @samp{--gpe}@*
 @end cartouche
@@ -12726,10 +12729,11 @@ SYNTAX
 @example
 ncpdq [-3] [-4] [-6] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [--hdr_pad @var{nbr}]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
+[-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
-[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-X ...] [-x]
+[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-U] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x]
 @var{input-file} [@var{output-file}]
 @end example
 
