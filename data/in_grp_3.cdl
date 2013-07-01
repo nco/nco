@@ -284,6 +284,19 @@ netcdf in_grp {
    lev=3;
    lon=4;
    time=unlimited;
+
+   variables:
+   float lat(lat);
+   float lon(lon); 
+   float lev(lev);
+	 lev:purpose = "Monotonically increasing coordinate pressure";
+   double time(time);
+
+   data:
+   lat=-90,90;
+   lon=0,90,180,270;
+   lev=100,500,1000;
+   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   
     group: g19g1 { 
      variables:
