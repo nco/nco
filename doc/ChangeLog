@@ -4,8 +4,8 @@
   
 	* Add ncpdq test #32 (Groups) Re-order 2D variable (-C , no MSA)
 	* Add ncpdq test #33 (Groups) Re-order 2D variable (no -C , no MSA)  
-	* Add ncpdq test #34 (Groups) Re-order 2D variable (-C , MSA)
-	* Add ncpdq test #35 (Groups) Re-order 2D variable (no -C , MSA)  
+	* Add ncpdq test #34 (Groups) Re-order 2D variable (no -C , MSA)
+	* Add ncpdq test #35 (Groups) Re-order 2D variable (-C , MSA)  
 
 2013-06-29  Charlie Zender  <zender@uci.edu>
 
