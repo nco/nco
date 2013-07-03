@@ -3,6 +3,7 @@
 	* Add in_grp_3.cdl group data for ncpdq testing
   
 	* Add ncpdq test #36 (Groups) Re-order 2D variable with record (-C , no MSA)
+	* Add ncpdq test #37 (Groups) Re-order 2D variable with record (no -C , no MSA)
 
 
 2013-07-01 Pedro Vicente  <pvicente@uci.edu>
