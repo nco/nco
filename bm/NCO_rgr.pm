@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.296 2013-07-04 08:40:51 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.297 2013-07-04 19:26:21 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2684,7 +2684,7 @@ print "\n";
 #  $tst_cmd[2]="lev[0] time[0] two_dmn_rec_var[0]=2.1 watt meter-2";
 
 
-# same #17 as previous but with group
+# same as #17 but with group
  
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g2 -a lev,time -v two_dmn_rec_var -d time,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -2695,6 +2695,24 @@ print "\n";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array      
 
+
+
+#NEW NCO 4.3.2
+#ncpdq #39
+# two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
+# ncpdq -O -g g19g2 -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in_grp_3.nc out.nc
+# ncks  -C -g g19g2 -v two_dmn_rec_var out.nc
+# $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
+
+# same as #18 but with group
+  
+   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -a lev,time -v two_dmn_rec_var -d time,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -C -g g19g2 -v two_dmn_rec_var  %tmp_fl_00%";
+   $dsc_sng="(Groups) Re-order 2D variable with record (no -C , MSA) -v two_dmn_rec_var";
+   $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array      
 
 
 
