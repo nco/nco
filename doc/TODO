@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1239 2013-06-08 06:31:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1240 2013-07-04 07:10:43 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -702,7 +702,7 @@ nco1093. ncks: print attribute function lynnes (NB: windows does not use filters
 nco1094. ncks: print statistics function lynnes (NB: windows does not use filters)
 nco1095. ncap2: user-defined functions (UDFs) lynnes
 nco1096. ncecat: --playnice, recognize, e.g., "latitude" variants lynnes
-nco1097. ncatted: rx attributes lynnes
+nco1097. ncatted: rx attributes lynnes and 1 other 20130702
 nco1099. 
 qrk
 ************************************************************************
