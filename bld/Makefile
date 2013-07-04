@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.639 2013-06-08 06:31:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.640 2013-07-04 18:17:43 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -87,6 +87,11 @@
 # cd ~/nco/bld;make OPTS=D allinone;cd -
 # netCDF4 on NCAR Linux cluster systems (yellowstone):
 # cd ~/nco/bld;make GSL_INC='/glade/apps/opt/gsl/1.15/gnu/4.7.2/include' GSL_LIB='/glade/apps/opt/gsl/1.15/gnu/4.7.2/lib' NETCDF_ROOT='/glade/apps/opt/netcdf/4.2/gnu/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/gnu/default/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/gnu/default/lib' OPTS=D allinone;cd -
+# module swap intel gnu
+# module add gsl
+# module add netcdf
+# cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.2/gnu/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/gnu/default/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/gnu/default/lib' OPTS=D allinone;cd -
+# export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}\:/glade/apps/opt/udunits/2.1.24/gnu/default/lib
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
 # cd ~/bin/WIN32;tar cvzf ~/nco-4.3.2.win32.cygwin.tar.gz nc* ; scp ~/nco-4.3.2.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
@@ -456,7 +461,7 @@ else
  GSL_LIB := $(shell gsl-config --libs)
 endif # endif GSL_LIB
  NETCDF_INC += ${GSL_INC}
- NC_LDFLAGS += ${GSL_LIB}
+ NC_LDFLAGS += -L${GSL_LIB}
  NC_LIBS += -lgsl
 endif # end if GSL
 

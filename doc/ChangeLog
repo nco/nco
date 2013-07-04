@@ -1,24 +1,20 @@
 2013-07-03 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #38 (Groups) Re-order 2D variable with record (-C , MSA)
-	
 
 2013-07-02 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncpdq testing
-  
 	* Add ncpdq test #36 (Groups) Re-order 2D variable with record (-C , no MSA)
 	* Add ncpdq test #37 (Groups) Re-order 2D variable with record (no -C , no MSA)
-
 
 2013-07-01 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncpdq testing
-  
 	* Add ncpdq test #32 (Groups) Re-order 2D variable (-C , no MSA)
-	* Add ncpdq test #33 (Groups) Re-order 2D variable (no -C , no MSA)  
+	* Add ncpdq test #33 (Groups) Re-order 2D variable (no -C , no MSA)
 	* Add ncpdq test #34 (Groups) Re-order 2D variable (no -C , MSA)
-	* Add ncpdq test #35 (Groups) Re-order 2D variable (-C , MSA)  
+	* Add ncpdq test #35 (Groups) Re-order 2D variable (-C , MSA)
 
 2013-06-29  Charlie Zender  <zender@uci.edu>
 
@@ -926,14 +922,6 @@
  	* GPE documentation
 
 	* Change most "Global" to "Group" attributes when printing metadata
-
-2012-11-08  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.2.3 release procedure:
- 	Changes since nco-4_2_2: GPE, ncecat fix, group atts.
-	cd ~/nco;cvs tag -d nco-4_2_3;cvs tag -d nco-4_2_3-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.2.3 release"
-	cvs tag -c nco-4_2_3;cvs tag -c nco-4_2_3-1
 
 2012-11-08  Pedro Vicente  <pvicente@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.40 2013-01-24 14:49:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.41 2013-07-04 18:17:43 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -10,8 +10,8 @@
 
 /* Arrays to hold calendar type units */
 /* Format: year,month,day,hour,min,sec,origin,offset */   
-double DATA_360[8]={31104000,2592000,86400,3600,  60  ,1,0.0,0.0};
-double DATA_365[8]={31536000,2628000,86400,3600.0,60.0,1,0.0,0.0};
+double DATA_360[8]={31104000.0,2592000.0,86400.0,3600.0,60.0,1,0.0,0.0};
+double DATA_365[8]={31536000.0,2628000.0,86400.0,3600.0,60.0,1,0.0,0.0};
 
 /* Days in months */
 int DAYS360[12]={30,30,30,30,30,30,30,30,30,30,30,30};
