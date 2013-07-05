@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.332 2013-07-05 22:58:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.333 2013-07-05 23:57:04 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -36,7 +36,8 @@
    ncpdq -O -D 3 -P all_new ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P all_xst ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P xst_new ~/nco/data/in.nc ~/foo.nc
-   ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc */
+   ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc
+   ncpdq -O -D 3 -g g1 -v v1 --union -G dude -p ~/nco/data in_grp.nc ~/foo.nc */
 
 #if 1
 #define USE_TRV_API
@@ -134,8 +135,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.332 2013-07-05 22:58:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.332 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.333 2013-07-05 23:57:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.333 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1570,39 +1571,38 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\n");
 
     /* Write/overwrite packing attributes for newly packed and re-packed variables 
-    Logic here should nearly mimic logic in nco_var_dfn() */
+       Logic here should nearly mimic logic in nco_var_dfn() */
     if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){
       /* ...put file in define mode to allow metadata writing... */
       (void)nco_redef(out_id);
       /* ...loop through all variables that may have been packed... */
       for(idx=0;idx<nbr_var_prc;idx++){
         /* nco_var_dfn() pre-defined dummy packing attributes in output file 
-        only for input variables considered "packable" */
+	   only for input variables considered "packable" */
         if(nco_pck_plc_typ_get(nco_pck_map,var_prc[idx]->typ_upk,(nc_type *)NULL)){
           /* Verify input variable was newly packed by this operator
-          Writing pre-existing (non-re-packed) attributes here would fail because
-          nco_pck_dsk_inq() never fills in var->scl_fct.vp and var->add_fst.vp
-          Logic is same as in nco_var_dfn() (except var_prc[] instead of var[])
-          If operator newly packed this particular variable... */
+	     Writing pre-existing (non-re-packed) attributes here would fail because
+	     nco_pck_dsk_inq() never fills in var->scl_fct.vp and var->add_fst.vp
+	     Logic is same as in nco_var_dfn() (except var_prc[] instead of var[])
+	     If operator newly packed this particular variable... */
           if(
-            /* ...either because operator newly packs all variables... */
-            (nco_pck_plc == nco_pck_plc_all_new_att) ||
-            /* ...or because operator newly packs un-packed variables like this one... */
-            (nco_pck_plc == nco_pck_plc_all_xst_att && !var_prc[idx]->pck_ram) ||
-            /* ...or because operator re-packs packed variables like this one... */
-            (nco_pck_plc == nco_pck_plc_xst_new_att && var_prc[idx]->pck_ram)
-            ){
-              /* Replace dummy packing attributes with final values, or delete them */
-              if(dbg_lvl >= nco_dbg_io) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
-              (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
-              (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
+	     /* ...either because operator newly packs all variables... */
+	     (nco_pck_plc == nco_pck_plc_all_new_att) ||
+	     /* ...or because operator newly packs un-packed variables like this one... */
+	     (nco_pck_plc == nco_pck_plc_all_xst_att && !var_prc[idx]->pck_ram) ||
+	     /* ...or because operator re-packs packed variables like this one... */
+	     (nco_pck_plc == nco_pck_plc_xst_new_att && var_prc[idx]->pck_ram)
+	     ){
+	    /* Replace dummy packing attributes with final values, or delete them */
+	    if(dbg_lvl >= nco_dbg_io) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
+	    (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
+	    (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
           } /* endif variable is newly packed by this operator */
         } /* !nco_pck_plc_alw */
       } /* end loop over var_prc */
       (void)nco_enddef(out_id);
     } /* nco_pck_plc == nco_pck_plc_nil || nco_pck_plc == nco_pck_plc_upk */
-
-
+    
     /* Close input netCDF file */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
 
@@ -1699,7 +1699,6 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
 
 void dbg_var_dim_sct(const char* str, const int idx_var, var_sct *var)
 {

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.578 2013-07-05 22:20:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.579 2013-07-05 23:57:04 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.2 are ready. 
 
@@ -24,21 +24,21 @@ Charlie
 
 NEW FEATURES:
 
-A. NCO takes advantage of improved Windows support in netCDF 4.3.0+.
-   NCO executables built with Visual Studio on Windows now support
-   OPenDAP. Formerly it was much more difficult to obtain
-   OPenDAP support on MS Windows.
-   http://nco.sf.net/nco.html#wnd
-
 A. ncflint and ncpdq now supports groups, Group Path Editing (GPE) and
    list unions, the same options supported by ncbo, ncecat, and ncks. 
    Features are controlled by -g, -G and --union, respectively.
    ncflint -g g1 -v v1 --union -G dude -w 0.5 -O -p ~/nco/data in_grp.nc in_grp.nc ~/foo.nc
-   ncpdq -g g1 -v v1 --union -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
+   ncpdq -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
    http://nco.sf.net/nco.html#ncflint
    http://nco.sf.net/nco.html#ncpdq
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
+
+B. NCO takes advantage of improved Windows support in netCDF 4.3.0+.
+   NCO executables built with Visual Studio on Windows now support
+   OPenDAP. Formerly it was much more difficult to obtain
+   OPenDAP support on MS Windows.
+   http://nco.sf.net/nco.html#wnd
 
 BUG FIXES:
 
@@ -52,14 +52,16 @@ A. Fixed ncks auxiliary coordinate (-X) bug introduced in ~4.2.0.
    ncks -O -X 0.,180.,-30.,30. -v gds_3dvar ~/nco/data/in.nc ~/foo.nc
    http://nco.sf.net#bug_ncks_aux
 
-A. Global history attribute once again always works in ncecat
+B. Global history attribute once again always works in ncecat
+
+C. Group Path Editing (GPE) once again always works in ncecat
 
 KNOWN BUGS NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.3.2 built/tested with netCDF
-   4.3.0-rc4 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.3.0 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
@@ -93,7 +95,7 @@ B. NOT YET FIXED
 C. NOT YET FIXED (requires change to DAP protocol)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
-   Metadata is returned successfully, data is not.
+   Metadata are returned successfully, data are not.
    DAP non-transparency: Works locally, fails through DAP server.
 
    Demonstration:
@@ -146,7 +148,8 @@ F. NCO support for netCDF4 features is tracked at
 
    NCO supports netCDF4 atomic data types, compression, chunking, and groups.
 
-G. Reminder that ncks and ncecat work on many common HDF5 datasets, e.g.,
+G. Reminder that ncks, ncecat, ncbo, ncflint, and ncpdq work on many common
+   HDF5 datasets, e.g., 
    NASA AURA HIRDLS HDF-EOS5
    NASA ICESat GLAS HDF5
    NASA SBUV HDF5...
