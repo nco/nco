@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.2 release"
 	cvs tag -c nco-4_3_2;cvs tag -c nco-4_3_2-1
 
+	* Implement/fix GPE in ncflint, ncpdq, ncecat
+
 	* Implement --union, --intersection, GRP_VAR_UNN in ncflint, ncpdq
 
 2013-07-04 Pedro Vicente  <pvicente@uci.edu>
