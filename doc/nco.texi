@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.795 2013-06-30 05:15:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.796 2013-07-05 18:18:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2907,7 +2907,8 @@ mechanisms including the @command{msread}, @command{msrcp}, and
 @command{nrnet} commands invoked either automatically or with sentinels
 like @command{ncks -p mss:/ZENDER/nco -l . in.nc}.
 Once the @acronym{MSS} was decommissioned in March, 2011, support for
-these retrieval mechanisms was removed from @acronym{NCO}.
+these retrieval mechanisms was replaced by support for @acronym{HPSS}
+in @acronym{NCO}.
 }.
 The sixth command works if your local version of @acronym{NCO} is
 @acronym{OPeNDAP}-enabled (this is fully described in @ref{OPeNDAP}),
