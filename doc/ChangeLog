@@ -1,5 +1,7 @@
 2013-07-04 Pedro Vicente  <pvicente@uci.edu>
 
+	* Add in_grp_3.cdl group data for ncpdq testing
+
 	* Add ncpdq test #39 (Groups) Re-order 2D variable with record (no -C , MSA)
 
 2013-07-03 Pedro Vicente  <pvicente@uci.edu>
