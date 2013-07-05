@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.837 2013-07-05 22:20:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.838 2013-07-05 22:58:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4333,28 +4333,42 @@ nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variab
 
 void
 nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT */
-(const int xtr_nbr,                    /* I [nbr] Number of extracted variables */
+(const int prc_nbr,                    /* I [nbr] Number of processed variables */
  var_sct **var,                        /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
   /* Purpose: Transfer variable type to table */
 
-  /* Transfer variable information to table. */
-  for(int idx_var=0;idx_var<xtr_nbr;idx_var++){
+  const char fnc_nm[]="nco_prc_cmn_nm()"; /* [sng] Function name */
+
+  /* Loop table. */
+  for(int idx_var=0;idx_var<prc_nbr;idx_var++){
 
     nc_type typ_out;         /* [enm] Type in output file */
+    var_sct *v;
+
+    assert(var[idx_var]);
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      v=var[idx_var];
+      (void)fprintf(stdout,"%s: DEBUG %s Transfer variable type into GTT <%s>\n",prg_nm_get(),fnc_nm,
+        v->nm_fll);        
+    } 
+    
 
     /* Obtain netCDF type to define variable from NCO program ID */
     typ_out=nco_get_typ(var[idx_var]);
 
-    /* Mark output type in table for "v->nm_fll" */
+    /* Mark output type in table for "nm_fll" */
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      /* Match */
       if(strcmp(var[idx_var]->nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
         trv_tbl->lst[uidx].var_typ_out=typ_out;
         break;
-      }
-    }
-  } 
+      } /* Match */
+    } /* Mark output type in table for "nm_fll" */
+
+  } /* Loop table. */
 
   return;
 

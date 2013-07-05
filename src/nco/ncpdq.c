@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.331 2013-07-05 22:20:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.332 2013-07-05 22:58:21 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.331 2013-07-05 22:20:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.331 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.332 2013-07-05 22:58:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.332 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1409,8 +1409,8 @@ main(int argc,char **argv)
       } /* endif packing */
     } /* end loop over var_prc */
 
-    /* Transfer variable type to table. NOTE: Using processed variables set with the new type. MUST be done befoe definition  */
-    (void)nco_var_typ_trv(xtr_nbr,var_prc_out,trv_tbl);    
+    /* Transfer variable type to table. NOTE: Using processed variables set with the new type. MUST be done before definition  */
+    (void)nco_var_typ_trv(nbr_var_prc,var_prc_out,trv_tbl);    
 
   } /* nco_pck_plc == nco_pck_plc_nil */
 
