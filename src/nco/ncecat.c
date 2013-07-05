@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.316 2013-06-24 22:27:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.317 2013-07-05 22:20:29 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.316 2013-06-24 22:27:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.316 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.317 2013-07-05 22:20:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.317 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -660,7 +660,7 @@ main(int argc,char **argv)
     (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
     /* Copy variable data for non-processed variables */
-    (void)nco_cpy_fix_var_trv(in_id,out_id,trv_tbl);  
+    (void)nco_cpy_fix_var_trv(in_id,out_id,gpe,trv_tbl);  
 
     /* Close first input netCDF file */
     (void)nco_close(in_id);

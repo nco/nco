@@ -1,16 +1,16 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.577 2013-06-24 05:13:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.578 2013-07-05 22:20:29 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Did you enjoy the short break after a rapid string of NCO releases?
+Did you enjoy the break after a rapid string of NCO releases?
 Good, because it's over. The current release brings group support
 to two more operators, ncflint and ncpdq. Now five operators fully
 support group hierarchies: ncbo, ncecat, ncflint, ncks, and ncpdq. 
 There is also a long-overdue bugfix for support of CF "coordinates"
-attributes which is how NCO understand Reduced Horizontal Grids and 
+attributes which is how NCO understands Reduced Horizontal Grids and  
 Unstructured Grids.
 
 Work on NCO 4.3.2 is underway and includes improved netCDF4 support
@@ -30,24 +30,15 @@ A. NCO takes advantage of improved Windows support in netCDF 4.3.0+.
    OPenDAP support on MS Windows.
    http://nco.sf.net/nco.html#wnd
 
-A. ncflint now supports groups, Group Path Editing (GPE) and list
-   unions, the same options supported by ncbo, ncecat, and ncks. 
+A. ncflint and ncpdq now supports groups, Group Path Editing (GPE) and
+   list unions, the same options supported by ncbo, ncecat, and ncks. 
    Features are controlled by -g, -G and --union, respectively.
    ncflint -g g1 -v v1 --union -G dude -w 0.5 -O -p ~/nco/data in_grp.nc in_grp.nc ~/foo.nc
+   ncpdq -g g1 -v v1 --union -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
    http://nco.sf.net/nco.html#ncflint
+   http://nco.sf.net/nco.html#ncpdq
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
-
-A. ncflint now always works when input files are interchanged, i.e.,
-   (ncflint -w 0.5 fl_1.nc fl_2.nc) = (ncflint -w 0.5 fl_2.nc fl_1.nc).
-   Formerly, ncflint broadcast variables in fl_2 to match the rank of
-   variables in fl_1 when necessary, but would fail rather than 
-   broadcast in the opposite direction. Hence one could interpolate
-   zonal averages, e.g., to full fields but not the reverse. Now
-   ncflint broadcasts variables both ways. If v1 is larger rank in
-   fl_1 than in fl_2 then both these work:
-   ncflint -v v1 -w 0.5 fl_1.nc fl_2.nc out.nc # Now works too!
-   ncflint -v v1 -w 0.5 fl_2.nc fl_1.nc out.nc # Always worked
 
 BUG FIXES:
 

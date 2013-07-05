@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.836 2013-06-29 09:20:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.837 2013-07-05 22:20:29 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3631,8 +3631,11 @@ void
 nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variables from input to output file */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int out_id,                    /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,           /* I [sng] GPE structure */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
+  char *grp_out_fll; /* [sng] Group name */
+
   /* Loop table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct var_trv=trv_tbl->lst[uidx];
@@ -3644,7 +3647,11 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
 
       /* Obtain group IDs using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id_in);
-      (void)nco_inq_grp_full_ncid(out_id,var_trv.grp_nm_fll,&grp_id_out);
+
+      /* Edit group name for output */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
+
+      (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_id_out);
 
       if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO writing fixed variable <%s> from ",prg_nm_get(),var_trv.nm_fll);        
@@ -3656,6 +3663,9 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
 
       /* Copy variable data */
       (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,(nco_bool)False,&var_trv);  
+
+      /* Memory management after current extracted group */
+      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
     } /* If object is a fixed variable... */ 
   } /* Loop table */
@@ -4333,14 +4343,13 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
   for(int idx_var=0;idx_var<xtr_nbr;idx_var++){
 
     nc_type typ_out;         /* [enm] Type in output file */
-    var_sct *v=var[idx_var]; /* [sct] Current variable */
 
     /* Obtain netCDF type to define variable from NCO program ID */
-    typ_out=nco_get_typ(v);
+    typ_out=nco_get_typ(var[idx_var]);
 
     /* Mark output type in table for "v->nm_fll" */
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-      if(strcmp(v->nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
+      if(strcmp(var[idx_var]->nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
         trv_tbl->lst[uidx].var_typ_out=typ_out;
         break;
       }

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.318 2013-06-29 06:49:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.319 2013-07-05 22:20:29 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -362,6 +362,7 @@ void
 nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variables from input to output file */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int out_id,                    /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,           /* I [sng] GPE structure */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 void                          

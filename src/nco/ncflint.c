@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.250 2013-06-24 22:27:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.251 2013-07-05 22:20:29 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.250 2013-06-24 22:27:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.250 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.251 2013-07-05 22:20:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.251 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -149,6 +149,8 @@ main(int argc,char **argv)
   Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
+
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
   int *in_id_1_arr;
   int *in_id_2_arr;
@@ -216,9 +218,6 @@ main(int argc,char **argv)
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
-  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
-  char *grp_out=NULL; /* [sng] Group name */
-
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
@@ -237,6 +236,10 @@ main(int argc,char **argv)
     {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
     {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
     {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
+    {"intersection",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+    {"nsx",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+    {"union",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+    {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
     {"version",no_argument,0,0},
     {"vrs",no_argument,0,0},
     /* Long options with argument, no short option counterpart */
@@ -356,6 +359,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
+      if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
+      if(!strcmp(opt_crr,"nsx") || !strcmp(opt_crr,"intersection")) GRP_VAR_UNN=False;
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);
@@ -400,7 +405,7 @@ main(int argc,char **argv)
       /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it
       http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
       gpe=nco_gpe_prs_arg(optarg);
-      grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
+      fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -728,7 +733,7 @@ main(int argc,char **argv)
 #ifdef USE_TRV_API
 
   /* Copy variable data for non-processed variables */
-  (void)nco_cpy_fix_var_trv(in_id_1,out_id,trv_tbl);  
+  (void)nco_cpy_fix_var_trv(in_id_1,out_id,gpe,trv_tbl);  
 
 #else /* ! USE_TRV_API */
 
@@ -875,14 +880,16 @@ main(int argc,char **argv)
   shared(): msk and wgt are not altered within loop
   private(): wgt_avg does not need initialization */
 # ifdef USE_TRV_API
-#  pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,nbr_dmn_fl,trv_tbl)
+#  pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,fl_in_1,fl_in_2,fl_out,gpe,in_id_1_arr,in_id_2_arr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,nbr_dmn_fl,trv_tbl)
 # else
-#  pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#  pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,gpe,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 # endif
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
 
     /* Note: Using object 2 from table 1, only one table built, assumes same structure for processed objects in both files */
+
+    char *grp_out_fll=NULL; /* [sng] Group name */
 
     int grp_id_1;      /* [ID] Group ID */
     int grp_id_2;      /* [ID] Group ID */
@@ -963,10 +970,15 @@ main(int argc,char **argv)
     /* Re-cast output variable to original type */
     var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);
 
-
 #ifdef USE_TRV_API
+    /* Edit group name for output */
+    if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv_1->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv_1->grp_nm_fll);
+
     /* Obtain output group ID using full group name */
-    (void)nco_inq_grp_full_ncid(out_id,var_trv_1->grp_nm_fll,&grp_out_id);
+    (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+
+    /* Memory management after current extracted group */
+    if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
     /* Get variable ID */
     (void)nco_inq_varid(grp_out_id,var_trv_1->nm,&var_out_id);

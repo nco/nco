@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1240 2013-07-04 07:10:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1241 2013-07-05 22:20:29 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -703,7 +703,18 @@ nco1094. ncks: print statistics function lynnes (NB: windows does not use filter
 nco1095. ncap2: user-defined functions (UDFs) lynnes
 nco1096. ncecat: --playnice, recognize, e.g., "latitude" variants lynnes
 nco1097. ncatted: rx attributes lynnes and 1 other 20130702
-nco1099. 
+nco1099. ncflint: make following statement true
+A. ncflint now always works when input files are interchanged, i.e.,
+   (ncflint -w 0.5 fl_1.nc fl_2.nc) = (ncflint -w 0.5 fl_2.nc fl_1.nc).
+   Formerly, ncflint broadcast variables in fl_2 to match the rank of
+   variables in fl_1 when necessary, but would fail rather than 
+   broadcast in the opposite direction. Hence one could interpolate
+   zonal averages, e.g., to full fields but not the reverse. Now
+   ncflint broadcasts variables both ways. If v1 is larger rank in
+   fl_1 than in fl_2 then both these work:
+   ncflint -v v1 -w 0.5 fl_1.nc fl_2.nc out.nc # Now works too!
+   ncflint -v v1 -w 0.5 fl_2.nc fl_1.nc out.nc # Always worked
+nco1100. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

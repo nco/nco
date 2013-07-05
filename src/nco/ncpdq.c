@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.330 2013-06-29 09:20:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.331 2013-07-05 22:20:29 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.330 2013-06-29 09:20:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.330 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.331 2013-07-05 22:20:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.331 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -214,7 +214,6 @@ main(int argc,char **argv)
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
-  size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */
 
   var_sct **var;
   var_sct **var_fix;
@@ -244,6 +243,10 @@ main(int argc,char **argv)
     {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
     {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
     {"no_tmp_fl",no_argument,0,0}, /* [flg] Do not write output to temporary file */
+    {"intersection",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+    {"nsx",no_argument,0,0}, /* [flg] Select intersection of specified groups and variables */
+    {"union",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
+    {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
     {"version",no_argument,0,0},
     {"vrs",no_argument,0,0},
     /* Long options with argument, no short option counterpart */
@@ -371,6 +374,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
+      if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
+      if(!strcmp(opt_crr,"nsx") || !strcmp(opt_crr,"intersection")) GRP_VAR_UNN=False;
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);
@@ -419,8 +424,7 @@ main(int argc,char **argv)
       /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it
       http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
       gpe=nco_gpe_prs_arg(optarg);
-      grp_out=(char *)strdup(gpe->nm_cnn); /* [sng] Group name */
-      grp_out_lng=gpe->lng_cnn;
+      fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -951,7 +955,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       in_id=in_id_arr[omp_get_thread_num()];
@@ -1446,7 +1450,7 @@ main(int argc,char **argv)
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
   /* Copy variable data for non-processed variables */
-  (void)nco_cpy_fix_var_trv(in_id,out_id,trv_tbl);  
+  (void)nco_cpy_fix_var_trv(in_id,out_id,gpe,trv_tbl);  
 
   /* Close first input netCDF file */
   nco_close(in_id);
@@ -1471,11 +1475,13 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,trv_tbl,IS_REORDER)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,trv_tbl,IS_REORDER)
 #endif /* !_OPENMP */
 
     /* Process all variables in current file */
     for(idx=0;idx<nbr_var_prc;idx++){ 
+
+      char *grp_out_fll=NULL; /* [sng] Group name */
 
       int grp_id;        /* [ID] Group ID */
       int grp_out_id;    /* [ID] Group ID (output) */
@@ -1521,9 +1527,14 @@ main(int argc,char **argv)
 
       } /* IS_REORDER */
 
+      /* Edit group name for output */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
 
       /* Obtain output group ID using full group name */
-      (void)nco_inq_grp_full_ncid(out_id,var_trv->grp_nm_fll,&grp_out_id);
+      (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+
+      /* Memory management after current extracted group */
+      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
       /* Get variable ID */
       (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);

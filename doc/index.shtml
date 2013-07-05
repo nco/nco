@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.790 2013-06-18 02:59:04 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.791 2013-07-05 22:20:29 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -142,7 +142,8 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2013 Jun&nbsp;??: NCO 4.3.2</li>
+<li>2013 Aug&nbsp;??: NCO 4.3.3 (<i>In progress</i>)
+<li>2013 Jul&nbsp;05: NCO 4.3.2 (<tt>ncflint</tt>, <tt>ncpdq</tt> Groups)</li>
 <li>2013 Jun&nbsp;03: Submitted NASA ACCESS 2013 <a href="http://dust.ess.uci.edu/prp/prp_axs/prp_axs.pdf">proposal</a></li>
 <li>2013 May&nbsp;01: NCO 4.3.1 (Group broadcasting)</li>
 <li>2013 Mar&nbsp;28: NCO 4.3.0 (<tt>ncbo</tt> Groups)</li>
@@ -598,15 +599,18 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.3.3</b>: (<i>Future</i>) 
+<li><b>NCO 4.3.4</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 Optimize diskless files?;
 <tt>ncrename -g</tt>?;</li>
-<li><b>NCO 4.3.2</b>: (<i>In Progress, features completed or being worked on include</i>)
+<li><b>NCO 4.3.3</b>: (<i>In Progress, features completed or being worked on include</i>)
+<tt>ncea/ncra/ncrcat -g -G --unn;</li>
+<tt>ncwa -g -G --unn</tt>;</li>
+<li><b>NCO 4.3.2</b>: (<i>Current Stable Release</i>)
 <tt>ncflint -g -G --unn</tt>;
 <tt>ncpdq -g -G --unn</tt>;
 <tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>;</li>
-<li><b>NCO 4.3.1</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.3.1</b>:
 <tt>ncbo</tt> symmetry, group broadcasting;
 <tt>ncbo -G --unn</tt>;
 <tt>ncecat</tt> <a href="http://nco.sf.net/nco.html#rag">RAG</a>;
