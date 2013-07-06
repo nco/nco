@@ -9564,10 +9564,6 @@ _lt_linker_boilerplate=`cat conftest.err`
 $RM -r conftest*
 
 
-## CAVEAT EMPTOR:
-## There is no encapsulation within the following macros, do not change
-## the running order or otherwise move them around unless you know exactly
-## what you are doing...
 if test -n "$compiler"; then
 
 lt_prog_compiler_no_builtin_flag=
@@ -20065,6 +20061,8 @@ $as_echo "$as_me: Creating sample netCDF data files for self-tests" >&6;}
 	${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp.nc data/in_grp.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp_1.nc data/in_grp_1.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_grp_2.nc data/in_grp_2.cdl
+        ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_1.nc data/in_1.cdl
+        ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_2.nc data/in_2.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/cmip5.nc data/cmip5.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/obs.cdl
     fi

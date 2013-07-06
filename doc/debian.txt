@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.186 2013-05-01 18:22:03 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.187 2013-07-06 00:09:28 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -10,8 +10,8 @@ wget http://ftp.debian.org/debian/pool/main/n/netcdf/netcdf_3.6.1.orig.tar.gz
 wget http://ftp.debian.org/debian/pool/main/n/netcdf/netcdf_3.6.1-0.1.diff.gz
 dpkg-source -x netcdf_3.6.1-0.1.dsc
 
-Debian:	    http://packages.debian.org/unstable/math/nco.html
-Gentoo:	    http://gentoo-stable.iq-computing.de/browse?type=version&category=app-sci&package=nco&version=2.2.0
+Debian: http://packages.debian.org/unstable/math/nco.html
+Gentoo: http://gentoo-stable.iq-computing.de/browse?type=version&category=app-sci&package=nco&version=2.2.0
 
 Debian New Maintainer's Guide (Rod05) is Bible for packaging .deb's: 
 /data/zender/tmp/debian.pdf

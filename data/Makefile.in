@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.in,v 1.81 2013-05-07 14:18:58 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.in,v 1.82 2013-07-06 00:09:28 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 am__make_dryrun = \
   { \
@@ -56,10 +56,8 @@ target_triplet = @target@
 subdir = data
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/libtool.m4 \
-	$(top_srcdir)/m4/ltoptions.m4 $(top_srcdir)/m4/ltsugar.m4 \
-	$(top_srcdir)/m4/ltversion.m4 $(top_srcdir)/m4/lt~obsolete.m4 \
-	$(top_srcdir)/acinclude.m4 $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
@@ -218,7 +216,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 test_data = big.nc in.nc in_rec_zero.nc
 test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc obs.nc 
-EXTRA_DIST = big.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl cmip5.cdl obs.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
+EXTRA_DIST = big.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
 
 # Automake manual section 14:
 # If configure built it, 'distclean' should delete it
@@ -432,6 +430,12 @@ in_grp_1.nc : in_grp_1.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 in_grp_2.nc : in_grp_2.cdl
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+
+in_1.nc : in_1.cdl
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+
+in_2.nc : in_2.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 in_grp_3.nc : in_grp_3.cdl
