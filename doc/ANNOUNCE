@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.579 2013-07-05 23:57:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.580 2013-07-06 00:39:16 zender Exp $ -*-text-*-
 
-The netCDF Operators NCO version 4.3.2 are ready. 
+The netCDF Operators NCO version 4.3.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -13,14 +13,14 @@ There is also a long-overdue bugfix for support of CF "coordinates"
 attributes which is how NCO understands Reduced Horizontal Grids and  
 Unstructured Grids.
 
-Work on NCO 4.3.2 is underway and includes improved netCDF4 support
+Work on NCO 4.3.4 is underway and includes improved netCDF4 support
 for more NCO operators (ncwa, ncra, ncea, ncrcat), and better support
 for Windows builds (enabling DAP and UDUnits by default).   
 
 Enjoy,
 Charlie
 
-"New stuff" in 4.3.2 summary (full details always in ChangeLog):
+"New stuff" in 4.3.3 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
@@ -60,7 +60,7 @@ KNOWN BUGS NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.3.2 built/tested with netCDF
+   These problems occur with NCO 4.3.3 built/tested with netCDF
    4.3.0 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
