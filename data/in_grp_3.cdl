@@ -350,7 +350,21 @@ netcdf in_grp {
 				-99,74,75,76,77,78,79,-99;
     
  
-      } // end g19g3      
+      } // end g19g3  
+      
+      
+      group: g19g4 { 
+      variables:
+      double upk;
+    	upk:long_name = "Unpacked scalar variable";
+	    upk:note = "Unpacked value is 3.0d0, upk=unpack(pck)= 2.0d0*1s + 1.0d0 = 3.0d0. Packing this variable should create an NC_SHORT scalar = 0s with packing attribute add_offset=3.0d and either no scale_factor (ncap) or scale_factor = 0.0d (ncpdq).";
+
+      data:
+      upk=3.;
+
+
+      } // end g19g4  
+          
   } // end g19
     
 } // end root group

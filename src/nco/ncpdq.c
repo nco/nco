@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.333 2013-07-05 23:57:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.334 2013-07-06 07:01:25 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -98,7 +98,6 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool IS_REORDER=False; /* Re-order mode */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
-  nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -125,18 +124,13 @@ main(int argc,char **argv)
   char *nco_pck_map_sng=NULL_CEWI; /* [sng] Packing map Option M */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
-  char *rec_dmn_nm_in=NULL; /* [sng] Record dimension name, original */
-  char *rec_dmn_nm_out=NULL; /* [sng] Record dimension name, re-ordered */
-  char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
-  char *grp_out=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.333 2013-07-05 23:57:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.333 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.334 2013-07-06 07:01:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.334 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -170,8 +164,6 @@ main(int argc,char **argv)
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
   int dfl_lvl=0; /* [enm] Deflate level */
-  int dmn_out_idx; /* [idx] Index over output dimension list */
-  int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
   int dmn_rdr_nbr_in=0; /* [nbr] Original number of dimension to re-order */
   int dmn_rdr_nbr_utl=0; /* [nbr] Number of dimension to re-order, utilized */
@@ -187,7 +179,7 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
-  int nbr_dmn_out;
+  
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
@@ -198,7 +190,6 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_id_in=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
@@ -208,9 +199,25 @@ main(int argc,char **argv)
   lmt_sct **lmt=NULL_CEWI;
   lmt_msa_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
 
-  nm_id_sct *dmn_lst;
+  
   nm_id_sct *dmn_rdr_lst;
+
+#ifndef USE_TRV_API
+  nco_bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
+
+  nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
+
+  int dmn_out_idx; /* [idx] Index over output dimension list */
+  int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
+  int rec_dmn_id_in=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
+  int nbr_dmn_out;
+
+  char *rec_dmn_nm_in=NULL; /* [sng] Record dimension name, original */
+  char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
+  char *rec_dmn_nm_out=NULL; /* [sng] Record dimension name, re-ordered */
+
+#endif
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -1577,6 +1584,29 @@ main(int argc,char **argv)
       (void)nco_redef(out_id);
       /* ...loop through all variables that may have been packed... */
       for(idx=0;idx<nbr_var_prc;idx++){
+
+        char *grp_out_fll=NULL; /* [sng] Group name */
+
+        int grp_out_id;    /* [ID] Group ID (output) */
+        int var_out_id;    /* [ID] Variable ID (output) */
+
+        trv_sct *var_trv;  /* [sct] Variable GTT object */
+
+        /* Obtain variable GTT object using full variable name */
+        var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+
+        /* Edit group name for output */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+
+        /* Obtain output group ID using full group name */
+        (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+
+        /* Memory management after current extracted group */
+        if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+
+        /* Get variable ID */
+        (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
         /* nco_var_dfn() pre-defined dummy packing attributes in output file 
 	   only for input variables considered "packable" */
         if(nco_pck_plc_typ_get(nco_pck_map,var_prc[idx]->typ_upk,(nc_type *)NULL)){
@@ -1595,14 +1625,15 @@ main(int argc,char **argv)
 	     ){
 	    /* Replace dummy packing attributes with final values, or delete them */
 	    if(dbg_lvl >= nco_dbg_io) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
-	    (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
-	    (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
+	    (void)nco_aed_prc(grp_out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
+	    (void)nco_aed_prc(grp_out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
           } /* endif variable is newly packed by this operator */
         } /* !nco_pck_plc_alw */
       } /* end loop over var_prc */
       (void)nco_enddef(out_id);
     } /* nco_pck_plc == nco_pck_plc_nil || nco_pck_plc == nco_pck_plc_upk */
-    
+
+
     /* Close input netCDF file */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
 
