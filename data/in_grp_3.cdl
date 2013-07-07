@@ -355,12 +355,23 @@ netcdf in_grp {
       
       group: g19g4 { 
       variables:
+
+      short rec_var_dbl_mss_val_dbl_pck(time);
+	    rec_var_dbl_mss_val_dbl_pck:long_name = "record variable, double, packed as short, with double missing values";
+	    rec_var_dbl_mss_val_dbl_pck:purpose = "Packed version of rec_var_dbl_mss_val_dbl_upk";
+	    rec_var_dbl_mss_val_dbl_pck:_FillValue = -999s;
+	    rec_var_dbl_mss_val_dbl_pck:missing_value = -999.;
+      rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
+      rec_var_dbl_mss_val_dbl_pck:add_offset = 5.;
+
       double upk;
     	upk:long_name = "Unpacked scalar variable";
 	    upk:note = "Unpacked value is 3.0d0, upk=unpack(pck)= 2.0d0*1s + 1.0d0 = 3.0d0. Packing this variable should create an NC_SHORT scalar = 0s with packing attribute add_offset=3.0d and either no scale_factor (ncap) or scale_factor = 0.0d (ncpdq).";
 
       data:
       upk=3.;
+
+      rec_var_dbl_mss_val_dbl_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
 
 
       } // end g19g4  

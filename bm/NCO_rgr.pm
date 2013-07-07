@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.298 2013-07-06 07:01:25 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.299 2013-07-07 07:29:55 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2720,11 +2720,13 @@ print "\n";
 #### ncpdq PACK GROUP tests 
 #####################   
 
-#NEW NCO 4.3.2
-# same as #29
+#NEW NCO 4.3.2patch
+#ncpdq #40
 #ncpdq -h -O -P all_new -v upk in.nc out.nc
 #ncpdq -h -O -P upk -v upk out.nc out.nc
 #ncks -C -H -s '%g' -v upk out.nc
+
+# same as #29 but with group
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -h -O -g g19g4 -P all_new -v upk $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P upk -v upk %tmp_fl_00% %tmp_fl_00%";
@@ -2734,6 +2736,25 @@ print "\n";
    $tst_cmd[4]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array  
+
+#NEW NCO 4.3.2patch
+#ncpdq #41
+# same as ncpdq #30
+#ncpdq -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 in_grp_3.nc out.nc
+#ncks -g g19g4 -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 out.nc
+#$tst_cmd[2]="7";
+
+# same as #30 but with group
+
+
+   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -g g19g4 -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 %tmp_fl_00%";
+   $dsc_sng="(Groups) Unpack 1D variable with MSA -C P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6";
+   $tst_cmd[2]="7";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array  
+
 
 
     

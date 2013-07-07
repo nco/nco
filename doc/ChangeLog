@@ -3,6 +3,7 @@
 	* Add in_grp_3.cdl group data for ncpdq testing
 
 	* Add ncpdq test #40 (Groups) Pack and then unpack scalar
+	* Add ncpdq test #41 (Groups) Unpack 1D variable with MSA  
 
 
 2013-07-05  Charlie Zender  <zender@uci.edu>
