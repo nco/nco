@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.838 2013-07-05 22:58:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.839 2013-07-07 03:40:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1750,8 +1750,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Populate traversal table by examining, recursively, subgroups of parent */
-
-  const char fnc_nm[]="nco_grp_itr()"; /* [sng] Function name */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
 
@@ -4463,7 +4461,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     /* Get dimension name and size from ID in group */
     (void)nco_inq_dim(grp_id,dmn_id,dmn_nm,&dmn_sz);
 
-    assert(dmn_sz == dmn_trv->sz);
+    assert((size_t)dmn_sz == dmn_trv->sz);
     assert(strcmp(dmn_nm,dmn_trv->nm) == 0);
 
     /* Get hyperslabed count */
@@ -4491,7 +4489,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     dim=nco_dmn_fll(grp_id,dmn_id,dmn_trv->nm);
 
     assert(strcmp(dim->nm,dmn_trv->nm) == 0);
-    assert(dim->sz == dmn_trv->sz);  
+    assert((size_t)dim->sz == dmn_trv->sz);  
     assert(dim->id == var->dmn_id[idx_dmn]);  
 
     /* Set the hyperslabed size for this dimension */
@@ -4652,7 +4650,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   nco_bool CRR_DMN_IS_REC_IN_INPUT;      /* [flg] Current dimension of variable is record dimension of variable in input file/group */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
   nco_bool FIX_REC_DMN=False;            /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
-  nco_bool HAS_DMN_RDR=False;            /* [flg] Is there dimension re-ordering (ncpdq only) */
   nco_bool NEED_TO_DEFINE_DIM;           /* [flg] Dimension needs to be defined in *this* group */  
 
   dmn_trv_sct *dmn_trv;                  /* [sct] Unique dimension object */
@@ -5790,7 +5787,6 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
   int dmn_in_nbr_m1;               /* [nbr] Number of dimensions in input variable, less one */
   int dmn_out_idx;                 /* [idx] Counting index for dmn_out */
   int dmn_out_nbr;                 /* [nbr] Number of dimensions in output variable */
-  int rcd=0;                       /* [rcd] Return code */
   int typ_sz;                      /* [B] Size of data element in memory */
 
   long dmn_in_map[NC_MAX_DIMS];    /* [idx] Map for each dimension of input variable */

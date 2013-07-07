@@ -1,3 +1,10 @@
+2013-07-06 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add in_grp_3.cdl group data for ncpdq testing
+
+	* Add ncpdq test #40 (Groups) Pack and then unpack scalar
+
+
 2013-07-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.3 release procedure:
