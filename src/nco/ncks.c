@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.616 2013-06-23 19:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.617 2013-07-09 18:10:59 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.616 2013-06-23 19:32:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.616 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.617 2013-07-09 18:10:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.617 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -770,7 +770,7 @@ main(int argc,char **argv)
       int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
       int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
       /* File summary line */
-      (void)fprintf(stdout,"Opened file %s: %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable), filetype = %s\n",fl_in,grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr,nco_fmt_sng(fl_in_fmt));
+      (void)fprintf(stdout,"Opened file %s, filetype = %s: %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
       /* Get unlimited dimension information from input file/group */
       rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
       if(nbr_rec_lcl > 0){
@@ -784,11 +784,50 @@ main(int argc,char **argv)
       } /* NCO_REC_DMN_UNDEFINED */
       /* Print group attributes recursively */
       (void)nco_prn_att_trv(in_id,trv_tbl);
-    } /* !PRN_GLB_METADATA */
+     } /* !PRN_GLB_METADATA */
     
     if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,trv_tbl);
 
     if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
+
+    /* New file dump format under development by CSZ 20130709. Test with, e.g.,
+       ncks -D 6 ~/nco/data/in_grp.nc
+       ncks -D 6 -g g1 ~/nco/data/in_grp.nc
+       ncks -D 6 -g g1,g2 ~/nco/data/in_grp.nc */
+    //    if(dbg_lvl == nco_dbg_crr && False){
+    if(dbg_lvl == nco_dbg_crr){
+      nco_bool ALPHA_BY_FULL_GROUP=False; /* [flg] Print alphabetically by full group */
+      nco_bool ALPHA_BY_STUB_GROUP=True; /* [flg] Print alphabetically by stub group */
+      //      nco_bool ALPHA_BY_FULL_OBJECT=False; /* [flg] Print alphabetically by full object */
+      //      nco_bool ALPHA_BY_STUB_OBJECT=False; /* [flg] Print alphabetically by stub object */
+
+      if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
+	/* [fnc] Recursively print group contents */
+	rcd+=nco_grp_prn(in_id,trv_pth,ALPHA_BY_FULL_GROUP,ALPHA_BY_STUB_GROUP,PRN_GLB_METADATA,PRN_VAR_METADATA,PRN_VAR_DATA,trv_tbl);
+      }else{
+	trv_sct trv_obj; /* [sct] Traversal table object */
+	for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
+	  /* Shallow copy to avoid indirection */
+	  trv_obj=trv_tbl->lst[obj_idx];
+	  /* Print this group */
+	  if(trv_obj.nco_typ == nco_obj_typ_grp){
+	    /* Print dimensions defined in this group */
+	    // (void)nco_prn_dmn_xtr(in_id,trv_tbl);
+	    /* Print group attributes */
+	    //if(PRN_GLB_METADATA) (void)nco_prn_grp_att(in_id,trv_tbl);
+	    ;
+	  } /* endif group */
+	  /* Print this variable */
+	  if(trv_obj.nco_typ == nco_obj_typ_var){
+	    /* Print variable metadata */
+	    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,trv_tbl);
+	    /* Print variable data */
+	    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
+	  } /* endif variable */
+	} /* end loop over obj_idx */
+      } /* end if */
+
+    } /* endif dbg */
 
   } /* !fl_out */
   

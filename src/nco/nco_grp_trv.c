@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.199 2013-06-23 03:08:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.200 2013-07-09 18:10:59 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -12,12 +12,9 @@
 /* This file contains the API for low level group data structures:
    Group Traversal Table (GTT): functions prefixed with "trv_tbl_"
    Group Dimension Map (GDM): functions prefixed with "trv_map_"
-   It does not include any netCDF API calls   
-   */
-
+   It does not include any netCDF API calls */
 
 #include "nco_grp_trv.h" /* Group traversal */
-
 
 void                          
 trv_tbl_init                           /* [fnc] GTT initialize */
@@ -26,18 +23,15 @@ trv_tbl_init                           /* [fnc] GTT initialize */
   trv_tbl_sct *tb=(trv_tbl_sct *)nco_malloc(sizeof(trv_tbl_sct));
 
   /* Object (group/variable) list */
-
   tb->nbr=0;
   tb->lst=NULL; 
 
   /* Dimension list */
-
   tb->nbr_dmn=0;
   tb->lst_dmn=NULL;
 
   *tbl=tb;
 } /* trv_tbl_init() */
-
  
 void 
 trv_tbl_free                           /* [fnc] GTT free memory */
@@ -88,8 +82,6 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
   tbl=(trv_tbl_sct *)nco_free(tbl);
 } /* end trv_tbl_free() */
-
-
 
 void                       
 trv_tbl_inq                          /* [fnc] Find and return global totals of dimensions, variables, attributes */
@@ -213,7 +205,6 @@ trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for
   return;
 } /* end trv_tbl_mrk_xtr() */
 
-
 void
 trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,        /* I [sng] Variable name to find */
@@ -229,8 +220,6 @@ trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in tab
 
   assert(0);
 } /* end trv_tbl_mrk_prc_fix() */
-
-
 
 void 
 trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of traversal table */
@@ -435,7 +424,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
 } /* trv_tbl_mch() */
 
-
 void                          
 trv_tbl_cmn_nm_prt                         /* [fnc] Print list of common objects (same absolute path) */
 (const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
@@ -458,25 +446,15 @@ int                                    /* O [nbr] Number of depth 1 groups (root
 trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups */
 (const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */           
 {
-  int nbr_grp_dpt; /* [nbr] Number of depth 1 groups (root = 0) */       
-
-  nbr_grp_dpt=0;
+  int nbr_grp_dpt=0; /* [nbr] Number of depth 1 groups (root = 0) */       
 
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-
-    /* If depth 1 */      
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_grp && trv_tbl->lst[uidx].grp_dpt == 1) {
-
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_grp && trv_tbl->lst[uidx].grp_dpt == 1)
       nbr_grp_dpt++;
 
-    } /* If depth 1 */  
-  } /* Loop table  */
-
   return nbr_grp_dpt;
-
 } /* trv_tbl_inq_dpt() */
-
 
 void 
 trv_map_dmn_init                       /* [fnc] Dimension map initialize */
@@ -501,9 +479,7 @@ trv_map_dmn_free                       /* [fnc] Dimension map free memory */
 {
   int idx;
 
-  for(idx=0;idx<TRV_MAP_SIZE;idx++){
-    map[idx].nm_fll=(char *)nco_free(map[idx].nm_fll);
-  }
+  for(idx=0;idx<TRV_MAP_SIZE;idx++) map[idx].nm_fll=(char *)nco_free(map[idx].nm_fll);
 
 } /* trv_map_dmn_free() */
 
@@ -518,9 +494,7 @@ trv_map_dmn_set                        /* [fnc] Dimension map set values */
   map[key_idx].key_idx=key_idx;
   map[key_idx].val_id=val_id;
   map[key_idx].nm_fll=strdup(nm_fll);
-
 } /* trv_map_dmn_set() */
-
 
 int                                    /* O [nbr] Value: dimension ID (map value) */
 trv_map_dmn_get                        /* [fnc] Dimension map get values */
@@ -530,11 +504,9 @@ trv_map_dmn_get                        /* [fnc] Dimension map get values */
   /* Purpose: find the value (if any) that is bound to a given key */
   int idx;
 
-  for(idx=0;idx<TRV_MAP_SIZE;idx++){
-    if (key_idx == map[idx].key_idx){
+  for(idx=0;idx<TRV_MAP_SIZE;idx++)
+    if(key_idx == map[idx].key_idx) 
       return map[idx].val_id;
-    }
-  }
 
   return err_typ;
 

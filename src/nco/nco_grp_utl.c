@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.840 2013-07-08 01:39:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.841 2013-07-09 18:10:59 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -19,12 +19,9 @@
    All functions are prefixed with "nco_"
    It uses low level functions defined in "nco_grp_trv.h":
    Group Traversal Table (GTT): functions prefixed with "trv_tbl_"
-   Group Dimension Map (GDM): functions prefixed with "trv_map_"
-   It does include netCDF API calls   
-   */
+   Group Dimension Map (GDM): functions prefixed with "trv_map_" */
 
 #include "nco_grp_utl.h"  /* Group utilities */
-#include "nco_cnf_dmn.h"  /* Conform dimensions */
 
 void
 nco_flg_set_grp_var_ass               /* [fnc] Set flags for groups and variables associated with matched object */
@@ -446,8 +443,6 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
 
 } /* nco_get_sls_chr_cnt() */
 
-
-
 void 
 nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes */
 (const int nc_id, /* I [id] netCDF file ID */
@@ -475,7 +470,6 @@ nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes 
     } /* end nco_obj_typ_grp */
   } /* end uidx */
 } /* end nco_prn_att_trv() */
-
 
 int /* O [nbr] Number of matches to current rx */
 nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
@@ -563,7 +557,6 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
 
   return mch_nbr;
 } /* end nco_trv_rx_search() */
-
 
 nco_bool                              /* O [flg] All names are in file */
 nco_xtr_mk                            /* [fnc] Check -v and -g input names and create extraction list */
@@ -852,7 +845,6 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   return (nco_bool)True;
 
 } /* end nco_xtr_mk() */
-
 
 void
 nco_xtr_xcl                           /* [fnc] Convert extraction list to exclusion list */
@@ -1335,7 +1327,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
        Associated and auxiliary coordinates may be in distant groups
        Hence no better place than nco_xtr_dfn() to finally identify ancestor groups */
     
-    /* Set extraction flag for groups if ancestors of extracted variables.*/
+    /* Set extraction flag for groups if ancestors of extracted variables */
     for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
       /* For each group ... */
       if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp){
@@ -1679,9 +1671,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         }
         if (strcmp(var_trv.var_dmn[dmn_idx_var].dmn_nm,dmn_trv->nm) != 0){
 
-
-        /*      
-        Test case generates duplicated dimension IDs in netCDF file
+        /* Test case generates duplicated dimension IDs in netCDF file
 
         ncks -O  -v two_dmn_rec_var in_grp.nc out.nc
 
@@ -1726,22 +1716,17 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
           nco_exit(EXIT_FAILURE);
         }
 
-
-        /* Store full dimension name  */
+        /* Store full dimension name */
         trv_tbl->lst[idx_var].var_dmn[dmn_idx_var].dmn_nm_fll=strdup(dmn_trv->nm_fll);
 
-        /* Store full group name where dimension is located. NOTE: using member "grp_nm_fll" of dimension  */
+        /* Store full group name where dimension is located */
         trv_tbl->lst[idx_var].var_dmn[dmn_idx_var].grp_nm_fll=strdup(dmn_trv->grp_nm_fll);
-
       }
 
     } /* Filter variables  */
   } /* Variables */
 
 } /* end nco_blb_dmn_ids_trv() */
-
-
-
 
 int                                    /* [rcd] Return code */
 nco_grp_itr                            /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */
@@ -1896,9 +1881,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       if(dbg_lvl_get() >= nco_dbg_var){
         (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",
           prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
-      }
+      } /* endif */
     } /* > NC_MAX_ATOMIC_TYPE */
-
 
     /* Keep the old table objects size for insertion */
     idx=trv_tbl->nbr;
@@ -1907,8 +1891,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->nbr++;
     trv_tbl->lst=(trv_sct *)nco_realloc(trv_tbl->lst,trv_tbl->nbr*sizeof(trv_sct));
 
-    /* Add this element, a variable to table. NOTE: nbr_var, nbr_grp, flg_rcr not valid here */
-
+    /* Add this element, a variable, to table. NB: nbr_var, nbr_grp, flg_rcr not valid here */
     trv_tbl->lst[idx].nco_typ=obj_typ;
 
     strcpy(trv_tbl->lst[idx].nm,var_nm);
@@ -2055,8 +2038,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
   /* Heart of traversal construction: construct a new sub-group path and call function recursively with this new name; Voila */
   for(int grp_idx=0;grp_idx<nbr_grp;grp_idx++){
-    char *sub_grp_nm_fll=NULL;  /* [sng] Sub group path */
-    int gid=grp_ids[grp_idx];   /* [id] Current group ID */  
+    char *sub_grp_nm_fll=NULL; /* [sng] Sub group path */
+    int gid=grp_ids[grp_idx]; /* [id] Current group ID */  
 
     /* Get sub-group name */
     rcd+=nco_inq_grpname(gid,grp_nm);
@@ -2255,7 +2238,6 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             /* Group depth */
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->grp_dpt=var_trv.grp_dpt;
 
-
             /* MSA */     
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.dmn_nm=strdup(var_trv.nm);
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.dmn_cnt=dmn_trv.sz;
@@ -2430,7 +2412,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
 
   /* Print table in debug mode */
-  if(dbg_lvl_get() == nco_dbg_old)(void)nco_prt_trv_tbl(nc_id,trv_tbl);
+  if(dbg_lvl_get() == nco_dbg_old) (void)nco_prt_trv_tbl(nc_id,trv_tbl);
 
   /* Parse auxiliary coordinates */
   if(aux_nbr)(void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
@@ -2454,8 +2436,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_bld_var_dmn(trv_tbl);
 
 } /* nco_bld_trv_tbl() */
-
-
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
@@ -3170,8 +3150,6 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
 
   return NULL;
 } /* nco_scp_var_crd() */
-
-
 
 void
 nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to either coordinates or dimension structs */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.53 2013-06-28 01:17:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.54 2013-07-09 18:10:59 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -408,7 +408,7 @@ nco_prc_stt_get /* [fnc] Read /proc/PID/stat */
      &prc_stt->delayacct_blkio_ticks);
 
   /* Were expected number of fields read? */
-  if(rcd_sys != PRC_STT_SCT_NBR) (void)fprintf(stdout,"%s: ERROR scanning %s returned %d fields, expected %d fields",fl_prc,rcd_sys,PRC_STT_SCT_NBR);
+  if(rcd_sys != PRC_STT_SCT_NBR) (void)fprintf(stdout,"%s: ERROR scanning %s returned %d fields, expected %d fields",prg_nm_get(),fl_prc,rcd_sys,PRC_STT_SCT_NBR);
 
   (void)fclose(fp_prc);
 
@@ -466,7 +466,7 @@ nco_prc_stm_get /* [fnc] Read /proc/PID/statm */
      &prc_stm->dt);
 
   /* Were expected number of fields read? */
-  if(rcd_sys != PRC_STM_SCT_NBR) (void)fprintf(stdout,"%s: ERROR scanning %s returned %d fields, expected %d fields",fl_prc,rcd_sys,PRC_STM_SCT_NBR);
+  if(rcd_sys != PRC_STM_SCT_NBR) (void)fprintf(stdout,"%s: ERROR scanning %s returned %d fields, expected %d fields",prg_nm_get(),fl_prc,rcd_sys,PRC_STM_SCT_NBR);
 
   (void)fclose(fp_prc);
 
@@ -530,12 +530,12 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
   /* Interrorgate /proc/self/stat for current memory usage */
   prc_stt_sct prc_stt;
   rcd_stt=nco_prc_stt_get((int)0,&prc_stt);
-  if(rcd_stt == NCO_ERR) (void)fprintf(stdout,"%s: WARNING call to %s failed, proceeding anyway...\n");
+  if(rcd_stt == NCO_ERR) (void)fprintf(stdout,"%s: WARNING call to nco_prc_stt_get() failed, proceeding anyway...\n",prg_nm_get());
   if(dbg_lvl_get() > nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s thinks pid = %d, comm = %s, ppid = %d, rlim = %lu B = %lu kB = %lu MB, rss = %ld B = %ld kB = %ld MB, vsize = %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),fnc_nm,prc_stt.pid,prc_stt.comm,prc_stt.ppid,prc_stt.rlim,prc_stt.rlim/NCO_BYT_PER_KB,prc_stt.rlim/NCO_BYT_PER_MB,prc_stt.rss,prc_stt.rss/NCO_BYT_PER_KB,prc_stt.rss/NCO_BYT_PER_MB,prc_stt.vsize,prc_stt.vsize/NCO_BYT_PER_KB,prc_stt.vsize/NCO_BYT_PER_MB,prc_stt.vsize/NCO_BYT_PER_GB);
 
   prc_stm_sct prc_stm;
   rcd_stm=nco_prc_stm_get((int)0,&prc_stm);
-  if(rcd_stm == NCO_ERR) (void)fprintf(stdout,"%s: WARNING call to %s failed, proceeding anyway...\n");
+  if(rcd_stm == NCO_ERR) (void)fprintf(stdout,"%s: WARNING call to nco_prc_stm_get() failed, proceeding anyway...\n",prg_nm_get());
   if(dbg_lvl_get() > nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s thinks size = %lu B = %lu kB = %lu MB = %lu GB, resident = %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),fnc_nm,prc_stm.size,prc_stm.size/NCO_BYT_PER_KB,prc_stm.size/NCO_BYT_PER_MB,prc_stm.size/NCO_BYT_PER_GB,prc_stm.resident,prc_stm.resident/NCO_BYT_PER_KB,prc_stm.resident/NCO_BYT_PER_MB,prc_stm.resident/NCO_BYT_PER_GB);
 
 #ifdef HAVE_GETRUSAGE

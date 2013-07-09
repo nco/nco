@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.35 2013-02-28 11:49:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.36 2013-07-09 18:10:59 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -28,6 +28,7 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_grp_utl.h" /* Group utilities */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_sng_utl.h" /* String utilities */
 
@@ -65,7 +66,16 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 (int nc_id, /* I [id] netCDF file ID */
  const trv_sct * const var_trv); /* I [sct] Object to print (variable) */
 
-
+int /* [rcd] Return code */
+nco_grp_prn /* [fnc] Recursively print group contents */
+(const int nc_id, /* I [id] netCDF file ID */
+ const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
+ const nco_bool ALPHA_BY_FULL_GROUP, /* I [flg] Print alphabetically by full group */
+ const nco_bool ALPHA_BY_STUB_GROUP, /* I [flg] Print alphabetically by stub group */
+ const nco_bool PRN_GLB_METADATA, /* I [flg] Print global metadata */
+ const nco_bool PRN_VAR_METADATA, /* I [flg] Print variable metadata */
+ const nco_bool PRN_VAR_DATA, /* I [flg] Print variable data */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.319 2013-07-05 22:20:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.320 2013-07-09 18:10:59 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -29,6 +29,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_cnf_dmn.h" /* Conform dimensions */
 #include "nco_cnk.h" /* Chunking */
 #include "nco_grp_trv.h" /* Group traversal */
 #include "nco_mmr.h" /* Memory management */

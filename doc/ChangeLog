@@ -1,10 +1,14 @@
+2013-07-09  Charlie Zender  <zender@uci.edu>
+
+	* First version of group-recursive printer nco_grp_prn()
+	Routine is cornerstone of more flexible print output formatting
+
 2013-07-06 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncpdq testing
 
 	* Add ncpdq test #40 (Groups) Pack and then unpack scalar
-	* Add ncpdq test #41 (Groups) Unpack 1D variable with MSA  
-
+	* Add ncpdq test #41 (Groups) Unpack 1D variable with MSA
 
 2013-07-05  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.348 2013-06-26 00:45:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.349 2013-07-09 18:10:59 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -584,6 +584,17 @@ extern "C" {
     aed_enm mode; /* Action to perform with attribute */
   } aed_sct;
   
+  /* Print flags structure */
+  typedef struct{ /* aed_sct */
+    nco_bool ALPHA_BY_FULL_GROUP; /* [flg] Print alphabetically by full group */
+    nco_bool ALPHA_BY_STUB_GROUP; /* [flg] Print alphabetically by stub group */
+    nco_bool ALPHA_BY_FULL_OBJECT; /* [flg] Print alphabetically by full object */
+    nco_bool ALPHA_BY_STUB_OBJECT; /* [flg] Print alphabetically by stub object */
+    nco_bool PRN_GLB_METADATA;
+    nco_bool PRN_VAR_METADATA;
+    nco_bool PRN_VAR_DATA;
+  } prn_sct;
+  
   /* Attribute structure */
   typedef struct{ /* att_sct */
     char *nm;
@@ -641,7 +652,7 @@ extern "C" {
     int lmt_crr;          /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
   } lmt_msa_sct;
 
-   /* GTT coordinate variable structure; it contains NetCDF model fields and a MSA field  */
+   /* GTT coordinate variable structure; it contains netCDF model fields and an MSA field  */
   typedef struct{ 
     char *crd_nm_fll;       /* [sng] Full coordinate name */
     char *dmn_nm_fll;       /* [sng] Full name of dimension for *this* coordinate  */  
@@ -656,7 +667,7 @@ extern "C" {
     int grp_dpt;            /* [nbr] Depth of group (root = 0); needed to get in scope of variable match */
   } crd_sct; 
 
-   /* GTT dimension structure (stored in *groups*); it contains NetCDF model fields and a MSA field */
+  /* GTT dimension structure (stored in *groups*); it contains netCDF model fields and an MSA field */
   typedef struct{ 
     char *grp_nm_fll;        /* [sng] Full group name where dimension was defined */
     char *nm_fll;            /* [sng] Dimension fully qualified name (path) */
@@ -669,7 +680,6 @@ extern "C" {
     int dmn_id;              /* [ID] Unique ID for dimension; same as "var_dmn_sct.id", obtained from API "nc_inq_dimid" */
     nco_bool has_crd_scp;    /* [flg] Is there a variable with same name in dimension's scope? */
   } dmn_trv_sct; 
-
 
   /* GTT Variable dimensions:
      A dimension has a name and a size, but it can have an associated variable (coordinate variable) */
@@ -690,7 +700,6 @@ extern "C" {
     prc_typ                 /*  1 [enm] Process variable (operator may alter data and metadata) */
   } prc_typ_enm; 
 
-
   /* Map (associative array) a dimension ID to a dimension index; 
      Lookup for the dimension ID (map value) associated with the dimension index (map key)
      Needed for dimension permutations */
@@ -707,8 +716,7 @@ extern "C" {
      Initialize trv_sct structure to defaults in trv_tbl_init()
      Populate trv_sct structure with correct values in nco_grp_itr()
      Deep-copy each pointer member of trv_sct structure in nco_grp_itr()
-     free() each pointer member of trv_sct structure in trv_tbl_free() 
-     */
+     free() each pointer member of trv_sct structure in trv_tbl_free() */
   typedef struct{ 
     nco_obj_typ nco_typ;              /* [enm] netCDF4 object type: group or variable */
     char *nm_fll;                     /* [sng] Fully qualified name (path) */
@@ -742,15 +750,13 @@ extern "C" {
     nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr;                 /* [flg] Extract object */ 
 
-    /* Following are members only used by transformation operators (non ncks) (For variables only) */
-
+    /* Following are members only used by transformation operators (non-ncks) (For variables only) */
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  
     int dmn_idx_out_in[NC_MAX_DIMS];  /* [nbr] Dimension correspondence, output->input (ncpdq); output of nco_var_dmn_rdr_mtd() */
     nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
-
   } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists
@@ -762,7 +768,6 @@ extern "C" {
     dmn_trv_sct *lst_dmn;   /* [sct] Array of dmn_trv_sct */
     unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
   } trv_tbl_sct;
-
  
   /* GPE duplicate name check structure */
   typedef struct{ /* gpe_nm_sct */
@@ -771,12 +776,12 @@ extern "C" {
 
   /* Name structure */
   typedef struct{ /* nm_sct */
-    char *nm;     /* [sng] A name */
+    char *nm;     /* [sng] Name */
   } nm_sct;
 
   /* Name list structure */
   typedef struct{ /* nm_tbl_sct */
-    nm_sct *lst;  /* [sct] A list of nm_sct ( char* currently) */
+    nm_sct *lst;  /* [sct] List of nm_sct (char * currently) */
     int nbr;      /* [nbr] Number of items in "lst" array */
   } nm_tbl_sct;
 

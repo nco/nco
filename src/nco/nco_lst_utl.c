@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.81 2013-06-22 01:09:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.82 2013-07-09 18:10:59 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -181,8 +181,6 @@ nco_lst_rx_search /* [fnc] Search for pattern matches in list of objects (groups
   return mch_nbr;
 } /* end nco_lst_rx_search() */
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-
-
 
 void 
 nco_srt_ntg /* [fnc] Sort array of integers */
