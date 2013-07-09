@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.98 2013-07-09 18:10:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.99 2013-07-09 18:23:53 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -10,8 +10,7 @@
 
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
-(const int in_id, /* I [id] netCDF file ID */
- const int grp_id, /* I [id] netCDF group ID */
+(const int grp_id, /* I [id] netCDF group ID */
  const int var_id) /* I [id] netCDF input variable ID */
 {
   /* Purpose: Print all global attributes in netCDF group,
@@ -39,7 +38,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     /* Which group is this? */
     rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
     if(rcd == NC_ENOGRP) (void)strcpy(src_sng,"Global"); else (void)strcpy(src_sng,"Group");
-    // if(in_id == grp_id) (void)strcpy(src_sng,"Global"); else (void)strcpy(src_sng,"Group");
   }else{
     /* Get name and number of attributes for variable */
     (void)nco_inq_var(grp_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
@@ -878,7 +876,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,dmn_nbr);
 
   /* Print group attributes */
-  if(PRN_GLB_METADATA) nco_prn_att(grp_id,grp_id,NC_GLOBAL);
+  if(PRN_GLB_METADATA) nco_prn_att(grp_id,NC_GLOBAL);
 
   (void)fprintf(stdout,"%*s } group %s\n",grp_dpt*spc_per_lvl,spc_sng,grp_nm_fll);
 

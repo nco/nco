@@ -1,5 +1,7 @@
 2013-07-09  Charlie Zender  <zender@uci.edu>
 
+	* Eliminate nc_id argument to nco_prn_att()
+
 	* First version of group-recursive printer nco_grp_prn()
 	Routine is cornerstone of more flexible print output formatting
 
