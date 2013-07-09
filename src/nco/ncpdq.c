@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.335 2013-07-09 18:10:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.336 2013-07-09 19:26:19 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.335 2013-07-09 18:10:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.335 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.336 2013-07-09 19:26:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.336 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1193,7 +1193,6 @@ main(int argc,char **argv)
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
-
 #ifdef USE_RDR_NETCDF3
 
   if (fl_in_fmt != NC_FORMAT_NETCDF4) {
@@ -1217,7 +1216,6 @@ main(int argc,char **argv)
         dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED;
       } /* end else */
   } /* end if file contains record dimension */
-
 
   /* If re-ordering, determine and set new dimensionality in metadata of each re-ordered variable */
   if(IS_REORDER){
@@ -1631,7 +1629,6 @@ main(int argc,char **argv)
       } /* end loop over var_prc */
       (void)nco_enddef(out_id);
     } /* nco_pck_plc == nco_pck_plc_nil || nco_pck_plc == nco_pck_plc_upk */
-
 
     /* Close input netCDF file */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
