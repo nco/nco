@@ -1,5 +1,8 @@
 2013-07-09  Charlie Zender  <zender@uci.edu>
 
+	* netCDF3 stubs for nco_inq_grp_parent(), nco_inq_grp_parent_flg()
+	return NC_ENOGRP rather than NC_NOERR or assert(0)
+
 	* NCO 4.3.3 release procedure:
  	Changes since nco-4_3_2: -X aux, ncflint/ncpdq -g -G --unn
 	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
