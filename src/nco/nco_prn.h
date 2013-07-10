@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.38 2013-07-10 16:55:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.39 2013-07-10 18:34:57 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -43,6 +43,7 @@ extern "C" {
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
 (const int grp_id, /* I [id] netCDF group ID */
+ const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const int var_id); /* I [id] netCDF input variable ID */
 
 const char * /* O [sng] sprintf() format string for type typ */
@@ -62,7 +63,8 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
-(int nc_id, /* I [id] netCDF file ID */
+(const int nc_id, /* I [id] netCDF file ID */
+ const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const trv_sct * const var_trv); /* I [sct] Object to print (variable) */
 
 int /* [rcd] Return code */

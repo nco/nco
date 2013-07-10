@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.101 2013-07-10 16:55:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.102 2013-07-10 18:34:57 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -11,6 +11,7 @@
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
 (const int grp_id, /* I [id] netCDF group ID */
+ const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const int var_id) /* I [id] netCDF input variable ID */
 {
   /* Purpose: Print all global attributes in netCDF group,
@@ -613,7 +614,8 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 
 void
 nco_prn_var_dfn                 /* [fnc] Print variable metadata */
-(int nc_id,                     /* I [id] netCDF file ID */
+(const int nc_id,               /* I [id] netCDF file ID */
+ const prn_sct prn_flg,         /* I [sct] Print formatting flags */
  const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata */
@@ -649,36 +651,29 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
   assert(var_trv->var_typ == var_typ);
   assert(var_trv->nbr_att == nbr_att);
 
-  /* Get storage properties */
+  /* Storage properties */
   (void)nco_inq_var_chunking(grp_id,var_id,&srg_typ,cnk_sz);
   (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
   (void)nco_inq_var_packing(grp_id,var_id,&packing);
 
-  /* Loop dimensions */
+  /* Loop over dimensions */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
 
     /* This dimension has a coordinate variable */
-    if (var_trv->var_dmn[dmn_idx].is_crd_var == True){
-
+    if(var_trv->var_dmn[dmn_idx].is_crd_var){
       /* Get coordinate from table */
       crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
-
       dmn_sz[dmn_idx]=crd->sz;
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=crd->is_rec_dmn;
-    }
-
-    /* This dimension does not has a coordinate variable, it must have a unique dimension */
-    else if (var_trv->var_dmn[dmn_idx].is_crd_var == False){
-
+    }else if(var_trv->var_dmn[dmn_idx].is_crd_var == False){
+      /* Dimension does not have associated coordinate variable */
       /* Get unique dimension */
       dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
-
       dmn_sz[dmn_idx]=dmn_trv->sz;
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=dmn_trv->is_rec_dmn;
-    }
+    } /* end else */
 
-  } /* Loop dimensions */
-
+  } /* end loop over dimensions */
 
   /* Print header for variable */
   (void)fprintf(stdout,"%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
@@ -689,10 +684,7 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
     char sz_sng[100];
     char sng_foo[200];
 
-    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++)
-    {
-      var_sz*=dmn_sz[dmn_idx];
-    }
+    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) var_sz*=dmn_sz[dmn_idx];
     sz_sng[0]='\0';
 
     for(dmn_idx=0;dmn_idx<nbr_dim-1;dmn_idx++){
@@ -758,7 +750,7 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
 
 int /* [rcd] Return code */
 nco_grp_prn /* [fnc] Recursively print group contents */
-(const int grp_id, /* I [id] Group ID */
+(const int nc_id, /* I [id] netCDF file ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
  const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
@@ -767,7 +759,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
      Assumptions: 
      1. Input group name is valid, extracted group (as defined in nco_xtr_dfn()). 
         Hence no need to check for group type, or if group is extracted.
-     2. Input grp_id is valid, extracted group ID */
+     2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
      ncks -D 6 ~/nco/data/in_grp.nc */
@@ -784,8 +776,6 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   char *dmn_nm_fll;                /* [sng] Full path for dimension */
   char *var_nm_fll;                /* [sng] Full path for variable */
 
-  const int spc_per_lvl=2;         /* [nbr] Indentation spaces per group level */
-
   int *grp_ids;                    /* [ID] Sub-group IDs array */  
 
   int dmn_ids_grp[NC_MAX_DIMS];    /* [ID] Dimension IDs array for group */ 
@@ -793,6 +783,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   int dmn_id_var[NC_MAX_DIMS];     /* [ID] Dimensions IDs array for variable */
   int dmn_idx_grp[NC_MAX_DIMS];    /* [ID] Dimension indices array for group */ 
   int grp_idx;                     /* [idx] Group index */  
+  int grp_id;                      /* [id] netCDF group ID */
   int grp_dpt;                     /* [nbr] Depth of group (root = 0) */
   int nbr_att;                     /* [nbr] Number of attributes */
   int nbr_dmn_grp;                 /* [nbr] Number of dimensions visible to group */
@@ -812,6 +803,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   nco_obj_typ obj_typ;             /* [enm] Object type (group or variable) */
 
   nm_id_sct *dmn_lst; /* [sct] Dimension list */
+  nm_id_sct *var_lst; /* [sct] Variable list */
 
   trv_sct trv_obj; /* [sct] Traversal table object */
 
@@ -829,6 +821,9 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       if(!strcmp(trv_tbl->lst[obj_idx].grp_nm_fll,grp_nm_fll))
 	break;
     
+  /* Obtain group ID */
+  (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+
   /* Obtain info for group */
   grp_dpt=trv_tbl->lst[obj_idx].grp_dpt;
   nbr_att=trv_tbl->lst[obj_idx].nbr_att;
@@ -860,12 +855,12 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg.ALPHA_BY_STUB_GROUP);
 
   if(grp_dpt == 0) (void)fprintf(stdout,"fxm: begin new file dump format under development in nco_grp_prn():\n");
-  //  (void)sprintf(fmt_sng,"%%dc",grp_dpt*spc_per_lvl);
+  //  (void)sprintf(fmt_sng,"%%dc",grp_dpt*prn_flg.spc_per_lvl);
   //  (void)fprintf(stdout,"%*sgroup: %s {\n",fmt_sng,grp_nm_fll);
-  (void)fprintf(stdout,"%*sgroup: %s {\n",grp_dpt*spc_per_lvl,spc_sng,grp_nm_fll);
+  (void)fprintf(stdout,"%*sgroup: %s {\n",grp_dpt*prn_flg.spc_per_lvl,spc_sng,grp_nm_fll);
 
   /* Print dimension information for group */
-  if(dmn_nbr > 0) (void)fprintf(stdout,"dimensions:\n");
+  if(dmn_nbr > 0) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg.sxn_fst+grp_dpt*prn_flg.spc_per_lvl,spc_sng);
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     (void)fprintf(stdout,"\t %s = %zi\n",dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz);
   } /* end loop over dmn_idx */
@@ -874,6 +869,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,dmn_nbr);
 
   /* Variables */
+
+  /* Create array to hold names and indices of extracted variables in this group */
+  var_lst=(nm_id_sct *)nco_malloc(nbr_var*(sizeof(nm_id_sct)));
+
   for(var_idx=0;var_idx<nbr_var;var_idx++){
     /* Get variable name */
     rcd+=nco_inq_varname(grp_id,var_idx,var_nm);
@@ -898,31 +897,45 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     
     /* Is variable to be extracted? */
     if(trv_tbl->lst[obj_idx].flg_xtr){
-      /* Obtain info for variable */
-      nbr_dmn_var=trv_tbl->lst[obj_idx].nbr_dmn;
-      var_nbr_xtr++;
-    } /* endif extracted */
-
-#if 0
-    /* Create arrays of these variables */
-    var_lst=(nm_id_sct *)nco_malloc(var_nbr_xtr*(sizeof(nm_id_sct)));
-    for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
 	 However, it is same type (int) as an ID so we can use nm_id infrastructure. */
-      var_lst[var_idx].id=var_idx_grp[var_idx];
-      var_lst[var_idx].nm=strdup(trv_tbl->lst_var[var_idx].nm);
-    } /* end loop over var_idx */
-#endif
+      var_lst[var_idx].id=obj_idx;
+      var_lst[var_idx].nm=strdup(var_nm);
+      var_nbr_xtr++;
+    } /* endif extracted */
 
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
 
   } /* end loop over variables */
 
-  /* Print group attributes */
-  if(prn_flg.PRN_GLB_METADATA) nco_prn_att(grp_id,NC_GLOBAL);
+  /* Compactify array to hold names and indices of extracted variables in this group */
+  var_lst=(nm_id_sct *)nco_realloc(var_lst,var_nbr_xtr*(sizeof(nm_id_sct)));
 
-  (void)fprintf(stdout,"%*s } group %s\n",grp_dpt*spc_per_lvl,spc_sng,grp_nm_fll);
+  /* Sort variables alphabetically */
+  if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg.ALPHA_BY_STUB_GROUP);
+
+  /* Print variable information for group */
+  if(var_nbr_xtr > 0) (void)fprintf(stdout,"%*svariables:\n",prn_flg.sxn_fst+grp_dpt*prn_flg.spc_per_lvl,spc_sng);
+  for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
+    trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
+
+    /* Print variable full name */
+    if(var_trv.grp_dpt > 0) (void)fprintf(stdout,"%*s\t%s\n",prn_flg.sxn_fst+grp_dpt*prn_flg.spc_per_lvl,spc_sng,var_trv.nm_fll);
+
+    /* Print variable metadata */ 
+    (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
+    if(var_idx < var_nbr_xtr-1) (void)fprintf(stdout,"\n");
+
+  } /* end loop over var_idx */
+
+  /* Variable list no longer needed */
+  var_lst=nco_nm_id_lst_free(var_lst,var_nbr_xtr);
+
+  /* Print group attributes */
+  if(prn_flg.PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
+
+  (void)fprintf(stdout,"%*s } group %s\n",grp_dpt*prn_flg.spc_per_lvl,spc_sng,grp_nm_fll);
 
   /* Get ready for sub-groups */ 
   grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
@@ -955,7 +968,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is sub-group to be extracted? */
-    if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn(gid,sub_grp_nm_fll,prn_flg,trv_tbl);
+    if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);

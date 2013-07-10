@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.842 2013-07-09 18:23:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.843 2013-07-10 18:34:57 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -446,6 +446,7 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
 void 
 nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes */
 (const int nc_id, /* I [id] netCDF file ID */
+ const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   int grp_id;                 /* [ID] Group ID */
@@ -465,7 +466,7 @@ nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes 
       /* List attributes using obtained group ID */
       if(nbr_att){
         if(trv.grp_dpt > 0) (void)fprintf(stdout,"Group %s attributes:\n",trv.nm_fll); else (void)fprintf(stdout,"Global attributes:\n"); 
-        (void)nco_prn_att(grp_id,NC_GLOBAL); 
+        (void)nco_prn_att(grp_id,prn_flg,NC_GLOBAL); 
       } /* nbr_att */
     } /* end nco_obj_typ_grp */
   } /* end uidx */
@@ -1200,6 +1201,7 @@ nco_get_prg_info(void)                 /* [fnc] Get program info */
 void
 nco_prn_xtr_dfn /* [fnc] Print variable metadata */
 (const int nc_id, /* I [id] netCDF file ID */
+ const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 { 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1210,7 +1212,7 @@ nco_prn_xtr_dfn /* [fnc] Print variable metadata */
       if(var_trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",var_trv.nm_fll);
 
       /* Print variable metadata. NOTE: using file ID and object...all that is needed */ 
-      (void)nco_prn_var_dfn(nc_id,&var_trv); 
+      (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv); 
 
       int grp_id; /* [id] Group ID */
       int var_id; /* [id] Variable ID */
@@ -1223,7 +1225,7 @@ nco_prn_xtr_dfn /* [fnc] Print variable metadata */
 
       /* Print variable attributes */
       /* fxm pvn: rewrite with NC_ID and OBJ */
-      (void)nco_prn_att(grp_id,var_id);
+      (void)nco_prn_att(grp_id,prn_flg,var_id);
     } /* end flg_xtr */
   } /* end uidx */
 

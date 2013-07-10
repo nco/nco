@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.320 2013-07-09 18:10:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.321 2013-07-10 18:34:57 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -160,10 +160,10 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-
 void 
 nco_prn_att_trv                       /* [fnc] Print all attributes of single variable */
 (const int in_id,                     /* I [id] netCDF input file ID */
+ const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 void
@@ -177,8 +177,8 @@ nco_get_prg_info(void);               /* [fnc] Get program info */
 void
 nco_prn_xtr_dfn                       /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
 (const int nc_id,                     /* I netCDF file ID */
+ const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
 
 void 
 nco_xtr_lst_prn                        /* [fnc] Print name-ID structure list */

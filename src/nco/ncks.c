@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.618 2013-07-10 16:55:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.619 2013-07-10 18:34:57 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.618 2013-07-10 16:55:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.618 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.619 2013-07-10 18:34:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.619 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -437,6 +437,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"sysconf")){
 	long maxrss; /* [B] Maximum resident set size */
 	maxrss=nco_mmr_usg_prn((int)0);
+	maxrss+=0; /* CEWI */
         nco_exit(EXIT_SUCCESS);
       } /* endif "sysconf" */
       if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
@@ -765,7 +766,29 @@ main(int argc,char **argv)
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
     
   }else{ /* !fl_out */
+    nco_bool ALPHA_BY_FULL_GROUP=False; /* [flg] Print alphabetically by full group */
+    nco_bool ALPHA_BY_STUB_GROUP=True; /* [flg] Print alphabetically by stub group */
+    //      nco_bool ALPHA_BY_FULL_OBJECT=False; /* [flg] Print alphabetically by full object */
+    //      nco_bool ALPHA_BY_STUB_OBJECT=False; /* [flg] Print alphabetically by stub object */
+
     /* No output file was specified so PRN_ tokens refer to screen printing */
+    prn_sct prn_flg;
+    prn_flg.spc_per_lvl=2;
+    prn_flg.sxn_fst=2;
+    prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
+    //	prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;
+    prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
+    // prn_flg.ALPHA_BY_STUB_OBJECT=ALPHA_BY_STUB_OBJECT;
+    prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
+    prn_flg.MD5_DIGEST=MD5_DIGEST;
+    prn_flg.PRN_DMN_IDX_CRD_VAL=PRN_DMN_IDX_CRD_VAL;
+    prn_flg.PRN_DMN_UNITS=PRN_DMN_UNITS;
+    prn_flg.PRN_DMN_VAR_NM=PRN_DMN_VAR_NM;
+    prn_flg.PRN_GLB_METADATA=PRN_GLB_METADATA;
+    prn_flg.PRN_MSS_VAL_BLANK=PRN_MSS_VAL_BLANK;
+    prn_flg.PRN_VAR_DATA=PRN_VAR_DATA;
+    prn_flg.PRN_VAR_METADATA=PRN_VAR_METADATA;
+
     if(PRN_GLB_METADATA){
       int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
       int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
@@ -783,10 +806,10 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"\n");
       } /* NCO_REC_DMN_UNDEFINED */
       /* Print group attributes recursively */
-      (void)nco_prn_att_trv(in_id,trv_tbl);
+      (void)nco_prn_att_trv(in_id,prn_flg,trv_tbl);
      } /* !PRN_GLB_METADATA */
     
-    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,trv_tbl);
+    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,prn_flg,trv_tbl);
 
     if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
 
@@ -796,27 +819,9 @@ main(int argc,char **argv)
        ncks -D 6 -g g1,g2 ~/nco/data/in_grp.nc */
     //    if(dbg_lvl == nco_dbg_crr && False){
     if(dbg_lvl == nco_dbg_crr){
-      nco_bool ALPHA_BY_FULL_GROUP=False; /* [flg] Print alphabetically by full group */
-      nco_bool ALPHA_BY_STUB_GROUP=True; /* [flg] Print alphabetically by stub group */
-      //      nco_bool ALPHA_BY_FULL_OBJECT=False; /* [flg] Print alphabetically by full object */
-      //      nco_bool ALPHA_BY_STUB_OBJECT=False; /* [flg] Print alphabetically by stub object */
 
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
 	/* [fnc] Recursively print group contents */
-	prn_sct prn_flg;
-	prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
-	//	prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;
-	prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
-	// prn_flg.ALPHA_BY_STUB_OBJECT=ALPHA_BY_STUB_OBJECT;
-	prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
-	prn_flg.MD5_DIGEST=MD5_DIGEST;
-	prn_flg.PRN_DMN_IDX_CRD_VAL=PRN_DMN_IDX_CRD_VAL;
-	prn_flg.PRN_DMN_UNITS=PRN_DMN_UNITS;
-	prn_flg.PRN_DMN_VAR_NM=PRN_DMN_VAR_NM;
-	prn_flg.PRN_GLB_METADATA=PRN_GLB_METADATA;
-	prn_flg.PRN_MSS_VAL_BLANK=PRN_MSS_VAL_BLANK;
-	prn_flg.PRN_VAR_DATA=PRN_VAR_DATA;
-	prn_flg.PRN_VAR_METADATA=PRN_VAR_METADATA;
 	rcd+=nco_grp_prn(in_id,trv_pth,prn_flg,trv_tbl);
       }else{
 	trv_sct trv_obj; /* [sct] Traversal table object */
@@ -834,7 +839,7 @@ main(int argc,char **argv)
 	  /* Print this variable */
 	  if(trv_obj.nco_typ == nco_obj_typ_var){
 	    /* Print variable metadata */
-	    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,trv_tbl);
+	    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,prn_flg,trv_tbl);
 	    /* Print variable data */
 	    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
 	  } /* endif variable */

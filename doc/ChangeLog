@@ -1,5 +1,9 @@
 2013-07-10  Charlie Zender  <zender@uci.edu>
 
+	* nco_grp_prn() prints variables by group
+
+	* Tidy ncbo.c, nco_grp_utl.c
+
 	* Introduce print flag structure prn_sct prn_flg in ncks
 
 2013-07-09  Charlie Zender  <zender@uci.edu>

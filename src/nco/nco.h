@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.350 2013-07-10 16:55:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.351 2013-07-10 18:34:57 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -585,7 +585,9 @@ extern "C" {
   } aed_sct;
   
   /* Print flags structure */
-  typedef struct{ /* aed_sct */
+  typedef struct{ /* prn_sct */
+    int spc_per_lvl; /* [nbr] Indentation spaces per group level */
+    int sxn_fst; /* [nbr] Offset width of subsection from group name */
     nco_bool ALPHA_BY_FULL_GROUP; /* [flg] Print alphabetically by full group */
     nco_bool ALPHA_BY_FULL_OBJECT; /* [flg] Print alphabetically by full object */
     nco_bool ALPHA_BY_STUB_GROUP; /* [flg] Print alphabetically by stub group */
@@ -643,7 +645,6 @@ extern "C" {
     int tok_crd_idx;    /* [nbr] Index of token for second full name  */
   } mtc_tok_sct; 
 
- 
   /* MSA Limits structure:
      GTT has a member for every unique dimension and for every coordinate variable */
   typedef struct { 
