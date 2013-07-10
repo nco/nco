@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.100 2013-07-10 04:11:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.101 2013-07-10 16:55:46 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -611,8 +611,6 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
  
 } /* end nco_prn_var_val_lmt() */
 
-
-
 void
 nco_prn_var_dfn                 /* [fnc] Print variable metadata */
 (int nc_id,                     /* I [id] netCDF file ID */
@@ -762,18 +760,14 @@ int /* [rcd] Return code */
 nco_grp_prn /* [fnc] Recursively print group contents */
 (const int grp_id, /* I [id] Group ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
- const nco_bool ALPHA_BY_FULL_GROUP, /* I [flg] Print alphabetically by full group */
- const nco_bool ALPHA_BY_STUB_GROUP, /* I [flg] Print alphabetically by stub group */
- const nco_bool PRN_GLB_METADATA, /* I [flg] Print global metadata */
- const nco_bool PRN_VAR_METADATA, /* I [flg] Print variable metadata */
- const nco_bool PRN_VAR_DATA, /* I [flg] Print variable data */
+ const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
   /* Purpose: Recursively print group contents
      Assumptions: 
      1. Input group name is valid, extracted group (as defined in nco_xtr_dfn()). 
         Hence no need to check for group type, or if group is extracted.
-     2. */
+     2. Input grp_id is valid, extracted group ID */
 
   /* Testing: 
      ncks -D 6 ~/nco/data/in_grp.nc */
@@ -863,7 +857,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   } /* end loop over dmn_idx */
 
   /* Sort dimensions alphabetically */
-  if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,ALPHA_BY_STUB_GROUP);
+  if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg.ALPHA_BY_STUB_GROUP);
 
   if(grp_dpt == 0) (void)fprintf(stdout,"fxm: begin new file dump format under development in nco_grp_prn():\n");
   //  (void)sprintf(fmt_sng,"%%dc",grp_dpt*spc_per_lvl);
@@ -926,7 +920,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   } /* end loop over variables */
 
   /* Print group attributes */
-  if(PRN_GLB_METADATA) nco_prn_att(grp_id,NC_GLOBAL);
+  if(prn_flg.PRN_GLB_METADATA) nco_prn_att(grp_id,NC_GLOBAL);
 
   (void)fprintf(stdout,"%*s } group %s\n",grp_dpt*spc_per_lvl,spc_sng,grp_nm_fll);
 
@@ -961,7 +955,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is sub-group to be extracted? */
-    if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn(gid,sub_grp_nm_fll,ALPHA_BY_FULL_GROUP,ALPHA_BY_STUB_GROUP,PRN_GLB_METADATA,PRN_VAR_METADATA,PRN_VAR_DATA,trv_tbl);
+    if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn(gid,sub_grp_nm_fll,prn_flg,trv_tbl);
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);

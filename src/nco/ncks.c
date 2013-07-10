@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.617 2013-07-09 18:10:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.618 2013-07-10 16:55:46 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.617 2013-07-09 18:10:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.617 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.618 2013-07-10 16:55:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.618 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -803,7 +803,21 @@ main(int argc,char **argv)
 
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
 	/* [fnc] Recursively print group contents */
-	rcd+=nco_grp_prn(in_id,trv_pth,ALPHA_BY_FULL_GROUP,ALPHA_BY_STUB_GROUP,PRN_GLB_METADATA,PRN_VAR_METADATA,PRN_VAR_DATA,trv_tbl);
+	prn_sct prn_flg;
+	prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
+	//	prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;
+	prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
+	// prn_flg.ALPHA_BY_STUB_OBJECT=ALPHA_BY_STUB_OBJECT;
+	prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
+	prn_flg.MD5_DIGEST=MD5_DIGEST;
+	prn_flg.PRN_DMN_IDX_CRD_VAL=PRN_DMN_IDX_CRD_VAL;
+	prn_flg.PRN_DMN_UNITS=PRN_DMN_UNITS;
+	prn_flg.PRN_DMN_VAR_NM=PRN_DMN_VAR_NM;
+	prn_flg.PRN_GLB_METADATA=PRN_GLB_METADATA;
+	prn_flg.PRN_MSS_VAL_BLANK=PRN_MSS_VAL_BLANK;
+	prn_flg.PRN_VAR_DATA=PRN_VAR_DATA;
+	prn_flg.PRN_VAR_METADATA=PRN_VAR_METADATA;
+	rcd+=nco_grp_prn(in_id,trv_pth,prn_flg,trv_tbl);
       }else{
 	trv_sct trv_obj; /* [sct] Traversal table object */
 	for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){

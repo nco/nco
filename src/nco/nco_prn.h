@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.37 2013-07-09 18:23:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.38 2013-07-10 16:55:46 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -69,11 +69,7 @@ int /* [rcd] Return code */
 nco_grp_prn /* [fnc] Recursively print group contents */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
- const nco_bool ALPHA_BY_FULL_GROUP, /* I [flg] Print alphabetically by full group */
- const nco_bool ALPHA_BY_STUB_GROUP, /* I [flg] Print alphabetically by stub group */
- const nco_bool PRN_GLB_METADATA, /* I [flg] Print global metadata */
- const nco_bool PRN_VAR_METADATA, /* I [flg] Print variable metadata */
- const nco_bool PRN_VAR_DATA, /* I [flg] Print variable data */
+ const prn_sct prn_flg, /* I [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 #ifdef __cplusplus

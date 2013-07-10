@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.349 2013-07-09 18:10:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.350 2013-07-10 16:55:46 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -587,12 +587,18 @@ extern "C" {
   /* Print flags structure */
   typedef struct{ /* aed_sct */
     nco_bool ALPHA_BY_FULL_GROUP; /* [flg] Print alphabetically by full group */
-    nco_bool ALPHA_BY_STUB_GROUP; /* [flg] Print alphabetically by stub group */
     nco_bool ALPHA_BY_FULL_OBJECT; /* [flg] Print alphabetically by full object */
+    nco_bool ALPHA_BY_STUB_GROUP; /* [flg] Print alphabetically by stub group */
     nco_bool ALPHA_BY_STUB_OBJECT; /* [flg] Print alphabetically by stub object */
-    nco_bool PRN_GLB_METADATA;
-    nco_bool PRN_VAR_METADATA;
-    nco_bool PRN_VAR_DATA;
+    nco_bool FORTRAN_IDX_CNV; /* Option F */
+    nco_bool MD5_DIGEST; /* [flg] Perform MD5 digests */
+    nco_bool PRN_DMN_IDX_CRD_VAL; /* [flg] Print leading dimension/coordinate indices/values Option Q */
+    nco_bool PRN_DMN_UNITS; /* [flg] Print dimensional units Option u */
+    nco_bool PRN_DMN_VAR_NM; /* [flg] Print dimension/variable names */
+    nco_bool PRN_GLB_METADATA; /* [flg] Print global metadata */
+    nco_bool PRN_MSS_VAL_BLANK; /* [flg] Print missing values as blanks */
+    nco_bool PRN_VAR_DATA; /* [flg] Print variable data */
+    nco_bool PRN_VAR_METADATA; /* [flg] Print variable metadata */
   } prn_sct;
   
   /* Attribute structure */
