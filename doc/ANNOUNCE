@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.580 2013-07-06 00:39:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.581 2013-07-10 00:42:50 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.3 are ready. 
 
@@ -24,37 +24,18 @@ Charlie
 
 NEW FEATURES:
 
-A. ncflint and ncpdq now supports groups, Group Path Editing (GPE) and
-   list unions, the same options supported by ncbo, ncecat, and ncks. 
+A. ncwa now supports groups, Group Path Editing (GPE) and list unions,
+   the same options supported by ncbo, ncecat, ncflint, ncks, and ncpdq.   
    Features are controlled by -g, -G and --union, respectively.
-   ncflint -g g1 -v v1 --union -G dude -w 0.5 -O -p ~/nco/data in_grp.nc in_grp.nc ~/foo.nc
-   ncpdq -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
-   http://nco.sf.net/nco.html#ncflint
-   http://nco.sf.net/nco.html#ncpdq
+   ncwa -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
+   http://nco.sf.net/nco.html#ncwa
+
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
 
-B. NCO takes advantage of improved Windows support in netCDF 4.3.0+.
-   NCO executables built with Visual Studio on Windows now support
-   OPenDAP. Formerly it was much more difficult to obtain
-   OPenDAP support on MS Windows.
-   http://nco.sf.net/nco.html#wnd
-
 BUG FIXES:
 
-A. Fixed ncks auxiliary coordinate (-X) bug introduced in ~4.2.0.  
-   What we call auxiliary coordinates are what CF defines as the
-   variables stored in the "coordinates" attributes of variables.
-   These make possible easy analysis of Reduced/Unstructured Grids. 
-   Auxiliary coordinates do not work in ncks versions 4.2.0-4.3.1,
-   though they do work in the other hyperslabbing NCO operators.
-   Auxiliary coordinates now also work in netCDF4 group files.
-   ncks -O -X 0.,180.,-30.,30. -v gds_3dvar ~/nco/data/in.nc ~/foo.nc
-   http://nco.sf.net#bug_ncks_aux
-
-B. Global history attribute once again always works in ncecat
-
-C. Group Path Editing (GPE) once again always works in ncecat
+A. Fixed potential ncpdq bug packing variables in subgroups.
 
 KNOWN BUGS NOT YET FIXED:
 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.792 2013-07-06 00:09:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.793 2013-07-10 00:42:50 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -143,10 +143,10 @@ and
 
 <ul>
 <li>2013 Aug&nbsp;??: NCO 4.3.3 (<i>In progress</i>)
-<li>2013 Jul&nbsp;05: NCO 4.3.2 (<tt>ncflint</tt>, <tt>ncpdq</tt> Groups)</li>
+<li>2013 Jul&nbsp;05: NCO 4.3.2 (<tt>ncflint</tt>, <tt>ncpdq</tt> groups)</li>
 <li>2013 Jun&nbsp;03: Submitted NASA ACCESS 2013 <a href="http://dust.ess.uci.edu/prp/prp_axs/prp_axs.pdf">proposal</a></li>
 <li>2013 May&nbsp;01: NCO 4.3.1 (Group broadcasting)</li>
-<li>2013 Mar&nbsp;28: NCO 4.3.0 (<tt>ncbo</tt> Groups)</li>
+<li>2013 Mar&nbsp;28: NCO 4.3.0 (<tt>ncbo</tt> groups)</li>
 <li>2013 Mar&nbsp;19: NCO 4.2.6</li>
 <li>2013 Jan&nbsp;28: NCO 4.2.5</li>
 <li>2013 Jan&nbsp;21: NCO 4.2.4</li>
@@ -604,11 +604,9 @@ netCDF4 compound types?;
 Optimize diskless files?;
 <tt>ncrename -g</tt>?;</li>
 <li><b>NCO 4.3.3</b>: (<i>In Progress, features completed or being worked on include</i>)
-<tt>ncea/ncra/ncrcat -g -G --unn;</li>
-<tt>ncwa -g -G --unn</tt>;</li>
+<tt>ncea/ncra/ncrcat/ncwa</tt> gropus with <tt>-g -G --unn</tt>;</li>
 <li><b>NCO 4.3.2</b>: (<i>Current Stable Release</i>)
-<tt>ncflint -g -G --unn</tt>;
-<tt>ncpdq -g -G --unn</tt>;
+<tt>ncflint/ncpdq</tt> groups with </tt>-g -G --unn</tt>;
 <tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>;</li>
 <li><b>NCO 4.3.1</b>:
 <tt>ncbo</tt> symmetry, group broadcasting;
@@ -618,7 +616,7 @@ Optimize diskless files?;
 <tt>ncatted</tt> <a href="#bug_ncatted_strcmp">bugfix</a>;
 Windows DAP;</li>
 <li><b>NCO 4.3.0</b>: 
-<tt>ncbo -g</tt>;
+<tt>ncbo -g</tt> groups;
 <tt>ncatted</tt> NULs;
 <tt>ncap2</tt> rounding;
 <tt>ncks</tt> metadata <a href="#bug_ncks_mtd">bugfix</a></li>
