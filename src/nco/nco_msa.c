@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.209 2013-07-11 03:29:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.210 2013-07-11 17:58:59 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1220,7 +1220,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   lat[1]=90 area[1]=50 */
 
   const char fnc_nm[]="nco_msa_prn_var_val_trv()"; /* [sng] Function name  */
-  const char spc_sng[]=" "; /* [sng] Space string */
+  const char spc_sng[]=""; /* [sng] Space string */
 
   char *dlm_sng=NULL;                        /* [sng] User-specified delimiter string, if any */
   char *unit_sng;                            /* [sng] Units string */ 
@@ -1253,7 +1253,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
   int in_id;                                 /* [ID] *Group* ID were variable resides (passed to MSA)*/
 
-  if(prn_flg->new_fmt) prn_ndn=prn_flg->prn_ndn;
+  if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn;
 
   /* Allocate local MSA */
   lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
@@ -1317,10 +1317,10 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
     (void)sng_ascii_trn(dlm_sng);
 
     /* Assume -s argument (dlm_sng) formats entire string
-    Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
-    and that user is only allowed to affect text between fields. 
-    This would be accomplished with:
-    (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
+       Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
+       and that user is only allowed to affect text between fields. 
+       This would be accomplished with:
+       (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
 
     /* Find replacement format string at most once, then re-use */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
@@ -1379,7 +1379,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
     } /* end if */
   } /* end if PRN_DMN_UNITS */
 
-  if(var.nbr_dim == 0 && dlm_sng == NULL){
+  if(var.nbr_dim == 0 && !dlm_sng){
     /* Variable is scalar, byte, or character */
     lmn=0L;
     if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byt) : False; 
@@ -1435,6 +1435,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         } /* end switch */
       } /* !PRN_DMN_VAR_NM */
     } /* !is_mss_val */
+    (void)fprintf(stdout,"\n");
   } /* end if variable is scalar, byte, or character */
 
   if(var.nbr_dim > 0 && dlm_sng == NULL){
@@ -1554,7 +1555,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
           if(!dim[dmn_idx].is_crd_dmn){ /* If dimension is not a coordinate... */
             if(prn_flg->PRN_DMN_VAR_NM){
-              if(prn_flg->FORTRAN_IDX_CNV) (void)fprintf(stdout,"%*s%s(%ld) ",(idx == 0) ? prn_ndn : 0,spc_sng,dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
+              if(prn_flg->FORTRAN_IDX_CNV) (void)fprintf(stdout,"%*s%s(%ld) ",(idx == 0) ? prn_ndn : 0,spc_sng,dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%*s%s[%ld] ",(idx == 0) ? prn_ndn : 0,spc_sng,dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
             } /* !PRN_DMN_VAR_NM */
             continue;
           } /* end if */
@@ -1656,14 +1657,14 @@ lbl_chr_prn:
       } /* end if NC_CHAR */
 
       /* Print variable name, index, and value */
-      if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s[%%ld]=%s %%s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
+      if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s[%%ld]=%s %%s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%*s%s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type));
       if(prn_flg->FORTRAN_IDX_CNV){
         (void)nco_msa_c_2_f(var_sng);
         var_dsk++;
       } /* end if FORTRAN_IDX_CNV */
 
       if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
-        if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s[%ld]=%s %s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,var_nm,var_dsk,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
+        if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s[%ld]=%s %s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,var_nm,var_dsk,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%*s%s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,mss_val_sng); 
       }else{ /* !is_mss_val */
         if(prn_flg->PRN_DMN_VAR_NM){
           switch(var.type){

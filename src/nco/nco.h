@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.353 2013-07-11 03:29:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.354 2013-07-11 17:58:59 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -324,7 +324,8 @@ extern "C" {
 #define NCO_ERR 0
 
   /* NB: Use EXIT_SUCCESS and EXIT_FAILURE as return codes to shell (e.g., Bash, Csh), not to other functions
-     Shell exit codes (where 0 indicates success) are traditionally opposite C exit codes (where 0 indicates failure) */
+     Shell exit codes (where 0 indicates success) are traditionally opposite C-function (not C-program) exit codes (where 0 indicates failure)
+     20130711: FC19 x86_64 Linux defines EXIT_FAILURE == 134 */
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
 # define EXIT_SUCCESS 0
 #endif /* SUN4 */
@@ -587,7 +588,8 @@ extern "C" {
   /* Print flags structure */
   typedef struct{ /* prn_fmt_sct */
     nco_bool new_fmt; /* [flg] Print in new format */
-    int prn_ndn; /* [nbr] Indentation */
+    int ndn; /* [nbr] Indentation */
+    int fll_pth; /* [nbr] Print full paths */
     int tab; /* [nbr] Number of spaces in tab */
     int spc_per_lvl; /* [nbr] Indentation spaces per group level */
     int sxn_fst; /* [nbr] Offset width of subsection from group name */
