@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.619 2013-07-10 18:34:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.620 2013-07-11 00:19:44 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.619 2013-07-10 18:34:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.619 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.620 2013-07-11 00:19:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.620 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -772,9 +772,11 @@ main(int argc,char **argv)
     //      nco_bool ALPHA_BY_STUB_OBJECT=False; /* [flg] Print alphabetically by stub object */
 
     /* No output file was specified so PRN_ tokens refer to screen printing */
-    prn_sct prn_flg;
+    prn_fmt_sct prn_flg;
+    prn_flg.new_fmt=False;
     prn_flg.spc_per_lvl=2;
     prn_flg.sxn_fst=2;
+    prn_flg.dlm_sng=dlm_sng;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
     //	prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;
     prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
@@ -806,12 +808,12 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"\n");
       } /* NCO_REC_DMN_UNDEFINED */
       /* Print group attributes recursively */
-      (void)nco_prn_att_trv(in_id,prn_flg,trv_tbl);
+      (void)nco_prn_att_trv(in_id,&prn_flg,trv_tbl);
      } /* !PRN_GLB_METADATA */
     
-    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,prn_flg,trv_tbl);
+    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,&prn_flg,trv_tbl);
 
-    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
+    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,&prn_flg,trv_tbl);
 
     /* New file dump format under development by CSZ 20130709. Test with, e.g.,
        ncks -D 6 ~/nco/data/in_grp.nc
@@ -822,7 +824,8 @@ main(int argc,char **argv)
 
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
 	/* [fnc] Recursively print group contents */
-	rcd+=nco_grp_prn(in_id,trv_pth,prn_flg,trv_tbl);
+	prn_flg.new_fmt=True;
+	rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl);
       }else{
 	trv_sct trv_obj; /* [sct] Traversal table object */
 	for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
@@ -839,9 +842,9 @@ main(int argc,char **argv)
 	  /* Print this variable */
 	  if(trv_obj.nco_typ == nco_obj_typ_var){
 	    /* Print variable metadata */
-	    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,prn_flg,trv_tbl);
+	    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,&prn_flg,trv_tbl);
 	    /* Print variable data */
-	    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,trv_tbl);
+	    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,&prn_flg,trv_tbl);
 	  } /* endif variable */
 	} /* end loop over obj_idx */
       } /* end if */

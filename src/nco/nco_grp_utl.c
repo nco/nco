@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.843 2013-07-10 18:34:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.844 2013-07-11 00:19:44 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -446,7 +446,7 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
 void 
 nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes */
 (const int nc_id, /* I [id] netCDF file ID */
- const prn_sct prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   int grp_id;                 /* [ID] Group ID */
@@ -1201,7 +1201,7 @@ nco_get_prg_info(void)                 /* [fnc] Get program info */
 void
 nco_prn_xtr_dfn /* [fnc] Print variable metadata */
 (const int nc_id, /* I [id] netCDF file ID */
- const prn_sct prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 { 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1211,7 +1211,7 @@ nco_prn_xtr_dfn /* [fnc] Print variable metadata */
       /* Print full name of variable */
       if(var_trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",var_trv.nm_fll);
 
-      /* Print variable metadata. NOTE: using file ID and object...all that is needed */ 
+      /* Print variable metadata */ 
       (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv); 
 
       int grp_id; /* [id] Group ID */
@@ -1242,18 +1242,12 @@ nco_xtr_lst_prn                            /* [fnc] Print name-ID structure list
     nm_id_sct nm_id=nm_id_lst[idx];
     (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.nm); 
   } 
-}/* end nco_xtr_lst_prn() */
+} /* end nco_xtr_lst_prn() */
 
 void
 nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
- char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
- const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
- const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
- const nco_bool PRN_DMN_UNITS,        /* I [flg] Print units attribute, if any */
- const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
- const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
- const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
+ prn_fmt_sct * const prn_flg,         /* I/O [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Print variable data (called with PRN_VAR_DATA) */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.351 2013-07-10 18:34:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.352 2013-07-11 00:19:44 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -585,9 +585,12 @@ extern "C" {
   } aed_sct;
   
   /* Print flags structure */
-  typedef struct{ /* prn_sct */
+  typedef struct{ /* prn_fmt_sct */
+    nco_bool new_fmt; /* [flg] Print in new format */
+    int prn_ndn; /* [nbr] Indentation */
     int spc_per_lvl; /* [nbr] Indentation spaces per group level */
     int sxn_fst; /* [nbr] Offset width of subsection from group name */
+    char *dlm_sng; /* User specified delimiter string for printed output */
     nco_bool ALPHA_BY_FULL_GROUP; /* [flg] Print alphabetically by full group */
     nco_bool ALPHA_BY_FULL_OBJECT; /* [flg] Print alphabetically by full object */
     nco_bool ALPHA_BY_STUB_GROUP; /* [flg] Print alphabetically by stub group */
@@ -601,7 +604,7 @@ extern "C" {
     nco_bool PRN_MSS_VAL_BLANK; /* [flg] Print missing values as blanks */
     nco_bool PRN_VAR_DATA; /* [flg] Print variable data */
     nco_bool PRN_VAR_METADATA; /* [flg] Print variable metadata */
-  } prn_sct;
+  } prn_fmt_sct;
   
   /* Attribute structure */
   typedef struct{ /* att_sct */

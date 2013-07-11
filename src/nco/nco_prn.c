@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.102 2013-07-10 18:34:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.103 2013-07-11 00:19:44 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -11,7 +11,7 @@
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
 (const int grp_id, /* I [id] netCDF group ID */
- const prn_sct prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
  const int var_id) /* I [id] netCDF input variable ID */
 {
   /* Purpose: Print all global attributes in netCDF group,
@@ -21,6 +21,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   att_sct *att=NULL_CEWI;
 
+  const char spc_sng[]=" "; /* [sng] Space string */
+
   char dlm_sng[3];
   char src_sng[NC_MAX_NAME];
   char att_sng[NCO_MAX_LEN_FMT_SNG];
@@ -28,11 +30,14 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   int idx;
   int grp_id_prn;
   int nbr_att;
-  int rcd=NC_NOERR;                /* [rcd] Return code */
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int prn_ndn=0; /* [nbr] Indentation for printing */
 
   long att_lmn;
   long att_sz;
   
+  if(prn_flg->new_fmt) prn_ndn=prn_flg->prn_ndn;
+
   if(var_id == NC_GLOBAL){
     /* Get number of global attributes in group */
     (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
@@ -60,7 +65,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     /* Allocate enough space to hold attribute */
     att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
     (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
-    (void)fprintf(stdout,"%s attribute %i: %s, size = %li %s, value = ",src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
+    
+    (void)fprintf(stdout,"%*s\t%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
     
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
@@ -613,12 +619,13 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 } /* end nco_prn_var_val_lmt() */
 
 void
-nco_prn_var_dfn                 /* [fnc] Print variable metadata */
-(const int nc_id,               /* I [id] netCDF file ID */
- const prn_sct prn_flg,         /* I [sct] Print formatting flags */
+nco_prn_var_dfn /* [fnc] Print variable metadata */
+(const int nc_id, /* I [id] netCDF file ID */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
  const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata */
+  const char spc_sng[]=" "; /* [sng] Space string */
 
   int deflate; /* [flg] Deflation is on */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
@@ -630,6 +637,7 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
   int var_id;
   int grp_id;
   int dmn_idx;
+  int prn_ndn=0; /* [nbr] Indentation for printing */
 
   nc_type var_typ;
 
@@ -676,7 +684,8 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
   } /* end loop over dimensions */
 
   /* Print header for variable */
-  (void)fprintf(stdout,"%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
+  if(prn_flg->new_fmt) prn_ndn=prn_flg->sxn_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
+  (void)fprintf(stdout,"%*s\t%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
 
   /* Print type, shape, and total size of variable */
   if(nbr_dim > 0){
@@ -697,15 +706,15 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
 
     (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 
-    if(deflate) (void)fprintf(stdout,"%s compression (Lempel-Ziv %s shuffling) level = %d\n",
-      var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
-    (void)fprintf(stdout,"%s size (RAM) = %s = %li*%lu = %lu bytes\n",
-      var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
+    if(deflate) (void)fprintf(stdout,"%*s\t%s compression (Lempel-Ziv %s shuffling) level = %d\n",
+      prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
+    (void)fprintf(stdout,"%*s\t%s size (RAM) = %s = %li*%lu = %lu bytes\n",
+      prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   }else{
     long var_sz=1L;
 
-    (void)fprintf(stdout,"%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",
-      var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
+    (void)fprintf(stdout,"%*s\t%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",
+      prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   } /* end if variable is scalar */
 
   /* Print dimension sizes and names */
@@ -719,40 +728,36 @@ nco_prn_var_dfn                 /* [fnc] Print variable metadata */
       /* Get coordinate from table */
       crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
 
-      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, chunksize = %zu (",var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->sz,nco_typ_sng(crd->var_typ),cnk_sz[dmn_idx]); 
-      else (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s (",var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->sz,nco_typ_sng(crd->var_typ));
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%*s\t%s dimension %i: %s, size = %li %s, chunksize = %zu (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->sz,nco_typ_sng(crd->var_typ),cnk_sz[dmn_idx]); 
+      else (void)fprintf(stdout,"%*s\t%s dimension %i: %s, size = %li %s (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->sz,nco_typ_sng(crd->var_typ));
       (void)fprintf(stdout,"%soordinate is %s)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record c" : "C",(!strcmp(crd->crd_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->crd_nm_fll);
-    }
 
-    /* This dimension does not has a coordinate variable, it must have a unique dimension pointer */
-    else if (var_trv->var_dmn[dmn_idx].is_crd_var == False){
-
-      /* Get unique dimension */
+    }else if(var_trv->var_dmn[dmn_idx].is_crd_var == False){
+      /* Dimension does not have an associated coordinate variable */
       dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
 
       /* Dimension is not a coordinate */
-      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%s dimension %i: %s, size = %li, chunksize = %zu (",
-        var_trv->nm,dmn_idx,(!strcmp(dmn_trv->grp_nm_fll,var_trv->grp_nm_fll)) ? dmn_trv->nm : dmn_trv->nm_fll,dmn_trv->sz,cnk_sz[dmn_idx]); 
-      else (void)fprintf(stdout,"%s dimension %i: %s, size = %li (",
-        var_trv->nm,dmn_idx,(!strcmp(dmn_trv->grp_nm_fll,var_trv->grp_nm_fll)) ? dmn_trv->nm : dmn_trv->nm_fll,dmn_trv->sz);
+      if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%*s\t%s dimension %i: %s, size = %li, chunksize = %zu (",
+        prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(dmn_trv->grp_nm_fll,var_trv->grp_nm_fll)) ? dmn_trv->nm : dmn_trv->nm_fll,dmn_trv->sz,cnk_sz[dmn_idx]); 
+      else (void)fprintf(stdout,"%*s\t%s dimension %i: %s, size = %li (",
+        prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(dmn_trv->grp_nm_fll,var_trv->grp_nm_fll)) ? dmn_trv->nm : dmn_trv->nm_fll,dmn_trv->sz);
       (void)fprintf(stdout,"%son-coordinate dimension)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record n" : "N");
 
-    }
+    } /* end if plain dimension */
 
     (void)fprintf(stdout,"\n"); 
-  } /* Loop dimensions for object (variable)  */
+  } /* end loop over dimensions */
 
   /* Caveat user */
-  if((nc_type)var_typ == NC_STRING) (void)fprintf(stdout,"%s size (RAM) above is space required for pointers only, full size of strings is unknown until data are read\n",var_trv->nm);
+  if((nc_type)var_typ == NC_STRING) (void)fprintf(stdout,"%*s\t%s size (RAM) above is space required for pointers only, full size of strings is unknown until data are read\n",prn_ndn,spc_sng,var_trv->nm);
   (void)fflush(stdout);
-
 } /* end nco_prn_var_dfn() */
 
 int /* [rcd] Return code */
 nco_grp_prn /* [fnc] Recursively print group contents */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
- const prn_sct prn_flg, /* I [sct] Print formatting flags */
+ prn_fmt_sct * const prn_flg, /* I/O [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
   /* Purpose: Recursively print group contents
@@ -792,6 +797,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   int nbr_rec;                     /* [nbr] Number of record dimensions in this group */
   int nbr_var;                     /* [nbr] Number of variables */
   int rcd=NC_NOERR;                /* [rcd] Return code */
+  int var_id;                      /* [id] Variable ID */
   int var_idx;                     /* [idx] Variable index */
   int var_nbr_xtr;                 /* [nbr] Number of extracted variables */
 
@@ -852,15 +858,16 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   } /* end loop over dmn_idx */
 
   /* Sort dimensions alphabetically */
-  if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg.ALPHA_BY_STUB_GROUP);
+  if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
 
   if(grp_dpt == 0) (void)fprintf(stdout,"fxm: begin new file dump format under development in nco_grp_prn():\n");
-  //  (void)sprintf(fmt_sng,"%%dc",grp_dpt*prn_flg.spc_per_lvl);
+  //  (void)sprintf(fmt_sng,"%%dc",grp_dpt*prn_flg->spc_per_lvl);
   //  (void)fprintf(stdout,"%*sgroup: %s {\n",fmt_sng,grp_nm_fll);
-  (void)fprintf(stdout,"%*sgroup: %s {\n",grp_dpt*prn_flg.spc_per_lvl,spc_sng,grp_nm_fll);
+  (void)fprintf(stdout,"%*sgroup: %s {\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,grp_nm_fll);
 
   /* Print dimension information for group */
-  if(dmn_nbr > 0) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg.sxn_fst+grp_dpt*prn_flg.spc_per_lvl,spc_sng);
+  prn_flg->prn_ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
+  if(dmn_nbr > 0) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->prn_ndn,spc_sng);
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     (void)fprintf(stdout,"\t %s = %zi\n",dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz);
   } /* end loop over dmn_idx */
@@ -913,29 +920,38 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   var_lst=(nm_id_sct *)nco_realloc(var_lst,var_nbr_xtr*(sizeof(nm_id_sct)));
 
   /* Sort variables alphabetically */
-  if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg.ALPHA_BY_STUB_GROUP);
+  if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg->ALPHA_BY_STUB_GROUP);
 
   /* Print variable information for group */
-  if(var_nbr_xtr > 0) (void)fprintf(stdout,"%*svariables:\n",prn_flg.sxn_fst+grp_dpt*prn_flg.spc_per_lvl,spc_sng);
+  if(var_nbr_xtr > 0) (void)fprintf(stdout,"%*svariables:\n",prn_flg->prn_ndn,spc_sng);
   for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
     trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
 
     /* Print variable full name */
-    if(var_trv.grp_dpt > 0) (void)fprintf(stdout,"%*s\t%s\n",prn_flg.sxn_fst+grp_dpt*prn_flg.spc_per_lvl,spc_sng,var_trv.nm_fll);
+    if(var_trv.grp_dpt > 0) (void)fprintf(stdout,"%*s\t%s\n",prn_flg->prn_ndn,spc_sng,var_trv.nm_fll);
 
     /* Print variable metadata */ 
     (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
-    if(var_idx < var_nbr_xtr-1) (void)fprintf(stdout,"\n");
 
+    /* Obtain variable ID using group ID */
+    (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+
+    /* Print variable attributes */
+    if(var_trv.nbr_att > 0) (void)nco_prn_att(grp_id,prn_flg,var_id);
+  } /* end loop over var_idx */
+
+  /* Print attribute information for group */
+  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"%*sattributes:\n",prn_flg->prn_ndn,spc_sng);
+  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
+
+  /* Print data for group */
+  if(var_nbr_xtr > 0) (void)fprintf(stdout,"%*sdata:\n",prn_flg->prn_ndn,spc_sng);
+  for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
+    trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
   } /* end loop over var_idx */
 
   /* Variable list no longer needed */
   var_lst=nco_nm_id_lst_free(var_lst,var_nbr_xtr);
-
-  /* Print group attributes */
-  if(prn_flg.PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
-
-  (void)fprintf(stdout,"%*s } group %s\n",grp_dpt*prn_flg.spc_per_lvl,spc_sng,grp_nm_fll);
 
   /* Get ready for sub-groups */ 
   grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
@@ -973,6 +989,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
   } /* end loop over grp_idx */
+
+  (void)fprintf(stdout,"%*s } // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,grp_nm_fll);
 
   if(grp_dpt == 0) (void)fprintf(stdout,"fxm: end new file dump format under development in nco_grp_prn():\n");
 

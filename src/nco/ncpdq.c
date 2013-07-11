@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.336 2013-07-09 19:26:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.337 2013-07-11 00:19:44 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -129,8 +129,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.336 2013-07-09 19:26:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.336 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.337 2013-07-11 00:19:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.337 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -198,7 +198,6 @@ main(int argc,char **argv)
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
   lmt_msa_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
-
   
   nm_id_sct *dmn_rdr_lst;
 
@@ -548,7 +547,6 @@ main(int argc,char **argv)
       } /* end else */
     } /* end loop over idx_rdr */
   } /* Create reversed dimension list */
-
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -1061,7 +1059,6 @@ main(int argc,char **argv)
 
 #endif /* USE_TRV_API */
 
-
 #ifdef USE_TRV_API
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
@@ -1090,7 +1087,6 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
-
   /* Allocate array of dimensions associated with variables to be extracted with maximum possible size */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));
 
@@ -1109,7 +1105,6 @@ main(int argc,char **argv)
 
     /* Create structured list of re-ordering dimension names and IDs */
     dmn_rdr_lst=nco_lst_dmn_mk_trv(dmn_rdr_lst_in,dmn_rdr_nbr,trv_tbl);
-
 
     /* Form list of re-ordering dimensions from extracted input dimensions */
     dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
@@ -1260,7 +1255,6 @@ main(int argc,char **argv)
       } /* endif current variable is record variable */
     } /* end loop over var_prc */
   } /* endif IS_REORDER */
-
 
   /* NB: Much of following logic is required by netCDF3 constraint that only
   one record variable is allowed per file. netCDF4 relaxes this constraint.
