@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.846 2013-07-11 18:53:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.847 2013-07-11 23:26:43 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1198,8 +1198,20 @@ nco_get_prg_info(void)                 /* [fnc] Get program info */
   exit(ret);
 } /* end nco_get_prg_info() */
 
+void 
+nco_xtr_lst_prn                            /* [fnc] Print name-ID structure list */
+(nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
+ const int nm_id_nbr)                  /* I [nbr] Number of name-ID structures in list */
+{
+  (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",prg_nm_get(),nm_id_nbr); 
+  for(int idx=0;idx<nm_id_nbr;idx++){
+    nm_id_sct nm_id=nm_id_lst[idx];
+    (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.nm); 
+  } 
+} /* end nco_xtr_lst_prn() */
+
 void
-nco_prn_xtr_dfn /* [fnc] Print variable metadata */
+nco_prn_xtr_mtd /* [fnc] Print variable metadata */
 (const int nc_id, /* I [id] netCDF file ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
@@ -1230,27 +1242,15 @@ nco_prn_xtr_dfn /* [fnc] Print variable metadata */
   } /* end uidx */
 
   return;
-} /* end nco_prn_xtr_dfn() */
-
-void 
-nco_xtr_lst_prn                            /* [fnc] Print name-ID structure list */
-(nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
- const int nm_id_nbr)                  /* I [nbr] Number of name-ID structures in list */
-{
-  (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",prg_nm_get(),nm_id_nbr); 
-  for(int idx=0;idx<nm_id_nbr;idx++){
-    nm_id_sct nm_id=nm_id_lst[idx];
-    (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.nm); 
-  } 
-} /* end nco_xtr_lst_prn() */
+} /* end nco_prn_xtr_mtd() */
 
 void
-nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+nco_prn_xtr_val                       /* [fnc] Print variable data */
 (const int nc_id,                     /* I netCDF file ID */
  prn_fmt_sct * const prn_flg,         /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Print variable data (called with PRN_VAR_DATA) */
+  /* Purpose: Print variable data */
 
   /* Loop variables in table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -1266,7 +1266,7 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
   } /* End Loop variables in table */
 
   return;
-} /* end nco_prn_var_val() */
+} /* end nco_prn_xtr_val() */
 
 void
 nco_xtr_dfn                          /* [fnc] Define extracted groups, variables, and attributes in output file */
@@ -1969,7 +1969,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->nbr_dmn++;
     trv_tbl->lst_dmn=(dmn_trv_sct *)nco_realloc(trv_tbl->lst_dmn,trv_tbl->nbr_dmn*sizeof(dmn_trv_sct));
 
-    /* Initialize dimension as a non-record dimension */
+    /* Initialize as non-record dimension */
     trv_tbl->lst_dmn[idx].is_rec_dmn=False;
 
     /* Get dimension name */
@@ -1981,8 +1981,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       /* Get record dimension name */
       (void)nco_inq_dim(grp_id,dmn_ids_grp_ult[rec_idx],rec_nm,&rec_sz);
 
-      /* Current dimension name matches current record dimension name ? */
-      if(strcmp(rec_nm,dmn_nm) == 0 ){
+      /* Current dimension name matches current record dimension name? */
+      if(!strcmp(rec_nm,dmn_nm)){
 
         /* Dimension is a record dimension */
         trv_tbl->lst_dmn[idx].is_rec_dmn=True;
@@ -2110,7 +2110,6 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
   } /* Loop all variables */
 
 } /* nco_blb_crd_var_trv() */
-
 
 void                      
 nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate variable structure */
@@ -2412,7 +2411,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Parse auxiliary coordinates */
   if(aux_nbr)(void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
 
-  /* Build dimension info for all variables (match dimension IDs) */
+  /* Build dimension information for all variables (match dimension IDs) */
   (void)nco_bld_dmn_ids_trv(nc_id,trv_tbl);
 
   /* Build "is_crd_var" and "is_rec_var" members for all variables */
@@ -3171,7 +3170,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dmn_id,trv_tbl);
 
         /* No coordinates */
-        if(dmn_trv->crd_nbr == 0) {
+        if(dmn_trv->crd_nbr == 0){
 
           if(dbg_lvl_get() == nco_dbg_old){
             (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
@@ -3183,12 +3182,12 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
           /* Store unique dimension (non coordinate ) */
           trv_tbl->lst[idx_var].var_dmn[dmn_idx_var].ncd=dmn_trv;
-        }
+
+        }else if(dmn_trv->crd_nbr > 0){
 
         /* There are coordinates; one must be chosen 
-        Scope definition: In the same group of the variable or beneath (closer to root) 
-        Above: out of scope */
-        else if(dmn_trv->crd_nbr > 0) {
+	   Scope definition: In the same group of the variable or beneath (closer to root) 
+	   Above: out of scope */
 
           crd_sct *crd=NULL; /* [sct] Coordinate to assign to dimension of variable */
 
@@ -3196,11 +3195,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
           crd=nco_scp_var_crd(&var_trv,dmn_trv);
 
           /* The "in scope" coordinate is returned */
-          if (crd) {
-            if(dbg_lvl_get() == nco_dbg_old){ 
-              (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm, 
-                dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
-            } /* endif dbg */ 
+          if(crd){
+            if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
 
             /* Mark as True */
             trv_tbl->lst[idx_var].var_dmn[dmn_idx_var].is_crd_var=True;
@@ -3208,12 +3204,9 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             /* Store coordinate */
             trv_tbl->lst[idx_var].var_dmn[dmn_idx_var].crd=crd;
 
-          /* None was found in scope */
-          }else {
-            if(dbg_lvl_get() == nco_dbg_old){ 
-              (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> with out of scope coordinate\n",prg_nm_get(),fnc_nm, 
-                dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll);         
-            } /* endif dbg */
+          }else{
+
+            if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> with out of scope coordinate\n",prg_nm_get(),fnc_nm,dmn_idx_var,var_trv.var_dmn[dmn_idx_var].dmn_nm_fll,var_trv.nm_fll);         
 
             /* Mark as False */
             trv_tbl->lst[idx_var].var_dmn[dmn_idx_var].is_crd_var=False;
@@ -3227,10 +3220,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
     } /* Filter variables  */
   } /* Loop table */
 
-
-
   /* Check if bool array is all filled  */
-
 #ifdef NCO_SANITY_CHECK
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -3252,9 +3242,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
   } /* Loop table */
 #endif /* NCO_SANITY_CHECK */
 
-
   /* Check if bool array is all filled  */
-
 #ifdef NCO_SANITY_CHECK
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -3271,8 +3259,6 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 #endif /* NCO_SANITY_CHECK */
 
 } /* nco_bld_var_dmn() */
-
-
 
 void                          
 nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (Group Traversal Table) for debugging  */

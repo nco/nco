@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.324 2013-07-11 18:53:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.325 2013-07-11 23:26:43 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -175,7 +175,7 @@ void
 nco_get_prg_info(void);               /* [fnc] Get program info */
 
 void
-nco_prn_xtr_dfn                       /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
+nco_prn_xtr_mtd                       /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
 (const int nc_id,                     /* I netCDF file ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
@@ -191,7 +191,7 @@ nco_prt_dmn                           /* [fnc] Print dimensions for a group  */
  const char * const grp_nm_fll);      /* I [sng] Full name of group */
 
 void
-nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
+nco_prn_xtr_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
  prn_fmt_sct * const prn_flg,         /* I/O [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */

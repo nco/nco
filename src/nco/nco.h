@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.354 2013-07-11 17:58:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.355 2013-07-11 23:26:43 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -587,12 +587,15 @@ extern "C" {
   
   /* Print flags structure */
   typedef struct{ /* prn_fmt_sct */
+    nco_bool cdl; /* [flg] Print valid CDL */
     nco_bool new_fmt; /* [flg] Print in new format */
+    nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
     int ndn; /* [nbr] Indentation */
     int fll_pth; /* [nbr] Print full paths */
     int tab; /* [nbr] Number of spaces in tab */
     int spc_per_lvl; /* [nbr] Indentation spaces per group level */
-    int sxn_fst; /* [nbr] Offset width of subsection from group name */
+    int sxn_fst; /* [nbr] Offset of section from group name */
+    int var_fst; /* [nbr] Offset of variable from section name */
     char *dlm_sng; /* User specified delimiter string for printed output */
     nco_bool ALPHA_BY_FULL_GROUP; /* [flg] Print alphabetically by full group */
     nco_bool ALPHA_BY_FULL_OBJECT; /* [flg] Print alphabetically by full object */

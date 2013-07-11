@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.105 2013-07-11 17:58:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.106 2013-07-11 23:26:43 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -36,17 +36,17 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   long att_lmn;
   long att_sz;
   
-  if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn;
-
   if(var_id == NC_GLOBAL){
     /* Get number of global attributes in group */
     (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
     /* Which group is this? */
     rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
     if(rcd == NC_ENOGRP) (void)strcpy(src_sng,"Global"); else (void)strcpy(src_sng,"Group");
+    if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->sxn_fst;
   }else{
     /* Get name and number of attributes for variable */
     (void)nco_inq_var(grp_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
+    if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
   } /* end else */
 
   /* Allocate space for attribute names and types */
@@ -684,7 +684,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   } /* end loop over dimensions */
 
   /* Print header for variable */
-  if(prn_flg->new_fmt) prn_ndn=prn_flg->sxn_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
+  if(prn_flg->new_fmt) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
   (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
 
   /* Print type, shape, and total size of variable */
@@ -767,7 +767,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
      2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
-     ncks -D 6 ~/nco/data/in_grp.nc */
+     ncks -5 ~/nco/data/in_grp.nc */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
   const char spc_sng[]="";        /* [sng] Space string */
@@ -852,16 +852,16 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Sort dimensions alphabetically */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
 
-  if(grp_dpt == 0) (void)fprintf(stdout,"fxm: begin new file dump format under development in nco_grp_prn():\n");
-  //  (void)sprintf(fmt_sng,"%%dc",grp_dpt*prn_flg->spc_per_lvl);
-  //  (void)fprintf(stdout,"%*sgroup: %s {\n",fmt_sng,grp_nm_fll);
-  (void)fprintf(stdout,"%*sgroup: %s {\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,grp_nm_fll);
+  (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
+  if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",grp_nm_fll); else (void)fprintf(stdout,"\n");
 
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
-  if(dmn_nbr > 0) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
-    (void)fprintf(stdout,"%*s%s = %zi\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz);
+  if(dmn_nbr > 0) (void)fprintf(stdout,"\n%*sdimensions:\n",prn_flg->ndn,spc_sng);
+  prn_ndn+=prn_flg->var_fst;
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+    if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ", trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz); else (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz,(prn_flg->cdl) ? " ;" : "");
+  } /* end loop over dimension */
 
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,dmn_nbr);
@@ -914,7 +914,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg->ALPHA_BY_STUB_GROUP);
 
   /* Print variable information for group */
-  if(var_nbr_xtr > 0) (void)fprintf(stdout,"%*svariables:\n",prn_flg->ndn,spc_sng);
+  if(var_nbr_xtr > 0) (void)fprintf(stdout,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
   for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
     trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
 
@@ -934,12 +934,12 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   } /* end loop over var_idx */
 
   /* Print attribute information for group */
-  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"%*sattributes:\n",prn_flg->ndn,spc_sng);
+  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\n%*sattributes:\n",prn_flg->ndn,spc_sng);
   if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
 
   /* Print data for group */
   if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
-    (void)fprintf(stdout,"%*sdata:\n",prn_flg->ndn,spc_sng);
+    (void)fprintf(stdout,"\n%*sdata:\n",prn_flg->ndn,spc_sng);
     for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) 
       (void)nco_msa_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id]);
   } /* end if */
@@ -984,9 +984,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
   } /* end loop over grp_idx */
 
-  (void)fprintf(stdout,"%*s } // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,grp_nm_fll);
-
-  if(grp_dpt == 0) (void)fprintf(stdout,"fxm: end new file dump format under development in nco_grp_prn():\n");
+  (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,grp_nm_fll);
 
   return rcd;
 } /* end nco_grp_prn() */

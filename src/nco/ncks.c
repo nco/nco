@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.622 2013-07-11 17:58:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.623 2013-07-11 23:26:43 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -119,6 +119,7 @@ main(int argc,char **argv)
   nco_bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
   nco_bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   nco_bool PRN_VRB=False; /* [flg] Print data and metadata by default */
+  nco_bool PRN_NEW_FMT=False; /* [flg] Print using new print format */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -149,9 +150,9 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.622 2013-07-11 17:58:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.622 $";
-  const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.623 2013-07-11 23:26:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.623 $";
+  const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -458,6 +459,9 @@ main(int argc,char **argv)
       break;
     case '4': /* Catch-all to prescribe output storage format */
       if(!strcmp(opt_crr,"64bit")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+      break;
+    case '5': /* Print using new print format */
+      PRN_NEW_FMT=!PRN_NEW_FMT;
       break;
     case '6': /* Request netCDF3 64-bit offset output storage format */
       fl_out_fmt=NC_FORMAT_64BIT;
@@ -766,6 +770,7 @@ main(int argc,char **argv)
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
     
   }else{ /* !fl_out */
+
     nco_bool ALPHA_BY_FULL_GROUP=False; /* [flg] Print alphabetically by full group */
     nco_bool ALPHA_BY_STUB_GROUP=True; /* [flg] Print alphabetically by stub group */
     //      nco_bool ALPHA_BY_FULL_OBJECT=False; /* [flg] Print alphabetically by full object */
@@ -773,11 +778,14 @@ main(int argc,char **argv)
 
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;
-    prn_flg.new_fmt=False;
+    prn_flg.new_fmt=PRN_NEW_FMT;
+    if(dbg_lvl == nco_dbg_crr) prn_flg.cdl=True; else prn_flg.cdl=False;
     prn_flg.spc_per_lvl=2;
     prn_flg.sxn_fst=2;
+    prn_flg.var_fst=2;
     prn_flg.tab=4;
     prn_flg.fll_pth=False;
+    prn_flg.nwl_pst_val=True;
     prn_flg.dlm_sng=dlm_sng;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
     //	prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;
@@ -793,37 +801,38 @@ main(int argc,char **argv)
     prn_flg.PRN_VAR_DATA=PRN_VAR_DATA;
     prn_flg.PRN_VAR_METADATA=PRN_VAR_METADATA;
 
-    if(PRN_GLB_METADATA){
-      int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
-      int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
-      /* File summary line */
-      (void)fprintf(stdout,"Opened file %s, filetype = %s: %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
-      /* Get unlimited dimension information from input file/group */
-      rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
-      if(nbr_rec_lcl > 0){
-        char dmn_nm[NC_MAX_NAME]; 
-        long rec_dmn_sz;
-        for(int rec_idx=0;rec_idx<nbr_rec_lcl;rec_idx++){
-          (void)nco_inq_dim(in_id,dmn_ids_rec[rec_idx],dmn_nm,&rec_dmn_sz);
-          (void)fprintf(stdout,"Root record dimension %d: name = %s, size = %li\n",rec_idx,dmn_nm,rec_dmn_sz);
-        } /* end loop over rec_idx */
-        (void)fprintf(stdout,"\n");
-      } /* NCO_REC_DMN_UNDEFINED */
-      /* Print group attributes recursively */
-      (void)nco_prn_att_trv(in_id,&prn_flg,trv_tbl);
-     } /* !PRN_GLB_METADATA */
-    
-    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,&prn_flg,trv_tbl);
-
-    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,&prn_flg,trv_tbl);
-
-    /* New file dump format under development by CSZ 20130709. Test with, e.g.,
-       ncks -D 6 ~/nco/data/in_grp.nc
-       ncks -D 6 -g g1 ~/nco/data/in_grp.nc
-       ncks -D 6 -g g1,g2 ~/nco/data/in_grp.nc */
-    //    if(dbg_lvl == nco_dbg_crr && False){
-    if(dbg_lvl == nco_dbg_crr){
-
+    if(!prn_flg.new_fmt){
+      
+      if(PRN_GLB_METADATA){
+	int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
+	int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
+	/* File summary line */
+	(void)fprintf(stdout,"Summary of %s: filetype = %s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
+	/* Get unlimited dimension information from input file/group */
+	rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
+	if(nbr_rec_lcl > 0){
+	  char dmn_nm[NC_MAX_NAME]; 
+	  long rec_dmn_sz;
+	  for(int rec_idx=0;rec_idx<nbr_rec_lcl;rec_idx++){
+	    (void)nco_inq_dim(in_id,dmn_ids_rec[rec_idx],dmn_nm,&rec_dmn_sz);
+	    (void)fprintf(stdout,"Root record dimension %d: name = %s, size = %li\n",rec_idx,dmn_nm,rec_dmn_sz);
+	  } /* end loop over rec_idx */
+	  (void)fprintf(stdout,"\n");
+	} /* NCO_REC_DMN_UNDEFINED */
+	/* Print group attributes recursively */
+	(void)nco_prn_att_trv(in_id,&prn_flg,trv_tbl);
+      } /* !PRN_GLB_METADATA */
+      
+      if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
+      if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
+      
+    }else{ 
+      
+      /* New file dump format under development by CSZ 20130709. Test with, e.g.,
+	 ncks -5 ~/nco/data/in_grp.nc
+	 ncks -5 -g g1 ~/nco/data/in_grp.nc
+	 ncks -5 -g g1,g2 ~/nco/data/in_grp.nc */
+      
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
 	/* [fnc] Recursively print group contents */
 	prn_flg.new_fmt=True;
@@ -841,18 +850,13 @@ main(int argc,char **argv)
 	    //if(PRN_GLB_METADATA) (void)nco_prn_grp_att(in_id,trv_tbl);
 	    ;
 	  } /* endif group */
-	  /* Print this variable */
 	  if(trv_obj.nco_typ == nco_obj_typ_var){
-	    /* Print variable metadata */
-	    if(PRN_VAR_METADATA) (void)nco_prn_xtr_dfn(in_id,&prn_flg,trv_tbl);
-	    /* Print variable data */
-	    if(PRN_VAR_DATA) (void)nco_prn_var_val(in_id,&prn_flg,trv_tbl);
+	    if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
+	    if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
 	  } /* endif variable */
 	} /* end loop over obj_idx */
       } /* end if */
-
-    } /* endif dbg */
-
+    } /* endif new format */
   } /* !fl_out */
   
  close_and_free: /* goto close_and_free */

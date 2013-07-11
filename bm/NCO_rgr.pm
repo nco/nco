@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.299 2013-07-07 07:29:55 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.300 2013-07-11 23:26:42 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -499,7 +499,7 @@ print "\n";
     
     
 #ncbo #16
-# ncbo -O  -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
+# ncbo -O -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
 
@@ -704,8 +704,8 @@ print "\n";
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
     $tst_cmd[2]="ncra -Y ncea -t1 -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_01%";
-    $tst_cmd[3]="ncbo -C -h -O   %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
-    $tst_cmd[4]="ncwa  -t1 -O -C  %tmp_fl_02% %tmp_fl_03% 2>%tmp_fl_05%";
+    $tst_cmd[3]="ncbo -C -h -O  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[4]="ncwa  -t1 -O -C %tmp_fl_02% %tmp_fl_03% 2>%tmp_fl_05%";
     $dsc_sng="Check op with OpenMP";
 #    $tst_cmd[5]="ncks -C -H -s '%d' -v R %tmp_fl_03%";
     $tst_cmd[5]="ncap2 -t1 -h -v -O -s 'n2= ( (fabs(R)<0.01) && (fabs(S)<0.01) && (fabs(T)<0.01) && (fabs(U)<0.01) && (fabs(V)<0.01) && (fabs(W)<0.01) && (fabs(X)<0.01) );print(n2)' %tmp_fl_03% %tmp_fl_04%";
@@ -739,7 +739,7 @@ print "\n";
     $tst_cmd[0]="ncks -C -h -O $fl_fmt $nco_D_flg -v three_dmn_var_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -C -v -O $fl_fmt $nco_D_flg -s 'three_dmn_var_int+=100;' $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[2]="ncecat -C -h -O $omp_flg $fl_fmt $nco_D_flg -d time,0,3 -d time,8,9 -d lon,0,1 -d lon,3,3 -v three_dmn_var_int %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
-    $tst_cmd[3]="ncwa -C -h -O  $omp_flg $fl_fmt $nco_D_flg -y avg -v three_dmn_var_int %tmp_fl_02% %tmp_fl_03%";
+    $tst_cmd[3]="ncwa -C -h -O $omp_flg $fl_fmt $nco_D_flg -y avg -v three_dmn_var_int %tmp_fl_02% %tmp_fl_03%";
     $tst_cmd[4]="ncks -C -O -H -s '%d' -v three_dmn_var_int  %tmp_fl_03%";
     $dsc_sng="concatenate two 3D vars with multihyperslabbing";
     $tst_cmd[5]="84"; 
@@ -941,11 +941,11 @@ print "\n";
     $#tst_cmd=0; # Reset array 			   
 
 #ncflint #6   
-# ncflint -4 -O  -w 0.8,0.0 in.nc in.nc out.nc
+# ncflint -4 -O -w 0.8,0.0 in.nc in.nc out.nc
 # ncks -H -C -v time  -d time,9,9,1 out.nc
 
     $dsc_sng="-w 0.8,0.0 in.nc in.nc";
-    $tst_cmd[0]="ncflint $nco_D_flg -4 -O  -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncflint $nco_D_flg -4 -O -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks  -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
     $tst_cmd[2]="time[9]=8";
@@ -958,7 +958,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			
 
 #ncflint #7    
-# ncflint -4 -O  -w 0.8,0.0 in.nc in.nc out.nc
+# ncflint -4 -O -w 0.8,0.0 in.nc in.nc out.nc
 # ncks -H -C -v time  -d time,9,9,1 out.nc
 # --fix_rec_crd prevents ncflint from multiplying or interpolating any coordinate variables, including record coordinate variables
 
@@ -1401,7 +1401,7 @@ print "\n";
 #ncks #30 2D variable definition (netCDF4 file)
 
     $dsc_sng="2D variable definition (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C  -v ilev $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v ilev $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks  %tmp_fl_00%";
     $tst_cmd[2]="lev[2] vrt_nbr[1] ilev[5]=1013.25";
     $tst_cmd[3]="SS_OK";
@@ -1771,7 +1771,7 @@ print "\n";
 #structure that stores full path names for dimensions and coordinate variables.
 #	nco_xtr_wrt_trv() writes extracted data to output file
 #nco_xtr_dfn_trv() defines extracted groups, variables, and attributes in output file
-#	nco_prn_var_val_trv() prints variable data
+#	nco_prn_xtr_val_trv() prints variable data
 #
 #	* ncks limits are stored in the GTT dimension structure and MSA is applied.
 #	Distribute these to variables when writing with nco_msa_prn_var_val_trv().
@@ -2169,7 +2169,7 @@ print "\n";
   
 #NEW NCO 4.3.2 
 #ncpdq #7 MSA stride
-#ncpdq -h -O  -a lat,lon,time  -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl  in.nc out.nc 
+#ncpdq -h -O -a lat,lon,time  -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl  in.nc out.nc 
 #ncks -C -H -v three_dmn_var_dbl -d lat,0,0 -d lon,1,1 -d time,0  out.nc
 #lat[0]=90 lon[1]=270 time[0]=2 three_dmn_var_dbl[2]=16 
 
@@ -2266,7 +2266,7 @@ print "\n";
 # ncpdq -O -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc out.nc
 # ncks out.nc
 
-  $tst_cmd[0]="ncpdq $omp_flg -O  $fl_fmt $nco_D_flg -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
+  $tst_cmd[0]="ncpdq $omp_flg -O $fl_fmt $nco_D_flg -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var $in_pth_arg in.nc %tmp_fl_00%";
   $tst_cmd[1]="ncks -v two_dmn_var %tmp_fl_00%";
   $dsc_sng="Re-order 2D variable (no -C , MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1";
   $tst_cmd[2]="lev[0]=500 lat[0]=90 two_dmn_var[0]=17.5 fraction";
@@ -3165,8 +3165,8 @@ print "\n";
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra  $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
     $tst_cmd[2]="ncra  -t1 -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_01%";
-    $tst_cmd[3]="ncbo -C -h -O   %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
-    $tst_cmd[4]="ncwa  -t1 -O -C  %tmp_fl_02% %tmp_fl_03% 2>%tmp_fl_05%";
+    $tst_cmd[3]="ncbo -C -h -O  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[4]="ncwa  -t1 -O -C %tmp_fl_02% %tmp_fl_03% 2>%tmp_fl_05%";
     $dsc_sng="Check op with OpenMP";
     $tst_cmd[5]="ncap2 -t1 -h -v -O -s 'n2= ( (fabs(R)<0.01) && (fabs(S)<0.01) && (fabs(T)<0.01) && (fabs(U)<0.01) && (fabs(V)<0.01) && (fabs(W)<0.01) && (fabs(X)<0.01) );print(n2)' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[6]="n2 = 1";

@@ -1,5 +1,15 @@
 2013-07-11  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.3.3 release procedure:
+ 	Changes since nco-4_3_2: -X aux, ncflint/ncpdq -g -G --unn
+	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
+	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
+
+	* New indentation works well enough. Begin implementing CDL option.
+
+	* Strip all tabs and extra vertical space, ready to design new indentation
+
 	* New print format almost glitch-free, old format intact, regressions all pass
 
 2013-07-10  Charlie Zender  <zender@uci.edu>
@@ -14,12 +24,6 @@
 
 	* netCDF3 stubs for nco_inq_grp_parent(), nco_inq_grp_parent_flg()
 	return NC_ENOGRP rather than NC_NOERR or assert(0)
-
-	* NCO 4.3.3 release procedure:
- 	Changes since nco-4_3_2: -X aux, ncflint/ncpdq -g -G --unn
-	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
-	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
 
 	* Eliminate nc_id argument to nco_prn_att()
 

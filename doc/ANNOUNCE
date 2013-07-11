@@ -1,17 +1,15 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.581 2013-07-10 00:42:50 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.582 2013-07-11 23:26:42 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Did you enjoy the break after a rapid string of NCO releases?
-Good, because it's over. The current release brings group support
-to two more operators, ncflint and ncpdq. Now five operators fully
-support group hierarchies: ncbo, ncecat, ncflint, ncks, and ncpdq. 
-There is also a long-overdue bugfix for support of CF "coordinates"
-attributes which is how NCO understands Reduced Horizontal Grids and  
-Unstructured Grids.
+The current release brings group support to more operators: fxm.
+Now fxm operators fully support group hierarchies: ncbo, ncecat,
+ncflint, ncks, and ncpdq.  
+ncks has a new, highly-configurable printing mode which displays data
+from files with groups with friendlier indentation and annotation.
 
 Work on NCO 4.3.4 is underway and includes improved netCDF4 support
 for more NCO operators (ncwa, ncra, ncea, ncrcat), and better support
@@ -23,6 +21,8 @@ Charlie
 "New stuff" in 4.3.3 summary (full details always in ChangeLog):
 
 NEW FEATURES:
+
+A. ncks supports a new, group-friendly printing format
 
 A. ncwa now supports groups, Group Path Editing (GPE) and list unions,
    the same options supported by ncbo, ncecat, ncflint, ncks, and ncpdq.   

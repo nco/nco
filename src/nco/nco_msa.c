@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.210 2013-07-11 17:58:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.211 2013-07-11 23:26:43 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1253,7 +1253,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
   int in_id;                                 /* [ID] *Group* ID were variable resides (passed to MSA)*/
 
-  if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn;
+  if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
 
   /* Allocate local MSA */
   lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
@@ -1371,9 +1371,9 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
     if(rcd_lcl == NC_NOERR){
       (void)nco_inq_att(in_id,var.id,units_nm,&att_typ,&att_sz);
       if(att_typ == NC_CHAR){
-        unit_sng=(char *)nco_malloc((att_sz+1)*nco_typ_lng(att_typ));
+        unit_sng=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
         (void)nco_get_att(in_id,var.id,units_nm,unit_sng,att_typ);
-        unit_sng[(att_sz+1)*nco_typ_lng(att_typ)-1]='\0';
+        unit_sng[(att_sz+1L)*nco_typ_lng(att_typ)-1L]='\0';
         MALLOC_UNITS_SNG=True; /* [flg] Allocated memory for units string */
       } /* end if */
     } /* end if */
@@ -1385,7 +1385,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
     if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byt) : False; 
     if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s = %s %%s\n",prn_ndn,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%*s%s\n",prn_ndn,spc_sng,nco_typ_fmt_sng(var.type));
     if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
-      if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s = %s %s\n",prn_ndn,spc_sng,var_nm,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
+      if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s = %s %s\n",prn_ndn,spc_sng,var_nm,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%*s%s\n",prn_ndn,spc_sng,mss_val_sng); 
     }else{ /* !is_mss_val */
       if(prn_flg->PRN_DMN_VAR_NM){
         switch(var.type){
@@ -1435,7 +1435,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         } /* end switch */
       } /* !PRN_DMN_VAR_NM */
     } /* !is_mss_val */
-    (void)fprintf(stdout,"\n");
+    //(void)fprintf(stdout,"\n");
   } /* end if variable is scalar, byte, or character */
 
   if(var.nbr_dim > 0 && dlm_sng == NULL){
@@ -1522,7 +1522,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
       if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
 
       /* Calculate RAM indices from current limit */
-      for(int idx=0;idx <var.nbr_dim;idx++)
+      for(int idx=0;idx<var.nbr_dim;idx++)
 	dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
 
       /* Calculate disk indices from RAM indices */
@@ -1530,7 +1530,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
       /* Find variable index relative to disk */
       var_dsk=0;
-      for(int idx=0;idx <var.nbr_dim;idx++) var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
+      for(int idx=0;idx<var.nbr_dim;idx++) var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
 
       /* Skip rest of loop unless element is first in string */
       if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] > 0) goto lbl_chr_prn;
@@ -1657,14 +1657,14 @@ lbl_chr_prn:
       } /* end if NC_CHAR */
 
       /* Print variable name, index, and value */
-      if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s[%%ld]=%s %%s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%*s%s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type));
+      if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s[%%ld]=%s %%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%*s%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type));
       if(prn_flg->FORTRAN_IDX_CNV){
         (void)nco_msa_c_2_f(var_sng);
         var_dsk++;
       } /* end if FORTRAN_IDX_CNV */
 
       if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
-        if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s[%ld]=%s %s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,var_nm,var_dsk,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%*s%s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,mss_val_sng); 
+        if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s[%ld]=%s %s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,var_nm,var_dsk,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%*s%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,mss_val_sng); 
       }else{ /* !is_mss_val */
         if(prn_flg->PRN_DMN_VAR_NM){
           switch(var.type){
@@ -1703,7 +1703,7 @@ lbl_chr_prn:
     } /* end loop over elements */
 
     /* Additional newline between consecutive variables or final variable and prompt */
-    (void)fprintf(stdout,"\n");
+    //    (void)fprintf(stdout,"\n");
     (void)fflush(stdout);
   } /* end if variable has more than one dimension */
 
@@ -1737,6 +1737,8 @@ lbl_chr_prn:
     (void)nco_free(lmt_msa);
     (void)nco_free(lmt);
   } /* end if */
+
+  if(prn_flg->nwl_pst_val) (void)fprintf(stdout,"\n");
 
 } /* end nco_msa_prn_var_val_trv() */
 
@@ -1818,8 +1820,6 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     return;
   } /* End Deal with scalar variables */
 
-
-
   /* Allocate local MSA */
   lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
   lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
@@ -1827,7 +1827,6 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
    /* Copy from table to local MSA */
   (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
   
-
   /* Dimension vectors */
   dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
@@ -1881,13 +1880,11 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     lmt_msa[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[dmn_idx_var]->lmt_dmn);
   }/* End Loop limits */
 
-
   (void)nco_free(lmt_msa);
   (void)nco_free(lmt);
 
   return;
 } /* end nco_cpy_var_val_mlt_lmt_trv() */
-
 
 void
 nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local function (print or write) */
