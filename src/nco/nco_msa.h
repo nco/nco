@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.73 2013-04-23 07:28:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.74 2013-07-11 03:29:03 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -49,7 +49,7 @@ nco_msa_clc_idx
  lmt_msa_sct *lmt_a,         /* I list of lmts for each dimension  */
  long *indices,          /* I/O so routine can keep track of where its at */
  lmt_sct* lmt_out,      /* O  output hyperslab */
- int *slb );             /* slab which the above limit refers to */ 
+ int *slb);             /* slab which the above limit refers to */ 
 
 void 
 nco_msa_prn_idx    /* [fnc] Print multiple hyperslab indices  */
@@ -85,7 +85,6 @@ nco_msa_lmt_all_ntl     /* [fnc] Initilaize lmt_msa_sct's */
  lmt_sct** lmt,
  int lmt_nbr);
 
-
 void *          /* O pointer to malloced slab */
 nco_msa_rcr_clc /* Multi slab algorithm (recursive routine) */
 (int i,             /* current depth, we start at 0 */
@@ -108,7 +107,6 @@ nco_msa_ram_2_dsk   /* [fnc] Convert hyperlsab indices into indices relative to 
  long *dmn_sbs_dsk,  /* Output - indices relative to disk */
  nco_bool flg_free);        /* Free static space on last call */
 
-
 void
 nco_msa_var_get  /* [fnc] Get var data from disk taking accound of multihyperslabs */
 (const int in_id,  /* I [id] netCDF input file ID */
@@ -124,7 +122,6 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
  const int nbr_var,  /* I [nbr] Number of variables */
  lmt_msa_sct * const * lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
-
 
 void
 nco_msa_wrp_splt_trv    /* [fnc] Split wrapped dimensions (traversal table version) */
@@ -146,19 +143,11 @@ void
 nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new wrapped limits) */
 (lmt_msa_sct *lmt_lst); /* [sct] MSA */
 
-
 void
 nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
 (const int nc_id,                   /* I [ID] netCDF file ID */
- char * const dlm_sng,              /* I [sng] User-specified delimiter string, if any */
- const nco_bool FORTRAN_IDX_CNV,    /* I [flg] Hyperslab indices obey Fortran convention */
- const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
- const nco_bool PRN_DMN_UNITS,      /* I [flg] Print units attribute, if any */
- const nco_bool PRN_DMN_IDX_CRD_VAL,/* I [flg] Print dimension/coordinate indices/values */
- const nco_bool PRN_DMN_VAR_NM,     /* I [flg] Print dimension/variable names */
- const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_sct * const var_trv);    /* I [sct] Object to print (variable) */
-
 
 void
 nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to output file */
@@ -178,8 +167,6 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
 (const int in_id,                   /* I [id] netCDF location ID */
  var_sct *var_in,                   /* O [sct] Variable */
  const trv_sct * const var_trv);   /* O [sct] Object to read (variable) */
-
-
 
 #ifdef __cplusplus
 } /* end extern "C" */

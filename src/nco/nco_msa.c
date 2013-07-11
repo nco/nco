@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.208 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.209 2013-07-11 03:29:03 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1174,25 +1174,14 @@ nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new
   } /* end loop over size */
 
   /* Check if genuine wrapped co-ordinate */
-  if(size==1 && lmt_lst->lmt_dmn_nbr==2){
-    lmt_lst->WRP=True;
-  }
+  if(size == 1 && lmt_lst->lmt_dmn_nbr == 2) lmt_lst->WRP=True;
 
 } /* End nco_msa_wrp_splt_trv() */
-
-
-
 
 void
 nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 (const int nc_id,                   /* I [ID] netCDF file ID */
- char * const dlm_sng,              /* I [sng] User-specified delimiter string, if any */
- const nco_bool FORTRAN_IDX_CNV,    /* I [flg] Hyperslab indices obey Fortran convention */
- const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
- const nco_bool PRN_DMN_UNITS,      /* I [flg] Print units attribute, if any */
- const nco_bool PRN_DMN_IDX_CRD_VAL,/* I [flg] Print dimension/coordinate indices/values */
- const nco_bool PRN_DMN_VAR_NM,     /* I [flg] Print dimension/variable names */
- const nco_bool PRN_MSS_VAL_BLANK,  /* I [flg] Print missing values as blanks */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_sct * const var_trv)     /* I [sct] Object to print (variable) */
 {
   /* Purpose:
@@ -1221,7 +1210,6 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   ncks -D 11 -v unique -H ~/nco/data/in_grp.nc # scalar
   ncks -D 11 -C -d time,1,2,1 -v two_dmn_rec_var -H ~/nco/data/in_grp.nc # two_dmn_rec_var(time,lev);
   ncks -D 11 -C -d time,1,2,1 -d lev,1,1,1 -v two_dmn_rec_var -H ~/nco/data/in_grp.nc # two_dmn_rec_var(time,lev);           
-
   Tests for coordinate variables in ancestor groups:
   ncks -D 11 -d lat,1,1,1 -H  -v area ~/nco/data/in_grp.nc
   /area
@@ -1229,11 +1217,12 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   /g6/area
   lat[1]=90 area[1]=30
   /g6/g6g1/area
-  lat[1]=90 area[1]=50
-  */
+  lat[1]=90 area[1]=50 */
 
   const char fnc_nm[]="nco_msa_prn_var_val_trv()"; /* [sng] Function name  */
+  const char spc_sng[]=" "; /* [sng] Space string */
 
+  char *dlm_sng=NULL;                        /* [sng] User-specified delimiter string, if any */
   char *unit_sng;                            /* [sng] Units string */ 
   char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
   char mss_val_sng[NCO_MAX_LEN_FMT_SNG]="_"; /* [sng] Print this instead of numerical missing value */
@@ -1241,6 +1230,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (used for validation only) */ 
 
   int val_sz_byt=int_CEWI;                   /* [nbr] Type size */
+  int prn_ndn=0;                             /* [nbr] Indentation for printing */
 
   long lmn;                                  /* [nbr] Index to print variable data */
   long var_dsk;                              /* [nbr] Variable index relative to disk */
@@ -1263,13 +1253,14 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
   int in_id;                                 /* [ID] *Group* ID were variable resides (passed to MSA)*/
 
+  if(prn_flg->new_fmt) prn_ndn=prn_flg->prn_ndn;
+
   /* Allocate local MSA */
   lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
   lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
 
   /* Copy from table to local MSA */
   (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
-
 
   /* Obtain group ID where variable is located using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&in_id);
@@ -1306,7 +1297,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   /* Call super-dooper recursive routine */
   var.val.vp=nco_msa_rcr_clc(0,var.nbr_dim,lmt,lmt_msa,&var);
   /* Call also initializes var.sz with final size */
-  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var.sz*nco_typ_lng(var.type),in_id,(long *)NULL,(long *)NULL,var.val.vp);
+  if(prn_flg->MD5_DIGEST) (void)nco_md5_chk(var_nm,var.sz*nco_typ_lng(var.type),in_id,(long *)NULL,(long *)NULL,var.val.vp);
 
   /* Warn if variable is packed */
   if(nco_pck_dsk_inq(in_id,&var)) (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",prg_nm_get(),var_nm);
@@ -1316,6 +1307,8 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   if(var.has_mss_val) val_sz_byt=nco_typ_lng(var.type);
 
   /* User supplied dlm_sng, print variable (includes nbr_dmn == 0) */  
+  
+  if(prn_flg->dlm_sng) dlm_sng=strdup(prn_flg->dlm_sng); /* [sng] User-specified delimiter string, if any */
   if(dlm_sng){
     char *fmt_sng_mss_val=NULL;
 
@@ -1338,9 +1331,9 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
     for(lmn=0;lmn<var.sz;lmn++){
 
       /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
-      if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
+      if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
 
-      if(PRN_MSS_VAL_BLANK && is_mss_val){
+      if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
         if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(stdout,"%s, ",mss_val_sng);
       }else{ /* !is_mss_val */
         switch(var.type){
@@ -1366,7 +1359,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
 
   } /* end if dlm_sng */
 
-  if(PRN_DMN_UNITS){
+  if(prn_flg->PRN_DMN_UNITS){
     const char units_nm[]="units"; /* [sng] Name of units attribute */
     int rcd_lcl; /* [rcd] Return code */
     int att_id; /* [id] Attribute ID */
@@ -1389,12 +1382,12 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
   if(var.nbr_dim == 0 && dlm_sng == NULL){
     /* Variable is scalar, byte, or character */
     lmn=0L;
-    if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byt) : False; 
-    if(PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
-    if(PRN_MSS_VAL_BLANK && is_mss_val){
-      if(PRN_DMN_VAR_NM) (void)fprintf(stdout,"%s = %s %s\n",var_nm,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
+    if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byt) : False; 
+    if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s = %s %%s\n",prn_ndn,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%*s%s\n",prn_ndn,spc_sng,nco_typ_fmt_sng(var.type));
+    if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
+      if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s = %s %s\n",prn_ndn,spc_sng,var_nm,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
     }else{ /* !is_mss_val */
-      if(PRN_DMN_VAR_NM){
+      if(prn_flg->PRN_DMN_VAR_NM){
         switch(var.type){
         case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
         case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
@@ -1402,10 +1395,10 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.ip[lmn],unit_sng); break;
         case NC_CHAR:
           if(var.val.cp[lmn] != '\0'){
-            (void)sprintf(var_sng,"%%s = '%s' %%s\n",nco_typ_fmt_sng(var.type));
+            (void)sprintf(var_sng,"%*s%%s = '%s' %%s\n",prn_ndn,spc_sng,nco_typ_fmt_sng(var.type));
             (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
           }else{ /* Deal with NUL character here */
-            (void)fprintf(stdout, "%s = \"\" %s\n",var_nm,unit_sng);
+            (void)fprintf(stdout,"%*s%s = \"\" %s\n",prn_ndn,spc_sng,var_nm,unit_sng);
           } /* end if */
           break;
         case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
@@ -1449,58 +1442,42 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
     /* Create mod_map_in */
     for(int idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
     for(int idx=0;idx<var.nbr_dim;idx++)
-    {
       for(int jdx=idx+1;jdx<var.nbr_dim;jdx++)
-      {
         mod_map_in[idx]*=lmt_msa[jdx]->dmn_sz_org;
-      }
-    }
 
     /* Create mod_map_cnt */
     for(int idx=0;idx<var.nbr_dim;idx++) mod_map_cnt[idx]=1L;
     for(int idx=0;idx<var.nbr_dim;idx++)
-    {
       for(int jdx=idx;jdx<var.nbr_dim;jdx++)
-      {
         mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
-      }
-    }
 
     /* "GTT" Use Object parameter instead of "var_sct var" to get possible coordinate variables */
 
     /* Read coordinate dimensions if required */
-    if(PRN_DMN_IDX_CRD_VAL){
+    if(prn_flg->PRN_DMN_IDX_CRD_VAL){
 
       for(int idx=0;idx<var_trv->nbr_dmn;idx++){
 
-        assert(strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn[idx].dmn_nm) == 0);
+        assert(!strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn[idx].dmn_nm));
 
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s <%s>: reading dimension[%d]:%s: ",prg_nm_get(),fnc_nm,
-            var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
-        }
-
+        if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s <%s>: reading dimension[%d]:%s: ",prg_nm_get(),fnc_nm,var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
 
         dim[idx].val.vp=NULL;
         dim[idx].nm=lmt_msa[idx]->dmn_nm;
 
         /* This dimension is not a coordinate variable, do not read... */
-        if (var_trv->var_dmn[idx].is_crd_var == False){
+        if(!var_trv->var_dmn[idx].is_crd_var){
 
-          if(dbg_lvl_get() == nco_dbg_old){
-            (void)fprintf(stdout,"...<%s> is not a coordinate variable\n",var_trv->var_dmn[idx].dmn_nm_fll);
-          }
+          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"...<%s> is not a coordinate variable\n",var_trv->var_dmn[idx].dmn_nm_fll);
 
           dim[idx].is_crd_dmn=False;
           dim[idx].cid=-1;
           continue;
 
           /* This dimension is a coordinate variable, read it... */
-        }else if (var_trv->var_dmn[idx].is_crd_var == True){
+        }else if(var_trv->var_dmn[idx].is_crd_var){
 
-          if(dbg_lvl_get() == nco_dbg_old){
-            (void)fprintf(stdout,"coordinate variable <%s> found\n",var_trv->var_dmn[idx].dmn_nm_fll);
-          }
+          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"coordinate variable <%s> found\n",var_trv->var_dmn[idx].dmn_nm_fll);
 
           /* Get coordinate from table */
           crd_sct *crd=var_trv->var_dmn[idx].crd;
@@ -1531,9 +1508,7 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
           dim[idx].cid=var_id;
 
           /* Ooopssy */ 
-        } else {
-          assert(0);
-        }
+        }else assert(0);
  
         /* Typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
@@ -1543,29 +1518,24 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
     for(lmn=0;lmn<var.sz;lmn++){
 
       /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
-      if(PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
+      if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
 
       /* Calculate RAM indices from current limit */
-      for(int idx=0;idx <var.nbr_dim;idx++) 
-      {
-        dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
-      }
+      for(int idx=0;idx <var.nbr_dim;idx++)
+	dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
 
       /* Calculate disk indices from RAM indices */
       (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_msa,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz-1));
 
       /* Find variable index relative to disk */
       var_dsk=0;
-      for(int idx=0;idx <var.nbr_dim;idx++)
-      {
-        var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
-      }
+      for(int idx=0;idx <var.nbr_dim;idx++) var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
 
       /* Skip rest of loop unless element is first in string */
       if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] > 0) goto lbl_chr_prn;
 
       /* Print dimensions with indices along with values if they are coordinate variables */
-      if(PRN_DMN_IDX_CRD_VAL){
+      if(prn_flg->PRN_DMN_IDX_CRD_VAL){
         int dmn_idx;
         long dmn_sbs_prn;
         long crd_idx_crr;
@@ -1575,33 +1545,31 @@ nco_msa_prn_var_val_trv             /* [fnc] Print variable data (GTT version) *
         for(int idx=0;idx<var_trv->nbr_dmn;idx++){
 
           /* Reverse dimension ordering for Fortran convention */
-          if(FORTRAN_IDX_CNV) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
+          if(prn_flg->FORTRAN_IDX_CNV) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
 
           /* Format and print dimension part of output string for non-coordinate variables */
 
           /* If variable is a coordinate then skip printing until later */
-          if(var_trv->is_crd_var){
-            continue;
-          }
+          if(var_trv->is_crd_var) continue;
 
           if(!dim[dmn_idx].is_crd_dmn){ /* If dimension is not a coordinate... */
-            if(PRN_DMN_VAR_NM){
-              if(FORTRAN_IDX_CNV) (void)fprintf(stdout,"%s(%ld) ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
+            if(prn_flg->PRN_DMN_VAR_NM){
+              if(prn_flg->FORTRAN_IDX_CNV) (void)fprintf(stdout,"%*s%s(%ld) ",(idx == 0) ? prn_ndn : 0,spc_sng,dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
             } /* !PRN_DMN_VAR_NM */
             continue;
           } /* end if */
 
-          if(PRN_DMN_VAR_NM) (void)sprintf(dmn_sng,"%%s[%%ld]=%s ",nco_typ_fmt_sng(dim[dmn_idx].type)); else (void)sprintf(dmn_sng,"%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
+          if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(dmn_sng,"%*s%%s[%%ld]=%s ",(idx == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(dim[dmn_idx].type)); else (void)sprintf(dmn_sng,"%*s%s ",(idx == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(dim[dmn_idx].type));
           dmn_sbs_prn=dmn_sbs_dsk[dmn_idx];
 
-          if(FORTRAN_IDX_CNV){
+          if(prn_flg->FORTRAN_IDX_CNV){
             (void)nco_msa_c_2_f(dmn_sng);
             dmn_sbs_prn++;
           } /* end if */
 
           /* Account for hyperslab offset in coordinate values*/
           crd_idx_crr=dmn_sbs_ram[dmn_idx];
-          if(PRN_DMN_VAR_NM){
+          if(prn_flg->PRN_DMN_VAR_NM){
             switch(dim[dmn_idx].type){
             case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
             case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
@@ -1674,7 +1642,7 @@ lbl_chr_prn:
             prn_sng[chr_cnt]='\0';
             var_dsk_end=var_dsk;   
           } /* end if */
-          if(FORTRAN_IDX_CNV){ 
+          if(prn_flg->FORTRAN_IDX_CNV){ 
             (void)nco_msa_c_2_f(var_sng);
             var_dsk_srt++; 
             var_dsk_end++; 
@@ -1688,16 +1656,16 @@ lbl_chr_prn:
       } /* end if NC_CHAR */
 
       /* Print variable name, index, and value */
-      if(PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%%s[%%ld]=%s %%s\n",nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
-      if(FORTRAN_IDX_CNV){
+      if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s[%%ld]=%s %%s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%s\n",nco_typ_fmt_sng(var.type));
+      if(prn_flg->FORTRAN_IDX_CNV){
         (void)nco_msa_c_2_f(var_sng);
         var_dsk++;
       } /* end if FORTRAN_IDX_CNV */
 
-      if(PRN_MSS_VAL_BLANK && is_mss_val){
-        if(PRN_DMN_VAR_NM) (void)fprintf(stdout,"%s[%ld]=%s %s\n",var_nm,var_dsk,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
+      if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
+        if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s[%ld]=%s %s\n",(var.nbr_dim == 0) ? prn_ndn : 0,spc_sng,var_nm,var_dsk,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%s\n",mss_val_sng); 
       }else{ /* !is_mss_val */
-        if(PRN_DMN_VAR_NM){
+        if(prn_flg->PRN_DMN_VAR_NM){
           switch(var.type){
           case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
           case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.dp[lmn],unit_sng); break;
@@ -1733,7 +1701,6 @@ lbl_chr_prn:
       } /* !is_mss_val */
     } /* end loop over elements */
 
-
     /* Additional newline between consecutive variables or final variable and prompt */
     (void)fprintf(stdout,"\n");
     (void)fflush(stdout);
@@ -1746,23 +1713,23 @@ lbl_chr_prn:
 
   if(MALLOC_UNITS_SNG) unit_sng=(char *)nco_free(unit_sng);
 
-  if(PRN_DMN_IDX_CRD_VAL && dlm_sng==NULL){
-    for(int idx=0;idx<var.nbr_dim;idx++) dim[idx].val.vp=nco_free(dim[idx].val.vp);
-  } /* end if */
-
+  if(prn_flg->PRN_DMN_IDX_CRD_VAL && dlm_sng == NULL)
+    for(int idx=0;idx<var.nbr_dim;idx++) 
+      dim[idx].val.vp=nco_free(dim[idx].val.vp);
 
   /* Loop dimensions for object (variable)  */
-  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
+  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
     /* Allocated number of limits */
     int lmt_dmn_nbr=lmt_msa[dmn_idx_var]->lmt_dmn_nbr;
 
     /* Loop needed limits */
-    for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
+    for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++)
       lmt_msa[dmn_idx_var]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[dmn_idx_var]->lmt_dmn[lmt_idx]);
-    } /* End Loop needed limits */
 
     lmt_msa[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[dmn_idx_var]->lmt_dmn);
   } /* End Loop limits */
+
+  if(dlm_sng) dlm_sng=(char *)nco_free(dlm_sng);
 
   /* Finally... */
   if(var.nbr_dim > 0){

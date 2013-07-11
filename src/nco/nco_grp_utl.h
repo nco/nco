@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.322 2013-07-11 00:19:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.323 2013-07-11 03:29:03 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -163,7 +163,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
 void 
 nco_prn_att_trv                       /* [fnc] Print all attributes of single variable */
 (const int in_id,                     /* I [id] netCDF input file ID */
- const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 void
@@ -177,7 +177,7 @@ nco_get_prg_info(void);               /* [fnc] Get program info */
 void
 nco_prn_xtr_dfn                       /* [fnc] Print variable metadata (called with PRN_VAR_METADATA) */
 (const int nc_id,                     /* I netCDF file ID */
- const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 void 
@@ -193,13 +193,7 @@ nco_prt_dmn                           /* [fnc] Print dimensions for a group  */
 void
 nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
- char * const dlm_sng,                /* I [sng] User-specified delimiter string, if any */
- const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
- const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
- const nco_bool PRN_DMN_UNITS,        /* I [flg] Print units attribute, if any */
- const nco_bool PRN_DMN_IDX_CRD_VAL,  /* I [flg] Print dimension/coordinate indices/values */
- const nco_bool PRN_DMN_VAR_NM,       /* I [flg] Print dimension/variable names */
- const nco_bool PRN_MSS_VAL_BLANK,    /* I [flg] Print missing values as blanks */
+ prn_fmt_sct * const prn_flg,         /* I/O [sct] Print formatting flags */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 int                                   /* O [nbr] Number of matches to current rx */

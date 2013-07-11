@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.352 2013-07-11 00:19:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.353 2013-07-11 03:29:03 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -588,6 +588,7 @@ extern "C" {
   typedef struct{ /* prn_fmt_sct */
     nco_bool new_fmt; /* [flg] Print in new format */
     int prn_ndn; /* [nbr] Indentation */
+    int tab; /* [nbr] Number of spaces in tab */
     int spc_per_lvl; /* [nbr] Indentation spaces per group level */
     int sxn_fst; /* [nbr] Offset width of subsection from group name */
     char *dlm_sng; /* User specified delimiter string for printed output */

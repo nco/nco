@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.844 2013-07-11 00:19:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.845 2013-07-11 03:29:03 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -446,7 +446,7 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
 void 
 nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes */
 (const int nc_id, /* I [id] netCDF file ID */
- const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   int grp_id;                 /* [ID] Group ID */
@@ -1201,7 +1201,7 @@ nco_get_prg_info(void)                 /* [fnc] Get program info */
 void
 nco_prn_xtr_dfn /* [fnc] Print variable metadata */
 (const int nc_id, /* I [id] netCDF file ID */
- const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 { 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1247,7 +1247,7 @@ nco_xtr_lst_prn                            /* [fnc] Print name-ID structure list
 void
 nco_prn_var_val                       /* [fnc] Print variable data (called with PRN_VAR_DATA) */
 (const int nc_id,                     /* I netCDF file ID */
- prn_fmt_sct * const prn_flg,         /* I/O [sct] Print formatting flags */
+ prn_fmt_sct * const prn_flg,         /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Print variable data (called with PRN_VAR_DATA) */
@@ -1258,11 +1258,10 @@ nco_prn_var_val                       /* [fnc] Print variable data (called with 
     if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
 
       /* Print full name of variable */
-      if(!dlm_sng && var_trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",var_trv.nm_fll);
-
+      if(!prn_flg->dlm_sng && var_trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",var_trv.nm_fll);
+      
       /* Print variable values */
-      (void)nco_msa_prn_var_val_trv(nc_id,dlm_sng,FORTRAN_IDX_CNV,MD5_DIGEST,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL,PRN_DMN_VAR_NM,PRN_MSS_VAL_BLANK,&var_trv);
-
+      (void)nco_msa_prn_var_val_trv(nc_id,prn_flg,&var_trv);
     } /* End flg_xtr */
   } /* End Loop variables in table */
 
@@ -4089,7 +4088,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
 
   rel_mch=False;
 
-  if (flg_tbl_1 == True ){
+  if(flg_tbl_1){
 
     /* Loop table 2 */
     for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
@@ -4107,7 +4106,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
       } /* A relative match was found */
     } /* Loop table 2 */
 
-  } else if (flg_tbl_1 == False ){
+  }else if(!flg_tbl_1){
 
     /* Loop table 1 */
     for(unsigned uidx=0;uidx<trv_tbl_1->nbr;uidx++){
@@ -4184,14 +4183,12 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
       /* Process common object */
       (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_def);
 
-    } /* Both objects exist in the 2 files, both objects are to extract */
-
-
-    /* Object exists only in one file and is to extract */
-    else {
+      /* Both objects exist in the 2 files, both objects are to extract */
+    }else{
+      /* Object exists only in one file and is to extract */
 
       /* Number of depth 1 groups in file 1 greater (typically model file) */
-      if (nbr_grp_dpt_1 > nbr_grp_dpt_2){
+      if(nbr_grp_dpt_1 > nbr_grp_dpt_2){
 
         /* Object exists only in file 1 and is to extract */
         if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
@@ -4219,9 +4216,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 
         } /* Object exists only in file 2 and is to extract */ 
 
-
-      } else { /* Number of depth 1 groups in file 2 greater */
-
+      }else{ /* Number of depth 1 groups in file 2 greater */
 
         /* Object exists only in file 1 and is to extract */
         if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
@@ -4256,8 +4251,6 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
   } /* Process objects in list */
 
 } /* nco_prc_cmn_nm() */
-
-
 
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
@@ -4300,8 +4293,6 @@ nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variab
   return;
 
 } /* end nco_var_prc_fix_trv() */
-
-
 
 void
 nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT */

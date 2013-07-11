@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.103 2013-07-11 00:19:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.104 2013-07-11 03:29:03 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -11,7 +11,7 @@
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
 (const int grp_id, /* I [id] netCDF group ID */
- const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const int var_id) /* I [id] netCDF input variable ID */
 {
   /* Purpose: Print all global attributes in netCDF group,
@@ -621,7 +621,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
 (const int nc_id, /* I [id] netCDF file ID */
- const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata */
@@ -757,7 +757,7 @@ int /* [rcd] Return code */
 nco_grp_prn /* [fnc] Recursively print group contents */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
- prn_fmt_sct * const prn_flg, /* I/O [sct] Print formatting flags */
+ prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
   /* Purpose: Recursively print group contents
@@ -801,17 +801,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   int var_idx;                     /* [idx] Variable index */
   int var_nbr_xtr;                 /* [nbr] Number of extracted variables */
 
-  long dmn_sz;                     /* [nbr] Dimension size */ 
-  long rec_sz;                     /* [nbr] Record dimension size */ 
-
-  nc_type var_typ;                 /* [enm] NetCDF type */
-
-  nco_obj_typ obj_typ;             /* [enm] Object type (group or variable) */
-
   nm_id_sct *dmn_lst; /* [sct] Dimension list */
   nm_id_sct *var_lst; /* [sct] Variable list */
-
-  trv_sct trv_obj; /* [sct] Traversal table object */
 
   unsigned int dmn_idx; /* [idx] Index over dimensions */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in group */
@@ -868,9 +859,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Print dimension information for group */
   prn_flg->prn_ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
   if(dmn_nbr > 0) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->prn_ndn,spc_sng);
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
     (void)fprintf(stdout,"\t %s = %zi\n",dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz);
-  } /* end loop over dmn_idx */
 
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,dmn_nbr);
@@ -931,13 +921,13 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(var_trv.grp_dpt > 0) (void)fprintf(stdout,"%*s\t%s\n",prn_flg->prn_ndn,spc_sng,var_trv.nm_fll);
 
     /* Print variable metadata */ 
-    (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
+    if(prn_flg->PRN_VAR_METADATA) (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
 
     /* Obtain variable ID using group ID */
     (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
     /* Print variable attributes */
-    if(var_trv.nbr_att > 0) (void)nco_prn_att(grp_id,prn_flg,var_id);
+    if(var_trv.nbr_att > 0 && prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
   } /* end loop over var_idx */
 
   /* Print attribute information for group */
@@ -945,10 +935,11 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
 
   /* Print data for group */
-  if(var_nbr_xtr > 0) (void)fprintf(stdout,"%*sdata:\n",prn_flg->prn_ndn,spc_sng);
-  for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
-    trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
-  } /* end loop over var_idx */
+  if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
+    (void)fprintf(stdout,"%*sdata:\n",prn_flg->prn_ndn,spc_sng);
+    for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) 
+      (void)nco_msa_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id]);
+  } /* end if */
 
   /* Variable list no longer needed */
   var_lst=nco_nm_id_lst_free(var_lst,var_nbr_xtr);

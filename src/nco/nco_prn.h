@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.40 2013-07-11 00:19:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.41 2013-07-11 03:29:03 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -43,7 +43,7 @@ extern "C" {
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable or group */
 (const int grp_id, /* I [id] netCDF group ID */
- const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const int var_id); /* I [id] netCDF input variable ID */
 
 const char * /* O [sng] sprintf() format string for type typ */
@@ -64,14 +64,14 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
 (const int nc_id, /* I [id] netCDF file ID */
- const prn_fmt_sct * const prn_flg, /* I [sct] Print formatting flags */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
  const trv_sct * const var_trv); /* I [sct] Object to print (variable) */
 
 int /* [rcd] Return code */
 nco_grp_prn /* [fnc] Recursively print group contents */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
- prn_fmt_sct * const prn_flg, /* I/O [sct] Print formatting flags */
+ prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 #ifdef __cplusplus

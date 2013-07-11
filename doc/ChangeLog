@@ -1,6 +1,6 @@
 2013-07-10  Charlie Zender  <zender@uci.edu>
 
-	* nco_grp_prn() prints variables by group
+	* nco_grp_prn() prints variables by group, with OK formatting
 
 	* Tidy ncbo.c, nco_grp_utl.c
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.620 2013-07-11 00:19:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.621 2013-07-11 03:29:03 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.620 2013-07-11 00:19:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.620 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.621 2013-07-11 03:29:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.621 $";
   const char * const opt_sht_lst="346aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -776,6 +776,7 @@ main(int argc,char **argv)
     prn_flg.new_fmt=False;
     prn_flg.spc_per_lvl=2;
     prn_flg.sxn_fst=2;
+    prn_flg.tab=4;
     prn_flg.dlm_sng=dlm_sng;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
     //	prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;
