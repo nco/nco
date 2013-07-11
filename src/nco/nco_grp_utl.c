@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.845 2013-07-11 03:29:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.846 2013-07-11 18:53:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6135,3 +6135,59 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
   return dmn_lst;
 
 } /* nco_lst_dmn_mk_trv() */
+
+
+void
+nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
+(const int nc_id,                     /* I [id] Input netCDF file ID */
+ const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+{
+  int grp_id; /* [id] Group ID */
+  int var_id; /* [id] Variable ID */
+
+  /* Loop table */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_sct var_trv=trv_tbl->lst[uidx];
+
+    /* Filter variables */
+    if (strcmp(var_trv.nm,aed.var_nm) == 0){
+
+      assert(var_trv.nco_typ == nco_obj_typ_var);
+
+      /* Obtain group ID using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+
+      /* Obtain variable ID using group ID */
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+
+
+      if(aed.var_nm == NULL){
+
+        /* Variable name is blank so edit same attribute for all variables ... */
+
+      }else if(strpbrk(aed.var_nm,".*^$\\[]()<>+?|{}")){
+
+        /* Variable name contains a "regular expression" (rx) ... */
+
+
+      }else if(!strcasecmp(aed.var_nm,"global")){
+
+        /* Variable name indicates a global attribute ... */
+
+
+      }else{ 
+
+        /* Variable is a normal variable ... */
+
+
+        /* Edit attribute */
+        (void)nco_aed_prc(grp_id,var_id,aed);
+
+
+      } /* end var_nm */
+    } /* end flg_xtr */
+  } /* Loop table */
+
+} /* nco_aed_prc_trv() */
+
