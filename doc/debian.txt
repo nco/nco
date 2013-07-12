@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.188 2013-07-06 00:39:16 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.189 2013-07-12 04:35:37 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -139,6 +139,8 @@ etch Debian 4.0
 lenny Debian 5.0
 squeeze Debian 6.0
 
+# All NCO bugs
+http://bugs.debian.org/nco
 # NCO orphan/ITA bug
 http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
 # netCDF orphan/ITA bug

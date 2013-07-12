@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.214 2013-06-26 05:04:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.215 2013-07-12 04:35:38 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -545,10 +545,14 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   FTP_OR_SFTP_URL=FTP_URL || SFTP_URL;
 
   if(FTP_OR_SFTP_URL){
-    /* If FTP  rearrange fl_nm_lcl to remove  ftp://hostname  part, and
-    if SFTP rearrange fl_nm_lcl to remove sftp://hostname: part,
-    then search for file on local disk */
+    /* If FTP rearrange fl_nm_lcl to remove ftp://hostname part, and
+       if SFTP rearrange fl_nm_lcl to remove sftp://hostname: part,
+       then search for file on local disk */
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
+    if(!fl_pth_lcl_tmp){
+      (void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of SFTP path %s\n",prg_nm_get(),fnc_nm,fl_nm_lcl);
+      nco_exit(EXIT_FAILURE);
+    } /* endif */
     fl_nm_lcl_tmp=fl_nm_lcl;
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
@@ -624,6 +628,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* If HTTP then rearrange fl_nm_lcl to remove http://hostname part
       before searching for file on local disk */
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
+      if(!fl_pth_lcl_tmp){
+	(void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of HTTP path %s\n",prg_nm_get(),fnc_nm,fl_nm_lcl);
+	nco_exit(EXIT_FAILURE);
+      } /* endif */
       fl_nm_lcl_tmp=fl_nm_lcl;
       fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
       (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
@@ -643,6 +651,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
         /* Rearrange fl_nm_lcl to remove hostname: part */
         fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
+	if(!fl_pth_lcl_tmp){
+	  (void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of scp or rcp path %s\n",prg_nm_get(),fnc_nm,fl_nm_lcl);
+	  nco_exit(EXIT_FAILURE);
+	} /* endif */
         fl_nm_lcl_tmp=fl_nm_lcl;
         fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
         (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
@@ -840,7 +852,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
               host_nm_lcl=(char *)nco_malloc((256UL+1UL)*sizeof(char));
               (void)gethostname(host_nm_lcl,256UL+1UL);
               /* fxm: move to gethostbyname() next */
-              if(strchr(host_nm_lcl,'.') == NULL){
+              if(!strchr(host_nm_lcl,'.')){
                 /* #ifdef HAVE_RES_ */
                 /* Returned hostname did not include fully qualified Internet domain name (FQDN) */
                 (void)res_init();
@@ -875,10 +887,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         } /* end if rmt_cmd */
 
         /* Currently, sftp transfers are indicated by FTP-style URLs
-        NB: Unlike FTP, SFTP does not have a recognized URL format
-        Hence actual transfer via SFTP uses scp syntax (for single files)
-        Multiple file transfer via SFTP can use FTP-like scripts, requires more work
-        NCO SFTP file specification must have colon separating hostname from filename */
+	   NB: Unlike FTP, SFTP does not have a recognized URL format
+	   Hence actual transfer via SFTP uses scp syntax (for single files)
+	   Multiple file transfer via SFTP can use FTP-like scripts, requires more work
+	   NCO SFTP file specification must have colon separating hostname from filename */
         if(rmt_cmd == NULL){
           if(SFTP_URL){
             /* Remote filename begins after URL but includes hostname */
@@ -889,7 +901,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
                 ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.')){
                   rmt_cmd=&sftp;
               } /* end if */
-            } /* end if colon */
+	    } /* end if colon */
           } /* end if SFTP */
         } /* end if rmt_cmd */
 
@@ -902,9 +914,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         } /* end if rmt_cmd */
 
         /* Otherwise, single colon preceded by period in filename signals rcp or scp
-        Determining whether to try scp instead of rcp is difficult
-        Ideally, NCO would test remote machine for rcp/scp priveleges with system command like, e.g., "ssh echo ok"
-        To start we use scp which has its own fall-through to rcp */
+	   Determining whether to try scp instead of rcp is difficult
+	   Ideally, NCO would test remote machine for rcp/scp priveleges with system command like, e.g., "ssh echo ok"
+	   To start we use scp which has its own fall-through to rcp */
         if(rmt_cmd == NULL){
           if((cln_ptr=strchr(fl_nm_rmt,':'))){
             if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||

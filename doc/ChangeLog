@@ -6,6 +6,12 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
 	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
 
+	* Debian Mayhem project reported five bugs due to unsanitized input:
+	716127 (ncflint), 716128 (ncap), 716129 (ncap2),716506 (ncbo), and 716602 (ncecat)
+	Each bug causes a core dump rather than a clean exit(EXIT_FAILURE)
+	Fixed four of these by checking return values on strchr()
+	ncap2 bug triggered _inside_ strtoul() so hard to fix
+
 	* New indentation works well enough. Begin implementing CDL option.
 
 	* Strip all tabs and extra vertical space, ready to design new indentation
