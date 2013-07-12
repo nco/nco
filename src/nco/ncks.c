@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.623 2013-07-11 23:26:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.624 2013-07-12 19:31:02 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.623 2013-07-11 23:26:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.623 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.624 2013-07-12 19:31:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.624 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -801,13 +801,14 @@ main(int argc,char **argv)
     prn_flg.PRN_VAR_DATA=PRN_VAR_DATA;
     prn_flg.PRN_VAR_METADATA=PRN_VAR_METADATA;
 
+    /* File summary line */
+    (void)fprintf(stdout,"Summary of %s: filetype = %s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
+
     if(!prn_flg.new_fmt){
       
       if(PRN_GLB_METADATA){
 	int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
 	int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
-	/* File summary line */
-	(void)fprintf(stdout,"Summary of %s: filetype = %s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
 	/* Get unlimited dimension information from input file/group */
 	rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
 	if(nbr_rec_lcl > 0){
@@ -834,7 +835,6 @@ main(int argc,char **argv)
 	 ncks -5 -g g1,g2 ~/nco/data/in_grp.nc */
       
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
-	/* [fnc] Recursively print group contents */
 	prn_flg.new_fmt=True;
 	rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl);
       }else{

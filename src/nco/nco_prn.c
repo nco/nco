@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.106 2013-07-11 23:26:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.107 2013-07-12 19:31:03 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -852,7 +852,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Sort dimensions alphabetically */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
 
-  (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
+  if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {","filename_goes_here"); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
   if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",grp_nm_fll); else (void)fprintf(stdout,"\n");
 
   /* Print dimension information for group */
@@ -897,8 +897,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(trv_tbl->lst[obj_idx].flg_xtr){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
 	 However, it is same type (int) as an ID so we can use nm_id infrastructure. */
-      var_lst[var_idx].id=obj_idx;
-      var_lst[var_idx].nm=strdup(var_nm);
+      var_lst[var_nbr_xtr].id=obj_idx;
+      var_lst[var_nbr_xtr].nm=strdup(var_nm);
       var_nbr_xtr++;
     } /* endif extracted */
 
@@ -974,7 +974,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Find sub-group in traversal table */
     for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
       if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
-	if(!strcmp(trv_tbl->lst[obj_idx].grp_nm_fll,grp_nm_fll))
+	if(!strcmp(trv_tbl->lst[obj_idx].grp_nm_fll,sub_grp_nm_fll))
 	  break;
     
     /* Is sub-group to be extracted? */
