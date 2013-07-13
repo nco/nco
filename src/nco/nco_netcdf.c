@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.197 2013-07-10 01:35:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.198 2013-07-13 05:44:52 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -230,6 +230,80 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_typ_sng() */
+
+const char * /* O [sng] Native CDL type */
+cdl_typ_nm /* [fnc] Return string describing native CDL type */
+(const nc_type type) /* I [enm] netCDF type */
+{
+  /* Purpose: Divine CDL type string from netCDF external type enum */
+  switch(type){
+  case NC_FLOAT:
+    return "float";
+  case NC_DOUBLE:
+    return "double";
+  case NC_INT:
+    return "int";
+  case NC_SHORT:
+    return "short";
+  case NC_CHAR:
+    return "char";
+  case NC_BYTE:
+    return "byte";
+  case NC_UBYTE:
+    return "ubyte";
+  case NC_USHORT:
+    return "ushort";
+  case NC_UINT:
+    return "uint";
+  case NC_INT64:
+    return "int64";
+  case NC_UINT64:
+    return "uint64";
+  case NC_STRING:
+    return "string";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end cdl_typ_nm() */
+
+const char * /* O [sng] Native CDL type suffix */
+cdl_typ_sfx /* [fnc] Return suffix string for CDL type */
+(const nc_type type) /* I [enm] netCDF type */
+{
+  /* Purpose: Return suffix string for CDL */
+  switch(type){
+  case NC_FLOAT:
+    return ".f";
+  case NC_DOUBLE:
+    return ".";
+  case NC_INT:
+    return "";
+  case NC_SHORT:
+    return "s";
+  case NC_CHAR:
+    return "";
+  case NC_BYTE:
+    return "b";
+  case NC_UBYTE:
+    return "ub";
+  case NC_USHORT:
+    return "us";
+  case NC_UINT:
+    return "u";
+  case NC_INT64:
+    return "ll";
+  case NC_UINT64:
+    return "ull";
+  case NC_STRING:
+    return "";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end cdl_typ_sfx() */
 
 const char * /* O [sng] Native C type */
 c_typ_nm /* [fnc] Return string describing native C type */

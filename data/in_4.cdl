@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.10 2012-07-26 17:56:08 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.11 2013-07-13 05:44:52 zender Exp $";
 
 //	netCDF4-specific atomic types
 	int64 int64_var;
@@ -526,9 +526,16 @@ variables:
 	att_var:byte_att = '\000','\001','\002','\177','\200','\201','\376','\377';
 	att_var:char_att = "Sentence one.\nSentence two.\n";
 	att_var:short_att = 37s;
-	att_var:int_att = 73l;
+	att_var:int_att = 73;
 	att_var:float_att = 73.0f,72.0f,71.0f;
 	att_var:double_att = 73.0d;
+	att_var:ubyte_att = 0ub, 1ub, 2ub, 127ub, 128ub, 254ub, 255ub, 0ub; // 20130712: ncgen 4.3.0 translates this to byte
+	att_var:ubyte2_att = '\000','\001','\002','\177','\200','\201','\376','\377'; // 20130712: ncgen 4.3.0 translates this to byte
+	att_var:ushort_att = 37us;
+	att_var:uint_att = 73u;
+	att_var:int64_att = 9223372036854775807l; // 20130712: ncgen 4.3.0 chokes on ll, LL suffix for int64 attributes
+	att_var:uint64_att = 18446744073709551615ul; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes
+//	att_var:string_att = "Sentence one.\nSentence two.\n"s; // 20130712: ncgen 4.3.0 chokes on s suffix for string attributes
 
 	int bnd_var(lev,bnd);
 	bnd_var:byte_att = '\0';

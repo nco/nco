@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.355 2013-07-11 23:26:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.356 2013-07-13 05:44:52 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -698,7 +698,7 @@ extern "C" {
   } dmn_trv_sct; 
 
   /* GTT Variable dimensions:
-     A dimension has a name and a size, but it can have an associated variable (coordinate variable) */
+     A dimension has a name and a size, and it can have an associated variable (coordinate variable) */
   typedef struct{ 
     char *dmn_nm_fll;        /* [sng] Full dimension name  */
     char *dmn_nm;            /* [sng] Dimension name */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.96 2013-03-14 01:59:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.97 2013-07-13 05:44:52 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -37,15 +37,23 @@ extern "C" {
 /* Begin Utility Routines */
 const char * /* O [sng] Native C type */
 c_typ_nm /* [fnc] Return string describing native C type */
-(const nc_type type); /* O [enm] netCDF type */
+(const nc_type type); /* I [enm] netCDF type */
+
+const char * /* O [sng] Native CDL type */
+cdl_typ_nm /* [fnc] Return string describing native CDL type */
+(const nc_type type); /* I [enm] netCDF type */
+
+const char * /* O [sng] Native CDL type suffix */
+cdl_typ_sfx /* [fnc] Return suffix string for CDL type */
+(const nc_type type); /* I [enm] netCDF type */
 
 const char * /* O [sng] Native Fortran77 type */
 f77_typ_nm /* [fnc] Return string describing native Fortran77 type */
-(const nc_type type); /* O [enm] netCDF type */
+(const nc_type type); /* I [enm] netCDF type */
 
 const char * /* O [sng] Native Fortran90 type */
 f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
-(const nc_type type); /* O [enm] netCDF type */
+(const nc_type type); /* I [enm] netCDF type */
 
 void 
 nco_dfl_case_nc_type_err /* [fnc] Print error and exit for illegal switch(nc_type) case */

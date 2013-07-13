@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.187 2013-05-03 22:03:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.188 2013-07-13 05:44:52 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1225,7 +1225,6 @@ no_data_ok: /* end goto */
 
 } /* end nco_lmt_evl() */
 
-
 void                      
 nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hyperslab specifications */
 (const int nc_id,              /* I [ID] netCDF file ID */
@@ -1297,7 +1296,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
   nc_type var_typ=NC_NAT;          /* [enm] Type of variable */
 
-  nco_bool is_crd_var;             /* [flg] Does the dimension have a coordinate variable ? */  
+  nco_bool is_crd_var;             /* [flg] Does the dimension have a coordinate variable? */
 
   lmt=*lmt_ptr;
 
@@ -1319,8 +1318,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
      Use case:
      ncks -O -v ts -d time,0,1 -d Latitude,40.0 -d Longitude,-105.0 http://hydro1.sci.gsfc.nasa.gov/opendap/hyrax/ncml/LPRM_AMSRE_D_SOILM3_timeSeries.ncml amsre.nc     
      */
-  if (is_crd){
-
+  if(is_crd){
     /* Obtain coordinate variable ID using group ID */
     (void)nco_inq_varid(grp_id,nm,&var_id);
 
@@ -1328,13 +1326,9 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     (void)nco_inq_vartype(grp_id,var_id,&var_typ);
   }
 
-
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: INFO %s dimension <%s/%s(%li)>:",prg_nm_get(),fnc_nm,grp_nm_fll,nm,sz);
-    if (is_crd_var == False )
-      (void)fprintf(stdout,"NOT a coordinate variable\n");
-    else 
-      (void)fprintf(stdout,"HAS a coordinate variable\n");    
+    if(!is_crd_var) (void)fprintf(stdout,"NOT a coordinate variable\n"); else (void)fprintf(stdout,"HAS a coordinate variable\n");    
   }
 
   /* Use info from parameter to assign locally used size */
@@ -1440,8 +1434,6 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
   /* Coordinate re-basing code */
   lmt.origin=0.0;
-
- 
 
   /* If there is a coordinate variable */
   if (is_crd){
@@ -1982,9 +1974,3 @@ no_data_ok: /* end goto */
   fl_udu_sng=(char *)nco_free(fl_udu_sng);
 
 } /* nco_lmt_evl_dmn_crd() */
-
-
-
-
-
-
