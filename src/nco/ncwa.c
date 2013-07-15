@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.324 2013-07-15 09:39:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.325 2013-07-15 09:44:52 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.324 2013-07-15 09:39:02 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.324 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.325 2013-07-15 09:44:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.325 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -608,11 +608,13 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
+  (void)nco_inq_format(in_id,&fl_in_fmt);
+
 #ifndef USE_TRV_API
 
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
-  (void)nco_inq_format(in_id,&fl_in_fmt);
+  
 
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
@@ -1296,7 +1298,17 @@ main(int argc,char **argv)
   /* Verify output file format supports requested actions */
   (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
 
-  
+  /* Open output file */
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
+
+  /* Copy all global attributes */
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+
+  /* Catenate time-stamped command line to "history" global attribute */
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
 
 
