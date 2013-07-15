@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.156 2013-07-11 18:53:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.157 2013-07-15 06:00:51 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -155,8 +155,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.156 2013-07-11 18:53:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.156 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.157 2013-07-15 06:00:51 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.157 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -400,14 +400,8 @@ main(int argc,char **argv)
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(nc_id,"/",(nco_bool)False,(int)0,(lmt_sct**)NULL,(nco_bool)False,(int)0,(char **)NULL,trv_tbl);
 
-  /* Loop attributes to edit */
-  for(idx=0;idx<nbr_aed;idx++){
-    
-    /* Process single attribute edit for single variable */
-    (void)nco_aed_prc_trv(nc_id,aed_lst[idx],trv_tbl);
-
-  } /* Loop attributes to edit */
-
+  /* Process attributes  */
+  (void)nco_aed_prc_trv(nc_id,aed_lst,nbr_aed,trv_tbl);
 
 
 #endif /* USE_TRV_API */

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.300 2013-07-11 23:26:42 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.301 2013-07-15 06:00:51 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -256,6 +256,9 @@ print "\n";
 ####################
 	$opr_nm="ncatted";
 ####################
+
+#ncatted #1
+
 	# FAILS!
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a units,,m,c,'meter second-1' $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -m -v lev %tmp_fl_00% | grep units | cut -d' ' -f 11-12"; ## daniel:fixme cut/ncks but how to do grep?
@@ -266,6 +269,8 @@ print "\n";
 	$#tst_cmd=0; # Reset array
 	
 #printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;
+
+#ncatted #2
 	
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v val_one_mss %tmp_fl_00%";
@@ -276,6 +281,8 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
+#ncatted #3
+
 	$tst_cmd[0]="ncatted -h -O $nco_D_flg -a _FillValue,wgt_one,c,f,200.0 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -C -H -s '%g' -d lat,1 -v wgt_one %tmp_fl_00%";
 	$dsc_sng="Create new _FillValue attribute ";
@@ -283,6 +290,8 @@ print "\n";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
+
+#ncatted #4
 
 # Fragile: This test fails when length of command changes
 	$tst_cmd[0]="ncatted -O --hdr_pad=1000 $nco_D_flg -a missing_value,val_one_mss,m,f,0.0 $in_pth_arg in.nc %tmp_fl_00%";
@@ -294,6 +303,8 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 
+#ncatted #5
+
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncap2 -v -C -O -s 'n2=three_dmn_var_int\@nw1;' %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[2]="ncks -O -C -H -s '%i'  -v n2 %tmp_fl_01%";
@@ -302,6 +313,10 @@ print "\n";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
+
+
+
+
     }
     
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;

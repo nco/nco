@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.325 2013-07-11 23:26:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.326 2013-07-15 06:00:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -568,7 +568,8 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope a
 void
 nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
 (const int nc_id,                     /* I [id] Input netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
+ const aed_sct *aed,                  /* I [sct] Structure containing information necessary to edit */
+ const int nbr_aed,                   /* I [nbr] Number of attribute structures */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.847 2013-07-11 23:26:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.848 2013-07-15 06:00:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6126,54 +6126,111 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
 void
 nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
 (const int nc_id,                     /* I [id] Input netCDF file ID */
- const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
+ const aed_sct *aed_lst,              /* I [sct] Structure containing information necessary to edit */
+ const int nbr_aed,                   /* I [nbr] Number of attribute structures */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
 
-  /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct var_trv=trv_tbl->lst[uidx];
 
-    /* Filter variables */
-    if (strcmp(var_trv.nm,aed.var_nm) == 0){
-
-      assert(var_trv.nco_typ == nco_obj_typ_var);
-
-      /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-
-      /* Obtain variable ID using group ID */
-      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+  /* Loop all attribure structure entries */
+  for(int idx_aed=0;idx_aed<nbr_aed;idx_aed++){
 
 
-      if(aed.var_nm == NULL){
+    /* Variable name is blank so edit same attribute for all variables ... */
 
-        /* Variable name is blank so edit same attribute for all variables ... */
+    if(aed_lst[idx_aed].var_nm == NULL){
 
-      }else if(strpbrk(aed.var_nm,".*^$\\[]()<>+?|{}")){
+      /* Loop table */
+      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+        trv_sct var_trv=trv_tbl->lst[uidx];
+        /* Filter variables */
+        if (var_trv.nco_typ == nco_obj_typ_var){
+          /* Obtain group ID using full group name */
+          (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+          /* Obtain variable ID using group ID */
+          (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+          /* Edit attribute */
+          (void)nco_aed_prc(grp_id,var_id,aed_lst[idx_aed]);
+        } /* Filter variables */
+      } /* Loop table */
 
-        /* Variable name contains a "regular expression" (rx) ... */
+    } /* End Variable name is blank so edit same attribute for all variables ... */
+
+    /* Variable name contains a "regular expression" (rx) ... */
+
+    else if(strpbrk(aed_lst[idx_aed].var_nm,".*^$\\[]()<>+?|{}")){
 
 
-      }else if(!strcasecmp(aed.var_nm,"global")){
+      /* Loop table */
+      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+        trv_sct var_trv=trv_tbl->lst[uidx];
+        /* Filter variables */
+        if (var_trv.nco_typ == nco_obj_typ_var ){
+          /* Obtain group ID using full group name */
+          (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+          /* Obtain variable ID using group ID */
+          (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+          /* Edit attribute */
+          (void)nco_aed_prc(grp_id,var_id,aed_lst[idx_aed]);
+        } /* Filter variables */
+      } /* Loop table */
 
-        /* Variable name indicates a global attribute ... */
+
+      /* End Variable name contains a "regular expression" (rx) ... */
 
 
-      }else{ 
+      /* Variable name indicates a global attribute ... */
 
-        /* Variable is a normal variable ... */
-
-
-        /* Edit attribute */
-        (void)nco_aed_prc(grp_id,var_id,aed);
+    }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
 
 
-      } /* end var_nm */
-    } /* end flg_xtr */
-  } /* Loop table */
+       /* Loop table */
+      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+        trv_sct var_trv=trv_tbl->lst[uidx];
+        /* Filter variables */
+        if (var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
+          /* Obtain group ID using full group name */
+          (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+          /* Obtain variable ID using group ID */
+          (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+          /* Edit attribute */
+          (void)nco_aed_prc(grp_id,NC_GLOBAL,aed_lst[idx_aed]);
+        } /* Filter variables */
+      } /* Loop table */
+
+
+
+      /* End Variable name indicates a global attribute ... */
+
+    }else{ 
+
+      /* Variable is a normal variable ... */
+
+
+      /* Loop table */
+      for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+        trv_sct var_trv=trv_tbl->lst[uidx];
+        /* Filter variables */
+        if (var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
+          /* Obtain group ID using full group name */
+          (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+          /* Obtain variable ID using group ID */
+          (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+          /* Edit attribute */
+          (void)nco_aed_prc(grp_id,var_id,aed_lst[idx_aed]);
+        } /* Filter variables */
+      } /* Loop table */
+
+    }
+    /* End Variable is a normal variable ... */
+
+
+  } /* Loop all attribure structure entries */
+
 
 } /* nco_aed_prc_trv() */
+
+
 
