@@ -123,6 +123,19 @@ netcdf in_grp {
     lev=100,500,1000;
     ilev=0,300,300,750,750,1013.25;
     vrt_nbr=1,2;
+
+    //
+    //g8g1: test ncwa in groups : ncwa -O -N -a lev -v lev -w lev_wgt in_grp3.nc out.nc
+    //
+    group: g8g1 { 
+    variables:
+    float lev_wgt(lev);
+	  lev_wgt:long_name = "lev_wgt";
+
+    data:
+    lev_wgt=10,2,1;
+
+    } // end g8g1
   } // end g8
   
  

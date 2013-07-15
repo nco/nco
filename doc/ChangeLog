@@ -1,3 +1,8 @@
+2013-07-15 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add in_grp_3.cdl group data for ncwa testing
+  
+
 2013-07-12  Charlie Zender  <zender@uci.edu>
 
 	* CDL mode for variable shape and attributes mostly works
