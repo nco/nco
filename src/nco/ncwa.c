@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.322 2013-07-15 09:18:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.323 2013-07-15 09:27:52 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.322 2013-07-15 09:18:46 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.322 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.323 2013-07-15 09:27:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.323 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1263,6 +1263,24 @@ main(int argc,char **argv)
     } /* end if */
 
   } /* dmn_avg_nbr <= 0 */
+
+
+
+  /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
+  var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
+
+  /* Duplicate to output array */
+  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  for(idx=0;idx<xtr_nbr;idx++){
+    var_out[idx]=nco_var_dpl(var[idx]);
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
+  }
+
+
+
+
+
 
 #endif /* USE_TRV_API */
 
