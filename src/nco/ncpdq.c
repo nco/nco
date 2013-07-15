@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.338 2013-07-15 05:38:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.339 2013-07-15 05:52:52 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.338 2013-07-15 05:38:09 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.338 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.339 2013-07-15 05:52:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.339 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -714,7 +714,9 @@ main(int argc,char **argv)
 
 
   /* Copy global attributes */
-  // (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); // Superceded by nco_xtr_dfn()
+#ifdef COPY_ROOT_GLOBAL_ATTRIBUTES
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); /* Superceded by nco_xtr_dfn() */
+#endif
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.252 2013-07-15 05:38:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.253 2013-07-15 05:52:52 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.252 2013-07-15 05:38:09 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.252 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.253 2013-07-15 05:52:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.253 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -615,7 +615,9 @@ main(int argc,char **argv)
 
 
   /* Copy global attributes */
-  // (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); // Superceded by nco_xtr_dfn()
+#ifdef COPY_ROOT_GLOBAL_ATTRIBUTES
+  (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); /* Superceded by nco_xtr_dfn() */
+#endif
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
