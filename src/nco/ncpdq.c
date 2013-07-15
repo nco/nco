@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.339 2013-07-15 05:52:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.340 2013-07-15 07:55:20 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.339 2013-07-15 05:52:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.339 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.340 2013-07-15 07:55:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.340 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -192,8 +192,6 @@ main(int argc,char **argv)
   lmt_msa_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
   
   nm_id_sct *dmn_rdr_lst;
-
-
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -550,9 +548,6 @@ main(int argc,char **argv)
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
 
-
-
-
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
 
@@ -578,6 +573,8 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
+
+  /* ncpdq core */
 
   /* Allocate array of dimensions associated with variables to be extracted with maximum possible size */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.320 2013-07-09 07:18:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.321 2013-07-15 07:55:20 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.320 2013-07-09 07:18:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.320 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.321 2013-07-15 07:55:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.321 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1149,6 +1149,9 @@ main(int argc,char **argv)
 
 #else /* USE_TRV_API */
 
+  /* Initialize traversal table */ 
+  trv_tbl_init(&trv_tbl);
+
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
 
@@ -1175,10 +1178,33 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
+  /* ncwa core */
+
+
+  /* Allocate array of dimensions associated with variables to be extracted with maximum possible size */
+  dim=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));
+
+  /* Find dimensions associated with variables to be extracted */
+  (void)nco_dmn_lst_ass_var_trv(in_id,trv_tbl,&nbr_dmn_xtr,&dim);
+
+
+  /* If there are input dimensions (-a) to average */
+  if(dmn_avg_nbr > 0){
+    if(dmn_avg_nbr > nbr_dmn_xtr){
+      (void)fprintf(fp_stdout,"%s: ERROR More reducing dimensions than extracted dimensions\n",prg_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+
+    /* Create structured list of reducing dimension names and IDs */
+    dmn_avg_lst=nco_lst_dmn_mk_trv(dmn_avg_lst_in,dmn_avg_nbr,trv_tbl);
+    /* Dimension average list no longer needed */
+    if(dmn_avg_nbr > 0) dmn_avg_lst_in=nco_sng_lst_free(dmn_avg_lst_in,dmn_avg_nbr);
 
 
 
-#endif
+  } /* If there are input dimensions (-a) to average */
+
+#endif /* USE_TRV_API */
 
 
   /* Clean memory unless dirty memory allowed */
@@ -1236,6 +1262,11 @@ main(int argc,char **argv)
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+
+#if defined USE_TRV_API
+  /* Free traversal table */
+  trv_tbl_free(trv_tbl); 
+#endif /* USE_TRV_API */
 
   nco_exit_gracefully();
   return EXIT_SUCCESS;
