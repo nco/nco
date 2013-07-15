@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.321 2013-07-15 07:55:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.322 2013-07-15 09:18:46 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.321 2013-07-15 07:55:20 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.321 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.322 2013-07-15 09:18:46 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.322 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1201,8 +1201,68 @@ main(int argc,char **argv)
     if(dmn_avg_nbr > 0) dmn_avg_lst_in=nco_sng_lst_free(dmn_avg_lst_in,dmn_avg_nbr);
 
 
+    /* Form list of reducing dimensions from extracted input dimensions */
+    dmn_avg=(dmn_sct **)nco_malloc(dmn_avg_nbr*sizeof(dmn_sct *));
+    for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
+      for(idx=0;idx<nbr_dmn_xtr;idx++){
+        if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)){
+          break;
+        }
+      } /* end loop over idx_avg */
+      if(idx != nbr_dmn_xtr){
+        dmn_avg[idx_avg]=dim[idx];
+      }else{
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING reducing dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
+        /* Collapse dimension average list by omitting irrelevent dimension */
+        (void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(dmn_avg_nbr-idx_avg-1)*sizeof(nm_id_sct));
+        --dmn_avg_nbr;
+        dmn_avg_lst=(nm_id_sct *)nco_realloc(dmn_avg_lst,dmn_avg_nbr*sizeof(nm_id_sct));
+        dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *)); 
+      } /* end else */
+    } /* end loop over idx_avg */
 
-  } /* If there are input dimensions (-a) to average */
+    /* Make sure no reducing dimension is specified more than once */
+    for(idx=0;idx<dmn_avg_nbr;idx++){
+      for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
+        if(idx_avg != idx){
+          if(dmn_avg[idx]->id == dmn_avg[idx_avg]->id){
+            (void)fprintf(fp_stdout,"%s: ERROR %s specified more than once in reducing list\n",prg_nm,dmn_avg[idx]->nm);
+            nco_exit(EXIT_FAILURE);
+          } /* end if */
+        } /* end if */
+      } /* end loop over idx_avg */
+    } /* end loop over idx */
+
+    /* Averaged dimensions appear in output file iff flg_rdd is set */
+    dmn_out=(dmn_sct **)nco_malloc((flg_rdd ? nbr_dmn_xtr : nbr_dmn_xtr-dmn_avg_nbr)*sizeof(dmn_sct *));
+    nbr_dmn_out=0;
+    for(idx=0;idx<nbr_dmn_xtr;idx++){
+      for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
+        if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)){
+          break;
+        }
+      } /* end loop over idx_avg */
+      if(idx_avg == dmn_avg_nbr || flg_rdd){
+        /* Output list comprises non-averaged and, if specified, degenerate dimensions */
+        dmn_out[nbr_dmn_out]=nco_dmn_dpl(dim[idx]);
+        (void)nco_dmn_xrf(dim[idx],dmn_out[nbr_dmn_out]);
+        if(idx_avg != dmn_avg_nbr && flg_rdd){
+          /* Cut degenerate dimensions down to size */
+          dmn_out[nbr_dmn_out]->cnt=1L;
+          dmn_out[nbr_dmn_out]->srt=dmn_out[nbr_dmn_out]->end=0L;
+        } /* !flg_rdd */
+        nbr_dmn_out++;
+      } /* end if idx_avg */
+    } /* end loop over idx_xtr */
+    /* Dimension average list no longer needed */
+    dmn_avg_lst=nco_nm_id_lst_free(dmn_avg_lst,dmn_avg_nbr);
+
+    if(nbr_dmn_out != (flg_rdd ? nbr_dmn_xtr : nbr_dmn_xtr-dmn_avg_nbr)){
+      (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != %s\n",prg_nm,(flg_rdd) ? "nbr_dmn_xtr" : "nbr_dmn_xtr-dmn_avg_nbr");
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+
+  } /* dmn_avg_nbr <= 0 */
 
 #endif /* USE_TRV_API */
 
