@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.325 2013-07-15 09:44:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.326 2013-07-15 10:10:23 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -124,6 +124,7 @@ main(int argc,char **argv)
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
   char **var_lst_in=NULL_CEWI;
+  char **grp_lst_in=NULL_CEWI;
   char *cmd_ln;
   char *cnk_arg[NC_MAX_DIMS];
   char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
@@ -143,9 +144,9 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.325 2013-07-15 09:44:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.325 $";
-  const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.326 2013-07-15 10:10:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.326 $";
+  const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -234,9 +235,9 @@ main(int argc,char **argv)
   var_sct *wgt_avg=NULL;
   var_sct *wgt_out=NULL;
 
-#if defined USE_TRV_API
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
-#endif
+
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
 #ifndef _MSC_VER
   prs_sct prs_arg;  /* I/O [sct] Global information required in ncwa parser */
@@ -460,6 +461,19 @@ main(int argc,char **argv)
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
+    case 'G': /* Apply Group Path Editing (GPE) to output group */
+      /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it
+      http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
+      gpe=nco_gpe_prs_arg(optarg);
+      fl_out_fmt=NC_FORMAT_NETCDF4; 
+      break;
+    case 'g': /* Copy group argument for later processing */
+      /* Replace commas with hashes when within braces (convert back later) */
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_rx_comma2hash(optarg_lcl);
+      grp_lst_in=nco_lst_prs_2D(optarg_lcl,",",&grp_lst_in_nbr);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+      break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
@@ -555,6 +569,9 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
+
+   /* Initialize traversal table */ 
+  trv_tbl_init(&trv_tbl);
 
   /* Parse mask string */
 #ifndef _MSC_VER
@@ -1149,11 +1166,11 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
+ 
+
 #else /* USE_TRV_API */
 
-  /* Initialize traversal table */ 
-  trv_tbl_init(&trv_tbl);
-
+ 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
 
@@ -1310,6 +1327,9 @@ main(int argc,char **argv)
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
+  /* Define dimensions, extracted groups, variables, and attributes in output file.  */
+  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl); 
+
 
 
 
@@ -1374,10 +1394,10 @@ main(int argc,char **argv)
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
 
-#if defined USE_TRV_API
+
   /* Free traversal table */
   trv_tbl_free(trv_tbl); 
-#endif /* USE_TRV_API */
+
 
   nco_exit_gracefully();
   return EXIT_SUCCESS;
