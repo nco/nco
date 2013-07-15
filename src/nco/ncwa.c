@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.327 2013-07-15 10:16:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.328 2013-07-15 21:27:45 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.327 2013-07-15 10:16:45 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.327 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.328 2013-07-15 21:27:45 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.328 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1362,6 +1362,31 @@ main(int argc,char **argv)
   nco_close(in_id);
 
 
+  /* Loop over input files (not currently used, fl_nbr == 1) */
+  for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
+    /* Parse filename */
+    if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
+    /* Make sure file is on local system and is readable or die trying */
+    if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+    if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
+    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+
+    /* Open file once per thread to improve caching */
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
+    in_id=in_id_arr[0];
+
+    /* Perform various error-checks on input file */
+    if(False) (void)nco_fl_cmp_err_chk();
+
+   
+
+
+
+
+
+
+  } /* end loop over fl_idx */
 
 
 #endif /* USE_TRV_API */
