@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.251 2013-07-05 22:20:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.252 2013-07-15 05:38:09 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -38,9 +38,7 @@
    ncdiff -O ~/foo.nc /data/zender/arese/clm/951030_0900_arese_clm.nc foo2.nc;ncks -H foo2.nc | m
  */
 
-#if 1
-#define USE_TRV_API
-#endif
+
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -120,8 +118,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.251 2013-07-05 22:20:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.251 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.252 2013-07-15 05:38:09 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.252 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -133,10 +131,7 @@ main(int argc,char **argv)
   ddra_info_sct ddra_info={.flg_ddra=False};
 #endif /* !__cplusplus */
 
-#ifndef USE_TRV_API
-  dmn_sct **dim;
-  dmn_sct **dmn_out;
-#endif
+
 
   double ntp_val_out=double_CEWI; /* Option i */
   double wgt_val_1=0.5; /* Option w */
@@ -174,9 +169,6 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
-#ifndef USE_TRV_API
-  int nbr_dmn_xtr;
-#endif
   int nbr_ntp;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
@@ -192,11 +184,7 @@ main(int argc,char **argv)
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
-#ifndef USE_TRV_API
-  lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
-  nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-#endif
+
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -561,7 +549,7 @@ main(int argc,char **argv)
   (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
   (void)nco_inq_format(in_id_2,&fl_in_fmt_2);
  
-#ifdef USE_TRV_API
+
 
   trv_tbl_init(&trv_tbl);
 
@@ -599,86 +587,13 @@ main(int argc,char **argv)
     var_out[var_idx]=nco_var_dpl(var[var_idx]);
   }
 
-#else /* ! USE_TRV_API */
-
-  /* Get number of variables and dimensions in file */
-  (void)nco_inq(in_id_1,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
-  
-  /* Form initial extraction list which may include extended regular expressions */
-  xtr_lst=nco_var_lst_mk(in_id_1,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
-
-  /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id_1,nbr_var_fl,xtr_lst,&xtr_nbr);
-
-  /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
-
-  /* Add all coordinate variables to extraction list */
-  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_crd_add(in_id_1,nbr_dmn_fl,nbr_var_fl,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-
-  /* Extract coordinates associated with extracted variables */
-  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_crd_ass_add(in_id_1,xtr_lst,&xtr_nbr,CNV_CCM_CCSM_CF);
-
-  /* Sort extraction list by variable ID for fastest I/O */
-  if(xtr_nbr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,xtr_nbr,False);
-
-  /* We now have final list of variables to extract. Phew. */
-
-  /* Find coordinate/dimension values associated with user-specified limits
-  NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id_1,lmt[idx],0L,FORTRAN_IDX_CNV);
-
-  /* Place all dimensions in lmt_all_lst */
-  lmt_all_lst=(lmt_msa_sct **)nco_malloc(nbr_dmn_fl*sizeof(lmt_msa_sct *));
-  /* Initialize lmt_msa_sct's */ 
-  (void)nco_msa_lmt_all_ntl(in_id_1,MSA_USR_RDR,lmt_all_lst,nbr_dmn_fl,lmt,lmt_nbr);
-
-  /* Find dimensions associated with variables to be extracted */
-  dmn_lst=nco_dmn_lst_ass_var(in_id_1,xtr_lst,xtr_nbr,&nbr_dmn_xtr);
-
-  /* Fill-in dimension structure for all extracted dimensions */
-  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id_1,dmn_lst[idx].id,dmn_lst[idx].nm);
-
-  /* Dimension list no longer needed */
-  dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
-
-  /* Duplicate input dimension structures for output dimension structures */
-  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++){ 
-    dmn_out[idx]=nco_dmn_dpl(dim[idx]);
-    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
-  } /* end loop over dimensions */
-
-  /* Merge hyperslab limit information into dimension structures */
-  if(nbr_dmn_fl > 0) (void)nco_dmn_lmt_all_mrg(dmn_out,nbr_dmn_xtr,lmt_all_lst,nbr_dmn_fl); 
-
-  /* Fill-in variable structure list for all extracted variables */
-  var=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
-  for(idx=0;idx<xtr_nbr;idx++){
-    var[idx]=nco_var_fll(in_id_1,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-    var_out[idx]=nco_var_dpl(var[idx]);
-    (void)nco_xrf_var(var[idx],var_out[idx]);
-    (void)nco_xrf_dmn(var_out[idx]);
-  } /* end loop over idx */
-  /* Extraction list no longer needed */
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
-
-  /* Refresh var_out with dim_out data */
-  (void)nco_var_dmn_refresh(var_out,xtr_nbr);
-
-#endif /* ! USE_TRV_API */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
 
-#ifdef USE_TRV_API
-
   /* Store processed and fixed variables info into GTT */
   (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc_1,nbr_var_fix,var_fix,trv_tbl);
 
-#endif /* ! USE_TRV_API */
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt_1;
@@ -689,7 +604,7 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-#ifdef USE_TRV_API
+
 
   /* Transfer variable type to table. NOTE: Using var/xtr_nbr containing all variables (processed, fixed) */
   (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);         
@@ -697,18 +612,7 @@ main(int argc,char **argv)
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl);   
 
-#else /* ! USE_TRV_API */
 
-  /* Define dimensions in output file */
-  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
-
-  /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id_1,fl_out,out_id,var_out,xtr_nbr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil,dfl_lvl);
-
-  /* Set chunksize parameters */
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
-
-#endif /* ! USE_TRV_API */
 
   /* Copy global attributes */
   // (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); // Superceded by nco_xtr_dfn()
@@ -730,18 +634,10 @@ main(int argc,char **argv)
   /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
-#ifdef USE_TRV_API
 
   /* Copy variable data for non-processed variables */
   (void)nco_cpy_fix_var_trv(in_id_1,out_id,gpe,trv_tbl);  
 
-#else /* ! USE_TRV_API */
-
-  /* Copy variable data for non-processed variables */
-  (void)nco_msa_var_val_cpy(in_id_1,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
-
-
-#endif /* ! USE_TRV_API */
 
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
@@ -757,7 +653,7 @@ main(int argc,char **argv)
     val_gnr_unn.d=ntp_val_out; /* Generic container for arrival point or weight */
     ntp_var_out=scl_mk_var(val_gnr_unn,NC_DOUBLE);
 
-#ifdef USE_TRV_API
+
 
     int grp_id_1;      /* [ID] Group ID */
     int grp_id_2;      /* [ID] Group ID */
@@ -798,22 +694,6 @@ main(int argc,char **argv)
     (void)nco_msa_var_get_trv(grp_id_2,ntp_2,var_trv_2);
 
 
-#else /* ! USE_TRV_API */
-    int ntp_id_1;
-    int ntp_id_2;
-
-    rcd=nco_inq_varid(in_id_1,ntp_nm,&ntp_id_1);
-    rcd=nco_inq_varid(in_id_2,ntp_nm,&ntp_id_2);
-
-    ntp_1=nco_var_fll(in_id_1,ntp_id_1,ntp_nm,dim,nbr_dmn_xtr);
-    ntp_2=nco_var_fll(in_id_2,ntp_id_2,ntp_nm,dim,nbr_dmn_xtr);  
-
-    /* Retrieve interpolation variable */
-    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-    (void)nco_var_get(in_id_1,ntp_1);
-    (void)nco_var_get(in_id_2,ntp_2);
-
-#endif /* ! USE_TRV_API */
 
 
     /* Currently, only support scalar variables */
@@ -845,16 +725,12 @@ main(int argc,char **argv)
     (void)nco_var_dvd(wgt_1->type,wgt_1->sz,wgt_1->has_mss_val,wgt_1->mss_val,ntp_2->val,wgt_1->val);
     (void)nco_var_dvd(wgt_2->type,wgt_2->sz,wgt_2->has_mss_val,wgt_2->mss_val,ntp_2->val,wgt_2->val);
 
-#ifdef USE_TRV_API
 
     for(idx=0;idx<xtr_nbr_ntp_1;idx++) var_ntp_1[idx]=nco_var_free(var_ntp_1[idx]);
     for(idx=0;idx<xtr_nbr_ntp_2;idx++) var_ntp_2[idx]=nco_var_free(var_ntp_2[idx]);
     var_ntp_1=(var_sct **)nco_free(var_ntp_1);
     var_ntp_2=(var_sct **)nco_free(var_ntp_2);
-#else
-    if(ntp_1) ntp_1=nco_var_free(ntp_1);
-    if(ntp_2) ntp_2=nco_var_free(ntp_2);
-#endif
+
     if(ntp_var_out) ntp_var_out=nco_var_free(ntp_var_out);
   } /* end if CMD_LN_NTP_VAR */
 
@@ -879,11 +755,9 @@ main(int argc,char **argv)
   /* OpenMP notes:
   shared(): msk and wgt are not altered within loop
   private(): wgt_avg does not need initialization */
-# ifdef USE_TRV_API
+
 #  pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,fl_in_1,fl_in_2,fl_out,gpe,in_id_1_arr,in_id_2_arr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,nbr_dmn_fl,trv_tbl)
-# else
-#  pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,gpe,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,lmt_all_lst,nbr_dmn_fl)
-# endif
+
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
 
@@ -906,8 +780,7 @@ main(int argc,char **argv)
     in_id_2=in_id_2_arr[omp_get_thread_num()];
 
     var_prc_2[idx]=nco_var_dpl(var_prc_1[idx]);
-    
-#ifdef USE_TRV_API
+
     /* Obtain variable GTT object using full variable name */
     var_trv_1=trv_tbl_var_nm_fll(var_prc_1[idx]->nm_fll,trv_tbl);
     var_trv_2=trv_tbl_var_nm_fll(var_prc_2[idx]->nm_fll,trv_tbl);
@@ -928,15 +801,6 @@ main(int argc,char **argv)
     (void)nco_msa_var_get_trv(grp_id_1,var_prc_1[idx],var_trv_1);
     (void)nco_msa_var_get_trv(grp_id_2,var_prc_2[idx],var_trv_2);
 
-#else /* ! USE_TRV_API */
-
-    (void)nco_var_mtd_refresh(in_id_2,var_prc_2[idx]);
-
-    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-    (void)nco_msa_var_get(in_id_1,var_prc_1[idx],lmt_all_lst,nbr_dmn_fl);
-    (void)nco_msa_var_get(in_id_2,var_prc_2[idx],lmt_all_lst,nbr_dmn_fl);
-
-#endif /* ! USE_TRV_API */
 
     /* Set var_prc_1 and var_prc_2 to correct size */
     var_prc_1[idx]->sz=var_prc_out[idx]->sz;       
@@ -970,7 +834,7 @@ main(int argc,char **argv)
     /* Re-cast output variable to original type */
     var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);
 
-#ifdef USE_TRV_API
+
     /* Edit group name for output */
     if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv_1->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv_1->grp_nm_fll);
 
@@ -990,11 +854,7 @@ main(int argc,char **argv)
       (void)fprintf(fp_stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv_1->nm_fll);
     }
 
-#else /* ! USE_TRV_API */
 
-    grp_out_id=out_id;
-
-#endif /* ! USE_TRV_API */
 
     if(dbg_lvl_get() >= nco_dbg_dev){
       var_sct *v=var_prc_out[idx];
@@ -1047,14 +907,6 @@ main(int argc,char **argv)
     if(wgt_out_2) wgt_out_2=(var_sct *)nco_var_free(wgt_out_2);
 
 
-#ifndef USE_TRV_API
-    /* NB: free lmt[] is now referenced within lmt_all_lst[idx] */
-    for(idx=0;idx<nbr_dmn_fl;idx++)
-      for(int jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-
-    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl); 
-#endif /* ! USE_TRV_API */
 
     lmt=(lmt_sct**)nco_free(lmt); 
 
@@ -1081,11 +933,7 @@ main(int argc,char **argv)
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
-#ifndef USE_TRV_API
-    /* Free dimension lists */
-    if(nbr_dmn_xtr > 0) dim=nco_dmn_lst_free(dim,nbr_dmn_xtr);
-    if(nbr_dmn_xtr > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_xtr);
-#endif
+
     /* Free variable lists */
     /* ncflint free()s _prc variables at end of main loop */
     var=(var_sct **)nco_free(var);
@@ -1095,9 +943,9 @@ main(int argc,char **argv)
     if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
 
     /* Free traversal table */
-#ifdef USE_TRV_API
+
     trv_tbl_free(trv_tbl); 
-#endif
+
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
   } /* !flg_cln */
 
