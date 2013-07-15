@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.323 2013-07-15 09:27:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.324 2013-07-15 09:39:02 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.323 2013-07-15 09:27:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.323 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.324 2013-07-15 09:39:02 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.324 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1276,6 +1276,27 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   }
+
+  /* Divide variable lists into lists of fixed variables and variables to be processed */
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,dmn_avg,dmn_avg_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+
+   /* Store processed and fixed variables info into GTT */
+  (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc,nbr_var_fix,var_fix,trv_tbl);
+
+  /* We now have final list of variables to extract. Phew. */
+  if(dbg_lvl >= nco_dbg_var){
+    for(idx=0;idx<xtr_nbr;idx++) (void)fprintf(stderr,"var[%d]->nm = %s, ->id=[%d]\n",idx,var[idx]->nm,var[idx]->id);
+    for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stderr,"var_fix[%d]->nm = %s, ->id=[%d]\n",idx,var_fix[idx]->nm,var_fix[idx]->id);
+    for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
+  } /* end if */
+
+  /* Make output and input files consanguinous */
+  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+
+  /* Verify output file format supports requested actions */
+  (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
+
+  
 
 
 
