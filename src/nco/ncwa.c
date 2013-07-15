@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.326 2013-07-15 10:10:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.327 2013-07-15 10:16:45 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -111,15 +111,11 @@ main(int argc,char **argv)
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   nco_bool flg_opt_a=False; /* [flg] Option a was invoked */
   nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
-#if defined USE_TRV_API
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
-#endif
 
-#if defined USE_TRV_API
-  char **grp_lst_in=NULL_CEWI;
+
   char *aux_arg[NC_MAX_DIMS];
-#endif
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
@@ -144,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.326 2013-07-15 10:10:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.326 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.327 2013-07-15 10:16:45 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.327 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1330,7 +1326,40 @@ main(int argc,char **argv)
   /* Define dimensions, extracted groups, variables, and attributes in output file.  */
   (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl); 
 
+  /* Add new missing values to output file while in define mode */
+  if(msk_nm){
+    for(idx=0;idx<nbr_var_prc;idx++){
+      /* Define for var_prc_out because mss_val for var_prc will be overwritten in nco_var_mtd_refresh() */
+      if(!var_prc_out[idx]->has_mss_val){
+        var_prc_out[idx]->has_mss_val=True;
+        var_prc_out[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);
+        (void)nco_put_att(out_id,var_prc_out[idx]->id,nco_mss_val_sng_get(),var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
+      } /* end if */
+    } /* end for */
+  } /* end if */
 
+  /* Set chunksize parameters */
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+
+  /* Turn off default filling behavior to enhance efficiency */
+  nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+
+  /* Take output file out of define mode */
+  if(hdr_pad == 0UL){
+    (void)nco_enddef(out_id);
+  }else{
+    (void)nco__enddef(out_id,hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+  } /* hdr_pad */
+
+  /* Assign zero to start and unity to stride vectors in output variables */
+  (void)nco_var_srd_srt_set(var_out,xtr_nbr);
+
+  /* Copy variable data for non-processed variables */
+  (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+
+  /* Close first input netCDF file */
+  nco_close(in_id);
 
 
 
