@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.45 2013-07-16 22:27:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.46 2013-07-16 22:35:43 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic, MSVC macros */
 
@@ -20,6 +20,9 @@
 #include <math.h> /* sin cos cos sin 3.14159 */
 
 /* fxm stdio only needed for TODO ncap57 */
+#ifdef _MSC_VER
+# include <float.h> /* isfinite() */
+#endif /* !_MSC_VER */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <time.h> /* time() seed for random()/rand() */
