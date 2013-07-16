@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.329 2013-07-16 04:11:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.330 2013-07-16 09:32:28 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.329 2013-07-16 04:11:21 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.329 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.330 2013-07-16 09:32:28 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.330 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1383,6 +1383,7 @@ main(int argc,char **argv)
     if(wgt_nm){
 
       /* Retrieve weighting variable */
+      /* fxm: TODO #111 core dump if msk has dimension not in extraction list */
       wgt=nco_var_get_trv(in_id,wgt_nm,trv_tbl);
 
       /* fxm: Perhaps should allocate default tally array for wgt here
@@ -1391,6 +1392,15 @@ main(int argc,char **argv)
       it will at least have space for a tally array. TODO #114. */
 
     } /* Find weighting variable in input file */
+
+    /* Find mask variable in input file */
+    if(msk_nm){
+
+      /* Retrieve mask variable */
+      /* fxm: TODO #111 core dump if msk has dimension not in extraction list */
+      msk=nco_var_get_trv(in_id,msk_nm,trv_tbl);
+
+    } /* Find mask variable in input file */
 
 
 
