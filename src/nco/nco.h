@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.357 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.358 2013-07-16 18:39:43 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -890,8 +890,4 @@ extern "C" {
 } /* end extern "C" */
 #endif /* !__cplusplus */
 
-/* MSVC does not define isnormal */
-#ifdef _MSC_VER
-# define isnormal
-#endif /* !_MSC_VER */
 #endif /* NCO_H */

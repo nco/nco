@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.110 2013-07-16 08:23:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.111 2013-07-16 18:39:43 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -87,16 +87,18 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       if(prn_flg->cdl){
 	for(lmn=0;lmn<att_sz;lmn++){
 	  val_flt=att[idx].val.fp[lmn];
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+	  for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,val_flt,(lmn != att_sz-1L) ? dlm_sng : "");
+#else /* !_MSC_VER */
 	  if(isfinite(val_flt)){
-	    rcd_prn=snprintf(var_val_sng,NCO_ATM_SNG_LNG,att_sng,val_flt);
+	    rcd_prn=snprintf(var_val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng,val_flt);
 	    assert(rcd_prn < NCO_ATM_SNG_LNG);
 	    (void)sng_trm_trl_zro(var_val_sng,prn_flg->nbr_zro);
 	    (void)fprintf(stdout,"%s",var_val_sng);
 	  }else{
 	    if(isnan(val_flt)) (void)fprintf(stdout,"NaNf"); else if(isinf(val_flt)) (void)fprintf(stdout,"%sInfinityf",(val_flt < 0.0f) ? "-" : "");
 	  } /* endelse */
-#endif /* _MSC_VER */
+#endif /* !_MSC_VER */
 	} /* end loop */
       }else{
 	for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.fp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
@@ -175,17 +177,11 @@ nco_typ_fmt_sng_var_cdl /* [fnc] Provide sprintf() format string for specified t
      These default to 7 and 15, respectively. */
 
   static const char fmt_NC_FLOAT[]="%.7g"; /* %g defaults to 6 digits of precision */
-  static const char fmt_NC_DOUBLE[]="%.12g"; /* Specify 12 digits of precision for double precision */
+  static const char fmt_NC_DOUBLE[]="%.15g"; /* %g defaults to 6 digits of precision */
   static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
   static const char fmt_NC_SHORT[]="%hi";
   static const char fmt_NC_CHAR[]="%c";
-  /* Formats useful in printing byte data as decimal notation */
-  /*  static const char fmt_NC_BYTE[]="%i";*/
-  /*  static const char fmt_NC_BYTE[]="%c"; */
-  /*  static const char fmt_NC_BYTE[]="%d";*/
-  /* NB: %hhi is GNU extension, not ANSI standard */
   static const char fmt_NC_BYTE[]="%hhi"; /* Takes signed char as arg and prints 0,1,2..,126,127,-127,-126,...-2,-1 */
-  /* static const char fmt_NC_BYTE[]="%hhub"; *//* Takes unsigned char as arg and prints 0..255 */
 
   static const char fmt_NC_UBYTE[]="%hhu"; /*  */
   static const char fmt_NC_USHORT[]="%hu"; /*  */
@@ -231,23 +227,17 @@ nco_typ_fmt_sng_att_cdl /* [fnc] Provide sprintf() format string for specified a
 (const nc_type typ) /* I [enm] netCDF attribute type to provide CDL format string for */
 {
   /* Purpose: Provide sprintf() format string for specified type attribute
-     Unidata formats shown in ncdump.c near ling 459
+     Unidata formats shown in ncdump.c near line 459
      Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
      and are user-configurable with -p float_digits,double_digits.
      These default to 7 and 15, respectively. */
 
   static const char fmt_NC_FLOAT[]="%#.7gf"; /* %g defaults to 6 digits of precision */
-  static const char fmt_NC_DOUBLE[]="%#.12g"; /* Specify 12 digits of precision for double precision */
+  static const char fmt_NC_DOUBLE[]="%#.15g"; /* %g defaults to 6 digits of precision */
   static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
   static const char fmt_NC_SHORT[]="%his";
   static const char fmt_NC_CHAR[]="%c";
-  /* Formats useful in printing byte data as decimal notation */
-  /*  static const char fmt_NC_BYTE[]="%i";*/
-  /*  static const char fmt_NC_BYTE[]="%c"; */
-  /*  static const char fmt_NC_BYTE[]="%d";*/
-  /* NB: %hhi is GNU extension, not ANSI standard */
   static const char fmt_NC_BYTE[]="%hhib"; /* Takes signed char as arg and prints 0,1,2..,126,127,-127,-126,...-2,-1 */
-  /* static const char fmt_NC_BYTE[]="%hhub"; *//* Takes unsigned char as arg and prints 0..255 */
 
   static const char fmt_NC_UBYTE[]="%hhuub"; /*  */
   static const char fmt_NC_USHORT[]="%huus"; /*  */
@@ -292,9 +282,12 @@ const char * /* O [sng] sprintf() format string for type typ */
 nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type typ) /* I [enm] netCDF type to provide format string for */
 {
-  /* Purpose: Provide sprintf() format string for specified type */
+  /* Purpose: Provide sprintf() format string for specified type 
+     nco_typ_fmt_sng() is "master" NCO formatting function 
+     It defines what users see by default, i.e., when not explicitly requesting CDL mode */
+
   static const char fmt_NC_FLOAT[]="%g"; /* %g defaults to 6 digits of precision */
-  static const char fmt_NC_DOUBLE[]="%.12g"; /* Specify 12 digits of precision for double precision */
+  static const char fmt_NC_DOUBLE[]="%.12g"; /* %g defaults to 6 digits of precision */
   static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
   static const char fmt_NC_SHORT[]="%hi";
   static const char fmt_NC_CHAR[]="%c";
@@ -1097,16 +1090,18 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         switch(var.type){
         case NC_FLOAT: 
 	  val_flt=var.val.fp[lmn];
-#ifndef _MSC_VER
+#ifdef _MSC_VER
+	  (void)fprintf(stdout,fmt_sng,val_flt); break;
+#else /* !_MSC_VER */
 	  if(isfinite(val_flt)){
-	    rcd_prn=snprintf(var_val_sng,NCO_ATM_SNG_LNG,fmt_sng,val_flt);
+	    rcd_prn=snprintf(var_val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
 	    assert(rcd_prn < NCO_ATM_SNG_LNG);
 	    (void)sng_trm_trl_zro(var_val_sng,prn_flg->nbr_zro);
 	    (void)fprintf(stdout,"%s",var_val_sng);
 	  }else{
 	    if(isnan(val_flt)) (void)fprintf(stdout,"NaNf %s",(prn_flg->cdl) ? ";" : ""); else if(isinf(val_flt)) (void)fprintf(stdout,"%sInfinityf%s",(val_flt < 0.0f) ? "-" : "",(prn_flg->cdl) ? ";" : "");
 	  } /* endelse */
-#endif /* _MSC_VER */
+#endif /* !_MSC_VER */
 	  break;
         case NC_DOUBLE: (void)fprintf(stdout,fmt_sng,var.val.dp[lmn]); break;
         case NC_SHORT: (void)fprintf(stdout,fmt_sng,var.val.sp[lmn]); break;

@@ -1,13 +1,13 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.43 2013-03-28 18:46:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.44 2013-07-16 18:39:43 zender Exp $ */
 
-/* Purpose: Float-precision arithmetic */
+/* Purpose: Float-precision arithmetic, MSVC macros */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 /* Usage:
-   #include "nco_rth_flt.h" *//* Float-precision arithmetic */
+   #include "nco_rth_flt.h" *//* Float-precision arithmetic, MSVC macros */
 
 #ifndef NCO_RTH_FLT_H
 #define NCO_RTH_FLT_H
@@ -33,6 +33,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+/* MSVC does not define isnormal(), isnan(), isinf(), isfinite()
+   http://stackoverflow.com/questions/2249110/how-do-i-make-a-portable-isnan-isinf-function */
+#ifdef _MSC_VER
+# include <math.h>
+# define isnormal
+# define isnan(x) _isnan(x)
+# define isfinite(x) _finite(x)
+# define isinf(x) (!_finite(x))
+#endif /* !_MSC_VER */
 
 /* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer, halfway cases round away from 0
    MSVC does not define lrint(), lrintf(), lrintl(), llrint(), llrintf(), llrintl(): Round to nearest even integer, raise exceptions

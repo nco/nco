@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.35 2013-03-28 18:46:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.36 2013-07-16 18:39:43 zender Exp $ */
 
-/* Purpose: Float-precision arithmetic */
+/* Purpose: Float-precision arithmetic, MSVC macros */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-#include "nco_rth_flt.h" /* Float-precision arithmetic */
+#include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
 
 /* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer, halfway cases round away from 0
    MSVC does not define lrint(), lrintf(), lrintl(), llrint(), llrintf(), llrintl(): Round to nearest even integer, raise exceptions

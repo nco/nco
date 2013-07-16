@@ -1,3 +1,7 @@
+2013-07-16  Charlie Zender  <zender@uci.edu>
+
+	* Isolate MSVC definitions and macros in nco_rth_flt.h
+
 2013-07-15  Charlie Zender  <zender@uci.edu>
 
 	* sng_trm_trl_zro() trims trailing zeros

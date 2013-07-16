@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.36 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.37 2013-07-16 18:39:43 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -24,7 +24,7 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_ctl.h" /* Program flow control functions */
-#include "nco_rth_flt.h" /* Float-precision arithmetic */
+#include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
 #include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus

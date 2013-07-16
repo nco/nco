@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.h,v 1.25 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.h,v 1.26 2013-07-16 18:39:43 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -23,6 +23,9 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_mmr.h" /* Memory management */
+#ifdef _MSC_VER
+# include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
+#endif /* !_MSC_VER */
 #include "nco_rth_utl.h" /* Arithmetic controls and utilities */
 #include "nco_var_rth.h" /* Variable arithmetic */
 #include "nco_var_utl.h" /* Variable utilities */

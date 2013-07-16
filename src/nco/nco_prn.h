@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.43 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.44 2013-07-16 18:39:43 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -30,14 +30,17 @@
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_grp_utl.h" /* Group utilities */
 #include "nco_mmr.h" /* Memory management */
+#ifdef _MSC_VER
+# include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
+#endif /* !_MSC_VER */
 #include "nco_sng_utl.h" /* String utilities */
 
 /* fxm: strings statically allocated with NCO_MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
 /* Length should be computed at run time but is a pain */
-#define NCO_MAX_LEN_FMT_SNG 100
+#define NCO_MAX_LEN_FMT_SNG 100ul
 
 /* Maximum length of single formatted value of atomic value type */
-#define NCO_ATM_SNG_LNG 25	
+#define NCO_ATM_SNG_LNG 25ul
 
 #ifdef __cplusplus
 extern "C" {

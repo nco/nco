@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.55 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.56 2013-07-16 18:39:43 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) library */
 
@@ -44,7 +44,7 @@
 #include "nco_pck.h" /* Packing and unpacking variables */
 #include "nco_prn.h" /* Print variables, attributes, metadata */
 #include "nco_rec_var.h" /* Record variable utilities */
-#include "nco_rth_flt.h" /* Float-precision arithmetic */
+#include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
 #include "nco_rth_utl.h" /* Arithmetic controls and utilities */
 #include "nco_scl_utl.h" /* Scalar utilities */
 #include "nco_scm.h" /* Software configuration management */

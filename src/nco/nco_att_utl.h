@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.45 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.46 2013-07-16 18:39:43 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -35,6 +35,9 @@
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mss_val.h" /* Missing value utilities */
+#ifdef _MSC_VER
+# include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
+#endif /* !_MSC_VER */
 #include "nco_scm.h" /* Software configuration management */
 #include "nco_sng_utl.h" /* String utilities */
 
