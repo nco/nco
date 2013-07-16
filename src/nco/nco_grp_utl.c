@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.849 2013-07-15 07:55:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.850 2013-07-16 04:11:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6026,6 +6026,19 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
   int nbr_dmn_out=0;
   int idx_dmn_out=0;
 
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s Input dimension names",prg_nm_get(),fnc_nm);
+    /* Loop input dimension name list */
+    for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
+
+      (void)fprintf(stdout,"<%s> : ",dmn_lst_in[idx_dmn_in]);
+
+    } /* Loop input dimension name list */
+    (void)fprintf(stdout,"\n");
+  } 
+
+
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,trv_tbl);
 
@@ -6065,8 +6078,15 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
                 /* Copy ID */
                 dmn_lst[idx_dmn_out].id=dmn_trv.dmn_id;
 
-                idx_dmn_out++;
+                if(dbg_lvl_get() >= nco_dbg_dev){
+                  (void)fprintf(stdout,"%s: DEBUG %s Add 1st entry <%s>#%d \n",prg_nm_get(),fnc_nm,
+                    dmn_lst[idx_dmn_out].nm,dmn_lst[idx_dmn_out].id);
 
+                } 
+
+                /* Increment output index */
+                idx_dmn_out++;
+                /* Increment number of output dimensions */
                 nbr_dmn_out++;
 
                 /* ! First item */
@@ -6082,6 +6102,12 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
                   /* Match ID  */
                   if(dmn_trv.dmn_id == dmn_lst[idx_dmn_out_dpl].id){
                     flg_has_id=True;
+
+                    if(dbg_lvl_get() >= nco_dbg_dev){
+                      (void)fprintf(stdout,"%s: DEBUG %s Found duplicate ID <%s>#%d \n",prg_nm_get(),fnc_nm,
+                        dmn_trv.nm_fll,dmn_trv.dmn_id);
+                    } 
+
                   } /* Match ID  */
                 } /* Look all IDs */
 
@@ -6094,10 +6120,18 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
                   /* Copy ID */
                   dmn_lst[idx_dmn_out].id=dmn_trv.dmn_id;
 
-                  idx_dmn_out++;
+                  if(dbg_lvl_get() >= nco_dbg_dev){
+                    (void)fprintf(stdout,"%s: DEBUG %s Add entry <%s>#%d \n",prg_nm_get(),fnc_nm,
+                      dmn_lst[idx_dmn_out].nm,dmn_lst[idx_dmn_out].id);
 
+                  } 
+
+                  /* Increment output index */
+                  idx_dmn_out++;
+                  /* Increment number of output dimensions */
                   nbr_dmn_out++;
 
+              
                 } /* ID not found */
 
               } /* ! First item */
@@ -6109,8 +6143,6 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
   } /* Loop input dimension name list */
 
   dmn_lst=(nm_id_sct *)nco_realloc(dmn_lst,nbr_dmn_out*sizeof(nm_id_sct));
-
- 
 
   /* Check valid input (nbr_dmn_in == nbr_dmn_out ) */
   if (nbr_dmn_in != nbr_dmn_out){
@@ -6235,3 +6267,65 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
 
 
 
+var_sct *                             /* O [sct] Variable */  
+nco_var_get_trv                       /* [fnc] Fill-in variable structure for a variable named "var_nm" */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const var_nm,           /* I [sng] Variable name (relative) */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  int idx_var;
+  int nbr_xtr;
+
+  var_sct **var=NULL;
+
+  nbr_xtr=0;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Filter variables to extract  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
+      nbr_xtr++;
+    } /* Filter variables  */
+  } /* Loop table */
+
+  /* Fill-in variable structure list for all extracted variables */
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+
+  idx_var=0;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+
+    /* Filter variables  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
+      trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
+
+      int grp_id; /* [ID] Group ID */
+      int var_id; /* [ID] Variable ID */
+
+      /* Obtain group ID from API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+
+      /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
+      var[idx_var]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
+
+      /* Store full name as key for GTT search */
+      var[idx_var]->nm_fll=strdup(var_trv.nm_fll);
+
+
+      /* Retrieve variable */
+      (void)nco_var_get(grp_id,var[idx_var]);
+
+      return var[idx_var];
+
+    } /* Filter variables  */
+  } /* Loop table */
+
+
+
+  return NULL;
+
+} /* nco_var_trv() */

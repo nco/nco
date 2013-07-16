@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.328 2013-07-15 21:27:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.329 2013-07-16 04:11:21 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.328 2013-07-15 21:27:45 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.328 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.329 2013-07-16 04:11:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.329 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1379,14 +1379,25 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
 
-   
+    /* Find weighting variable in input file */
+    if(wgt_nm){
 
+      /* Retrieve weighting variable */
+      wgt=nco_var_get_trv(in_id,wgt_nm,trv_tbl);
 
+      /* fxm: Perhaps should allocate default tally array for wgt here
+      That way, when wgt conforms to the first var_prc_out and it therefore
+      does not get a tally array copied by nco_var_dpl() in nco_var_cnf_dmn(), 
+      it will at least have space for a tally array. TODO #114. */
+
+    } /* Find weighting variable in input file */
 
 
 
 
   } /* end loop over fl_idx */
+
+
 
 
 #endif /* USE_TRV_API */

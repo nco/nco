@@ -2,6 +2,8 @@
 
 	* Add in_grp_3.cdl group data for ncwa testing
   
+	* nco_var_get_trv() Fill-in variable structure for a variable named "var_nm", used to get weighting variable
+  
 
 2013-07-12  Charlie Zender  <zender@uci.edu>
 
