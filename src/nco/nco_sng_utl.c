@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.45 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.46 2013-07-16 19:18:00 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -229,9 +229,10 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating poi
     /* Find last zero after decimal point, if any */
     trl_zro_ptr=strrchr(dcm_ptr,'0'); 
     if(trl_zro_ptr){
-      /* Next character must be NUL or exponent (d,D,e,E) */
       chr_val=*(trl_zro_ptr+1);
-      if(chr_val != '\0' || !isdigit(chr_val)) return;
+      /* If the next character is a (non-zero) digit, then this is not a trailing zero */
+      if(isdigit(chr_val)) return;
+      /* Next character is a NUL or exponent (d,D,e,E) or floating type suffix (d,D,f,F) */
       /* This is a trailing zero. Allow given number of trailing zeros. */
       cnt_zro_rmn=trl_zro_max;
       while(cnt_zro_rmn > 0){
@@ -242,13 +243,13 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating poi
 
       /* All characters to right are valid */
       vld_ptr=trl_zro_ptr+1;
-      nbr_vld_chr=strlen(sng)-strlen(vld_ptr);
+      nbr_vld_chr=strlen(vld_ptr);
 
       /* Trim all remaining consecutive zeros leftward */
       while(*trl_zro_ptr == '0') *trl_zro_ptr--='\0';
 
       /* Copy allowed zeros and/or exponent, if any, to current location */
-      strncpy(trl_zro_ptr,vld_ptr,nbr_vld_chr);
+      strncpy(trl_zro_ptr+1UL,vld_ptr,nbr_vld_chr+1UL);
     } /* end if trl_zro_ptr */
   } /* end if dcm_ptr */
 

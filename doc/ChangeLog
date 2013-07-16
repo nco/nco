@@ -1,5 +1,7 @@
 2013-07-16  Charlie Zender  <zender@uci.edu>
 
+	* Variable number of trailing zeros implemented with sng_trm_trl_zro()
+
 	* Isolate MSVC definitions and macros in nco_rth_flt.h
 
 2013-07-15  Charlie Zender  <zender@uci.edu>

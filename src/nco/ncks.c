@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.625 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.626 2013-07-16 19:18:00 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.625 2013-07-16 04:26:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.625 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.626 2013-07-16 19:18:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.626 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -781,7 +781,7 @@ main(int argc,char **argv)
     prn_flg.new_fmt=PRN_NEW_FMT;
     if(dbg_lvl == nco_dbg_crr) prn_flg.cdl=True; else prn_flg.cdl=False;
     if(dbg_lvl == nco_dbg_crr+1) prn_flg.xml=True; else prn_flg.xml=False;
-    prn_flg.nbr_zro=2;
+    prn_flg.nbr_zro=1;
     prn_flg.spc_per_lvl=2;
     prn_flg.sxn_fst=2;
     prn_flg.var_fst=2;
