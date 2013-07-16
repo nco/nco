@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.111 2013-07-16 18:39:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.112 2013-07-16 18:57:28 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -23,7 +23,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   const char spc_sng[]=""; /* [sng] Space string */
 
-  char att_sng[NCO_MAX_LEN_FMT_SNG];
+  char att_sng_dlm[NCO_MAX_LEN_FMT_SNG];
+  char att_sng_pln[NCO_MAX_LEN_FMT_SNG];
   char dlm_sng[3];
   char src_sng[NC_MAX_NAME];
   char var_val_sng[NCO_ATM_SNG_LNG];
@@ -81,37 +82,39 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
 
     (void)strcpy(dlm_sng,", ");
-    (void)sprintf(att_sng,"%s%%s",(prn_flg->cdl) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
+    (void)sprintf(att_sng_pln,"%s",(prn_flg->cdl) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
+    (void)sprintf(att_sng_dlm,"%s%%s",(prn_flg->cdl) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
     switch(att[idx].type){
     case NC_FLOAT:
       if(prn_flg->cdl){
 	for(lmn=0;lmn<att_sz;lmn++){
 	  val_flt=att[idx].val.fp[lmn];
 #ifdef _MSC_VER
-	  for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,val_flt,(lmn != att_sz-1L) ? dlm_sng : "");
+	  for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,val_flt,(lmn != att_sz-1L) ? dlm_sng : "");
 #else /* !_MSC_VER */
 	  if(isfinite(val_flt)){
-	    rcd_prn=snprintf(var_val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng,val_flt);
-	    assert(rcd_prn < NCO_ATM_SNG_LNG);
+	    rcd_prn=snprintf(var_val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_flt);
+	    assert(rcd_prn < (int)NCO_ATM_SNG_LNG);
 	    (void)sng_trm_trl_zro(var_val_sng,prn_flg->nbr_zro);
 	    (void)fprintf(stdout,"%s",var_val_sng);
 	  }else{
 	    if(isnan(val_flt)) (void)fprintf(stdout,"NaNf"); else if(isinf(val_flt)) (void)fprintf(stdout,"%sInfinityf",(val_flt < 0.0f) ? "-" : "");
 	  } /* endelse */
 #endif /* !_MSC_VER */
+	  if(lmn != att_sz-1L) (void)fprintf(stdout,"%s",dlm_sng);
 	} /* end loop */
       }else{
-	for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.fp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+	for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.fp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       } /* endelse */
       break;
     case NC_DOUBLE:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.dp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.dp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_SHORT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.sp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.sp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_INT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.ip[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,(long)att[idx].val.ip[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_CHAR:
       for(lmn=0;lmn<att_sz;lmn++){
@@ -121,25 +124,25 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       } /* end loop over element */
       break;
     case NC_BYTE:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.bp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.bp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_UBYTE:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ubp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ubp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_USHORT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.usp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.usp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_UINT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.uip[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.uip[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_INT64:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.i64p[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.i64p[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_UINT64:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.ui64p[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ui64p[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     case NC_STRING:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.sngp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.sngp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
       break;
     default: nco_dfl_case_nc_type_err();
       break;
@@ -1095,7 +1098,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 #else /* !_MSC_VER */
 	  if(isfinite(val_flt)){
 	    rcd_prn=snprintf(var_val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
-	    assert(rcd_prn < NCO_ATM_SNG_LNG);
+	    assert(rcd_prn < (int)NCO_ATM_SNG_LNG);
 	    (void)sng_trm_trl_zro(var_val_sng,prn_flg->nbr_zro);
 	    (void)fprintf(stdout,"%s",var_val_sng);
 	  }else{
