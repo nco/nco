@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1241 2013-07-05 22:20:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1242 2013-07-16 08:23:32 pvicente Exp $
 
 # Purpose: TODO items for NCO
 
@@ -714,7 +714,7 @@ A. ncflint now always works when input files are interchanged, i.e.,
    fl_1 than in fl_2 then both these work:
    ncflint -v v1 -w 0.5 fl_1.nc fl_2.nc out.nc # Now works too!
    ncflint -v v1 -w 0.5 fl_2.nc fl_1.nc out.nc # Always worked
-nco1100. 
+nco1100 Find MSVC 2010 versions of isfinite, snprintf, isnan, isinf
 qrk
 ************************************************************************
 End ncoXXX TODOs

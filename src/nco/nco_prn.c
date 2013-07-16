@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.109 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.110 2013-07-16 08:23:32 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -87,6 +87,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       if(prn_flg->cdl){
 	for(lmn=0;lmn<att_sz;lmn++){
 	  val_flt=att[idx].val.fp[lmn];
+#ifndef _MSC_VER
 	  if(isfinite(val_flt)){
 	    rcd_prn=snprintf(var_val_sng,NCO_ATM_SNG_LNG,att_sng,val_flt);
 	    assert(rcd_prn < NCO_ATM_SNG_LNG);
@@ -95,6 +96,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  }else{
 	    if(isnan(val_flt)) (void)fprintf(stdout,"NaNf"); else if(isinf(val_flt)) (void)fprintf(stdout,"%sInfinityf",(val_flt < 0.0f) ? "-" : "");
 	  } /* endelse */
+#endif /* _MSC_VER */
 	} /* end loop */
       }else{
 	for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng,att[idx].val.fp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
@@ -1095,6 +1097,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         switch(var.type){
         case NC_FLOAT: 
 	  val_flt=var.val.fp[lmn];
+#ifndef _MSC_VER
 	  if(isfinite(val_flt)){
 	    rcd_prn=snprintf(var_val_sng,NCO_ATM_SNG_LNG,fmt_sng,val_flt);
 	    assert(rcd_prn < NCO_ATM_SNG_LNG);
@@ -1103,6 +1106,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 	  }else{
 	    if(isnan(val_flt)) (void)fprintf(stdout,"NaNf %s",(prn_flg->cdl) ? ";" : ""); else if(isinf(val_flt)) (void)fprintf(stdout,"%sInfinityf%s",(val_flt < 0.0f) ? "-" : "",(prn_flg->cdl) ? ";" : "");
 	  } /* endelse */
+#endif /* _MSC_VER */
 	  break;
         case NC_DOUBLE: (void)fprintf(stdout,fmt_sng,var.val.dp[lmn]); break;
         case NC_SHORT: (void)fprintf(stdout,fmt_sng,var.val.sp[lmn]); break;
