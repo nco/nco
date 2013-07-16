@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.74 2013-07-11 03:29:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.75 2013-07-16 04:26:06 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -37,7 +37,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
   
 void 
 nco_msa_c_2_f /* [fnc] Replace brackets with parentheses in a string */
@@ -142,12 +141,6 @@ nco_msa_qsort_srt_trv   /* [fnc] Sort limits by srt values (traversal table vers
 void
 nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new wrapped limits) */
 (lmt_msa_sct *lmt_lst); /* [sct] MSA */
-
-void
-nco_msa_prn_var_val_trv             /* [fnc] Print variable data */
-(const int nc_id,                   /* I [ID] netCDF file ID */
- const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
- const trv_sct * const var_trv);    /* I [sct] Object to print (variable) */
 
 void
 nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to output file */

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.301 2013-07-15 06:00:51 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.302 2013-07-16 04:26:06 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -498,7 +498,6 @@ print "\n";
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
 
-
     $dsc_sng="Group addition with limits -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
@@ -512,12 +511,10 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
     
-    
 #ncbo #16
 # ncbo -O -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
-
 
     $dsc_sng="Group subtraction -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
@@ -536,7 +533,6 @@ print "\n";
 # ncbo -O -y mlt -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
-
 
     $dsc_sng="Group multiplication with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,2,2,1 -y mlt -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
@@ -1297,9 +1293,7 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-    
 
-    
 #   
 #NCO 4.2.3   
 # 
@@ -1789,7 +1783,7 @@ print "\n";
 #	nco_prn_xtr_val_trv() prints variable data
 #
 #	* ncks limits are stored in the GTT dimension structure and MSA is applied.
-#	Distribute these to variables when writing with nco_msa_prn_var_val_trv().
+#	Distribute these to variables when writing with nco_prn_var_val_trv().
 #	nco_bld_lmt_trv() assigns user specified dimension limits to traversal table dimensions.   
 
 # 

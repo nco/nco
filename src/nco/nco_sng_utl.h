@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.34 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.35 2013-07-16 04:26:06 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -64,6 +64,11 @@ nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */
 (char * const sng); /* I/O [sng] String to process */
+
+void /* O [nbr]  */
+sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating point string */
+(char * const sng, /* I/O [sng] String to process */
+ const int trl_zro_max); /* [nbr] Maximum number of trailing zeros allowed */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.44 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.45 2013-07-16 04:26:06 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -207,4 +207,50 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
   return trn_nbr;
 } /* end sng_ascii_trn() */
 
+void /* O [nbr]  */
+sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating point string */
+(char * const sng, /* I/O [sng] String to process */
+ const int trl_zro_max) /* [nbr] Maximum number of trailing zeros allowed */
+{
+  /* Purpose: Trim zeros trailing decimal point from floating point string
+     Source: 20130715 CSZ modified code that does not handle exponents at 
+     http://stackoverflow.com/questions/277772/avoid-trailing-zeroes-in-printf */
+  char *trl_zro_ptr; /* [sng] */
+  char *dcm_ptr; /* [sng] */
+  char *vld_ptr=NULL; /* [sng] */
+  char chr_val; /* [chr] Character value */
 
+  int cnt_zro_rmn; /* [nbr] Number of trailing zeros remaining until maximum reached */
+  int nbr_vld_chr; /* [nbr] Number of valid characters to copy */
+  
+  /* Find decimal point, if any */
+  dcm_ptr=strchr(sng,'.'); 
+  if(dcm_ptr){
+    /* Find last zero after decimal point, if any */
+    trl_zro_ptr=strrchr(dcm_ptr,'0'); 
+    if(trl_zro_ptr){
+      /* Next character must be NUL or exponent (d,D,e,E) */
+      chr_val=*(trl_zro_ptr+1);
+      if(chr_val != '\0' || !isdigit(chr_val)) return;
+      /* This is a trailing zero. Allow given number of trailing zeros. */
+      cnt_zro_rmn=trl_zro_max;
+      while(cnt_zro_rmn > 0){
+	cnt_zro_rmn--;
+	/* Shift pointer back one character. If that is zero, continue else return. */
+	if(*trl_zro_ptr-- != '0') return;
+      } /* end while */
+
+      /* All characters to right are valid */
+      vld_ptr=trl_zro_ptr+1;
+      nbr_vld_chr=strlen(sng)-strlen(vld_ptr);
+
+      /* Trim all remaining consecutive zeros leftward */
+      while(*trl_zro_ptr == '0') *trl_zro_ptr--='\0';
+
+      /* Copy allowed zeros and/or exponent, if any, to current location */
+      strncpy(trl_zro_ptr,vld_ptr,nbr_vld_chr);
+    } /* end if trl_zro_ptr */
+  } /* end if dcm_ptr */
+
+  return;
+} /* end sng_trm_trl_zro() */

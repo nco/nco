@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.167 2013-05-01 20:40:38 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.168 2013-07-16 04:26:06 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -530,13 +530,13 @@ variables:
 	int one_dmn_int_val_one(lat);
 	int one_dmn_int_val_two(lat);
 
-	float att_var;
+	float att_var(time);
 	att_var:byte_att = '\000','\001','\002','\177','\200','\201','\376','\377';
 	att_var:char_att = "Sentence one.\nSentence two.\n";
 	att_var:short_att = 37s;
-	att_var:int_att = 73l;
-	att_var:float_att = 73.0f,72.0f,71.0f;
-	att_var:double_att = 73.0d;
+	att_var:int_att = 73;
+        att_var:float_att = 73.0f,72.0f,71.0f,70.010f,69.0010f,68.010000f,67.01000100f;
+	att_var:double_att = 73.0,72.0,71.0,70.010,69.0010,68.010000,67.01000100;
 
 	int bnd_var(lev,bnd);
 	bnd_var:byte_att = '\0';
@@ -966,7 +966,7 @@ data:
 //	netCDF4-specific atomic types:
 //	None in this file
 //	netCDF3 atomic types:
-	att_var=10.;
+	att_var=10.0,10.1,10.20,10.3000,10.40101,10.500001,10.60000001,10.7000001,10.80,10.9900;
 	area=10.,10.;
 	area2=20.,5.;
 	area_asm=1.,2.;

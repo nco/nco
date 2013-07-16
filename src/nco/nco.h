@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.356 2013-07-13 05:44:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.357 2013-07-16 04:26:06 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -117,7 +117,7 @@ extern "C" {
   /* netcdf.h defines four NC_FORMAT tokens: NC_FORMAT_CLASSIC, ...
      The values are (currently) enumerated from one to four
      Operators need to check if fl_out_fmt has been user-specified
-     Saftest way is to compare current value of fl_out_fmt to initial value 
+     Safest way is to compare current value of fl_out_fmt to initial value 
      Initial value should be a number that will never be a true netCDF format */
 #define NCO_FORMAT_UNDEFINED 0
   
@@ -587,9 +587,11 @@ extern "C" {
   
   /* Print flags structure */
   typedef struct{ /* prn_fmt_sct */
+    nco_bool xml; /* [flg] Print valid XML */
     nco_bool cdl; /* [flg] Print valid CDL */
     nco_bool new_fmt; /* [flg] Print in new format */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
+    int nbr_zro; /* [nbr] Trailing zeros allowed after decimal point */
     int ndn; /* [nbr] Indentation */
     int fll_pth; /* [nbr] Print full paths */
     int tab; /* [nbr] Number of spaces in tab */

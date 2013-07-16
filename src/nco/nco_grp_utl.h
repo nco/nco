@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.327 2013-07-16 04:11:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.328 2013-07-16 04:26:06 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -28,14 +28,15 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
-#include "nco_ctl.h" /* Program flow control functions */
+#include "nco_aux.h" /* Auxiliary coordinates */
 #include "nco_cnf_dmn.h" /* Conform dimensions */
 #include "nco_cnk.h" /* Chunking */
+#include "nco_ctl.h" /* Program flow control functions */
 #include "nco_grp_trv.h" /* Group traversal */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_msa.h" /* Multi-slabbing algorithm */
+#include "nco_prn.h" /* Print variables, attributes, metadata */
 #include "nco_var_lst.h" /* Variable list utilities */
-#include "nco_aux.h" /* Auxiliary coordinates */
 
 /* Dynamic array implementation of group stack */
 typedef struct {

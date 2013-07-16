@@ -1,9 +1,14 @@
+2013-07-15  Charlie Zender  <zender@uci.edu>
+
+	* sng_trm_trl_zro() trims trailing zeros
+
+	* CDL mode works for non-char variables for attributes, dies for float attributes
+
 2013-07-15 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncwa testing
-  
-	* nco_var_get_trv() Fill-in variable structure for a variable named "var_nm", used to get weighting variable
-  
+
+	* nco_var_get_trv() Fill-in variable structure for weighting variable "var_nm"
 
 2013-07-12  Charlie Zender  <zender@uci.edu>
 

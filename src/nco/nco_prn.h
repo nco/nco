@@ -1,13 +1,13 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.42 2013-07-13 05:44:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.43 2013-07-16 04:26:06 zender Exp $ */
 
-/* Purpose: Printing variables, attributes, metadata */
+/* Purpose: Print variables, attributes, metadata */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 /* Usage:
-   #include "nco_prn.h" *//* Printing variables, attributes, metadata */
+   #include "nco_prn.h" *//* Print variables, attributes, metadata */
 
 #ifndef NCO_PRN_H
 #define NCO_PRN_H
@@ -36,6 +36,9 @@
 /* Length should be computed at run time but is a pain */
 #define NCO_MAX_LEN_FMT_SNG 100
 
+/* Maximum length of single formatted value of atomic value type */
+#define NCO_ATM_SNG_LNG 25	
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
@@ -50,9 +53,13 @@ const char * /* O [sng] sprintf() format string for type typ */
 nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type typ); /* I [enm] netCDF type to provide format string for */
 
-const char * /* O [sng] sprintf() format string for CDL type typ */
-nco_typ_fmt_sng_cdl /* [fnc] Provide sprintf() format string for specified type in CDL */
-(const nc_type typ); /* I [enm] netCDF type to provide CDL format string for */
+const char * /* O [sng] sprintf() format string for CDL variable type typ */
+nco_typ_fmt_sng_var_cdl /* [fnc] Provide sprintf() format string for specified variable type in CDL */
+(const nc_type typ); /* I [enm] netCDF variable type to provide CDL format string for */
+
+const char * /* O [sng] sprintf() format string for CDL attribute type typ */
+nco_typ_fmt_sng_att_cdl /* [fnc] Provide sprintf() format string for specified attribute type in CDL */
+(const nc_type typ); /* I [enm] netCDF attribute type to provide CDL format string for */
 
 void
 nco_prn_var_val_lmt /* [fnc] Print variable data */
@@ -64,6 +71,12 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
  const nco_bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
  const nco_bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const nco_bool PRN_DMN_IDX_CRD_VAL); /* I [flg] Print dimension/coordinate indices/values */
+
+void
+nco_prn_var_val_trv             /* [fnc] Print variable data */
+(const int nc_id,                   /* I [ID] netCDF file ID */
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
+ const trv_sct * const var_trv);    /* I [sct] Object to print (variable) */
 
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */

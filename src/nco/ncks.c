@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.624 2013-07-12 19:31:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.625 2013-07-16 04:26:06 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.624 2013-07-12 19:31:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.624 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.625 2013-07-16 04:26:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.625 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -780,6 +780,8 @@ main(int argc,char **argv)
     prn_fmt_sct prn_flg;
     prn_flg.new_fmt=PRN_NEW_FMT;
     if(dbg_lvl == nco_dbg_crr) prn_flg.cdl=True; else prn_flg.cdl=False;
+    if(dbg_lvl == nco_dbg_crr+1) prn_flg.xml=True; else prn_flg.xml=False;
+    prn_flg.nbr_zro=2;
     prn_flg.spc_per_lvl=2;
     prn_flg.sxn_fst=2;
     prn_flg.var_fst=2;
@@ -800,8 +802,14 @@ main(int argc,char **argv)
     prn_flg.PRN_MSS_VAL_BLANK=PRN_MSS_VAL_BLANK;
     prn_flg.PRN_VAR_DATA=PRN_VAR_DATA;
     prn_flg.PRN_VAR_METADATA=PRN_VAR_METADATA;
+    /* Derived formats */
+    if(prn_flg.cdl){
+      prn_flg.PRN_DMN_UNITS=False;
+      prn_flg.PRN_DMN_VAR_NM=True;
+      prn_flg.PRN_MSS_VAL_BLANK=True;
+    } /* endif */
 
-    /* File summary line */
+    /* File summary */
     (void)fprintf(stdout,"Summary of %s: filetype = %s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
 
     if(!prn_flg.new_fmt){
