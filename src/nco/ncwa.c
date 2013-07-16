@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.331 2013-07-16 09:38:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.332 2013-07-16 09:43:23 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.331 2013-07-16 09:38:37 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.331 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.332 2013-07-16 09:43:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.332 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -566,7 +566,7 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
-   /* Initialize traversal table */ 
+  /* Initialize traversal table */ 
   trv_tbl_init(&trv_tbl);
 
   /* Parse mask string */
@@ -627,7 +627,7 @@ main(int argc,char **argv)
 
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
-  
+
 
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,&xtr_nbr);
@@ -1162,11 +1162,11 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
- 
+
 
 #else /* USE_TRV_API */
 
- 
+
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
 
@@ -1295,7 +1295,7 @@ main(int argc,char **argv)
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,dmn_avg,dmn_avg_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
-   /* Store processed and fixed variables info into GTT */
+  /* Store processed and fixed variables info into GTT */
   (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc,nbr_var_fix,var_fix,trv_tbl);
 
   /* We now have final list of variables to extract. Phew. */
@@ -1414,14 +1414,280 @@ main(int argc,char **argv)
 #pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* !_OPENMP */
 
+    for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+      in_id=in_id_arr[omp_get_thread_num()];
+      if(dbg_lvl >= nco_dbg_var && dbg_lvl < nco_dbg_nbr) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+      if(dbg_lvl >= nco_dbg_var && dbg_lvl < nco_dbg_nbr) (void)fflush(fp_stderr);
 
+      /* Allocate and, if necessary, initialize accumulation space for all processed variables */
+      var_prc_out[idx]->sz=var_prc[idx]->sz;
+      /*      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){*/
+      /* fxm: verify that var_prc->tally is not needed */
+      if((var_prc_out[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){
+        (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
+        nco_exit(EXIT_FAILURE); 
+      } /* end if err */
+      (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
+      if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
+        (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+        nco_exit(EXIT_FAILURE); 
+      } /* end if err */
+      (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
 
+      (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
+      /* Retrieve variable from disk into memory */
+      if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
+      (void)nco_var_get(in_id,var_prc[idx]);
+      if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
 
+      /* Convert char, short, long, int types to doubles before arithmetic */
+      var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
+      var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 
+      if(msk_nm && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+        msk_out=nco_var_cnf_dmn(var_prc[idx],msk,msk_out,MUST_CONFORM,&DO_CONFORM_MSK);
+        /* If msk and var did not conform then do not mask var! */
+        if(DO_CONFORM_MSK){
+          msk_out=nco_var_cnf_typ(var_prc[idx]->type,msk_out);
 
+          /* mss_val for var_prc has been overwritten in nco_var_mtd_refresh() */
+          if(!var_prc[idx]->has_mss_val){
+            var_prc[idx]->has_mss_val=True;
+            var_prc[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);
+          } /* end if */
 
+          /* Mask by changing variable to missing value where condition is false */
+          (void)nco_var_msk(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_typ_rlt,msk_out->val,var_prc[idx]->val);
+        } /* end if */
+      } /* end if */
+      /* Perform non-linear transformations before weighting */
+      if(!var_prc[idx]->is_crd_var){
+        switch(nco_op_typ){
+        case nco_op_avgsqr: /* Square variable before weighting */
+        case nco_op_rms: /* Square variable before weighting */
+        case nco_op_rmssdn: /* Square variable before weighting */
+          (void)nco_var_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,var_prc[idx]->val);
+          break;
+        default: /* All other operations are linear, do nothing to them yet */
+          break;
+        } /* end case */
+      } /* var_prc[idx]->is_crd_var */
+      if(wgt_nm && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+        /* fxm: nco_var_cnf_dmn() has bug where it does not allocate tally array
+        for weights that do already conform to var_prc. TODO #114. */
+        wgt_out=nco_var_cnf_dmn(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
+        if(DO_CONFORM_WGT){
+          wgt_out=nco_var_cnf_typ(var_prc[idx]->type,wgt_out);
+          /* Weight after any initial non-linear operation so, e.g., variable is squared but not weights */
+          /* Weight variable by taking product of weight and variable */
+          (void)nco_var_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
+        } /* end if weights conformed */
+      } /* end if weight was specified and then tested for conformance */
+      /* Copy (masked) (weighted) values from var_prc to var_prc_out */
+      (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
+      /* 20050516: fxm: destruction of var_prc_out in nco_var_avg() leaves dangling pointers in var_out? */
+      /* Reduce variable over specified dimensions (tally array is set here)
+      NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
+      var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,flg_rdd,&ddra_info);
+      /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
+      Denominator is also tricky due to sundry normalization options
+      These logical switches are VERY tricky---be careful modifying them */
+      if(NRM_BY_DNM && DO_CONFORM_WGT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+        /* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
+        averaging operation and may be re-used on next variable.
+        Free wgt_avg after each use but continue to re-use wgt_out */
+        wgt_avg=nco_var_dpl(wgt_out);
+
+        if(var_prc[idx]->has_mss_val){
+          double mss_val_dbl=double_CEWI;
+          /* Set denominator to missing value at all locations where variable is missing value
+          If this is accomplished by setting weight to missing value wherever variable is missing value
+          then weight must not be re-used by next variable (which might conform but have missing values in different locations)
+          This is one good reason to copy wgt_out into disposable wgt_avg for each new variable */
+          /* First, make sure wgt_avg has same missing value as variable */
+          (void)nco_mss_val_cp(var_prc[idx],wgt_avg);
+          /* Copy missing value into double precision variable */
+          switch(wgt_avg->type){
+          case NC_FLOAT: mss_val_dbl=wgt_avg->mss_val.fp[0]; break; 
+          case NC_DOUBLE: mss_val_dbl=wgt_avg->mss_val.dp[0]; break; 
+          case NC_INT: mss_val_dbl=wgt_avg->mss_val.ip[0]; break;
+          case NC_SHORT: mss_val_dbl=wgt_avg->mss_val.sp[0]; break;
+          case NC_USHORT: mss_val_dbl=wgt_avg->mss_val.usp[0]; break;
+          case NC_UINT: mss_val_dbl=wgt_avg->mss_val.uip[0]; break;
+          case NC_INT64: mss_val_dbl=wgt_avg->mss_val.i64p[0]; break;
+          case NC_UINT64: mss_val_dbl=wgt_avg->mss_val.ui64p[0]; break;
+          case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
+          case NC_UBYTE: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
+          case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
+          case NC_STRING: break; /* Do nothing */
+          default: nco_dfl_case_nc_type_err(); break;
+          } /* end switch */
+          /* Second, mask wgt_avg where variable is missing value */
+          (void)nco_var_msk(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nco_op_ne,var_prc[idx]->val,wgt_avg->val);
+        } /* endif weight must be checked for missing values */
+
+        /* Free current input buffer */
+        var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+
+        if(msk_nm && DO_CONFORM_MSK){
+          /* Must mask weight in same fashion as variable was masked
+          If msk and var did not conform then do not mask wgt
+          Ensure wgt_avg has a missing value */
+          if(!wgt_avg->has_mss_val){
+            wgt_avg->has_mss_val=True;
+            wgt_avg->mss_val=nco_mss_val_mk(wgt_avg->type);
+          } /* end if */
+          /* Mask by changing weight to missing value where condition is false */
+          (void)nco_var_msk(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,msk_val,op_typ_rlt,msk_out->val,wgt_avg->val);
+        } /* endif weight must be masked */
+
+        /* fxm: temporary kludge to make sure weight has tally space
+        wgt_avg may lack valid tally array in ncwa because wgt_avg is created, 
+        sometimes, before the tally array for var_prc_out[idx] is created. 
+        When this occurs the nco_var_dpl() call in nco_var_cnf_dmn() does not copy
+        tally array into wgt_avg. See related note about this above. TODO #114.*/
+        if(wgt_avg->sz > 0)
+          if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
+            (void)fprintf(fp_stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
+            nco_exit(EXIT_FAILURE); 
+          } /* end if */
+          /* Average weight over specified dimensions (tally array is set here) */
+          wgt_avg=nco_var_avg(wgt_avg,dmn_avg,dmn_avg_nbr,nco_op_avg,flg_rdd,&ddra_info);
+
+          if(MULTIPLY_BY_TALLY){
+            /* NB: Currently this is not implemented */
+            /* Multiply numerator (weighted sum of variable) by tally 
+            We deviously accomplish this by dividing denominator by tally */
+            (void)nco_var_nrm(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);
+          } /* endif */
+          /* Divide numerator by denominator */
+          /* Diagnose common PEBCAK before it causes core dump */
+          if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.ip[0] == 0){
+            (void)fprintf(fp_stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
+          } /* end if */
+          /* Rather complex conditional statement is shorter than switch() */
+          if( /* Normalize by weighted tally if ....  */
+            (nco_op_typ != nco_op_min) && /* ...operation is not min() and... */
+            (nco_op_typ != nco_op_max) && /* ...operation is not max() and... */
+            (nco_op_typ != nco_op_ttl || /* ...operation is not ttl() or... */
+            var_prc[idx]->is_crd_var) /* ...variable is a coordinate */
+            ){ /* Divide numerator by masked, averaged, weights */
+              (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
+          } /* endif */
+          /* Free wgt_avg, but keep wgt_out, after each use */
+          if(wgt_avg) wgt_avg=nco_var_free(wgt_avg);
+          /* End of branch for normalization when weights were specified */
+      }else if(NRM_BY_DNM){
+        /* Branch for normalization when no weights were specified
+        Normalization is just due to tally */
+        if(var_prc[idx]->is_crd_var){
+          /* Return linear averages of coordinates unless computing extrema
+          Prevent coordinate variables from encountering nco_var_nrm_sdn() */
+          if((nco_op_typ != nco_op_min) && (nco_op_typ != nco_op_max)) (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+        }else{ /* !var_prc[idx]->is_crd_var */
+          switch(nco_op_typ){
+          case nco_op_avg: /* Normalize sum by tally to create mean */
+          case nco_op_sqravg: /* Normalize sum by tally to create mean */
+          case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
+          case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
+          case nco_op_sqrt: /* Normalize sum by tally to create mean */
+            (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+            break;
+          case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
+            (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+            break;
+          case nco_op_min: /* Minimum is already in buffer, do nothing */
+          case nco_op_max: /* Maximum is already in buffer, do nothing */	
+          case nco_op_ttl: /* Total is already in buffer, do nothing */	
+            break;
+          default:
+            (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",prg_nm);
+            nco_exit(EXIT_FAILURE);
+            break;
+          } /* end switch */
+        } /* !var_prc[idx]->is_crd_var */
+      }else if(!NRM_BY_DNM){
+        /* User turned off normalization so we are done */
+        ;
+      }else{
+        (void)fprintf(fp_stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
+        nco_exit(EXIT_FAILURE);
+      } /* end if */
+      /* Some non-linear operations require additional processing */
+      if(!var_prc[idx]->is_crd_var){
+        switch(nco_op_typ){
+        case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
+          (void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+          break;
+        case nco_op_sqrt: /* Take root of mean to create root mean */
+        case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
+        case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
+          (void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);  
+          break;
+        default:
+          break;
+        } /* end switch */
+      } /* var_prc[idx]->is_crd_var */
+      /* Free tally buffer */
+      var_prc_out[idx]->tally=(long *)nco_free(var_prc_out[idx]->tally);
+
+      /* Revert any arithmetic promotion but leave unpacked (for now) */
+      var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
+
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
+      { /* begin OpenMP critical */
+        /* Copy average to output file then free averaging buffer */
+        if(var_prc_out[idx]->nbr_dim == 0){
+          (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+        }else{ /* end if variable is scalar */
+          (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+        } /* end if variable is array */
+      } /* end OpenMP critical */
+
+      if(flg_ddra){
+        /* DDRA diagnostics
+        Usage:
+        ncwa -O -C --mdl -a lat,lon,time -w lat ~/nco/data/in.nc ~/foo.nc
+        ncwa -O -C --mdl -a lat,lon -w lat ${DATA}/nco_bm/stl_5km.nc ~/foo.nc
+        ncwa -O -C --mdl -a lat,lon,time -w lat ${DATA}/nco_bm/gcm_T85.nc ~/foo.nc */
+
+        /* Assign remaining input for DDRA diagnostics */
+        ddra_info.lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */
+        if(wgt) ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
+        ddra_info.nco_op_typ=nco_op_typ; /* [enm] Operation type */
+        ddra_info.rnk_var=var_prc[idx]->nbr_dim; /* I [nbr] Variable rank (in input file) */
+        if(wgt) ddra_info.rnk_wgt=wgt->nbr_dim; /* [nbr] Rank of weight */
+        ddra_info.var_idx=idx; /* [enm] Index */
+        ddra_info.wrd_sz=nco_typ_lng(var_prc[idx]->type); /* [B] Bytes per element */
+
+        /* DDRA diagnostics */
+        rcd+=nco_ddra /* [fnc] Count operations */
+          (var_prc[idx]->nm, /* I [sng] Variable name */
+          wgt_nm, /* I [sng] Weight name */
+          &ddra_info); /* I [sct] DDRA information */
+
+      } /* !flg_ddra */
+
+      /* Free current output buffer */
+      var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
+
+    } /* end (OpenMP parallel for) loop over idx */
+
+    if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
+
+    /* Close input netCDF file */
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
+
+    /* Remove local copy of file */
+    if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
   } /* end loop over fl_idx */
+
+  /* Close output file and move it from temporary to permanent location */
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
 #endif /* USE_TRV_API */
 
