@@ -1,5 +1,9 @@
 2013-07-16  Charlie Zender  <zender@uci.edu>
 
+	* New MSVC macros for isinf(), isfinite(), isnan()"
+
+	* CDL mode prints all floating point values correctly
+
 	* Variable number of trailing zeros implemented with sng_trm_trl_zro()
 
 	* Isolate MSVC definitions and macros in nco_rth_flt.h

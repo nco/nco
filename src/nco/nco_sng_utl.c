@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.46 2013-07-16 19:18:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.47 2013-07-16 22:24:10 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -122,6 +122,18 @@ nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
   return cmd_ln; /* [sng] Parsed command line */
 } /* end nco_cmd_ln_sng() */
 
+void 
+sng_idx_dlm_c2f /* [fnc] Replace brackets with parentheses in a string */
+(char *sng) /* [sng] String to change from C to Fortran notation */
+{
+  /* Purpose: Replace brackets with parentheses in a string */
+  while(*sng){
+    if(*sng == '[') *sng='(';
+    if(*sng == ']') *sng=')';
+    sng++;
+  } /* end while */
+} /* end sng_idx_dlm_c2f() */
+
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */
 (char * const sng) /* I/O [sng] String to process */
@@ -213,15 +225,14 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating poi
  const int trl_zro_max) /* [nbr] Maximum number of trailing zeros allowed */
 {
   /* Purpose: Trim zeros trailing decimal point from floating point string
-     Source: 20130715 CSZ modified code that does not handle exponents at 
-     http://stackoverflow.com/questions/277772/avoid-trailing-zeroes-in-printf */
+     Allow trl_zro_max trailing zeros to remain */
+
   char *trl_zro_ptr; /* [sng] */
   char *dcm_ptr; /* [sng] */
   char *vld_ptr=NULL; /* [sng] */
   char chr_val; /* [chr] Character value */
 
   int cnt_zro_rmn; /* [nbr] Number of trailing zeros remaining until maximum reached */
-  int nbr_vld_chr; /* [nbr] Number of valid characters to copy */
   
   /* Find decimal point, if any */
   dcm_ptr=strchr(sng,'.'); 
@@ -243,13 +254,12 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating poi
 
       /* All characters to right are valid */
       vld_ptr=trl_zro_ptr+1;
-      nbr_vld_chr=strlen(vld_ptr);
 
       /* Trim all remaining consecutive zeros leftward */
       while(*trl_zro_ptr == '0') *trl_zro_ptr--='\0';
 
       /* Copy allowed zeros and/or exponent, if any, to current location */
-      strncpy(trl_zro_ptr+1UL,vld_ptr,nbr_vld_chr+1UL);
+      strncpy(trl_zro_ptr+1UL,vld_ptr,strlen(vld_ptr)+1UL);
     } /* end if trl_zro_ptr */
   } /* end if dcm_ptr */
 

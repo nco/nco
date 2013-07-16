@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.188 2013-07-13 05:44:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.189 2013-07-16 22:24:10 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1324,12 +1324,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
     /* Get coordinate type */
     (void)nco_inq_vartype(grp_id,var_id,&var_typ);
-  }
-
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO %s dimension <%s/%s(%li)>:",prg_nm_get(),fnc_nm,grp_nm_fll,nm,sz);
-    if(!is_crd_var) (void)fprintf(stdout,"NOT a coordinate variable\n"); else (void)fprintf(stdout,"HAS a coordinate variable\n");    
-  }
+  } /* !is_crd */
 
   /* Use info from parameter to assign locally used size */
   dmn_sz=sz;

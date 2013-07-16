@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.21 2013-02-28 12:57:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.22 2013-07-16 22:24:10 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -22,6 +22,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_grp_utl.h" /* Group utilities */
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
 

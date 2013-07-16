@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.112 2013-07-16 18:57:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.113 2013-07-16 22:24:10 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -22,12 +22,12 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   att_sct *att=NULL_CEWI;
 
   const char spc_sng[]=""; /* [sng] Space string */
+  const char cma_sng[]=", "; /* [sng] Comma string */
 
   char att_sng_dlm[NCO_MAX_LEN_FMT_SNG];
   char att_sng_pln[NCO_MAX_LEN_FMT_SNG];
-  char dlm_sng[3];
   char src_sng[NC_MAX_NAME];
-  char var_val_sng[NCO_ATM_SNG_LNG];
+  char val_sng[NCO_ATM_SNG_LNG];
 
   double val_dbl;
 
@@ -42,6 +42,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   long lmn;
   long att_sz;
+  long att_szm1;
   
   if(var_id == NC_GLOBAL){
     /* Get number of global attributes in group */
@@ -68,6 +69,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
     /* Copy value to avoid indirection in loop over att_sz */
     att_sz=att[idx].sz;
+    att_szm1=att_sz-1L;
 
     /* Allocate enough space to hold attribute */
     att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
@@ -81,40 +83,38 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
 
-    (void)strcpy(dlm_sng,", ");
     (void)sprintf(att_sng_pln,"%s",(prn_flg->cdl) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
     (void)sprintf(att_sng_dlm,"%s%%s",(prn_flg->cdl) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
     switch(att[idx].type){
     case NC_FLOAT:
-      if(prn_flg->cdl){
-	for(lmn=0;lmn<att_sz;lmn++){
-	  val_flt=att[idx].val.fp[lmn];
-#ifdef _MSC_VER
-	  for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,val_flt,(lmn != att_sz-1L) ? dlm_sng : "");
-#else /* !_MSC_VER */
-	  if(isfinite(val_flt)){
-	    rcd_prn=snprintf(var_val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_flt);
-	    assert(rcd_prn < (int)NCO_ATM_SNG_LNG);
-	    (void)sng_trm_trl_zro(var_val_sng,prn_flg->nbr_zro);
-	    (void)fprintf(stdout,"%s",var_val_sng);
-	  }else{
-	    if(isnan(val_flt)) (void)fprintf(stdout,"NaNf"); else if(isinf(val_flt)) (void)fprintf(stdout,"%sInfinityf",(val_flt < 0.0f) ? "-" : "");
-	  } /* endelse */
-#endif /* !_MSC_VER */
-	  if(lmn != att_sz-1L) (void)fprintf(stdout,"%s",dlm_sng);
-	} /* end loop */
-      }else{
-	for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.fp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
-      } /* endelse */
+      for(lmn=0;lmn<att_sz;lmn++){
+	val_flt=att[idx].val.fp[lmn];
+	if(isfinite(val_flt)){
+	  rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_flt);
+	  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
+	}else{
+	  if(isnan(val_flt)) (void)sprintf(val_sng,"NaNf"); else if(isinf(val_flt)) (void)sprintf(val_sng,"%sInfinityf",(val_flt < 0.0f) ? "-" : "");
+	} /* endelse */
+	(void)fprintf(stdout,"%s%s",val_sng,(lmn != att_szm1) ? cma_sng : "");
+      } /* end loop */
       break;
     case NC_DOUBLE:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.dp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++){
+	val_dbl=att[idx].val.dp[lmn];
+	if(isfinite(val_dbl)){
+	  rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_dbl);
+	  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
+	}else{
+	  if(isnan(val_dbl)) (void)sprintf(val_sng,"NaNf"); else if(isinf(val_dbl)) (void)sprintf(val_sng,"%sInfinity",(val_dbl < 0.0) ? "-" : "");
+	} /* endelse */
+	(void)fprintf(stdout,"%s%s",val_sng,(lmn != att_szm1) ? cma_sng : "");
+      } /* end loop */
       break;
     case NC_SHORT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.sp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.sp[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     case NC_INT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,(long)att[idx].val.ip[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,(long)att[idx].val.ip[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     case NC_CHAR:
       for(lmn=0;lmn<att_sz;lmn++){
@@ -124,25 +124,25 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       } /* end loop over element */
       break;
     case NC_BYTE:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.bp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.bp[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     case NC_UBYTE:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ubp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ubp[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     case NC_USHORT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.usp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.usp[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     case NC_UINT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.uip[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.uip[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     case NC_INT64:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.i64p[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.i64p[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     case NC_UINT64:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ui64p[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ui64p[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     case NC_STRING:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.sngp[lmn],(lmn != att_sz-1L) ? dlm_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.sngp[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     default: nco_dfl_case_nc_type_err();
       break;
@@ -151,6 +151,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       if(att[idx].type == NC_CHAR) (void)fprintf(stdout,"\"");
       (void)fprintf(stdout," ;");
     } /* endif CDL */
+    rcd_prn+=0; /* CEWI */
     (void)fprintf(stdout,"\n");
     
   } /* end loop over attributes */
@@ -935,12 +936,13 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
      Tests for coordinate variables in ancestor groups:
      ncks -D 11 -d lat,1,1,1 -H  -v area ~/nco/data/in_grp.nc */
 
+  const char cma_sng[]=", "; /* [sng] Comma string */
   const char fnc_nm[]="nco_prn_var_val_trv()"; /* [sng] Function name  */
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *dlm_sng=NULL;                        /* [sng] User-specified delimiter string, if any */
   char *unit_sng;                            /* [sng] Units string */ 
-  char var_val_sng[NCO_ATM_SNG_LNG];
+  char val_sng[NCO_ATM_SNG_LNG];
   char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
   char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
   char nul_chr='\0';                         /* [sng] Character to end string */ 
@@ -966,6 +968,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   long mod_map_cnt[NC_MAX_DIMS];             /* [nbr] MSA modulo array */
   long dmn_sbs_ram[NC_MAX_DIMS];             /* [nbr] Indices in hyperslab */
   long dmn_sbs_dsk[NC_MAX_DIMS];             /* [nbr] Indices of hyperslab relative to original on disk */
+  long var_szm1;
 
   var_sct var;                               /* [sct] Variable structure */
   var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
@@ -1082,46 +1085,50 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
     (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,var_nm);
+    var_szm1=var.sz-1L;
     for(lmn=0;lmn<var.sz;lmn++){
 
       /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
       if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp((char *)var.val.vp+lmn*val_sz_byt,var.mss_val.vp,(size_t)val_sz_byt) : False; 
 
       if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
-        (void)fprintf(stdout,"%s",mss_val_sng);
+        (void)sprintf(val_sng,"%s",mss_val_sng);
       }else{ /* !is_mss_val */
         switch(var.type){
         case NC_FLOAT: 
 	  val_flt=var.val.fp[lmn];
-#ifdef _MSC_VER
-	  (void)fprintf(stdout,fmt_sng,val_flt); break;
-#else /* !_MSC_VER */
 	  if(isfinite(val_flt)){
-	    rcd_prn=snprintf(var_val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
-	    assert(rcd_prn < (int)NCO_ATM_SNG_LNG);
-	    (void)sng_trm_trl_zro(var_val_sng,prn_flg->nbr_zro);
-	    (void)fprintf(stdout,"%s",var_val_sng);
+	    rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
+	    (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	  }else{
-	    if(isnan(val_flt)) (void)fprintf(stdout,"NaNf %s",(prn_flg->cdl) ? ";" : ""); else if(isinf(val_flt)) (void)fprintf(stdout,"%sInfinityf%s",(val_flt < 0.0f) ? "-" : "",(prn_flg->cdl) ? ";" : "");
+	    if(isnan(val_flt)) (void)sprintf(val_sng,"NaN"); else if(isinf(val_flt)) (void)sprintf(val_sng,"%sInfinity",(val_flt < 0.0f) ? "-" : "");
 	  } /* endelse */
-#endif /* !_MSC_VER */
 	  break;
-        case NC_DOUBLE: (void)fprintf(stdout,fmt_sng,var.val.dp[lmn]); break;
-        case NC_SHORT: (void)fprintf(stdout,fmt_sng,var.val.sp[lmn]); break;
-        case NC_INT: (void)fprintf(stdout,fmt_sng,var.val.ip[lmn]); break;
-        case NC_CHAR: (void)fprintf(stdout,fmt_sng,var.val.cp[lmn]); break;
-        case NC_BYTE: (void)fprintf(stdout,fmt_sng,var.val.bp[lmn]); break;
-        case NC_UBYTE: (void)fprintf(stdout,fmt_sng,var.val.ubp[lmn]); break;
-        case NC_USHORT: (void)fprintf(stdout,fmt_sng,var.val.usp[lmn]); break;
-        case NC_UINT: (void)fprintf(stdout,fmt_sng,var.val.uip[lmn]); break;
-        case NC_INT64: (void)fprintf(stdout,fmt_sng,var.val.i64p[lmn]); break;
-        case NC_UINT64: (void)fprintf(stdout,fmt_sng,var.val.ui64p[lmn]); break;
-        case NC_STRING: (void)fprintf(stdout,fmt_sng,var.val.sngp[lmn]); break;
+        case NC_DOUBLE:
+	  val_dbl=var.val.dp[lmn];
+	  if(isfinite(val_dbl)){
+	    rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_dbl);
+	    (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
+	  }else{
+	    if(isnan(val_dbl)) (void)sprintf(val_sng,"NaN"); else if(isinf(val_dbl)) (void)sprintf(val_sng,"%sInfinity",(val_dbl < 0.0) ? "-" : "");
+	  } /* endelse */
+	  break;
+        case NC_SHORT: (void)sprintf(val_sng,fmt_sng,var.val.sp[lmn]); break;
+        case NC_INT: (void)sprintf(val_sng,fmt_sng,var.val.ip[lmn]); break;
+        case NC_CHAR: (void)sprintf(val_sng,fmt_sng,var.val.cp[lmn]); break;
+        case NC_BYTE: (void)sprintf(val_sng,fmt_sng,var.val.bp[lmn]); break;
+        case NC_UBYTE: (void)sprintf(val_sng,fmt_sng,var.val.ubp[lmn]); break;
+        case NC_USHORT: (void)sprintf(val_sng,fmt_sng,var.val.usp[lmn]); break;
+        case NC_UINT: (void)sprintf(val_sng,fmt_sng,var.val.uip[lmn]); break;
+        case NC_INT64: (void)sprintf(val_sng,fmt_sng,var.val.i64p[lmn]); break;
+        case NC_UINT64: (void)sprintf(val_sng,fmt_sng,var.val.ui64p[lmn]); break;
+        case NC_STRING: (void)sprintf(val_sng,fmt_sng,var.val.sngp[lmn]); break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
-      if(lmn != var.sz-1L) (void)fprintf(stdout,", ");
+      (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? cma_sng : "");
     } /* end loop over element */
+    rcd_prn+=0; /* CEWI */
     (void)fprintf(stdout," ;\n");
 
   } /* end if prn_flg->cdl */
@@ -1326,7 +1333,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
           dmn_sbs_prn=dmn_sbs_dsk[dmn_idx];
 
           if(prn_flg->FORTRAN_IDX_CNV){
-            (void)nco_msa_c_2_f(dmn_sng);
+            (void)sng_idx_dlm_c2f(dmn_sng);
             dmn_sbs_prn++;
           } /* end if */
 
@@ -1372,7 +1379,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 lbl_chr_prn:
 
       if(var.type == NC_CHAR){
-        static nco_bool NULL_IN_SLAB;
+        static nco_bool NUL_CHR_IN_SLB;
         static char *prn_sng;
         static int chr_cnt;
         static long dmn_sz;
@@ -1386,19 +1393,19 @@ lbl_chr_prn:
           var_dsk_srt=var_dsk;
           var_dsk_end=var_dsk;
           chr_cnt=0;
-          NULL_IN_SLAB=False;
+          NUL_CHR_IN_SLB=False;
         } /* end if */
 
         /* In middle of array---save characters to prn_sng */
         prn_sng[chr_cnt++]=var.val.cp[lmn];
-        if(var.val.cp[lmn] == '\0' && !NULL_IN_SLAB){
+        if(var.val.cp[lmn] == '\0' && !NUL_CHR_IN_SLB){
           var_dsk_end=var_dsk;
-          NULL_IN_SLAB=True;
+          NUL_CHR_IN_SLB=True;
         } /* end if */
 
         /* At end of character array */
-        if(dmn_sbs_ram[var.nbr_dim-1] == dmn_sz-1 ){
-          if(NULL_IN_SLAB){
+        if(dmn_sbs_ram[var.nbr_dim-1] == dmn_sz-1){
+          if(NUL_CHR_IN_SLB){
             (void)sprintf(var_sng,"%%s[%%ld--%%ld]=\"%%s\" %%s");
           }else{
             (void)sprintf(var_sng,"%%s[%%ld--%%ld]='%%s' %%s");
@@ -1406,7 +1413,7 @@ lbl_chr_prn:
             var_dsk_end=var_dsk;   
           } /* end if */
           if(prn_flg->FORTRAN_IDX_CNV){ 
-            (void)nco_msa_c_2_f(var_sng);
+            (void)sng_idx_dlm_c2f(var_sng);
             var_dsk_srt++; 
             var_dsk_end++; 
           } /* end if */
@@ -1421,7 +1428,7 @@ lbl_chr_prn:
       /* Print variable name, index, and value */
       if(prn_flg->PRN_DMN_VAR_NM) (void)sprintf(var_sng,"%*s%%s[%%ld]=%s %%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type)); else (void)sprintf(var_sng,"%*s%s\n",(var_trv->is_crd_var) ? prn_ndn : 0,spc_sng,nco_typ_fmt_sng(var.type));
       if(prn_flg->FORTRAN_IDX_CNV){
-        (void)nco_msa_c_2_f(var_sng);
+        (void)sng_idx_dlm_c2f(var_sng);
         var_dsk++;
       } /* end if FORTRAN_IDX_CNV */
 

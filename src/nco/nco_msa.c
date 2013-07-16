@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.212 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.213 2013-07-16 22:24:10 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -7,12 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_msa.h" /* Multi-slabbing algorithm */
-#include "nco_var_utl.h" /* Variable utilities */
-#include "nco_grp_utl.h" /* Group utilities */
-
-/* fxm: strings statically allocated with NCR_MAX_LEN_FMT_SNG chars may be susceptible to buffer overflow attacks */
-/* Length should be computed at run time but doing so would be painful */
-#define NCO_MAX_LEN_FMT_SNG 100
 
 void *
 nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a single slab pointer */
@@ -550,19 +544,6 @@ do_upk:
 
   return;
 } /* end nco_msa_var_get() */
-
-
-void 
-nco_msa_c_2_f /* [fnc] Replace brackets with parentheses in a string */
-(char *sng) /* [sng] String to change from C to Fortran notation */
-{
-  /* Purpose: Replace brackets with parentheses in a string */
-  while(*sng){
-    if(*sng == '[') *sng='(';
-    if(*sng == ']') *sng=')';
-    sng++;
-  } /* end while */
-} /* end nco_msa_c_2_f() */
 
 void /* Initilaize lmt_msa_sct's */ 
 nco_msa_lmt_all_ntl

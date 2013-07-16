@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.61 2013-07-12 04:35:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.62 2013-07-16 22:24:10 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -32,7 +32,6 @@
    http://hdfeos.org/workshops/ws13/presentations/day1/HDF5-EOSXIII-Advanced-Chunking.ppt */
 
 #include "nco_cnk.h" /* Chunking */
-#include "nco_grp_utl.h" /* Group utilities */
 
 const char * /* O [sng] Chunking map string */
 nco_cnk_map_sng_get /* [fnc] Convert chunking map enum to string */

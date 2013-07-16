@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.341 2013-06-20 20:40:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.342 2013-07-16 22:24:10 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -7,7 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_var_utl.h" /* Variable utilities */
-#include "nco_grp_utl.h" /* Variable utilities */
 
 void
 nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */

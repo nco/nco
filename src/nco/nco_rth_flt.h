@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.44 2013-07-16 18:39:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.45 2013-07-16 22:27:26 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic, MSVC macros */
 
@@ -37,7 +37,6 @@ extern "C" {
 /* MSVC does not define isnormal(), isnan(), isinf(), isfinite()
    http://stackoverflow.com/questions/2249110/how-do-i-make-a-portable-isnan-isinf-function */
 #ifdef _MSC_VER
-# include <math.h>
 # define isnormal
 # define isnan(x) _isnan(x)
 # define isfinite(x) _finite(x)

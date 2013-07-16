@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.75 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.76 2013-07-16 22:24:10 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -29,19 +29,17 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_bnr.h" /* Binary write utilities */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_grp_utl.h" /* Group utilities */
+#include "nco_lmt.h" /* Hyperslab limits */
 #include "nco_mmr.h" /* Memory management */
-#include "nco_prn.h" /* print format functions */
-#include "nco_sng_utl.h" /* sng_ascii_trn */
-#include "nco_lmt.h"     /* free lmt_sct */
+#include "nco_prn.h" /* Print variables, attributes, metadata */
+#include "nco_sng_utl.h" /* String utilities */
+#include "nco_var_utl.h" /* Variable utilities */
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
   
-void 
-nco_msa_c_2_f /* [fnc] Replace brackets with parentheses in a string */
-(char *sng); /* [sng] String to change from C to Fortran notation */
-
 nco_bool /* if false then we are at the end of the slab */
 nco_msa_clc_idx
 (nco_bool NORMALIZE,         /* Return indices of slab within the slab */
