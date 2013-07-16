@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.330 2013-07-16 09:32:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.331 2013-07-16 09:38:37 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.330 2013-07-16 09:32:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.330 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.331 2013-07-16 09:38:37 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.331 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1402,13 +1402,26 @@ main(int argc,char **argv)
 
     } /* Find mask variable in input file */
 
+    /* Timestamp end of metadata setup and disk layout */
+    rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
+    ddra_info.tmr_flg=nco_tmr_rgl;
+
+#ifdef _OPENMP
+    /* OpenMP notes:
+    firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
+    shared(): msk and wgt are not altered within loop
+    private(): wgt_avg does not need initialization */
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
+#endif /* !_OPENMP */
+
+
+
+
+
 
 
 
   } /* end loop over fl_idx */
-
-
-
 
 #endif /* USE_TRV_API */
 
