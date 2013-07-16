@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.46 2013-07-16 22:35:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.47 2013-07-16 22:39:21 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic, MSVC macros */
 
@@ -44,6 +44,10 @@ extern "C" {
 # define isnan(x) _isnan(x)
 # define isfinite(x) _finite(x)
 # define isinf(x) (!_finite(x))
+#endif /* !_MSC_VER */
+
+#ifdef _MSC_VER
+# define snprintf _snprintf
 #endif /* !_MSC_VER */
 
 /* MSVC does not define lround(), lroundf(), lroundl(), llround(), llroundf(), llroundl(): Round to nearest integer, halfway cases round away from 0
