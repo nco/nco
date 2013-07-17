@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.318 2013-07-15 05:52:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.319 2013-07-17 08:27:13 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.318 2013-07-15 05:52:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.318 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.319 2013-07-17 08:27:13 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.319 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -767,54 +767,54 @@ main(int argc,char **argv)
         if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
       } /* endif first file */
 
-      trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table for GROUP_AGGREGATE only */
+      trv_tbl_sct *trv_tbl_gpr=NULL; /* [lst] Traversal table for GROUP_AGGREGATE only */
 
       /* Initialize traversal table */
-      trv_tbl_init(&trv_tbl);
+      trv_tbl_init(&trv_tbl_gpr);
 
       /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-      (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
+      (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl_gpr);
 
       /* Get number of variables, dimensions, and global attributes in file, file format */
-      (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
+      (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl_gpr);
       (void)nco_inq_format(in_id,&fl_in_fmt);
 
       /* Check -v and -g input names and create extraction list */
-      nco_xtr_mk(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
+      nco_xtr_mk(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_gpr);
 
       /* Change included variables to excluded variables */
-      if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
+      if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl_gpr);
 
       /* Add all coordinate variables to extraction list */
-      if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
+      if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl_gpr);
 
       /* Extract coordinates associated with extracted variables */
-      if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
+      if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl_gpr);
 
       /* Is this a CCM/CCSM/CF-format history tape? */
       CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
       if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
         /* Implement CF "coordinates" and "bounds" conventions */
-        (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
-        (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
+        (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl_gpr);
+        (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl_gpr);
       } /* CNV_CCM_CCSM_CF */
 
       /* We now have final list of variables to extract. Phew. */
 
       /* Define extracted groups, variables, and attributes in output file */
-      (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CPY_GLB_METADATA,(nco_bool)True,rec_dmn_nm,trv_tbl);
+      (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,CPY_GLB_METADATA,(nco_bool)True,rec_dmn_nm,trv_tbl_gpr);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Write extracted data to output file */
-      (void)nco_xtr_wrt(in_id,out_id,fp_bnr,MD5_DIGEST,HAVE_LIMITS,trv_tbl);
+      (void)nco_xtr_wrt(in_id,out_id,fp_bnr,MD5_DIGEST,HAVE_LIMITS,trv_tbl_gpr);
 
       /* Close input netCDF file */
       (void)nco_close(in_id);
 
       /* Free traversal table */
-      trv_tbl_free(trv_tbl);
+      trv_tbl_free(trv_tbl_gpr);
 
     } /* !GROUP_AGGREGATE */
 

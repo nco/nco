@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.149 2013-06-24 05:13:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.150 2013-07-17 08:27:13 pvicente Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -980,7 +980,7 @@ nco_gpe_evl /* [fnc] Apply Group Path Editing (GPE) to argument */
   const char sls_sng[]="/"; /* [sng] Slash string */
   const char sls_chr='/'; /* [sng] Slash character */
 
-  char *grp_nm_fll_out; /* [sng] Returned output name. Safe to free() in calling routine. */
+  char *grp_nm_fll_out=NULL; /* [sng] Returned output name. Safe to free() in calling routine. */
   char *grp_out; /* [sng] Mutable pointer to output name. Unsafe to free(). */
   char *grp_nm_fll_in_dpl; /* [sng] Allocated pointer to output name. Safe to free(). */
   char *sls_ptr; /* [sng] Pointer to slash character. Unsafe to free(). */

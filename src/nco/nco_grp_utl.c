@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.855 2013-07-17 08:09:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.856 2013-07-17 08:27:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4507,6 +4507,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     assert(strcmp(dmn_nm,dmn_trv->nm) == 0);
 
     /* Get hyperslabed count */
+    dmn_cnt=-1;
     if(var_trv->var_dmn[idx_dmn].crd){
       dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
     }
