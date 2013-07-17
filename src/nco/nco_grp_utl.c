@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.854 2013-07-17 02:29:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.855 2013-07-17 08:09:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1508,7 +1508,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       } /* endif dbg */
 
       /* Define variable in output file */
-      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,grp_id,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
+      var_out_id=nco_cpy_var_dfn_trv(nc_out_id,grp_id,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
 
       /* Set chunksize parameters */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&var_trv);
@@ -3891,8 +3891,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) 
-      : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
+    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) 
+      : nco_cpy_var_dfn_trv(nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,rnk_gtr);
@@ -4068,7 +4068,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
 
     /* Define variable in output file. */
-    var_out_id= nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
+    var_out_id= nco_cpy_var_dfn_trv(nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,trv_1);
@@ -4224,7 +4224,6 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
@@ -4632,8 +4631,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
 int                                 /* O [id] Output file variable ID */
 nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output file */
-(const int nc_id,                   /* I [ID] netCDF input file ID */
- const int nc_out_id,               /* I [ID] netCDF output file ID */
+(const int nc_out_id,               /* I [ID] netCDF output file ID */
  const int grp_in_id,               /* I [id] netCDF input group ID */
  const int grp_out_id,              /* I [id] netCDF output group ID */
  const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
@@ -6076,8 +6074,7 @@ nco_dmn_lst_mk_trv                  /* [fnc] Attach dimension IDs to dimension l
 nco_bool                               /* O [flg] True if variable has dimensions in scope of GTT dimension */
 nco_var_dmn_scp                        /* [fnc] Variable has dimensions in scope of GTT dimension */
 (const trv_sct * const var_trv,        /* I [sct] GTT Object Variable */
- const dmn_trv_sct * const dmn_trv,    /* I [sct] GTT unique dimension */
- const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
+ const dmn_trv_sct * const dmn_trv)    /* I [sct] GTT unique dimension */
 {
   /* Purpose: Find variable in dimension scope and has dimensions that match unique dimension GTT */
 
@@ -6154,7 +6151,7 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
           if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
             /* Variable has dimensions in scope of GTT dimension ? */
-            if(nco_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
+            if(nco_var_dmn_scp(&var_trv,&dmn_trv) == True ){
 
               if(dbg_lvl_get() >= nco_dbg_dev){
                 (void)fprintf(stdout,"%s: DEBUG %s variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
