@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.853 2013-07-17 00:28:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.854 2013-07-17 02:29:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -484,6 +484,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
 
   char *sng2mch; /* [sng] String to match to regular expression */
   const char sls_chr='/'; /* [chr] Slash character */
+  
 
   int mch_nbr=0;
 #ifndef NCO_HAVE_REGEX_FUNCTIONALITY
@@ -1275,7 +1276,6 @@ nco_xtr_dmn_mrk                      /* [fnc] Mark extracted dimensions */
   /* Purpose: Set flag for dimensions to be extracted
      ncks print functions need dimension extraction flag to print CDL files */
 
-  const char fnc_nm[]="nco_xtr_dmn_mrk()"; /* [sng] Function name */
 
   unsigned int dmn_idx; /* [idx] Index over dimensions */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in file */
@@ -1310,14 +1310,7 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
      However, ncks print functions need group extraction flag set for printing
      As of 20130716 we isolate this flag-setting from actual copying still done in nco_xtr_dfn() */
 
-  const char fnc_nm[]="nco_xtr_grp_mrk()"; /* [sng] Function name */
   const char sls_sng[]="/"; /* [sng] Slash string */
-
-  char *grp_out_fll; /* [sng] Group name */
-
-  gpe_nm_sct *gpe_nm; /* [sct] GPE name duplicate check array */
-
-  int grp_id; /* [ID] Group ID in input file */
   
   /* Goal here is to annotate which groups will appear in output
      Need to know in order to efficiently copy their metadata
@@ -4162,9 +4155,6 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
- const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
  nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
@@ -4235,8 +4225,6 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
  const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
@@ -4285,7 +4273,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try a relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_def);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_def);
 
           /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
           if(has_mch == False) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
@@ -4298,7 +4286,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try a relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_def);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_def);
 
           /* A match was not found in file 2, copy instead object from file 2 as fixed to output */
           if(has_mch == False) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
@@ -4313,7 +4301,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try a relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_def);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_def);
 
           /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
           if(has_mch == False) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
@@ -4326,7 +4314,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try a relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_def);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_def);
 
           /* A match was not found in file 2, copy instead object from file 2 as fixed to output */
           if(has_mch == False) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
@@ -4340,6 +4328,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
   } /* Process objects in list */
 
 } /* nco_prc_cmn_nm() */
+
 
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */

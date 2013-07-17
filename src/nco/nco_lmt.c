@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.189 2013-07-16 22:24:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.190 2013-07-17 02:29:30 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1265,7 +1265,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   ncks -D 11 -d lon,0,1,1 -v lon -H ~/nco/data/in_grp.nc
   */
 
-  const char fnc_nm[]="nco_lmt_evl_dmn_crd()"; /* [sng] Function name */
+  
 
   char *fl_udu_sng=NULL_CEWI;     /* [sng] Store units attribute of coordinate dimension */
   char *msg_sng=NULL_CEWI;        /* [sng] Error message */
@@ -1296,7 +1296,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
   nc_type var_typ=NC_NAT;          /* [enm] Type of variable */
 
-  nco_bool is_crd_var;             /* [flg] Does the dimension have a coordinate variable? */
+ 
 
   lmt=*lmt_ptr;
 
