@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.627 2013-07-16 22:24:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.628 2013-07-17 00:07:56 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.627 2013-07-16 22:24:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.627 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.628 2013-07-17 00:07:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.628 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -668,6 +668,12 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
+  /* Mark extracted dimensions */
+  //if(True) (void)nco_xtr_dmn_mrk(trv_tbl);
+
+  /* Mark extracted groups */
+  //if(True) (void)nco_xtr_grp_mrk(trv_tbl);
+
   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
 
   /* We now have final list of variables to extract. Phew. */
@@ -775,12 +781,21 @@ main(int argc,char **argv)
     nco_bool ALPHA_BY_STUB_GROUP=True; /* [flg] Print alphabetically by stub group */
     //      nco_bool ALPHA_BY_FULL_OBJECT=False; /* [flg] Print alphabetically by full object */
     //      nco_bool ALPHA_BY_STUB_OBJECT=False; /* [flg] Print alphabetically by stub object */
+    char *fl_nm_stub;
+    char *fl_in_dpl;
+    char *sfx_ptr;
 
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;
     prn_flg.new_fmt=PRN_NEW_FMT;
     if(dbg_lvl == nco_dbg_crr) prn_flg.cdl=True; else prn_flg.cdl=False;
     if(dbg_lvl == nco_dbg_crr+1) prn_flg.xml=True; else prn_flg.xml=False;
+    fl_in_dpl=strdup(fl_in);
+    fl_nm_stub=strrchr(fl_in_dpl,'/');
+    if(fl_nm_stub) fl_nm_stub++; else fl_nm_stub=fl_in_dpl;
+    sfx_ptr=strrchr(fl_nm_stub,'.');
+    if(sfx_ptr) *sfx_ptr='\0';
+    prn_flg.fl_stb=fl_nm_stub;
     prn_flg.nbr_zro=0;
     prn_flg.spc_per_lvl=2;
     prn_flg.sxn_fst=2;
@@ -865,6 +880,8 @@ main(int argc,char **argv)
 	} /* end loop over obj_idx */
       } /* end if */
     } /* endif new format */
+
+    fl_in_dpl=(char *)nco_free(fl_in_dpl);
   } /* !fl_out */
   
  close_and_free: /* goto close_and_free */

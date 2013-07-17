@@ -18,6 +18,7 @@
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
+#include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
 
 #include "sym_cls.hh" // holder for float/double math function pointers
 #include "map_srt_tmp.hh" // template -used in srt_cls
@@ -65,9 +66,6 @@
   extern float truncf(float);
 #endif
 
-
-
-
 //Conversion Functions **************************************/
 class cnv_cls: public vtl_cls {
 private:
@@ -75,9 +73,7 @@ private:
 public:
     cnv_cls(bool flg_dbg);
     var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-
 };
-
 
 //Aggregate Functions /***************************************/
 class agg_cls: public vtl_cls {
@@ -90,7 +86,6 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
 
-
 //Utility Functions /****************************************/
 class utl_cls: public vtl_cls {
 private:
@@ -102,8 +97,6 @@ public:
   var_sct *is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
 };
 
-
-
 //Basic Functions /****************************************/
 class bsc_cls: public vtl_cls {
 private:
@@ -112,12 +105,7 @@ private:
 public:
   bsc_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-
 };
-
-
-
-
 
 //Maths Functions /****************************************/
 class mth_cls: public vtl_cls {
@@ -129,7 +117,6 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
 
-
 //Maths2 - Maths functions that take 2 args /*********/
 class mth2_cls: public vtl_cls {
 private:
@@ -140,7 +127,6 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
 
-
 //PDQ Functions /****************************************/
 class pdq_cls: public vtl_cls {
 private: 
@@ -149,10 +135,7 @@ private:
 public:
   pdq_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-
 };
-
-
 
 //Mask Function /****************************************/
 class msk_cls: public vtl_cls {
@@ -162,7 +145,6 @@ private:
 public:
   msk_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-
 };
 
 //Pack Function /****************************************/
@@ -173,10 +155,7 @@ private:
 public:
   pck_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-
 };
-
-
 
 //Sort Function /****************************************/
 class srt_cls: public vtl_cls {
@@ -189,9 +168,7 @@ public:
   var_sct *srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
   var_sct *mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
   var_sct *imap_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
-
 };
-
 
 //Unary Function /****************************************/
 class unr_cls: public vtl_cls {
@@ -201,11 +178,7 @@ private:
 public:
   unr_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-
 };
-
-
-
 
 //Array Function /****************************************/
 class arr_cls: public vtl_cls {
@@ -215,11 +188,7 @@ private:
 public:
   arr_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-
 };
-
-
-
 
 //Bilinear  Interpolation Functions /****************************************/
 class bil_cls: public vtl_cls {
@@ -231,7 +200,6 @@ public:
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
   void clc_bil_fnc(var_sct *v_xin, var_sct *v_yin, var_sct *v_din, var_sct *v_xout, var_sct *v_yout, var_sct *v_dout,bool bwrp,std::string sfnm);
   double clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1);
-
 };
 
 // Co-ord class /*********************************************************/
@@ -242,8 +210,6 @@ private:
 public:
   cod_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
-
 };
-
 
 #endif // FMC_ALL_CLS_HH

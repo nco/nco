@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.60 2013-07-16 18:39:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.61 2013-07-17 00:07:56 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -7,8 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "fmc_all_cls.hh"
-#include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
-
 
 //Conversion Functions /***********************************/
  
