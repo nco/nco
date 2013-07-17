@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.361 2013-07-17 21:51:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.362 2013-07-17 23:01:00 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -644,17 +644,17 @@ extern "C" {
     size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
   } gpe_sct;
 
-  /* GTT structure to break a full path name into components */
+  /* GTT structure to break a full path name into components  */
   typedef struct{ 
     char *nm;       /* [sng] Path component */
     int psn;        /* [nbr] Position of path component */
   } sng_pth_sct; 
 
-  /* Match token structure for finding if a variable is in scope of coordinate */
+  /* Match token structure for finding if a variable is in scope of coordinate   */
   typedef struct{ 
     char *nm;           /* [sng] Path token. A token is a component of a path (e.g /g1/ ) */
     int tkn_var_idx;    /* [nbr] Index of token for first full name */
-    int tkn_crd_idx;    /* [nbr] Index of token for second full name */
+    int tkn_crd_idx;    /* [nbr] Index of token for second full name  */
   } mtc_tkn_sct; 
 
   /* MSA Limits structure:
@@ -671,7 +671,7 @@ extern "C" {
     int lmt_crr;          /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
   } lmt_msa_sct;
 
-   /* GTT coordinate variable structure; it contains netCDF model fields and an MSA field */
+   /* GTT coordinate variable structure; it contains netCDF model fields and an MSA field  */
   typedef struct{ 
     char *crd_nm_fll;       /* [sng] Full coordinate name */
     char *dmn_nm_fll;       /* [sng] Full name of dimension for *this* coordinate  */  
@@ -684,7 +684,7 @@ extern "C" {
     lmt_msa_sct lmt_msa;    /* [sct] MSA Limits structure for every coordinate */
     int dmn_id;             /* [ID] Unique ID for dimension (duplicate of dmn_trv_sct.dim_id, since all coordinates share that ID) */
     int grp_dpt;            /* [nbr] Depth of group (root = 0); needed to get in scope of variable match */
-  } crd_sct; 
+  } crd_sct;  
 
   /* GTT dimension structure (stored in *groups*); it contains netCDF model fields and an MSA field */
   typedef struct{ 

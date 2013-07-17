@@ -1,12 +1,4 @@
-2013-07-17  Charlie Zender  <zender@uci.edu>
-
-	* Fix dimension name printed in compact lists due to mis-nested indices
-
-	* Implement CDL user switch --cdl
-
-	* CDL output is more compact (less unnecessary information) than ncdump
-
-	* Successful CDL output by ncks and conversion by ncgen
+2013-07-17  Charlie Zender  <zender@uci.edu> 
 
 	* Tidy ncoGrammer.g
 

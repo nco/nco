@@ -1,7 +1,7 @@
 // -*-C++-*-
 // Purpose: CDL file to generate netCDF4 test file for groups
 // Created: 20110801 based on in.cdl
-
+ 
 // Usage:
 // NB: ncgen arguments depend on version:
 // "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
@@ -44,7 +44,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.83 2013-07-17 21:51:38 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.84 2013-07-17 23:01:00 pvicente Exp $";
   
   float ilev(lev,vrt_nbr);
   ilev:purpose = "Cell boundaries for lev coordinate";
@@ -86,7 +86,6 @@ netcdf in_grp {
   ilev=0,300,300,750,750,1013.25;
   lev=100,500,1000;
   lon=0,90,180,270;
-  one=1.;
   scl=1.0;
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   tm2=1.,2.;

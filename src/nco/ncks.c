@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.631 2013-07-17 21:51:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.632 2013-07-17 23:01:00 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -33,7 +33,7 @@
 /* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncks.c
 
    Usage:
-v   ncks ~/nco/data/in.nc 
+   ncks ~/nco/data/in.nc 
    ncks -v one ~/nco/data/in.nc
    ncks ~/nco/data/in.nc ~/foo.nc
    ncks -O -4 ~/nco/data/in.nc ~/foo.nc
@@ -57,7 +57,7 @@ v   ncks ~/nco/data/in.nc
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
-
+ 
 /* Standard C headers */
 #include <assert.h> /* assert() */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
@@ -106,7 +106,6 @@ main(int argc,char **argv)
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-  nco_bool PRN_CDL=False; /* [flg] Print CDL */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   nco_bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
   nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
@@ -151,8 +150,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.631 2013-07-17 21:51:38 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.631 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.632 2013-07-17 23:01:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.632 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -212,7 +211,6 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
-      {"cdl",no_argument,0,0}, /* [flg] Print CDL */
       {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
       {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
@@ -384,7 +382,6 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"%s\n",nco_cmp_get());
         nco_exit(EXIT_SUCCESS);
       } /* endif "cmp" */
-      if(!strcmp(opt_crr,"cdl")) PRN_CDL=True; /* [flg] Print CDL */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")){
@@ -672,10 +669,10 @@ main(int argc,char **argv)
   } /* CNV_CCM_CCSM_CF */
 
   /* Mark extracted dimensions */
-  if(True) (void)nco_xtr_dmn_mrk(trv_tbl);
+  //if(True) (void)nco_xtr_dmn_mrk(trv_tbl);
 
   /* Mark extracted groups */
-  if(True) (void)nco_xtr_grp_mrk(trv_tbl);
+  if(False) (void)nco_xtr_grp_mrk(trv_tbl);
 
   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
 
@@ -785,23 +782,20 @@ main(int argc,char **argv)
     //      nco_bool ALPHA_BY_FULL_OBJECT=False; /* [flg] Print alphabetically by full object */
     //      nco_bool ALPHA_BY_STUB_OBJECT=False; /* [flg] Print alphabetically by stub object */
     char *fl_nm_stub;
-    char *fl_in_dpl=NULL;
+    char *fl_in_dpl;
     char *sfx_ptr;
 
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;
-    prn_flg.cdl=PRN_CDL;
-    prn_flg.new_fmt=(PRN_CDL || PRN_NEW_FMT);
+    prn_flg.new_fmt=PRN_NEW_FMT;
+    if(dbg_lvl == nco_dbg_crr) prn_flg.cdl=True; else prn_flg.cdl=False;
     if(dbg_lvl == nco_dbg_crr+1) prn_flg.xml=True; else prn_flg.xml=False;
-    /* CDL must print filename stub */
-    if(prn_flg.cdl){
-      fl_in_dpl=strdup(fl_in);
-      fl_nm_stub=strrchr(fl_in_dpl,'/');
-      if(fl_nm_stub) fl_nm_stub++; else fl_nm_stub=fl_in_dpl;
-      sfx_ptr=strrchr(fl_nm_stub,'.');
-      if(sfx_ptr) *sfx_ptr='\0';
-      prn_flg.fl_stb=fl_nm_stub;
-    } /* endif CDL */
+    fl_in_dpl=strdup(fl_in);
+    fl_nm_stub=strrchr(fl_in_dpl,'/');
+    if(fl_nm_stub) fl_nm_stub++; else fl_nm_stub=fl_in_dpl;
+    sfx_ptr=strrchr(fl_nm_stub,'.');
+    if(sfx_ptr) *sfx_ptr='\0';
+    prn_flg.fl_stb=fl_nm_stub;
     prn_flg.nbr_zro=0;
     prn_flg.spc_per_lvl=2;
     prn_flg.sxn_fst=2;
@@ -864,6 +858,7 @@ main(int argc,char **argv)
 	 ncks -5 -g g1,g2 ~/nco/data/in_grp.nc */
       
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
+	prn_flg.new_fmt=True;
 	rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl);
       }else{
 	trv_sct trv_obj; /* [sct] Traversal table object */
@@ -886,7 +881,7 @@ main(int argc,char **argv)
       } /* end if */
     } /* endif new format */
 
-    if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
+    fl_in_dpl=(char *)nco_free(fl_in_dpl);
   } /* !fl_out */
   
  close_and_free: /* goto close_and_free */

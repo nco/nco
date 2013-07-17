@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.117 2013-07-17 22:40:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.118 2013-07-17 23:01:00 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -49,7 +49,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
     /* Which group is this? */
     rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
-    if(rcd == NC_ENOGRP) (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Global"); else (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Group");
+    if(rcd == NC_ENOGRP) (void)strcpy(src_sng,"Global"); else (void)strcpy(src_sng,"Group");
     if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->sxn_fst;
   }else{
     /* Get name and number of attributes for variable */
@@ -1505,6 +1505,7 @@ lbl_chr_prn:
 
 } /* end nco_prn_var_val_trv() */
 
+
 int /* [rcd] Return code */
 nco_grp_prn /* [fnc] Recursively print group contents */
 (const int nc_id, /* I [id] netCDF file ID */
@@ -1572,15 +1573,12 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   /* Find dimension information for group */
   for(dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    /* Will dimension be extracted? */
-    if(trv_tbl->lst_dmn[dmn_idx].flg_xtr){
-      /* And was dimension defined in this group? */
-      if(!strcmp(grp_nm_fll,trv_tbl->lst_dmn[dmn_idx].grp_nm_fll)){
-	/* Add dimension to list of dimensions defined in group */
-	dmn_idx_grp[dmn_nbr]=dmn_idx;
-	dmn_nbr++;
-      } /* end if */
-    } /* end if flg_xtr */
+    /* Was this dimension defined in this group? */
+    if(!strcmp(grp_nm_fll,trv_tbl->lst_dmn[dmn_idx].grp_nm_fll)){
+      /* Add dimension to list of dimensions defined in group */
+      dmn_idx_grp[dmn_nbr]=dmn_idx;
+      dmn_nbr++;
+    } /* end if */
   } /* end loop over dmn_idx */
 
   /* Create arrays of these dimensions */
@@ -1589,7 +1587,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* NB: ID here is actually index into trv_tbl->lst_dmn. It is NOT an ID. 
        However, it is same type (int) as an ID so we can use nm_id infrastructure. */
     dmn_lst[dmn_idx].id=dmn_idx_grp[dmn_idx];
-    dmn_lst[dmn_idx].nm=strdup(trv_tbl->lst_dmn[dmn_idx_grp[dmn_idx]].nm);
+    dmn_lst[dmn_idx].nm=strdup(trv_tbl->lst_dmn[dmn_idx].nm);
   } /* end loop over dmn_idx */
 
   /* Sort dimensions alphabetically */
@@ -1600,7 +1598,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
-  if(dmn_nbr > 0) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
+  if(dmn_nbr > 0) (void)fprintf(stdout,"\n%*sdimensions:\n",prn_flg->ndn,spc_sng);
   prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ", trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz); else (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz,(prn_flg->cdl) ? " ;" : "");
@@ -1677,7 +1675,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   } /* end loop over var_idx */
 
   /* Print attribute information for group */
-  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\n%*s%sattributes:\n",prn_flg->ndn,spc_sng,(prn_flg->cdl) ? "// " : "");
+  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\n%*sattributes:\n",prn_flg->ndn,spc_sng);
   if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
 
   /* Print data for group */
@@ -1731,3 +1729,4 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   return rcd;
 } /* end nco_grp_prn() */
+
