@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.628 2013-07-17 00:07:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.629 2013-07-17 00:08:29 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -150,8 +150,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.628 2013-07-17 00:07:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.628 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.629 2013-07-17 00:08:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.629 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -672,7 +672,7 @@ main(int argc,char **argv)
   //if(True) (void)nco_xtr_dmn_mrk(trv_tbl);
 
   /* Mark extracted groups */
-  //if(True) (void)nco_xtr_grp_mrk(trv_tbl);
+  if(False) (void)nco_xtr_grp_mrk(trv_tbl);
 
   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
 

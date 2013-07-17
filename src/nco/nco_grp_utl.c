@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.851 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.852 2013-07-17 00:07:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -369,9 +369,9 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
 
 
 int
-nco_get_str_pth_sct                   /* [fnc] Get full name token structure (path components) */
+nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (path components) */
 (char * const nm_fll,                 /* I [sng] Full name  */ 
- str_pth_sct ***str_pth_lst)          /* I/O [sct] List of path components  */    
+ sng_pth_sct ***str_pth_lst)          /* I/O [sct] List of path components  */    
 {
   /* Purpose: Break a full path name into components separated by the slash character (netCDF4 path separator) 
   
@@ -393,10 +393,10 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
   nbr_sls_chr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
 
   Alloc
-  str_pth_lst_var=(str_pth_sct **)nco_malloc(nbr_sls_chr_var*sizeof(str_pth_sct *)); 
+  str_pth_lst_var=(sng_pth_sct **)nco_malloc(nbr_sls_chr_var*sizeof(sng_pth_sct *)); 
 
   Get token list in variable full name 
-  (void)nco_get_str_pth_sct(var_trv->nm_fll,&str_pth_lst_var); 
+  (void)nco_get_sng_pth_sct(var_trv->nm_fll,&str_pth_lst_var); 
   
   */
 
@@ -422,7 +422,7 @@ nco_get_str_pth_sct                   /* [fnc] Get full name token structure (pa
     psn_chr=ptr_chr-nm_fll;
     
     /* Store token and position */
-    (*str_pth_lst)[nbr_sls_chr]=(str_pth_sct *)nco_malloc(1*sizeof(str_pth_sct));
+    (*str_pth_lst)[nbr_sls_chr]=(sng_pth_sct *)nco_malloc(1*sizeof(sng_pth_sct));
 
     (*str_pth_lst)[nbr_sls_chr]->nm=strdup(ptr_chr_tok);
     (*str_pth_lst)[nbr_sls_chr]->psn=psn_chr;
@@ -1269,6 +1269,75 @@ nco_prn_xtr_val                       /* [fnc] Print variable data */
 } /* end nco_prn_xtr_val() */
 
 void
+nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
+(trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Set flag for groups to be extracted
+     Could be performed before or after writing variables
+     Used to be part of nco_xtr_dfn()
+     However, ncks print functions need group extraction flag set for printing
+     As of 20130716 we isolate this flag-setting from actual copying still done in nco_xtr_dfn() */
+
+  const char fnc_nm[]="nco_xtr_grp_mrk()"; /* [sng] Function name */
+  const char sls_sng[]="/"; /* [sng] Slash string */
+
+  char *grp_out_fll; /* [sng] Group name */
+
+  gpe_nm_sct *gpe_nm; /* [sct] GPE name duplicate check array */
+
+  int grp_id; /* [ID] Group ID in input file */
+  
+  /* Goal here is to annotate which groups will appear in output
+     Need to know in order to efficiently copy their metadata
+     Definition of flags in extraction table is operational
+     Could create a new flag just for this
+     Instead, we re-purpose the extraction flag, flg_xtr, for groups
+     Could re-purpose flg_ncs too with same effect
+     nco_xtr_mk() sets flg_xtr for groups, like variables, that match user-specified strings
+     Later processing makes flg_xtr for groups unreliable
+     For instance, the exclusion flag (-x) is ambiguous for groups
+     Also identification of associated coordinates and auxiliary coordinates occurs after nco_xtr_mk()
+     Associated and auxiliary coordinates may be in distant groups
+     Hence no better place than nco_xtr_dfn() to finally identify ancestor groups */
+  
+  /* Set extraction flag for groups if ancestors of extracted variables */
+  for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
+    /* For each group ... */
+    if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp){
+      char *sbs_srt; /* [sng] Location of user-string match start in object path */
+      char *grp_fll_sls=NULL; /* [sng] Full group name with slash appended */
+      /* Initialize extraction flag to False and overwrite later iff ... */
+      trv_tbl->lst[grp_idx].flg_xtr=False;
+      if(!strcmp(trv_tbl->lst[grp_idx].grp_nm_fll,sls_sng)){
+	/* Manually mark root group as extracted because matching algorithm below fails for root group 
+	   (it looks for "//" in variable names) */
+	trv_tbl->lst[grp_idx].flg_xtr=True;
+	continue;
+      } /* endif root group */
+      grp_fll_sls=(char *)strdup(trv_tbl->lst[grp_idx].grp_nm_fll);
+      grp_fll_sls=(char *)nco_realloc(grp_fll_sls,(strlen(grp_fll_sls)+2L)*sizeof(char));
+      strcat(grp_fll_sls,sls_sng);
+      /* ... loop through ... */
+      for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+	/* ... all variables to be extracted ... */
+	if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_var].flg_xtr){
+	  /* ... finds that full path to current group is contained in an extracted variable path ... */
+	  if((sbs_srt=strstr(trv_tbl->lst[idx_var].nm_fll,grp_fll_sls))){
+	    /* ... and _begins_ a full group path of that variable ... */
+	    if(sbs_srt == trv_tbl->lst[idx_var].nm_fll){
+	      /* ... and mark _only_ those groups for extraction... */
+	      trv_tbl->lst[grp_idx].flg_xtr=True;
+	      continue;
+	    } /* endif */
+	  } /* endif full group path */
+	} /* endif extracted variable */
+      } /* end loop over idx_var */
+      if(grp_fll_sls) grp_fll_sls=(char *)nco_free(grp_fll_sls);
+    } /* endif group */
+  } /* end loop over grp_idx */
+} /* end nco_xtr_grp_mrk() */
+
+void
 nco_xtr_dfn                          /* [fnc] Define extracted groups, variables, and attributes in output file */
 (const int nc_id,                    /* I [ID] netCDF input file ID */
  const int nc_out_id,                /* I [ID] netCDF output file ID */
@@ -1358,6 +1427,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       } /* endif group */
     } /* end loop over grp_idx */
 
+    /* Extraction flag for groups was set in nco_xtr_grp_mrk() 
+       This loop defines those groups in output file and copies their metadata */
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       trv_sct grp_trv=trv_tbl->lst[uidx];
 

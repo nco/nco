@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.358 2013-07-16 18:39:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.359 2013-07-17 00:07:56 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -587,6 +587,7 @@ extern "C" {
   
   /* Print flags structure */
   typedef struct{ /* prn_fmt_sct */
+    char *fl_stb; /* [sng] Input filename stub */
     nco_bool xml; /* [flg] Print valid XML */
     nco_bool cdl; /* [flg] Print valid CDL */
     nco_bool new_fmt; /* [flg] Print in new format */
@@ -647,14 +648,14 @@ extern "C" {
   typedef struct{ 
     char *nm;       /* [sng] Path component */
     int psn;        /* [nbr] Position of path component */
-  } str_pth_sct; 
+  } sng_pth_sct; 
 
   /* Match token structure for finding if a variable is in scope of coordinate   */
   typedef struct{ 
     char *nm;           /* [sng] Path token. A token is a component of a path (e.g /g1/ ) */
-    int tok_var_idx;    /* [nbr] Index of token for first full name */
-    int tok_crd_idx;    /* [nbr] Index of token for second full name  */
-  } mtc_tok_sct; 
+    int tkn_var_idx;    /* [nbr] Index of token for first full name */
+    int tkn_crd_idx;    /* [nbr] Index of token for second full name  */
+  } mtc_tkn_sct; 
 
   /* MSA Limits structure:
      GTT has a member for every unique dimension and for every coordinate variable */

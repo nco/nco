@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.113 2013-07-16 22:24:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.114 2013-07-17 00:07:56 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1596,7 +1596,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Sort dimensions alphabetically */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
 
-  if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {","filename_goes_here"); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
+  if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
   if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",grp_nm_fll); else (void)fprintf(stdout,"\n");
 
   /* Print dimension information for group */

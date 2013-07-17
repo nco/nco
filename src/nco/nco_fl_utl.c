@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.215 2013-07-12 04:35:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.216 2013-07-17 00:07:56 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -684,10 +684,10 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   } /* end if */
 
   /* Finally, check if file exists locally in directory for remotely retrieved files
-  This occurs when previous program invocations have already retrieved some files */
+     This occurs when previous program invocations have already retrieved some files */
   if(rcd_stt == -1){
     /* Where does filename stub begin? 
-    NB: Assume local filename has a slash (because remote file system always has a slash) */
+       NB: Assume local filename has a slash (because remote file system always has a slash) */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
 
     /* Construct local filename from user-supplied local file path and existing file stub */
@@ -979,7 +979,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
           fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
           if(HTTP_URL){
             /* Strip leading slash from fl_nm_lcl for HTTP files so, e.g., 
-            http://dust.ess.uci.edu/nco/in.nc produces local path "nco" not "/nco" */
+	       http://dust.ess.uci.edu/nco/in.nc produces local path "nco" not "/nco" */
             fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
             fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
             fl_nm_lcl=fl_nm_lcl_tmp;
@@ -1270,7 +1270,6 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
     char *fl_nm_stub;
 
     fl_nm_stub=fl_nm;
-
     /* Allocate enough room for joining slash '/' and terminating NUL */
     fl_nm=(char *)nco_malloc((strlen(fl_nm_stub)+strlen(fl_pth)+2)*sizeof(char));
     (void)strcpy(fl_nm,fl_pth);
@@ -1279,19 +1278,16 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
     char *sng;
 
     /* Remote access detection; this should be replaced with NC_testurl; DAP-URL = "http://" host [ ":" port ] [ abs-path ] */
-    if (strlen(fl_pth) < 8 ) is_url=False; else {
+    if(strlen(fl_pth) < 8UL) is_url=False; else{
       sng=(char *)nco_malloc(8);
       sng=strncpy(sng,fl_pth,8);
       sng[7]='\0';    
-      if (strcmp("http://",sng) == 0) is_url=True; else is_url=False;
+      if(!strcmp("http://",sng)) is_url=True; else is_url=False;
       sng=(char *)nco_free(sng);
-    }
+    } /* end else */
 
-    if (is_url){
-      (void)strcat(fl_nm,"/");
-    } else {
-      (void)strcat(fl_nm,"\\"); /* Windows uses backslash for path separator; escape the character */
-    }
+    /* Windows uses backslash for path separator; escape the character */
+    if(is_url) (void)strcat(fl_nm,"/"); else (void)strcat(fl_nm,"\\");
    
 #else /* !_MSC_VER */
     (void)strcat(fl_nm,"/");

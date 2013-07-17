@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.47 2013-07-16 22:39:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.48 2013-07-17 00:07:56 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic, MSVC macros */
 
@@ -19,10 +19,10 @@
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
 
-/* fxm stdio only needed for TODO ncap57 */
 #ifdef _MSC_VER
-# include <float.h> /* isfinite() */
+# include <float.h> /* isfinite(), isinf(), isnan() */
 #endif /* !_MSC_VER */
+/* fxm stdio only needed for TODO ncap57 on UNIX */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <time.h> /* time() seed for random()/rand() */
@@ -40,13 +40,16 @@ extern "C" {
 /* MSVC does not define isnormal(), isnan(), isinf(), isfinite()
    http://stackoverflow.com/questions/2249110/how-do-i-make-a-portable-isnan-isinf-function */
 #ifdef _MSC_VER
+  /* isnormal() may be in MSVC 2012 with header amp_math.h. fxm: verify and utilize if true. */
 # define isnormal
+  /* Following functions are in MSVC 2008+ and require float.h */
 # define isnan(x) _isnan(x)
 # define isfinite(x) _finite(x)
 # define isinf(x) (!_finite(x))
 #endif /* !_MSC_VER */
 
 #ifdef _MSC_VER
+  /* _snprintf() is in MSVC 2005+ and requires stdio.h */
 # define snprintf _snprintf
 #endif /* !_MSC_VER */
 

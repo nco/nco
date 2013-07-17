@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.328 2013-07-16 04:26:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.329 2013-07-17 00:07:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -121,9 +121,9 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
 (char * const nm_fll);                /* I [sct] Full name  */
 
 int
-nco_get_str_pth_sct                   /* [fnc] Get string path structure  */
+nco_get_sng_pth_sct                   /* [fnc] Get string path structure  */
 (char * const nm_fll,                 /* I [sng] Full name  */ 
- str_pth_sct ***str_pth_lst);         /* I/O [sct] List of path components  */  
+ sng_pth_sct ***str_pth_lst);         /* I/O [sct] List of path components  */  
 
 void
 nco_prt_grp_nm_fll                   /* [fnc] Debug function to print group full name from ID */
@@ -202,6 +202,10 @@ nco_trv_rx_search                     /* [fnc] Search for pattern matches in tra
 (const char * const rx_sng,           /* I [sng] Regular expression pattern */
  const nco_obj_typ obj_typ,           /* I [enm] Object type (group or variable) */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
+(trv_tbl_sct * const trv_tbl);       /* I/O [sct] GTT (Group Traversal Table) */
 
 void
 nco_xtr_dfn                           /* [fnc] Define extracted groups, variables, and attributes in output file */
