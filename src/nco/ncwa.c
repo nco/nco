@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.332 2013-07-16 09:43:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.333 2013-07-17 16:35:47 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -64,7 +64,7 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 
-#if 0
+#if 0 
 #define USE_TRV_API
 #endif
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.332 2013-07-16 09:43:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.332 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.333 2013-07-17 16:35:47 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.333 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1415,13 +1415,29 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
 
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+
+      char *grp_out_fll=NULL; /* [sng] Group name */
+
+      int grp_id;        /* [ID] Group ID */
+      int grp_out_id;    /* [ID] Group ID (output) */
+      int var_out_id;    /* [ID] Variable ID (output) */
+      trv_sct *var_trv;  /* [sct] Variable GTT object */
+
+
       in_id=in_id_arr[omp_get_thread_num()];
+
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+
+      /* Obtain group ID using full group name */
+      (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+
       if(dbg_lvl >= nco_dbg_var && dbg_lvl < nco_dbg_nbr) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
       if(dbg_lvl >= nco_dbg_var && dbg_lvl < nco_dbg_nbr) (void)fflush(fp_stderr);
 
       /* Allocate and, if necessary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
-      /*      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){*/
+     
       /* fxm: verify that var_prc->tally is not needed */
       if((var_prc_out[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){
         (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
@@ -1434,7 +1450,8 @@ main(int argc,char **argv)
       } /* end if err */
       (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
 
-      (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
+      (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
+
       /* Retrieve variable from disk into memory */
       if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
       /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
