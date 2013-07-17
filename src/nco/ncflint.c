@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.253 2013-07-15 05:52:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.254 2013-07-17 09:08:26 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.253 2013-07-15 05:52:52 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.253 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.254 2013-07-17 09:08:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.254 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -647,8 +647,8 @@ main(int argc,char **argv)
   /* ncflint-specific stuff: */
   /* Find the weighting variable in input file */
   if(CMD_LN_NTP_VAR){
-    var_sct *ntp_1;
-    var_sct *ntp_2;
+    var_sct *ntp_1=NULL;
+    var_sct *ntp_2=NULL;
     var_sct *ntp_var_out;
 
     /* Turn arrival point into pseudo-variable */

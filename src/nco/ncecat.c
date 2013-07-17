@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.319 2013-07-17 08:27:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.320 2013-07-17 09:08:26 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -125,8 +125,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.319 2013-07-17 08:27:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.319 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.320 2013-07-17 09:08:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.320 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -149,7 +149,7 @@ main(int argc,char **argv)
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
-  int *in_id_arr;
+  int *in_id_arr=NULL;
 
   int abb_arg_nbr=0;
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
@@ -192,10 +192,10 @@ main(int argc,char **argv)
   size_t grp_out_lng; /* [nbr] Length of original, canonicalized GPE specification filename component */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
-  var_sct **var;
+  var_sct **var=NULL;
   var_sct **var_fix;
   var_sct **var_fix_out;
-  var_sct **var_out;
+  var_sct **var_out=NULL;
   var_sct **var_prc;
   var_sct **var_prc_out;
 
@@ -514,6 +514,8 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
 
+  if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+
   if(RECORD_AGGREGATE){
 
     /* Initialize thread information */
@@ -521,7 +523,6 @@ main(int argc,char **argv)
     in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
 
     /* Open file using appropriate buffer size hints and verbosity */
-    if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
     rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
     (void)nco_inq_format(in_id,&fl_in_fmt); 
@@ -752,7 +753,6 @@ main(int argc,char **argv)
       if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file has gpe->arg=%s\n",prg_nm_get(),gpe->arg);
 
       /* Open file using appropriate buffer size hints and verbosity */
-      if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
       rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
       if(fl_idx == 0){
