@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.329 2013-07-17 00:07:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.330 2013-07-17 00:28:43 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -202,6 +202,10 @@ nco_trv_rx_search                     /* [fnc] Search for pattern matches in tra
 (const char * const rx_sng,           /* I [sng] Regular expression pattern */
  const nco_obj_typ obj_typ,           /* I [enm] Object type (group or variable) */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_xtr_dmn_mrk                      /* [fnc] Mark extracted dimensions */
+(trv_tbl_sct * const trv_tbl);       /* I/O [sct] GTT (Group Traversal Table) */
 
 void
 nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */

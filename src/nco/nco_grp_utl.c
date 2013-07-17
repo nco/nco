@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.852 2013-07-17 00:07:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.853 2013-07-17 00:28:43 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1267,6 +1267,38 @@ nco_prn_xtr_val                       /* [fnc] Print variable data */
 
   return;
 } /* end nco_prn_xtr_val() */
+
+void
+nco_xtr_dmn_mrk                      /* [fnc] Mark extracted dimensions */
+(trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Set flag for dimensions to be extracted
+     ncks print functions need dimension extraction flag to print CDL files */
+
+  const char fnc_nm[]="nco_xtr_dmn_mrk()"; /* [sng] Function name */
+
+  unsigned int dmn_idx; /* [idx] Index over dimensions */
+  unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in file */
+  unsigned int obj_idx; /* [idx] Index over objects */
+  unsigned int obj_nbr; /* [nbr] Number of objects in table */
+
+  dmn_nbr=trv_tbl->nbr_dmn;
+  obj_nbr=trv_tbl->nbr;
+
+  /* Set extraction flag for groups if ancestors of extracted variables */
+
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+    trv_tbl->lst_dmn[dmn_idx].flg_xtr=False;
+    for(obj_idx=0;obj_idx<obj_nbr;obj_idx++){
+      /* For each variable to be extracted ... */
+      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[obj_idx].flg_xtr){
+	/* fxm: check against each variable */
+	trv_tbl->lst_dmn[dmn_idx].flg_xtr=True;
+      } /* endif extracted variable */
+    } /* end loop over obj_idx */
+  } /* end loop over dmn_idx */
+
+} /* end nco_xtr_dmn_mrk() */
 
 void
 nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */

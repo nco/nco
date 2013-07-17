@@ -1,5 +1,7 @@
 2013-07-16  Charlie Zender  <zender@uci.edu>
 
+	* Mark extracted dimensions with nco_xtr_dmn_mrk()
+
 	* Isolate nco_xtr_grp_mrk() from nco_xtr_dfn()
 
 	* New MSVC macros for isinf(), isfinite(), isnan()"

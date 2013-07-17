@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.114 2013-07-17 00:07:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.115 2013-07-17 00:28:43 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -811,10 +811,6 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   /* Get number of dimensions, type, and number of attributes for variable */
   (void)nco_inq_var(grp_id,var_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,&nbr_att);
-
-  assert(var_trv->nbr_dmn == nbr_dim);
-  assert(var_trv->var_typ == var_typ);
-  assert(var_trv->nbr_att == nbr_att);
 
   /* Storage properties */
   (void)nco_inq_var_chunking(grp_id,var_id,&srg_typ,cnk_sz);
