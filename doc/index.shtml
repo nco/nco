@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.797 2013-07-17 18:26:36 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.798 2013-07-17 21:51:38 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -604,7 +604,7 @@ netCDF4 compound types?;
 Optimize diskless files?;
 <tt>ncrename -g</tt>?;</li>
 <li><b>NCO 4.3.3</b>: (<i>In Progress, features completed or being worked on include</i>)
-<tt>ncks</tt> printing with <tt>-5</tt>;</li>
+Printintg <tt>ncks --cdl</tt>;</li>
 <tt>ncea/ncra/ncrcat/ncwa</tt> groups with <tt>-g -G --unn</tt>;</li>
 <li><b>NCO 4.3.2</b>: (<i>Current Stable Release</i>)
 <tt>ncflint/ncpdq</tt> groups with </tt>-g -G --unn</tt>;
@@ -1176,16 +1176,18 @@ infrequently updated. Comments and suggestions are certainly welcomed on the
 <ul><b>Best Practices:</b>
 
 <a name="bld_rqr"></a> <!-- http://nco.sf.net#bld_rqr -->
-<li>Although building NCO yourself can be easy, sexy, and lucrative, we recommend you first try the pre-built binaries for your system, e.g., 
+<li>Although building NCO yourself can be easy, sexy, and lucrative,
+we recommend that you first try the pre-built binaries for your
+system, e.g.,  
 <tt>
-<dt>sudo aptitude install nco # Debian-based systems like Ubuntu</dt>
-<dt>sudo yum-install nco      # RPM-based systems like Fedora</dt>
+<dt>sudo aptitude install nco # Debian-based systems like Debian, Mint, Ubuntu</dt>
+<dt>sudo yum-install nco      # RPM-based systems like CentOS, Fedora, RHEL</dt>
 </tt>
 If the pre-built executables do not satisfy you, or are out-of-date
 and you want the latest, greatest NCO features, then the recommended
 first steps to build (i.e., compile, for the most part) NCO from
 source code are to install 
-<a href="http://www.antlr.org">ANTLR 2.7.x (not version 3.x!)</a> (required for <tt>ncap2</tt>), 
+<a href="http://www.antlr.org">ANTLR 2.7.x (not version 3.x or 4.x!)</a> (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
@@ -1202,13 +1204,15 @@ The exception is <tt>ncap2</tt> which is written in&nbsp;C++.
 ANTLR, OPeNDAP, and NCO must be built with the same C++ compiler
 to properly resolve the C++ name-mangling.
 NCO does not yet support newer ANTLR versions because the
-ANTLR&nbsp;3.x C++ interface is incomplete.
+ANTLR&nbsp;3.x and 4.x C++ interfaces are incomplete.
 
 <dt><a name="apt"></a></dt> <!-- http://nco.sf.net#apt -->
 <dt><a name="aptitude"></a></dt> <!-- http://nco.sf.net#aptitude -->
-It is possible and often preferable to install most of the
-pre-requisite and optional software from pre-compiled packages on
-modern Debian-based systems with
+For the reasons explained above (compiler compatibility) install as
+much pre-requisite and optional software as possible from pre-compiled
+packages. 
+This is easy on modern package-oriented OSs. 
+For Debian-based systems:
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
 <dt>sudo aptitude install libcurl4-gnutls-dev libexpat1-dev libxml2-dev # DAP-prereqs</dt>
@@ -1216,9 +1220,10 @@ modern Debian-based systems with
 <dt>sudo aptitude install gsl-bin libgsl0-dev # GSL</dt>
 <dt>sudo aptitude install libnetcdf6 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>
 <dt>sudo aptitude install udunits-bin libudunits2-0 libudunits2-dev # UDUnits</dt>
+</tt>
 
 <dt><a name="yum"></a></dt> <!-- http://nco.sf.net#yum -->
-</tt>or, on RPM-based systems, with
+For RPM-based systems:
 <tt>
 <dt>sudo yum install antlr antlr-C++ # ANTLR</dt>
 <dt>sudo yum install curl-devel libxml2-devel # DAP-prereqs</dt>
@@ -1229,7 +1234,9 @@ modern Debian-based systems with
 <dt>sudo yum install librx librx-devel # RX</dt>
 <dt>sudo yum install udunits2 udunits2-devel # UDUnits</dt>
 </tt>
-</tt>or, using MacPorts for Mac OS X, with
+
+<dt><a name="yum"></a></dt> <!-- http://nco.sf.net#port -->
+For Mac OS X with MacPorts:
 <tt>
 <dt>sudo port install libdap # DAP</dt>
 <dt>sudo port install gsl # GSL</dt>
@@ -1237,6 +1244,17 @@ modern Debian-based systems with
 <dt>sudo port install udunits2 # UDUnits</dt>
 </tt>
 </li>
+<li>Once you have installed the pre-requisites as shown above, you may
+  then build the latest stable NCO and install it in <tt>/usr/local</tt> with:
+<tt>
+<dt>wget http://dust.ess.uci.edu/nco/nco.tar.gz</dt>
+<dt>tar xvzf nco.tar.gz</dt>
+<dt>cd nco-4.3.2</dt>
+<dt>./configure</dt>
+<dt>make</dt>
+<dt>sudo make install</dt>
+</tt>
+For more sophisticated installation options, see the next section.
 </ul>
 
 <dt><a name="Makefile"></a></dt> <!-- http://nco.sf.net#Makefile -->

@@ -1,5 +1,11 @@
 2013-07-17  Charlie Zender  <zender@uci.edu>
 
+	* Implement CDL user switch --cdl
+
+	* CDL output is more compact (less unnecessary information) than ncdump
+
+	* Successful CDL output by ncks and conversion by ncgen
+
 	* Tidy ncoGrammer.g
 
 2013-07-16  Charlie Zender  <zender@uci.edu>
