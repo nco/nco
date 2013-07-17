@@ -8,7 +8,7 @@
 
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.126 2013-06-16 20:52:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoTree.hpp,v 1.127 2013-07-17 18:26:37 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -50,7 +50,7 @@
 #line 51 "ncoTree.hpp"
 class CUSTOM_API ncoTree : public ANTLR_USE_NAMESPACE(antlr)TreeParser, public ncoParserTokenTypes
 {
-#line 669 "ncoGrammer.g"
+#line 619 "ncoGrammer.g"
 
 
 private:
@@ -60,9 +60,6 @@ private:
 public:
     prs_cls *prs_arg;
     ASTFactory myFactory;
-
-
-
 
      //Structure to hold AST pointers to indices in hyperslabs -only temporary 
      typedef struct{
@@ -110,7 +107,6 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
          hyp.ind[0]=ANTLR_USE_NAMESPACE(antlr)nullAST;
          hyp.ind[1]=ANTLR_USE_NAMESPACE(antlr)nullAST;
          hyp.ind[2]=ANTLR_USE_NAMESPACE(antlr)nullAST;
-
              
        if(lRef->getType()!=LMT) 
             return 0;
@@ -161,7 +157,6 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
        lRef=lRef->getNextSibling();
      }
      return nbr_dmn;
-
 } 
 
 int 
@@ -176,7 +171,6 @@ lmt_sct *lmt_ptr;
 RefAST aRef;
 
 vector<ast_lmt_sct> ast_lmt_vtr;
-
 
 // populate ast_lmt_vtr
 nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
@@ -196,8 +190,6 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
      lmt_ptr->is_usr_spc_max=False;
      /* rec_skp_ntl_spf is used for record dimension in multi-file operators */
      lmt_ptr->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
-
-
 
     for(jdx=0 ; jdx <3 ; jdx++){
       long ldx=0L;
@@ -230,10 +222,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
              lmt_ptr->srd=ldx;         
              break;
         }
-
       }
-
-
     }// end jdx
          
     /* need to deal with situation where only start is defined -- ie picking only a single value */
@@ -312,8 +301,6 @@ public:
       
     goto end;
     } //end if
-
-
 
 small: 
      idx=0;

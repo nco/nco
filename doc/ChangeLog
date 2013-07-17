@@ -1,3 +1,7 @@
+2013-07-17  Charlie Zender  <zender@uci.edu>
+
+	* Tidy ncoGrammer.g
+
 2013-07-16  Charlie Zender  <zender@uci.edu>
 
 	* Mark extracted dimensions with nco_xtr_dmn_mrk()

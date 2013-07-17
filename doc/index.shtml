@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.796 2013-07-17 02:04:45 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.797 2013-07-17 18:26:36 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1176,7 +1176,7 @@ infrequently updated. Comments and suggestions are certainly welcomed on the
 <ul><b>Best Practices:</b>
 
 <a name="bld_rqr"></a> <!-- http://nco.sf.net#bld_rqr -->
-<li>Building NCO yourself can be painful, so we recommend you first try the pre-built binaries for your system, e.g., 
+<li>Although building NCO yourself can be easy, sexy, and lucrative, we recommend you first try the pre-built binaries for your system, e.g., 
 <tt>
 <dt>sudo aptitude install nco # Debian-based systems like Ubuntu</dt>
 <dt>sudo yum-install nco      # RPM-based systems like Fedora</dt>

@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.200 2012-08-30 09:35:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.201 2013-07-17 18:26:36 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -77,13 +77,11 @@ tokens {
     VRSORT;     // reverse sort only used outside of grammer to sort in VarOp 
     VABS;      // imaginary token used in VarOp to return absolute value 
     VSQR2;     // imaginary token used in VarOp to return square of number 
-
 }
 {
 
 public:
    std::vector<std::string> inc_vtr;
-
 }
 
 program:
@@ -125,17 +123,13 @@ statement:
         | PRINT^ LPAREN! (VAR_ID|ATT_ID|NSTRING) (COMMA! NSTRING)?  RPAREN! SEMI! 
         // Code block
         | block
-
    ;        
-
-
 
 // a bracketed block
 block:
     LCURL! (statement)* RCURL!
     { #block = #( [BLOCK, "block"], #block ); }
     ;
-
 
 for_stmt:
      FOR^ LPAREN! (e1:expr)? SEMI! (e2:expr)? SEMI! (e3:expr)? RPAREN! st:statement
@@ -146,17 +140,13 @@ for_stmt:
          }  */
      ;
 
-
 lmt:    (expr)? (COLON (expr)?)*
         { #lmt = #( [LMT, "lmt"], #lmt ); }
    ;
 
-
-
 lmt_list: LPAREN! lmt (COMMA! lmt)*  RPAREN!
           { #lmt_list = #( [LMT_LIST, "lmt_list"], #lmt_list ); }
   ;
-
 
 // Use vars in dimension list so dims in [] can
 // be used with or with out $ prefix. ie "$lon" or "lon" 
@@ -193,8 +183,6 @@ call_ref: CALL_REF^(VAR_ID|ATT_ID)
 
 /*************************************************************/
 /* start  expressions */
-
-
 meth_exp: primary_exp (DOT^ FUNC func_arg)*
      ;
 
@@ -207,7 +195,6 @@ unaryleft_exp: meth_exp (
                           )?
     ;
 
-
 // unary right association   
 /*
 unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^ | TIMES^ ) unary_exp
@@ -219,8 +206,6 @@ unary_exp:  ( LNOT^| PLUS^| MINUS^ |INC^ | DEC^
              | ur:TIMES^ {#ur->setType(UTIMES);#ur->setText("UTIMES");} ) unary_exp
              | unaryleft_exp
     ;    
-
-
 
 // right association
 pow_exp: unary_exp (CARET^ pow_exp )? 
@@ -291,10 +276,8 @@ primary_exp
     | hyper_slb  //remember this includes VAR_ID & ATT_ID
   ;
 
-
 /* End  expressions */
 /*************************************************************/
-
 	  
 imaginary_token
 	: NRootAST
@@ -302,19 +285,14 @@ imaginary_token
 
 class ncoLexer extends Lexer;
 
-
 options {
     k = 4; 
-
-
 
     defaultErrorHandler=false;
     filter=BLASTOUT;
     testLiterals=false;
     charVocabulary = '\u0000'..'\u00FF';
-
 }
-
 
 tokens {
 // token keywords
@@ -339,12 +317,9 @@ tokens {
     SET_MISS="set_miss";
     CH_MISS="change_miss";
     */
-
 }
 
-
 {
-
 private:
     prs_cls *prs_arg;
 public:
@@ -371,12 +346,8 @@ public:
 			selector.retry();
 		}
 		// else ANTLR_USE_NAMESPACE(std)cout << "Hit EOF of main file" << ANTLR_USE_NAMESPACE(std)endl;
-		
 	}
-
-
 }
-
 
 ASSIGN options { paraphrase="="; } : '=';
 
@@ -460,8 +431,6 @@ protected LPHDGT:  ( 'a'..'z' | 'A'..'Z' | '_' | '0'..'9');
 protected XPN:     ( 'e' | 'E' ) ( '+' | '-' )? ('0'..'9')+ ;
 protected VAR_NM_QT: (LPHDGT|'-'|'+'|'.'|'('|')'|':' )+  ;      
 
-
-
 protected BLASTOUT: .
          {
           // blast out of lexer & parser
@@ -478,10 +447,6 @@ protected BLASTOUT: .
           throw  ANTLR_USE_NAMESPACE(antlr)TokenStreamRecognitionException(re);
          }  
     ;     
-
-
-
-
 	
 UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
   
@@ -494,20 +459,16 @@ UNUSED_OPS: ( "%=" | "^=" | "&=" | "|=" ) {
          }  
     ;    
 
-
 // Whitespace -- ignored
 WS  options {paraphrase="white space"; } 	
 	: ( ' ' |'\t' { tab(); } | '\f' |'\n' { newline(); })
 		{ $setType(antlr::Token::SKIP);}
 	;
 
-
-
 CXX_COMMENT options {paraphrase="a C++-style comment"; } 
     : "//" (~'\n')* '\n'
     { $setType(antlr::Token::SKIP); newline(); }
     ;
-
 
 C_COMMENT options {paraphrase="a C-style comment"; } 
         :       
@@ -549,7 +510,6 @@ NUMBER:
     )?        
 ;
 
-
 // Return var or att (var_nm@att_nm)
 VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribute identifier"; } 
      :  (LPH)(LPH|DGT)*   
@@ -588,16 +548,12 @@ VAR_ATT options {testLiterals=true; paraphrase="variable or function or attribut
            ('@'(LPH)(LPH|DGT)*  {$setType(ATT_ID); })?
 ;
 
-
 // Return a quoted var or att (var_nm@att_nm)
 VAR_ATT_QT :( '\''!)
                 VAR_NM_QT  {$setType(VAR_ID);}
                 ( '@' VAR_NM_QT {$setType(ATT_ID);})?
              ('\''!)
    ;     
-
-
-
 
 //Return a quoted dim
 DIM_QT: ( '\''!)
@@ -614,14 +570,11 @@ DIM_VAL options { paraphrase="dimension identifier"; }
          )? 
    ;  
 
- 
-
 // Shorthand for naming dims in method e.g $0,$1, $2 etc
 DIM_MTD_ID 
   options{paraphrase="dimension identifier";} 
   : '$'! (DGT)+
    ;            
-
 
 NSTRING
   options{paraphrase="a string";} 
@@ -629,8 +582,6 @@ NSTRING
         {$setType(NSTRING);}
        ('s'! {$setType(N4STRING);} )? 
    ;   
-
-
 
 INCLUDE
 	:	"#include" (WS)? f:NSTRING
@@ -664,7 +615,6 @@ INCLUDE
 		}
 	;
 
-
 class ncoTree extends TreeParser;
 {
 
@@ -675,9 +625,6 @@ private:
 public:
     prs_cls *prs_arg;
     ASTFactory myFactory;
-
-
-
 
      //Structure to hold AST pointers to indices in hyperslabs -only temporary 
      typedef struct{
@@ -725,7 +672,6 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
          hyp.ind[0]=ANTLR_USE_NAMESPACE(antlr)nullAST;
          hyp.ind[1]=ANTLR_USE_NAMESPACE(antlr)nullAST;
          hyp.ind[2]=ANTLR_USE_NAMESPACE(antlr)nullAST;
-
              
        if(lRef->getType()!=LMT) 
             return 0;
@@ -776,7 +722,6 @@ vector<ast_lmt_sct> &ast_lmt_vtr)
        lRef=lRef->getNextSibling();
      }
      return nbr_dmn;
-
 } 
 
 int 
@@ -791,7 +736,6 @@ lmt_sct *lmt_ptr;
 RefAST aRef;
 
 vector<ast_lmt_sct> ast_lmt_vtr;
-
 
 // populate ast_lmt_vtr
 nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
@@ -811,8 +755,6 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
      lmt_ptr->is_usr_spc_max=False;
      /* rec_skp_ntl_spf is used for record dimension in multi-file operators */
      lmt_ptr->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
-
-
 
     for(jdx=0 ; jdx <3 ; jdx++){
       long ldx=0L;
@@ -845,10 +787,7 @@ nbr_dmn=lmt_init(lmt,ast_lmt_vtr);
              lmt_ptr->srd=ldx;         
              break;
         }
-
       }
-
-
     }// end jdx
          
     /* need to deal with situation where only start is defined -- ie picking only a single value */
@@ -927,8 +866,6 @@ public:
       
     goto end;
     } //end if
-
-
 
 small: 
      idx=0;
@@ -1015,9 +952,6 @@ RefAST nco_dupList(RefAST tr){
      }
 } // end native block
 
-
-
-
 // Return the number of dimensions in lmt subscript
 lmt_peek returns [int nbr_dmn=0]
 
@@ -1031,8 +965,6 @@ lmt_peek returns [int nbr_dmn=0]
     }   
   }
   ;
-
-
 
 statements returns [int iret=0] 
 {
@@ -1063,7 +995,6 @@ static std::vector<std::string> lpp_vtr;
            // std::cout << "Modified assign "<<exp->toStringTree()<<std::endl;      
          }
        } 
-       
 
        var=out(exp->getFirstChild());
        if(var != (var_sct*)NULL)
@@ -1097,7 +1028,6 @@ static std::vector<std::string> lpp_vtr;
              iret=run_exe(stmt->getFirstChild(),lpp_vtr.size());
          }else
            iret=statements(stmt);     
-         
       }
 
       // See if else stmt exists (3rd sibling)       
@@ -1107,7 +1037,6 @@ static std::vector<std::string> lpp_vtr;
            iret=run_exe(stmt->getFirstChild(),lpp_vtr.size());
          }else
            iret=statements(stmt);     
-             
       }
  
       var=NULL_CEWI;
@@ -1219,13 +1148,11 @@ static std::vector<std::string> lpp_vtr;
        
         if(iret==BREAK) break;
 
-
         if(b3){
           var_f3=out(e3);
           var_f3=nco_var_free(var_f3);
         }
 
-  
         if(b2){
          var_f2=out(e2);
          br=ncap_var_lgcl(var_f2);
@@ -1239,7 +1166,6 @@ static std::vector<std::string> lpp_vtr;
       var=NULL_CEWI;                
         
     } // end  for action
-
 
     | ELSE { iret=ELSE;}
     | BREAK { iret=BREAK;}
@@ -1258,7 +1184,6 @@ static std::vector<std::string> lpp_vtr;
         (void)ncap_def_dim(def->getText(),sz,prs_arg);
      }
 
-
     // All the following functions have iret=0
     | (#(PRINT VAR_ID))=> #(PRINT pvid:VAR_ID){
 
@@ -1268,10 +1193,8 @@ static std::vector<std::string> lpp_vtr;
           std::string va_nm(pvid->getText());
           NcapVar *Nvar;
           
-          
           if(prs_arg->ntl_scn) goto end2;
           Nvar=prs_arg->var_vtr.find(va_nm);
-
 
           if(Nvar && Nvar->flg_mem){   
             wrn_prn(fnc_nm,"Cannot print out RAM variables at the moment!");
@@ -1305,10 +1228,8 @@ static std::vector<std::string> lpp_vtr;
            (void)nco_prn_var_val_lmt(fl_id,va_nm.c_str(),(lmt_sct*)NULL,0L,fmt_sng,prs_arg->FORTRAN_IDX_CNV,False,False);
              
           if(fmt_sng) fmt_sng=(char*)nco_free(fmt_sng); 
-         
 
         end2: ;
-
     }
     | (#(PRINT ATT_ID))=> #(PRINT patt:ATT_ID){
 
@@ -1386,7 +1307,6 @@ var=NULL_CEWI;
 }
    : (#(VAR_ID LMT_LIST ))=> #(vid:VAR_ID lmt:LMT_LIST){
 
-
                std::string var_nm; 
                var_sct *var_lhs;
                var_sct *var_rhs;
@@ -1405,7 +1325,6 @@ var=NULL_CEWI;
                  var=nco_var_dpl(var_lhs);
                  (void)prs_arg->ncap_var_write(var_lhs,bram);
                } else {
-
                  // set var to udf
                  var_lhs=ncap_var_udf(var_nm.c_str());
                  var=nco_var_dpl(var_lhs);
@@ -1451,9 +1370,7 @@ var=NULL_CEWI;
                // return undef if dim missing 
                if( idx <str_vtr_sz){
                   var=NULL_CEWI;
-
                } else {
-
                  // Cast is applied in VAR_ID action in function out()
                  var_cst=ncap_cst_mk(str_vtr,prs_arg);
 
@@ -1464,12 +1381,10 @@ var=NULL_CEWI;
                    var_cst=nco_var_cnf_typ(var1->type,var_cst);
                    var_cst->typ_dsk=var1->type;
                    var=nco_var_dpl(var_cst);
-
                    }
                  var1=nco_var_free(var1);
               }
               
-
               if(!var){
                 var1=ncap_var_udf(var_nm.c_str());
                 Nvar=new NcapVar(var1);
@@ -1486,7 +1401,6 @@ var=NULL_CEWI;
                 var_cst=nco_var_free(var_cst);
  
               bcst=false;   
-              
             }
 
           | vid2:VAR_ID {   
@@ -1494,7 +1408,6 @@ var=NULL_CEWI;
               std::string var_nm;
               
               var_nm=vid2->getText();
-
 
               if(dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
 
@@ -1504,7 +1417,6 @@ var=NULL_CEWI;
                bcst=false;
                var_cst=NULL_CEWI; 
              
-
                // get shape from RHS
                var1=out(vid2->getNextSibling());
                (void)nco_free(var1->nm);                
@@ -1545,7 +1457,6 @@ var=NULL_CEWI;
        } //end action
 
     ; // end assign block
-
 
 assign [bool bram] returns [var_sct *var]
 {
@@ -1596,11 +1507,9 @@ var=NULL_CEWI;
               // Overwrite bram possibly 
               if(Nvar) 
                 bram=Nvar->flg_mem;
-
                
               // Deal with RAM variables
               if(bram) {
- 
                   
                  if(Nvar && Nvar->flg_stt==1){
                     var_sct *var_ini;
@@ -1614,10 +1523,8 @@ var=NULL_CEWI;
                  if(Nvar && Nvar->flg_stt==2)
                     var_lhs=Nvar->var;    
                    
-                 
                  if(!Nvar)
                     var_lhs=prs_arg->ncap_var_init(var_nm,true);       
-                 
                     
                   nbr_dmn=var_lhs->nbr_dim;
 
@@ -1625,15 +1532,12 @@ var=NULL_CEWI;
                   if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
                     err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ var_nm);
                   
-
                  if( lmt_vtr.size() != nbr_dmn)
                     err_prn(fnc_nm,"Number of hyperslab limits for variable "+ var_nm+" doesn't match number of dimensions");
-                 
 
                  // add dim names to dimension list 
                  for(idx=0 ; idx < nbr_dmn;idx++) 
                     lmt_vtr[idx]->nm=strdup(var_lhs->dim[idx]->nm);   
-        
                 
                  slb_sz=1;        
                 // fill out limit structure
@@ -1651,7 +1555,6 @@ var=NULL_CEWI;
                  if(var_rhs->sz == 1)
                    (void)ncap_att_stretch(var_rhs,slb_sz);
 
-
                  // make sure var_lhs and var_rhs are the same size
                  // and that they are the same shape (ie they conform!!)          
                  if(var_rhs->sz != slb_sz){
@@ -1661,12 +1564,9 @@ var=NULL_CEWI;
                 (void)nco_put_var_mem(var_rhs,var_lhs,lmt_vtr);
                 if(Nvar==NULL)
                    (void)prs_arg->ncap_var_write(var_lhs,true); 
-             
-
 
               // deal with Regular Vars
               } else {                 
-
 
               // if var undefined in O or defined but not populated
                if(!Nvar || ( Nvar && Nvar->flg_stt==1)){              
@@ -1690,15 +1590,12 @@ var=NULL_CEWI;
                if( lmt_mk(lmt_Ref,lmt_vtr) == 0)
                   err_prn(fnc_nm,"Invalid hyperslab limits for variable "+ var_nm);
                
-
                if( lmt_vtr.size() != nbr_dmn)
                   err_prn(fnc_nm,"Number of hyperslab limits for variable "+ var_nm+" doesn't match number of dimensions");
-               
 
                 // add dim names to dimension list 
                for(idx=0 ; idx < nbr_dmn;idx++) 
                    lmt_vtr[idx]->nm=strdup(var_lhs->dim[idx]->nm);   
-        
                 
                 var_lhs->sz=1;        
                 // fill out limit structure
@@ -1723,7 +1620,6 @@ var=NULL_CEWI;
                if(var_rhs->sz != var_lhs->sz){
                  err_prn(fnc_nm, "Hyperslab for "+var_nm+" - number of elements on LHS(" +nbr2sng(var_lhs->sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
                  }
-
                 
               // swap values about
               var_lhs->val.vp=var_rhs->val.vp; 
@@ -1745,14 +1641,10 @@ var=NULL_CEWI;
 
               } // end put block !!
 
-                 
-
              } // end else if regular var
-
 
               var_rhs=nco_var_free(var_rhs);
               
-               
                // Empty and free vector 
               for(idx=0 ; idx < nbr_dmn ; idx++)
                 (void)nco_lmt_free(lmt_vtr[idx]);
@@ -1763,9 +1655,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               else 
                 var=prs_arg->ncap_var_init(var_nm,true);
                
-
         } // end action
-
 
         // Deal with LHS casting 
         | (#(VAR_ID DMN_LIST ))=> #(vid1:VAR_ID dmn:DMN_LIST){   
@@ -1782,7 +1672,6 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               // set class wide variables
               bcst=true;  
               var_cst=NULL_CEWI;
-
 
               //aRef=vid->getFirstChild()->getFirstChild();
               aRef=dmn->getFirstChild();
@@ -1808,8 +1697,6 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               // to have a size of one e.g if the dim(s) in the list have a size of one   
               bool br1=(var_cst->sz >=1 && var1->sz==1);
               bool br2=(var_cst->sz==var1->sz &&  ( ncap_var_is_att(var1) ||var1->has_dpl_dmn==-1 ));
-              
-              
 
               // The code rebuilds var1 with the shape from the casting variable  
               if( br1 || br2){
@@ -1831,13 +1718,9 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
                
                //blow out if vars not the same size      
              if(var1->sz != var_cst->sz) 
-                  err_prn(fnc_nm, "LHS cast for "+var_nm+" - cannot make RHS "+ std::string(var1->nm) + " conform.");               
-     
+                  err_prn(fnc_nm, "LHS cast for "+var_nm+" - cannot make RHS "+ std::string(var1->nm) + " conform.");          
               var1->nm=(char*)nco_free(var1->nm);
-
               var1->nm =strdup(var_nm.c_str());
-
-
 
               // See If we have to return something
               if(dmn->getNextSibling() && dmn->getNextSibling()->getType()==NORET)
@@ -1845,15 +1728,12 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
               else 
                 var=nco_var_dpl(var1);     
 
-
-              
               //call to nco_var_get() in ncap_var_init() uses this property
               var1->typ_dsk=var1->type;
               (void)prs_arg->ncap_var_write(var1,bram);
 
               bcst=false;
               var_cst=nco_var_free(var_cst); 
-
 
           } // end action
            
@@ -1903,13 +1783,11 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
                (void)prs_arg->ncap_var_write(var1,bram);
                //(void)ncap_var_write_omp(var1,bram,prs_arg);
 
-                          
                 // See If we have to return something
                if(vid2->getFirstChild() && vid2->getFirstChild()->getType()==NORET)
                  var=NULL_CEWI;
                else 
                  var=prs_arg->ncap_var_init(var_nm,true);               ;
-
                          
        } // end action
  
@@ -1945,7 +1823,6 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
             NcapVar *Nvar=new NcapVar(var1,sa);
             prs_arg->var_vtr.push_ow(Nvar);       
 
-
                // See If we have to return something
             if(att2->getFirstChild() && att2->getFirstChild()->getType()==NORET)
               var=NULL_CEWI;
@@ -1955,7 +1832,6 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
        } // end action
    ;
                
-
 out returns [var_sct *var]
 {
     const std::string fnc_nm("out"); 
@@ -1991,7 +1867,6 @@ out returns [var_sct *var]
 	         {var=ncap_var_var_op(var1,var2, MOD);}
     |   #(CARET var1=out var2=out)
             {var=ncap_var_var_op(var1,var2, CARET);}
-
     //unary Operators
     |   #(LNOT var1=out )      
             { var=ncap_var_var_op(var1,NULL_CEWI, LNOT );}
@@ -2010,7 +1885,6 @@ out returns [var_sct *var]
     |   #(POST_DEC var1=out_asn ){      
             var=ncap_var_var_inc(var1,NULL_CEWI,POST_DEC,false,prs_arg);
         }
-
     // Logical Operators
     | #(LAND var1=out var2=out)  
             { var=ncap_var_var_op(var1,var2, LAND );}        
@@ -2029,13 +1903,11 @@ out returns [var_sct *var]
             { var=ncap_var_var_op(var1,var2, EQ );}
     | #(NEQ  var1=out var2=out)   
             { var=ncap_var_var_op(var1,var2, NEQ );}
-
     // Fortran style Comparison Operators
     | #(FLTHAN  var1=out var2=out) 
             { var=ncap_var_var_op(var1,var2, FLTHAN );}
     | #(FGTHAN  var1=out var2=out) 
             { var=ncap_var_var_op(var1,var2, FGTHAN );}
-
     // Assign Operators 
     | #(PLUS_ASSIGN pls_asn:. var2=out) {
        var1=out_asn(pls_asn);
@@ -2083,8 +1955,6 @@ out returns [var_sct *var]
               err_prn(fnc_nm,serr );       
               }                
 
-
-
              if(prs_arg->ntl_scn)
                var=assign_ntl(tr,bram); 
              else
@@ -2092,7 +1962,6 @@ out returns [var_sct *var]
                
             }  
      | #(WHERE_ASSIGN wasn:. ) {
-
 
      }
 
@@ -2113,7 +1982,6 @@ out returns [var_sct *var]
            }   
            var1=nco_var_free(var1);
     } 
-           
 
     // Functions 
     |  #(m:FUNC args:FUNC_ARG) {
@@ -2156,7 +2024,6 @@ out returns [var_sct *var]
 #ifndef NC_MAX_INT
 # define NC_MAX_INT 2147483647
 #endif
-
             //Initial Scan
             if(prs_arg->ntl_scn){  
                 if( (dmn_fd==NULL_CEWI )|| (dmn_fd->sz <= NC_MAX_INT) )
@@ -2176,8 +2043,6 @@ out returns [var_sct *var]
                   var=ncap_sclr_var_mk(static_cast<std::string>("~dmn"),(nco_int64)dmn_fd->sz); 
             } 
                   
-
-
         }  // end action 
         
      // Variable with argument list 
@@ -2209,8 +2074,6 @@ out returns [var_sct *var]
           // apply cast only if sz >1 
           if(bcst && var->sz >1)
             var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
-
-
         } /* end action */
 
     // PLain attribute
@@ -2239,7 +2102,6 @@ out returns [var_sct *var]
             if(prs_arg->ntl_scn && var==NULL_CEWI )
                 var=ncap_var_udf(att->getText().c_str());
             
-
             if(prs_arg->ntl_scn && var->val.vp !=NULL)
                 var->val.vp=(void*)nco_free(var->val.vp);
               
@@ -2273,11 +2135,9 @@ out returns [var_sct *var]
             tsng=(char*)nco_free(tsng);      
         }
 
-
     |   str1:N4STRING
         {
             char *tsng;
-
 
             tsng=strdup(str1->getText().c_str());
             (void)sng_ascii_trn(tsng);            
@@ -2300,13 +2160,9 @@ out returns [var_sct *var]
              var->val.sngp[0]=strdup(tsng);   
 
              (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
-               
-
             }
             tsng=(char*)nco_free(tsng);      
         }
-
-
 
         // Naked numbers: Cast is not applied to these numbers
     |   val_float:FLOAT        
@@ -2372,8 +2228,6 @@ var=NULL_CEWI;
                nco_exit(EXIT_FAILURE);
           }
          
-
-
         } /* end action */
     // Plain attribute
     |   att:ATT_ID { 
@@ -2396,7 +2250,6 @@ var=NULL_CEWI;
             else    
                 var=ncap_att_init(att->getText(),prs_arg);
 
-
             if(!prs_arg->ntl_scn && var==NULL_CEWI ){
                 err_prn(fnc_nm,"Unable to locate attribute " +att->getText()+ " in input or output files.");
             }
@@ -2404,15 +2257,12 @@ var=NULL_CEWI;
             // if att not found return undefined
             if(prs_arg->ntl_scn && var==NULL_CEWI )
                 var=ncap_var_udf(att->getText().c_str());
-            
 
             if(prs_arg->ntl_scn && var->val.vp !=NULL)
                 var->val.vp=(void*)nco_free(var->val.vp);
 
-
        }// end action    
 ;
-
 
 value_list returns [var_sct *var]
 {
@@ -2425,7 +2275,6 @@ var=NULL_CEWI;
          int nbr_lst;
          int idx;
          int tsz;
-         
 
          nc_type type=NC_NAT;
          var_sct *var_ret;                        
@@ -2447,12 +2296,10 @@ var=NULL_CEWI;
              goto end_val;
            }
       
-         
          // find highest type
          for(idx=0;idx <nbr_lst ;idx++)
            type=ncap_typ_hgh(type,exp_vtr[idx]->type);
              //(void)ncap_var_retype(exp_vtr[0], exp_vtr[idx]);  
-
 
          // Inital Scan
          if(prs_arg->ntl_scn){
@@ -2501,8 +2348,7 @@ var=NULL_CEWI;
             cp=(char*)(var_ret->val.vp)+ (ptrdiff_t)(idx*tsz);
             memcpy(cp,exp_vtr[idx]->val.vp,tsz);
          }    
-         
-        
+
          // Free vector        
         end_val: for(idx=0 ; idx < nbr_lst ; idx++)
            (void)nco_var_free(exp_vtr[idx]);    
@@ -2510,9 +2356,7 @@ var=NULL_CEWI;
         var=var_ret;
 
         } // end action
-
 ;
-
 
 // Deal here with a value list of strings
 // Called only from value_list
@@ -2529,10 +2373,7 @@ var=NULL_CEWI;
          nco_string *cp;         
          var_sct *var_ret;                        
 
-      
          nbr_lst=exp_vtr.size();
-
-
          var_ret=(var_sct *)nco_malloc(sizeof(var_sct));
          /* Set defaults */
          (void)var_dfl_set(var_ret); 
@@ -2543,8 +2384,6 @@ var=NULL_CEWI;
          var_ret->sz=nbr_lst;
          var_ret->type=(nc_type)NC_STRING;
 
-
-
          // Inital Scan
          if(prs_arg->ntl_scn)
            goto end_val;          
@@ -2553,12 +2392,10 @@ var=NULL_CEWI;
          for(idx=0; idx<nbr_lst ; idx++)
             if( exp_vtr[idx]->type != NC_STRING)
               err_prn(fnc_nm," error processing value list string: to successfully parse value list of strings all elements must be of type NC_STRING");
-         
 
          // from here on deal with final scan
          tsz=nco_typ_lng((nc_type)NC_STRING);
          var_ret->val.vp=(void*)nco_malloc(nbr_lst*tsz);
- 
 
          (void)cast_void_nctype((nc_type)NC_STRING,&var_ret->val);
          cp=var_ret->val.sngp; 
@@ -2573,14 +2410,11 @@ var=NULL_CEWI;
          } // end loop      
 
          (void)cast_nctype_void((nc_type)NC_STRING,&var_ret->val);
-       
          
          end_val: var=var_ret;
 
 }// end action
-
 ;
-
 
 //where calculate 
 where_assign [var_sct *var_msk] returns [bool bret]
@@ -2649,7 +2483,6 @@ var_sct *var_rhs;
     bool b_vp=false;
     char *mss_cp;
 
-
     sz=var_lhs->sz;
     slb_sz=nco_typ_lng(var_lhs->type);
 
@@ -2710,7 +2543,6 @@ var_sct *var_rhs;
    // free "local" copy of var_msk if necessary
    if(bfr)
       var_msk=nco_var_free(var_msk);           
-   
 
    // Do attribute propagation if LHS is new
    Nvar=prs_arg->var_vtr.find(var_nm);
@@ -2721,10 +2553,8 @@ var_sct *var_rhs;
 
    prs_arg->ncap_var_write(var_lhs,false);
    bret=true;
-
         }
 ;
-
 
 //Calculate scalar hyperslab where there is a single limit for a possibly
 // multi-dimensional variable
@@ -2740,7 +2570,6 @@ var_sct *var_nbr;
             var_sct *var_rhs;
             std::string var_nm;
            
-
             var_nm=vid->getText(); 
             var_rhs=prs_arg->ncap_var_init(var_nm,false);            
          
@@ -2748,8 +2577,6 @@ var_sct *var_nbr;
               var=ncap_var_udf("~rhs_undefined");       
               goto end0;  // cannot use return var!!
             }
-
-
 
             if(prs_arg->ntl_scn){
              var=ncap_sclr_var_mk(var_nm,(nc_type)(var_rhs->type),false);
@@ -2773,7 +2600,6 @@ var_sct *var_nbr;
               (void)cast_void_nctype(NC_INT,&var_nbr->val);
               srt=var_nbr->val.ip[0];
               (void)cast_nctype_void(NC_INT,&var_nbr->val);
-
 
               // fortran index convention   
               if(prs_arg->FORTRAN_IDX_CNV)
@@ -2817,7 +2643,6 @@ var_sct *var_nbr;
                   fl_id=prs_arg->in_id; 
                 }
 
-
                 // convert srt into multiple indices  
                 for(idx=0;idx<nbr_dim;idx++)
                   sz_dim*= var_rhs->cnt[idx]; 
@@ -2833,21 +2658,13 @@ var_sct *var_nbr;
  
                // copy missing value if any over             
                nco_mss_val_cp(var_rhs,var);
-            
 
             } // end else !prs_arg->ntl_scn 
-             
-
-
 
 end0:       var_nbr=nco_var_free(var_nbr);
             var_rhs=nco_var_free(var_rhs);   
-             
 }
-
 ;
-
-
 
 //Calculate scalar LHS hyperslab where there is a single limit for a possibly
 // multi-dimensional variable
@@ -2868,7 +2685,6 @@ var_sct *var_nbr;
                var_sct *var_lhs=NULL_CEWI;
                var_sct *var_rhs=NULL_CEWI;
                NcapVar *Nvar; 
-
            
                var_nm=vid->getText(); 
 
@@ -2882,12 +2698,10 @@ var_sct *var_nbr;
                srt=var_nbr->val.ip[0];
                (void)cast_nctype_void(NC_INT,&var_nbr->val);
  
- 
               // Overwrite bram possibly 
               if(Nvar) 
                 bram=Nvar->flg_mem;
              
-               
               // Deal with RAM variables
               if(bram){
                
@@ -2935,8 +2749,6 @@ var_sct *var_nbr;
                  if(!Nvar)
                    (void)prs_arg->ncap_var_write(var_lhs,true); 
 
-
-
               // deal with regular vars 
               }else{
 
@@ -2956,7 +2768,6 @@ var_sct *var_nbr;
                if(prs_arg->FORTRAN_IDX_CNV)
                 srt--;
                else if(srt<0) srt+=var_lhs->sz-1; //deal with negative index convention 
-                
               
                 // do some bounds checking on single limits
                 if(srt >= var_lhs->sz || srt<0 )
@@ -2991,14 +2802,12 @@ var_sct *var_nbr;
                    srt1[idx]=srt/sz_dim; 
                    srt-=srt1[idx]*sz_dim;
                  }
-
                 
                  for(idx=0;idx<nbr_dim;idx++){
                    var_lhs->srt[idx]=srt1[idx]; 
                    var_lhs->cnt[idx]=1L; 
                    var_lhs->srd[idx]=1L; 
                  } /* end loop over idx */
-    
 
                  // write slab to O contains call to Open MP critical region
                  //  routine also frees up var_lhs
@@ -3009,9 +2818,7 @@ var_sct *var_nbr;
                    var_rhs=nco_var_free(var_rhs); 
                    var_nbr=nco_var_free(var_nbr); 
 }
-
 ;
-
 
 //Calculate var with limits
 var_lmt returns [var_sct *var]
@@ -3037,7 +2844,6 @@ var=NULL_CEWI;
             NcapVector<lmt_sct*> lmt_vtr;
             NcapVector<dmn_sct*> dmn_vtr;
             NcapVector<std::string> dmn_nrm_vtr;  // list of dimension names
-     
 
             var_nm=vid->getText(); 
             var_rhs=prs_arg->ncap_var_init(var_nm,false);            
@@ -3049,7 +2855,6 @@ var=NULL_CEWI;
 
             nbr_dmn=var_rhs->nbr_dim;          
             lRef=lmt;
-
 
           if(prs_arg->ntl_scn){
             // check limit only contains numbers or dim_id.size()
@@ -3070,7 +2875,6 @@ var=NULL_CEWI;
 
          if( lmt_vtr.size() != nbr_dmn)
             err_prn(fnc_nm,"Number of hyperslab limits for variable "+ var_nm+" doesn't match number of dimensions");
-         
 
           // add dim names to dimension list 
           for(idx=0 ; idx < nbr_dmn;idx++)
@@ -3079,7 +2883,6 @@ var=NULL_CEWI;
           // fill out limit structure
            for(idx=0 ; idx < nbr_dmn ;idx++)
             (void)ncap_lmt_evl(var_rhs->nc_id,lmt_vtr[idx],prs_arg);
-
 
           // See if var can be normalized
            for(idx=0; idx<nbr_dmn ; idx++){
@@ -3092,8 +2895,6 @@ var=NULL_CEWI;
            } 
 
            bnrm= (idx==nbr_dmn ? true:false);       
-
-
 
            // deal more with inital scan 
            if(prs_arg->ntl_scn){
@@ -3110,17 +2911,13 @@ var=NULL_CEWI;
                // apply LHS cast if necessary 
                if(var->sz>1 && bcst) 
                  var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
-                
               }else{
                 var=ncap_var_udf("~rhs_undefined");             
               }
-                  
              goto end1;
            }           
 
-
            /**** From here on we are dealing with a final scan  ****/
-            
            // copy lmt_sct to dmn_sct;
            for(idx=0 ;idx <nbr_dmn ; idx++){
               dmn_sct *dmn_nw;
@@ -3144,7 +2941,6 @@ var=NULL_CEWI;
             bram=true;
           else
             bram=false;
- 
  
           // Ram variable -do an in memory get  
           if(bram){
@@ -3184,18 +2980,13 @@ var=NULL_CEWI;
 
            } // end if(nbram)
            
-
            // copy missing value over
            nco_mss_val_cp(var_rhs,var);
-
            
           /* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
              a hyperslabed var and not a regular var  -- It shouldn't cause 
              any abberant behaviour!! */ 
            var->has_dpl_dmn=-1;  
-
-
-
 
             // if variable is scalar re-organize in a new var 
            // loose extraneous material so it looks like a
@@ -3205,7 +2996,6 @@ var=NULL_CEWI;
              var1=ncap_sclr_var_mk(var_nm,var->type,true);
              (void)memcpy( (void*)var1->val.vp,var->val.vp,nco_typ_lng(var1->type));
              
-             
              // copy missing value if any from var_rhs to var1
              nco_mss_val_cp(var_rhs,var1);
            
@@ -3214,9 +3004,6 @@ var=NULL_CEWI;
 
              var=var1;
 
-
-
-              
             // if hyperslab -nomalizable 
             // nb the returned var is just like a regular var 
             }else if(bnrm) {
@@ -3225,7 +3012,6 @@ var=NULL_CEWI;
               var1=ncap_cst_mk(dmn_nrm_vtr,prs_arg);
               (void)nco_free(var1->nm);
                 
-
               var1->nm=strdup(var_nm.c_str());
               var1=nco_var_cnf_typ(var_rhs->type,var1);
 
@@ -3266,24 +3052,16 @@ var=NULL_CEWI;
               var->dim[idx]=prs_arg->dmn_out_vtr.find(dmn_vtr[idx]->nm);  
 
            }   
-           
-
-
 
           //free vectors
-
           for(idx=0 ; idx < nbr_dmn ; idx++)
              (void)nco_dmn_free(dmn_vtr[idx]); 
                ;
-            
 
           end1: ;
           for(idx=0 ; idx < nbr_dmn ; idx++)
             (void)nco_lmt_free(lmt_vtr[idx]);
           
-          
           end2: var_rhs=nco_var_free(var_rhs); 
-    
     }
-
 ;

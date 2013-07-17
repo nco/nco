@@ -10,7 +10,7 @@
 #include <antlr/CharScanner.hpp>
 #line 1 "ncoGrammer.g"
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.106 2013-06-16 20:52:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoLexer.hpp,v 1.107 2013-07-17 18:26:37 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -52,8 +52,7 @@
 #line 53 "ncoLexer.hpp"
 class CUSTOM_API ncoLexer : public ANTLR_USE_NAMESPACE(antlr)CharScanner, public ncoParserTokenTypes
 {
-#line 346 "ncoGrammer.g"
-
+#line 322 "ncoGrammer.g"
 
 private:
     prs_cls *prs_arg;
@@ -81,10 +80,7 @@ public:
 			selector.retry();
 		}
 		// else ANTLR_USE_NAMESPACE(std)cout << "Hit EOF of main file" << ANTLR_USE_NAMESPACE(std)endl;
-		
 	}
-
-
 #line 57 "ncoLexer.hpp"
 private:
 	void initLiterals();

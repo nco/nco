@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.856 2013-07-17 08:27:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.857 2013-07-17 18:26:36 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -366,8 +366,6 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
 
 } /* nco_get_sls_chr_cnt() */
 
-
-
 int
 nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (path components) */
 (char * const nm_fll,                 /* I [sng] Full name  */ 
@@ -387,7 +385,7 @@ nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (pa
   Token 1: g16g1
   Token 2: lon1
 
-  Usage
+  Usage:
 
   Get number of tokens in variable full name
   nbr_sls_chr_var=nco_get_sls_chr_cnt(var_trv->nm_fll); 
@@ -396,9 +394,7 @@ nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (pa
   str_pth_lst_var=(sng_pth_sct **)nco_malloc(nbr_sls_chr_var*sizeof(sng_pth_sct *)); 
 
   Get token list in variable full name 
-  (void)nco_get_sng_pth_sct(var_trv->nm_fll,&str_pth_lst_var); 
-  
-  */
+  (void)nco_get_sng_pth_sct(var_trv->nm_fll,&str_pth_lst_var); */
 
   char *ptr_chr;      /* [sng] Pointer to character '/' in full name */
   char *ptr_chr_tok;  /* [sng] Pointer to character */
@@ -480,11 +476,10 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
 {
   /* Purpose: Set flags indicating whether each list member matches given regular expression
      NB: This function only writes True to the match flag, it never writes False.
-     Input flags are assumed to be statefull, and may contain Trues from previous calls */
+     Input flags are assumed to be stateful, and may contain Trues from previous calls */
 
   char *sng2mch; /* [sng] String to match to regular expression */
   const char sls_chr='/'; /* [chr] Slash character */
-  
 
   int mch_nbr=0;
 #ifndef NCO_HAVE_REGEX_FUNCTIONALITY
