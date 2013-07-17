@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.116 2013-07-17 21:51:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.117 2013-07-17 22:40:21 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1589,7 +1589,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* NB: ID here is actually index into trv_tbl->lst_dmn. It is NOT an ID. 
        However, it is same type (int) as an ID so we can use nm_id infrastructure. */
     dmn_lst[dmn_idx].id=dmn_idx_grp[dmn_idx];
-    dmn_lst[dmn_idx].nm=strdup(trv_tbl->lst_dmn[dmn_idx].nm);
+    dmn_lst[dmn_idx].nm=strdup(trv_tbl->lst_dmn[dmn_idx_grp[dmn_idx]].nm);
   } /* end loop over dmn_idx */
 
   /* Sort dimensions alphabetically */
