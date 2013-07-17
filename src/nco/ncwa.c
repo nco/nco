@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.333 2013-07-17 16:35:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.334 2013-07-17 16:46:16 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -64,7 +64,7 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 
-#if 0 
+#if 0
 #define USE_TRV_API
 #endif
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.333 2013-07-17 16:35:47 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.333 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.334 2013-07-17 16:46:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.334 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1454,8 +1454,10 @@ main(int argc,char **argv)
 
       /* Retrieve variable from disk into memory */
       if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+
       /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-      (void)nco_var_get(in_id,var_prc[idx]);
+      (void)nco_var_get(grp_id,var_prc[idx]);
+
       if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
 
       /* Convert char, short, long, int types to doubles before arithmetic */
@@ -1652,15 +1654,31 @@ main(int argc,char **argv)
       /* Revert any arithmetic promotion but leave unpacked (for now) */
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
 
+      /* Edit group name for output */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+
+      /* Obtain output group ID using full group name */
+      (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+
+      /* Memory management after current extracted group */
+      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+      /* Store the output variable ID */
+      var_prc_out[idx]->id=var_out_id;
+
+
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
       { /* begin OpenMP critical */
         /* Copy average to output file then free averaging buffer */
         if(var_prc_out[idx]->nbr_dim == 0){
-          (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+          (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
         }else{ /* end if variable is scalar */
-          (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+          (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
         } /* end if variable is array */
       } /* end OpenMP critical */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.340 2013-07-15 07:55:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.341 2013-07-17 16:46:16 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -67,7 +67,6 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-void dbg_var_dim_sct(const char* str, const int idx_var, var_sct *var);
 
 int 
 main(int argc,char **argv)
@@ -121,8 +120,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.340 2013-07-15 07:55:20 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.340 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.341 2013-07-17 16:46:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.341 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1000,11 +999,4 @@ main(int argc,char **argv)
   return EXIT_SUCCESS;
 } /* end main() */
 
-void dbg_var_dim_sct(const char* str, const int idx_var, var_sct *var)
-{
-  (void)fprintf(stdout,"%s[%d]->nm=%s\n",str,idx_var,var->nm);
-  for(int idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
-    dmn_sct *dim=var->dim[idx_dmn];
-    (void)fprintf(stdout,"dim[%d]->nm=%s ID=%d cnt=%ld sz=%ld\n",idx_dmn,dim->nm,dim->id,dim->cnt,dim->sz);
-  }
-}
+
