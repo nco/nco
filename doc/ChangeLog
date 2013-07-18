@@ -1,5 +1,7 @@
 2013-07-17  Charlie Zender  <zender@uci.edu>
 
+	* Change DDRA to print to stderr not stdout to simplify CDL mode
+
 	* Fix dimension name printed in compact lists due to mis-nested indices
 
 	* Implement CDL user switch --cdl

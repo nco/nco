@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.798 2013-07-06 00:39:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.799 2013-07-18 02:05:28 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1463,12 +1463,12 @@ However, if the user creates the output file in RAM (@pxref{RAM disks})
 then it is still possible to have the same name for both
 @var{output-file} and @var{input-file}.
 @example
-ncks -O in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
-ncks -O --wrt_tmp_fl in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
-ncks -O --no_tmp_fl in.nc out.nc # Create out.nc directly on disk
-ncks -O --no_tmp_fl in.nc in.nc # ERROR-prone! Overwrite in.nc with itself
-ncks -O --create_ram --no_tmp_fl in.nc in.nc # Create in.nc in RAM; then write to disk
-ncks -O --open_ram --no_tmp_fl in.nc in.nc # Read in.nc into RAM; then write to disk
+ncks in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
+ncks --wrt_tmp_fl in.nc out.nc # Same as default
+ncks --no_tmp_fl in.nc out.nc # Create out.nc directly on disk
+ncks --no_tmp_fl in.nc in.nc # ERROR-prone! Overwrite in.nc with itself
+ncks --create_ram --no_tmp_fl in.nc in.nc # Create in RAM, write to disk
+ncks --open_ram --no_tmp_fl in.nc in.nc # Read into RAM, write to disk
 @end example
 @noindent
 There is no reason to expect the fourth example to work.
@@ -3351,17 +3351,17 @@ First, examine the end of the first line of global metadata output by
 @cindex @code{-M}
 @example
 % ncks -M foo_3c.nc
-Opened file foo_3c.nc: dimensions = 23, variables = 296, global atts. = 5, 
-type = NC_FORMAT_CLASSIC 
+Opened file foo_3c.nc: dimensions = 23, variables = 296, 
+global atts. = 5, type = NC_FORMAT_CLASSIC 
 % ncks -M foo_364.nc
-Opened file foo_364.nc: dimensions = 23, variables = 296, global atts. = 5, 
-type = NC_FORMAT_64BIT
+Opened file foo_364.nc: dimensions = 23, variables = 296, 
+global atts. = 5, type = NC_FORMAT_64BIT
 % ncks -M foo_4c.nc
-Opened file foo_4c.nc: dimensions = 23, variables = 296, global atts. = 5, 
-type = NC_FORMAT_NETCDF4_CLASSIC
+Opened file foo_4c.nc: dimensions = 23, variables = 296, 
+global atts. = 5, type = NC_FORMAT_NETCDF4_CLASSIC
 % ncks -M foo_4.nc
-Opened file foo_4.nc: dimensions = 23, variables = 296, global atts. = 5, 
-type = NC_FORMAT_NETCDF4
+Opened file foo_4.nc: dimensions = 23, variables = 296, 
+global atts. = 5, type = NC_FORMAT_NETCDF4
 @end example
 This method requires a netCDF4-enabled @acronym{NCO} version 3.9.0+
 (i.e., from 2007 or later).
@@ -3631,8 +3631,8 @@ ncks -g /g1/ -v v1 # Yes: /g1/v1. No: /g2/g1/v1, /v1, /g2/v1 ...
 ncks -v /g1/v1     # Yes: /g1/v1. No: /g2/g1/v1, /v1, /g2/v1 ...
 
 # Union mode subsetting (invoke with --unn or --union)
-ncks -g  g1  -v v1 --unn # All variables in  g1 (or descendents), or named v1
-ncks -g /g1  -v v1 --unn # All variables in /g1 (or descendents), or named v1
+ncks -g  g1  -v v1 --unn # All variables in  g1 or progeny, or named v1
+ncks -g /g1  -v v1 --unn # All variables in /g1 or progeny, or named v1
 ncks -g  g1/ -v v1 --unn # All variables in  g1 or named v1
 ncks -g /g1/ -v v1 --unn # All variables in /g1 or named v1
 @end example
@@ -3777,7 +3777,7 @@ ncks -v '^Q[0-6][0-9]|7[0-3]' in.nc # Q01--Q73, Q100
 ncks -v '(Q[0-6][0-9]|7[0-3])$' in.nc # Q01--Q73
 ncks -v '^[a-z]_[a-z]@{3@}$' in.nc # Q_H2O, X_H2O, Q_CO2, X_CO2
 ncks -g 'g.' in_grp.nc           # 10 Groups g0-g9
-ncks -g 's.' in_grp.nc           # 100 sub-groups g0/s0, g0/s1, ... g9/s9
+ncks -g 's.' in_grp.nc       # 100 sub-groups g0/s0, g0/s1, ... g9/s9
 ncks -g 'g.' -v 'v.' in_grp.nc   # All variables 'v.' in groups 'g.'
 @end example
 Beware---two of the most frequently used repetition pattern matching
@@ -4726,14 +4726,19 @@ and longitude), it is stored in the netCDF file with only two dimensions,
 @code{time} and @code{gds_crd}.  
 @example
 % ncks -m -C -v gds_3dvar ~/nco/data/in.nc
-gds_3dvar: type NC_FLOAT, 2 dimensions, 4 attributes, chunked? no, compressed? no, packed? no, ID = 41
+gds_3dvar: type NC_FLOAT, 2 dimensions, 4 attributes, chunked? no, \
+ compressed? no, packed? no, ID = 41
 gds_3dvar RAM size is 10*8*sizeof(NC_FLOAT) = 80*4 = 320 bytes
-gds_3dvar dimension 0: time, size = 10 NC_DOUBLE, dim. ID = 20 (CRD)(REC)
+gds_3dvar dimension 0: time, size = 10 NC_DOUBLE, dim. ID = 20 \ 
+ (CRD)(REC)
 gds_3dvar dimension 1: gds_crd, size = 8 NC_FLOAT, dim. ID = 17 (CRD)
-gds_3dvar attribute 0: long_name, size = 17 NC_CHAR, value = Geodesic variable
+gds_3dvar attribute 0: long_name, size = 17 NC_CHAR, value = \ 
+ Geodesic variable
 gds_3dvar attribute 1: units, size = 5 NC_CHAR, value = meter
-gds_3dvar attribute 2: coordinates, size = 15 NC_CHAR, value = lat_gds lon_gds
-gds_3dvar attribute 3: purpose, size = 64 NC_CHAR, value = Test auxiliary coordinates like those that define geodesic grids
+gds_3dvar attribute 2: coordinates, size = 15 NC_CHAR, value = \
+ lat_gds lon_gds
+gds_3dvar attribute 3: purpose, size = 64 NC_CHAR, value = \ 
+ Test auxiliary coordinates like those that define geodesic grids
 @end example
 The @code{coordinates} attribute lists the names of the latitude and
 longitude coordinates, @code{lat_gds} and @code{lon_gds}, respectively. 
@@ -4749,21 +4754,25 @@ The cell-based grid file must contain two variables whose
 @code{standard_name} attributes are ``latitude'', and ``longitude'':
 @example
 % ncks -m -C -v lat_gds,lon_gds ~/nco/data/in.nc
-lat_gds: type NC_DOUBLE, 1 dimensions, 4 attributes, chunked? no, compressed? no, packed? no, ID = 37
+lat_gds: type NC_DOUBLE, 1 dimensions, 4 attributes, \
+ chunked? no, compressed? no, packed? no, ID = 37
 lat_gds RAM size is 8*sizeof(NC_DOUBLE) = 8*8 = 64 bytes
 lat_gds dimension 0: gds_crd, size = 8 NC_FLOAT, dim. ID = 17 (CRD)
 lat_gds attribute 0: long_name, size = 8 NC_CHAR, value = Latitude
 lat_gds attribute 1: standard_name, size = 8 NC_CHAR, value = latitude
 lat_gds attribute 2: units, size = 6 NC_CHAR, value = degree
-lat_gds attribute 3: purpose, size = 62 NC_CHAR, value = 1-D latitude coordinate referred to by geodesic grid variables
+lat_gds attribute 3: purpose, size = 62 NC_CHAR, value = \ 
+ 1-D latitude coordinate referred to by geodesic grid variables
 
-lon_gds: type NC_DOUBLE, 1 dimensions, 4 attributes, chunked? no, compressed? no, packed? no, ID = 38
+lon_gds: type NC_DOUBLE, 1 dimensions, 4 attributes, \
+ chunked? no, compressed? no, packed? no, ID = 38
 lon_gds RAM size is 8*sizeof(NC_DOUBLE) = 8*8 = 64 bytes
 lon_gds dimension 0: gds_crd, size = 8 NC_FLOAT, dim. ID = 17 (CRD)
 lon_gds attribute 0: long_name, size = 9 NC_CHAR, value = Longitude
 lon_gds attribute 1: standard_name, size = 9 NC_CHAR, value = longitude
 lon_gds attribute 2: units, size = 6 NC_CHAR, value = degree
-lon_gds attribute 3: purpose, size = 63 NC_CHAR, value = 1-D longitude coordinate referred to by geodesic grid variables
+lon_gds attribute 3: purpose, size = 63 NC_CHAR, value = \
+ 1-D longitude coordinate referred to by geodesic grid variables
 @end example
 In this example @code{lat_gds} and @code{lon_gds} represent the 
 latitude or longitude, respectively, of cell-based variables.
@@ -4942,8 +4951,10 @@ With UDUnits @w{version 2}, users may specify the UDUnits database file
 itself, @file{udunits2.xml}, via the @code{UDUNITS2_XML_PATH} 
 environment variable.
 @example
-export UDUNITS_PATH='/nonstandard/location/share/udunits' # UDUnits1
-export UDUNITS2_XML_PATH='/nonstandard/location/share/udunits/udunits2.xml' # UDUnits2
+# UDUnits1
+export UDUNITS_PATH='/unusual/location/share/udunits'
+# UDUnits2
+export UDUNITS2_XML_PATH='/unusual/location/share/udunits/udunits2.xml'
 @end example
 This run-time flexibility can enable the full functionality of
 pre-built binaries on machines with libraries in different locations.
@@ -4993,11 +5004,9 @@ variables:
     lon_cal:calendar = "365_day" ;
 data:
   lon_cal = 1,2,3,4,5,6,7,8,9,10;
-
-So the command 
-"ncks -v lon_cal -d lon_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' in.nc out.nc"
-Results in the hyperslab lon_cal=1,2,3,4   
 @end example 
+@samp{ncks -v lon_cal -d lon_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0'}
+results in @code{lon_cal=1,2,3,4}.
 
 @cindex MKS units
 @cindex God
@@ -5060,20 +5069,20 @@ ncrcat -v tpt -d time,"1990-1-2 12:00:00","1990-1-3 11:59:59" \
       file01.nc file02.nc file03.nc noon.nc    
 
 // Results: time is "re-based" to the time units in "file01.nc"
-time=36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52,
-     53, 54, 55, 56, 57, 58, 59 ;
+time=36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, \
+     51, 52, 53, 54, 55, 56, 57, 58, 59 ;
   
 // If we repeat the above command but with only two input files...
 ncrcat -v tpt -d time,"1990-1-2 12:00:00","1990-1-3 11:59:59" \
       file02.nc file03 noon.nc    
 
-// ...then the output time coordinate is based on the time units in "file02.nc"
-time = 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
-    29, 30, 31, 32, 33, 34, 35 ;
+// ...then output time coordinate is based on time units in "file02.nc"
+time = 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, \ 
+     26, 27, 28, 29, 30, 31, 32, 33, 34, 35 ;
 @end example
 As of @acronym{NCO} version 4.2.1 (August, 2012), @acronym{NCO}
 automatically rebases not only the record coordinate (@code{time}, here) 
-but also any bounds associated with the record coordinate (i.e.,
+but also any bounds associated with the record coordinate (e.g.,
 @code{time_bnds}) (@pxref{CF Conventions}).
 
 @html
@@ -5433,19 +5442,25 @@ ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
 
 # More complex chunking procedures, with informative metadata
 ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_scl=8 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm.nc ~/foo.nc 
+ncks -O -4 -D 4 --cnk_scl=8 dstmch90_clm.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_dmn lat,64 --cnk_dmn lon,128 dstmch90_clm.nc \ 
+ ~/foo.nc 
 ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
-ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,32 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm_0112.nc ~/foo.nc
+ncks -O -4 -D 4 --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,32 \
+ --cnk_dmn lon,128 dstmch90_clm_0112.nc ~/foo.nc
 
 # Chunking works with all operators...
-ncap2 -O -4 -D 4 --cnk_scl=8 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc
+ncap2 -O -4 -D 4 --cnk_scl=8 -S ~/nco/data/ncap2_tst.nco \ 
+ ~/nco/data/in.nc ~/foo.nc
 ncbo -O -4 -D 4 --cnk_scl=8 -p ~/nco/data in.nc in.nc ~/foo.nc
-ncecat -O -4 -D 4 -n 12,2,1 --cnk_dmn lat,32 -p /data/zender/dstmch90 dstmch90_clm01.nc ~/foo.nc
+ncecat -O -4 -D 4 -n 12,2,1 --cnk_dmn lat,32 \ 
+ -p /data/zender/dstmch90 dstmch90_clm01.nc ~/foo.nc
 ncflint -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
 ncpdq -O -4 -D 4 -P all_new --cnk_scl=8 -L 5 ~/nco/data/in.nc ~/foo.nc
-ncrcat -O -4 -D 4 -n 12,2,1 --cnk_dmn lat,32 -p /data/zender/dstmch90 dstmch90_clm01.nc ~/foo.nc
-ncwa -O -4 -D 4 -a time --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,32 --cnk_dmn lon,128 /data/zender/dstmch90/dstmch90_clm_0112.nc ~/foo.nc
+ncrcat -O -4 -D 4 -n 12,2,1 --cnk_dmn lat,32 \ 
+ -p /data/zender/dstmch90 dstmch90_clm01.nc ~/foo.nc
+ncwa -O -4 -D 4 -a time --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,32 \ 
+ --cnk_dmn lon,128 dstmch90_clm_0112.nc ~/foo.nc
 @end example
 
 @cindex record dimension
@@ -5733,7 +5748,7 @@ Thus
 @example
 ncks in.nc out.nc # Default: Open in.nc on disk, write out.nc to disk
 ncks --open_ram in.nc out.nc # Open in.nc in RAM, write out.nc to disk
-ncks --create_ram in.nc out.nc # Create out.nc in RAM, then write to disk
+ncks --create_ram in.nc out.nc # Create out.nc in RAM, write to disk
 # Open in.nc in RAM, create out.nc in RAM, then write out.nc to disk
 ncks --open_ram --create_ram in.nc out.nc
 ncks --ram_all in.nc out.nc # Same as above
@@ -5754,8 +5769,8 @@ for idx in @{1..99999@}; do
              $@{DATA@}/nco/$@{idx_fmt@}.nc
 done
 # Benchmark time to ncecat one hundred thousand files
-time ncecat --create_ram -O -u time -v ts -d Latitude,40.0 -d Longitude,-105.0 \
-            -p $@{DATA@}/nco -n 99999,5,1 00001.nc ~/foo.nc
+time ncecat --create_ram -O -u time -v ts -d Latitude,40.0 \ 
+ -d Longitude,-105.0 -p $@{DATA@}/nco -n 99999,5,1 00001.nc ~/foo.nc
 @end example
 Run normally on a laptop in 201303, this completes in @w{21 seconds}.
 The @samp{--create_ram} reduces the elapsed time to @w{9 seconds}.
@@ -10417,8 +10432,7 @@ netcdf-3.6.2 @*
 @example
 /*
  * ( [a-zA-Z]|[0-9]|'_'|'-'|'+'|'.'|'|':'|'@@'|'('|')' )+
- * Verify that a name string is valid
- * CDL syntax, eg, all the characters are
+ * Verify that name string is valid CDL syntax, i.e., all characters are
  * alphanumeric, '-', '_', '+', or '.'.
  * Also permit ':', '@@', '(', or ')' in names for chemists currently making 
  * use of these characters, but don't document until ncgen and ncdump can 
@@ -11995,7 +12009,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-3] [-4] [-6] [-A] [-a] [-b @var{binary-file}] [-C] [-c] 
+ncks [-3] [-4] [-6] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
@@ -12333,6 +12347,42 @@ missing values as blanks (i.e., the underscore character @samp{_}) by default.
 To enable the old behavior of printing the numeric representation of
 missing values (e.g., @code{1.0e36}), use the @samp{--no_blank} switch.
 Also activated using @samp{--noblank} or @samp{--no-blank}.
+
+@cindex @command{ncgen}
+@cindex @command{ncdump}
+@cindex @code{--cdl}
+@item --cdl 
+Print extracted data and metadata to screen (i.e., @code{stdout}) as 
+valid CDL (network Common data form Description Language).
+CDL is the human-readable ``lingua franca'' of netCDF ingested by
+@command{ncgen} and excreted by @command{ncdump}.
+Compare @command{ncks} ``traditional'' with CDL printing:
+@example
+zender@@roulee:~$ ncks -v one ~/nco/data/in.nc
+one: type NC_FLOAT, 0 dimensions, 1 attribute, chunked? no, compressed? no, packed? no
+one size (RAM) = 1*sizeof(NC_FLOAT) = 1*4 = 4 bytes
+one attribute 0: long_name, size = 3 NC_CHAR, value = one
+
+one = 1 
+
+zender@@roulee:~$ ncks --cdl -v one ~/nco/data/in.nc
+netcdf in @{
+
+  variables:
+    float one ;
+    one:long_name = "one" ;
+
+  data:
+    one = 1 ;
+
+@} // group /
+@end example
+@command{ncgen} converts CDL mode output into a netCDF file:
+@example
+ncks --cdl -v one ~/nco/data/in.nc > ~/in.cdl
+ncgen -k netCDF-4 -b -o ~/in.nc ~/in.cdl
+ncks -v one ~/in.nc
+@end example
 
 @cindex @code{-P}
 @cindex @code{--print}
