@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.125 2013-07-18 20:36:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.126 2013-07-18 21:34:38 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -940,6 +940,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 
   char *dlm_sng=NULL;                        /* [sng] User-specified delimiter string, if any */
   char *unit_sng;                            /* [sng] Units string */ 
+  char *sng_val_sng;                         /* [sng] String of NC_CHAR */
   char val_sng[NCO_ATM_SNG_LNG];
   char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
   char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
@@ -967,6 +968,8 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   long dmn_sbs_ram[NC_MAX_DIMS];             /* [nbr] Indices in hyperslab */
   long dmn_sbs_dsk[NC_MAX_DIMS];             /* [nbr] Indices of hyperslab relative to original on disk */
   long var_szm1;
+  long sng_lng;                              /* [nbr] Length of NC_CHAR string */
+  long sng_lngm1;                            /* [nbr] Length minus one of NC_CHAR string */
 
   var_sct var;                               /* [sct] Variable structure */
   var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
@@ -1116,14 +1119,26 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         case NC_CHAR: 
 	  if(var.nbr_dim == 0){
 	    (void)fprintf(stdout,"\"");
-	    if(var.val.cp[lmn] != '\0') (void)sprintf(val_sng,fmt_sng,var.val.cp[lmn]);
+	    if(var.val.cp[lmn] != '\0') (void)fprintf(stdout,"%c\"",var.val.cp[lmn]);
+	    val_sng[0]='\0';
 	  }else{ /* var.nbr_dim > 0 */
 	    //qrk
-	    //fxm: finish multi-dimensional strings
-	    //static long dmn_sz;
-	    //dmn_sz=lmt_msa[var.nbr_dim-1]->dmn_cnt;
-	    if(lmn == 0L) (void)fprintf(stdout,"\"");
-	    (void)sprintf(val_sng,"%c",var.val.cp[lmn]);
+	    /* Multi-dimensional string arrays of NC_CHAR */
+	    if(lmn == 0L){
+	      sng_lng=lmt_msa[var.nbr_dim-1]->dmn_cnt;
+	      sng_lngm1=sng_lng-1UL;
+	      sng_val_sng=(char *)nco_malloc(sng_lng+1UL);
+	    } /* endif first element of string array */
+	    /* New string begins each element where penultimate dimension changes */
+	    if(lmn%sng_lng == 0L) (void)fprintf(stdout,"\"");
+	    (void)sprintf(sng_val_sng+lmn%sng_lng,"%c",var.val.cp[lmn]);
+	    if(lmn%sng_lng == sng_lngm1){
+	      (void)fprintf(stdout,"%s",sng_val_sng);
+	      (void)fprintf(stdout,"\"");
+	      /* Print commas after non-final strings */
+	      if(lmn != var_szm1) (void)fprintf(stdout,"%s",cma_sng);
+	    } /* endif string end */
+	    if(lmn == var_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
 	  } /* var.nbr_dim > 0 */
 	  break;
         case NC_BYTE: (void)sprintf(val_sng,fmt_sng,var.val.bp[lmn]); break;
@@ -1140,7 +1155,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
-      if(var.type == NC_CHAR) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? "" : "\""); else (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? cma_sng : "");
+      if(var.type != NC_CHAR) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? cma_sng : "");
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
     (void)fprintf(stdout," ;\n");

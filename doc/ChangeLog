@@ -1,5 +1,7 @@
 2013-07-18  Charlie Zender  <zender@uci.edu>
 
+	* CDL mode works on zero and one-dimension arrays of NC_CHAR strings
+
 	* CDL mode works with GPE transformations with constant group level, e.g.,
 	ncks --cdl -O -G f1:1 -g g1 ~/nco/data/in_grp.nc
 	GPE transformations that alter group level are incorrectly sorted, indented, and braced
