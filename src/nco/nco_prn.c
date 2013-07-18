@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.120 2013-07-18 02:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.121 2013-07-18 02:54:28 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -907,7 +907,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
      Get variable with limits from input file
      User supplied dlm_sng, print var (includes nbr_dim == 0)
      Get dimensional units
-     if nbr_dim==0 and dlm_sng==NULL Print variable
+     if nbr_dim == 0 and dlm_sng == NULL Print variable
      if PRN.. == False Print variable taking account of FORTRAN (need variable indices)
      if PRN_DMN_IDX_CRD_VAL then read in co-ordinate dimensions
      if PRN.. == True Print variable taking account of FORTRAN (Use dimensions to calculate variable indices)
