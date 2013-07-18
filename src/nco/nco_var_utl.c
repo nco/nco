@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.342 2013-07-16 22:24:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.343 2013-07-18 09:25:35 pvicente Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1086,9 +1086,13 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
             No, really, it indicates poor program design
             fxm: TODO nco374: have ncwa re-arrange output metadata prior to nco_var_dfn()
             Then delete this branch and use straightforward branch of code */
-            if(var[idx]->xrf->dim[dmn_idx]->id == dmn_ncl[idx_ncl]->xrf->id) break;
+            if(var[idx]->xrf->dim[dmn_idx]->id == dmn_ncl[idx_ncl]->xrf->id){
+              break;
+            }
           } /* end loop over idx_ncl */
-          if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[dmn_nbr++]=var[idx]->dim[dmn_idx]->id;
+          if(idx_ncl != nbr_dmn_ncl){
+            dmn_id_vec[dmn_nbr++]=var[idx]->dim[dmn_idx]->id;
+          }
         } /* end loop over dmn_idx */
       }else{ /* ...operator does not change variable rank so handle normally... */
         /* More straightforward definition used by operators besides ncwa */

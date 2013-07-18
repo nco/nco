@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.364 2013-07-18 02:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.365 2013-07-18 09:25:35 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -775,7 +775,7 @@ extern "C" {
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  
     int dmn_idx_out_in[NC_MAX_DIMS];  /* [nbr] Dimension correspondence, output->input (ncpdq); output of nco_var_dmn_rdr_mtd() */
-    nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension */
+    nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension (ncpdq) */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
   } trv_sct;

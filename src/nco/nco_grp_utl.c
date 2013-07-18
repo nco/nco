@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.860 2013-07-18 00:17:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.861 2013-07-18 09:25:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4952,6 +4952,15 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           dmn_sz=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
         }
       } /* Define dimension size */
+
+
+      /* ncwa */
+      if (prg_id == ncwa){
+
+
+
+
+      } /* ncwa */
 
       /* Define dimension and obtain dimension ID */
       (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);
