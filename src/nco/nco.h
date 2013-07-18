@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.365 2013-07-18 09:25:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.366 2013-07-18 20:11:04 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -574,6 +574,19 @@ extern "C" {
     nod_typ_enm nod_typ; /* [enm] Node type */
   } scv_sct;      
 
+  /* Group Path Editing (GPE) structure */
+  typedef struct{ /* gpe_sct */
+    char *arg; /* [sng] Full GPE specification (for debugging) */
+    char *edt; /* [sng] Editing component of full GPE specification */
+    char *nm; /* [sng] Group name component of full GPE specification */
+    char *nm_cnn; /* [sng] Canonicalized (i.e., slash-terminated) group name */
+    gpe_enm md; /* [enm] Editing mode to perform */
+    short lvl_nbr; /* [nbr] Number of levels to shift */
+    size_t lng; /* [nbr] Length of user-specified group path */
+    size_t lng_cnn; /* [nbr] Length of canonicalized user-specified group path */
+    size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
+  } gpe_sct;
+
   /* Attribute editing structure */
   typedef struct{ /* aed_sct */
     char *att_nm; /* Name of attribute */
@@ -588,6 +601,7 @@ extern "C" {
   /* Print flags structure */
   typedef struct{ /* prn_fmt_sct */
     char *fl_stb; /* [sng] Input filename stub */
+    gpe_sct *gpe; /* I [sng] GPE structure */
     nco_bool xml; /* [flg] Print valid XML */
     nco_bool nfo_cdl; /* [flg] Print extra information in CDL mode */
     nco_bool cdl; /* [flg] Print valid CDL */
@@ -632,19 +646,6 @@ extern "C" {
     nco_bool is_usr_spc_cnk; /* [flg] Chunk size was user-specified */
   } cnk_sct;
   
-  /* Group Path Editing (GPE) structure */
-  typedef struct{ /* gpe_sct */
-    char *arg; /* [sng] Full GPE specification (for debugging) */
-    char *edt; /* [sng] Editing component of full GPE specification */
-    char *nm; /* [sng] Group name component of full GPE specification */
-    char *nm_cnn; /* [sng] Canonicalized (i.e., slash-terminated) group name */
-    gpe_enm md; /* [enm] Editing mode to perform */
-    short lvl_nbr; /* [nbr] Number of levels to shift */
-    size_t lng; /* [nbr] Length of user-specified group path */
-    size_t lng_cnn; /* [nbr] Length of canonicalized user-specified group path */
-    size_t lng_edt; /* [nbr] Length of editing component of full GPE specification */
-  } gpe_sct;
-
   /* GTT structure to break a full path name into components */
   typedef struct{ 
     char *nm;       /* [sng] Path component */

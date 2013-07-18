@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.46 2013-07-16 18:39:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.47 2013-07-18 20:11:04 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -92,6 +92,11 @@ nco_gpe_prs_arg /* [fnc] Parse Group Path Editing (GPE) argument */
 
 char * /* O [sng] Result of applying GPE to input path */
 nco_gpe_evl /* [fnc] Apply Group Path Editing (GPE) to argument */
+(const gpe_sct * const gpe, /* I [sng] GPE structure */
+ const char * const grp_nm_fll_in); /* I [sng] Full group name */
+
+char * /* O [sng] Stub of GPE applied to input path */
+nco_gpe_evl_stb /* [fnc] Find stub of Group Path Editing (GPE) applied to argument */
 (const gpe_sct * const gpe, /* I [sng] GPE structure */
  const char * const grp_nm_fll_in); /* I [sng] Full group name */
 

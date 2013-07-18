@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.862 2013-07-18 17:50:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.863 2013-07-18 20:11:04 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3650,12 +3650,10 @@ nco_var_trv                           /* [fnc] Fill-in variable structure list f
     } /* Filter variables  */
   } /* Loop table */
 
-
   *xtr_nbr=nbr_xtr;
   return var;
 
 } /* nco_var_trv() */
-
 
 void
 nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variables from input to output file */

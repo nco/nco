@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.801 2013-07-18 17:07:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.802 2013-07-18 20:11:04 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3988,7 +3988,7 @@ groups and their placement in the output file as shown by the following
 commands. 
 All commands below may be assumed to end with @samp{in.nc out.nc}.
 @example       
-# Appending paths without editing:
+# Prepending paths without editing:
 ncks                   # /g?/v? -> /g?/v?
 ncks             -v v1 # /g?/v1 -> /g?/v1
 ncks       -g g1       # /g1/v? -> /g1/v?
@@ -4028,6 +4028,19 @@ ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
 ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
 ncks -G g2:-1 -g g1    -v v1 # /g1/v1    -> /g1/g2/v1
 ncks -G g1:-1 -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/g1/v1
+@end example
+
+As of 2013, netCDF contains no library function for renaming groups.
+@acronym{GPE} can be used to move groups, which is a more arduous way 
+of accomplishing the same goal.
+@acronym{GPE} applies to all selected groups, so, in the general case,
+one must move only the desired group to a new file, and then merge that
+new file with the original to obtain a file where the desired group has
+been ``renamed'' and all else is unchanged.
+@example
+ncks -O -G f1:1 -g g1 ~/nco/data/in_grp.nc ~/tmp.nc # Move /g1 to /f1
+ncks -O -x -g g1 ~/nco/data/in_grp.nc ~/out.nc # Move all but /g1 to new file
+ncks -A ~/tmp.nc ~/out.nc # Add /f1 to new file
 @end example
 
 @html

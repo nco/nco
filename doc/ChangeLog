@@ -1,5 +1,9 @@
 2013-07-18  Charlie Zender  <zender@uci.edu>
 
+	* Create nco_gpe_evl_stb() to easily print GPE-transformed group stubs
+
+	* Move GPE to pre-fl_out code so CDL mode can use it
+
 	* Fix string and string-array printing for NC_STRING
 
 	* Ooops, CDL mode always prints on-disk dimension sizes even when hyperslabbing

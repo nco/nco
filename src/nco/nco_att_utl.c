@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.150 2013-07-17 08:27:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.151 2013-07-18 20:11:04 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -963,6 +963,39 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
   return NCO_NOERR;
 } /* end nco_prs_att() */
 
+char * /* O [sng] Stub of GPE applied to input path */
+nco_gpe_evl_stb /* [fnc] Apply Group Path Editing (GPE) to argument safely */
+(const gpe_sct * const gpe, /* I [sng] GPE structure, if any */
+ const char * const grp_nm_fll_in) /* I [sng] Full group name */
+{
+  /* Purpose: Apply Group Path Editing (GPE) to input full group name, return stub of result */
+  const char fnc_nm[]="nco_gpe_evl_stb()"; /* [sng] Function name */
+  const char sls_chr='/'; /* [sng] Slash character */
+
+  char *grp_nm_stb_out; /* [sng] Returned output name. Must be free()'d in calling routine. */
+  char *grp_nm_fll_out; /* [sng] Intermediate output name. Allocated and free()'d here. */
+  char *sls_ptr; /* [sng] Pointer to slash character. Unsafe to free(). */
+
+  size_t in_lng; /* [nbr] Length of grp_nm_fll_in */
+
+  in_lng=strlen(grp_nm_fll_in);
+  if(!in_lng) (void)fprintf(stdout,"%s: WARNING %s reports grp_nm_fll_in is empty\n",prg_nm_get(),fnc_nm);
+  grp_nm_fll_out=nco_gpe_evl(gpe,grp_nm_fll_in);
+
+  /* Root group has no stub */
+  if(in_lng == 1UL) return grp_nm_fll_out;
+
+  /* First level and deeper group stubs begin just after final slash */
+  sls_ptr=strrchr(grp_nm_fll_out,sls_chr);
+  assert(sls_ptr);
+  grp_nm_stb_out=(char *)strdup(sls_ptr+1UL);
+
+  if(grp_nm_fll_out) grp_nm_fll_out=(char *)nco_free(grp_nm_fll_out);
+
+  return grp_nm_stb_out;
+
+} /* end nco_gpe_evl_stb() */
+
 char * /* O [sng] Result of applying GPE to input path */
 nco_gpe_evl /* [fnc] Apply Group Path Editing (GPE) to argument */
 (const gpe_sct * const gpe, /* I [sng] GPE structure */
@@ -971,6 +1004,7 @@ nco_gpe_evl /* [fnc] Apply Group Path Editing (GPE) to argument */
   /* Purpose: Apply Group Path Editing (GPE) to input full group name, return result
      grp_nm_fll_in:  "Input"  path---usually full group path of object in input  file
      grp_nm_fll_out: "Output" path---usually full group path of object in output file
+     grp_nm_fll_out: Calling routine is responsible for freeing this memory
      grp_nm_fll_in usually is not terminated by a slash
      grp_nm_fll_in is assumed to begin with a slash
      The "group path" includes only groups--variable names should be omitted
@@ -980,9 +1014,9 @@ nco_gpe_evl /* [fnc] Apply Group Path Editing (GPE) to argument */
   const char sls_sng[]="/"; /* [sng] Slash string */
   const char sls_chr='/'; /* [sng] Slash character */
 
-  char *grp_nm_fll_out=NULL; /* [sng] Returned output name. Safe to free() in calling routine. */
+  char *grp_nm_fll_out=NULL; /* [sng] Returned output name. Must be free()'d in calling routine. */
   char *grp_out; /* [sng] Mutable pointer to output name. Unsafe to free(). */
-  char *grp_nm_fll_in_dpl; /* [sng] Allocated pointer to output name. Safe to free(). */
+  char *grp_nm_fll_in_dpl; /* [sng] Allocated pointer to output name. Allocated and free()'d here. */
   char *sls_ptr; /* [sng] Pointer to slash character. Unsafe to free(). */
   
   int lvl_idx=0; /* [idx] Level counter (gets incremented) */
@@ -997,7 +1031,7 @@ nco_gpe_evl /* [fnc] Apply Group Path Editing (GPE) to argument */
   sls_ptr=grp_out=grp_nm_fll_in_dpl;
 
   /* If GPE was not invoked, perform identity translation and return */
-  if(!gpe->arg) return grp_out;
+  if(!gpe->arg) return grp_nm_fll_in_dpl;
 
   /* Sanity checks */
   if(grp_out[0] != '/') (void)fprintf(stdout,"%s: WARNING %s reports GPE input path %s does not begin with slash\n",prg_nm_get(),fnc_nm,grp_out);
