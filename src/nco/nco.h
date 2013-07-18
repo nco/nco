@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.366 2013-07-18 20:11:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.367 2013-07-18 23:10:02 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -659,6 +659,29 @@ extern "C" {
     int tkn_crd_idx;    /* [nbr] Index of token for second full name */
   } mtc_tkn_sct; 
 
+  /* Fill actual value of dmn_sct structure in nco_dmn_fll()
+  free() each pointer member of dmn_sct structure in nco_dmn_free()
+  deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
+  /* Dimension structure */
+  typedef struct dmn_sct_tag{ /* dmn_sct */
+    char *nm; /* [sng] Dimension name */
+    char fmt[5]; /* [sng] Hint for printf()-style formatting */
+    int cid; /* [id] Variable ID of associated coordinate, if any */
+    int id; /* [id] Dimension ID */
+    int nc_id; /* [id] File ID */
+    long cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
+    long end; /* [idx] Index to end of hyperslab */
+    long srd; /* [nbr] Stride of hyperslab */
+    long srt; /* [idx] Index to start of hyperslab */
+    long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
+    nc_type type; /* [enm] Type of coordinate, if applicable */
+    ptr_unn val; /* [sct] Buffer to hold hyperslab fxm: is this ever used? */
+    short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
+    short is_rec_dmn; /* [flg] Is this the record dimension? */
+    size_t cnk_sz; /* [nbr] Chunk size */
+    struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
+  } dmn_sct; /* end dmn_sct_tag */
+
   /* MSA Limits structure:
      GTT has a member for every unique dimension and for every coordinate variable */
   typedef struct { 
@@ -779,6 +802,7 @@ extern "C" {
     nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension (ncpdq) */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
+    dmn_sct *dmn_rdc_out;             /* [sct] (ncwa) Reduced dimensions */
   } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists
@@ -820,28 +844,7 @@ extern "C" {
     not_checked /* 2 */
   } monotonic_direction_enm;
 
-  /* Fill actual value of dmn_sct structure in nco_dmn_fll()
-  free() each pointer member of dmn_sct structure in nco_dmn_free()
-  deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
-  /* Dimension structure */
-  typedef struct dmn_sct_tag{ /* dmn_sct */
-    char *nm; /* [sng] Dimension name */
-    char fmt[5]; /* [sng] Hint for printf()-style formatting */
-    int cid; /* [id] Variable ID of associated coordinate, if any */
-    int id; /* [id] Dimension ID */
-    int nc_id; /* [id] File ID */
-    long cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
-    long end; /* [idx] Index to end of hyperslab */
-    long srd; /* [nbr] Stride of hyperslab */
-    long srt; /* [idx] Index to start of hyperslab */
-    long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
-    nc_type type; /* [enm] Type of coordinate, if applicable */
-    ptr_unn val; /* [sct] Buffer to hold hyperslab fxm: is this ever used? */
-    short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
-    short is_rec_dmn; /* [flg] Is this the record dimension? */
-    size_t cnk_sz; /* [nbr] Chunk size */
-    struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
-  } dmn_sct; /* end dmn_sct_tag */
+ 
   
   /* Initialize default value of each member of var_sct structure in var_dfl_set()
      Fill actual value of var_sct structure in nco_var_fll()
