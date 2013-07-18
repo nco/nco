@@ -1,5 +1,7 @@
 2013-07-18  Charlie Zender  <zender@uci.edu>
 
+	* Fix string and string-array printing for NC_STRING
+
 	* Ooops, CDL mode always prints on-disk dimension sizes even when hyperslabbing
 
 2013-07-17  Charlie Zender  <zender@uci.edu>
