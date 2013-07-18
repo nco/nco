@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.302 2013-07-16 04:26:06 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.303 2013-07-18 05:57:08 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3200,6 +3200,8 @@ print "\n";
 ####################
     $opr_nm='ncwa';
 ####################
+
+#ncwa #1
     
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc %tmp_fl_03%";
     $tst_cmd[1]="ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tmp_fl_03%";
@@ -3210,6 +3212,8 @@ print "\n";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.
+
+#ncwa #2
 
     push(@tst_cmd, "ncks -h -O $fl_fmt $nco_D_flg -v lat_T42,lon_T42,gw_T42 $in_pth_arg in.nc %tmp_fl_03%");
     push(@tst_cmd, "ncrename -h -O $nco_D_flg -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon %tmp_fl_03%");
@@ -3224,6 +3228,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #3
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
@@ -3233,6 +3239,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+#ncwa #4
+
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -v pck,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tmp_fl_00%";
     $dsc_sng="pass through non-averaged (i.e., non-processed) packed data to output";
@@ -3240,6 +3248,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #5
     
     $tst_cmd[0]="ncwa -N $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v mask %tmp_fl_00%";
@@ -3248,6 +3258,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #6
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -v mss_val $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v mss_val %tmp_fl_00%";
@@ -3256,6 +3268,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #7
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -v no_mss_val $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v no_mss_val %tmp_fl_00%";
@@ -3264,6 +3278,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #8
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat -m lat -M 90.0 -T eq -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat %tmp_fl_00%";
@@ -3272,6 +3288,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #9
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat_var -m lat -M 90.0 -T eq -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat_var %tmp_fl_00%";
@@ -3280,6 +3298,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #10
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -m lev -M 100.0 -T eq -a lev -w lev_wgt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lev %tmp_fl_00%";
@@ -3288,6 +3308,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #11
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev_var -m lev -M 100.0 -T gt -a lev -w lev_wgt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lev_var %tmp_fl_00%";
@@ -3296,6 +3318,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #11
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lat -a lat -w gw -d lat,0 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v lat %tmp_fl_00%";
@@ -3304,6 +3328,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #12
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v mss_val_all -a lon -w lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_all %tmp_fl_00%";
@@ -3312,6 +3338,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #13
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v val_one_mss -a lat -w wgt_one $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v val_one_mss %tmp_fl_00%";
@@ -3320,6 +3348,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #14
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -T lt -a lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v msk_prt_mss_prt %tmp_fl_00%";
@@ -3329,6 +3359,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+#ncwa #15
+
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area -v area -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v area %tmp_fl_00%";
     $dsc_sng="average uniform field with uniform weights";
@@ -3336,6 +3368,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #16
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area_asm -v area -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v area %tmp_fl_00%";
@@ -3344,6 +3378,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #17
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w area_asm -v area2 -a lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v area2 %tmp_fl_00%";
@@ -3352,6 +3388,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #18
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3360,6 +3398,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #19
     
 # will fail SS - ncks not the last cmd
     @tst_cmd=(); # really reset array. $#tst_cmd=0; sets last index=0 --> list has one element.
@@ -3371,6 +3411,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #20
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg  -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_dbl -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -3382,6 +3424,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #21
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -3392,6 +3436,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #22
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_int -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -3403,6 +3449,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #23
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -3413,6 +3461,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #24
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_var_sht -a lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -3424,6 +3474,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #25
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var %tmp_fl_00%";
@@ -3432,6 +3484,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #26
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v four_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v four_dmn_rec_var %tmp_fl_00%";
@@ -3440,6 +3494,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #27
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -3450,6 +3506,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #28
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_dbl -a lat,lon $in_pth_arg in.nc %tmp_fl_00%");
@@ -3461,6 +3519,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #29
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tmp_fl_00%");
@@ -3471,6 +3531,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #30
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_int -a lat $in_pth_arg in.nc %tmp_fl_00%");
@@ -3482,6 +3544,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #31
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tmp_fl_00%");
@@ -3492,6 +3556,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #32
     
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v three_dmn_var_sht -a lat $in_pth_arg in.nc %tmp_fl_00%");
@@ -3503,6 +3569,8 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #33
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -v lat_cpy $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v lat_cpy %tmp_fl_00%";;
@@ -3511,6 +3579,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #34
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -w val_half_half -v val_one_one_int $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_one_one_int %tmp_fl_00%";;
@@ -3519,6 +3589,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #35
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v val_max_max_sht $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht %tmp_fl_00%";;
@@ -3527,6 +3599,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #36
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v val_max_max_sht $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v val_max_max_sht %tmp_fl_00%";
@@ -3540,6 +3614,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #37
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tmp_fl_00%";;
@@ -3548,6 +3624,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #38
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -a lat -v lat_cpy -w gw $in_pth_arg in.nc %tmp_fl_00%";;
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_cpy %tmp_fl_00%";;
@@ -3556,6 +3634,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #39
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v time %tmp_fl_00%";
@@ -3564,6 +3644,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #40
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -a time -w one -v time,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";

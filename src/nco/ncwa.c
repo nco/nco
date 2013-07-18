@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.334 2013-07-17 16:46:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.335 2013-07-18 05:57:08 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.334 2013-07-17 16:46:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.334 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.335 2013-07-18 05:57:08 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.335 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -894,7 +894,6 @@ main(int argc,char **argv)
 
       /* Allocate and, if necessary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
-      /*      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){*/
       /* fxm: verify that var_prc->tally is not needed */
       if((var_prc_out[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){
         (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
