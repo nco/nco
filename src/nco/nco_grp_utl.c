@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.863 2013-07-18 20:11:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.864 2013-07-18 23:39:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6403,3 +6403,17 @@ nco_var_get_trv                       /* [fnc] Fill-in variable structure for a 
   return NULL;
 
 } /* nco_var_trv() */
+
+
+void
+nco_dmn_rcd_trv                        /* [fnc] Transfer reduced dimension information into GTT  (ncwa)  */
+(const int nbr_dmn_rcd,                /* I [nbr] Number of reduced dimensions  */
+ const dmn_sct **dmn_rcd_out,          /* I [sct] Array of reduced dimensions */
+ const trv_tbl_sct *trv_tbl)           /* I/O [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Transfer reduced dimension information into GTT  (ncwa) */
+
+  
+
+  return;
+} /* end nco_dmn_rcd_trv() */

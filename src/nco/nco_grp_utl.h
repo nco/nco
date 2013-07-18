@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.332 2013-07-17 08:09:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.333 2013-07-18 23:39:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -579,6 +579,12 @@ nco_var_get_trv                       /* [fnc] Fill-in variable structure for a 
 (const int nc_id,                     /* I [id] netCDF file ID */
  const char * const var_nm,           /* I [sng] Variable name (relative) */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void
+nco_dmn_rcd_trv                        /* [fnc] Transfer reduced dimension information into GTT  (ncwa)  */
+(const int nbr_dmn_rcd,                /* I [nbr] Number of reduced dimensions  */
+ const dmn_sct **dmn_rcd_out,          /* I [sct] Array of reduced dimensions */
+ const trv_tbl_sct *trv_tbl);          /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
