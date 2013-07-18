@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.121 2013-07-18 02:54:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.122 2013-07-18 04:03:45 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -184,7 +184,7 @@ nco_typ_fmt_sng_var_cdl /* [fnc] Provide sprintf() format string for specified t
   static const char fmt_NC_DOUBLE[]="%.15g"; /* %g defaults to 6 digits of precision */
   static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
   static const char fmt_NC_SHORT[]="%hi";
-  static const char fmt_NC_CHAR[]="\"%c\"";
+  static const char fmt_NC_CHAR[]="%c";
   static const char fmt_NC_BYTE[]="%hhi"; /* Takes signed char as arg and prints 0,1,2..,126,127,-127,-126,...-2,-1 */
 
   static const char fmt_NC_UBYTE[]="%hhu"; /*  */
@@ -1111,7 +1111,16 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 	  break;
         case NC_SHORT: (void)sprintf(val_sng,fmt_sng,var.val.sp[lmn]); break;
         case NC_INT: (void)sprintf(val_sng,fmt_sng,var.val.ip[lmn]); break;
-        case NC_CHAR: (void)sprintf(val_sng,fmt_sng,var.val.cp[lmn]); break;
+        case NC_CHAR: 
+	  //(void)sprintf(val_sng,fmt_sng,var.val.cp[lmn]); break;
+	  if(var.nbr_dim == 0){
+	    (void)fprintf(stdout,"\"");
+	    if(var.val.cp[lmn] != '\0') (void)sprintf(val_sng,fmt_sng,var.val.cp[lmn]);
+	  }else{ /* var.nbr_dim > 0 */
+	    if(lmn == 0L) (void)fprintf(stdout,"\"");
+	    (void)sprintf(val_sng,"%c",var.val.cp[lmn]);
+	  } /* var.nbr_dim > 0 */
+	  break;
         case NC_BYTE: (void)sprintf(val_sng,fmt_sng,var.val.bp[lmn]); break;
         case NC_UBYTE: (void)sprintf(val_sng,fmt_sng,var.val.ubp[lmn]); break;
         case NC_USHORT: (void)sprintf(val_sng,fmt_sng,var.val.usp[lmn]); break;
@@ -1122,7 +1131,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
-      (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? cma_sng : "");
+      if(var.type == NC_CHAR) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? "" : "\""); else (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? cma_sng : "");
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
     (void)fprintf(stdout," ;\n");
