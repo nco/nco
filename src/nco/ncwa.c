@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.335 2013-07-18 05:57:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.336 2013-07-18 09:40:51 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.335 2013-07-18 05:57:08 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.335 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.336 2013-07-18 09:40:51 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.336 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1200,6 +1200,16 @@ main(int argc,char **argv)
 
   /* Find dimensions associated with variables to be extracted */
   (void)nco_dmn_lst_ass_var_trv(in_id,trv_tbl,&nbr_dmn_xtr,&dim);
+
+  /* Not specifying any dimensions is interpreted as specifying all dimensions. GTT: using dmn_sct* (dim) */
+  if(dmn_avg_nbr == 0){
+    dmn_avg_nbr=nbr_dmn_xtr;
+    dmn_avg_lst_in=(char **)nco_malloc(dmn_avg_nbr*sizeof(char *));
+    for(idx=0;idx<dmn_avg_nbr;idx++){
+      dmn_avg_lst_in[idx]=(char *)strdup(dim[idx]->nm);
+    } /* end loop over idx */
+    if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",prg_nm);
+  } /* end if dmn_avg_nbr == 0 */
 
 
   /* If there are input dimensions (-a) to average */
