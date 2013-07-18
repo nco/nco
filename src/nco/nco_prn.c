@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.123 2013-07-18 17:07:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.124 2013-07-18 17:50:37 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1118,6 +1118,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 	    (void)fprintf(stdout,"\"");
 	    if(var.val.cp[lmn] != '\0') (void)sprintf(val_sng,fmt_sng,var.val.cp[lmn]);
 	  }else{ /* var.nbr_dim > 0 */
+	    //qrk
 	    //fxm: finish multi-dimensional strings
 	    //static long dmn_sz;
 	    //dmn_sz=lmt_msa[var.nbr_dim-1]->dmn_cnt;
@@ -1131,7 +1132,11 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         case NC_UINT: (void)sprintf(val_sng,fmt_sng,var.val.uip[lmn]); break;
         case NC_INT64: (void)sprintf(val_sng,fmt_sng,var.val.i64p[lmn]); break;
         case NC_UINT64: (void)sprintf(val_sng,fmt_sng,var.val.ui64p[lmn]); break;
-        case NC_STRING: (void)sprintf(val_sng,fmt_sng,var.val.sngp[lmn]); break;
+        case NC_STRING: 
+	  /* Print strings directly to stdout so they are not limited by size of val_sng */
+	  (void)fprintf(stdout,fmt_sng,var.val.sngp[lmn]); 
+	  val_sng[0]='\0';
+	  break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
@@ -1617,10 +1622,12 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(dmn_nbr > 0) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
   prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-    /*    size_t dmn_cnt;
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst[dmn_idx].id];
-    dmn_cnt=dmn_trv.sz;
-    //    dmn_cnt=dmn_trv.lmt_msa.dmn_cnt; */
+    /* 20130718: These "abbreviations" make things clearer but cause memory problem. Why?
+       ncks --cdl -v three_dmn_rec_var -d lon,2 ~/nco/data/in_grp.nc
+       size_t dmn_cnt;
+       dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst[dmn_idx].id];
+       dmn_cnt=dmn_trv.sz;
+       dmn_cnt=dmn_trv.lmt_msa.dmn_cnt; */
     if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
   } /* end loop over dimension */
 
