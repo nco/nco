@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.633 2013-07-18 00:10:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.634 2013-07-18 02:51:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -33,7 +33,7 @@
 /* URL: http://nco.cvs.sf.net/nco/nco/src/nco/ncks.c
 
    Usage:
-v   ncks ~/nco/data/in.nc 
+   ncks ~/nco/data/in.nc 
    ncks -v one ~/nco/data/in.nc
    ncks ~/nco/data/in.nc ~/foo.nc
    ncks -O -4 ~/nco/data/in.nc ~/foo.nc
@@ -151,8 +151,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.633 2013-07-18 00:10:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.633 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.634 2013-07-18 02:51:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.634 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -791,6 +791,7 @@ main(int argc,char **argv)
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;
     prn_flg.cdl=PRN_CDL;
+    if(prn_flg.cdl && dbg_lvl > nco_dbg_std) prn_flg.nfo_cdl=True; else prn_flg.nfo_cdl=False;
     prn_flg.new_fmt=(PRN_CDL || PRN_NEW_FMT);
     if(dbg_lvl == nco_dbg_crr+1) prn_flg.xml=True; else prn_flg.xml=False;
     /* CDL must print filename stub */
@@ -831,7 +832,7 @@ main(int argc,char **argv)
     } /* endif */
 
     /* File summary */
-    if(PRN_GLB_METADATA) (void)fprintf(stdout,"Summary of %s: filetype = %s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
+    if(PRN_GLB_METADATA && !prn_flg.cdl) (void)fprintf(stdout,"Summary of %s: filetype = %s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
 
     if(!prn_flg.new_fmt){
       

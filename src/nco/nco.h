@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.363 2013-07-18 00:15:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.364 2013-07-18 02:51:53 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -589,6 +589,7 @@ extern "C" {
   typedef struct{ /* prn_fmt_sct */
     char *fl_stb; /* [sng] Input filename stub */
     nco_bool xml; /* [flg] Print valid XML */
+    nco_bool nfo_cdl; /* [flg] Print extra information in CDL mode */
     nco_bool cdl; /* [flg] Print valid CDL */
     nco_bool new_fmt; /* [flg] Print in new format */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.119 2013-07-18 00:13:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.120 2013-07-18 02:51:53 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -184,7 +184,7 @@ nco_typ_fmt_sng_var_cdl /* [fnc] Provide sprintf() format string for specified t
   static const char fmt_NC_DOUBLE[]="%.15g"; /* %g defaults to 6 digits of precision */
   static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
   static const char fmt_NC_SHORT[]="%hi";
-  static const char fmt_NC_CHAR[]="%c";
+  static const char fmt_NC_CHAR[]="\"%c\"";
   static const char fmt_NC_BYTE[]="%hhi"; /* Takes signed char as arg and prints 0,1,2..,126,127,-127,-126,...-2,-1 */
 
   static const char fmt_NC_UBYTE[]="%hhu"; /*  */
@@ -192,7 +192,7 @@ nco_typ_fmt_sng_var_cdl /* [fnc] Provide sprintf() format string for specified t
   static const char fmt_NC_UINT[]="%u"; /*  */
   static const char fmt_NC_INT64[]="%lli"; /*  */
   static const char fmt_NC_UINT64[]="%llu"; /*  */
-  static const char fmt_NC_STRING[]="%s"; /*  */
+  static const char fmt_NC_STRING[]="\"%s\""; /*  */
 
   switch (typ){
   case NC_FLOAT:
@@ -1597,6 +1597,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
   if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",grp_nm_fll); else (void)fprintf(stdout,"\n");
+  if(grp_dpt == 0 && prn_flg->nfo_cdl) (void)fprintf(stdout,"%*s// ncgen -k netCDF-4 -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->fl_stb,prn_flg->fl_stb);
 
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;

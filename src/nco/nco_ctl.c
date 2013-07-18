@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.397 2013-07-11 23:26:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.398 2013-07-18 02:51:53 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -427,9 +427,9 @@ nco_ddra /* [fnc] Count operations */
 
   if(var_idx == 0){
     /* Table headings */
-    (void)fprintf(stdout,"%3s %8s %8s %8s %8s %5s %5s %8s %8s %8s %4s %4s %4s %4s %4s %7s %7s\n",
+    (void)fprintf(stderr,"%3s %8s %8s %8s %8s %5s %5s %8s %8s %8s %4s %4s %4s %4s %4s %7s %7s\n",
 		  "idx"," var_nm ","   lmn  ","   flp  ","   ntg  ","tm_io","  tm "," lmn_ttl"," flp_ttl"," ntg_ttl"," flp"," ntg","  rd"," wrt"," io"," tm_ttl"," tm_obs");
-    (void)fprintf(stdout,"%3s %8s %8s %8s %8s %5s %5s %8s %8s %8s %4s %4s %4s %4s %4s %7s %7s\n",
+    (void)fprintf(stderr,"%3s %8s %8s %8s %8s %5s %5s %8s %8s %8s %4s %4s %4s %4s %4s %7s %7s\n",
 		  "   ","        ","    #   ","    #   ","    #   ","  s  ","  s  ","   #    ","   #    ","    #   ","  % ","  % ","  % ","  % ","  % ","   s   ","   s   ");
   } /* var_idx != 0 */
 
@@ -443,15 +443,15 @@ nco_ddra /* [fnc] Count operations */
 
   switch(ddra_info->tmr_flg){
   case nco_tmr_mtd: /* [enm] Metadata timer (second timer call) */
-    if(ddra_info->flg_ddra || dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: TIMER Metadata setup and file layout before main loop took %7.2f s\n",prg_nm_get(),tm_obs_ttl);
+    if(ddra_info->flg_ddra || dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: TIMER Metadata setup and file layout before main loop took %7.2f s\n",prg_nm_get(),tm_obs_ttl);
     break;
   case nco_tmr_rgl: /* [enm] Regular timer call (main loop timer call) */
-    (void)fprintf(stdout,
+    (void)fprintf(stderr,
 		  "%3d %8s %8.2e %8.2e %8.2e %5.2f %5.2f %8.2e %8.2e %8.2e %4.1f %4.1f %4.1f %4.1f %4.1f %7.2f %7.2f\n",
 		  var_idx,var_nm,(float)lmn_nbr,(float)flp_nbr,(float)ntg_nbr,tm_io,tm_crr,(float)lmn_nbr_ttl,(float)flp_nbr_ttl,(float)ntg_nbr_ttl,100.0*tm_frc_flp_ttl,100.0*tm_frc_ntg_ttl,100.0*tm_frc_rd_ttl,100.0*tm_frc_wrt_ttl,100.0*tm_frc_io_ttl,tm_ttl,tm_obs_ttl);
     break;
   case nco_tmr_end: /* [enm] Close timer (last timer call) */
-    if(ddra_info->flg_ddra || dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: TIMER Wallclock-elapsed time for command is %7.2f s\n",prg_nm_get(),tm_obs_ttl);
+    if(ddra_info->flg_ddra || dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: TIMER Wallclock-elapsed time for command is %7.2f s\n",prg_nm_get(),tm_obs_ttl);
     break;
   default: nco_dfl_case_tmr_typ_err(); break;
   } /* end switch */
@@ -794,7 +794,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Unkindly wound\n";
+  return "Game of Thrones Season One Finale\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -909,7 +909,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [--fix_rec_crd] [-h] [--hdr_pad nbr] [-i var,val] [-L lvl] [-l path] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [-v ...] [-X box] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
     break;
   case ncks:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [--fix_rec_dmn dim] [-G grp:lvl] [-g ...] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [-m] [--md5_digest] [--mk_rec_dmn dim] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--ram_all] [-s format] [-u] [--unn] [-v ...] [-X box] [-x] in.nc [[out.nc]]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a] [-b fl_bnr] [--bfr sz] [-C] [-c] [--cdl] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [--fix_rec_dmn dim] [-G grp:lvl] [-g ...] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [-M] [-m] [--md5_digest] [--mk_rec_dmn dim] [--no_blank] [--no_tmp_fl] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [--ram_all] [-s format] [-u] [--unn] [-v ...] [-X box] [-x] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-A] [-a ...] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D dbg_lvl] [-d ...] [-F] [-G grp:lvl] [-g ...] [-h] [[--hdr_pad nbr] -L lvl] [-l path] [-M pck_map] [--no_tmp_fl] [-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-U] [-v ...] [-X box] [-x] in.nc [out.nc]\n");
@@ -965,6 +965,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--bfr")) (void)fprintf(stdout,"    --bfr_sz, --buffer_size sz\tBuffer size to open files with\n");
   if(strstr(opt_sng,"[-C]")) (void)fprintf(stdout,"-C, --nocoords\t\tAssociated coordinate variables should not be processed\n");
   if(strstr(opt_sng,"[-c]")) (void)fprintf(stdout,"-c, --crd, --coords\tCoordinate variables will all be processed\n");
+  if(strstr(opt_sng,"--cdl")) (void)fprintf(stdout,"    --cdl\t\tPrint CDL (netCDF lingua franca used by ncdump/ncgen)\n");
   if(strstr(opt_sng,"--cnk_dmn")) (void)fprintf(stdout,"    --cnk_dmn, --chunk_dimension nm,sz\tChunksize of dimension nm is sz\n");
   if(strstr(opt_sng,"--cnk_map")) (void)fprintf(stdout,"    --cnk_map, --chunk_map map\t\tChunking map [dmn,rd1,prd,xpl]\n");
   if(strstr(opt_sng,"--cnk_plc")) (void)fprintf(stdout,"    --cnk_plc, --chunk_policy plc\tChunking policy [all,g2d,g3d,xpl,uck]\n");
