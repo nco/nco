@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.71 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.72 2013-07-18 07:55:52 pvicente Exp $ */
 
 /* Purpose: Average variables */
 
@@ -19,29 +19,29 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Reduce given variable over specified dimensions 
-     "Reduce" means to rank-reduce variable by performing arithmetic operation
-     Output variable is duplicate of input variable, except for averaging dimensions
-     Default operation is averaging, but nco_op_typ can also be min, max, etc.
-     nco_var_avg() overwrites contents, if any, of tally array with number of valid input elements contributing to each valid output element
+  "Reduce" means to rank-reduce variable by performing arithmetic operation
+  Output variable is duplicate of input variable, except for averaging dimensions
+  Default operation is averaging, but nco_op_typ can also be min, max, etc.
+  nco_var_avg() overwrites contents, if any, of tally array with number of valid input elements contributing to each valid output element
 
-     Input variable structure is destroyed and routine returns resized, partially reduced variable
-     For some operations, such as min, max, ttl, variable returned by nco_var_avg() is complete and need not be further processed
-     For averaging operation, output variable must be normalized by its tally array
-     In other words, nco_var_nrm() should be called subsequently if normalization is desired
-     Normalization is not done internally to nco_var_avg() to allow user more flexibility */ 
+  Input variable structure is destroyed and routine returns resized, partially reduced variable
+  For some operations, such as min, max, ttl, variable returned by nco_var_avg() is complete and need not be further processed
+  For averaging operation, output variable must be normalized by its tally array
+  In other words, nco_var_nrm() should be called subsequently if normalization is desired
+  Normalization is not done internally to nco_var_avg() to allow user more flexibility */ 
 
   /* Routine keeps track of three variables whose abbreviations are:
-     avg: Array of averaging blocks, each a contiguous arrangement of all 
-          elements of var which contribute to a single element of fix.
-     fix: Output (averaged) variable
-     rdd: Output (averaged) variable which retains degenerate dimensions
-     var: Input variable (already hyperslabbed)
-     
-     It is easier to implement averaging as if all averaged dimensions are eliminated
-     This presumption allows us to ignore degenerate dimension indices
-     Including degenerate dimensions in fix would also complicate MRV-detection code 
-     The core averaging algorithm treats input data as single 1-D array
-     To retain degenerate dimensions, fxm */
+  avg: Array of averaging blocks, each a contiguous arrangement of all 
+  elements of var which contribute to a single element of fix.
+  fix: Output (averaged) variable
+  rdd: Output (averaged) variable which retains degenerate dimensions
+  var: Input variable (already hyperslabbed)
+
+  It is easier to implement averaging as if all averaged dimensions are eliminated
+  This presumption allows us to ignore degenerate dimension indices
+  Including degenerate dimensions in fix would also complicate MRV-detection code 
+  The core averaging algorithm treats input data as single 1-D array
+  To retain degenerate dimensions, fxm */
 
   nco_bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
 
@@ -69,11 +69,11 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   fix=nco_var_dpl(var);
 
   /* Create lists of averaging and fixed dimensions (in order of their appearance 
-     in the variable). We do not know a priori how many dimensions remain in the 
-     output (averaged) variable, but dmn_var_nbr is an upper bound. Similarly, we do
-     not know a priori how many of the dimensions in the input list of averaging 
-     dimensions (dim) actually occur in the current variable, so we do not know
-     dmn_avg_nbr, but nbr_dim is an upper bound on it. */
+  in the variable). We do not know a priori how many dimensions remain in the 
+  output (averaged) variable, but dmn_var_nbr is an upper bound. Similarly, we do
+  not know a priori how many of the dimensions in the input list of averaging 
+  dimensions (dim) actually occur in the current variable, so we do not know
+  dmn_avg_nbr, but nbr_dim is an upper bound on it. */
   dmn_var_nbr=var->nbr_dim;
   dmn_fix_nbr=0;
   dmn_avg_nbr=0;
@@ -82,18 +82,18 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   for(idx=0;idx<dmn_var_nbr;idx++){
     for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
       /* Comparing dimension IDs is faster than comparing dimension names 
-	 but requires assumption that all dimensions are from same file */
+      but requires assumption that all dimensions are from same file */
       if(var->dmn_id[idx] == dim[idx_dmn]->id){
-	/* Although structures in dim are never altered, linking them into
-	   dmn_avg list makes them vulnerable to manipulation and forces 
-	   dim to lose const protection in prototype */
-	dmn_avg[dmn_avg_nbr]=dim[idx_dmn];
-	/* idx_avg_var[i]=j means that ith averaging dimension is jth dimension of var */
-	idx_avg_var[dmn_avg_nbr]=idx;
-	/* idx_var_avg[j]=i means that jth dimension of var is ith averaging dimension */
-	/*	idx_var_avg[idx]=dmn_avg_nbr;*/ /* Variable is unused but instructive anyway */
-	dmn_avg_nbr++;
-	break;
+        /* Although structures in dim are never altered, linking them into
+        dmn_avg list makes them vulnerable to manipulation and forces 
+        dim to lose const protection in prototype */
+        dmn_avg[dmn_avg_nbr]=dim[idx_dmn];
+        /* idx_avg_var[i]=j means that ith averaging dimension is jth dimension of var */
+        idx_avg_var[dmn_avg_nbr]=idx;
+        /* idx_var_avg[j]=i means that jth dimension of var is ith averaging dimension */
+        /*	idx_var_avg[idx]=dmn_avg_nbr;*/ /* Variable is unused but instructive anyway */
+        dmn_avg_nbr++;
+        break;
       } /* end if */
     } /* end loop over idx_dmn */
     if(idx_dmn == nbr_dim){
@@ -109,21 +109,21 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
   if(dmn_avg_nbr == 0){
     /* 20050517: ncwa only calls nco_var_avg() with variables containing averaging dimensions
-       Variables without averaging dimensions are in the var_fix list 
-       We preserve nco_var_avg() capability to work on var_fix variables for future flexibility */
+    Variables without averaging dimensions are in the var_fix list 
+    We preserve nco_var_avg() capability to work on var_fix variables for future flexibility */
     (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
     /* Variable does not contain any averaging dimensions so we are done
-       For consistency, return copy of variable held in fix and free() original
-       Hence, nco_var_avg() always destroys original input and returns valid output */
+    For consistency, return copy of variable held in fix and free() original
+    Hence, nco_var_avg() always destroys original input and returns valid output */
     goto cln_and_xit;
   } /* end if */
 
   /* Use dmn_rdd_nbr rather than dmn_fix_nbr for dmn_fix memory management
-     When flg_rdd is true, than malloc() and reallloc() will create/leave enough
-     room in dmn_fix arrays to ultimately hold all dmn_rdd data
-     However, dmn_fix_nbr remains same in flg_rdd and !flg_rdd cases
-     Hence loops and averaging algorithm itself need not be re-coded
-     Reconcile contents of dmn_fix structures with dengenerate dimensions at end */
+  When flg_rdd is true, than malloc() and reallloc() will create/leave enough
+  room in dmn_fix arrays to ultimately hold all dmn_rdd data
+  However, dmn_fix_nbr remains same in flg_rdd and !flg_rdd cases
+  Hence loops and averaging algorithm itself need not be re-coded
+  Reconcile contents of dmn_fix structures with dengenerate dimensions at end */
   dmn_rdd_nbr=flg_rdd ? dmn_var_nbr : dmn_fix_nbr;
 
   /* Free extra list space */
@@ -151,7 +151,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     fix->cnt[idx]=var->cnt[idx_fix_var[idx]];
     fix->end[idx]=var->end[idx_fix_var[idx]];
   } /* end loop over idx */
-  
+
   fix->is_crd_var=False;
   if(dmn_fix_nbr == 1)
     if(dmn_fix[0]->is_crd_dmn) 
@@ -163,14 +163,14 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   fix->srt=(long *)nco_realloc(fix->srt,dmn_rdd_nbr*sizeof(long));
   fix->cnt=(long *)nco_realloc(fix->cnt,dmn_rdd_nbr*sizeof(long));
   fix->end=(long *)nco_realloc(fix->end,dmn_rdd_nbr*sizeof(long));
-  
+
   /* Resize (or just plain allocate) tally array */
   fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
 
   if(avg_sz == 1L){
     /* If averaging block size is 1L, input and output value arrays are identical 
-       var->val was copied to fix->val by nco_var_dpl() at beginning of routine
-       Only one task remains: to set fix->tally appropriately */
+    var->val was copied to fix->val by nco_var_dpl() at beginning of routine
+    Only one task remains: to set fix->tally appropriately */
     long *fix_tally;
 
     fix_tally=fix->tally;
@@ -190,59 +190,59 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       val_sz_byt=nco_typ_lng(fix->type);
       val=(char *)fix->val.vp;
       for(idx=0;idx<fix_sz;idx++,val+=val_sz_byt)
-	if(!memcmp(val,mss_val,(size_t)val_sz_byt)) fix_tally[idx]=0L;
+        if(!memcmp(val,mss_val,(size_t)val_sz_byt)) fix_tally[idx]=0L;
     } /* fix->has_mss_val */
   } /* end if avg_sz == 1L */
 
   /* Distribute all elements of input hyperslab into averaging block in avg_val
-     Each block contains avg_sz elements in contiguous buffer 
-     Reduction step then "reduces" each block into single output element */
+  Each block contains avg_sz elements in contiguous buffer 
+  Reduction step then "reduces" each block into single output element */
   if(avg_sz != 1L){
     ptr_unn avg_val;
-    
+
     /* Initialize data needed by reduction step independent of collection algorithm */
     var_sz=var->sz;
 
     /* Value buffer of size var_sz is currently duplicate of input values
-       MRV algorithm uses these values without re-arranging
-       General collection algorithm overwrites avg_val with averaging blocks */
+    MRV algorithm uses these values without re-arranging
+    General collection algorithm overwrites avg_val with averaging blocks */
     avg_val=fix->val;
     /* Create new value buffer for output (averaged) size */
     fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
-    
+
     /* Initialize value and tally arrays */
     (void)nco_zero_long(fix_sz,fix->tally);
     (void)nco_var_zero(fix->type,fix_sz,fix->val);
 
     /* Complex expensive collection step for creating averaging blocks works 
-       in all cases though is unnecessary in one important case.
-       No re-arrangement is necessary when averaging dimensions are most rapidly varying 
-       (MRV) dimensions because original variable is stored in averaging block order.
-       Averaging dimensions are MRV dimensions iff dmn_fix_nbr fixed dimensions are 
-       one-to-one with first dmn_fix_nbr input dimensions. 
-       Alternatively, could compare dmn_avg_nbr averaging dimensions to last 
-       dmn_avg_nbr dimensions of input variable.
-       However, averaging dimensions may appear in any order so it is more
-       straightforward to compare fixed dimensions to LRV input dimensions. */
+    in all cases though is unnecessary in one important case.
+    No re-arrangement is necessary when averaging dimensions are most rapidly varying 
+    (MRV) dimensions because original variable is stored in averaging block order.
+    Averaging dimensions are MRV dimensions iff dmn_fix_nbr fixed dimensions are 
+    one-to-one with first dmn_fix_nbr input dimensions. 
+    Alternatively, could compare dmn_avg_nbr averaging dimensions to last 
+    dmn_avg_nbr dimensions of input variable.
+    However, averaging dimensions may appear in any order so it is more
+    straightforward to compare fixed dimensions to LRV input dimensions. */
     for(idx=0;idx<dmn_fix_nbr;idx++) 
       if(idx_fix_var[idx] != idx) break;
     if(idx == dmn_fix_nbr){
       if(dbg_lvl_get() >= nco_dbg_scl && dbg_lvl_get() < 10) (void)fprintf(stderr,"%s: INFO Reduction dimensions are %d most-rapidly-varying (MRV) dimensions of %s. Will skip collection step and proceed straight to reduction step.\n",prg_nm_get(),dmn_avg_nbr,fix->nm);
       AVG_DMN_ARE_MRV=True; /* [flg] Avergaging dimensions are MRV dimensions */
     } /* idx != dmn_fix_nbr */
-    
+
     /* MRV algorithm simply skips this collection step 
-       Some DDRA benchmarks need to know cost of collection
-       Always invoke collection step by uncommenting following line: */
+    Some DDRA benchmarks need to know cost of collection
+    Always invoke collection step by uncommenting following line: */
     /*    AVG_DMN_ARE_MRV=False;*/
     if(!AVG_DMN_ARE_MRV){
       /* Dreaded, expensive collection algorithm sorts input into averaging blocks */
       char *avg_cp;
       char *var_cp;
-      
+
       int typ_sz;
       int dmn_var_nbr_m1;
-      
+
       long *var_cnt;
       long avg_lmn;
       long fix_lmn;
@@ -251,76 +251,76 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       long dmn_var_map[NC_MAX_DIMS];
       long dmn_avg_map[NC_MAX_DIMS];
       long dmn_fix_map[NC_MAX_DIMS];
-      
+
       dmn_var_nbr_m1=dmn_var_nbr-1;
       typ_sz=nco_typ_lng(fix->type);
       var_cnt=var->cnt;
       var_cp=(char *)var->val.vp;
       avg_cp=(char *)avg_val.vp;
-      
+
       /* Compute map for each dimension of input variable */
       for(idx=0;idx<dmn_var_nbr;idx++) dmn_var_map[idx]=1L;
       for(idx=0;idx<dmn_var_nbr-1;idx++)
-	for(idx_dmn=idx+1;idx_dmn<dmn_var_nbr;idx_dmn++)
-	  dmn_var_map[idx]*=var->cnt[idx_dmn];
-      
+        for(idx_dmn=idx+1;idx_dmn<dmn_var_nbr;idx_dmn++)
+          dmn_var_map[idx]*=var->cnt[idx_dmn];
+
       /* Compute map for each dimension of output variable */
       for(idx=0;idx<dmn_fix_nbr;idx++) dmn_fix_map[idx]=1L;
       for(idx=0;idx<dmn_fix_nbr-1;idx++)
-	for(idx_dmn=idx+1;idx_dmn<dmn_fix_nbr;idx_dmn++)
-	  dmn_fix_map[idx]*=fix->cnt[idx_dmn];
-      
+        for(idx_dmn=idx+1;idx_dmn<dmn_fix_nbr;idx_dmn++)
+          dmn_fix_map[idx]*=fix->cnt[idx_dmn];
+
       /* Compute map for each dimension of averaging buffer */
       for(idx=0;idx<dmn_avg_nbr;idx++) dmn_avg_map[idx]=1L;
       for(idx=0;idx<dmn_avg_nbr-1;idx++)
-	for(idx_dmn=idx+1;idx_dmn<dmn_avg_nbr;idx_dmn++)
-	  dmn_avg_map[idx]*=dmn_avg[idx_dmn]->cnt;
-      
+        for(idx_dmn=idx+1;idx_dmn<dmn_avg_nbr;idx_dmn++)
+          dmn_avg_map[idx]*=dmn_avg[idx_dmn]->cnt;
+
       /* var_lmn is offset into 1-D array */
       for(var_lmn=0;var_lmn<var_sz;var_lmn++){
-	/* dmn_ss are corresponding indices (subscripts) into N-D array */
-	/* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
-	   Repetitions: \lmnnbr
-	   Total Counts: \rthnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
-	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
-	dmn_ss[dmn_var_nbr_m1]=var_lmn%var_cnt[dmn_var_nbr_m1];
-	for(idx=0;idx<dmn_var_nbr_m1;idx++){
-	  /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
-	     Repetitions: \lmnnbr(\dmnnbr-1)
-	     Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
-	     NB: LHS assumed compact and cached, counted RHS offsets and fetches only
-	     NB: Neglected loop arithmetic/compare */
-	  dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
-	  dmn_ss[idx]%=var_cnt[idx];
-	} /* end loop over dimensions */
-	
-	/* Map variable's N-D array indices into a 1-D index into averaged data */
-	fix_lmn=0L;
-	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
-	   Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
-	   Counts: \rthnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
-	for(idx=0;idx<dmn_fix_nbr;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
-	
-	/* Map N-D array indices into 1-D offset from group offset */
-	avg_lmn=0L;
-	/* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
-	   Repetitions: \lmnnbr\avgnbr
-	   Counts: \rthnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
-	for(idx=0;idx<dmn_avg_nbr;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
-	
-	/* Copy current element in input array into its slot in sorted avg_val */
-	/* Operations: 3 add, 3 multiply, 0 pointer offset, 1 system memory copy
-	   Repetitions: \lmnnbr
-	   Counts: \rthnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
-	(void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);
+        /* dmn_ss are corresponding indices (subscripts) into N-D array */
+        /* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
+        Repetitions: \lmnnbr
+        Total Counts: \rthnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
+        NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
+        dmn_ss[dmn_var_nbr_m1]=var_lmn%var_cnt[dmn_var_nbr_m1];
+        for(idx=0;idx<dmn_var_nbr_m1;idx++){
+          /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
+          Repetitions: \lmnnbr(\dmnnbr-1)
+          Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
+          NB: LHS assumed compact and cached, counted RHS offsets and fetches only
+          NB: Neglected loop arithmetic/compare */
+          dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
+          dmn_ss[idx]%=var_cnt[idx];
+        } /* end loop over dimensions */
+
+        /* Map variable's N-D array indices into a 1-D index into averaged data */
+        fix_lmn=0L;
+        /* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
+        Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
+        Counts: \rthnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
+        for(idx=0;idx<dmn_fix_nbr;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
+
+        /* Map N-D array indices into 1-D offset from group offset */
+        avg_lmn=0L;
+        /* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
+        Repetitions: \lmnnbr\avgnbr
+        Counts: \rthnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
+        for(idx=0;idx<dmn_avg_nbr;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
+
+        /* Copy current element in input array into its slot in sorted avg_val */
+        /* Operations: 3 add, 3 multiply, 0 pointer offset, 1 system memory copy
+        Repetitions: \lmnnbr
+        Counts: \rthnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
+        (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);
       } /* end loop over var_lmn */
     } /* AVG_DMN_ARE_MRV */
-    
+
     /* Input data are now sorted and stored (in avg_val) in blocks (of length avg_sz)
-       in same order as blocks' average values will appear in output buffer. 
-       Averaging routines can take advantage of this by casting avg_val to 
-       two dimensional variable and averaging over inner dimension. 
-       nco_var_avg_rdc_*() sets tally array */
+    in same order as blocks' average values will appear in output buffer. 
+    Averaging routines can take advantage of this by casting avg_val to 
+    two dimensional variable and averaging over inner dimension. 
+    nco_var_avg_rdc_*() sets tally array */
     switch(nco_op_typ){
     case nco_op_max:
       (void)nco_var_avg_rdc_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
@@ -338,15 +338,15 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       (void)nco_var_avg_rdc_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
       break;
     } /* end case */
-    
+
     /* Free dynamic memory that held rearranged input variable values */
     avg_val.vp=nco_free(avg_val.vp);
   } /* end if avg_sz != 1 */
-  
+
   /* Retain degenerate dimensions? */
   if(flg_rdd){
     /* Simplest way to retain degenerate dimensions is average over them,
-       then insert degenerate dimensions back into list at end */
+    then insert degenerate dimensions back into list at end */
 
     /* Get rid of averaged dimensions */
     fix->nbr_dim=dmn_rdd_nbr;
@@ -370,15 +370,15 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   } /* !flg_rdd */
 
   /* Jump here when variable is not to be reduced. This occurs when
-     1. Variable contains no averaging dimensions
-     2. Averaging block size is 1 */
- cln_and_xit:
-  
+  1. Variable contains no averaging dimensions
+  2. Averaging block size is 1 */
+cln_and_xit:
+
   /* Free input variable */
   var=nco_var_free(var);
   dmn_avg=(dmn_sct **)nco_free(dmn_avg);
   dmn_fix=(dmn_sct **)nco_free(dmn_fix);
-  
+
   /* Set diagnostic DDRA information DDRA */
   ddra_info->lmn_nbr_avg=avg_sz; /* [nbr] Averaging block size */
   ddra_info->rnk_avg=dmn_avg_nbr; /* [nbr] Rank of averaging space */
@@ -401,25 +401,25 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Sum values in each contiguous block of first operand and place
-     result in corresponding element in second operand. 
-     Currently arithmetic operation performed is summation of elements in op1
-     Input operands are assumed to have conforming types, but not dimensions or sizes
-     nco_var_avg_rdc_ttl() knows nothing about dimensions
-     Routine is one dimensional array operator acting serially on each element of input buffer op1
-     Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
-     Routine only does summation rather than averaging in order to remain flexible
-     Operations which require normalization, e.g., averaging, must call nco_var_nrm() 
-     or nco_var_dvd() to divide sum set in this routine by tally set in this routine. */
-  
+  result in corresponding element in second operand. 
+  Currently arithmetic operation performed is summation of elements in op1
+  Input operands are assumed to have conforming types, but not dimensions or sizes
+  nco_var_avg_rdc_ttl() knows nothing about dimensions
+  Routine is one dimensional array operator acting serially on each element of input buffer op1
+  Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
+  Routine only does summation rather than averaging in order to remain flexible
+  Operations which require normalization, e.g., averaging, must call nco_var_nrm() 
+  or nco_var_dvd() to divide sum set in this routine by tally set in this routine. */
+
   /* Each operation has GNUC and non-GNUC blocks:
-     GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
-     This results in more elegent loop structure and, theoretically, in faster performance
-     20040225: In reality, the GNUC non-ANSI blocks fail on some large files
-     This may be because they allocate significant local storage on the stack
-     
-     non-GNUC: Fully ANSI-compliant structure
-     Fortran: Support deprecated */
-  
+  GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
+  This results in more elegent loop structure and, theoretically, in faster performance
+  20040225: In reality, the GNUC non-ANSI blocks fail on some large files
+  This may be because they allocate significant local storage on the stack
+
+  non-GNUC: Fully ANSI-compliant structure
+  Fortran: Support deprecated */
+
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
   long idx_op1;
@@ -470,43 +470,43 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	/* Operations: 1 multiply 
-	   Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
-	   Total Counts: \rthnbr=\dmnszavg^(\dmnnbr-\avgnbr) */
-	const long blk_off=idx_op2*sz_blk;
-	/* Operations: 1 fp add, 3 pointer offsets, 3 user memory fetch
-	   Repetitions: \lmnnbr
-	   Total Counts: \flpnbr=\lmnnbr, \rthnbr=3\lmnnbr, \mmrusrnbr=3\lmnnbr,
-	   NB: Counted LHS+RHS+tally offsets and fetches */
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+        /* Operations: 1 multiply 
+        Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
+        Total Counts: \rthnbr=\dmnszavg^(\dmnnbr-\avgnbr) */
+        const long blk_off=idx_op2*sz_blk;
+        /* Operations: 1 fp add, 3 pointer offsets, 3 user memory fetch
+        Repetitions: \lmnnbr
+        Total Counts: \flpnbr=\lmnnbr, \rthnbr=3\lmnnbr, \mmrusrnbr=3\lmnnbr,
+        NB: Counted LHS+RHS+tally offsets and fetches */
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       if(isnormal(mss_val_flt)){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  const long blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    idx_op1=blk_off+idx_blk;
-	    if(op1.fp[idx_op1] != mss_val_flt){
-	      op2.fp[idx_op2]+=op1.fp[idx_op1];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          const long blk_off=idx_op2*sz_blk;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            idx_op1=blk_off+idx_blk;
+            if(op1.fp[idx_op1] != mss_val_flt){
+              op2.fp[idx_op2]+=op1.fp[idx_op1];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+        } /* end loop over idx_op2 */
       }else{ /* Missing value exists and is NaN-like */
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  const long blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    idx_op1=blk_off+idx_blk;
-	    /* Missing value is NaN-like so comparisons to it are always false---must use macros */
-	    if(isnormal(op1.fp[idx_op1])){
-	      op2.fp[idx_op2]+=op1.fp[idx_op1];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          const long blk_off=idx_op2*sz_blk;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            idx_op1=blk_off+idx_blk;
+            /* Missing value is NaN-like so comparisons to it are always false---must use macros */
+            if(isnormal(op1.fp[idx_op1])){
+              op2.fp[idx_op2]+=op1.fp[idx_op1];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+        } /* end loop over idx_op2 */
       } /* !Missing value exists and is NaN-like */
     } /* end else */
 #else /* __GNUC__ */
@@ -515,32 +515,32 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       float op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
       }else{
-	if(isnormal(mss_val_flt)){
-	  for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	    for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	      if(op1_2D[idx_op2][idx_blk] != mss_val_flt){
-		op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-		tally[idx_op2]++;
-	      } /* end if */
-	    } /* end loop over idx_blk */
-	    if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
-	  } /* end loop over idx_op2 */
-	}else{ /* Missing value exists and is NaN-like */
-	  for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	    for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	      if(isnormal(op1_2D[idx_op2][idx_blk])){
-		op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-		tally[idx_op2]++;
-	      } /* end if */
-	    } /* end loop over idx_blk */
-	    if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
-	  } /* end loop over idx_op2 */
-	} /* !Missing value exists and is NaN-like */
+        if(isnormal(mss_val_flt)){
+          for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+            for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+              if(op1_2D[idx_op2][idx_blk] != mss_val_flt){
+                op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+                tally[idx_op2]++;
+              } /* end if */
+            } /* end loop over idx_blk */
+            if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+          } /* end loop over idx_op2 */
+        }else{ /* Missing value exists and is NaN-like */
+          for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+            for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+              if(isnormal(op1_2D[idx_op2][idx_blk])){
+                op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+                tally[idx_op2]++;
+              } /* end if */
+            } /* end loop over idx_blk */
+            if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+          } /* end loop over idx_op2 */
+        } /* !Missing value exists and is NaN-like */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -551,21 +551,21 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1.dp[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1.dp[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.dp[idx_op1] != mss_val_dbl){
-	    op2.dp[idx_op2]+=op1.dp[idx_op1];
-	    tally[idx_op2]++;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.dp[idx_op2]=mss_val_dbl;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.dp[idx_op1] != mss_val_dbl){
+            op2.dp[idx_op2]+=op1.dp[idx_op1];
+            tally[idx_op2]++;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(tally[idx_op2] == 0L) op2.dp[idx_op2]=mss_val_dbl;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -574,20 +574,20 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       double op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
-	      op2.dp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.dp[idx_op2]=mss_val_dbl;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
+              op2.dp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.dp[idx_op2]=mss_val_dbl;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -598,21 +598,21 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ip[idx_op2]+=op1.ip[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ip[idx_op2]+=op1.ip[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.ip[idx_op1] != mss_val_ntg){
-	    op2.ip[idx_op2]+=op1.ip[idx_op1];
-	    tally[idx_op2]++;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.ip[idx_op2]=mss_val_ntg;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.ip[idx_op1] != mss_val_ntg){
+            op2.ip[idx_op2]+=op1.ip[idx_op1];
+            tally[idx_op2]++;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(tally[idx_op2] == 0L) op2.ip[idx_op2]=mss_val_ntg;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -621,20 +621,20 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       long op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.ip),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ip[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ip[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_ntg){
-	      op2.ip[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.ip[idx_op2]=mss_val_ntg;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_ntg){
+              op2.ip[idx_op2]+=op1_2D[idx_op2][idx_blk];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.ip[idx_op2]=mss_val_ntg;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -645,21 +645,21 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1.sp[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1.sp[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.sp[idx_op1] != mss_val_short){
-	    op2.sp[idx_op2]+=op1.sp[idx_op1];
-	    tally[idx_op2]++;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_short;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.sp[idx_op1] != mss_val_short){
+            op2.sp[idx_op2]+=op1.sp[idx_op1];
+            tally[idx_op2]++;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_short;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -668,20 +668,20 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       nco_short op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_short){
-	      op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_short;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_short){
+              op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_short;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -692,21 +692,21 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.usp[idx_op2]+=op1.usp[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.usp[idx_op2]+=op1.usp[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.usp[idx_op1] != mss_val_ushort){
-	    op2.usp[idx_op2]+=op1.usp[idx_op1];
-	    tally[idx_op2]++;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.usp[idx_op2]=mss_val_ushort;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.usp[idx_op1] != mss_val_ushort){
+            op2.usp[idx_op2]+=op1.usp[idx_op1];
+            tally[idx_op2]++;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(tally[idx_op2] == 0L) op2.usp[idx_op2]=mss_val_ushort;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -715,20 +715,20 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       nco_ushort op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.usp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.usp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.usp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_ushort){
-	      op2.usp[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.usp[idx_op2]=mss_val_ushort;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_ushort){
+              op2.usp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.usp[idx_op2]=mss_val_ushort;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -739,21 +739,21 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.uip[idx_op2]+=op1.uip[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.uip[idx_op2]+=op1.uip[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.uip[idx_op1] != mss_val_uint){
-	    op2.uip[idx_op2]+=op1.uip[idx_op1];
-	    tally[idx_op2]++;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.uip[idx_op2]=mss_val_uint;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.uip[idx_op1] != mss_val_uint){
+            op2.uip[idx_op2]+=op1.uip[idx_op1];
+            tally[idx_op2]++;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(tally[idx_op2] == 0L) op2.uip[idx_op2]=mss_val_uint;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -762,20 +762,20 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       nco_uint op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.uip),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.uip[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.uip[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_uint){
-	      op2.uip[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.uip[idx_op2]=mss_val_uint;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_uint){
+              op2.uip[idx_op2]+=op1_2D[idx_op2][idx_blk];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.uip[idx_op2]=mss_val_uint;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -786,21 +786,21 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.i64p[idx_op2]+=op1.i64p[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.i64p[idx_op2]+=op1.i64p[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.i64p[idx_op1] != mss_val_int64){
-	    op2.i64p[idx_op2]+=op1.i64p[idx_op1];
-	    tally[idx_op2]++;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.i64p[idx_op2]=mss_val_int64;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.i64p[idx_op1] != mss_val_int64){
+            op2.i64p[idx_op2]+=op1.i64p[idx_op1];
+            tally[idx_op2]++;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(tally[idx_op2] == 0L) op2.i64p[idx_op2]=mss_val_int64;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -809,20 +809,20 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       nco_int64 op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.i64p),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.i64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.i64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_int64){
-	      op2.i64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.i64p[idx_op2]=mss_val_int64;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_int64){
+              op2.i64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.i64p[idx_op2]=mss_val_int64;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -833,21 +833,21 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ui64p[idx_op2]+=op1.ui64p[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ui64p[idx_op2]+=op1.ui64p[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.ui64p[idx_op1] != mss_val_uint64){
-	    op2.ui64p[idx_op2]+=op1.ui64p[idx_op1];
-	    tally[idx_op2]++;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.ui64p[idx_op2]=mss_val_uint64;
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.ui64p[idx_op1] != mss_val_uint64){
+            op2.ui64p[idx_op2]+=op1.ui64p[idx_op1];
+            tally[idx_op2]++;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(tally[idx_op2] == 0L) op2.ui64p[idx_op2]=mss_val_uint64;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -856,20 +856,20 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
       nco_uint64 op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.ui64p),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ui64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ui64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_uint64){
-	      op2.ui64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.ui64p[idx_op2]=mss_val_uint64;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_uint64){
+              op2.ui64p[idx_op2]+=op1_2D[idx_op2][idx_blk];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.ui64p[idx_op2]=mss_val_uint64;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -880,9 +880,9 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   case NC_STRING: mss_val_string=mss_val_string; break; /* CEWI */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  
+
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */
+  because we have only operated on local copies of them. */
 
 } /* end nco_var_avg_rdc_ttl() */
 
@@ -897,13 +897,13 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
  ptr_unn op2) /* O [sct] Minimum of each block of op1 */
 {
   /* Purpose: Find minimum value of each contiguous block of first operand and place
-     result in corresponding element in second operand. Operands are assumed to have
-     conforming types, but not dimensions or sizes. */
+  result in corresponding element in second operand. Operands are assumed to have
+  conforming types, but not dimensions or sizes. */
 
   /* nco_var_avg_rdc_min() is derived from nco_var_avg_rdc_ttl()
-     Routines are very similar but tallies are not incremented
-     See nco_var_avg_rdc_ttl() for more algorithmic documentation
-     nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
+  Routines are very similar but tallies are not incremented
+  See nco_var_avg_rdc_ttl() for more algorithmic documentation
+  nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
 
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
@@ -925,14 +925,14 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
   nco_ubyte mss_val_ubyte;
   nco_string mss_val_string;
   nco_byte mss_val_byte;
-  
+
   nco_bool flg_mss=False; /* [flg] Block has valid (non-missing) values */
-  
+
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-  
+
   if(has_mss_val){
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
@@ -950,32 +950,32 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
-  
+
   switch(type){
   case NC_FLOAT:
-    
+
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.fp[idx_op2]=op1.fp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.fp[idx_op2] > op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.fp[idx_op2]=op1.fp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.fp[idx_op2] > op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.fp[idx_op1] != mss_val_flt) {
-	    if(!flg_mss || op2.fp[idx_op2] > op1.fp[idx_op1]) op2.fp[idx_op2]=op1.fp[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.fp[idx_op1] != mss_val_flt) {
+            if(!flg_mss || op2.fp[idx_op2] > op1.fp[idx_op1]) op2.fp[idx_op2]=op1.fp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -984,22 +984,22 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
       float op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.fp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.fp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.fp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_flt) {
-	      if(!flg_mss || op2.fp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_flt) {
+              if(!flg_mss || op2.fp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1010,23 +1010,23 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.dp[idx_op2]=op1.dp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.dp[idx_op2] > op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.dp[idx_op2]=op1.dp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.dp[idx_op2] > op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.dp[idx_op1] != mss_val_dbl) {
-	    if(!flg_mss || (op2.dp[idx_op2] > op1.dp[idx_op1])) op2.dp[idx_op2]=op1.dp[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.dp[idx_op1] != mss_val_dbl) {
+            if(!flg_mss || (op2.dp[idx_op2] > op1.dp[idx_op1])) op2.dp[idx_op2]=op1.dp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1035,22 +1035,22 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
       double op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.dp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
-	      if(!flg_mss || (op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
+              if(!flg_mss || (op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1061,23 +1061,23 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.ip[idx_op2]=op1.ip[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.ip[idx_op2] > op1.ip[blk_off+idx_blk]) op2.ip[idx_op2]=op1.ip[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.ip[idx_op2]=op1.ip[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.ip[idx_op2] > op1.ip[blk_off+idx_blk]) op2.ip[idx_op2]=op1.ip[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.ip[idx_op1] != mss_val_ntg){
-	    if(!flg_mss || op2.ip[idx_op2] > op1.ip[idx_op1]) op2.ip[idx_op2]=op1.ip[idx_op1];
-	    flg_mss= True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.ip[idx_op1] != mss_val_ntg){
+            if(!flg_mss || op2.ip[idx_op2] > op1.ip[idx_op1]) op2.ip[idx_op2]=op1.ip[idx_op1];
+            flg_mss= True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1086,22 +1086,22 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
       long op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.ip),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.ip[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.ip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.ip[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.ip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_ntg){
-	      if(!flg_mss || op2.ip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_ntg){
+              if(!flg_mss || op2.ip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1112,23 +1112,23 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.sp[idx_op2]=op1.sp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.sp[idx_op2] > op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.sp[idx_op2]=op1.sp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.sp[idx_op2] > op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.sp[idx_op1] != mss_val_short){
-	    if(!flg_mss || op2.sp[idx_op2] > op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.sp[idx_op1] != mss_val_short){
+            if(!flg_mss || op2.sp[idx_op2] > op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1137,22 +1137,22 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
       nco_short op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.sp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_short){
-	      if(!flg_mss  || op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_short){
+              if(!flg_mss  || op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1163,23 +1163,23 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.usp[idx_op2]=op1.usp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.usp[idx_op2] > op1.usp[blk_off+idx_blk]) op2.usp[idx_op2]=op1.usp[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.usp[idx_op2]=op1.usp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.usp[idx_op2] > op1.usp[blk_off+idx_blk]) op2.usp[idx_op2]=op1.usp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.usp[idx_op1] != mss_val_ushort){
-	    if(!flg_mss || op2.usp[idx_op2] > op1.usp[idx_op1]) op2.usp[idx_op2]=op1.usp[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.usp[idx_op2]=mss_val_ushort;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.usp[idx_op1] != mss_val_ushort){
+            if(!flg_mss || op2.usp[idx_op2] > op1.usp[idx_op1]) op2.usp[idx_op2]=op1.usp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.usp[idx_op2]=mss_val_ushort;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1188,22 +1188,22 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
       nco_ushort op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.usp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.usp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.usp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.usp[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.usp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.usp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.usp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_ushort){
-	      if(!flg_mss  || op2.usp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.usp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.usp[idx_op2]=mss_val_ushort;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_ushort){
+              if(!flg_mss  || op2.usp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.usp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.usp[idx_op2]=mss_val_ushort;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1214,23 +1214,23 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.uip[idx_op2]=op1.uip[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.uip[idx_op2] > op1.uip[blk_off+idx_blk]) op2.uip[idx_op2]=op1.uip[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.uip[idx_op2]=op1.uip[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.uip[idx_op2] > op1.uip[blk_off+idx_blk]) op2.uip[idx_op2]=op1.uip[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.uip[idx_op1] != mss_val_uint){
-	    if(!flg_mss || op2.uip[idx_op2] > op1.uip[idx_op1]) op2.uip[idx_op2]=op1.uip[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.uip[idx_op2]=mss_val_uint;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.uip[idx_op1] != mss_val_uint){
+            if(!flg_mss || op2.uip[idx_op2] > op1.uip[idx_op1]) op2.uip[idx_op2]=op1.uip[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.uip[idx_op2]=mss_val_uint;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1239,22 +1239,22 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
       nco_uint op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.uip),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.uip[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.uip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.uip[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.uip[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.uip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.uip[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_uint){
-	      if(!flg_mss  || op2.uip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.uip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.uip[idx_op2]=mss_val_uint;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_uint){
+              if(!flg_mss  || op2.uip[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.uip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.uip[idx_op2]=mss_val_uint;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1265,23 +1265,23 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.i64p[idx_op2]=op1.i64p[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.i64p[idx_op2] > op1.i64p[blk_off+idx_blk]) op2.i64p[idx_op2]=op1.i64p[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.i64p[idx_op2]=op1.i64p[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.i64p[idx_op2] > op1.i64p[blk_off+idx_blk]) op2.i64p[idx_op2]=op1.i64p[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.i64p[idx_op1] != mss_val_int64){
-	    if(!flg_mss || op2.i64p[idx_op2] > op1.i64p[idx_op1]) op2.i64p[idx_op2]=op1.i64p[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.i64p[idx_op2]=mss_val_int64;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.i64p[idx_op1] != mss_val_int64){
+            if(!flg_mss || op2.i64p[idx_op2] > op1.i64p[idx_op1]) op2.i64p[idx_op2]=op1.i64p[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.i64p[idx_op2]=mss_val_int64;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1290,22 +1290,22 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
       nco_int64 op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.i64p),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.i64p[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.i64p[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.i64p[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.i64p[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.i64p[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.i64p[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_int64){
-	      if(!flg_mss  || op2.i64p[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.i64p[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.i64p[idx_op2]=mss_val_int64;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_int64){
+              if(!flg_mss  || op2.i64p[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.i64p[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.i64p[idx_op2]=mss_val_int64;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1316,23 +1316,23 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.ui64p[idx_op2]=op1.ui64p[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.ui64p[idx_op2] > op1.ui64p[blk_off+idx_blk]) op2.ui64p[idx_op2]=op1.ui64p[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.ui64p[idx_op2]=op1.ui64p[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.ui64p[idx_op2] > op1.ui64p[blk_off+idx_blk]) op2.ui64p[idx_op2]=op1.ui64p[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.ui64p[idx_op1] != mss_val_uint64){
-	    if(!flg_mss || op2.ui64p[idx_op2] > op1.ui64p[idx_op1]) op2.ui64p[idx_op2]=op1.ui64p[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.ui64p[idx_op2]=mss_val_uint64;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.ui64p[idx_op1] != mss_val_uint64){
+            if(!flg_mss || op2.ui64p[idx_op2] > op1.ui64p[idx_op1]) op2.ui64p[idx_op2]=op1.ui64p[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.ui64p[idx_op2]=mss_val_uint64;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1341,22 +1341,22 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
       nco_uint64 op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.ui64p),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.ui64p[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.ui64p[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ui64p[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.ui64p[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.ui64p[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ui64p[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_uint64){
-	      if(!flg_mss  || op2.ui64p[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ui64p[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.ui64p[idx_op2]=mss_val_uint64;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_uint64){
+              if(!flg_mss  || op2.ui64p[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ui64p[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.ui64p[idx_op2]=mss_val_uint64;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1367,10 +1367,10 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
   case NC_STRING: mss_val_string=mss_val_string; break; /* CEWI */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
-  
+
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */
-  
+  because we have only operated on local copies of them. */
+
 } /* end nco_var_avg_rdc_min() */
 
 void
@@ -1384,13 +1384,13 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
  ptr_unn op2) /* O [sct] Maximum of each block of op1 */
 {
   /* Purpose: Find maximum value of each contiguous block of first operand and place
-     result in corresponding element in second operand. Operands are assumed to have
-     conforming types, but not dimensions or sizes. */
+  result in corresponding element in second operand. Operands are assumed to have
+  conforming types, but not dimensions or sizes. */
 
   /* nco_var_avg_rdc_min() is derived from nco_var_avg_rdc_ttl()
-     Routines are very similar but tallies are not incremented
-     See nco_var_avg_rdc_ttl() for more algorithmic documentation
-     nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
+  Routines are very similar but tallies are not incremented
+  See nco_var_avg_rdc_ttl() for more algorithmic documentation
+  nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
 
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
@@ -1399,7 +1399,7 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
   const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;
-  
+
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
   nco_int mss_val_ntg=nco_int_CEWI;
@@ -1412,14 +1412,14 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
   nco_ubyte mss_val_ubyte;
   nco_string mss_val_string;
   nco_byte mss_val_byte;
-  
+
   nco_bool flg_mss=False;
-  
+
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-  
+
   if(has_mss_val){
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
@@ -1437,32 +1437,32 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
-  
+
   switch(type){
   case NC_FLOAT:
-    
+
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.fp[idx_op2]=op1.fp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.fp[idx_op2] < op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.fp[idx_op2]=op1.fp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.fp[idx_op2] < op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.fp[idx_op1] != mss_val_flt) {
-	    if(!flg_mss || op2.fp[idx_op2] < op1.fp[idx_op1]) op2.fp[idx_op2]=op1.fp[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.fp[idx_op1] != mss_val_flt) {
+            if(!flg_mss || op2.fp[idx_op2] < op1.fp[idx_op1]) op2.fp[idx_op2]=op1.fp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1471,22 +1471,22 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
       float op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.fp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.fp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.fp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_flt) {
-	      if(!flg_mss || op2.fp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_flt) {
+              if(!flg_mss || op2.fp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1497,23 +1497,23 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.dp[idx_op2]=op1.dp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.dp[idx_op2] < op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.dp[idx_op2]=op1.dp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.dp[idx_op2] < op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.dp[idx_op1] != mss_val_dbl) {
-	    if(!flg_mss || (op2.dp[idx_op2] < op1.dp[idx_op1])) op2.dp[idx_op2]=op1.dp[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.dp[idx_op1] != mss_val_dbl) {
+            if(!flg_mss || (op2.dp[idx_op2] < op1.dp[idx_op1])) op2.dp[idx_op2]=op1.dp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1522,22 +1522,22 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
       double op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.dp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
-	      if(!flg_mss || (op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
+              if(!flg_mss || (op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1548,23 +1548,23 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.ip[idx_op2]=op1.ip[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.ip[idx_op2] < op1.ip[blk_off+idx_blk]) op2.ip[idx_op2]=op1.ip[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.ip[idx_op2]=op1.ip[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.ip[idx_op2] < op1.ip[blk_off+idx_blk]) op2.ip[idx_op2]=op1.ip[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.ip[idx_op1] != mss_val_ntg){
-	    if(!flg_mss || op2.ip[idx_op2] < op1.ip[idx_op1]) op2.ip[idx_op2]=op1.ip[idx_op1];
-	    flg_mss= True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.ip[idx_op1] != mss_val_ntg){
+            if(!flg_mss || op2.ip[idx_op2] < op1.ip[idx_op1]) op2.ip[idx_op2]=op1.ip[idx_op1];
+            flg_mss= True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1573,22 +1573,22 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
       long op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.ip),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.ip[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.ip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.ip[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.ip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_ntg){
-	      if(!flg_mss || op2.ip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_ntg){
+              if(!flg_mss || op2.ip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.ip[idx_op2]=mss_val_ntg;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1599,23 +1599,23 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.sp[idx_op2]=op1.sp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.sp[idx_op2] < op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.sp[idx_op2]=op1.sp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.sp[idx_op2] < op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.sp[idx_op1] != mss_val_short){
-	    if(!flg_mss || op2.sp[idx_op2] < op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.sp[idx_op1] != mss_val_short){
+            if(!flg_mss || op2.sp[idx_op2] < op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1624,22 +1624,22 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
       nco_short op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.sp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_short){
-	      if(!flg_mss  || op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_short){
+              if(!flg_mss  || op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.sp[idx_op2]=mss_val_short;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1650,23 +1650,23 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.usp[idx_op2]=op1.usp[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.usp[idx_op2] < op1.usp[blk_off+idx_blk]) op2.usp[idx_op2]=op1.usp[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.usp[idx_op2]=op1.usp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.usp[idx_op2] < op1.usp[blk_off+idx_blk]) op2.usp[idx_op2]=op1.usp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.usp[idx_op1] != mss_val_ushort){
-	    if(!flg_mss || op2.usp[idx_op2] < op1.usp[idx_op1]) op2.usp[idx_op2]=op1.usp[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.usp[idx_op2]=mss_val_ushort;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.usp[idx_op1] != mss_val_ushort){
+            if(!flg_mss || op2.usp[idx_op2] < op1.usp[idx_op1]) op2.usp[idx_op2]=op1.usp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.usp[idx_op2]=mss_val_ushort;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1675,22 +1675,22 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
       nco_ushort op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.usp),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.usp[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.usp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.usp[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.usp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.usp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.usp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_ushort){
-	      if(!flg_mss  || op2.usp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.usp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.usp[idx_op2]=mss_val_ushort;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_ushort){
+              if(!flg_mss  || op2.usp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.usp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.usp[idx_op2]=mss_val_ushort;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1701,23 +1701,23 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.uip[idx_op2]=op1.uip[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.uip[idx_op2] < op1.uip[blk_off+idx_blk]) op2.uip[idx_op2]=op1.uip[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.uip[idx_op2]=op1.uip[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.uip[idx_op2] < op1.uip[blk_off+idx_blk]) op2.uip[idx_op2]=op1.uip[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.uip[idx_op1] != mss_val_uint){
-	    if(!flg_mss || op2.uip[idx_op2] < op1.uip[idx_op1]) op2.uip[idx_op2]=op1.uip[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.uip[idx_op2]=mss_val_uint;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.uip[idx_op1] != mss_val_uint){
+            if(!flg_mss || op2.uip[idx_op2] < op1.uip[idx_op1]) op2.uip[idx_op2]=op1.uip[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.uip[idx_op2]=mss_val_uint;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1726,22 +1726,22 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
       nco_uint op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.uip),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.uip[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.uip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.uip[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.uip[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.uip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.uip[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_uint){
-	      if(!flg_mss  || op2.uip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.uip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.uip[idx_op2]=mss_val_uint;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_uint){
+              if(!flg_mss  || op2.uip[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.uip[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.uip[idx_op2]=mss_val_uint;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1752,23 +1752,23 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.i64p[idx_op2]=op1.i64p[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.i64p[idx_op2] < op1.i64p[blk_off+idx_blk]) op2.i64p[idx_op2]=op1.i64p[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.i64p[idx_op2]=op1.i64p[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.i64p[idx_op2] < op1.i64p[blk_off+idx_blk]) op2.i64p[idx_op2]=op1.i64p[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.i64p[idx_op1] != mss_val_int64){
-	    if(!flg_mss || op2.i64p[idx_op2] < op1.i64p[idx_op1]) op2.i64p[idx_op2]=op1.i64p[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.i64p[idx_op2]=mss_val_int64;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.i64p[idx_op1] != mss_val_int64){
+            if(!flg_mss || op2.i64p[idx_op2] < op1.i64p[idx_op1]) op2.i64p[idx_op2]=op1.i64p[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.i64p[idx_op2]=mss_val_int64;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1777,22 +1777,22 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
       nco_int64 op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.i64p),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.i64p[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.i64p[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.i64p[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.i64p[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.i64p[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.i64p[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_int64){
-	      if(!flg_mss  || op2.i64p[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.i64p[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.i64p[idx_op2]=mss_val_int64;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_int64){
+              if(!flg_mss  || op2.i64p[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.i64p[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.i64p[idx_op2]=mss_val_int64;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1803,23 +1803,23 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	op2.ui64p[idx_op2]=op1.ui64p[blk_off];
-	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.ui64p[idx_op2] < op1.ui64p[blk_off+idx_blk]) op2.ui64p[idx_op2]=op1.ui64p[blk_off+idx_blk];
+        const long blk_off=idx_op2*sz_blk;
+        op2.ui64p[idx_op2]=op1.ui64p[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.ui64p[idx_op2] < op1.ui64p[blk_off+idx_blk]) op2.ui64p[idx_op2]=op1.ui64p[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	const long blk_off=idx_op2*sz_blk;
-	flg_mss=False;
-	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	  idx_op1=blk_off+idx_blk;
-	  if(op1.ui64p[idx_op1] != mss_val_uint64){
-	    if(!flg_mss || op2.ui64p[idx_op2] < op1.ui64p[idx_op1]) op2.ui64p[idx_op2]=op1.ui64p[idx_op1];
-	    flg_mss=True;
-	  } /* end if */
-	} /* end loop over idx_blk */
-	if(!flg_mss) op2.ui64p[idx_op2]=mss_val_uint64;
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.ui64p[idx_op1] != mss_val_uint64){
+            if(!flg_mss || op2.ui64p[idx_op2] < op1.ui64p[idx_op1]) op2.ui64p[idx_op2]=op1.ui64p[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.ui64p[idx_op2]=mss_val_uint64;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -1828,22 +1828,22 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
       nco_uint64 op1_2D[sz_op2][sz_blk];
       (void)memcpy((void *)op1_2D,(void *)(op1.ui64p),sz_op1*nco_typ_lng(type));
       if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  op2.ui64p[idx_op2]=op1_2D[idx_op2][0];
-	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	    if(op2.ui64p[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ui64p[idx_op2]=op1_2D[idx_op2][idx_blk];
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.ui64p[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.ui64p[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ui64p[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
       }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  flg_mss=False;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_uint64){
-	      if(!flg_mss  || op2.ui64p[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ui64p[idx_op2]=op1_2D[idx_op2][idx_blk];	      
-	      flg_mss=True;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.ui64p[idx_op2]=mss_val_uint64;
-	} /* end loop over idx_op2 */
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_uint64){
+              if(!flg_mss  || op2.ui64p[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ui64p[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.ui64p[idx_op2]=mss_val_uint64;
+        } /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
 #endif /* __GNUC__ */
@@ -1854,8 +1854,8 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
   case NC_STRING: mss_val_string=mss_val_string; break; /* CEWI */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
-  
+
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */
+  because we have only operated on local copies of them. */
 
 } /* end nco_var_avg_rdc_max() */
