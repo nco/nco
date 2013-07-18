@@ -1,5 +1,7 @@
 2013-07-17  Charlie Zender  <zender@uci.edu>
 
+	* Document ncks --cdl switch. texi2dvi nco.texi works on Ubuntu, fails on Fedora
+
 	* Change DDRA to print to stderr not stdout to simplify CDL mode
 
 	* Fix dimension name printed in compact lists due to mis-nested indices
