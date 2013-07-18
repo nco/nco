@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.128 2013-07-18 23:20:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.129 2013-07-18 23:40:17 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -129,17 +129,16 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* endif first element of string array */
 	/* New string begins each element where penultimate dimension changes */
 	if(lmn%sng_lng == 0L){
-	  (void)fprintf(stdout,"\"");
+	  if(prn_flg->cdl) (void)fprintf(stdout,"\"");
 	  sng_val_sng[0]='\0';
 	} /* endif new string */
 	(void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
 	if(lmn%sng_lng == sng_lngm1){
-	  (void)fprintf(stdout,"%s\"",sng_val_sng);
+	  (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->cdl) ? "\"" : "");
 	  /* Print commas after non-final strings */
 	  if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
 	} /* endif string end */
 	if(lmn == att_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
-	//	if((chr_val=att[idx].val.cp[lmn]) != '\0') (void)fprintf(stdout,"%c",chr_val);
       } /* end loop over element */
       break;
     case NC_BYTE:
