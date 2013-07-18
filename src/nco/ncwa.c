@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.336 2013-07-18 09:40:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.337 2013-07-18 10:06:06 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.336 2013-07-18 09:40:51 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.336 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.337 2013-07-18 10:06:06 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.337 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -693,7 +693,9 @@ main(int argc,char **argv)
     dmn_avg=(dmn_sct **)nco_malloc(dmn_avg_nbr*sizeof(dmn_sct *));
     for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
       for(idx=0;idx<nbr_dmn_xtr;idx++){
-        if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
+        if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)){
+          break;
+        }
       } /* end loop over idx_avg */
       if(idx != nbr_dmn_xtr){
         dmn_avg[idx_avg]=dim[idx];
@@ -724,7 +726,9 @@ main(int argc,char **argv)
     nbr_dmn_out=0;
     for(idx=0;idx<nbr_dmn_xtr;idx++){
       for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
-        if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
+        if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)){
+          break;
+        }
       } /* end loop over idx_avg */
       if(idx_avg == dmn_avg_nbr || flg_rdd){
         /* Output list comprises non-averaged and, if specified, degenerate dimensions */
@@ -1278,6 +1282,14 @@ main(int argc,char **argv)
         nbr_dmn_out++;
       } /* end if idx_avg */
     } /* end loop over idx_xtr */
+
+
+    /* Transfer dimension average list information into GTT  */
+
+
+
+
+
     /* Dimension average list no longer needed */
     dmn_avg_lst=nco_nm_id_lst_free(dmn_avg_lst,dmn_avg_nbr);
 
