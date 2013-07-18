@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.859 2013-07-17 23:01:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.860 2013-07-18 00:17:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -52,7 +52,7 @@ nco_flg_set_grp_var_ass               /* [fnc] Set flags for groups and variable
   } /* end loop over obj_idx */
   
 } /* end nco_flg_set_grp_var_ass() */
- 
+
 int                                   /* [rcd] Return code */
 nco_inq_grps_full                     /* [fnc] Discover and return IDs of apex and all sub-groups */
 (const int grp_id,                    /* I [ID] Apex group */
@@ -1271,9 +1271,10 @@ nco_xtr_dmn_mrk                      /* [fnc] Mark extracted dimensions */
   /* Purpose: Set flag for dimensions to be extracted
      ncks print functions need dimension extraction flag to print CDL files */
 
-
   unsigned int dmn_idx; /* [idx] Index over dimensions */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in file */
+  unsigned int dmn_var_idx; /* [idx] Index over dimensions in variable */
+  unsigned int dmn_var_nbr; /* [nbr] Number of dimensions in variable */
   unsigned int obj_idx; /* [idx] Index over objects */
   unsigned int obj_nbr; /* [nbr] Number of objects in table */
 
@@ -1283,16 +1284,25 @@ nco_xtr_dmn_mrk                      /* [fnc] Mark extracted dimensions */
   /* Set extraction flag for groups if ancestors of extracted variables */
 
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+    /* Set extraction flag to False then override below if found */
     trv_tbl->lst_dmn[dmn_idx].flg_xtr=False;
     for(obj_idx=0;obj_idx<obj_nbr;obj_idx++){
+      trv_sct var_trv=trv_tbl->lst[obj_idx];
       /* For each variable to be extracted ... */
-      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[obj_idx].flg_xtr){
-	/* fxm: check against each variable */
-	trv_tbl->lst_dmn[dmn_idx].flg_xtr=True;
+      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+	dmn_var_nbr=var_trv.nbr_dmn;
+	for(dmn_var_idx=0;dmn_var_idx<dmn_var_nbr;dmn_var_idx++){
+	  if(var_trv.var_dmn[dmn_var_idx].dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id){
+	    trv_tbl->lst_dmn[dmn_idx].flg_xtr=True;
+	    /* Break from loop over dmn_var_idx into loop over obj_idx */
+	    break;
+	  } /* endif match */
+	} /* end loop over dmn_var_idx */
       } /* endif extracted variable */
+      /* Break from loop over obj_idx into loop over dmn_idx */
+      if(trv_tbl->lst_dmn[dmn_idx].flg_xtr) break;
     } /* end loop over obj_idx */
   } /* end loop over dmn_idx */
-
 } /* end nco_xtr_dmn_mrk() */
 
 void
