@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.800 2013-07-18 00:24:33 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.801 2013-07-18 23:20:42 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1250,11 +1250,11 @@ For Mac OS X with MacPorts:
 <dt>wget http://dust.ess.uci.edu/nco/nco.tar.gz</dt>
 <dt>tar xvzf nco.tar.gz</dt>
 <dt>cd nco-4.3.2</dt>
-<dt>./configure</dt>
+<dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>
 </tt>
-For more sophisticated installation options, see the next section.
+For more sophisticated build/install options, see the next section.
 </ul>
 
 <dt><a name="Makefile"></a></dt> <!-- http://nco.sf.net#Makefile -->

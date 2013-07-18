@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.127 2013-07-18 21:47:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.128 2013-07-18 23:20:42 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -28,6 +28,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   char att_sng_pln[NCO_MAX_LEN_FMT_SNG];
   char src_sng[NC_MAX_NAME];
   char val_sng[NCO_ATM_SNG_LNG];
+  char chr_val; /* [sng] Current character */
+  char *sng_val_sng; /* [sng] String of NC_CHAR */
 
   double val_dbl;
 
@@ -43,6 +45,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   long lmn;
   long att_sz;
   long att_szm1;
+  long sng_lng; /* [nbr] Length of NC_CHAR string */
+  long sng_lngm1; /* [nbr] Length minus one of NC_CHAR string */
   
   if(var_id == NC_GLOBAL){
     /* Get number of global attributes in group */
@@ -75,10 +79,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
     (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
     
-    if(prn_flg->cdl){
-      (void)fprintf(stdout,"%*s%s:%s = ",prn_ndn,spc_sng,src_sng,att[idx].nm); 
-      if(att[idx].type == NC_CHAR) (void)fprintf(stdout,"\"");
-    }else (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
+    if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s:%s = ",prn_ndn,spc_sng,src_sng,att[idx].nm); else (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
     
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
@@ -118,9 +119,27 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       break;
     case NC_CHAR:
       for(lmn=0;lmn<att_sz;lmn++){
-        char char_foo;
-	/* Assume \0 is string terminator and do not print it */
-	if((char_foo=att[idx].val.cp[lmn]) != '\0') (void)fprintf(stdout,"%c",char_foo);
+	chr_val=att[idx].val.cp[lmn];
+	val_sng[0]='\0';
+	if(lmn == 0L){
+	  sng_lng=att_sz;
+	  sng_lngm1=sng_lng-1UL;
+	  /* Worst case is printable strings are four times longer than unformatted, i.e. '\\' == "\\\\" */
+	  sng_val_sng=(char *)nco_malloc(4*sng_lng+1UL);
+	} /* endif first element of string array */
+	/* New string begins each element where penultimate dimension changes */
+	if(lmn%sng_lng == 0L){
+	  (void)fprintf(stdout,"\"");
+	  sng_val_sng[0]='\0';
+	} /* endif new string */
+	(void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+	if(lmn%sng_lng == sng_lngm1){
+	  (void)fprintf(stdout,"%s\"",sng_val_sng);
+	  /* Print commas after non-final strings */
+	  if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
+	} /* endif string end */
+	if(lmn == att_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
+	//	if((chr_val=att[idx].val.cp[lmn]) != '\0') (void)fprintf(stdout,"%c",chr_val);
       } /* end loop over element */
       break;
     case NC_BYTE:
@@ -147,10 +166,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     default: nco_dfl_case_nc_type_err();
       break;
     } /* end switch */
-    if(prn_flg->cdl){
-      if(att[idx].type == NC_CHAR) (void)fprintf(stdout,"\"");
-      (void)fprintf(stdout," ;");
-    } /* endif CDL */
+    if(prn_flg->cdl) (void)fprintf(stdout," ;");
     rcd_prn+=0; /* CEWI */
     (void)fprintf(stdout,"\n");
     
@@ -946,6 +962,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
   char nul_chr='\0';                         /* [sng] Character to end string */ 
   char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (used for validation only) */ 
+  char chr_val;                              /* [sng] Current character */
 
   dmn_sct dim[NC_MAX_DIMS];                  /* [sct] Dimension structure  */
 
@@ -1117,24 +1134,29 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         case NC_SHORT: (void)sprintf(val_sng,fmt_sng,var.val.sp[lmn]); break;
         case NC_INT: (void)sprintf(val_sng,fmt_sng,var.val.ip[lmn]); break;
         case NC_CHAR: 
+	  chr_val=var.val.cp[lmn];
 	  if(var.nbr_dim == 0){
 	    (void)fprintf(stdout,"\"");
-	    if(var.val.cp[lmn] == '\0') (void)fprintf(stdout,"\""); else (void)fprintf(stdout,"%c\"",var.val.cp[lmn]);
+	    if(chr_val != '\0') (void)fprintf(stdout,"%s",chr2sng_cdl(chr_val,val_sng));
+	    (void)fprintf(stdout,"\"");
 	    val_sng[0]='\0';
 	  }else{ /* var.nbr_dim > 0 */
-	    //qrk
 	    /* Multi-dimensional string arrays of NC_CHAR */
+	    val_sng[0]='\0';
 	    if(lmn == 0L){
 	      sng_lng=lmt_msa[var.nbr_dim-1]->dmn_cnt;
 	      sng_lngm1=sng_lng-1UL;
-	      sng_val_sng=(char *)nco_malloc(sng_lng+1UL);
+	      /* Worst case is printable strings are four times longer than unformatted, i.e. '\\' == "\\\\" */
+	      sng_val_sng=(char *)nco_malloc(4*sng_lng+1UL);
 	    } /* endif first element of string array */
 	    /* New string begins each element where penultimate dimension changes */
-	    if(lmn%sng_lng == 0L) (void)fprintf(stdout,"\"");
-	    (void)sprintf(sng_val_sng+lmn%sng_lng,"%c",var.val.cp[lmn]);
-	    if(lmn%sng_lng == sng_lngm1){
-	      (void)fprintf(stdout,"%s",sng_val_sng);
+	    if(lmn%sng_lng == 0L){
 	      (void)fprintf(stdout,"\"");
+	      sng_val_sng[0]='\0';
+	    } /* endif new string */
+	    (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+	    if(lmn%sng_lng == sng_lngm1){
+	      (void)fprintf(stdout,"%s\"",sng_val_sng);
 	      /* Print commas after non-final strings */
 	      if(lmn != var_szm1) (void)fprintf(stdout,"%s",cma_sng);
 	    } /* endif string end */

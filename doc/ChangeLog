@@ -1,5 +1,11 @@
 2013-07-18  Charlie Zender  <zender@uci.edu>
 
+	* CDL mode prints all test cases at least as well as ncdump
+
+	* Switch attribute NC_CHAR printing to chr2sng_cdl() infrastructure
+
+	* Added chr2sng_cdl() so CDL mode prints control sequences visibly
+
 	* CDL mode works on zero and one-dimension arrays of NC_CHAR strings
 
 	* CDL mode works with GPE transformations with constant group level, e.g.,

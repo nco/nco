@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.47 2013-07-16 22:24:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.48 2013-07-18 23:20:42 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -133,6 +133,35 @@ sng_idx_dlm_c2f /* [fnc] Replace brackets with parentheses in a string */
     sng++;
   } /* end while */
 } /* end sng_idx_dlm_c2f() */
+
+char * /* O [sng] String containing printable result */
+chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII bytes */
+(const char chr_val, /* I [chr] Character to process */
+ char * const val_sng) /* I/O [sng] String to stuff printable result into */
+{
+  /* Purpose: Translate character to C-printable, visible ASCII bytes for CDL */
+  
+  switch(chr_val){              /* man ascii:Oct   Dec   Hex   Char \X  */
+  case '\a': strcpy(val_sng,"\\a"); break; /* 007   7     07    BEL '\a' Bell */
+  case '\b': strcpy(val_sng,"\\b"); break; /* 010   8     08    BS  '\b' Backspace */
+  case '\f': strcpy(val_sng,"\\f"); break; /* 014   12    0C    FF  '\f' Formfeed */
+  case '\n': strcpy(val_sng,"\\n"); break; /* 012   10    0A    LF  '\n' Linefeed */
+  case '\r': strcpy(val_sng,"\\r"); break; /* 015   13    0D    CR  '\r' Carriage return */
+  case '\t': strcpy(val_sng,"\\t"); break; /* 011   9     09    HT  '\t' Horizontal tab */
+  case '\v': strcpy(val_sng,"\\v"); break; /* 013   11    0B    VT  '\v' Vertical tab */
+  case '\\': strcpy(val_sng,"\\\\"); break; /* 134   92    5C    \   '\\' */
+  case '\?': strcpy(val_sng,"\\?"); break; /* Unsure why or if this works! */
+  case '\'': strcpy(val_sng,"\\\'"); break; /* Unsure why or if this works! */
+  case '\"': strcpy(val_sng,"\\\""); break; /* Unsure why or if this works! */
+  case '\0':	
+    break;
+  default: 
+    sprintf(val_sng,"%c",chr_val); break;
+    break;
+  } /* end switch */
+
+  return val_sng;
+} /* end chr2sng_cdl */
 
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */

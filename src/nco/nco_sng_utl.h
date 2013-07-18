@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.36 2013-07-16 22:24:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.37 2013-07-18 23:20:42 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -60,6 +60,11 @@ nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 (const int argc, /* I [nbr] Argument count */
  CST_X_PTR_CST_PTR_CST_Y(char,argv)); /* I [sng] Command line argument values */
  /* char **argv); *//* I [sng] Command line argument values */
+
+char * /* O [sng] String containing printable result */
+chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII bytes */
+(const char chr_val, /* I [chr] Character to process */
+ char * const val_sng); /* I/O [sng] String to stuff printable result into */
 
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */
