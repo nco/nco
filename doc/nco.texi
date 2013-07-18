@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.800 2013-07-18 02:51:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.801 2013-07-18 17:07:27 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12348,6 +12348,9 @@ To enable the old behavior of printing the numeric representation of
 missing values (e.g., @code{1.0e36}), use the @samp{--no_blank} switch.
 Also activated using @samp{--noblank} or @samp{--no-blank}.
 
+@html
+<a name="cdl"></a> <!-- http://nco.sf.net/nco.html#cdl -->
+@end html
 @cindex @command{ncgen}
 @cindex @command{ncdump}
 @cindex @code{--cdl}

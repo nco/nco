@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.122 2013-07-18 04:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.123 2013-07-18 17:07:27 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -356,7 +356,9 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   /* NB: nco_prn_var_val_lmt() with same nc_id contains OpenMP critical region */
   /* Purpose: Print variable data 
      Routine truncates dimensions of printed output variable in accord with user-specified limits
-     fxm: routine does not correctly print hyperslabs which are wrapped, or which use non-unity stride */
+     NB: routine does not correctly print hyperslabs which are wrapped, or which use non-unity stride
+     NB: nco_prn_var_val_lmt() is simple, pre-MSA, pre-GTT code kept only for historical interest 
+     It lacks most of the clutter caused by weird corner cases */
 
   nco_bool SRD=False; /* Stride is non-unity */
   nco_bool WRP=False; /* Coordinate is wrapped */
@@ -1014,7 +1016,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   } /* end if */
 
   /* Call super-dooper recursive routine */
-  var.val.vp=nco_msa_rcr_clc(0,var.nbr_dim,lmt,lmt_msa,&var);
+  var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
   /* Call also initializes var.sz with final size */
   if(prn_flg->MD5_DIGEST) (void)nco_md5_chk(var_nm,var.sz*nco_typ_lng(var.type),grp_id,(long *)NULL,(long *)NULL,var.val.vp);
 
@@ -1112,11 +1114,13 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         case NC_SHORT: (void)sprintf(val_sng,fmt_sng,var.val.sp[lmn]); break;
         case NC_INT: (void)sprintf(val_sng,fmt_sng,var.val.ip[lmn]); break;
         case NC_CHAR: 
-	  //(void)sprintf(val_sng,fmt_sng,var.val.cp[lmn]); break;
 	  if(var.nbr_dim == 0){
 	    (void)fprintf(stdout,"\"");
 	    if(var.val.cp[lmn] != '\0') (void)sprintf(val_sng,fmt_sng,var.val.cp[lmn]);
 	  }else{ /* var.nbr_dim > 0 */
+	    //fxm: finish multi-dimensional strings
+	    //static long dmn_sz;
+	    //dmn_sz=lmt_msa[var.nbr_dim-1]->dmn_cnt;
 	    if(lmn == 0L) (void)fprintf(stdout,"\"");
 	    (void)sprintf(val_sng,"%c",var.val.cp[lmn]);
 	  } /* var.nbr_dim > 0 */
@@ -1275,7 +1279,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
           var_crd.nm=crd->nm;
 
           /* Read coordinate variable with limits applied */
-          dim[idx].val.vp=nco_msa_rcr_clc(0,1,lmt,lmt_msa+idx,&var_crd);
+          dim[idx].val.vp=nco_msa_rcr_clc((int)0,1,lmt,lmt_msa+idx,&var_crd);
 
           /* Store "dmn_sct" members */
           dim[idx].is_crd_dmn=True;
@@ -1300,7 +1304,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 	dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
 
       /* Calculate disk indices from RAM indices */
-      (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_msa,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz-1));
+      (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_msa,var.nbr_dim,dmn_sbs_dsk,(lmn == var.sz-1L));
 
       /* Find variable index relative to disk */
       var_dsk=0;
@@ -1409,7 +1413,7 @@ lbl_chr_prn:
         } /* end if */
 
         /* At end of character array */
-        if(dmn_sbs_ram[var.nbr_dim-1] == dmn_sz-1){
+        if(dmn_sbs_ram[var.nbr_dim-1] == dmn_sz-1L){
           if(NUL_CHR_IN_SLB){
             (void)sprintf(var_sng,"%%s[%%ld--%%ld]=\"%%s\" %%s");
           }else{
@@ -1613,7 +1617,11 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(dmn_nbr > 0) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
   prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-    if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ", trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz); else (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].sz,(prn_flg->cdl) ? " ;" : "");
+    /*    size_t dmn_cnt;
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst[dmn_idx].id];
+    dmn_cnt=dmn_trv.sz;
+    //    dmn_cnt=dmn_trv.lmt_msa.dmn_cnt; */
+    if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
   } /* end loop over dimension */
 
   /* Dimension list no longer needed */

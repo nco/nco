@@ -1,3 +1,7 @@
+2013-07-18  Charlie Zender  <zender@uci.edu>
+
+	* Ooops, CDL mode always prints on-disk dimension sizes even when hyperslabbing
+
 2013-07-17  Charlie Zender  <zender@uci.edu>
 
 	* Document ncks --cdl switch. texi2dvi nco.texi works on Ubuntu, fails on Fedora

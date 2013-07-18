@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.213 2013-07-16 22:24:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.214 2013-07-18 17:07:27 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -512,7 +512,7 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
   /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
   typ_tmp=var_in->type;
   var_in->type=var_in->typ_dsk; 
-  void_ptr=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,var_in);
+  void_ptr=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,var_in);
 
   var_in->type=typ_tmp;
   var_in->val.vp=void_ptr;
@@ -724,7 +724,7 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
 
       /* Call super-dooper recursive routine */
       /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
-      var[idx]->val.vp=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,var[idx]);
+      var[idx]->val.vp=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,var[idx]);
 
       (void)nco_free(lmt_msa);
       (void)nco_free(lmt);
@@ -1264,7 +1264,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   vara.type=var_typ;
 
   /* Call super-dooper recursive routine */
-  void_ptr=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,&vara);
+  void_ptr=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,&vara);
 
   /* After MSA, we have the size to write */
   var_sz=vara.sz;
@@ -1472,7 +1472,7 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   /* Call super-dooper recursive routine */
   typ_tmp=var_in->type;
   var_in->type=var_in->typ_dsk; 
-  void_ptr=nco_msa_rcr_clc(0,nbr_dim,lmt,lmt_msa,var_in);
+  void_ptr=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,var_in);
 
   var_in->type=typ_tmp;
   var_in->val.vp=void_ptr;
