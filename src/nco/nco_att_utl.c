@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.152 2013-07-18 20:36:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.153 2013-07-18 23:32:48 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -1034,6 +1034,9 @@ nco_gpe_evl /* [fnc] Apply Group Path Editing (GPE) to argument */
   if(!in_lng) (void)fprintf(stdout,"%s: WARNING %s reports grp_nm_fll_in is empty\n",prg_nm_get(),fnc_nm);
   grp_nm_fll_in_dpl=(char *)strdup(grp_nm_fll_in);
   sls_ptr=grp_out=grp_nm_fll_in_dpl;
+
+  /* Prevent attempts to dereference NULL. perform identity translation and return */
+  if(!gpe) return grp_nm_fll_in_dpl;
 
   /* If GPE was not invoked, perform identity translation and return */
   if(!gpe->arg) return grp_nm_fll_in_dpl;
