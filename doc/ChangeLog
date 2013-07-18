@@ -1,5 +1,11 @@
 2013-07-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.3.3 release procedure:
+ 	Changes since nco-4_3_2: -X aux, ncflint/ncpdq -g -G --unn
+	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
+	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
+
 	* CDL mode prints all test cases at least as well as ncdump
 
 	* Switch attribute NC_CHAR printing to chr2sng_cdl() infrastructure
@@ -65,12 +71,6 @@
 2013-07-12  Charlie Zender  <zender@uci.edu>
 
 	* CDL mode for variable shape and attributes mostly works
-
-	* NCO 4.3.3 release procedure:
- 	Changes since nco-4_3_2: -X aux, ncflint/ncpdq -g -G --unn
-	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
-	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
 
 	* Implement CDL mode in variable header in nco_prn_var_dfn()
 
