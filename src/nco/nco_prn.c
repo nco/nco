@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.126 2013-07-18 21:34:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.127 2013-07-18 21:47:24 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1119,7 +1119,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         case NC_CHAR: 
 	  if(var.nbr_dim == 0){
 	    (void)fprintf(stdout,"\"");
-	    if(var.val.cp[lmn] != '\0') (void)fprintf(stdout,"%c\"",var.val.cp[lmn]);
+	    if(var.val.cp[lmn] == '\0') (void)fprintf(stdout,"\""); else (void)fprintf(stdout,"%c\"",var.val.cp[lmn]);
 	    val_sng[0]='\0';
 	  }else{ /* var.nbr_dim > 0 */
 	    //qrk
