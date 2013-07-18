@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.151 2013-07-18 20:11:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.152 2013-07-18 20:36:25 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -968,7 +968,12 @@ nco_gpe_evl_stb /* [fnc] Apply Group Path Editing (GPE) to argument safely */
 (const gpe_sct * const gpe, /* I [sng] GPE structure, if any */
  const char * const grp_nm_fll_in) /* I [sng] Full group name */
 {
-  /* Purpose: Apply Group Path Editing (GPE) to input full group name, return stub of result */
+  /* Purpose: Apply Group Path Editing (GPE) to input full group name, return stub of result
+     NB: Function designed to make it easy for ncks to print GPE-transformed group stubs 
+     Hence returned strings may be used directly in print functions without pointers being save and free()'d
+     This kind of memory leak is acceptable since it scales only with total number of groups in printed file,
+     and does not scale with data size. */
+
   const char fnc_nm[]="nco_gpe_evl_stb()"; /* [sng] Function name */
   const char sls_chr='/'; /* [sng] Slash character */
 
