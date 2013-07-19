@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.129 2013-07-18 23:40:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.130 2013-07-19 19:45:49 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -969,6 +969,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 
   float val_flt;
 
+  int dmn_idx;                              /* [idx] Counter over dimensions */
   int grp_id;                                 /* [ID] Group ID where variable resides (passed to MSA) */
   int rcd_prn;
   int prn_ndn=0;                             /* [nbr] Indentation for printing */
@@ -977,15 +978,15 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   lmt_msa_sct **lmt_msa=NULL_CEWI;           /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI;                   /* [sct] Auxiliary Limit used in MSA */
 
-  long lmn;                                  /* [nbr] Index to print variable data */
-  long var_dsk;                              /* [nbr] Variable index relative to disk */
-  long mod_map_in[NC_MAX_DIMS];              /* [nbr] MSA modulo array */
-  long mod_map_cnt[NC_MAX_DIMS];             /* [nbr] MSA modulo array */
-  long dmn_sbs_ram[NC_MAX_DIMS];             /* [nbr] Indices in hyperslab */
   long dmn_sbs_dsk[NC_MAX_DIMS];             /* [nbr] Indices of hyperslab relative to original on disk */
-  long var_szm1;
+  long dmn_sbs_ram[NC_MAX_DIMS];             /* [nbr] Indices in hyperslab */
+  long lmn;                                  /* [nbr] Index to print variable data */
+  long mod_map_cnt[NC_MAX_DIMS];             /* [nbr] MSA modulo array */
+  long mod_map_in[NC_MAX_DIMS];              /* [nbr] MSA modulo array */
   long sng_lng;                              /* [nbr] Length of NC_CHAR string */
   long sng_lngm1;                            /* [nbr] Length minus one of NC_CHAR string */
+  long var_dsk;                              /* [nbr] Variable index relative to disk */
+  long var_szm1;
 
   var_sct var;                               /* [sct] Variable structure */
   var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
@@ -1356,7 +1357,6 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 
       /* Print dimensions with indices along with values if they are coordinate variables */
       if(prn_flg->PRN_DMN_IDX_CRD_VAL){
-        int dmn_idx;
         long dmn_sbs_prn;
         long crd_idx_crr;
         char dmn_sng[NCO_MAX_LEN_FMT_SNG];
@@ -1522,6 +1522,8 @@ lbl_chr_prn:
     } /* end loop over elements */
 
     (void)fflush(stdout);
+
+    for(int idx=0;idx<var.nbr_dim;idx++) if(dim[idx].val.vp) dim[idx].val.vp=nco_free(dim[idx].val.vp);
   } /* end if variable has more than one dimension */
 
   /* Free value buffer */
@@ -1531,11 +1533,7 @@ lbl_chr_prn:
 
   if(MALLOC_UNITS_SNG) unit_sng=(char *)nco_free(unit_sng);
 
-  if(prn_flg->PRN_DMN_IDX_CRD_VAL && dlm_sng == NULL)
-    for(int idx=0;idx<var.nbr_dim;idx++) 
-      dim[idx].val.vp=nco_free(dim[idx].val.vp);
-
-  /* Loop dimensions for object (variable)  */
+  /* Loop dimensions for object (variable) */
   for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
     /* Allocated number of limits */
     int lmt_dmn_nbr=lmt_msa[dmn_idx_var]->lmt_dmn_nbr;

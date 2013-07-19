@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.801 2013-07-18 23:20:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.802 2013-07-19 19:45:49 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -142,7 +142,7 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2013 Aug&nbsp;??: NCO 4.3.3 (<i>In progress</i>)
+<li>2013 Aug&nbsp;??: NCO 4.3.3 (<tt>ncwa</tt> groups, CDL) (<i>In progress</i>)
 <li>2013 Jul&nbsp;05: NCO 4.3.2 (<tt>ncflint</tt>, <tt>ncpdq</tt> groups)</li>
 <li>2013 Jun&nbsp;03: Submitted NASA ACCESS 2013 <a href="http://dust.ess.uci.edu/prp/prp_axs/prp_axs.pdf">proposal</a></li>
 <li>2013 May&nbsp;01: NCO 4.3.1 (Group broadcasting)</li>
@@ -835,7 +835,7 @@ Improve IRIX&nbsp;6.5 support</li>
 <li><b>NCO 2.0.3</b>: small fixes to 2.0.0 (e.g., <tt>ncks</tt> printing)</li>
 <li><b>NCO 2.0.2</b>: Add packing/unpacking capabilities based on <tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>
 <li><b>NCO 2.0.1</b>: Add user-configurable multi-threaded capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
-<li><b>NCO 2.0.0</b>: (RPM available) <a href="./nco_news.shtml#20010507">20010507</a>: Switched all internal calls to netCDF 3.x API</li>
+<li><b>NCO 2.0.0</b>: (RPM available) <a href="./nco_news.shtml#20010507">20010507</a>: Switched all internal calls to netCDF&nbsp;3.x API</li>
 <li><b>NCO 1.2.2</b>: <a href="./nco_news.shtml#20010211">20010211</a>: Allow weights with
 <tt>ncwa</tt> in min/max/ttl operations; easier building with HDF4. 
 <tt>ncrename</tt> can now work on specific variables rather than whole file.
@@ -1187,7 +1187,7 @@ If the pre-built executables do not satisfy you, or are out-of-date
 and you want the latest, greatest NCO features, then the recommended
 first steps to build (i.e., compile, for the most part) NCO from
 source code are to install 
-<a href="http://www.antlr.org">ANTLR 2.7.x (not version 3.x or 4.x!)</a> (required for <tt>ncap2</tt>), 
+<a href="http://www.antlr.org">ANTLR 2.7.x</a> (not version 3.x or 4.x!) (required for <tt>ncap2</tt>), 
 <a href="http://www.gnu.org/software/gsl">GSL</a> (desirable for <tt>ncap2</tt>), 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> (absolutely required), 
 <a href="http://opendap.org">OPeNDAP</a> (enables network transparency), and
@@ -1254,6 +1254,11 @@ For Mac OS X with MacPorts:
 <dt>make</dt>
 <dt>sudo make install</dt>
 </tt>
+Please post questions about building or installing NCO to the 
+<a href="http://sf.net/projects/nco/forums/forum/9830">list</a>
+only after reading and attempting to follow these instructions.
+To indicate you have done this, include the word &ldquo;bonobo&rdquo;
+in the first sentence of your post.
 For more sophisticated build/install options, see the next section.
 </ul>
 
