@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.61 2013-07-17 00:07:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.62 2013-07-19 11:59:20 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -882,7 +882,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
     }
   }
 
-
+  
   var_sct *mth2_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("mth2_cls::fnd");
 
@@ -1051,7 +1051,6 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
             }
 
             if(fdx==PPERMUTE){
-
               if((size_t)dmn_vtr.size() < str_vtr.size())
 	        wrn_prn(sfnm, "Unrecognized dimension arguments");
 
@@ -2260,7 +2259,7 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
    long kdx;
 
 
-  // Sanity check for input/output data
+  // Sanity check for input/ooooutput data
   if( v_xin->sz *v_yin->sz != v_din->sz)
     err_prn(sfnm,"Dimension size mismatch with input variables\n"); 
 
@@ -2698,3 +2697,485 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   return ncap_sclr_var_mk(static_cast<std::string>("~coord_function"),(nco_int)lret);        
   }
 
+
+//misc Functions /******************************************/
+// These fuctions are used to create and apply masks to 2D grid variables
+//    mask_out=imask_make(var_in,lat,lon)
+//
+//    var_in is a 2D var. mask_out is a 0/1 mask of grid points.
+//    value is set to 1 if point in var_in is  missing_value but has a neigbour with a non-missing value;
+//
+//    var_out=imask_fill(var_in.mask_out,lat,lon)
+//  
+//    Points  in var_in are filled if they are missing AND are specified in mask_out.
+//    The fill value is an average from the nearest neigbours. nb if a neighbour has just been filled 
+//    in then this value is NOT used in the calculation of the average      
+//    Typically mask_out and var_in should be the same shape. 
+//    Howver its possible to specify multiple mask in mask_out - in this case each mask is iterativly applied to var_in
+//    so the shape would be like mask_out(mask_size,lat,lon) 
+// 
+//
+//
+  misc_cls::misc_cls(bool flg_dbg){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+      fmc_vtr.push_back( fmc_cls("imask",this,(int)PMISC1));
+      fmc_vtr.push_back( fmc_cls("imask_make",this,(int)PMISC2));
+      fmc_vtr.push_back( fmc_cls("imask_fill",this,(int)PMISC3));
+    }
+  }
+
+
+
+
+  var_sct *misc_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("misc_cls::fnd");
+    int idx;
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_args;
+    int in_nbr_args;
+    prs_cls* prs_arg=walker.prs_arg;
+    var_sct *var_arr[4];
+    var_sct *var_out;
+    RefAST tr;
+    nc_type in_typ;  
+    std::string susg;
+    std::string serr;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::vector<RefAST> vtr_args; 
+    NcapVector<dmn_sct*> dmn_vtr;
+
+
+    if(expr)
+      vtr_args.push_back(expr);
+
+    if(tr=fargs->getFirstChild()) {
+       do  
+         vtr_args.push_back(tr);
+       while(tr=tr->getNextSibling());    
+    } 
+
+      
+    nbr_args=vtr_args.size();  
+
+    switch(fdx){
+
+      case PMISC1:
+       in_nbr_args=nbr_args;  
+       susg="usage: var_out="+sfnm+"(Data_2D, X_in, Y_in)"; 
+       break;
+
+      case PMISC2: 
+        in_nbr_args=nbr_args;  
+        susg="usage: var_out="+sfnm+"(data_2D, mask,X_in?, Y_in?)"; 
+        break;
+
+
+      case PMISC3:
+       in_nbr_args=nbr_args;  
+       susg="usage: var_out="+sfnm+"(data_2D,mask, X_in, Y_in)"; 
+       break;
+
+
+    } // end switch
+
+
+    if(in_nbr_args <3 ){   
+      serr="function requires at least two arguments. You have only supplied "+nbr2sng(in_nbr_args)+ " arguments\n"; 
+      err_prn(sfnm,serr+susg);
+    }
+
+    
+   
+    // process input args 
+    for(idx=0 ; idx<in_nbr_args; idx++)
+      var_arr[idx]=walker.out(vtr_args[idx]);
+
+   
+    // initial scan
+    if(prs_arg->ntl_scn){
+        for(idx=1 ; idx<in_nbr_args ; idx++)
+	    nco_var_free(var_arr[idx]);
+
+        return var_arr[0];
+    }
+
+    // save inital type
+    in_typ=var_arr[0]->type;     
+    // convert all args to type DOUBLE 
+    for(idx=0;idx<in_nbr_args;idx++)
+       var_arr[idx]=nco_var_cnf_typ(NC_DOUBLE,var_arr[idx]);               
+
+   
+
+    if(fdx==PMISC1){
+      // recall input arguments in order
+      // 0 - input data
+      // 1 - input X   co-ordinate var
+      // 2 - input Y   co-ordinate var
+      long cnt=0l; 
+      long ldx; 
+      long idx;
+      long jdx;
+      long v_sz;
+      long iidx;
+      long jjdx;
+      long lldx; 
+      long x_sz;
+      long y_sz;
+      double *dpi;
+      double *dpo;
+      double mss_dbl=9.999e20;; 
+
+      var_out=nco_var_dpl(var_arr[0]);
+      (void)cast_void_nctype(NC_DOUBLE,&var_out->val);   
+
+      for(idx=0;idx<in_nbr_args;idx++) 
+         (void)cast_void_nctype(NC_DOUBLE,&var_arr[idx]->val);
+
+      // grab missing value;  
+      if( var_arr[0]->has_mss_val ){
+         cast_void_nctype(NC_DOUBLE,&var_arr[0]->mss_val);
+         mss_dbl=*var_arr[0]->mss_val.dp;      
+         cast_nctype_void(NC_DOUBLE,&var_arr[0]->mss_val);       
+       }   
+
+      dpi=var_arr[0]->val.dp; 
+      dpo=var_out->val.dp;          
+      v_sz=var_arr[0]->sz;     
+      x_sz=var_arr[1]->sz;   
+      y_sz=var_arr[2]->sz;   
+
+      
+      
+      // set all values to zero      
+     memset((void*)dpo,0, sizeof(double) *v_sz);     
+
+     for(idx=2;idx<x_sz-2; idx++)       
+       for(jdx=2;jdx<y_sz-2;jdx++ ){
+         ldx=idx*y_sz+jdx; 
+         // set output to default missing vale; 
+         dpo[ldx]=mss_dbl; 
+         // mask either 1 or mss_dbl
+	 if( dpi[ldx] !=1.0 ){
+	   for(iidx=idx-2; iidx<idx+3;iidx++){ 
+	     for(jjdx=jdx-2; jjdx<jdx+3;jjdx++){ 
+	       lldx=iidx*y_sz+jjdx;
+	        if(dpi[lldx]==1.0){
+		  dpo[ldx]=1.0;  
+                  cnt++; 
+                  goto outer; 
+	        }             
+	     }
+           }
+	 } 
+       outer: ;
+       }
+       
+     printf("misc_cls number of spots processed=%ld\n" ,cnt);
+                       
+    } // end fdx
+
+    if(fdx==PMISC2){
+      // recall input arguments in order
+      // 0 - input var -2D INPUT GRID 
+      // 1 - input X   co-ordinate var
+      // 2 - input Y   co-ordinate var
+      long ldx;  
+      long v_sz;
+      long x_sz;
+      long y_sz;
+      long mcnt=0l;   // num missing values count 
+      long vmcnt=0l; // num missing processed;   
+      double mss_dbl=9.999e20; 
+      double *dpi;   // input pointer
+      double *dpo;   //output pointer 
+      double *dpm;   // mask pointer;  
+      // save in type; 
+      ostringstream os; 
+      
+      // var_out is the output mask - same shape as input var 
+      var_out=nco_var_dpl(var_arr[0]);         
+      (void)cast_void_nctype(NC_DOUBLE,&var_out->val); 
+
+      // cast all vars
+      for(idx=0;idx<in_nbr_args;idx++)
+        (void)cast_void_nctype(NC_DOUBLE,&var_arr[idx]->val);
+        
+      v_sz=var_arr[0]->sz;
+      x_sz=var_arr[1]->sz;
+      y_sz=var_arr[2]->sz;
+   
+      
+      dpo=var_out->val.dp;
+      dpi=var_arr[0]->val.dp;     
+      dpm=var_arr[1]->val.dp;      
+ 
+      // grab missing value;  
+     if( var_arr[0]->has_mss_val ){
+         cast_void_nctype(NC_DOUBLE,&var_arr[0]->mss_val);
+         mss_dbl=*var_arr[0]->mss_val.dp;      
+         cast_nctype_void(NC_DOUBLE,&var_arr[0]->mss_val);       
+       }   
+      
+      for(ldx=0; ldx<v_sz ; ldx++){
+        // set otuput to default -0.0 
+        dpo[ldx]=0.0;
+
+        if(dpi[ldx]==mss_dbl ){  
+          int cnt=0;  
+          int jdx;
+          long iX=ldx/y_sz;
+          long iY= ldx -iX*y_sz;
+          double sum=0.0;
+          double Q[4]={mss_dbl,mss_dbl,mss_dbl,mss_dbl};
+          mcnt++; 
+            
+  
+          if(iY >0 )    Q[0]=dpi[ldx-1];
+          if(iY+1<y_sz) Q[1]=dpi[ldx+1]; 
+          if(iX>0 )     Q[2]=dpi[ldx-y_sz];
+          if(iX+1 < x_sz) Q[3]=dpi[ldx+y_sz];   
+           
+          for(jdx=0 ; jdx<4 ;jdx++)
+	    if(Q[jdx] !=mss_dbl) {
+	      sum+=Q[jdx];              
+              cnt++; 
+	    }
+       
+	  if(cnt){ 
+	    dpo[ldx]=1.0;   
+            vmcnt++;
+	  }
+           
+	} // end if
+               
+      } // end for
+
+      if(dbg_lvl_get() >= 2){ 
+          os<< sfnm<<": num missing="<<mcnt<<+" num valid="<<vmcnt;
+          dbg_prn(fnc_nm,os.str());
+      } 
+
+    } // end fdx  
+
+
+    if(fdx==PMISC3){
+      // recall input arguments in order
+      // 0 - input var -2D INPUT GRID 
+      // 1 - input mask 2D GRID (VARMASK these are the places we want to fill a value)
+      //     nb this mask may contain multiple masks. So size of mask is a multiple of the
+      //     the input size grid i.e mask size = n * v_sz, When its a multiple we apply each mask
+      //     i an iteration    
+      // 2 - input X   co-ordinate var
+      // 3 - input Y   co-ordinate var
+      long ldx;  
+      long mdx;
+      long v_sz;
+      long m_sz;
+      long x_sz;
+      long y_sz;
+      size_t m_offset=0ll; 
+      double mss_dbl=9.999e20; 
+      double *dpi;   // input pointer
+      double *dpo;   //output pointer 
+      double *dpm;   // mask pointer;  
+   
+      // save in type; 
+      
+
+
+      var_out=nco_var_dpl(var_arr[0]);         
+      (void)cast_void_nctype(NC_DOUBLE,&var_out->val);
+
+      // cast all arguments
+      for(idx=0;idx<in_nbr_args;idx++)
+        (void)cast_void_nctype(NC_DOUBLE,&var_arr[idx]->val);
+
+      v_sz=var_arr[0]->sz;
+      m_sz=var_arr[1]->sz; 
+      x_sz=var_arr[2]->sz;
+      y_sz=var_arr[3]->sz;
+      
+    
+      assert(v_sz==x_sz*y_sz); 
+      // check mask size  
+      assert(m_sz % v_sz ==0l);    
+     
+      dpo=var_out->val.dp;
+      dpi=var_arr[0]->val.dp;     
+ 
+ 
+      // grab missing value;  
+      if( var_arr[0]->has_mss_val ){
+	cast_void_nctype(NC_DOUBLE,&var_arr[0]->mss_val);
+	mss_dbl=*var_arr[0]->mss_val.dp;      
+	cast_nctype_void(NC_DOUBLE,&var_arr[0]->mss_val);       
+      }   
+
+      for(mdx=0;mdx < m_sz/v_sz ; mdx++){  
+        long mcnt=0l;
+        long vmcnt=0l;        
+	ostringstream os; 
+        dpm=var_arr[1]->val.dp+mdx*v_sz;
+
+        // copy new values into input pointer !!
+        // dont want dpi and dpo the same
+        if(mdx >0)
+          memcpy(dpi,dpo, v_sz* sizeof(double));    
+
+	for(ldx=0; ldx<v_sz ; ldx++){
+	  //check mask  
+	  // if(dpm[ldx]==1.0 && dpi[ldx]==mss_dbl){  
+	  // if( dpi[ldx]==mss_dbl) dpo[ldx]=0.0; 
+	  // if(dpm[ldx]==1.0 && dpi[ldx]==mss_dbl){     
+	  if(dpi[ldx]==mss_dbl && dpm[ldx]==1.0){  
+	    int cnt=0;  
+	    int jdx;  
+	    long iX=ldx/y_sz;
+	    long iY= ldx -iX*y_sz;
+	    double sum=0.0;
+	    double Q[4]={mss_dbl,mss_dbl,mss_dbl,mss_dbl};
+	    mcnt++;
+       
+	    if(iY >0 )    Q[0]=dpi[ldx-1];
+	    if(iY+1<x_sz) Q[1]=dpi[ldx+1]; 
+	    if(iX>0 )     Q[2]=dpi[ldx-y_sz];
+	    if(iX+1 < x_sz) Q[3]=dpi[ldx+y_sz];   
+           
+	    for(jdx=0 ; jdx<4 ;jdx++){
+	      if(Q[jdx] !=mss_dbl) {
+		sum+=Q[jdx];              
+		cnt++; 
+	      }
+	    }
+	    if(cnt){ 
+	      dpo[ldx]=sum/cnt;
+	      vmcnt++;  
+	    } 
+
+	  } // end if
+
+	} // end for ldx 
+
+        if(dbg_lvl_get() >= 2){ 
+	      os<< sfnm<<" mask num="<<mdx<<" : num missing="<<mcnt<<+" num processed="<<vmcnt;
+              dbg_prn(fnc_nm,os.str());
+	} 
+         
+      } // end for mdx
+    } 
+
+    // cast everything back to void,and free up
+    for(idx=0;idx<in_nbr_args;idx++){
+      (void)cast_nctype_void(NC_DOUBLE,&var_arr[idx]->val);
+      nco_var_free(var_arr[idx]);
+    } 
+
+    (void)cast_nctype_void(NC_DOUBLE,&var_out->val);    
+    // change back to input type  
+    var_out=nco_var_cnf_typ(in_typ,var_out);
+    
+
+    return var_out;
+
+
+  }// end  
+
+/*****************************************************************************************************************/
+/* ncap2 functions and methods */
+
+/* To avoid confusion when I say FUNC (uppercase) I mean a custom ncap2 function.
+   When I say METHOD (uppercase) I mean a custom ncap2 method 
+   When I say method (lowercase) I mean a C++ class method
+   When I say function(lowercase) I mean a C/C++ function
+
+   When I refer to an ncap2  FUNC. I also mean a METHOD 
+   most of the FUNCS can be called as  METHODS  e.g  
+ 
+  sum=three_dmn_var_dbl.total($time) or sum=total(three_dmn_var_dbl,$time)
+ 
+  So for a method the "first argument" is the evaluation of everything prefixing the DOT.
+  The nice thing about METHODS is that you can daisy chain them together.  
+  e.g promote to type double - find avg - then convert back to short()
+
+  three_avg=three_dmn_var_sht.double().avg($time).short();
+  
+  file: ncap2.cc
+  The vector fmc_vtr in ncap2.cc contains all the method pointers that will deal with all the FUNC's 
+  Each element in this vector has the following properties
+
+  string fnm() -- The name of the FUNC - as used in the script.
+                  It is defined in one place only  - the constructor of the C++ class 
+                  that will deal with the FUNC  
+
+  vtl_cls vfnc -- This points to the  C++ method that will deal with the FUNC.
+                  As you look at all the classes in fmc_all_cls.cc you will see that all
+                  the  methods thet deal with a FUNC share the same argument signature
+                  More on this later.   
+
+  int fdx()   --  This is the index (with respect to a particular class) of the FUNC called.
+                  Some classes deal with a whole family of FUNCS others only one or two
+                  The index's are defined in an enum. 
+                  so for (basic)-    bsc_cls we have:   enum {PSIZE, PTYPE, PNDIMS, PEXISTS };
+                  and for(aggregate) agg_cls we have:   enum {PAVG ,PAVGSQR ,PMAX ,PMIN ,PRMS, PRMSSDN, PSQRAVG, PTTL} 
+
+  This vector 'fmc_vtr' is used by the lexer to identify FUNC names and to distingush them from var names 
+  so for example:
+     total = three_dmn_var_dbl.total($lat,$lon);   
+  Is completely valid - The lexer sees that the lvalue total has no trailing '(' and so 
+  identifies it as a variable. If I subsequently said:
+     total0= total(0);       
+  The lexer  would get confused. It would recognize 'total' on the RHS as a FUNC call rather than a hyperslab.
+   
+  After being populated fmc_vtr is then passed by reference to the object prs_arg. This object provides the 
+  Parser with the necessary detail to enable IO to netcdf files. It also maintains a lookup table for vars/ atts 
+  and memory vars. The most important properties listed are below
+
+  NcapVector<dmn_sct*> &dmn_in_vtr;        //Vector of dimensions in input file nb doesn't change
+  NcapVector<dmn_sct*> &dmn_out_vtr;       //Vector of dimensions in output file file
+  std::vector<fmc_cls> &fmc_vtr;           //List of functions/methods nb doesn't change 
+  NcapVarVector &var_vtr;                  // list of attributes & variables
+  NcapVarVector &int_vtr;                  // stores vars/atts in FIRST PARSE
+  bool ntl_scn;                            // [flg] Initial scan of script 
+ 
+  The most important methods are the following:
+  
+  // initialize var_sct with the variable snm
+  var_sct *ncap_var_init(const std::string &snm, bool bfll);        
+ // write var to disc
+ int ncap_var_write (var_sct *var, bool bram);           
+
+ 
+ Perhaps the most important thing to grasp is that given a list of statements TWO PARSES of the script (syntax tree) are made.
+ In the first parse the vars are defined on disc. In the second parse the vars are populated. 
+ This greatly increases peformance. 
+
+ The Grammer file ncoGrammer.g file is composed of three sections
+ ncoLexer  -  returns tokens/ deals with include files
+ ncoParser -  The main grammer - creates a syntax tree
+ ncoTree   -  Reads a syntax tree
+
+ Hopefully the only thing you'll deal with here is the ncoTree methods
+
+/*****************************************************************************************************************/
+
+/*
+  Lets take a look at mth2_cls(). 
+  The enum in the include file is: 
+    enum {PPOW,PATAN2,PCONVERT};
+  The constructor associates the pointer(this) and  FUNC script name  with the enum index:  
+   fmc_vtr.push_back( fmc_cls("pow",this,(int)PPOW));
+   fmc_vtr.push_back( fmc_cls("atan2",this,(int)PATAN2));
+   fmc_vtr.push_back( fmc_cls("convert",this,(int)PCONVERT));
+
+ The method that does the heavy lifting is:
+    var_sct *mth2_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker)
+  
+ It takes two fragments of the the parse tree ( expr, fargs) and returns a var_sct. 
+ 
+ If expr is null then it is A FUNC else its a METHOD
+   
+  
+
+*/
