@@ -1,3 +1,18 @@
+2012-08-27  Henry Butowsky  <henryb@hush.com>
+         * added the following custom masking function for 2D vars
+	
+	 *  mask_out=imask_make(var_in,lat,lon)
+
+	   mask_out is a 0/1 mask of grid points whose value in var_in is missng_value but
+	   have an adjacent neighbour whose value is NOT missing
+
+         *  var_out=imask_fill(var_in.mask_out,lat,lon)
+
+           Points  in var_in are filled if they are missing AND are specified in mask_out.
+           The fill value is an average from the nearest neigbours in input. but if a neighbour has just been filled
+           then its value is NOT used in the calculation of the average      
+
+
 2013-07-18 Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_dmn_avg_tbl() Transfer averaged dimensions information into GTT (-a for ncwa) 
