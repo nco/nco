@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.865 2013-07-18 23:45:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.866 2013-07-19 00:12:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6407,13 +6407,34 @@ nco_var_get_trv                       /* [fnc] Fill-in variable structure for a 
 
 void
 nco_dmn_rcd_trv                        /* [fnc] Transfer reduced dimension information into GTT  (ncwa)  */
-(const int nbr_dmn_rcd,                /* I [nbr] Number of reduced dimensions  */
- dmn_sct **dmn_rcd_out,                /* I [sct] Array of reduced dimensions */
+(const int nbr_dmn_rdc,                /* I [nbr] Number of reduced dimensions  */
+ dmn_sct **dmn_rdc_out,                /* I [sct] Array of reduced dimensions */
  const trv_tbl_sct *trv_tbl)           /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Transfer reduced dimension information into GTT  (ncwa) */
 
-  
+  const char fnc_nm[]="nco_dmn_rcd_trv()"; /* [sng] Function name  */
+
+  /* Loop input dimension list */
+  for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn_rdc;idx_dmn_in++){
+
+    /* Loop GTT dimensions  */
+    for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+      dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn];
+
+      /* Match name  */
+      if(strcmp(dmn_trv.nm,dmn_rdc_out[idx_dmn_in]->nm) == 0){
+
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s Found dimension <%s>#%d \n",prg_nm_get(),fnc_nm,
+            dmn_trv.nm_fll,dmn_trv.dmn_id);
+        } 
+
+
+      } /* Match name  */
+    } /* Loop GTT dimensions  */
+  } /* Loop input dimension name list */
 
   return;
 } /* end nco_dmn_rcd_trv() */
