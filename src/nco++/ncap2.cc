@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.169 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.170 2013-07-19 12:00:19 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.169 2013-06-25 16:56:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.169 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.170 2013-07-19 12:00:19 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.170 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -506,6 +506,9 @@ main(int argc,char **argv)
   // Co-ordinates functions
   cod_cls cod_obj(true); 
 
+  // misc functions 
+  misc_cls misc_obj(true);
+
   // Populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
   (void)pop_fmc_vtr(fmc_vtr,&agg_obj);
@@ -521,6 +524,7 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&arr_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bil_obj);
   (void)pop_fmc_vtr(fmc_vtr,&cod_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&misc_obj);
 
 #ifdef ENABLE_NCO_GSL
   // nco_gsl functions
@@ -877,7 +881,7 @@ main(int argc,char **argv)
 
       /* type mismatch dont overwrite. This can occur when packed vars are in output from using the -A switch */
       if(rcd_inq_att==NC_NOERR && var_ref->type != att_item.type) continue;   
-      
+
       /* fill mode and att exists */ 
       if(prs_arg.NCAP4_FILL && rcd_inq_att==NC_NOERR){
         (void)nco_rename_att(out_id,var_id,nco_mss_val_sng_get(),att_nm_tmp);     
