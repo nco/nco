@@ -1,3 +1,7 @@
+2013-07-18 Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_dmn_avg_tbl() Transfer averaged dimensions information into GTT (-a for ncwa) 
+
 2013-07-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.3 release procedure:

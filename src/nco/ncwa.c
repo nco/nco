@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.339 2013-07-19 09:36:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.340 2013-07-19 10:29:42 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 #endif
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.339 2013-07-19 09:36:58 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.339 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.340 2013-07-19 10:29:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.340 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1230,10 +1230,7 @@ main(int argc,char **argv)
 
     /* Create structured list of reducing dimension names and IDs */
     dmn_avg_lst=nco_lst_dmn_mk_trv(dmn_avg_lst_in,dmn_avg_nbr,trv_tbl);
-    /* Dimension average list no longer needed */
-    if(dmn_avg_nbr > 0) dmn_avg_lst_in=nco_sng_lst_free(dmn_avg_lst_in,dmn_avg_nbr);
-
-
+   
     /* Form list of reducing dimensions from extracted input dimensions */
     dmn_avg=(dmn_sct **)nco_malloc(dmn_avg_nbr*sizeof(dmn_sct *));
     for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
@@ -1298,7 +1295,11 @@ main(int argc,char **argv)
 
   } /* dmn_avg_nbr <= 0 */
 
+  /* Transfer averaged dimensions information into GTT (-a for ncwa)  */
+  (void)nco_dmn_avg_tbl(dmn_avg_lst_in,dmn_avg_nbr,trv_tbl);
 
+  /* Dimension average list no longer needed */
+  if(dmn_avg_nbr > 0) dmn_avg_lst_in=nco_sng_lst_free(dmn_avg_lst_in,dmn_avg_nbr);
 
   /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);

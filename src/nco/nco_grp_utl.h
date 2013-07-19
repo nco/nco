@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.336 2013-07-19 09:36:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.337 2013-07-19 10:29:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -580,6 +580,11 @@ nco_var_get_trv                       /* [fnc] Fill-in variable structure for a 
  const char * const var_nm,           /* I [sng] Variable name (relative) */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
+void                          
+nco_dmn_avg_tbl                       /* [fnc] Transfer averaged dimensions information into GTT (-a for ncwa)  */
+(char **dmn_avg_lst_in,               /* I [sng] User-specified list of dimension names */
+ const int dmn_avg_nbr,               /* I [nbr] Total number of dimensions in list */
+ const trv_tbl_sct *trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
