@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.338 2013-07-18 23:39:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.339 2013-07-19 09:36:58 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -59,7 +59,7 @@
 # ifdef HAVE_GETOPT_H
 #  include <getopt.h>
 # endif /* !HAVE_GETOPT_H */ 
-#endif /* HAVE_GETOPT_LONG */
+#endif /* HAVE_GETOPT_LONG *0
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
@@ -111,11 +111,14 @@ main(int argc,char **argv)
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
   nco_bool flg_opt_a=False; /* [flg] Option a was invoked */
   nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
+#ifdef USE_TRV_API
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
+#endif
 
-
+#ifdef USE_TRV_API
   char *aux_arg[NC_MAX_DIMS];
+#endif
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
@@ -138,10 +141,12 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
+#ifdef USE_TRV_API
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
+#endif
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.338 2013-07-18 23:39:46 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.338 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.339 2013-07-19 09:36:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.339 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1282,11 +1287,6 @@ main(int argc,char **argv)
         nbr_dmn_out++;
       } /* end if idx_avg */
     } /* end loop over idx_xtr */
-
-
-    /* Transfer reduced dimension information into GTT  */
-    (void)nco_dmn_rcd_trv(nbr_dmn_out,dmn_out,trv_tbl);
-
 
     /* Dimension average list no longer needed */
     dmn_avg_lst=nco_nm_id_lst_free(dmn_avg_lst,dmn_avg_nbr);

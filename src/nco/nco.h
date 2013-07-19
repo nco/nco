@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.367 2013-07-18 23:10:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.368 2013-07-19 09:36:58 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -745,14 +745,6 @@ extern "C" {
     prc_typ                 /*  1 [enm] Process variable (operator may alter data and metadata) */
   } prc_typ_enm; 
 
-  /* Map (associative array) a dimension ID to a dimension index; 
-     Lookup for the dimension ID (map value) associated with the dimension index (map key)
-     Needed for dimension permutations */
-  typedef struct {
-    int key_idx;       /* [nbr] Key: dimension index ( map key ) */
-    int val_id;        /* [nbr] Value: dimension ID ( map value ) */
-    char *nm_fll;      /* [sng] Dimension full name ( human helpful information ) */
-  } trv_map_dmn_id_t;
 
   /* GTT Object structure 
      Information for each object/node in traversal tree
@@ -802,7 +794,7 @@ extern "C" {
     nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension (ncpdq) */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
-    dmn_sct *dmn_rdc_out;             /* [sct] (ncwa) Reduced dimensions */
+
   } trv_sct;
  
   /* GTT (Group Traversal Table) structure contains two lists

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.85 2013-07-17 08:27:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.86 2013-07-19 09:36:58 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -106,27 +106,6 @@ trv_tbl_cmn_nm_prt                     /* [fnc] Print list of common objects (sa
 (const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm);                /* I [nbr] Number of common names entries */
 
-
-void 
-trv_map_dmn_init                       /* [fnc] Dimension map initialize */
-(trv_map_dmn_id_t *map);               /* I/O [sct] Dimension map */
-
-
-void 
-trv_map_dmn_free                       /* [fnc] Dimension map free memory */
-(trv_map_dmn_id_t *map);               /* I [sct] Dimension map */
-
-void 
-trv_map_dmn_set                        /* [fnc] Dimension map set values */
-(int key_idx,                          /* I [nbr] Key: dimension index (map key) */
- int val_id,                           /* I [nbr] Value: dimension ID (map value) */
- const char * const nm_fll,            /* I [sng] Dimension full name */
- trv_map_dmn_id_t *map);               /* I/O [sct] Dimension map */
-
-int                                    /* O [nbr] Value: dimension ID (map value) */
-trv_map_dmn_get                        /* [fnc] Dimension map get values */
-(int key_idx,                          /* I [nbr] Key: dimension index (map key) */
- const trv_map_dmn_id_t * const map);  /* I [sct] Dimension map */
 
 
 
