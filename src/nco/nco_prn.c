@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.130 2013-07-19 19:45:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.131 2013-07-19 20:12:30 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -120,25 +120,30 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     case NC_CHAR:
       for(lmn=0;lmn<att_sz;lmn++){
 	chr_val=att[idx].val.cp[lmn];
-	val_sng[0]='\0';
-	if(lmn == 0L){
-	  sng_lng=att_sz;
-	  sng_lngm1=sng_lng-1UL;
-	  /* Worst case is printable strings are four times longer than unformatted, i.e. '\\' == "\\\\" */
-	  sng_val_sng=(char *)nco_malloc(4*sng_lng+1UL);
-	} /* endif first element of string array */
-	/* New string begins each element where penultimate dimension changes */
-	if(lmn%sng_lng == 0L){
-	  if(prn_flg->cdl) (void)fprintf(stdout,"\"");
-	  sng_val_sng[0]='\0';
-	} /* endif new string */
-	(void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
-	if(lmn%sng_lng == sng_lngm1){
-	  (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->cdl) ? "\"" : "");
-	  /* Print commas after non-final strings */
-	  if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
-	} /* endif string end */
-	if(lmn == att_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
+	if(prn_flg->cdl){
+	  val_sng[0]='\0';
+	  if(lmn == 0L){
+	    sng_lng=att_sz;
+	    sng_lngm1=sng_lng-1UL;
+	    /* Worst case is printable strings are four times longer than unformatted, i.e. '\\' == "\\\\" */
+	    sng_val_sng=(char *)nco_malloc(4*sng_lng+1UL);
+	  } /* endif first element of string array */
+	  /* New string begins each element where penultimate dimension changes */
+	  if(lmn%sng_lng == 0L){
+	    if(prn_flg->cdl) (void)fprintf(stdout,"\"");
+	    sng_val_sng[0]='\0';
+	  } /* endif new string */
+	  (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+	  if(lmn%sng_lng == sng_lngm1){
+	    (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->cdl) ? "\"" : "");
+	    /* Print commas after non-final strings */
+	    if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
+	  } /* endif string end */
+	  if(lmn == att_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
+	}else{ /* !CDL */
+	  /* Assume \0 is string terminator and do not print it */
+	  if(chr_val != '\0') (void)fprintf(stdout,"%c",chr_val);
+	} /* !CDL */
       } /* end loop over element */
       break;
     case NC_BYTE:
