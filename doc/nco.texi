@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.804 2013-07-20 02:46:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.805 2013-07-20 02:47:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12448,7 +12448,6 @@ Also @samp{--string}  and @samp{--sng_fmt}.
 Toggle the printing of a variable's @code{units} attribute, if any, 
 with its values.
 Also @samp{--units}.
-@end table
 
 @html
 <a name="xml"></a> <!-- http://nco.sf.net/nco.html#xml -->
@@ -12478,6 +12477,7 @@ zender@@roulee:~$ ncks --xml -v one ~/nco/data/in.nc
     </variable>
 </netcdf>
 @end example
+@end table
 
 @html
 <a name="ncattget"></a> <!-- http://nco.sf.net/nco.html#ncattget -->
