@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.131 2013-07-19 20:12:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.132 2013-07-20 02:21:21 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -58,7 +58,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   }else{
     /* Get name and number of attributes for variable */
     (void)nco_inq_var(grp_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
-    if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
+    if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+2*prn_flg->var_fst;
   } /* end else */
 
   /* Allocate space for attribute names and types */
@@ -79,13 +79,15 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
     (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
     
-    if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s:%s = ",prn_ndn,spc_sng,src_sng,att[idx].nm); else (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
+    if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s:%s = ",prn_ndn,spc_sng,src_sng,att[idx].nm); 
+    if(prn_flg->trd) (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
+    if(prn_flg->xml) (void)fprintf(stdout,"%*s<attribute name=\"%s\" value=\"",prn_ndn,spc_sng,att[idx].nm); 
     
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
 
-    (void)sprintf(att_sng_pln,"%s",(prn_flg->cdl) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
-    (void)sprintf(att_sng_dlm,"%s%%s",(prn_flg->cdl) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
+    (void)sprintf(att_sng_pln,"%s",(prn_flg->cdl) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : (prn_flg->xml) ? nco_typ_fmt_sng_att_xml(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
+    (void)sprintf(att_sng_dlm,"%s%%s",(prn_flg->cdl) ? nco_typ_fmt_sng_att_cdl(att[idx].type) : (prn_flg->xml) ? nco_typ_fmt_sng_att_xml(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
     switch(att[idx].type){
     case NC_FLOAT:
       for(lmn=0;lmn<att_sz;lmn++){
@@ -120,30 +122,30 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     case NC_CHAR:
       for(lmn=0;lmn<att_sz;lmn++){
 	chr_val=att[idx].val.cp[lmn];
-	if(prn_flg->cdl){
+	if(prn_flg->cdl || prn_flg->xml){
 	  val_sng[0]='\0';
 	  if(lmn == 0L){
 	    sng_lng=att_sz;
 	    sng_lngm1=sng_lng-1UL;
-	    /* Worst case is printable strings are four times longer than unformatted, i.e. '\\' == "\\\\" */
-	    sng_val_sng=(char *)nco_malloc(4*sng_lng+1UL);
+	    /* Worst case is printable strings are six or four times longer than unformatted, i.e., '&' == "&quot;" or '\\' == "\\\\" */
+	    sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
 	  } /* endif first element of string array */
 	  /* New string begins each element where penultimate dimension changes */
 	  if(lmn%sng_lng == 0L){
 	    if(prn_flg->cdl) (void)fprintf(stdout,"\"");
 	    sng_val_sng[0]='\0';
 	  } /* endif new string */
-	  (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+	  (void)strcat(sng_val_sng,(prn_flg->cdl) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng));
 	  if(lmn%sng_lng == sng_lngm1){
-	    (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->cdl) ? "\"" : "");
+	    (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
 	    /* Print commas after non-final strings */
 	    if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
 	  } /* endif string end */
 	  if(lmn == att_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
-	}else{ /* !CDL */
+	}else{ /* Traditional */
 	  /* Assume \0 is string terminator and do not print it */
 	  if(chr_val != '\0') (void)fprintf(stdout,"%c",chr_val);
-	} /* !CDL */
+	} /* endelse CDL, XML, Traditional */
       } /* end loop over element */
       break;
     case NC_BYTE:
@@ -170,13 +172,14 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     default: nco_dfl_case_nc_type_err();
       break;
     } /* end switch */
-    if(prn_flg->cdl) (void)fprintf(stdout," ;");
+    if(prn_flg->cdl) (void)fprintf(stdout," ;\n");
+    if(prn_flg->trd) (void)fprintf(stdout,"\n");
+    if(prn_flg->xml) (void)fprintf(stdout,"\" />\n");
     rcd_prn+=0; /* CEWI */
-    (void)fprintf(stdout,"\n");
     
   } /* end loop over attributes */
 
-  if(!prn_flg->new_fmt) (void)fprintf(stdout,"\n");
+  if(!prn_flg->new_fmt && !prn_flg->xml) (void)fprintf(stdout,"\n");
   (void)fflush(stdout);
   
   /* Free the space holding attribute values */
@@ -302,13 +305,69 @@ nco_typ_fmt_sng_att_cdl /* [fnc] Provide sprintf() format string for specified a
   return (char *)NULL;
 } /* end nco_typ_fmt_sng_att_cdl() */
 
+const char * /* O [sng] sprintf() format string for XML attribute type typ */
+nco_typ_fmt_sng_att_xml /* [fnc] Provide sprintf() format string for specified attribute type in XML */
+(const nc_type typ) /* I [enm] netCDF attribute type to provide XML format string for */
+{
+  /* Purpose: Provide sprintf() format string for specified type attribute
+     Unidata formats shown in ncdump.c near line 459
+     Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
+     and are user-configurable with -p float_digits,double_digits.
+     These default to 7 and 15, respectively. */
+
+  static const char fmt_NC_FLOAT[]="%#.7g"; /* %g defaults to 6 digits of precision */
+  static const char fmt_NC_DOUBLE[]="%#.15g"; /* %g defaults to 6 digits of precision */
+  static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
+  static const char fmt_NC_SHORT[]="%hi";
+  static const char fmt_NC_CHAR[]="%c";
+  static const char fmt_NC_BYTE[]="%hhi"; /* Takes signed char as arg and prints 0,1,2..,126,127,-127,-126,...-2,-1 */
+
+  static const char fmt_NC_UBYTE[]="%hhu"; /*  */
+  static const char fmt_NC_USHORT[]="%hu"; /*  */
+  static const char fmt_NC_UINT[]="%u"; /*  */
+  static const char fmt_NC_INT64[]="%ll"; /*  */
+  static const char fmt_NC_UINT64[]="%llu"; /*  */
+  static const char fmt_NC_STRING[]="%s"; /*  */
+
+  switch (typ){
+  case NC_FLOAT:
+    return fmt_NC_FLOAT;
+  case NC_DOUBLE:
+    return fmt_NC_DOUBLE;
+  case NC_INT:
+    return fmt_NC_INT;
+  case NC_SHORT:
+    return fmt_NC_SHORT;
+  case NC_CHAR:
+    return fmt_NC_CHAR;
+  case NC_BYTE:
+    return fmt_NC_BYTE;
+  case NC_UBYTE:
+    return fmt_NC_UBYTE; 
+  case NC_USHORT:
+    return fmt_NC_USHORT; 
+  case NC_UINT:
+    return fmt_NC_UINT; 
+  case NC_INT64:
+    return fmt_NC_INT64; 
+  case NC_UINT64:
+    return fmt_NC_UINT64; 
+  case NC_STRING:
+    return fmt_NC_STRING; 
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_typ_fmt_sng_att_xml() */
+
 const char * /* O [sng] sprintf() format string for type typ */
 nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type typ) /* I [enm] netCDF type to provide format string for */
 {
   /* Purpose: Provide sprintf() format string for specified type 
-     nco_typ_fmt_sng() is "master" NCO formatting function 
-     It defines what users see by default, i.e., when not explicitly requesting CDL mode */
+     nco_typ_fmt_sng() is "master" NCO formatting function that defines formatting 
+     in traditional NCO mode, i.e., when not explicitly requesting CDL or XML */
 
   static const char fmt_NC_FLOAT[]="%g"; /* %g defaults to 6 digits of precision */
   static const char fmt_NC_DOUBLE[]="%.12g"; /* %g defaults to 6 digits of precision */
@@ -860,15 +919,16 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   /* Print header for variable */
   if(prn_flg->new_fmt) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
-  if(!prn_flg->cdl) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
+  if(prn_flg->trd) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
+  if(prn_flg->xml) (void)fprintf(stdout,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,cdl_typ_nm(var_typ));
 
   /* Print type, shape, and total size of variable */
   dmn_sng[0]='\0';
   if(nbr_dim == 0){
-    if(!prn_flg->cdl) (void)fprintf(stdout,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
+    if(prn_flg->trd) (void)fprintf(stdout,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   }else{
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
-      (void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? "(" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < nbr_dim-1) ? "," : ")");
+      if(prn_flg->xml) (void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? " shape=\"" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < nbr_dim-1) ? " " : "\""); else (void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? "(" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < nbr_dim-1) ? "," : ")");
       (void)strcat(dmn_sng,sng_foo);
     } /* end loop over dim */
 
@@ -883,18 +943,19 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) var_sz*=dmn_sz[dmn_idx];
     (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 
-    if(!prn_flg->cdl){
+    if(prn_flg->trd){
       if(deflate) (void)fprintf(stdout,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
       (void)fprintf(stdout,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
-    } /* prn_flg->cdl */
+    } /* !prn_flg->trd */
 
   } /* end if variable is scalar */
   if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s %s%s ;\n",prn_ndn,spc_sng,cdl_typ_nm(var_typ),var_trv->nm,dmn_sng);
+  if(prn_flg->xml) (void)fprintf(stdout,"%s>\n",dmn_sng);
 
   /* Print dimension sizes and names */
 
   /* Loop dimensions for object (variable)  */
-  if(!prn_flg->cdl){
+  if(prn_flg->trd){
     for(dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
       if(var_trv->var_dmn[dmn_idx].is_crd_var){
 	/* Coordinate dimension */
@@ -914,7 +975,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
     /* Caveat user */
     if((nc_type)var_typ == NC_STRING) (void)fprintf(stdout,"%*s%s size (RAM) above is space required for pointers only, full size of strings is unknown until data are read\n",prn_ndn,spc_sng,var_trv->nm);
-  } /* !prn_flg->cdl */
+  } /* !prn_flg->trd */
 
   (void)fflush(stdout);
 } /* end nco_prn_var_dfn() */
@@ -1652,13 +1713,17 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Sort dimensions alphabetically */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
 
-  if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
-  if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(stdout,"\n");
-  if(grp_dpt == 0 && prn_flg->nfo_cdl) (void)fprintf(stdout,"%*s// ncgen -k netCDF-4 -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->fl_stb,prn_flg->fl_stb);
+  if(prn_flg->xml){
+    if(grp_dpt == 0) (void)fprintf(stdout,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"%s\">\n",prn_flg->fl_in);
+  }else{ /* !xml */
+    if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
+    if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(stdout,"\n");
+      if(grp_dpt == 0 && prn_flg->nfo_cdl) (void)fprintf(stdout,"%*s// ncgen -k netCDF-4 -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->fl_stb,prn_flg->fl_stb);
+  } /* !xml */
 
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
-  if(dmn_nbr > 0) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
+  if(dmn_nbr > 0 && !prn_flg->xml) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
   prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     /* 20130718: These "abbreviations" make things clearer but cause memory problem. Why?
@@ -1667,7 +1732,11 @@ nco_grp_prn /* [fnc] Recursively print group contents */
        dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst[dmn_idx].id];
        dmn_cnt=dmn_trv.sz;
        dmn_cnt=dmn_trv.lmt_msa.dmn_cnt; */
-    if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
+    if(prn_flg->xml){
+      (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%zi\" />\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);
+    }else{ /* !XML */
+      if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
+    } /* !XML */
   } /* end loop over dimension */
 
   /* Dimension list no longer needed */
@@ -1721,7 +1790,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg->ALPHA_BY_STUB_GROUP);
 
   /* Print variable information for group */
-  if(var_nbr_xtr > 0) (void)fprintf(stdout,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
+  if(var_nbr_xtr > 0 && !prn_flg->xml) (void)fprintf(stdout,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
   for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
     trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
 
@@ -1737,11 +1806,13 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Print variable attributes */
     if(var_trv.nbr_att > 0 && prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
 
-    if(var_idx != var_nbr_xtr-1) (void)fprintf(stdout,"\n");
+    if(prn_flg->xml) (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
+
+    if(var_idx != var_nbr_xtr-1 && !prn_flg->xml) (void)fprintf(stdout,"\n");
   } /* end loop over var_idx */
 
   /* Print attribute information for group */
-  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"\n%*s%sattributes:\n",prn_flg->ndn,spc_sng,(prn_flg->cdl) ? "// " : "");
+  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA && !prn_flg->xml) (void)fprintf(stdout,"\n%*s%sattributes:\n",prn_flg->ndn,spc_sng,(prn_flg->cdl) ? "// " : "");
   if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
 
   /* Print data for group */
@@ -1791,7 +1862,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
   } /* end loop over grp_idx */
 
-  (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nco_gpe_evl(prn_flg->gpe,grp_nm_fll));
+  if(prn_flg->xml && grp_dpt == 0) (void)fprintf(stdout,"</netcdf>\n"); else (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nco_gpe_evl(prn_flg->gpe,grp_nm_fll));
 
   return rcd;
 } /* end nco_grp_prn() */

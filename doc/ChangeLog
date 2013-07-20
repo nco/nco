@@ -1,5 +1,7 @@
 2013-07-19  Charlie Zender  <zender@uci.edu>
 
+	* XML mode (with --xml) prints all test cases at least as well as ncdump -x
+
 	* NCO 4.3.3 release procedure:
  	Changes since nco-4_3_2: -X aux, ncflint/ncpdq -g -G --unn
 	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1

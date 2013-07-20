@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.369 2013-07-19 09:57:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.370 2013-07-20 02:21:20 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -600,11 +600,13 @@ extern "C" {
   
   /* Print flags structure */
   typedef struct{ /* prn_fmt_sct */
+    char *fl_in; /* [sng] Input filename */
     char *fl_stb; /* [sng] Input filename stub */
     gpe_sct *gpe; /* I [sng] GPE structure */
-    nco_bool xml; /* [flg] Print valid XML */
-    nco_bool nfo_cdl; /* [flg] Print extra information in CDL mode */
     nco_bool cdl; /* [flg] Print valid CDL */
+    nco_bool xml; /* [flg] Print valid XML (NcML) */
+    nco_bool trd; /* [flg] Print traditional NCO format */
+    nco_bool nfo_cdl; /* [flg] Print extra information in CDL mode */
     nco_bool new_fmt; /* [flg] Print in new format */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
     int nbr_zro; /* [nbr] Trailing zeros allowed after decimal point */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.636 2013-07-18 20:11:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.637 2013-07-20 02:21:20 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -107,6 +107,7 @@ main(int argc,char **argv)
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool PRN_CDL=False; /* [flg] Print CDL */
+  nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   nco_bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
   nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
@@ -151,8 +152,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.636 2013-07-18 20:11:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.636 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.637 2013-07-20 02:21:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.637 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -252,6 +253,7 @@ main(int argc,char **argv)
       {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
+      {"xml",no_argument,0,0}, /* [flg] Print XML (NcML) */
       /* Long options with argument, no short option counterpart */
       {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
       {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
@@ -452,6 +454,7 @@ main(int argc,char **argv)
       } /* endif "vrs" */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
+      if(!strcmp(opt_crr,"xml")) PRN_XML=True; /* [flg] Print XML (NcML) */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -791,11 +794,17 @@ main(int argc,char **argv)
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;
     prn_flg.cdl=PRN_CDL;
+    prn_flg.xml=PRN_XML;
+    prn_flg.trd=!(PRN_CDL || PRN_XML);
     if(prn_flg.cdl && dbg_lvl > nco_dbg_std) prn_flg.nfo_cdl=True; else prn_flg.nfo_cdl=False;
-    prn_flg.new_fmt=(PRN_CDL || PRN_NEW_FMT);
-    if(dbg_lvl == nco_dbg_crr+1) prn_flg.xml=True; else prn_flg.xml=False;
+    prn_flg.new_fmt=(PRN_CDL || PRN_XML || PRN_NEW_FMT);
+    /* XML must print filename */
+    if(prn_flg.xml){
+      prn_flg.fl_in=fl_in;
+      PRN_VAR_DATA=False;
+    } /* !XML */
     /* CDL must print filename stub */
-    if(prn_flg.cdl){
+    if(prn_flg.cdl || prn_flg.xml){
       fl_in_dpl=strdup(fl_in);
       fl_nm_stub=strrchr(fl_in_dpl,'/');
       if(fl_nm_stub) fl_nm_stub++; else fl_nm_stub=fl_in_dpl;
@@ -833,7 +842,7 @@ main(int argc,char **argv)
     } /* endif */
 
     /* File summary */
-    if(PRN_GLB_METADATA && !prn_flg.cdl) (void)fprintf(stdout,"Summary of %s: filetype = %s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
+    if(PRN_GLB_METADATA && !prn_flg.cdl && !prn_flg.xml) (void)fprintf(stdout,"Summary of %s: filetype = %s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)\n",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
 
     if(!prn_flg.new_fmt){
       

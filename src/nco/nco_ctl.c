@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.398 2013-07-18 02:51:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.399 2013-07-20 02:21:20 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -1063,6 +1063,7 @@ nco_usg_prn(void)
   } /* end if */
   if(strstr(opt_sng,"[-X")) (void)fprintf(stdout,"-X, --auxiliary lon_min,lon_max,lat_min,lat_max\tAuxiliary coordinate bounding box\n");
   if(strstr(opt_sng,"[-x]")) (void)fprintf(stdout,"-x, --xcl, --exclude\tExtract all variables EXCEPT those specified with -v\n");
+  if(strstr(opt_sng,"--xml")) (void)fprintf(stdout,"    --xml\t\tPrint XML (NcML)\n");
   if(strstr(opt_sng,"[-y op_typ]")){
     if(prg_lcl == ncbo)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tBinary arithmetic operation: add,sbt,mlt,dvd (+,-,*,/)\n");
     if(prg_lcl == ncra || prg_lcl == ncea || prg_lcl == ncwa)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");

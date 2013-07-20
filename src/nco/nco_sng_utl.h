@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.37 2013-07-18 23:20:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.38 2013-07-20 02:21:21 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -63,6 +63,11 @@ nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 
 char * /* O [sng] String containing printable result */
 chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII bytes */
+(const char chr_val, /* I [chr] Character to process */
+ char * const val_sng); /* I/O [sng] String to stuff printable result into */
+
+char * /* O [sng] String containing printable result */
+chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII bytes */
 (const char chr_val, /* I [chr] Character to process */
  char * const val_sng); /* I/O [sng] String to stuff printable result into */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.48 2013-07-18 23:20:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.49 2013-07-20 02:21:21 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -162,6 +162,31 @@ chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII 
 
   return val_sng;
 } /* end chr2sng_cdl */
+
+char * /* O [sng] String containing printable result */
+chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII bytes */
+(const char chr_val, /* I [chr] Character to process */
+ char * const val_sng) /* I/O [sng] String to stuff printable result into */
+{
+  /* Purpose: Translate character to C-printable, visible ASCII bytes for XML */
+  
+  switch(chr_val){              /* man ascii:Oct   Dec   Hex   Char \X  */
+  case '\n': strcpy(val_sng,"&#xA;"); break; /* 012   10    0A    LF  '\n' Linefeed */
+  case '\r': strcpy(val_sng,"&#xD;"); break; /* 015   13    0D    CR  '\r' Carriage return */
+  case '\t': strcpy(val_sng,"&#x9;"); break; /* 011   9     09    HT  '\t' Horizontal tab */
+  case '<': strcpy(val_sng,"&lt;"); break;
+  case '>': strcpy(val_sng,"&gt;"); break;
+  case '&': strcpy(val_sng,"&amp;"); break;
+  case '\"': strcpy(val_sng,"&quot;"); break;
+  case '\0':	
+    break;
+  default: 
+    sprintf(val_sng,"%c",chr_val); break;
+    break;
+  } /* end switch */
+
+  return val_sng;
+} /* end chr2sng_xml */
 
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */

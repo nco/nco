@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.802 2013-07-18 20:11:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.803 2013-07-20 02:21:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.3
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 17 July 2013
+@set update-date 19 July 2013
 @set update-month July 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -12029,7 +12029,7 @@ ncks [-3] [-4] [-6] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--mk_rec_dmn @var{dim}] [--md5_digest]
 [--no_blank] [--no_tmp_fl] [-O] [-o @var{output-file}] [-P] [-p @var{path}] 
 [-Q] [-q] [-R] [-r] [--ram_all] [-s @var{format}] 
-[-u] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+[-u] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
 @var{input-file} [[@var{output-file}]]
 @end example
 
@@ -12367,6 +12367,7 @@ Also activated using @samp{--noblank} or @samp{--no-blank}.
 @cindex @command{ncgen}
 @cindex @command{ncdump}
 @cindex @code{--cdl}
+@cindex CDL
 @item --cdl 
 Print extracted data and metadata to screen (i.e., @code{stdout}) as 
 valid CDL (network Common data form Description Language).
@@ -12448,6 +12449,35 @@ Toggle the printing of a variable's @code{units} attribute, if any,
 with its values.
 Also @samp{--units}.
 @end table
+
+@html
+<a name="xml"></a> <!-- http://nco.sf.net/nco.html#xml -->
+@end html
+@cindex @command{ncdump}
+@cindex @code{--xml}
+@cindex XML
+@item --xml 
+Print extracted data and metadata to screen (i.e., @code{stdout}) as 
+valid XML (i.e., NcML, the netCDF Markup Language).
+XML is also exported by @command{ncdump -x}.
+Compare @command{ncks} ``traditional'' with XML printing:
+@example
+zender@@roulee:~$ ncks -v one ~/nco/data/in.nc
+one: type NC_FLOAT, 0 dimensions, 1 attribute, chunked? no, compressed? no, packed? no
+one size (RAM) = 1*sizeof(NC_FLOAT) = 1*4 = 4 bytes
+one attribute 0: long_name, size = 3 NC_CHAR, value = one
+
+one = 1 
+
+zender@@roulee:~$ ncks --xml -v one ~/nco/data/in.nc
+<?xml version="1.0" encoding="UTF-8"?>
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" \
+     location="/home/zender/nco/data/in.nc">
+    <variable name="one" type="float">
+      <attribute name="long_name" value="one" />
+    </variable>
+</netcdf>
+@end example
 
 @html
 <a name="ncattget"></a> <!-- http://nco.sf.net/nco.html#ncattget -->
