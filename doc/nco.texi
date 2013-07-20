@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.803 2013-07-20 02:21:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.804 2013-07-20 02:46:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4038,9 +4038,9 @@ one must move only the desired group to a new file, and then merge that
 new file with the original to obtain a file where the desired group has
 been ``renamed'' and all else is unchanged.
 @example
-ncks -O -G f1:1 -g g1 ~/nco/data/in_grp.nc ~/tmp.nc # Move /g1 to /f1
-ncks -O -x -g g1 ~/nco/data/in_grp.nc ~/out.nc # Move all but /g1 to new file
-ncks -A ~/tmp.nc ~/out.nc # Add /f1 to new file
+ncks -O -G f4:1 -g g4 ~/nco/data/in_grp.nc ~/tmp.nc # Move /g4 to /f4
+ncks -O -x -g g4 ~/nco/data/in_grp.nc ~/out.nc # Move all but /g4 to new file
+ncks -A ~/tmp.nc ~/out.nc # Add /f4 to new file
 @end example
 
 @html
