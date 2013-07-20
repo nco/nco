@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.805 2013-07-20 02:47:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.806 2013-07-20 02:57:46 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3429,14 +3429,14 @@ See @ref{Selecting Output File Format} for instructions on accessing
 the different file formats, including 64-bit files, supported by the
 modern netCDF interface. 
 
-If you are still interesting in explicit LFS support for netCDF versions
+If you are still interested in explicit LFS support for netCDF versions
 prior @w{to 3.6}, know that LFS support depends on a complex,
 interlocking set of operating system  
 @footnote{
-Linux and @acronym{AIX} are known to support @acronym{LFS}.}
-and netCDF suppport issues.
-The netCDF LFS FAQ at
-@uref{http://my.unidata.ucar.edu/content/software/netcdf/faq-lfs.html}
+Linux and @acronym{AIX} do support @acronym{LFS}.}
+and netCDF support issues.
+The netCDF LFS 
+@uref{http://my.unidata.ucar.edu/content/software/netcdf/faq-lfs.html,FAQ}
 describes the various file size limitations imposed by different
 versions of the netCDF standard.
 @acronym{NCO} and netCDF automatically attempt to configure LFS at
@@ -4032,16 +4032,20 @@ ncks -G g1:-1 -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/g1/v1
 
 As of 2013, netCDF contains no library function for renaming groups.
 @acronym{GPE} can be used to move groups, which is a more arduous way 
-of accomplishing the same goal.
+of accomplishing the same goal as renaming.
 @acronym{GPE} applies to all selected groups, so, in the general case,
 one must move only the desired group to a new file, and then merge that
 new file with the original to obtain a file where the desired group has
 been ``renamed'' and all else is unchanged.
 @example
 ncks -O -G f4:1 -g g4 ~/nco/data/in_grp.nc ~/tmp.nc # Move /g4 to /f4
-ncks -O -x -g g4 ~/nco/data/in_grp.nc ~/out.nc # Move all but /g4 to new file
+ncks -O -x -g g4 ~/nco/data/in_grp.nc ~/out.nc # Excise /g4
 ncks -A ~/tmp.nc ~/out.nc # Add /f4 to new file
 @end example
+If the original group @file{g4} is not excised from @file{out.nc} (step
+two above), then the final output file would contain both @file{g4} and
+a copy named @file{f4}.
+Thus GPE can be used to both ``rename'' and copy groups.
 
 @html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
