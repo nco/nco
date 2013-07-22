@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.202 2013-07-19 09:36:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.203 2013-07-22 23:23:58 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -456,3 +456,72 @@ trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups 
   return nbr_grp_dpt;
 } /* trv_tbl_inq_dpt() */
 
+
+dmn_trv_sct *                         /* O [sct] GTT dimension structure (stored in *groups*) */
+nco_dmn_trv_sct                       /* [fnc] Return unique dimension object from unique ID */
+(const int dmn_id,                    /* I [id] Unique dimension ID */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+{
+
+  /* Search table dimension list */
+  for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
+
+    /* Compare IDs */
+    if (dmn_id == trv_tbl->lst_dmn[dmn_lst_idx].dmn_id){
+
+      /* Return object  */
+      return &trv_tbl->lst_dmn[dmn_lst_idx];
+
+    } /* Compare IDs */
+  } /* Search table dimension list */
+
+  return NULL;
+
+} /* nco_dmn_trv_sct() */
+
+
+char *                                /* O [id] Unique dimension full name */
+nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name from unique ID  */
+(const int dmn_id,                    /* I [id] Unique dimension ID */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+{
+
+  /* Search table dimension list */
+  for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
+
+    /* Compare IDs */
+    if (dmn_id == trv_tbl->lst_dmn[dmn_lst_idx].dmn_id){
+
+      /* Return object  */
+      return trv_tbl->lst_dmn[dmn_lst_idx].nm_fll;
+
+    } /* Compare IDs */
+  } /* Search table dimension list */
+
+  return NULL;
+
+} /* nco_dmn_fll_nm_id() */
+
+void                                  
+nco_dmn_trv_msa                       /* [fnc] Update dimension with hyperslabed size */
+(const int dmn_id,                    /* I [id] Unique dimension ID */
+ const long dmn_cnt,                  /* I [nbr] New dimension size */
+ const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
+{
+
+  /* Search table dimension list */
+  for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
+
+    /* Compare IDs */
+    if (dmn_id == trv_tbl->lst_dmn[dmn_lst_idx].dmn_id){
+
+      trv_tbl->lst_dmn[dmn_lst_idx].lmt_msa.dmn_cnt=dmn_cnt;
+
+     
+    } /* Compare IDs */
+  } /* Search table dimension list */
+
+
+  return;
+
+} /* nco_dmn_trv_msa() */

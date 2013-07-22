@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.86 2013-07-19 09:36:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.87 2013-07-22 23:23:58 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -107,6 +107,22 @@ trv_tbl_cmn_nm_prt                     /* [fnc] Print list of common objects (sa
  const int nbr_cmn_nm);                /* I [nbr] Number of common names entries */
 
 
+dmn_trv_sct *                         /* O [sct] GTT dimension structure (stored in *groups*) */
+nco_dmn_trv_sct                       /* [fnc] Return unique dimension object from unique ID */
+(const int dmn_id,                    /* I [id] Unique dimension ID */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
+char *                                /* O [id] Unique dimension full name */
+nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name from unique ID  */
+(const int dmn_id,                    /* I [id] Unique dimension ID */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
+
+void                                  
+nco_dmn_trv_msa                       /* [fnc] Update dimension with hyperslabed size */
+(const int dmn_id,                    /* I [id] Unique dimension ID */
+ const long dmn_cnt,                  /* I [nbr] New dimension size */
+ const trv_tbl_sct *trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 
 #endif /* NCO_GRP_TRV_H */
