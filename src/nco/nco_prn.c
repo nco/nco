@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.133 2013-07-21 23:32:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.134 2013-07-22 06:49:26 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1639,6 +1639,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Testing: 
      ncks -5 ~/nco/data/in_grp.nc */
 
+  const char fnc_nm[]="nco_grp_prn()"; /* [sng] Function name  */
+
   const char sls_sng[]="/";        /* [sng] Slash string */
   const char spc_sng[]="";        /* [sng] Space string */
 
@@ -1738,7 +1740,22 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn){
         (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);
       }else {
-        (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
+        int idx_gbl_dmn;     /* [nbr] Index into global GTT dimension table */
+        dmn_trv_sct dmn_trv; /* [sct] GTT dimension object */
+        
+        idx_gbl_dmn=dmn_lst[dmn_idx].id;
+        dmn_trv=trv_tbl->lst_dmn[idx_gbl_dmn];
+
+        if(dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s for group <%s> dimension <%s>\n",prg_nm_get(),
+            fnc_nm,grp_nm_fll,dmn_trv.nm_fll);
+        }
+
+#ifdef _MSC_VER
+        (void)fprintf(stdout,"%*s%s = %d%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
+#else
+        (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
+#endif
       }
     } /* !XML */
   } /* end loop over dimension */
