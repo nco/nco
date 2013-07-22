@@ -1,3 +1,7 @@
+2013-07-22 Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_dmn_trv_msa() Update dimension with hyperslabed size 
+
 2013-07-19  Charlie Zender  <zender@uci.edu>
 
 	* XML mode (with --xml) prints all test cases at least as well as ncdump -x
