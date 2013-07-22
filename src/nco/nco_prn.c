@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.134 2013-07-22 06:49:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.135 2013-07-22 06:59:02 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1747,8 +1747,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
         dmn_trv=trv_tbl->lst_dmn[idx_gbl_dmn];
 
         if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s for group <%s> dimension <%s>\n",prg_nm_get(),
-            fnc_nm,grp_nm_fll,dmn_trv.nm_fll);
+          (void)fprintf(stdout,"%s: DEBUG %s for group <%s> dimension <%s>, global dimension <%s>\n",prg_nm_get(),fnc_nm,
+            grp_nm_fll,dmn_lst[dmn_idx].nm,dmn_trv.nm_fll);
         }
 
 #ifdef _MSC_VER
