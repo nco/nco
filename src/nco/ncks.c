@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.637 2013-07-20 02:21:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.638 2013-07-23 00:21:11 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.637 2013-07-20 02:21:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.637 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.638 2013-07-23 00:21:11 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.638 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -790,6 +790,9 @@ main(int argc,char **argv)
     char *fl_nm_stub;
     char *fl_in_dpl=NULL;
     char *sfx_ptr;
+
+    /* Update all GTT dimensions with hyperslabed size */
+    (void)nco_dmn_trv_msa_tbl(in_id,rec_dmn_nm,trv_tbl);   
 
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;

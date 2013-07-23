@@ -1,6 +1,10 @@
 2013-07-22 Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_dmn_trv_msa() Update dimension with hyperslabed size 
+  
+	* nco_dmn_trv_msa_tbl() Update all GTT dimensions with hyperslabed size 
+    
+	* nco_dmn_msa_tbl() Update GTT dimension with hyperslabed size 
 
 2013-07-19  Charlie Zender  <zender@uci.edu>
 

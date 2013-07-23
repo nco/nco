@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.338 2013-07-22 23:23:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.339 2013-07-23 00:21:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -574,6 +574,20 @@ nco_dmn_avg_tbl                       /* [fnc] Transfer averaged dimensions info
 (char **dmn_avg_lst_in,               /* I [sng] User-specified list of dimension names */
  const int dmn_avg_nbr,               /* I [nbr] Total number of dimensions in list */
  const trv_tbl_sct *trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
+
+void
+nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabed size */
+(const int nc_id,                     /* I [ID] netCDF input file ID */
+ const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
+
+
+void                                  /* [fnc] Update all GTT dimensions with hyperslabed size */
+nco_dmn_msa_tbl                       /* [fnc] Define specified variable in output file */
+(const int grp_in_id,                 /* I [id] netCDF input group ID */
+ const char * const rec_dmn_nm_cst,   /* I [sng] User-specified record dimension, if any, to create or fix in output file */
+ trv_sct *var_trv,                    /* I/O [sct] Object to write (variable) trv_map_dmn_set() is O */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
