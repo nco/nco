@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.871 2013-07-23 19:31:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.872 2013-07-23 21:16:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4886,6 +4886,16 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
       /* ncwa */
       if (prg_id == ncwa){
+
+        /* Dimension flagged to average */
+        if (var_trv->var_dmn[idx_dmn].flg_avg == True){
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s dimension avg [%d]%s\n",prg_nm_get(),fnc_nm,
+              idx_dmn,dmn_trv->nm_fll);
+          } /* endif dbg */
+
+        } /* Dimension flagged to average */
 
 
 
