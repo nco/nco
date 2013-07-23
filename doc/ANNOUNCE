@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.583 2013-07-18 17:07:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.584 2013-07-23 05:58:55 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.3 are ready. 
 
@@ -24,7 +24,7 @@ NEW FEATURES:
 
 A. ncks supports a new, group-friendly printing format
 
-A. ncks will print data in CDL format. CDL is the human-readable
+A. ncks --cdl prints results in CDL format. CDL is the human-readable
    lingua franca of netCDF imported by ncgen and exported by ncdump. 
    "Traditional" ncks printing was designed for flat netCDF3 files,
    and for examining hyperslabs of data values. CDL printing is
@@ -38,6 +38,17 @@ A. ncks will print data in CDL format. CDL is the human-readable
    ncks --cdl -v v1 ~/nco/data/in_grp.nc
    ncks --cdl -v three_dmn_rec_var -d lon,2 ~/nco/data/in_grp.nc
    http://nco.sf.net/nco.html#cdl
+
+A. ncks --xml prints metadata in  NcML XML format.
+   NcML is also exported by ncdump -x. 
+   ncks outputs the minimal NcML that matches the user's request
+   unlike ncdump -x which outputs the entire file structure in NcML.
+   CDL mode plays well with other ncks options, such as hyperslabs:
+   ncks --xml ~/nco/data/in_grp.nc
+   ncks --xml ~/nco/data/in.nc
+   ncks --xml -v v1 ~/nco/data/in_grp.nc
+   ncks --xml -v three_dmn_rec_var -d lon,2 ~/nco/data/in_grp.nc
+   http://nco.sf.net/nco.html#xml
 
 A. ncwa now supports groups, Group Path Editing (GPE) and list unions,
    the same options supported by ncbo, ncecat, ncflint, ncks, and ncpdq.   

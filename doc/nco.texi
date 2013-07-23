@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.806 2013-07-20 02:57:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.807 2013-07-23 05:58:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12373,8 +12373,9 @@ Also activated using @samp{--noblank} or @samp{--no-blank}.
 @cindex @code{--cdl}
 @cindex CDL
 @item --cdl 
-Print extracted data and metadata to screen (i.e., @code{stdout}) as 
-valid CDL (network Common data form Description Language).
+As of @acronym{NCO} version 4.3.3 (August, 2013), @command{ncks} can
+extracted data and metadata to screen (i.e., @code{stdout}) as valid CDL
+(network Common data form Description Language). 
 CDL is the human-readable ``lingua franca'' of netCDF ingested by
 @command{ncgen} and excreted by @command{ncdump}.
 Compare @command{ncks} ``traditional'' with CDL printing:
@@ -12460,9 +12461,10 @@ Also @samp{--units}.
 @cindex @code{--xml}
 @cindex XML
 @item --xml 
-Print extracted data and metadata to screen (i.e., @code{stdout}) as 
-valid XML (i.e., NcML, the netCDF Markup Language).
-XML is also exported by @command{ncdump -x}.
+As of @acronym{NCO} version 4.3.3 (August, 2013), @command{ncks} can
+print extracted data and metadata to screen (i.e., @code{stdout}) as 
+valid XML in NcML, the netCDF Markup Language.
+XML is also exported by @samp{ncdump -x}.
 Compare @command{ncks} ``traditional'' with XML printing:
 @example
 zender@@roulee:~$ ncks -v one ~/nco/data/in.nc
@@ -12481,6 +12483,10 @@ zender@@roulee:~$ ncks --xml -v one ~/nco/data/in.nc
     </variable>
 </netcdf>
 @end example
+Note that XML mode only prints variable metadata, not variable data.
+This is because @samp{ncdump -x} does the same, and we do not know
+what the NcML format for the data is.
+If printing data in XML would be useful to you, please let us know.
 @end table
 
 @html
@@ -13612,8 +13618,8 @@ v
 SYNTAX
 @example
 ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
-[-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [--hdr_pad @var{nbr}] [-l @var{path}]
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
+[-d @var{old_name},@var{new_name}] [-d @dots{}] [-g @var{old_name},@var{new_name}] [-g @dots{}] 
+[-h] [--hdr_pad @var{nbr}] [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-v @var{old_name},@var{new_name}] [-v @dots{}]
 @var{input-file} [[@var{output-file}]]
 @end example
@@ -13622,8 +13628,8 @@ ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}]
 DESCRIPTION
 
 @cindex @kbd{.}
-@command{ncrename} renames dimensions, variables, and attributes in a
-netCDF file.  
+@command{ncrename} renames netCDF dimensions, variables, attributes, and
+groups. 
 Each object that has a name in the list of old names is renamed using
 the corresponding name in the list of new names. 
 All the new names must be unique. 

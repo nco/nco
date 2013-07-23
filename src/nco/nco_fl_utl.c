@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.216 2013-07-17 00:07:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.217 2013-07-23 05:58:56 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -564,8 +564,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* Filename has http:// prefix so try DAP access to unadulterated filename */
     int in_id; /* [id] Temporary input file ID */
 
-    /* Attempt nc_open() on HTTP protocol files. Success means DAP found file
-    Do not worry about NC_DISKLESS here since any file will be immediately closed */
+    /* Attempt nc_open() on HTTP protocol files. Success means DAP found file.
+       Do not worry about NC_DISKLESS here since any file will be immediately closed */
     rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
 
     if(rcd == NC_NOERR){
@@ -593,7 +593,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s successfully accessed this file using the DAP protocol\n",prg_nm_get(),fnc_nm);
 
       /* 20120728: Set rcd_stt=0 to mimic successful stat() return so rest of function treats file as local
-      (DAP treats HTTP protocol files as local files) */
+	 (DAP treats HTTP protocol files as local files) */
       rcd_stt=0;
 
     }else{ /* DAP-access failed */
@@ -612,16 +612,16 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     if(DAP_URL == False){ /* DAP access to http:// file failed */
       /* Attempt to retrieve URLs directly when DAP access fails. Tests:
-      ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
-      ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
-      ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget
-      ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
-      ncks -O -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc # DAP
-      ncks -O -v one -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc ~/foo.nc # DAP */
+	 ncks -D 2 -M http://dust.ess.uci.edu/nco/in.nc # wget
+	 ncks -D 2 -M -l . http://dust.ess.uci.edu/nco/in.nc # wget
+	 ncks -D 2 -M -l . -p http://dust.ess.uci.edu/nco in.nc # wget
+	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
+	 ncks -O -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc # DAP
+	 ncks -O -v one -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc ~/foo.nc # DAP */
       if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find file on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
 
       /* DAP cannot open file so leave DAP_URL=FALSE and set HTTP_URL=True
-      Later we will attempt to wget file to local system */
+	 Later we will attempt to wget file to local system */
       HTTP_URL=True;
       url_sng_lng=strlen(http_url_sng);
 
@@ -641,18 +641,18 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
-    Colon separates machine name from filename in rcp, scp, and sftp requests
-    However, colon is also legal in _any_ UNIX filename
-    Thus whether colon signifies rcp or scp request is somewhat ambiguous
-    NCO treats names with more than one colon as regular filenames
-    In order for colon to be interpreted as machine name delimiter,
-    it must be preceded by period within three or four spaces, e.g., uci.edu: */
+       Colon separates machine name from filename in rcp, scp, and sftp requests
+       However, colon is also legal in _any_ UNIX filename
+       Thus whether colon signifies rcp or scp request is somewhat ambiguous
+       NCO treats names with more than one colon as regular filenames
+       In order for colon to be interpreted as machine name delimiter,
+       it must be preceded by period within three or four spaces, e.g., uci.edu: */
     if(((cln_ptr-4 >= fl_nm_lcl) && *(cln_ptr-4) == '.') ||
-      ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
-        /* Rearrange fl_nm_lcl to remove hostname: part */
-        fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
-	if(!fl_pth_lcl_tmp){
-	  (void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of scp or rcp path %s\n",prg_nm_get(),fnc_nm,fl_nm_lcl);
+       ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
+      /* Rearrange fl_nm_lcl to remove hostname: part */
+      fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
+      if(!fl_pth_lcl_tmp){
+	(void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of scp or rcp path %s\n",prg_nm_get(),fnc_nm,fl_nm_lcl);
 	  nco_exit(EXIT_FAILURE);
 	} /* endif */
         fl_nm_lcl_tmp=fl_nm_lcl;

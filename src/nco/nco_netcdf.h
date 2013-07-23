@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.97 2013-07-13 05:44:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.98 2013-07-23 05:58:56 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -204,9 +204,9 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 /* End Attribute routines */
 
 /* Begin libnetcdf prototypes (i.e., for completely new library routines not yet in netcdf.h */
-#ifndef HAS_CSZ_NC_RENAME_GRP_IN_LIBNETCDF
+#ifndef NC_HAVE_RENAME_GRP
   int nc_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm);
-#endif /* HAS_CSZ_NC_RENAME_GRP_IN_LIBNETCDF */
+#endif /* NC_HAVE_RENAME_GRP */
 
 /* Begin netCDF4 stubs */
 #ifndef HAVE_NETCDF4_H

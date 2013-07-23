@@ -1,11 +1,15 @@
+2013-07-22  Charlie Zender  <zender@uci.edu>
+
+	* Add ncrename stubs and docs for libnetcdf version of nc_rename_grp()
+
 2013-07-22 Pedro Vicente  <pvicente@uci.edu>
 
-	* nco_dmn_trv_msa() Update dimension with hyperslabed size 
-  
-	* nco_dmn_trv_msa_tbl() Update all GTT dimensions with hyperslabed size 
-    
-	* nco_dmn_msa_tbl() Update GTT dimension with hyperslabed size 
-  
+	* nco_dmn_trv_msa() Update dimension with hyperslabed size
+
+	* nco_dmn_trv_msa_tbl() Update all GTT dimensions with hyperslabed size
+
+	* nco_dmn_msa_tbl() Update GTT dimension with hyperslabed size
+
 	* nco_prn_var_dfn() Print variable metadata; modified to use hyperslabed sizes
 
 2013-07-19  Charlie Zender  <zender@uci.edu>
