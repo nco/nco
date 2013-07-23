@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.340 2013-07-19 10:29:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.341 2013-07-23 21:35:05 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 #endif
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.340 2013-07-19 10:29:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.340 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.341 2013-07-23 21:35:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.341 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1294,6 +1294,21 @@ main(int argc,char **argv)
     } /* end if */
 
   } /* dmn_avg_nbr <= 0 */
+
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG output dimensions: ",prg_nm_get());
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_out;idx_dmn++){
+      (void)fprintf(stdout,"%s :",dmn_out[idx_dmn]->nm);
+    }
+    (void)fprintf(stdout,"\n");
+    (void)fprintf(stdout,"%s: DEBUG averaged dimensions: ",prg_nm_get());
+    for(int idx_dmn=0;idx_dmn<dmn_avg_nbr;idx_dmn++){
+      (void)fprintf(stdout,"%s :",dmn_avg[idx_dmn]->nm);
+    }
+    (void)fprintf(stdout,"\n");
+  } /* endif dbg */
+
 
   /* Transfer averaged dimensions information into GTT (-a for ncwa)  */
   (void)nco_dmn_avg_tbl(dmn_avg_lst_in,dmn_avg_nbr,trv_tbl);
