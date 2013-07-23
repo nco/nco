@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.877 2013-07-23 22:47:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.878 2013-07-23 22:56:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4667,7 +4667,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   (void)nco_inq_vardimid(grp_in_id,var_in_id,dmn_in_id_var);
 
 
-  if(dbg_lvl_get() >= nco_dbg_dev){
+  if(dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with dimensions: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
       (void)fprintf(stdout,"#%d<%s> : ",var_trv->var_dmn[idx_dmn].dmn_id,var_trv->var_dmn[idx_dmn].dmn_nm);
@@ -4720,7 +4720,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       /* Does variable contain requested record dimension? */
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
         if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
-          if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
           break;
         } /* endif */
       } /* end loop over idx_dmn */
@@ -4734,7 +4734,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       /* Dimension not existent, define it */
       if (rcd_lcl != NC_NOERR){
 
-        if(dbg_lvl_get() >= nco_dbg_dev)(void)fprintf(stdout,"%s: INFO %s defining ncecat dimension: <%s>\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
+        if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s defining ncecat dimension: <%s>\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
 
         /* Define dimension */
         (void)nco_def_dim(nc_out_id,rec_dmn_nm,NC_UNLIMITED,&rec_id_out);
@@ -4782,7 +4782,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Inquire if dimension defined in output using obtained group ID (return value not used in the logic) */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,&dmn_id_out);
 
-    if(dbg_lvl_get() >= nco_dbg_dev){
+    if(dbg_lvl_get() == nco_dbg_old){
       if (rcd_lcl == NC_NOERR) 
         (void)fprintf(stdout,"%s: DEBUG %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);
@@ -4817,7 +4817,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Define dimension in output file if necessary */
     if (NEED_TO_DEFINE_DIM == True){
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
+      if(dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: DEBUG %s need to define dimension '%s' in ",prg_nm_get(),fnc_nm,dmn_nm);        
         (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
         (void)fprintf(stdout,"\n");
