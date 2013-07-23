@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.878 2013-07-23 22:56:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.879 2013-07-23 23:12:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4913,10 +4913,10 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         nco_bool found_dim=False;
 
         /* Degenerated dimensions */
-        for(idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn_dgn;idx_dmn++){
+        for(int idx_dmn_dgn=0;idx_dmn_dgn<trv_tbl->nbr_dmn_dgn;idx_dmn_dgn++){
 
           /* Compare ID */
-          if (trv_tbl->dmn_dgn[idx_dmn]->id == var_dim_id){
+          if (trv_tbl->dmn_dgn[idx_dmn_dgn]->id == var_dim_id){
 
             found_dim=True;
 
@@ -4930,10 +4930,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         if (found_dim == False){
           DEFINE_DIM=False;
 
-          nbr_dmn_var_out--;
-          
-          
-        }
+          nbr_dmn_var_out--;    
+        } /* found_dim */
       } /* ncwa */
 
 
