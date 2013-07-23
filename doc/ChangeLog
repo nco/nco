@@ -1,5 +1,7 @@
 2013-07-23  Charlie Zender  <zender@uci.edu>
 
+	* ncatted: Clarify netCDF4 atomic type specifications
+
 	* CDL mode prefix NC_STRING attributes with "string "
 
 	* CDL mode add double quotes to printing NC_STRING attributes

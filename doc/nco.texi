@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.807 2013-07-23 05:58:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.808 2013-07-23 18:59:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -10705,14 +10705,14 @@ type @code{NC_INT64}.
 @dfn{Uint64}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_UINT64}.
-@item sng
+@item sng, string
 @dfn{String}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_STRING}.
 @end table
 @noindent
-The specification of @var{att_type} is optional (and is ignored) in
-@dfn{Delete} mode. 
+In @dfn{Delete} mode the specification of @var{att_type} is optional
+(and is ignored if supplied).
 
 The value of @var{att_val} is what you want to change attribute
 @var{att_nm} to contain.

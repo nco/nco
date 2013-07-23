@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.153 2013-07-18 23:32:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.154 2013-07-23 18:59:24 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -740,15 +740,21 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       case 'c':	aed_lst[idx].type=(nc_type)NC_CHAR; break;
       case 'b':	aed_lst[idx].type=(nc_type)NC_BYTE; break;
       default: 
+#ifdef ENABLE_NETCDF4
 	if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=(nc_type)NC_UBYTE; 
 	else if(!strcasecmp(arg_lst[3],"us")) aed_lst[idx].type=(nc_type)NC_USHORT; 
 	else if(!strcasecmp(arg_lst[3],"u") || !strcasecmp(arg_lst[3],"ui") || !strcasecmp(arg_lst[3],"ul")) aed_lst[idx].type=(nc_type)NC_UINT; 
 	else if(!strcasecmp(arg_lst[3],"ll") || !strcasecmp(arg_lst[3],"int64")) aed_lst[idx].type=(nc_type)NC_INT64; 
 	else if(!strcasecmp(arg_lst[3],"ull") || !strcasecmp(arg_lst[3],"uint64")) aed_lst[idx].type=(nc_type)NC_UINT64; 
-	else if(!strcasecmp(arg_lst[3],"sng")) aed_lst[idx].type=(nc_type)NC_STRING; 
+	else if(!strcasecmp(arg_lst[3],"sng") || !strcasecmp(arg_lst[3],"string")) aed_lst[idx].type=(nc_type)NC_STRING; 
 	else{
+#endif /* ENABLE_NETCDF4 */
 	  (void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
 	  (void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, 'l' = `i' = integer, `b' = byte",prg_nm_get());
+#ifdef ENABLE_NETCDF4
+	  (void)fprintf(stderr,", `ub' = unsigned byte, `us' = unsigned short, `u' or `ui' or `ul' = unsigned int,`ll' or `int64' = 64-bit signed integer, `ull' or `uint64` = unsigned 64-bit integer, `sng' or `string' = string");
+#endif /* ENABLE_NETCDF4 */
+	  (void)fprintf(stderr,"\n");
 	  nco_exit(EXIT_FAILURE);} /*  end if error */
       break;
       } /* end switch */
