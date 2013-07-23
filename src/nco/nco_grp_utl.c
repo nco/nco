@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.879 2013-07-23 23:12:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.880 2013-07-23 23:34:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4920,9 +4920,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
             found_dim=True;
 
+            dmn_sz=trv_tbl->dmn_dgn[idx_dmn_dgn]->cnt;
+
             if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s dimension dgn %s\n",prg_nm_get(),fnc_nm,
-                dmn_trv->nm_fll);
+              (void)fprintf(stdout,"%s: DEBUG %s dimension dgn %s new size=%d\n",prg_nm_get(),fnc_nm,
+                dmn_trv->nm_fll,dmn_sz);
             } /* endif dbg */
           } /* Compare ID */
         } /* Degenerated dimensions */
@@ -6882,8 +6884,11 @@ void
 nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions information into GTT  */
 (dmn_sct **dmn_dgn,                   /* [sct] Degenerate (size 1) dimensions used by ncwa */
  const int nbr_dmn_dgn,               /* I [nbr] Total number of dimensions in list */
- const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct *trv_tbl)                /* I/O [sct] GTT (Group Traversal Table) */
 {
+
+  trv_tbl->nbr_dmn_dgn=nbr_dmn_dgn;
+  trv_tbl->dmn_dgn=(dmn_sct **)nco_malloc(nbr_dmn_dgn*sizeof(dmn_sct *));
 
   /* Loop dimensions */
   for(int idx_dmn=0;idx_dmn<nbr_dmn_dgn;idx_dmn++){
