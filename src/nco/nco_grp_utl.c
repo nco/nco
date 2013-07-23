@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.872 2013-07-23 21:16:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.873 2013-07-23 22:00:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4900,6 +4900,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
 
 
+
       } /* ncwa */
 
       /* Define dimension and obtain dimension ID */
@@ -6359,39 +6360,7 @@ nco_var_get_trv                       /* [fnc] Fill-in variable structure for a 
 } /* nco_var_trv() */
 
 
-void                          
-nco_dmn_avg_tbl                       /* [fnc] Transfer averaged dimensions information into GTT (-a for ncwa)  */
-(char **dmn_avg_lst_in,               /* I [sng] User-specified list of dimension names */
- const int dmn_avg_nbr,               /* I [nbr] Total number of dimensions in list */
- const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
-{
 
-  /* Loop table */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-    trv_sct var_trv=trv_tbl->lst[idx_var];
-
-    /* If object is an extracted variable... */ 
-    if(var_trv.nco_typ == nco_obj_typ_var){
-
-      /* Loop variable dimensions */
-      for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++){
-        /* Loop input dimensions */
-        for(int idx_dmn_avg=0;idx_dmn_avg<dmn_avg_nbr;idx_dmn_avg++){
-
-          /* Match name  */
-          if(strcmp(var_trv.var_dmn[idx_dmn_var].dmn_nm,dmn_avg_lst_in[idx_dmn_avg]) == 0){
-
-            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].flg_avg=True;
-
-          } /* Match name  */
-        } /* Loop input dimensions */
-
-
-      } /* Loop variable dimensions */
-    } /* If object is an extracted variable... */ 
-  } /* Loop table */
-
-} /* nco_dmn_avg_tbl() */
 
 
 void
@@ -6827,3 +6796,57 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
 
 } /* end nco_dmn_msa_tbl() */
+
+
+
+void                          
+nco_dmn_avg_tbl                       /* [fnc] Transfer averaged dimensions information into GTT (-a for ncwa)  */
+(char **dmn_avg_lst_in,               /* I [sng] User-specified list of dimension names */
+ const int dmn_avg_nbr,               /* I [nbr] Total number of dimensions in list */
+ const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
+{
+
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    /* If object is an extracted variable... */ 
+    if(var_trv.nco_typ == nco_obj_typ_var){
+
+      /* Loop variable dimensions */
+      for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++){
+        /* Loop input dimensions */
+        for(int idx_dmn_avg=0;idx_dmn_avg<dmn_avg_nbr;idx_dmn_avg++){
+
+          /* Match name  */
+          if(strcmp(var_trv.var_dmn[idx_dmn_var].dmn_nm,dmn_avg_lst_in[idx_dmn_avg]) == 0){
+
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].flg_avg=True;
+
+          } /* Match name  */
+        } /* Loop input dimensions */
+
+
+      } /* Loop variable dimensions */
+    } /* If object is an extracted variable... */ 
+  } /* Loop table */
+
+} /* nco_dmn_avg_tbl() */
+
+
+
+void                          
+nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions information into GTT  */
+(dmn_sct **dmn_dgn,                   /* [sct] Degenerate (size 1) dimensions used by ncwa */
+ const int nbr_dmn_dgn,               /* I [nbr] Total number of dimensions in list */
+ const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
+{
+
+  /* Loop dimensions */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn_dgn;idx_dmn++){
+
+    trv_tbl->dmn_dgn[idx_dmn]=dmn_dgn[idx_dmn];
+ 
+  } /* Loop dimensions */
+
+} /* nco_dmn_dgn_tbl() */

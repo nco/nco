@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.371 2013-07-20 02:46:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.372 2013-07-23 22:00:35 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -776,6 +776,33 @@ extern "C" {
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
 
   } trv_sct;
+
+
+
+  /* Fill actual value of dmn_sct structure in nco_dmn_fll()
+  free() each pointer member of dmn_sct structure in nco_dmn_free()
+  deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
+  /* Dimension structure */
+  typedef struct dmn_sct_tag{ /* dmn_sct */
+    char *nm; /* [sng] Dimension name */
+    char fmt[5]; /* [sng] Hint for printf()-style formatting */
+    int cid; /* [id] Variable ID of associated coordinate, if any */
+    int id; /* [id] Dimension ID */
+    int nc_id; /* [id] File ID */
+    long cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
+    long end; /* [idx] Index to end of hyperslab */
+    long srd; /* [nbr] Stride of hyperslab */
+    long srt; /* [idx] Index to start of hyperslab */
+    long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
+    nc_type type; /* [enm] Type of coordinate, if applicable */
+    ptr_unn val; /* [sct] Buffer to hold hyperslab fxm: is this ever used? */
+    short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
+    short is_rec_dmn; /* [flg] Is this the record dimension? */
+    size_t cnk_sz; /* [nbr] Chunk size */
+    struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
+  } dmn_sct; /* end dmn_sct_tag */
+
+
  
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
@@ -785,6 +812,12 @@ extern "C" {
     unsigned int nbr;       /* [nbr] Number of trv_sct elements */   
     dmn_trv_sct *lst_dmn;   /* [sct] Array of dmn_trv_sct */
     unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
+
+    /* Following are members only used by transformation operators (non-ncks) */
+    dmn_sct **dmn_dgn;      /* [sct] Degenerate (size 1) dimensions used by ncwa */
+    int nbr_dmn_dgn;        /* [sct] Number of degenerate (size 1) dimensions used by ncwa */
+
+
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */
@@ -817,28 +850,7 @@ extern "C" {
   } monotonic_direction_enm;
 
  
-  /* Fill actual value of dmn_sct structure in nco_dmn_fll()
-  free() each pointer member of dmn_sct structure in nco_dmn_free()
-  deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
-  /* Dimension structure */
-  typedef struct dmn_sct_tag{ /* dmn_sct */
-    char *nm; /* [sng] Dimension name */
-    char fmt[5]; /* [sng] Hint for printf()-style formatting */
-    int cid; /* [id] Variable ID of associated coordinate, if any */
-    int id; /* [id] Dimension ID */
-    int nc_id; /* [id] File ID */
-    long cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
-    long end; /* [idx] Index to end of hyperslab */
-    long srd; /* [nbr] Stride of hyperslab */
-    long srt; /* [idx] Index to start of hyperslab */
-    long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
-    nc_type type; /* [enm] Type of coordinate, if applicable */
-    ptr_unn val; /* [sct] Buffer to hold hyperslab fxm: is this ever used? */
-    short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
-    short is_rec_dmn; /* [flg] Is this the record dimension? */
-    size_t cnk_sz; /* [nbr] Chunk size */
-    struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
-  } dmn_sct; /* end dmn_sct_tag */
+  
   
   /* Initialize default value of each member of var_sct structure in var_dfl_set()
      Fill actual value of var_sct structure in nco_var_fll()
