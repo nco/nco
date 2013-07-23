@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.874 2013-07-23 22:09:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.875 2013-07-23 22:20:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1905,6 +1905,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;
     trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_avg=False;
   }
+
+  /* Degenerate dimensions used by ncwa */
+  trv_tbl->nbr_dmn_dgn=0;
+  trv_tbl->dmn_dgn=NULL;
 
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
@@ -4895,12 +4899,27 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         if (var_trv->var_dmn[idx_dmn].flg_avg == True){
 
           if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s dimension avg [%d]%s\n",prg_nm_get(),fnc_nm,
-              idx_dmn,dmn_trv->nm_fll);
+            (void)fprintf(stdout,"%s: DEBUG %s dimension avg %s\n",prg_nm_get(),fnc_nm,
+              dmn_trv->nm_fll);
           } /* endif dbg */
 
         } /* Dimension flagged to average */
 
+
+        /* Degenerated dimensions */
+        for(int idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn_dgn;idx_dmn++){
+
+          /* Compare ID */
+          if (trv_tbl->dmn_dgn[idx_dmn]->id == var_dim_id){
+
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s dimension dgn %s\n",prg_nm_get(),fnc_nm,
+                dmn_trv->nm_fll);
+            } /* endif dbg */
+
+
+          } /* Compare ID */
+        } /* Degenerated dimensions */
       } /* ncwa */
 
 
