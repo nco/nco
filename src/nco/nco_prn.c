@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.135 2013-07-22 06:59:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.136 2013-07-23 00:43:27 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -851,10 +851,10 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 } /* end nco_prn_var_val_lmt() */
 
 void
-nco_prn_var_dfn /* [fnc] Print variable metadata */
-(const int nc_id, /* I [id] netCDF file ID */
+nco_prn_var_dfn                     /* [fnc] Print variable metadata */
+(const int nc_id,                   /* I [id] netCDF file ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
- const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
+ const trv_sct * const var_trv)     /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata */
   const char spc_sng[]=""; /* [sng] Space string */
@@ -903,15 +903,25 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
     /* This dimension has a coordinate variable */
     if(var_trv->var_dmn[dmn_idx].is_crd_var){
+
       /* Get coordinate from table */
       crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
-      dmn_sz[dmn_idx]=crd->sz;
+
+      /* Use the hyperslabed size */
+      dmn_sz[dmn_idx]=crd->lmt_msa.dmn_cnt;
+
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=crd->is_rec_dmn;
+
     }else if(var_trv->var_dmn[dmn_idx].is_crd_var == False){
+
       /* Dimension does not have associated coordinate variable */
       /* Get unique dimension */
+
       dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
-      dmn_sz[dmn_idx]=dmn_trv->sz;
+
+      /* Use the hyperslabed size */
+      dmn_sz[dmn_idx]=dmn_trv->lmt_msa.dmn_cnt;
+
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=dmn_trv->is_rec_dmn;
     } /* end else */
 
