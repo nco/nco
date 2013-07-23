@@ -60,7 +60,8 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.12 2013-07-16 04:26:06 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.13 2013-07-23 17:41:16 zender Exp $";
+	string :sng_att = "Test global string attribute"; // 20130723 This is how to specify global string attributes
 
 //	netCDF4-specific atomic types
 	int64 int64_var;
@@ -533,9 +534,11 @@ variables:
 	att_var:ubyte2_att = '\000','\001','\002','\177','\200','\201','\376','\377'; // 20130712: ncgen 4.3.0 translates this to byte
 	att_var:ushort_att = 37us;
 	att_var:uint_att = 73u;
-	att_var:int64_att = 9223372036854775807l; // 20130712: ncgen 4.3.0 chokes on ll, LL suffix for int64 attributes
+	att_var:int64_att = 9223372036854775807l; // 20130712: ncgen 4.3.0 chokes on ll, LL suffix for int64 attributes, and translates -l suffixed numbers to NC_UINT64
 	att_var:uint64_att = 18446744073709551615ul; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes
-//	att_var:string_att = "Sentence one.\nSentence two.\n"s; // 20130712: ncgen 4.3.0 chokes on s suffix for string attributes
+	att_var:string_att1 = "20130723: ncgen -k netCDF-4 version 4.0.x converts quoted string to NC_STRING not NC_CHAR. Incompatible with classic behavior.";
+	att_var:string_att2 = "20130712: ncgen -k netCDF-4 version 4.2.x+ converts quoted string to NC_CHAR not NC_STRING. Backwards compatible with classic behavior.";
+	string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
 
 	int bnd_var(lev,bnd);
 	bnd_var:byte_att = '\0';

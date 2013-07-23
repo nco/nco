@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.137 2013-07-23 00:53:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.138 2013-07-23 17:41:16 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -79,7 +79,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
     (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
     
-    if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s:%s = ",prn_ndn,spc_sng,src_sng,att[idx].nm); 
+    if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s%s:%s = ",prn_ndn,spc_sng,(att[idx].type == NC_STRING) ? "string " : "",src_sng,att[idx].nm); 
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
     if(prn_flg->xml) (void)fprintf(stdout,"%*s<attribute name=\"%s\" value=\"",prn_ndn,spc_sng,att[idx].nm); 
     
@@ -253,7 +253,7 @@ const char * /* O [sng] sprintf() format string for CDL attribute type typ */
 nco_typ_fmt_sng_att_cdl /* [fnc] Provide sprintf() format string for specified attribute type in CDL */
 (const nc_type typ) /* I [enm] netCDF attribute type to provide CDL format string for */
 {
-  /* Purpose: Provide sprintf() format string for specified type attribute
+  /* Purpose: Provide sprintf() format string for specified type attribute in CDL
      Unidata formats shown in ncdump.c near line 459
      Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
      and are user-configurable with -p float_digits,double_digits.
@@ -271,7 +271,7 @@ nco_typ_fmt_sng_att_cdl /* [fnc] Provide sprintf() format string for specified a
   static const char fmt_NC_UINT[]="%uu"; /*  */
   static const char fmt_NC_INT64[]="%llil"; /*  */
   static const char fmt_NC_UINT64[]="%lluul"; /*  */
-  static const char fmt_NC_STRING[]="%s"; /*  */
+  static const char fmt_NC_STRING[]="\"%s\""; /*  */
 
   switch (typ){
   case NC_FLOAT:
