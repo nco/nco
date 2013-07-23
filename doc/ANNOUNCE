@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.584 2013-07-23 05:58:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.585 2013-07-23 23:01:10 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.3 are ready. 
 
@@ -22,7 +22,13 @@ Charlie
 
 NEW FEATURES:
 
+A. ncatted supports type NC_STRING attributes.
+   Earlier versions of ncatted fail when handling NC_STRINGs. 
+   ncatted -a string_att,att_var,c,sng,"list","of","strings" in.nc out.nc
+   http://nco.sf.net/nco.html#ncatted
+
 A. ncks supports a new, group-friendly printing format
+   http://nco.sf.net/nco.html#ncks
 
 A. ncks --cdl prints results in CDL format. CDL is the human-readable
    lingua franca of netCDF imported by ncgen and exported by ncdump. 

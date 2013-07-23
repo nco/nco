@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.13 2013-07-23 17:41:16 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.14 2013-07-23 23:01:10 zender Exp $";
 	string :sng_att = "Test global string attribute"; // 20130723 This is how to specify global string attributes
 
 //	netCDF4-specific atomic types
@@ -69,6 +69,9 @@ variables:
 
 	string string_var;
 	string_var:long_name = "string-type variable";
+
+	string string_arr_var(lon);
+	string_arr_var:long_name = "arrays of string-types";
 
 	ubyte ubyte_var;
 	ubyte_var:long_name = "ubyte-type variable";
@@ -539,6 +542,7 @@ variables:
 	att_var:string_att1 = "20130723: ncgen -k netCDF-4 version 4.0.x converts quoted string to NC_STRING not NC_CHAR. Incompatible with classic behavior.";
 	att_var:string_att2 = "20130712: ncgen -k netCDF-4 version 4.2.x+ converts quoted string to NC_CHAR not NC_STRING. Backwards compatible with classic behavior.";
 	string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
+	string att_var:string_att4 = "20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Don't \"jump the shark\".","This array comprises three sentences.";
 
 	int bnd_var(lev,bnd);
 	bnd_var:byte_att = '\0';
@@ -945,6 +949,7 @@ data:
 //	netCDF4-specific atomic types:
 	int64_var=9223372036854775807;
 	string_var="If you prick us, do we not bleed? If you tickle us, do we not laugh? If you poison us, do we not die? And if you wrong us, shall we not revenge?";
+	string_arr_var="20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Don't \"jump the shark\".","This array comprises three sentences.","Woops, I mean four.";
 	ubyte_var='z';
 	uint_var=4294967295;
 	uint64_var=18446744073709551615;

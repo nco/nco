@@ -1,5 +1,7 @@
 2013-07-23  Charlie Zender  <zender@uci.edu>
 
+	* CDL mode prints NC_STRING's and arrays of NC_STRING correctly
+
 	* ncatted: Works with single NC_STRING's (previous versions of
 	ncatted completely and utterly fail with NC_STRING).
 

@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.809 2013-07-23 20:59:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.810 2013-07-23 23:01:10 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -10709,6 +10709,9 @@ type @code{NC_UINT64}.
 @dfn{String}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_STRING}.
+Note that @command{ncatted} handles type @code{NC_STRING} attributes
+correctly beginning with version 4.3.3 released in August, 2013. 
+Earlier versions fail when asked to handle @code{NC_STRING} attributes.  
 @end table
 @noindent
 In @dfn{Delete} mode the specification of @var{att_type} is optional

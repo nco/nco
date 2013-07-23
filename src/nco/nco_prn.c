@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.139 2013-07-23 19:31:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.140 2013-07-23 23:01:10 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -24,22 +24,23 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   const char spc_sng[]=""; /* [sng] Space string */
   const char cma_sng[]=", "; /* [sng] Comma string */
 
+  char *sng_val_sng; /* [sng] String of NC_CHAR */
   char att_sng_dlm[NCO_MAX_LEN_FMT_SNG];
   char att_sng_pln[NCO_MAX_LEN_FMT_SNG];
+  char chr_val; /* [sng] Current character */
   char src_sng[NC_MAX_NAME];
   char val_sng[NCO_ATM_SNG_LNG];
-  char chr_val; /* [sng] Current character */
-  char *sng_val_sng; /* [sng] String of NC_CHAR */
 
   double val_dbl;
 
   float val_flt;
 
-  int idx;
+  int chr_idx;
   int grp_id_prn;
+  int idx;
   int nbr_att;
-  int rcd=NC_NOERR; /* [rcd] Return code */
   int prn_ndn=0; /* [nbr] Indentation for printing */
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_prn;
 
   long lmn;
@@ -48,6 +49,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   long sng_lng; /* [nbr] Length of NC_CHAR string */
   long sng_lngm1; /* [nbr] Length minus one of NC_CHAR string */
   
+  nco_string sng_val; /* [sng] Current string */
+
   if(var_id == NC_GLOBAL){
     /* Get number of global attributes in group */
     (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
@@ -127,7 +130,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  if(lmn == 0L){
 	    sng_lng=att_sz;
 	    sng_lngm1=sng_lng-1UL;
-	    /* Worst case is printable strings are six or four times longer than unformatted, i.e., '&' == "&quot;" or '\\' == "\\\\" */
+	    /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
 	    sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
 	  } /* endif first element of string array */
 	  /* New string begins each element where penultimate dimension changes */
@@ -167,7 +170,28 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ui64p[lmn],(lmn != att_szm1) ? cma_sng : "");
       break;
     case NC_STRING:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.sngp[lmn],(lmn != att_szm1) ? cma_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++){
+	sng_val=att[idx].val.sngp[lmn];
+	sng_lng=strlen(sng_val);
+	sng_lngm1=sng_lng-1UL;
+	/* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
+	if(prn_flg->cdl || prn_flg->xml){
+	  sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
+	  if(prn_flg->cdl) (void)fprintf(stdout,"\"");
+	  sng_val_sng[0]='\0';
+	  for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
+	    val_sng[0]='\0';
+	    chr_val=sng_val[chr_idx];
+	    (void)strcat(sng_val_sng,(prn_flg->cdl) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng));
+	  } /* end loop over character */
+	  (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
+	  /* Print commas after non-final strings */
+	  if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
+	  if(lmn == att_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
+	}else{ /* Traditional */
+	  (void)fprintf(stdout,att_sng_dlm,att[idx].val.sngp[lmn],(lmn != att_szm1) ? cma_sng : "");
+	} /* endelse CDL, XML, Traditional */
+      } /* end loop over element */
       break;
     default: nco_dfl_case_nc_type_err();
       break;
@@ -1663,8 +1687,6 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Testing: 
      ncks -5 ~/nco/data/in_grp.nc */
 
-  const char fnc_nm[]="nco_grp_prn()"; /* [sng] Function name  */
-
   const char sls_sng[]="/";        /* [sng] Slash string */
   const char spc_sng[]="";        /* [sng] Space string */
 
@@ -1752,43 +1774,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(dmn_nbr > 0 && !prn_flg->xml) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
   prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-    /* 20130718: These "abbreviations" make things clearer but cause memory problem. Why?
-    ncks --cdl -v three_dmn_rec_var -d lon,2 ~/nco/data/in_grp.nc
-    size_t dmn_cnt;
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst[dmn_idx].id];
-    dmn_cnt=dmn_trv.sz;
-    dmn_cnt=dmn_trv.lmt_msa.dmn_cnt; */
-
-    int idx_gbl_dmn;     /* [nbr] Index into global GTT dimension table */
-    dmn_trv_sct dmn_trv; /* [sct] GTT dimension object */
-
-    idx_gbl_dmn=dmn_lst[dmn_idx].id;
-    dmn_trv=trv_tbl->lst_dmn[idx_gbl_dmn];
-
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG %s for group <%s> dimension <%s>, global dimension <%s>\n",prg_nm_get(),fnc_nm,
-        grp_nm_fll,dmn_lst[dmn_idx].nm,dmn_trv.nm_fll);
-    }
-
     if(prn_flg->xml){
-      (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%zi\" />\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt);
+      (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%lu\" />\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);
     }else{ /* !XML */
-      if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn){
-
-#ifdef _MSC_VER
-        (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%d currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt);
-#else
-        (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt);
-#endif
-      }else {
-
-        /* MSVC seg faults with %zi */
-#ifdef _MSC_VER
-        (void)fprintf(stdout,"%*s%s = %d%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
-#else
-        (void)fprintf(stdout,"%*s%s = %zi%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
-#endif
-      }
+      if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %lu%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
     } /* !XML */
   } /* end loop over dimension */
 

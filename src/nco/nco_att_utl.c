@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.155 2013-07-23 20:59:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.156 2013-07-23 23:01:10 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -769,7 +769,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     if(aed_lst[idx].mode != aed_delete){
       
       /* Re-assemble string list values which inadvertently contain delimiters */
-      if((aed_lst[idx].type == NC_CHAR || aed_lst[idx].type == NC_STRING) && arg_nbr > idx_att_val_arg+1){
+      if((aed_lst[idx].type == NC_CHAR) && arg_nbr > idx_att_val_arg+1){
 	/* Number of elements which must be concatenated into single string value */
 	long lmn_nbr;
 	lmn_nbr=arg_nbr-idx_att_val_arg; 
