@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.138 2013-07-23 17:41:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.139 2013-07-23 19:31:09 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1753,28 +1753,36 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     /* 20130718: These "abbreviations" make things clearer but cause memory problem. Why?
-       ncks --cdl -v three_dmn_rec_var -d lon,2 ~/nco/data/in_grp.nc
-       size_t dmn_cnt;
-       dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst[dmn_idx].id];
-       dmn_cnt=dmn_trv.sz;
-       dmn_cnt=dmn_trv.lmt_msa.dmn_cnt; */
+    ncks --cdl -v three_dmn_rec_var -d lon,2 ~/nco/data/in_grp.nc
+    size_t dmn_cnt;
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[dmn_lst[dmn_idx].id];
+    dmn_cnt=dmn_trv.sz;
+    dmn_cnt=dmn_trv.lmt_msa.dmn_cnt; */
+
+    int idx_gbl_dmn;     /* [nbr] Index into global GTT dimension table */
+    dmn_trv_sct dmn_trv; /* [sct] GTT dimension object */
+
+    idx_gbl_dmn=dmn_lst[dmn_idx].id;
+    dmn_trv=trv_tbl->lst_dmn[idx_gbl_dmn];
+
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s for group <%s> dimension <%s>, global dimension <%s>\n",prg_nm_get(),fnc_nm,
+        grp_nm_fll,dmn_lst[dmn_idx].nm,dmn_trv.nm_fll);
+    }
+
     if(prn_flg->xml){
-      (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%zi\" />\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);
+      (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%zi\" />\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt);
     }else{ /* !XML */
       if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn){
-        (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);
+
+#ifdef _MSC_VER
+        (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%d currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt);
+#else
+        (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%zi currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt);
+#endif
       }else {
-        int idx_gbl_dmn;     /* [nbr] Index into global GTT dimension table */
-        dmn_trv_sct dmn_trv; /* [sct] GTT dimension object */
-        
-        idx_gbl_dmn=dmn_lst[dmn_idx].id;
-        dmn_trv=trv_tbl->lst_dmn[idx_gbl_dmn];
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s for group <%s> dimension <%s>, global dimension <%s>\n",prg_nm_get(),fnc_nm,
-            grp_nm_fll,dmn_lst[dmn_idx].nm,dmn_trv.nm_fll);
-        }
-
+        /* MSVC seg faults with %zi */
 #ifdef _MSC_VER
         (void)fprintf(stdout,"%*s%s = %d%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,trv_tbl->lst_dmn[idx_gbl_dmn].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
 #else

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.870 2013-07-23 00:21:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.871 2013-07-23 19:31:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6617,6 +6617,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   int var_dim_id;                        /* [id] Variable dimension ID */   
   int dmn_id_out;                        /* [id] Dimension ID defined in outout group */  
 
+  long dmn_cnt;                          /* [sng] Hyperslabed dimension size  */  
   long dmn_sz;                           /* [sng] Dimension size  */  
 
   nc_type var_typ;                       /* [enm] netCDF type in input variable (usually same as output) */
@@ -6780,26 +6781,34 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
       /* Define current index dimension size */
 
       /* If current dimension is to be defined as record dimension in output file */
-      if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){    
-        dmn_sz=NC_UNLIMITED;
+      if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){  
+
+        if(var_trv->var_dmn[idx_dmn].is_crd_var){
+          dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+        } else {
+          dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+        }
+        (void)nco_dmn_trv_msa(var_dim_id,dmn_cnt,trv_tbl);  
+
+
         /* ! DFN_CRR_DMN_AS_REC_IN_OUTPUT */
       }else{
         /* Get size from GTT */
         if(var_trv->var_dmn[idx_dmn].is_crd_var){
 
           /* Set size */
-          dmn_sz=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+          dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
 
           /* Update GTT dimension */
-          (void)nco_dmn_trv_msa(var_dim_id,dmn_sz,trv_tbl);        
+          (void)nco_dmn_trv_msa(var_dim_id,dmn_cnt,trv_tbl);        
 
         }else {
 
           /* Set size */
-          dmn_sz=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+          dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
 
           /* Update GTT dimension */
-          (void)nco_dmn_trv_msa(var_dim_id,dmn_sz,trv_tbl);  
+          (void)nco_dmn_trv_msa(var_dim_id,dmn_cnt,trv_tbl);  
 
         }
       } /* Define dimension size */
