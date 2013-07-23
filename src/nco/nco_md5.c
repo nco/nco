@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.11 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.12 2013-07-23 20:59:40 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -59,7 +59,7 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
   
   /* NB: Setting this flag significantly increases execution time
      Comparing RAM to disk requires reading hyperslab from disk
-     Hence it essentially double numbers of disk reads, e.g.,
+     Hence it essentially doubles numbers of disk reads, e.g.,
      ncrcat reads/writes only one record of one variable at a time, and will perform an extra read to digest each write.
      Default strategy is to turn on MD5 disk-checking only when user is concatenating files */
   if(prg_id == ncrcat || prg_id == ncecat) MD5_DGS_DSK=True;  /* [flg] Perform MD5 digest of variable written to disk */
@@ -156,7 +156,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.11 2013-01-13 06:07:47 zender Exp $ */
+/* $Id: nco_md5.c,v 1.12 2013-07-23 20:59:40 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   
@@ -258,7 +258,6 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
 #define T62 /* 0xbd3af235 */ (T_MASK ^ 0x42c50dca)
 #define T63    0x2ad7d2bb
 #define T64 /* 0xeb86d391 */ (T_MASK ^ 0x14792c6e)
-
 
 static void
 md5_process(md5_state_t *pms, const md5_byte_t *data /*[64]*/)

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1242 2013-07-16 08:23:32 pvicente Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1243 2013-07-23 20:59:39 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -656,7 +656,6 @@ nco1026. ncwa weighted average bug reported by Lori Sentman, then by Mark Flanne
 	 ncks -H -C -v area -m ~/foo.nc
 nco1028. ncap2: create maintainable list of reserved words and put in manual
 nco1033. ncrcat: warn when first file has more variables than subsequent files
-nco1034. ncatted: allow option to append md5 attribute to each variable
 nco1035. rewrite nco_var_cnf_typ() to use default rather than truncated missing values
 nco1036. ncks: implement rew's copy workaround in nco_cpy_var_val()
 nco1037. nco: support NaN's in math, comparison, averagers following template in NC_FLOAT in nco_var_avg() using isnormal()
@@ -681,9 +680,6 @@ nco1065. ncra2.c move input_complete break to precede record loop but remember t
 nco1067. stat() fails on ~30 GB file on windows? fix workaround
 nco1068. nco: optimize so ncra writes straight to output when drn==1, MRO=Yes (i.e., no nrm) maybe not, what about rms? verify
 	 ncra2 -O -C -d time,0,,1,1 --mro -v time -p ~/nco/data in.nc in.nc ~/foo.nc # 
-nco1069. nco: md5 over DODS works for md5_abc, breaks for md5_a
-	 seems to be (undocumented?) opendap "feature":
-         ncks -O -D 1 -H -C -m --md5 -v md5_a,md5_abc -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
 nco1070. nco: rx add windows equivalent to variable wildcarding regex.h
 nco1071. nco: rx add windows equivalent to filename expansion (globbing) 
 nco1072. nco: clang breaks (gcc is fine) on ncra rgr #20 record average of cell-based geodesic data
@@ -715,6 +711,9 @@ A. ncflint now always works when input files are interchanged, i.e.,
    ncflint -v v1 -w 0.5 fl_1.nc fl_2.nc out.nc # Now works too!
    ncflint -v v1 -w 0.5 fl_2.nc fl_1.nc out.nc # Always worked
 nco1100 Find MSVC 2010 versions of isfinite, snprintf, isnan, isinf
+nco1034. ncatted: option to append md5 attribute to each variable
+nco1101. ncks: md5 digest attributes requested by ocehugo 20130723
+nco1102. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

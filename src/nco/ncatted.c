@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.157 2013-07-15 06:00:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.158 2013-07-23 20:59:40 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -50,8 +50,14 @@
    Create new float:
    ncatted -D 5 -O -a new_float_att,att_var,c,f,74 ~/nco/data/in.nc ~/foo.nc
 
-   Create new netCDF4 atomic type attributes:
-   ncatted -D 5 -O -a new_ubyte_att,att_var,c,ub,0 -a new_ushort_att,att_var,c,us,74 -a new_uint_att,att_var,c,u,71,72,73,74 -a 'new_int64_att,att_var,c,ll,-74' -a new_uint64_att,att_var,c,ull,74,75 ~/nco/data/in_4.nc ~/foo.nc
+   Create new string:
+   ncatted -D 5 -O -a new_string_att,att_var,c,sng,"string" ~/nco/data/in_4.nc ~/foo.nc
+
+   Create new list of strings:
+   ncatted -D 5 -O -a new_string_att,att_var,c,sng,"list","of","strings" ~/nco/data/in_4.nc ~/foo.nc
+
+   Create all new netCDF4 atomic type attributes:
+   ncatted -D 5 -O -a new_ubyte_att,att_var,c,ub,0 -a new_ushort_att,att_var,c,us,74 -a new_uint_att,att_var,c,u,71,72,73,74 -a new_int64_att,att_var,c,ll,-74 -a new_uint64_att,att_var,c,ull,74,75 -a new_string_att,att_var,c,sng,"No man is an island" ~/nco/data/in_4.nc ~/foo.nc
 
    Delete attribute:
    ncatted -D 5 -O -a float_att,att_var,d,,, ~/nco/data/in.nc ~/foo.nc
@@ -155,8 +161,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.157 2013-07-15 06:00:51 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.157 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.158 2013-07-23 20:59:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.158 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

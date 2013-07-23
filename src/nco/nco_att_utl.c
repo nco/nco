@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.154 2013-07-23 18:59:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.155 2013-07-23 20:59:40 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -645,6 +645,8 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
   int idx;
   int arg_nbr;
 
+  long lmn;
+	
   nco_bool ATT_TYP_INHERIT; /* [flg] Inherit attribute type from pre-existing attribute */
   nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in attribute-edit specification */
 
@@ -668,7 +670,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       NCO_SYNTAX_ERROR=True;
     }else if(arg_lst[idx_att_val_arg] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[3]) == 'c'){
       /* ... value is not specified except that att_val = "" is valid for character type */
-      msg_sng=strdup("Value must be explicitly specified for all modes except delete (although an empty string value is permissible for attributes of type NC_NCAR)");
+      msg_sng=strdup("Value must be explicitly specified for all modes except delete (although an empty string value is permissible for attributes of type NC_NCAR and NC_STRING)");
       NCO_SYNTAX_ERROR=True;
     } /* end else */
 
@@ -732,16 +734,20 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       /* Set type of current aed structure */
       /* Convert single letter code to type enum */
       switch(*(arg_lst[3])){
+      case 'F':	
       case 'f':	aed_lst[idx].type=(nc_type)NC_FLOAT; break;
+      case 'D':	
       case 'd':	aed_lst[idx].type=(nc_type)NC_DOUBLE; break;
-      case 'l':	
-      case 'i':	aed_lst[idx].type=(nc_type)NC_INT; break;
-      case 's':	aed_lst[idx].type=(nc_type)NC_SHORT; break;
+      case 'C':	
       case 'c':	aed_lst[idx].type=(nc_type)NC_CHAR; break;
+      case 'B':	
       case 'b':	aed_lst[idx].type=(nc_type)NC_BYTE; break;
       default: 
+	/* Ambiguous single letters must use full string comparisons */
+	if(!strcasecmp(arg_lst[3],"l") || !strcasecmp(arg_lst[3],"i")) aed_lst[idx].type=(nc_type)NC_INT; 
+	else if(!strcasecmp(arg_lst[3],"s")) aed_lst[idx].type=(nc_type)NC_SHORT; 
 #ifdef ENABLE_NETCDF4
-	if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=(nc_type)NC_UBYTE; 
+	else if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=(nc_type)NC_UBYTE; 
 	else if(!strcasecmp(arg_lst[3],"us")) aed_lst[idx].type=(nc_type)NC_USHORT; 
 	else if(!strcasecmp(arg_lst[3],"u") || !strcasecmp(arg_lst[3],"ui") || !strcasecmp(arg_lst[3],"ul")) aed_lst[idx].type=(nc_type)NC_UINT; 
 	else if(!strcasecmp(arg_lst[3],"ll") || !strcasecmp(arg_lst[3],"int64")) aed_lst[idx].type=(nc_type)NC_INT64; 
@@ -750,7 +756,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	else{
 #endif /* ENABLE_NETCDF4 */
 	  (void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
-	  (void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, 'l' = `i' = integer, `b' = byte",prg_nm_get());
+	  (void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, `i' = `l' = integer, `b' = byte",prg_nm_get());
 #ifdef ENABLE_NETCDF4
 	  (void)fprintf(stderr,", `ub' = unsigned byte, `us' = unsigned short, `u' or `ui' or `ul' = unsigned int,`ll' or `int64' = 64-bit signed integer, `ull' or `uint64` = unsigned 64-bit integer, `sng' or `string' = string");
 #endif /* ENABLE_NETCDF4 */
@@ -763,7 +769,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     if(aed_lst[idx].mode != aed_delete){
       
       /* Re-assemble string list values which inadvertently contain delimiters */
-      if(aed_lst[idx].type == NC_CHAR && arg_nbr > idx_att_val_arg+1){
+      if((aed_lst[idx].type == NC_CHAR || aed_lst[idx].type == NC_STRING) && arg_nbr > idx_att_val_arg+1){
 	/* Number of elements which must be concatenated into single string value */
 	long lmn_nbr;
 	lmn_nbr=arg_nbr-idx_att_val_arg; 
@@ -777,7 +783,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       } /* endif arg_nbr > idx_att_val_arg+1 */
       
       /* Replace any C language '\X' escape codes with ASCII bytes */
-      if(aed_lst[idx].type == NC_CHAR) (void)sng_ascii_trn(arg_lst[idx_att_val_arg]);
+      if(aed_lst[idx].type == NC_CHAR || aed_lst[idx].type == NC_STRING) (void)sng_ascii_trn(arg_lst[idx_att_val_arg]);
 
       /* Set size of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
@@ -814,13 +820,16 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	   Retaining is obliquely discussed in netCDF Best Practices document:
 	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char */
 	aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
+      }else if(aed_lst[idx].type == NC_STRING){
+	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
+	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+	    aed_lst[idx].val.sngp[lmn]=(nco_string)strdup(arg_lst[idx_att_val_arg+lmn]);
+	  } /* end loop over elements */
       }else{
 	char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 	double *val_arg_dbl=NULL_CEWI;
 	long long *val_arg_lng_lng=NULL_CEWI;
 	unsigned long long *val_arg_ulng_lng=NULL_CEWI;
-	
-	long lmn;
 	
 	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
 	
@@ -855,6 +864,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtoull",sng_cnv_rcd);
 	  } /* end loop over elements */
 	break;
+	/* fxm: 20130723 save whole string! */
 	case NC_STRING: break;
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* end switch */
@@ -873,6 +883,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	case NC_UINT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.uip[lmn]=(nco_uint)val_arg_ulng_lng[lmn];} break; 
 	case NC_INT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.i64p[lmn]=(nco_int64)val_arg_lng_lng[lmn];} break; 
 	case NC_UINT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ui64p[lmn]=(nco_uint64)val_arg_ulng_lng[lmn];} break; 
+	  /* fxm: 20130723 save whole string! */
 	case NC_STRING: break;
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* end switch */

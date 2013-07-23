@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.808 2013-07-23 18:59:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.809 2013-07-23 20:59:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5583,8 +5583,8 @@ Long options: @samp{--md5_digest}@*
 As of @acronym{NCO} version 4.1.0 (April, 2012), @acronym{NCO} 
 supports data integrity verification using the @acronym{MD5} digest
 algorithm. 
-This support is currently implemented in the multifile concantenators
-(@command{ncecat} and @command{ncrcat}) and @command{ncks}.
+This support is currently implemented in @command{ncks} and in the
+multifile concantenators @command{ncecat} and @command{ncrcat}.
 Activate it with the @samp{--md5_digest} long option.
 
 The behavior and verbosity of the @acronym{MD5} digest is
@@ -5592,10 +5592,10 @@ operator-dependent.
 When activating @acronym{MD5} digests with @command{ncks} it is assumed
 that the user simply wishes to see the digest of every variable and this
 is done when the debugging level exceeds one.
-This incurs the minor overhead of performing the hash algorithm for each 
-variable read.
+This incurs only the minor overhead of performing the hash algorithm for
+each variable read.
 @acronym{MD5} digests may be activated in both the one- and two-filename
-argument forms of @command{ncks}, which are used for printing and
+argument forms of @command{ncks}, which are used for printing and for
 sub-setting, respectively.
 The @acronym{MD5} digests are shown as a 32-character hexadecimal string 
 in which each two characters represent one byte of the 16-byte digest:
@@ -5619,7 +5619,7 @@ widely known.
 The second example shows that the hyperslab of variable @code{md5_abc}
 (= ``abc'') consisting of only its first letter (= ``a'') has the same
 hash as the variable @code{md5_a} (``a'').
-This illustrates that @acronym{MD5} digests acts only on variable data,
+This illustrates that @acronym{MD5} digests act only on variable data,
 not on metadata. 
 
 When activating @acronym{MD5} digests with @command{ncecat} or
@@ -5643,9 +5643,9 @@ ncecat: INFO MD5 digests of RAM and disk contents for wnd_spd agree
 ncrcat: INFO MD5(wnd_spd) = 74699bb0a72b7f16456badb2c995f1a1
 ncrcat: INFO MD5 digests of RAM and disk contents for wnd_spd agree
 @end example
-Regardless of the debugging level, an error will be returned if the
-digests of the variable read from the source file and from the output
-file do not agree.
+Regardless of the debugging level, an error is returned when the digests
+of the variable read from the source file and from the output file
+disagree.  
 
 These rules are evolving and as @acronym{NCO} pays more attention to
 data integrity. 

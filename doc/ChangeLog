@@ -1,5 +1,10 @@
 2013-07-23  Charlie Zender  <zender@uci.edu>
 
+	* ncatted: Works with single NC_STRING's (previous versions of
+	ncatted completely and utterly fail with NC_STRING).
+
+	* ncatted: Fix ambigous interpretation of type specifications
+
 	* ncatted: Clarify netCDF4 atomic type specifications
 
 	* CDL mode prefix NC_STRING attributes with "string "
