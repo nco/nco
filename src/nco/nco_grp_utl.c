@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.876 2013-07-23 22:41:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.877 2013-07-23 22:47:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4929,6 +4929,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
         if (found_dim == False){
           DEFINE_DIM=False;
+
+          nbr_dmn_var_out--;
           
           
         }
@@ -5011,6 +5013,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Increment number of dimensions for this variable */
     nbr_dmn_var++;
 
+    nbr_dmn_var_out++;
+
     /* Insert the previously obtained record dimension ID at start */
     dmn_out_id[0]=rec_id_out;
 
@@ -5054,7 +5058,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
 
   /* Finally... define variable in output file */
-  (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var,dmn_out_id,&var_out_id);
+  (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var_out,dmn_out_id,&var_out_id);
 
 
   /* Duplicate netCDF4 settings when possible */
