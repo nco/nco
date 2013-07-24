@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.811 2013-07-24 05:02:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.812 2013-07-24 15:04:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3469,12 +3469,12 @@ build time.
 @cartouche
 Options @code{--unn}@*
 Availability: @command{ncbo}, @command{ncecat}, @command{ncflint},
-@command{ncks}, @command{ncpdq}@*
+@command{ncks}, @command{ncpdq}, @command{ncwa}@*
 Short options: @*
 Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
 Availability: @command{ncbo}, @command{ncecat}, @command{ncflint},
-@command{ncks}, @command{ncpdq}@*
+@command{ncks}, @command{ncpdq}, @command{ncwa}@*
 Short options: @samp{-g}@*
 Long options: @samp{--grp} and @samp{--group}@*
 Options @code{-v @var{var}} and @code{-x}@*
@@ -3877,7 +3877,7 @@ convention described in @ref{CF Conventions}.
 @cartouche
 Options @code{-G @var{gpe_dsc}}@*
 Availability: @command{ncbo}, @command{ncecat}, @command{ncflint},
-@command{ncks}, @command{ncpdq}@*
+@command{ncks}, @command{ncpdq}, @command{ncwa}@*
 Short options: @samp{-G}@*
 Long options: @samp{--gpe}@*
 @end cartouche
@@ -5619,7 +5619,7 @@ ncks: INFO MD5(md5_abc) = 900150983cd24fb0d6963f7d28e17f72
 lev[0]=100 md5_abc[0--2]='abc' 
 > ncks -O -D 2 -C -d lev,0 --md5 -v md5_a,md5_abc ~/nco/data/in.nc
 ...
-cks: INFO MD5(md5_a) = 0cc175b9c0f1b6a831c399e269772661
+ncks: INFO MD5(md5_a) = 0cc175b9c0f1b6a831c399e269772661
 md5_a = 'a' 
 ncks: INFO MD5(md5_abc) = 0cc175b9c0f1b6a831c399e269772661
 lev[0]=100 md5_abc[0--0]='a' 
@@ -13834,10 +13834,10 @@ SYNTAX
 ncwa [-3] [-4] [-6] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
-[-h] [--hdr_pad @var{nbr}] [-I] [-L @var{dfl_lvl}] [-l @var{path}] 
-[-M @var{mask_val}] [-m @var{mask_var}] [-N] [--no_tmp_fl] [-O] 
-[-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [-T @var{mask_comp}]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x] [-y @var{op_typ}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
+[-I] [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] 
+[--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [-T @var{mask_comp}]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
 

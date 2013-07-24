@@ -1,4 +1,4 @@
-2013-07-23  Charlie Zender  <zender@uci.edu>
+2013-07-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.3 release procedure:
  	Changes since nco-4_3_2: -X aux, ncflint/ncpdq -g -G --unn
@@ -6,7 +6,11 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
 	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
 
-	* Document new features
+	* Fix ncwa OpenMP
+
+	* Document new ncatted, ncrename, ncks, ncwa features in man pages, nco.texi
+
+2013-07-23  Charlie Zender  <zender@uci.edu>
 
 	* ncrename -g works when linked to new libnetcdf nc_rename_grp() function
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.345 2013-07-24 05:59:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.346 2013-07-24 15:04:07 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 #endif
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.345 2013-07-24 05:59:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.345 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.346 2013-07-24 15:04:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.346 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1471,7 +1471,7 @@ main(int argc,char **argv)
     firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
     shared(): msk and wgt are not altered within loop
     private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,trv_tbl,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* !_OPENMP */
 
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */

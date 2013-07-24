@@ -1,11 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.586 2013-07-24 05:02:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.587 2013-07-24 15:04:07 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-The current release brings group support to more operators: fxm.
+The current release brings full group support to ncwa and ncrename. 
 Now seven operators fully support group hierarchies: ncbo, ncecat,
 ncflint, ncks, ncpdq, ncrename, and ncwa.
 
@@ -19,8 +19,8 @@ the future. Please let us know if you find any substantive
 (non-whitespace) differences outputting CDL from ncdump and ncks.
 
 Work on NCO 4.3.4 is underway and includes improved netCDF4 support
-for more NCO operators (ncwa, ncra, ncea, ncrcat), and better support
-for Windows builds (enabling DAP and UDUnits by default).   
+for more NCO operators (ncatted, ncra, ncea, ncrcat) and improved
+support for HDF4 files.
 
 Enjoy,
 Charlie
@@ -83,7 +83,6 @@ A. ncwa now supports groups, Group Path Editing (GPE) and list unions,
    Features are controlled by -g, -G and --union, respectively.
    ncwa -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
    http://nco.sf.net/nco.html#ncwa
-
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
 
