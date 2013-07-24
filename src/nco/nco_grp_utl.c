@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.881 2013-07-24 00:45:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.882 2013-07-24 01:20:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4621,7 +4621,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
   nco_bool FIX_REC_DMN=False;            /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
   nco_bool NEED_TO_DEFINE_DIM;           /* [flg] Dimension needs to be defined in *this* group */  
-  nco_bool DEFINE_DIM;                   /* [flg] Defined dimension (always True, except for ncwa)  */  
+  nco_bool DEFINE_DIM[NC_MAX_DIMS];      /* [flg] Defined dimension (always True, except for ncwa)  */  
 
   dmn_trv_sct *dmn_trv;                  /* [sct] Unique dimension object */
 
@@ -4657,8 +4657,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   assert(nbr_dmn_var == var_trv->nbr_dmn);
 
   nbr_dmn_var_out=nbr_dmn_var;
-
-  DEFINE_DIM=True;
 
   var_typ=var_trv->var_typ;
   nbr_dmn_var=var_trv->nbr_dmn;
@@ -4747,7 +4745,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
 
     /* Always define, except maybe for ncwa */
-    DEFINE_DIM=True;
+    DEFINE_DIM[idx_dmn]=True;
 
     /* Dimension needs to be defined in *this* group? Assume yes... */
     NEED_TO_DEFINE_DIM=True;   
@@ -4933,7 +4931,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         } /* Degenerated dimensions */
 
         if (found_dim == False){
-          DEFINE_DIM=False;
+          DEFINE_DIM[idx_dmn]=False;
 
           nbr_dmn_var_out--;    
         } /* found_dim */
@@ -4941,7 +4939,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
 
       /* Always define, except maybe for ncwa */
-      if (DEFINE_DIM) {
+      if (DEFINE_DIM[idx_dmn]) {
 
         /* Define dimension and obtain dimension ID */
         (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);
@@ -5050,13 +5048,13 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
 
   if(dbg_lvl_get() >= nco_dbg_dev){
-    if (DEFINE_DIM) {
-      (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with new dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
-        (void)fprintf(stdout,"##%d<%s> : ",dmn_out_id[idx_dmn],var_trv->var_dmn[dmn_idx_in_out[idx_dmn]].dmn_nm);
+    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with new dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+      if (DEFINE_DIM[idx_dmn]) {
+        (void)fprintf(stdout,"##%d<%s> : ",dmn_out_id[idx_dmn],var_trv->var_dmn[idx_dmn].dmn_nm);
       }
-      (void)fprintf(stdout,"\n");
     }
+    (void)fprintf(stdout,"\n");
   }
 
 
