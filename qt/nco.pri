@@ -20,7 +20,7 @@ unix {
 }
 
 CONFIG -= qt
-#CONFIG += netcdf3
+CONFIG += netcdf3
 
 win32{
  CONFIG += console 
@@ -47,10 +47,11 @@ win32{
  LIBS += $(LIB_HDF5_HL)
  LIBS += $(LIB_ZLIB)
  LIBS += $(LIB_SZIP)
- LIBS += $(LIB_GSL)
- LIBS += $(LIB_CURL)
  DEFINES += ENABLE_NETCDF4
  DEFINES += HAVE_NETCDF4_H
 }
+
+ LIBS += $(LIB_GSL)
+ LIBS += $(LIB_CURL)
 }
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.156 2013-07-23 23:01:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.157 2013-07-24 23:09:56 pvicente Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -597,40 +597,40 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
  X_CST_PTR_CST_PTR_Y(char,aed_arg)) /* I/O [sng] List of user-specified attribute edits (delimiters are changed to NULL on output */
 {
   /* Purpose: Parse name, type, size, and value elements of comma-separated list of attribute edit information
-     Routine merely evaluates syntax of input expressions
-     Routine does not validate attributes or variables against those present in input netCDF file */
+  Routine merely evaluates syntax of input expressions
+  Routine does not validate attributes or variables against those present in input netCDF file */
 
   /* Options are:
-     -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
+  -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
 
-     -a att_nm,,mode,att_typ,att_val (modifies attribute att_nm for every variable in file)
-     If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in file
-     Thus attribute editing operation is performed on every variable in file.
+  -a att_nm,,mode,att_typ,att_val (modifies attribute att_nm for every variable in file)
+  If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in file
+  Thus attribute editing operation is performed on every variable in file.
 
-     mode,att_nm,att_typ,att_val (modifies global attribute att_nm for file)
-     This option may be combined with modes -a, -c, -d, or -o to specify 
-     appending to, changing, deleting, or overwriting, any existing global attribute named att_nm
+  mode,att_nm,att_typ,att_val (modifies global attribute att_nm for file)
+  This option may be combined with modes -a, -c, -d, or -o to specify 
+  appending to, changing, deleting, or overwriting, any existing global attribute named att_nm
 
-     One mode must be set for each edited attribute: append (a), create (c), delete (d), modify (m), or overwrite (o).
-     -a: Attribute append mode
-     Append value att_val to current var_nm attribute att_nm value att_val, if any. 
-     If var_nm does not have an attribute att_nm, there is no effect.
+  One mode must be set for each edited attribute: append (a), create (c), delete (d), modify (m), or overwrite (o).
+  -a: Attribute append mode
+  Append value att_val to current var_nm attribute att_nm value att_val, if any. 
+  If var_nm does not have an attribute att_nm, there is no effect.
 
-     -c: Attribute create mode
-     Create variable var_nm attribute att_nm with att_val if att_nm does not yet exist. 
-     If var_nm already has an attribute att_nm, there is no effect.
+  -c: Attribute create mode
+  Create variable var_nm attribute att_nm with att_val if att_nm does not yet exist. 
+  If var_nm already has an attribute att_nm, there is no effect.
 
-     -d: Attribute delete mode
-     Delete current var_nm attribute att_nm.
-     If var_nm does not have an attribute att_nm, there is no effect.
+  -d: Attribute delete mode
+  Delete current var_nm attribute att_nm.
+  If var_nm does not have an attribute att_nm, there is no effect.
 
-     -m: Attribute modify mode
-     Change value of current var_nm attribute att_nm to value att_val.
-     If var_nm does not have an attribute att_nm, there is no effect.
+  -m: Attribute modify mode
+  Change value of current var_nm attribute att_nm to value att_val.
+  If var_nm does not have an attribute att_nm, there is no effect.
 
-     -o: Attribute overwrite mode
-     Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
-     This is default mode. */
+  -o: Attribute overwrite mode
+  Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
+  This is default mode. */
 
   aed_sct *aed_lst;
 
@@ -646,7 +646,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
   int arg_nbr;
 
   long lmn;
-	
+
   nco_bool ATT_TYP_INHERIT; /* [flg] Inherit attribute type from pre-existing attribute */
   nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in attribute-edit specification */
 
@@ -682,10 +682,10 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 
     /* Initialize structure */
     /* aed strings not explicitly set by user remain NULL,
-       i.e., specifying default setting appears as if nothing was set.
-       Hopefully, in routines that follow, the branch followed by an aed for which
-       all default settings were specified (e.g.,"-a foo,,,,") will yield same result
-       as branch for which all defaults were set. */
+    i.e., specifying default setting appears as if nothing was set.
+    Hopefully, in routines that follow, the branch followed by an aed for which
+    all default settings were specified (e.g.,"-a foo,,,,") will yield same result
+    as branch for which all defaults were set. */
     aed_lst[idx].att_nm=NULL;
     aed_lst[idx].var_nm=NULL;
     aed_lst[idx].val.vp=NULL;
@@ -722,7 +722,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     /* For modify-mode, type may be inherited when not explicitly specified */
     if(aed_lst[idx].mode == aed_modify && arg_lst[3] == NULL){
       /* 20120711: Problem with inherit is that nc_id info is needed now to get att_typ to inherit
-	 Hence file information/validation becomes involved here, earlier than expected */
+      Hence file information/validation becomes involved here, earlier than expected */
       ATT_TYP_INHERIT=True;
       (void)fprintf(stderr,"%s: ERROR: Inherited attribute type not yet supported. TODO nco1060 fxm.",prg_nm_get());
       nco_exit(EXIT_FAILURE);
@@ -743,165 +743,166 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       case 'B':	
       case 'b':	aed_lst[idx].type=(nc_type)NC_BYTE; break;
       default: 
-	/* Ambiguous single letters must use full string comparisons */
-	if(!strcasecmp(arg_lst[3],"l") || !strcasecmp(arg_lst[3],"i")) aed_lst[idx].type=(nc_type)NC_INT; 
-	else if(!strcasecmp(arg_lst[3],"s")) aed_lst[idx].type=(nc_type)NC_SHORT; 
+        /* Ambiguous single letters must use full string comparisons */
+        if(!strcasecmp(arg_lst[3],"l") || !strcasecmp(arg_lst[3],"i")) aed_lst[idx].type=(nc_type)NC_INT; 
+        else if(!strcasecmp(arg_lst[3],"s")) aed_lst[idx].type=(nc_type)NC_SHORT; 
 #ifdef ENABLE_NETCDF4
-	else if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=(nc_type)NC_UBYTE; 
-	else if(!strcasecmp(arg_lst[3],"us")) aed_lst[idx].type=(nc_type)NC_USHORT; 
-	else if(!strcasecmp(arg_lst[3],"u") || !strcasecmp(arg_lst[3],"ui") || !strcasecmp(arg_lst[3],"ul")) aed_lst[idx].type=(nc_type)NC_UINT; 
-	else if(!strcasecmp(arg_lst[3],"ll") || !strcasecmp(arg_lst[3],"int64")) aed_lst[idx].type=(nc_type)NC_INT64; 
-	else if(!strcasecmp(arg_lst[3],"ull") || !strcasecmp(arg_lst[3],"uint64")) aed_lst[idx].type=(nc_type)NC_UINT64; 
-	else if(!strcasecmp(arg_lst[3],"sng") || !strcasecmp(arg_lst[3],"string")) aed_lst[idx].type=(nc_type)NC_STRING; 
-	else{
+        else if(!strcasecmp(arg_lst[3],"ub")) aed_lst[idx].type=(nc_type)NC_UBYTE; 
+        else if(!strcasecmp(arg_lst[3],"us")) aed_lst[idx].type=(nc_type)NC_USHORT; 
+        else if(!strcasecmp(arg_lst[3],"u") || !strcasecmp(arg_lst[3],"ui") || !strcasecmp(arg_lst[3],"ul")) aed_lst[idx].type=(nc_type)NC_UINT; 
+        else if(!strcasecmp(arg_lst[3],"ll") || !strcasecmp(arg_lst[3],"int64")) aed_lst[idx].type=(nc_type)NC_INT64; 
+        else if(!strcasecmp(arg_lst[3],"ull") || !strcasecmp(arg_lst[3],"uint64")) aed_lst[idx].type=(nc_type)NC_UINT64; 
+        else if(!strcasecmp(arg_lst[3],"sng") || !strcasecmp(arg_lst[3],"string")) aed_lst[idx].type=(nc_type)NC_STRING; 
+        else{
+          (void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
+          (void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, `i' = `l' = integer, `b' = byte",prg_nm_get());
+
+          (void)fprintf(stderr,", `ub' = unsigned byte, `us' = unsigned short, `u' or `ui' or `ul' = unsigned int,`ll' or `int64' = 64-bit signed integer, `ull' or `uint64` = unsigned 64-bit integer, `sng' or `string' = string");
+
+          (void)fprintf(stderr,"\n");
+          nco_exit(EXIT_FAILURE);} /*  end if error */
 #endif /* ENABLE_NETCDF4 */
-	  (void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
-	  (void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, `i' = `l' = integer, `b' = byte",prg_nm_get());
-#ifdef ENABLE_NETCDF4
-	  (void)fprintf(stderr,", `ub' = unsigned byte, `us' = unsigned short, `u' or `ui' or `ul' = unsigned int,`ll' or `int64' = 64-bit signed integer, `ull' or `uint64` = unsigned 64-bit integer, `sng' or `string' = string");
-#endif /* ENABLE_NETCDF4 */
-	  (void)fprintf(stderr,"\n");
-	  nco_exit(EXIT_FAILURE);} /*  end if error */
-      break;
+        break;
       } /* end switch */
     } /* end if not delete mode and !ATT_TYP_INHERIT */
 
     if(aed_lst[idx].mode != aed_delete){
-      
+
       /* Re-assemble string list values which inadvertently contain delimiters */
       if((aed_lst[idx].type == NC_CHAR) && arg_nbr > idx_att_val_arg+1){
-	/* Number of elements which must be concatenated into single string value */
-	long lmn_nbr;
-	lmn_nbr=arg_nbr-idx_att_val_arg; 
-	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), re-assembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
-	/* Rewrite list, splicing in original delimiter string */
-	/* fxm: TODO nco527 ncatted memory may be lost here */
-	arg_lst[idx_att_val_arg]=sng_lst_cat(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
-	/* Keep bookkeeping straight, just in case */
-	arg_nbr=idx_att_val_arg+1L;
-	lmn_nbr=1L;
+        /* Number of elements which must be concatenated into single string value */
+        long lmn_nbr;
+        lmn_nbr=arg_nbr-idx_att_val_arg; 
+        if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), re-assembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
+        /* Rewrite list, splicing in original delimiter string */
+        /* fxm: TODO nco527 ncatted memory may be lost here */
+        arg_lst[idx_att_val_arg]=sng_lst_cat(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
+        /* Keep bookkeeping straight, just in case */
+        arg_nbr=idx_att_val_arg+1L;
+        lmn_nbr=1L;
       } /* endif arg_nbr > idx_att_val_arg+1 */
-      
+
       /* Replace any C language '\X' escape codes with ASCII bytes */
       if(aed_lst[idx].type == NC_CHAR || aed_lst[idx].type == NC_STRING) (void)sng_ascii_trn(arg_lst[idx_att_val_arg]);
 
       /* Set size of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
-	/* 20100409 Remove extra space formerly allocated for NUL-terminator 
-	   This caused each append to insert a NUL at end of NC_CHAR attributes
-	   Multiple appends would then result in attributes pockmarked with NULs
-	   Solves TODO nco985
-	   Not yet sure there are no ill effects though...
-	   20120902 Apparently this fixed some of append mode and broke other modes
-	   Dave Allured reports on NCO Discussion forum that create, modify, and overwrite 
-	   modes have not added NUL to NC_CHAR attributes since 4.0.2.
-	   strdup() below attaches trailing NUL to user-specified string 
-	   Retaining this NUL is obliquely discussed in netCDF Best Practices document:
-	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char
-	   Two behaviors are possible:
-	   1. Terminate user-specified strings with NUL before saving as attributes
-	      This behavior was used in 4.0.2-4.2.2 (201007-201210)
-	   2. Do not NUL-terminate user-specified strings
-	      This behavior was re-instituted in 4.3.0 (201204)
-	   Between 201210 and 201304 the behavior was unclear to me...
-	   ncgen may be interpreted as utilizing Behavior 2, since attributes in CDL are not NUL-terminated after conversion to netCDF binary format
-	   As of 20130327, NCO chooses Behavior 2 (like ncgen)
-	   To revert to Behavior 1, uncomment next line to create space for NUL-terminator */
-	/* aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 1L : strlen(arg_lst[idx_att_val_arg])+1L; */ /* Behavior 1 */
-	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg])+0L; /* Behavior 2 (like ncgen) */
+        /* 20100409 Remove extra space formerly allocated for NUL-terminator 
+        This caused each append to insert a NUL at end of NC_CHAR attributes
+        Multiple appends would then result in attributes pockmarked with NULs
+        Solves TODO nco985
+        Not yet sure there are no ill effects though...
+        20120902 Apparently this fixed some of append mode and broke other modes
+        Dave Allured reports on NCO Discussion forum that create, modify, and overwrite 
+        modes have not added NUL to NC_CHAR attributes since 4.0.2.
+        strdup() below attaches trailing NUL to user-specified string 
+        Retaining this NUL is obliquely discussed in netCDF Best Practices document:
+        http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char
+        Two behaviors are possible:
+        1. Terminate user-specified strings with NUL before saving as attributes
+        This behavior was used in 4.0.2-4.2.2 (201007-201210)
+        2. Do not NUL-terminate user-specified strings
+        This behavior was re-instituted in 4.3.0 (201204)
+        Between 201210 and 201304 the behavior was unclear to me...
+        ncgen may be interpreted as utilizing Behavior 2, since attributes in CDL are not NUL-terminated after conversion to netCDF binary format
+        As of 20130327, NCO chooses Behavior 2 (like ncgen)
+        To revert to Behavior 1, uncomment next line to create space for NUL-terminator */
+        /* aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 1L : strlen(arg_lst[idx_att_val_arg])+1L; */ /* Behavior 1 */
+        aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0L : strlen(arg_lst[idx_att_val_arg])+0L; /* Behavior 2 (like ncgen) */
       }else{
-	/* Number of elements of numeric types is determined by number of delimiters */
-	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
+        /* Number of elements of numeric types is determined by number of delimiters */
+        aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
       } /* end else */
-      
+
       /* Set value of current aed structure */
       if(aed_lst[idx].type == NC_CHAR){
-	/* strdup() attaches a trailing NUL to the user-specified string 
-	   Retaining is obliquely discussed in netCDF Best Practices document:
-	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char */
-	aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
+        /* strdup() attaches a trailing NUL to the user-specified string 
+        Retaining is obliquely discussed in netCDF Best Practices document:
+        http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char */
+        aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
       }else if(aed_lst[idx].type == NC_STRING){
-	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
-	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
-	    aed_lst[idx].val.sngp[lmn]=(nco_string)strdup(arg_lst[idx_att_val_arg+lmn]);
-	  } /* end loop over elements */
+        aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
+        for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+          aed_lst[idx].val.sngp[lmn]=(nco_string)strdup(arg_lst[idx_att_val_arg+lmn]);
+        } /* end loop over elements */
       }else{
-	char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-	double *val_arg_dbl=NULL_CEWI;
-	long long *val_arg_lng_lng=NULL_CEWI;
-	unsigned long long *val_arg_ulng_lng=NULL_CEWI;
-	
-	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
-	
-	/* Use type-appropriate conversion */
-	switch(aed_lst[idx].type){
-	case NC_FLOAT: 
-	case NC_DOUBLE: 
-	  val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
-	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
-	    val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd);
-	    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtod",sng_cnv_rcd);
-	  } /* end loop over elements */
-	  break; 
-	case NC_BYTE:
-	case NC_INT: 
-	case NC_SHORT: 
-	case NC_INT64: 
-	  val_arg_lng_lng=(long long *)nco_malloc(aed_lst[idx].sz*sizeof(long long int));
-	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
-	    val_arg_lng_lng[lmn]=strtoll(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtoll",sng_cnv_rcd);
-	  } /* end loop over elements */
-	  break;
-	case NC_CHAR:
-	case NC_UBYTE: 
-	case NC_USHORT: 
-	case NC_UINT: 
-	case NC_UINT64: 
-	  val_arg_ulng_lng=(unsigned long long *)nco_malloc(aed_lst[idx].sz*sizeof(unsigned long long int));
-	  for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
-	    val_arg_ulng_lng[lmn]=strtoull(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd,NCO_SNG_CNV_BASE10); 
-	    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtoull",sng_cnv_rcd);
-	  } /* end loop over elements */
-	break;
-	/* fxm: 20130723 save whole string! */
-	case NC_STRING: break;
-	default: nco_dfl_case_nc_type_err(); break;
-	} /* end switch */
-	
-	/* Copy and typecast entire array of values, using implicit coercion rules of C */
-	/* 20011001: Use explicit coercion rules to quiet C++ compiler warnings */
-	switch(aed_lst[idx].type){
-	case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=(float)val_arg_dbl[lmn];} break; 
-	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=(double)val_arg_dbl[lmn];} break; 
-	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ip[lmn]=(nco_int)val_arg_lng_lng[lmn];} break; 
-	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(nco_short)val_arg_lng_lng[lmn];} break; 
-	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(nco_char)val_arg_ulng_lng[lmn];} break; 
-	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(nco_byte)val_arg_lng_lng[lmn];} break; 
-	case NC_UBYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ubp[lmn]=(nco_ubyte)val_arg_ulng_lng[lmn];} break; 
-	case NC_USHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.usp[lmn]=(nco_ushort)val_arg_ulng_lng[lmn];} break; 
-	case NC_UINT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.uip[lmn]=(nco_uint)val_arg_ulng_lng[lmn];} break; 
-	case NC_INT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.i64p[lmn]=(nco_int64)val_arg_lng_lng[lmn];} break; 
-	case NC_UINT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ui64p[lmn]=(nco_uint64)val_arg_ulng_lng[lmn];} break; 
-	  /* fxm: 20130723 save whole string! */
-	case NC_STRING: break;
-	default: nco_dfl_case_nc_type_err(); break;
-	} /* end switch */
-	
-	/* Free array used to hold input values */
-	if(val_arg_dbl) val_arg_dbl=(double *)nco_free(val_arg_dbl);
-	if(val_arg_lng_lng) val_arg_lng_lng=(long long *)nco_free(val_arg_lng_lng);
-	if(val_arg_ulng_lng) val_arg_ulng_lng=(unsigned long long *)nco_free(val_arg_ulng_lng);
+        char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+        double *val_arg_dbl=NULL_CEWI;
+        long long *val_arg_lng_lng=NULL_CEWI;
+        unsigned long long *val_arg_ulng_lng=NULL_CEWI;
+
+        aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
+
+        /* Use type-appropriate conversion */
+        switch(aed_lst[idx].type){
+        case NC_FLOAT: 
+        case NC_DOUBLE: 
+          val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
+          for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+            val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd);
+            if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtod",sng_cnv_rcd);
+          } /* end loop over elements */
+          break; 
+        case NC_BYTE:
+        case NC_INT: 
+        case NC_SHORT: 
+        case NC_INT64: 
+          val_arg_lng_lng=(long long *)nco_malloc(aed_lst[idx].sz*sizeof(long long int));
+          for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+            val_arg_lng_lng[lmn]=strtoll(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+            if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtoll",sng_cnv_rcd);
+          } /* end loop over elements */
+          break;
+        case NC_CHAR:
+        case NC_UBYTE: 
+        case NC_USHORT: 
+        case NC_UINT: 
+        case NC_UINT64: 
+          val_arg_ulng_lng=(unsigned long long *)nco_malloc(aed_lst[idx].sz*sizeof(unsigned long long int));
+          for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+            val_arg_ulng_lng[lmn]=strtoull(arg_lst[idx_att_val_arg+lmn],&sng_cnv_rcd,NCO_SNG_CNV_BASE10); 
+            if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[idx_att_val_arg+lmn],"strtoull",sng_cnv_rcd);
+          } /* end loop over elements */
+          break;
+          /* fxm: 20130723 save whole string! */
+        case NC_STRING: break;
+        default: nco_dfl_case_nc_type_err(); break;
+        } /* end switch */
+
+        /* Copy and typecast entire array of values, using implicit coercion rules of C */
+        /* 20011001: Use explicit coercion rules to quiet C++ compiler warnings */
+        switch(aed_lst[idx].type){
+        case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=(float)val_arg_dbl[lmn];} break; 
+        case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=(double)val_arg_dbl[lmn];} break; 
+        case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ip[lmn]=(nco_int)val_arg_lng_lng[lmn];} break; 
+        case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(nco_short)val_arg_lng_lng[lmn];} break; 
+        case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(nco_char)val_arg_ulng_lng[lmn];} break; 
+        case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(nco_byte)val_arg_lng_lng[lmn];} break; 
+        case NC_UBYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ubp[lmn]=(nco_ubyte)val_arg_ulng_lng[lmn];} break; 
+        case NC_USHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.usp[lmn]=(nco_ushort)val_arg_ulng_lng[lmn];} break; 
+        case NC_UINT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.uip[lmn]=(nco_uint)val_arg_ulng_lng[lmn];} break; 
+        case NC_INT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.i64p[lmn]=(nco_int64)val_arg_lng_lng[lmn];} break; 
+        case NC_UINT64: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.ui64p[lmn]=(nco_uint64)val_arg_ulng_lng[lmn];} break; 
+          /* fxm: 20130723 save whole string! */
+        case NC_STRING: break;
+        default: nco_dfl_case_nc_type_err(); break;
+        } /* end switch */
+
+        /* Free array used to hold input values */
+        if(val_arg_dbl) val_arg_dbl=(double *)nco_free(val_arg_dbl);
+        if(val_arg_lng_lng) val_arg_lng_lng=(long long *)nco_free(val_arg_lng_lng);
+        if(val_arg_ulng_lng) val_arg_ulng_lng=(unsigned long long *)nco_free(val_arg_ulng_lng);
       } /* end else */
       /* Un-typecast pointer to values after access */
       (void)cast_nctype_void(aed_lst[idx].type,&aed_lst[idx].val);
-      
+
     } /* end if mode is not delete */
 
     arg_lst=nco_sng_lst_free(arg_lst,arg_nbr);
 
   } /* end loop over aed */
-  
+
+
   if(dbg_lvl_get() >= nco_dbg_io){
     for(idx=0;idx<nbr_aed;idx++){
       (void)fprintf(stderr,"aed_lst[%d].att_nm = %s\n",idx,aed_lst[idx].att_nm);
@@ -913,9 +914,10 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
       (void)fprintf(stderr,"aed_lst[%d].mode = %i\n",idx,aed_lst[idx].mode);
     } /* end loop over idx */
   } /* end debug */
-  
+
+
   return aed_lst;
-  
+
 } /* end nco_prs_aed_lst() */
 
 int /* [flg] Variable and attribute names are conjoined */

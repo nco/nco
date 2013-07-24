@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.141 2013-07-24 05:02:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.142 2013-07-24 23:09:56 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -56,7 +56,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
     /* Which group is this? */
     rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
+#ifdef ENABLE_NETCDF4
     if(rcd == NC_ENOGRP) (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Global"); else (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Group");
+#endif
     if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->sxn_fst;
   }else{
     /* Get name and number of attributes for variable */
