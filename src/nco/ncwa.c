@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.344 2013-07-24 03:41:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.345 2013-07-24 05:59:30 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -64,7 +64,7 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 
-#if 0
+#if 1
 #define USE_TRV_API
 #endif
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 #endif
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.344 2013-07-24 03:41:57 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.344 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.345 2013-07-24 05:59:30 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.345 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1363,11 +1363,37 @@ main(int argc,char **argv)
   /* Add new missing values to output file while in define mode */
   if(msk_nm){
     for(idx=0;idx<nbr_var_prc;idx++){
+
+      char *grp_out_fll=NULL; /* [sng] Group name */
+
+      int grp_id;        /* [ID] Group ID */
+      int grp_out_id;    /* [ID] Group ID (output) */
+      int var_out_id;    /* [ID] Variable ID (output) */
+      trv_sct *var_trv;  /* [sct] Variable GTT object */
+
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+
+      /* Edit group name for output */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+
+      /* Obtain output group ID using full group name */
+      (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+
+      /* Memory management after current extracted group */
+      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+      /* Store the output variable ID */
+      var_prc_out[idx]->id=var_out_id;
+
       /* Define for var_prc_out because mss_val for var_prc will be overwritten in nco_var_mtd_refresh() */
       if(!var_prc_out[idx]->has_mss_val){
         var_prc_out[idx]->has_mss_val=True;
         var_prc_out[idx]->mss_val=nco_mss_val_mk(var_prc[idx]->type);
-        (void)nco_put_att(out_id,var_prc_out[idx]->id,nco_mss_val_sng_get(),var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
+        (void)nco_put_att(grp_out_id,var_prc_out[idx]->id,nco_mss_val_sng_get(),var_prc_out[idx]->type,1,var_prc_out[idx]->mss_val.vp);
       } /* end if */
     } /* end for */
   } /* end if */
