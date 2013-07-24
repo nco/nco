@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.304 2013-07-18 23:52:52 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.305 2013-07-24 06:27:38 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3650,6 +3650,26 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+#ncwa #41
+#NEW NCO 4.3.3
+#same as #ncwa #25
+#ncwa -h -O -y min -g g10 -v three_dmn_rec_var in_grp.nc out.nc
+#ncks -C -H -s '%f' -g g10 -v three_dmn_rec_var out.nc
+#$tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
+#$tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_rec_var %tmp_fl_00%";
+#$dsc_sng="Dimension reduction with min flag on type float variable";
+#$tst_cmd[2]="1";
+     
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -g g10 -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00% 2> %tmp_fl_02%";
+    $tst_cmd[1]="ncks -C -H -s '%f' -g g10 -v three_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="(Groups) Dimension reduction with min flag on type float variable";
+    $tst_cmd[2]="1";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+
     
     
 #print "paused - hit return to continue"; my $wait=<STDIN>;
