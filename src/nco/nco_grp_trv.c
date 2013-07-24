@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.203 2013-07-22 23:23:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.204 2013-07-24 04:21:30 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -503,19 +503,19 @@ nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name
 } /* nco_dmn_fll_nm_id() */
 
 void                                  
-nco_dmn_trv_msa                       /* [fnc] Update dimension with hyperslabed size */
+nco_dmn_set_msa                       /* [fnc] Update dimension with hyperslabed size */
 (const int dmn_id,                    /* I [id] Unique dimension ID */
  const long dmn_cnt,                  /* I [nbr] New dimension size */
  const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
 {
 
   /* Search table dimension list */
-  for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++){
+  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
 
     /* Compare IDs */
-    if (dmn_id == trv_tbl->lst_dmn[dmn_lst_idx].dmn_id){
+    if (dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id){
 
-      trv_tbl->lst_dmn[dmn_lst_idx].lmt_msa.dmn_cnt=dmn_cnt;
+      trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt=dmn_cnt;
 
      
     } /* Compare IDs */
@@ -524,4 +524,27 @@ nco_dmn_trv_msa                       /* [fnc] Update dimension with hyperslabed
 
   return;
 
-} /* nco_dmn_trv_msa() */
+} /* nco_dmn_set_msa() */
+
+
+long                                  /* O hyperslabed size */
+nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabed size */
+(const int dmn_id,                    /* I [id] Unique dimension ID */
+ const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
+{
+
+  /* Search table dimension list */
+  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+
+    /* Compare IDs */
+    if (dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id){
+
+      return trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt;
+     
+    } /* Compare IDs */
+  } /* Search table dimension list */
+
+  assert(0);
+  return -1;
+
+} /* nco_dmn_get_msa() */
