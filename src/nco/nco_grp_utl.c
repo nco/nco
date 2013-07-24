@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.885 2013-07-24 04:21:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.886 2013-07-24 04:46:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5062,9 +5062,28 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     (void)fprintf(stdout,"\n");
   }
 
+  /* Special case for ncwa */
+  if (prg_id == ncwa){
 
-  /* Finally... define variable in output file */
-  (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var_out,dmn_out_id,&var_out_id);
+    int dmn_ids_out[NC_MAX_DIMS];  /* [id] Dimension IDs array for output variable (ncwa can skip some dimensions, rearranje) */
+
+    int idx_dmn_def=0;
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+      if (DEFINE_DIM[idx_dmn]) {
+        dmn_ids_out[idx_dmn_def]=dmn_out_id[idx_dmn];
+        idx_dmn_def++;
+      }
+    }
+
+    /* Finally... define variable in output file */
+    (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var_out,dmn_ids_out,&var_out_id);
+
+  } else { /* non ncwa */
+
+    /* Finally... define variable in output file */
+    (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var_out,dmn_out_id,&var_out_id);
+
+  } /* non ncwa */
 
 
   /* Duplicate netCDF4 settings when possible */
