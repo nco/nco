@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.341 2013-07-17 16:46:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.342 2013-07-24 21:55:42 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.341 2013-07-17 16:46:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.341 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.342 2013-07-24 21:55:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.342 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -164,7 +164,6 @@ main(int argc,char **argv)
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
-  int jdx=int_CEWI;
   int idx_rdr=int_CEWI;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
@@ -188,7 +187,6 @@ main(int argc,char **argv)
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
-  lmt_msa_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
   
   nm_id_sct *dmn_rdr_lst;
 
@@ -717,9 +715,6 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
-  /* Set chunksize parameters */
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,lmt_all_lst,nbr_dmn_fl,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
-
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
@@ -944,11 +939,6 @@ main(int argc,char **argv)
       } /* nco_pck_plc == nco_pck_plc_upk */
     } /* nco_pck_plc == nco_pck_plc_nil */
 
-    /* NB: lmt now referenced within lmt_all_lst[idx]  */
-    for(idx=0;idx<nbr_dmn_fl;idx++)
-      for(jdx=0;jdx< lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);   
     lmt=(lmt_sct**)nco_free(lmt); 
 
     /* NCO-generic clean-up */
