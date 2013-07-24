@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.341 2013-07-23 23:34:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.342 2013-07-24 03:41:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -582,12 +582,6 @@ nco_dmn_msa_tbl                       /* [fnc] Define specified variable in outp
  const char * const rec_dmn_nm_cst,   /* I [sng] User-specified record dimension, if any, to create or fix in output file */
  trv_sct *var_trv,                    /* I/O [sct] Object to write (variable) trv_map_dmn_set() is O */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
-void                          
-nco_dmn_avg_tbl                       /* [fnc] Transfer averaged dimensions information into GTT (-a for ncwa)  */
-(char **dmn_avg_lst_in,               /* I [sng] User-specified list of dimension names */
- const int dmn_avg_nbr,               /* I [nbr] Total number of dimensions in list */
- const trv_tbl_sct *trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 
 void                          

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.372 2013-07-23 22:00:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.373 2013-07-24 03:41:57 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -715,8 +715,6 @@ extern "C" {
     crd_sct *crd;            /* [sct] Pointer to *coordinate variable* if coordinate variable */
     dmn_trv_sct *ncd;        /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
     int dmn_id;              /* [ID] Unique ID for dimension; same as "dmn_trv_sct.id", obtained from API "nc_inq_vardimid" */
-    /* Following are members only used by transformation operators (non-ncks) */
-    nco_bool flg_avg;        /* [flg] (ncwa) This dimension (name) was included in the input -a list of names */ 
   } var_dmn_sct; 
 
   /* Processing type enumerator */

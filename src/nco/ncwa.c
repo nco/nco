@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.343 2013-07-24 01:35:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.344 2013-07-24 03:41:57 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 #endif
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.343 2013-07-24 01:35:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.343 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.344 2013-07-24 03:41:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.344 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1311,9 +1311,6 @@ main(int argc,char **argv)
 
   /* Transfer degenerated dimensions information into GTT  */
   (void)nco_dmn_dgn_tbl(dmn_out,nbr_dmn_out,trv_tbl);
-
-  /* Transfer averaged dimensions information into GTT (-a for ncwa)  */
-  (void)nco_dmn_avg_tbl(dmn_avg_lst_in,dmn_avg_nbr,trv_tbl);
 
   /* Dimension average list no longer needed */
   if(dmn_avg_nbr > 0) dmn_avg_lst_in=nco_sng_lst_free(dmn_avg_lst_in,dmn_avg_nbr);
