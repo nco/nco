@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.587 2013-07-24 15:04:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.588 2013-07-24 15:42:41 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.3 are ready. 
 
@@ -49,7 +49,13 @@ A. ncks will write the MD5 digest of each variable as an NC_CHAR
    ncks -O -C --md5_wrt -v md5_.? ~/nco/data/in.nc ~/out.nc
    http://nco.sf.net/nco.html#md5
 
-A. ncks supports a new, group-friendly printing format
+A. ncks -5 supports a new, group-friendly printing format.
+   This format uses indentation to indicate group level.
+   Groups are arranged alphabetically, and variable metadata and data  
+   are printed alphabetically within each group. Otherwise the
+   information printed is in "traditional" ncks format (but see --cdl
+   switch below for another possibility). Feedback welcome!
+   ncks -5 ~/nco/data/in_grp.nc
    http://nco.sf.net/nco.html#ncks
 
 A. ncks --cdl prints results in CDL format. CDL is the human-readable

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.373 2013-07-24 03:41:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.374 2013-07-24 15:42:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -598,6 +598,12 @@ extern "C" {
     aed_enm mode; /* Action to perform with attribute */
   } aed_sct;
   
+  /* MD5 flags structure */
+  typedef struct{ /* md5_sct */
+    nco_bool MD5_DIGEST; /* [flg] Perform MD5 digests */
+    nco_bool MD5_WRT_ATT; /* [flg] Write MD5 digests as attributes */
+  } md5_sct;
+
   /* Print flags structure */
   typedef struct{ /* prn_fmt_sct */
     char *fl_in; /* [sng] Input filename */

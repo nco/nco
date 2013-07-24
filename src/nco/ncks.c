@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.640 2013-07-24 05:02:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.641 2013-07-24 15:42:41 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -153,8 +153,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.640 2013-07-24 05:02:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.640 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.641 2013-07-24 15:42:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.641 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -204,6 +204,8 @@ main(int argc,char **argv)
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
+
+  md5_sct md5_flg; /* [sct] MD5 configuration */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -416,11 +418,11 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
       if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
-        MD5_DIGEST=True;
+        md5_flg.MD5_DIGEST=MD5_DIGEST=True;
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
       } /* endif "md5" */
       if(!strcmp(opt_crr,"md5_wrt_att") || !strcmp(opt_crr,"md5_write_attribute")){
-        MD5_WRT_ATT=True;
+        md5_flg.MD5_WRT_ATT=MD5_WRT_ATT=True;
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will write MD5 digests as attributes\n",prg_nm_get());
       } /* endif "md5" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */

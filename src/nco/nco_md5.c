@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.13 2013-07-24 05:02:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.14 2013-07-24 15:42:41 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -61,6 +61,7 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
   if((prg_id == ncks && dbg_lvl_get() >= nco_dbg_crr)) MD5_ATT_WRT=True;
   if(MD5_ATT_WRT){
     /* Test with:
+       ncks -O -C -4 --md5_wrt -v md5_.? ~/nco/data/in.nc ~/foo.nc
        ncks -O -C -4 --md5 -D 6 -v md5_.? ~/nco/data/in.nc ~/foo.nc */
     aed_sct aed_md5;
     char md5_sng[]="MD5"; /* [sng] Attribute name for MD5 digest */
@@ -174,7 +175,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.13 2013-07-24 05:02:27 zender Exp $ */
+/* $Id: nco_md5.c,v 1.14 2013-07-24 15:42:41 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   
