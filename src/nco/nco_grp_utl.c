@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.883 2013-07-24 03:41:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.884 2013-07-24 03:55:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4606,10 +4606,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int dmn_id_out;                        /* [id] Dimension ID defined in outout group */  
   int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */
 
-  int dmn_idx_in_out[NC_MAX_DIMS];      /* [idx] Dimension correspondence, input->output (ncpdq) */
-  int dmn_out_id_tmp[NC_MAX_DIMS];      /* [idx] Copy of dmn_out_id (ncpdq) */
+  int dmn_idx_in_out[NC_MAX_DIMS];       /* [idx] Dimension correspondence, input->output (ncpdq) */
+  int dmn_out_id_tmp[NC_MAX_DIMS];       /* [idx] Copy of dmn_out_id (ncpdq) */
 
-  long dmn_sz;                           /* [sng] Dimension size  */  
+  long dmn_cnt;                          /* [nbr] Hyperslabbed size of dimension */  
+  long dmn_sz;                           /* [nbr] Size of dimension (on input)  */  
   long dmn_sz_grp;                       /* [sng] Dimension size for group  */  
 
   nc_type var_typ;                       /* [enm] netCDF type in input variable (usually same as output) */
@@ -4868,26 +4869,38 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       /* Define current index dimension size */
 
       /* If current dimension is to be defined as record dimension in output file */
-      if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){    
-        dmn_sz=NC_UNLIMITED;
+      if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){  
+
+        dmn_cnt=NC_UNLIMITED;
+
+        long cnt;
+        if(var_trv->var_dmn[idx_dmn].is_crd_var){
+          cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+        } else {
+          cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+        }
+        (void)nco_dmn_trv_msa(var_dim_id,cnt,trv_tbl);  
+
+
+
         /* ! DFN_CRR_DMN_AS_REC_IN_OUTPUT */
       }else{
         /* Get size from GTT */
         if(var_trv->var_dmn[idx_dmn].is_crd_var){
 
           /* Set size */
-          dmn_sz=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+          dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
 
           /* Update GTT dimension */
-          (void)nco_dmn_trv_msa(var_dim_id,dmn_sz,trv_tbl);        
+          (void)nco_dmn_trv_msa(var_dim_id,dmn_cnt,trv_tbl);        
 
         }else {
 
           /* Set size */
-          dmn_sz=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+          dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
 
           /* Update GTT dimension */
-          (void)nco_dmn_trv_msa(var_dim_id,dmn_sz,trv_tbl);  
+          (void)nco_dmn_trv_msa(var_dim_id,dmn_cnt,trv_tbl);  
 
         }
       } /* Define dimension size */
@@ -4906,11 +4919,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
             found_dim=True;
 
-            dmn_sz=trv_tbl->dmn_dgn[idx_dmn_dgn]->cnt;
+            dmn_cnt=trv_tbl->dmn_dgn[idx_dmn_dgn]->cnt;
 
             if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s dimension dgn %s new size=%d\n",prg_nm_get(),fnc_nm,
-                dmn_trv->nm_fll,dmn_sz);
+              (void)fprintf(stdout,"%s: DEBUG %s dimension dgn %s size=%d\n",prg_nm_get(),fnc_nm,
+                dmn_trv->nm_fll,dmn_cnt);
             } /* endif dbg */
 
             break;
@@ -4930,14 +4943,14 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if (DEFINE_DIM[idx_dmn]) {
 
         /* Define dimension and obtain dimension ID */
-        (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_sz,&dmn_id_out);
+        (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_cnt,&dmn_id_out);
 
         /* Assign the defined ID to the dimension ID array for the variable. */
         dmn_out_id[idx_dmn]=dmn_id_out; 
 
         if(dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: DEBUG %s defined dimension [%d] new ##%d:<%s> with size %li\n",prg_nm_get(),fnc_nm,
-            idx_dmn,dmn_id_out,dmn_trv->nm_fll,dmn_sz);
+            idx_dmn,dmn_id_out,dmn_trv->nm_fll,dmn_cnt);
         } /* endif dbg */
 
       } /* Always define, except maybe for ncwa */
@@ -5088,7 +5101,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 
   int nbr_dmn;      /* [nbr] Number of dimensions associated with variables to be extracted */
 
-  long dmn_cnt;     /* [nbr] *Hyperslabbed* size of dimension */  
+  long dmn_cnt;     /* [nbr] Hyperslabbed size of dimension */  
   long dmn_sz;      /* [nbr] Size of dimension  */  
 
   nco_bool dmn_flg; /* [flg] Is dimension already inserted in output array  */  
