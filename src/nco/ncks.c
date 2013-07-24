@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.641 2013-07-24 15:42:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.642 2013-07-24 18:55:09 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,8 +104,6 @@ main(int argc,char **argv)
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
-  nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
-  nco_bool MD5_WRT_ATT=False; /* [flg] Write MD5 digests as attributes */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool PRN_CDL=False; /* [flg] Print CDL */
   nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
@@ -153,8 +151,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.641 2013-07-24 15:42:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.641 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.642 2013-07-24 18:55:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.642 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -162,8 +160,11 @@ main(int argc,char **argv)
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
   ddra_info.flg_ddra=False;
+  md5_sct md5_flg; /* [sct] MD5 configuration */
+  md5_flg.MD5_DIGEST=False;
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.flg_ddra=False};
+  md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
 #endif /* !__cplusplus */
 
   extern char *optarg;
@@ -204,8 +205,6 @@ main(int argc,char **argv)
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
-
-  md5_sct md5_flg; /* [sct] MD5 configuration */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -418,13 +417,13 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
       if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
-        md5_flg.MD5_DIGEST=MD5_DIGEST=True;
+        md5_flg.MD5_DIGEST=True;
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
-      } /* endif "md5" */
+      } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"md5_wrt_att") || !strcmp(opt_crr,"md5_write_attribute")){
-        md5_flg.MD5_WRT_ATT=MD5_WRT_ATT=True;
+        md5_flg.MD5_WRT_ATT=True;
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will write MD5 digests as attributes\n",prg_nm_get());
-      } /* endif "md5" */
+      } /* endif "md5_wrt_att" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
@@ -778,7 +777,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
     /* Write extracted data to output file */
-    (void)nco_xtr_wrt(in_id,out_id,fp_bnr,MD5_DIGEST,HAVE_LIMITS,trv_tbl);
+    (void)nco_xtr_wrt(in_id,out_id,fp_bnr,md5_flg,HAVE_LIMITS,trv_tbl);
 
     /* [fnc] Close unformatted binary data file */
     if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
@@ -839,7 +838,7 @@ main(int argc,char **argv)
     prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
     // prn_flg.ALPHA_BY_STUB_OBJECT=ALPHA_BY_STUB_OBJECT;
     prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
-    prn_flg.MD5_DIGEST=MD5_DIGEST;
+    prn_flg.MD5_DIGEST=md5_flg.MD5_DIGEST;
     prn_flg.PRN_DMN_IDX_CRD_VAL=PRN_DMN_IDX_CRD_VAL;
     prn_flg.PRN_DMN_UNITS=PRN_DMN_UNITS;
     prn_flg.PRN_DMN_VAR_NM=PRN_DMN_VAR_NM;

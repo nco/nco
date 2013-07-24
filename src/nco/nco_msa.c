@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.214 2013-07-18 17:07:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.215 2013-07-24 18:55:09 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1164,7 +1164,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 (const int in_id,                   /* I [id] Input group ID */
  const int out_id,                  /* I [id] Output group ID */
  FILE * const fp_bnr,               /* I [flg] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
+ const md5_sct md5_flg,         /* I [flg] MD5 Configuration */
  const trv_sct * const var_trv)     /* I [sct] Object to write (variable) */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
@@ -1227,7 +1227,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
 
     /* Perform MD5 digest of input and output data if requested */
-    if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
+    if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
 
     /* Write unformatted binary data */
     if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
@@ -1273,7 +1273,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ);
 
   /* Perform MD5 digest of input and output data if requested */
-  if(MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
+  if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
 
   /* Write unformatted binary data */
   if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);

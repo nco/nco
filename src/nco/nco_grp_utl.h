@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.342 2013-07-24 03:41:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.343 2013-07-24 18:55:09 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -232,18 +232,15 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int nc_out_id,                 /* I [ID] netCDF output file ID */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
+ const md5_sct md5_flg,           /* I [flg] MD5 Configuration */
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
 
 nco_bool                              /* O [flg] True if in scope */ 
 nco_crd_var_dmn_scp                   /* [fnc] Is coordinate variable in dimension scope */
 (const trv_sct * const var_trv,       /* I [sct] GTT Object Variable */
  const dmn_trv_sct * const dmn_trv,   /* I [sct] GTT unique dimension */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
-
 
 int                                    /* [rcd] Return code */
 nco_grp_itr                            /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */

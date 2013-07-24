@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.76 2013-07-16 22:24:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.77 2013-07-24 18:55:09 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -145,7 +145,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 (const int in_id,                   /* I [id] netCDF input file ID */
  const int out_id,                  /* I [id] netCDF output file ID */
  FILE * const fp_bnr,               /* I [flg] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST,         /* I [flg] Perform MD5 digests */
+ const md5_sct md5_flg,         /* I [flg] MD5 Configuration */
  const trv_sct * const var_trv);    /* I [sct] Object to write (variable) */
 
 void

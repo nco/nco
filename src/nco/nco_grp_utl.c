@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.887 2013-07-24 05:02:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.888 2013-07-24 18:55:09 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1549,7 +1549,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 (const int nc_in_id,                  /* I [ID] netCDF input file ID */
  const int nc_out_id,                 /* I [ID] netCDF output file ID */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
- const nco_bool MD5_DIGEST,           /* I [flg] Perform MD5 digests */
+ const md5_sct md5_flg,           /* I [flg] MD5 Configuration */
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist ( For convenience, ideally... not needed ) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
@@ -1590,11 +1590,11 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
     for(idx_var=0;idx_var<fix_nbr;idx_var++){
       if(dbg_lvl_get() >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",fix_lst[idx_var]->nm);
       if(dbg_lvl_get() >= nco_dbg_var) (void)fflush(stderr);
-      (void)nco_cpy_var_val(fix_lst[idx_var]->grp_id_in,fix_lst[idx_var]->grp_id_out,fp_bnr,MD5_DIGEST,fix_lst[idx_var]->nm);
+      (void)nco_cpy_var_val(fix_lst[idx_var]->grp_id_in,fix_lst[idx_var]->grp_id_out,fp_bnr,md5_flg,fix_lst[idx_var]->nm);
     } /* end loop over idx_var */
 
     /* Copy record data record-by-record */
-    (void)nco_cpy_rec_var_val(nc_in_id,fp_bnr,MD5_DIGEST,rec_lst,rec_nbr);
+    (void)nco_cpy_rec_var_val(nc_in_id,fp_bnr,md5_flg,rec_lst,rec_nbr);
 
     /* Extraction lists no longer needed */
     if(fix_lst) fix_lst=(nm_id_sct **)nco_free(fix_lst);
@@ -1618,7 +1618,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
         } /* endif dbg */
 
         /* Copy variable data from input netCDF file to output netCDF file */
-        (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,MD5_DIGEST,&trv); 
+        (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,md5_flg,&trv); 
        
       } /* endif */
 
@@ -3621,6 +3621,13 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
  const gpe_sct * const gpe,           /* I [sng] GPE structure */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
+#if defined(__cplusplus) || defined(PGI_CC)
+  md5_sct md5_flg; /* [sct] MD5 configuration */
+  md5_flg.MD5_DIGEST=False;
+#else /* !__cplusplus */
+  md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
+#endif /* !__cplusplus */
+
   char *grp_out_fll; /* [sng] Group name */
 
   /* Loop table */
@@ -3649,7 +3656,7 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
       } /* endif dbg */       
 
       /* Copy variable data */
-      (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,(nco_bool)False,&var_trv);  
+      (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,md5_flg,&var_trv);  
 
       /* Memory management after current extracted group */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
@@ -3658,7 +3665,6 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
   } /* Loop table */
 
 } /* nco_cpy_fix_var_trv() */
-
 
 void                          
 nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
@@ -3847,6 +3853,13 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
   }else{ /* Write mode */
 
+#if defined(__cplusplus) || defined(PGI_CC)
+  md5_sct md5_flg; /* [sct] MD5 configuration */
+  md5_flg.MD5_DIGEST=False;
+#else /* !__cplusplus */
+  md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
+#endif /* !__cplusplus */
+
     int has_mss_val;      /* [flg] Variable has missing value */
 
     ptr_unn mss_val;      /* [sct] Missing value */
@@ -3861,7 +3874,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
     /* Non-processed variable */
     if(prc_typ_1 == fix_typ || prc_typ_2 == fix_typ){
-      if(RNK_1_GTR) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_2);
+      if(RNK_1_GTR) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,md5_flg,trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,md5_flg,trv_2);
     } /* endif fix */
 
     /* Processed variable */
@@ -3951,6 +3964,13 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
   int var_id_1;                  /* [id] Variable ID in input file */
   int var_out_id;                /* [id] Variable ID in output file */
 
+#if defined(__cplusplus) || defined(PGI_CC)
+  md5_sct md5_flg; /* [sct] MD5 configuration */
+  md5_flg.MD5_DIGEST=False;
+#else /* !__cplusplus */
+  md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
+#endif /* !__cplusplus */
+
   var_sct *var_prc_1;            /* [sct] Variable to process in file 1 */
   var_sct *var_prc_out;          /* [sct] Variable to process in output */
 
@@ -4002,7 +4022,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
 
     /* Define variable in output file. */
-    var_out_id= nco_cpy_var_dfn_trv(nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
+    var_out_id=nco_cpy_var_dfn_trv(nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,trv_1);
@@ -4019,7 +4039,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     (void)nco_inq_varid(grp_out_id,trv_1->nm,&var_out_id);         
 
     /* Copy non-processed variable */
-    (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,(nco_bool)False,trv_1); 
+    (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,md5_flg,trv_1); 
   
   } /* Write mode */
 
@@ -4030,7 +4050,6 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
 
   /* Free output path name */
   grp_out_fll=(char *)nco_free(grp_out_fll);
-
 
 } /* nco_cpy_fix() */
 
@@ -4820,7 +4839,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         (void)fprintf(stdout,"\n");
       } /* endif dbg */
 
-
       /* Here begins a complex tree to decide a simple, binary output:
       Will current input dimension be defined as an output record dimension or as a fixed dimension?
       Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
@@ -4903,7 +4921,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         }
       } /* Define dimension size */
 
-
       /* ncwa */
       if (prg_id == ncwa){
 
@@ -4920,7 +4937,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
             dmn_cnt=trv_tbl->dmn_dgn[idx_dmn_dgn]->cnt;
 
             if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s dimension dgn %s size=%d\n",prg_nm_get(),fnc_nm,
+              (void)fprintf(stdout,"%s: DEBUG %s dimension dgn %s size=%li\n",prg_nm_get(),fnc_nm,
                 dmn_trv->nm_fll,dmn_cnt);
             } /* endif dbg */
 
@@ -4966,20 +4983,17 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
-
     long cnt=nco_dmn_get_msa(var_dim_id,trv_tbl);       
 
     dmn_cnt_dbg[idx_dmn]=cnt;
 
   } /* End of the very important dimension loop */
 
-
   /* If variable needs dimension re-ordering */
   if (var_trv->flg_rdr){
 
     /* Must be ncpdq */
     assert(prg_id == ncpdq);
-
 
     if(dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: DEBUG %s dimension map: ",prg_nm_get(),fnc_nm);
@@ -4991,7 +5005,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       (void)fprintf(stdout,"\n");
     }
 
-
     for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
       dmn_idx_in_out[var_trv->dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
 
@@ -5002,7 +5015,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       dmn_out_id[dmn_idx_in_out[dmn_out_idx]]=dmn_out_id_tmp[dmn_out_idx];
 
   } /* If variable needs dimension re-ordering */
-
 
   /* Insert extra "record" dimension in dimension array if...  
   ... is ncecat
@@ -5055,7 +5067,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with new dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
       if (DEFINE_DIM[idx_dmn]) {
-        (void)fprintf(stdout,"##%d<%s> size=%d: ",dmn_out_id[idx_dmn],var_trv->var_dmn[idx_dmn].dmn_nm,dmn_cnt_dbg[idx_dmn]);
+        (void)fprintf(stdout,"##%d<%s> size=%li: ",dmn_out_id[idx_dmn],var_trv->var_dmn[idx_dmn].dmn_nm,dmn_cnt_dbg[idx_dmn]);
       }
     }
     (void)fprintf(stdout,"\n");

@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
 	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
 
+	* Place MD5 flags in md5_flg structure
+
 	* Fix ncwa OpenMP
 
 	* Document new ncatted, ncrename, ncks, ncwa features in man pages, nco.texi

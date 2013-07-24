@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.320 2013-07-17 09:08:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.321 2013-07-24 18:55:09 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -88,7 +88,6 @@ main(int argc,char **argv)
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
-  nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
@@ -125,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.320 2013-07-17 09:08:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.320 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.321 2013-07-24 18:55:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.321 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -134,10 +133,12 @@ main(int argc,char **argv)
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
   ddra_info.flg_ddra=False;
+  md5_sct md5_flg; /* [sct] MD5 configuration */
+  md5_flg.MD5_DIGEST=False;
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.flg_ddra=False};
+  md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
 #endif /* !__cplusplus */
-
 
   extern char *optarg;
   extern int optind;
@@ -212,7 +213,8 @@ main(int argc,char **argv)
     {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"gag",no_argument,0,0}, /* [flg] Group aggregation */
     {"aggregate_group",no_argument,0,0}, /* [flg] Group aggregation */
-    {"md5_digest",no_argument,0,0}, /* [flg] Print MD5 digest */
+    {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
+    {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
     {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
@@ -343,10 +345,10 @@ main(int argc,char **argv)
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
-      if(!strcmp(opt_crr,"md5_digest")){
-        MD5_DIGEST=True;
+      if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
+        md5_flg.MD5_DIGEST=True;
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
-      } /* endif "md5" */
+      } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
@@ -808,7 +810,7 @@ main(int argc,char **argv)
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
       /* Write extracted data to output file */
-      (void)nco_xtr_wrt(in_id,out_id,fp_bnr,MD5_DIGEST,HAVE_LIMITS,trv_tbl_gpr);
+      (void)nco_xtr_wrt(in_id,out_id,fp_bnr,md5_flg,HAVE_LIMITS,trv_tbl_gpr);
 
       /* Close input netCDF file */
       (void)nco_close(in_id);
@@ -845,7 +847,7 @@ main(int argc,char **argv)
 
       /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
-# pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,nbr_dmn_fl,MD5_DIGEST,trv_tbl)
+# pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,nbr_dmn_fl,md5_flg,trv_tbl)
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(int idx=0;idx<nbr_var_prc;idx++){
@@ -894,7 +896,7 @@ main(int argc,char **argv)
             (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
           } /* end if variable is array */
           /* Perform MD5 digest of input and output data if requested */
-          if(MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
+          if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
           /* Free current input buffer */
           var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
         } /* end OpenMP critical */
