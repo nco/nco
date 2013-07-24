@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.880 2013-07-23 23:34:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.881 2013-07-24 00:45:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4926,6 +4926,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
               (void)fprintf(stdout,"%s: DEBUG %s dimension dgn %s new size=%d\n",prg_nm_get(),fnc_nm,
                 dmn_trv->nm_fll,dmn_sz);
             } /* endif dbg */
+
+            break;
+
           } /* Compare ID */
         } /* Degenerated dimensions */
 
@@ -5049,7 +5052,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(dbg_lvl_get() >= nco_dbg_dev){
     if (DEFINE_DIM) {
       (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with new dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
         (void)fprintf(stdout,"##%d<%s> : ",dmn_out_id[idx_dmn],var_trv->var_dmn[dmn_idx_in_out[idx_dmn]].dmn_nm);
       }
       (void)fprintf(stdout,"\n");
