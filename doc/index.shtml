@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.802 2013-07-19 19:45:49 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.803 2013-07-24 05:02:27 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -142,7 +142,7 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2013 Aug&nbsp;??: NCO 4.3.3 (<tt>ncwa</tt> groups, CDL) (<i>In progress</i>)
+<li>2013 Aug&nbsp;??: NCO 4.3.3 (<tt>ncrename</tt>, <tt>ncwa</tt> groups, CDL, XML) (<i>In progress</i>)
 <li>2013 Jul&nbsp;05: NCO 4.3.2 (<tt>ncflint</tt>, <tt>ncpdq</tt> groups)</li>
 <li>2013 Jun&nbsp;03: Submitted NASA ACCESS 2013 <a href="http://dust.ess.uci.edu/prp/prp_axs/prp_axs.pdf">proposal</a></li>
 <li>2013 May&nbsp;01: NCO 4.3.1 (Group broadcasting)</li>
@@ -602,10 +602,11 @@ You can also retrieve the source of tagged versions directly
 <li><b>NCO 4.3.4</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 Optimize diskless files?;
-<tt>ncrename -g</tt>?;</li>
+<tt>ncea/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
 <li><b>NCO 4.3.3</b>: (<i>In Progress, features completed or being worked on include</i>)
-Printintg <tt>ncks --cdl</tt>;</li>
-<tt>ncea/ncra/ncrcat/ncwa</tt> groups with <tt>-g -G --unn</tt>;</li>
+CDL printing <tt>ncks --cdl</tt>;
+<tt>ncrename -g</tt>;
+<tt>ncwa</tt> groups with <tt>-g -G --unn</tt>;</li>
 <li><b>NCO 4.3.2</b>: (<i>Current Stable Release</i>)
 <tt>ncflint/ncpdq</tt> groups with </tt>-g -G --unn</tt>;
 <tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>;</li>

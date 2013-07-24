@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.643 2013-07-11 20:40:21 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.644 2013-07-24 05:02:27 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -35,6 +35,7 @@
 # Usage (Compilation):
 # cd ~/nco/qt;qmake;make;cd -        # Qt
 # cd ~/nco/bld;make;cd -             # Default build
+# cd ~/nco/bld;make USR_TKN='-DNC_HAVE_RENAME_GRP';cd - # New API
 # cd ~/nco/bld;make UDUNITS_INC='/usr/include/udunits2';cd - # Fedora build
 # cd ~/nco/bld;make cln bin_cln;cd - # Clean all dependencies for fresh build
 # cd ~/nco/bld;make dir all; cd -    # Create target directories then build

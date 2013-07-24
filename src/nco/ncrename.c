@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.154 2013-02-26 16:58:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.155 2013-07-24 05:02:27 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -99,8 +99,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.154 2013-02-26 16:58:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.154 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.155 2013-07-24 05:02:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.155 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -350,7 +350,7 @@ main(int argc,char **argv)
     if(grp_rnm_lst[idx].old_nm[0] == opt_chr){
       rcd=nco_inq_grp_ncid_flg(nc_id,grp_rnm_lst[idx].old_nm+1L,&grp_rnm_lst[idx].id);
       if(rcd == NC_NOERR){
-	(void)nco_rename_grp(nc_id,grp_rnm_lst[idx].id,grp_rnm_lst[idx].new_nm);
+	(void)nco_rename_grp(grp_rnm_lst[idx].id,grp_rnm_lst[idx].new_nm);
 	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed group \'%s\' to \'%s\'\n",prg_nm,grp_rnm_lst[idx].old_nm+1L,grp_rnm_lst[idx].new_nm);
       }else{
 	(void)fprintf(stderr,"%s: WARNING Group \"%s\" not present in %s, skipping it.\n",prg_nm,grp_rnm_lst[idx].old_nm+1L,fl_in);
@@ -359,7 +359,7 @@ main(int argc,char **argv)
       } /* end if */
     }else{ /* Group name does not contain opt_chr so group presence is required */
       rcd=nco_inq_grp_ncid(nc_id,grp_rnm_lst[idx].old_nm,&grp_rnm_lst[idx].id);
-      (void)nco_rename_grp(nc_id,grp_rnm_lst[idx].id,grp_rnm_lst[idx].new_nm);
+      (void)nco_rename_grp(grp_rnm_lst[idx].id,grp_rnm_lst[idx].new_nm);
       if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed group \'%s\' to \'%s\'\n",prg_nm,grp_rnm_lst[idx].old_nm,grp_rnm_lst[idx].new_nm);
     } /* end else */
   } /* end loop over idx */

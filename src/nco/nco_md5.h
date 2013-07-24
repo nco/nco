@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.10 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.11 2013-07-24 05:02:27 zender Exp $ */
 
 /* Purpose: Description (definition) of MD5 digest functions */
 
@@ -27,6 +27,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_att_utl.h" /* Attribute utilities */
 #include "nco_mmr.h" /* Memory management */
 
 /* MD5 specification defines digest as a 16 byte array 
@@ -84,7 +85,7 @@ extern "C" {
   ghost@aladdin.com
   
 */
-/* $Id: nco_md5.h,v 1.10 2013-01-13 06:07:47 zender Exp $ */
+/* $Id: nco_md5.h,v 1.11 2013-07-24 05:02:27 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

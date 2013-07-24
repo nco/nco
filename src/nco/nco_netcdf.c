@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.200 2013-07-23 05:58:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.201 2013-07-24 05:02:27 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -802,32 +802,31 @@ int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id
 } /* end nco_def_grp_flg() */
 
 int
-nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
+nco_rename_grp(int grp_id,const char * const grp_nm)
 {
   /* Purpose: Wrapper for nc_rename_grp() */
   int rcd;
-  rcd=nc_rename_grp(nc_id,grp_id,grp_nm);
+  rcd=nc_rename_grp(grp_id,grp_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_grp()");
   return rcd;
 } /* end nco_rename_grp() */
 
-#undef NC_HAVE_RENAME_GRP
 #ifndef NC_HAVE_RENAME_GRP
 int
-nc_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm)
+nc_rename_grp(int grp_id,const char * const grp_nm)
 {
   /* Purpose: Pseudo-library function to rename groups.
      This particular stub routine is only called by netCDF4-enabled code
      when built against a netCDF library that it too old to have
      the nc_rename_grp() function.
      Test by running something like this:
-     ncrename -O -g g7,g20 ~/nco/data/in_grp.nc ~/foo.nc */
+     ncrename -O -g g1,obama ~/nco/data/in_grp.nc ~/foo.nc */
   const char fnc_nm[]="nc_rename_grp()";
   char grp_nm_old[NC_MAX_NAME+1L];
   int rcd;
   rcd=NC_NOERR;
   rcd+=nco_inq_grpname(grp_id,grp_nm_old);
-  (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\" was foiled because libnetcdf.a does not contain nc_rename_grp(). Please rebuild NCO again the netCDF library version 4.3.1 (released 201308) or later.\nContinuing as though nothing untoward happened...\n",fnc_nm,grp_nm_old,grp_nm);
+  (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\" was foiled because libnetcdf.a does not contain nc_rename_grp(). To obtain this functionality, please rebuild NCO against netCDF library version 4.3.1 (released 201308) or later.\nContinuing as though nothing untoward happened...\n",fnc_nm,grp_nm_old,grp_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_rename_grp()");
   return rcd;
 } /* end nc_rename_grp() */
@@ -1768,7 +1767,7 @@ int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){
 /* Stubs thus present a fake library for manipulating netCDF3 files with the netCDF4 API
    These are only called when netCDF4 library is unavailable, thus I/O assumed to be netCDF3 */
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
-int nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
+int nco_rename_grp(int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
 int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){assert(0);return NC_NOERR;}
 int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){if(grp_nbr) *grp_nbr=0;return NC_NOERR;}

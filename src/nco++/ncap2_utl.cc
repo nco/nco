@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.150 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.151 2013-07-24 05:02:28 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1210,27 +1210,9 @@ ncap_def_dim(
 	     prs_cls *prs_arg){
   const char fnc_nm[]="ncap_def_dim"; 
   
-  // int idx;
-  // char ch; 
-  int len;
-  
   dmn_sct *dmn_nw;             
   dmn_sct *dmn_in_e;
   dmn_sct *dmn_out_e;
-  
-  
-  
-  len=dmn_nm.length();
-  // Ckeck for a valid name 
-  /*
-  for(idx=0 ; idx < len ; idx++){ 
-    ch=dmn_nm[idx];
-    if( !( isalpha(ch) || isdigit(ch) || ch=='.' || ch=='_' ||ch=='-') ){ 
-      wrn_prn(fnc_nm,"dim \""+ dmn_nm + "\" - Invalid dimension name.");
-      return False;;
-    }
-  }         
-  */
 
   // Check if dimension already exists
   dmn_in_e=prs_arg->dmn_in_vtr.find(dmn_nm);

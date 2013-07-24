@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.49 2013-07-20 02:21:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.50 2013-07-24 05:02:27 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -150,7 +150,6 @@ chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII 
   case '\t': strcpy(val_sng,"\\t"); break; /* 011   9     09    HT  '\t' Horizontal tab */
   case '\v': strcpy(val_sng,"\\v"); break; /* 013   11    0B    VT  '\v' Vertical tab */
   case '\\': strcpy(val_sng,"\\\\"); break; /* 134   92    5C    \   '\\' */
-  case '\?': strcpy(val_sng,"\\?"); break; /* Unsure why or if this works! */
   case '\'': strcpy(val_sng,"\\\'"); break; /* Unsure why or if this works! */
   case '\"': strcpy(val_sng,"\\\""); break; /* Unsure why or if this works! */
   case '\0':	

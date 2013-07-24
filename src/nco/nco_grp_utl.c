@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.886 2013-07-24 04:46:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.887 2013-07-24 05:02:27 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1624,7 +1624,6 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
     } /* end loop over uidx */
   } /* !USE_MM3_WORKAROUND */
-
 
   /* Print extraction list in developer mode */
   if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);

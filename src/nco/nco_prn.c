@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.140 2013-07-23 23:01:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.141 2013-07-24 05:02:27 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -35,7 +35,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   float val_flt;
 
-  int chr_idx;
   int grp_id_prn;
   int idx;
   int nbr_att;
@@ -43,9 +42,10 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_prn;
 
-  long lmn;
   long att_sz;
   long att_szm1;
+  long chr_idx;
+  long lmn;
   long sng_lng; /* [nbr] Length of NC_CHAR string */
   long sng_lngm1; /* [nbr] Length minus one of NC_CHAR string */
   
@@ -174,8 +174,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	sng_val=att[idx].val.sngp[lmn];
 	sng_lng=strlen(sng_val);
 	sng_lngm1=sng_lng-1UL;
-	/* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
 	if(prn_flg->cdl || prn_flg->xml){
+	  /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
 	  sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
 	  if(prn_flg->cdl) (void)fprintf(stdout,"\"");
 	  sng_val_sng[0]='\0';
@@ -187,7 +187,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
 	  /* Print commas after non-final strings */
 	  if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
-	  if(lmn == att_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
+	  sng_val_sng=(char *)nco_free(sng_val_sng);
+
 	}else{ /* Traditional */
 	  (void)fprintf(stdout,att_sng_dlm,att[idx].val.sngp[lmn],(lmn != att_szm1) ? cma_sng : "");
 	} /* endelse CDL, XML, Traditional */
@@ -1108,6 +1109,8 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
   nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
 
+  nco_string sng_val; /* [sng] Current string */
+
   if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
 
   /* Allocate local MSA */
@@ -1215,6 +1218,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 
   if(prn_flg->cdl){
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
+    long chr_idx;
     (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
     (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,var_nm);
     var_szm1=var.sz-1L;
@@ -1284,14 +1288,27 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         case NC_INT64: (void)sprintf(val_sng,fmt_sng,var.val.i64p[lmn]); break;
         case NC_UINT64: (void)sprintf(val_sng,fmt_sng,var.val.ui64p[lmn]); break;
         case NC_STRING: 
-	  /* Print strings directly to stdout so they are not limited by size of val_sng */
-	  (void)fprintf(stdout,fmt_sng,var.val.sngp[lmn]); 
-	  val_sng[0]='\0';
+	  sng_val=var.val.sngp[lmn];
+	  sng_lng=strlen(sng_val);
+	  sng_lngm1=sng_lng-1UL;
+	  /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
+	  sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
+	  (void)fprintf(stdout,"\"");
+	  sng_val_sng[0]='\0';
+	  for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
+	    val_sng[0]='\0';
+	    chr_val=sng_val[chr_idx];
+	    (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+	  } /* end loop over character */
+	  (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
+	  /* Print commas after non-final strings */
+	  if(lmn != var_szm1) (void)fprintf(stdout,"%s",cma_sng);
+	  sng_val_sng=(char *)nco_free(sng_val_sng);
 	  break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
-      if(var.type != NC_CHAR) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? cma_sng : "");
+      if(var.type != NC_CHAR && var.type != NC_STRING) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? cma_sng : "");
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
     (void)fprintf(stdout," ;\n");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.12 2013-07-23 20:59:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.13 2013-07-24 05:02:27 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -47,6 +47,7 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
   char md5_dgs_hxd_sng_ram[NCO_MD5_DGS_SZ*2+1];
   
   nco_bool MD5_DGS_DSK=False; /* [flg] Perform MD5 digest of variable written to disk */
+  nco_bool MD5_ATT_WRT=False; /* [flg] Write MD5 digest to attributes on disk */
 
   prg_id=prg_get(); /* [enm] Program ID */
 
@@ -57,6 +58,23 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
      False)
     (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram);
   
+  if((prg_id == ncks && dbg_lvl_get() >= nco_dbg_crr)) MD5_ATT_WRT=True;
+  if(MD5_ATT_WRT){
+    /* Test with:
+       ncks -O -C -4 --md5 -D 6 -v md5_.? ~/nco/data/in.nc ~/foo.nc */
+    aed_sct aed_md5;
+    char md5_sng[]="MD5"; /* [sng] Attribute name for MD5 digest */
+    aed_md5.att_nm=md5_sng;
+    aed_md5.var_nm=NULL;
+    (void)nco_inq_varid(nc_id,var_nm,&aed_md5.id);
+    aed_md5.sz=NCO_MD5_DGS_SZ*2L;
+    aed_md5.type=NC_CHAR;
+    aed_md5.val.cp=md5_dgs_hxd_sng_ram;
+    aed_md5.mode=aed_overwrite;
+    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Writing MD5 digest to attribute %s of variable %s\n",prg_nm_get(),aed_md5.att_nm,var_nm);
+    (void)nco_aed_prc(nc_id,aed_md5.id,aed_md5);
+  } /* !MD5_ATT_WRT */
+
   /* NB: Setting this flag significantly increases execution time
      Comparing RAM to disk requires reading hyperslab from disk
      Hence it essentially doubles numbers of disk reads, e.g.,
@@ -156,7 +174,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.12 2013-07-23 20:59:40 zender Exp $ */
+/* $Id: nco_md5.c,v 1.13 2013-07-24 05:02:27 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

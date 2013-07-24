@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.639 2013-07-23 05:58:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.640 2013-07-24 05:02:27 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -105,6 +105,7 @@ main(int argc,char **argv)
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool MD5_DIGEST=False; /* [flg] Perform MD5 digests */
+  nco_bool MD5_WRT_ATT=False; /* [flg] Write MD5 digests as attributes */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool PRN_CDL=False; /* [flg] Print CDL */
   nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
@@ -152,8 +153,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.639 2013-07-23 05:58:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.639 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.640 2013-07-24 05:02:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.640 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -220,7 +221,10 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
       {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
+      {"md5_wrt_att",no_argument,0,0}, /* [flg] Write MD5 digests as attributes */
+      {"md5_write_attribute",no_argument,0,0}, /* [flg] Write MD5 digests as attributes */
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
       {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
@@ -411,9 +415,13 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"%s\n",nco_mpi_get());
         nco_exit(EXIT_SUCCESS);
       } /* endif "mpi" */
-      if(!strcmp(opt_crr,"md5_digest")){
+      if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
         MD5_DIGEST=True;
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
+      } /* endif "md5" */
+      if(!strcmp(opt_crr,"md5_wrt_att") || !strcmp(opt_crr,"md5_write_attribute")){
+        MD5_WRT_ATT=True;
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will write MD5 digests as attributes\n",prg_nm_get());
       } /* endif "md5" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;

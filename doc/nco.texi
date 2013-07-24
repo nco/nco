@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.810 2013-07-23 23:01:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.811 2013-07-24 05:02:27 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5568,6 +5568,9 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 @node MD5 digests, Buffer sizes, Deflation, Common features
 @section MD5 digests
 @cindex @code{--md5_digest}
+@cindex @code{--md5_dgs}
+@cindex @code{--md5_wrt_att}
+@cindex @code{--md5_write_attribute}
 @cindex integrity
 @cindex security
 @cindex digest
@@ -5577,7 +5580,7 @@ ncpdq -4 -L 9 in.nc out.nc # Deflated packing  (~80% compression)
 Availability: 
 @command{ncecat}, @command{ncks}, @command{ncrcat}@*
 Short options: @*
-Long options: @samp{--md5_digest}@*  
+Long options: @samp{--md5_dgs}, @samp{--md5_digest}, @samp{--md5_wrt_att}, @samp{--md5_write_attribute}@*
 @end cartouche
 
 As of @acronym{NCO} version 4.1.0 (April, 2012), @acronym{NCO} 
@@ -5585,7 +5588,15 @@ supports data integrity verification using the @acronym{MD5} digest
 algorithm. 
 This support is currently implemented in @command{ncks} and in the
 multifile concantenators @command{ncecat} and @command{ncrcat}.
-Activate it with the @samp{--md5_digest} long option.
+Activate it with the @samp{--md5_dgs} or @samp{--md5_digest} long
+options. 
+As of @acronym{NCO} version 4.3.3 (August, 2013), @acronym{NCO} 
+will write the @acronym{MD5} digest of each variable as an
+@code{NC_CHAR} attribute named @code{MD5}.
+This support is currently implemented in @command{ncks} and in the
+multifile concantenators @command{ncecat} and @command{ncrcat}.
+Activate it with the @samp{--md5_wrt_att} or
+@samp{--md5_write_attribute} long options.
 
 The behavior and verbosity of the @acronym{MD5} digest is
 operator-dependent.
@@ -13739,6 +13750,11 @@ Rename the attribute @code{long_name} to @code{largo_nombre} in the
 variable @code{u}, and no other variables in netCDF @file{in.nc}. 
 @example
 ncrename -a u@@long_name,largo_nombre in.nc
+@end example
+ 
+Rename the group @code{g1} to @code{obama} in netCDF @file{in.nc}. 
+@example
+ncrename -g g1,obama in_grp.nc
 @end example
  
 @cindex coordinate variables

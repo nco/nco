@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.168 2013-07-16 04:26:06 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.169 2013-07-24 05:02:27 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -266,12 +266,12 @@ variables:
 	char md5_a;
 	md5_a:long_name = "the letter a";
 	md5_a:purpose = "String with known MD5 digest"; 
-	md5_a:MD5 = "0cc175b9c0f1b6a831c399e269772661"; 
+	md5_a:MD5_known_checksum = "0cc175b9c0f1b6a831c399e269772661"; 
 
 	char md5_abc(lev);
 	md5_abc:long_name = "the letters abc";
 	md5_abc:purpose = "String with known MD5 digest"; 
-	md5_abc:MD5 = "900150983cd24fb0d6963f7d28e17f72";
+	md5_abc:MD5_known_checksum = "900150983cd24fb0d6963f7d28e17f72";
 
 	float msk_prt_mss_prt(lon);
 	msk_prt_mss_prt:long_name = "partial mask, partial missing value example";

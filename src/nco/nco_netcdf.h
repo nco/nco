@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.98 2013-07-23 05:58:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.99 2013-07-24 05:02:27 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -128,7 +128,7 @@ int nco_inq_unlimdim_flg(const int nc_id,int * const rec_dmn_id);
 /* End File routines */
 
 /* Begin Group routines (_grp) */
-int nco_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm);
+int nco_rename_grp(int grp_id,const char * const grp_nm);
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn);
@@ -205,7 +205,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 
 /* Begin libnetcdf prototypes (i.e., for completely new library routines not yet in netcdf.h */
 #ifndef NC_HAVE_RENAME_GRP
-  int nc_rename_grp(const int nc_id,const int grp_id,const char * const grp_nm);
+  int nc_rename_grp(int grp_id,const char * const grp_nm);
 #endif /* NC_HAVE_RENAME_GRP */
 
 /* Begin netCDF4 stubs */

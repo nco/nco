@@ -1,9 +1,23 @@
 2013-07-23  Charlie Zender  <zender@uci.edu>
 
-	* CDL mode prints NC_STRING's and arrays of NC_STRING correctly
+	* NCO 4.3.3 release procedure:
+ 	Changes since nco-4_3_2: -X aux, ncflint/ncpdq -g -G --unn
+	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
+	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
+
+	* Document new features
+
+	* ncrename -g works when linked to new libnetcdf nc_rename_grp() function
+
+	* ncks now writes MD5 attributes with --md5 -D 6+ to netCDF4 files
+
+	* CDL mode prints NC_STRING's and arrays of NC_STRING correctly,
+	in both attributes and data sections. CDL mode appears to be ready.
 
 	* ncatted: Works with single NC_STRING's (previous versions of
-	ncatted completely and utterly fail with NC_STRING).
+	ncatted completely and utterly fail with all NC_STRINGs).
+	Still fails on NC_STRING arrays because parser is not smart.
 
 	* ncatted: Fix ambigous interpretation of type specifications
 
@@ -30,12 +44,6 @@
 2013-07-19  Charlie Zender  <zender@uci.edu>
 
 	* XML mode (with --xml) prints all test cases at least as well as ncdump -x
-
-	* NCO 4.3.3 release procedure:
- 	Changes since nco-4_3_2: -X aux, ncflint/ncpdq -g -G --unn
-	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
-	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
 
 	* Fix bad memory dereference in nco_prn_var_val_trv()
 
