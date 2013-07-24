@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.342 2013-07-23 22:00:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.343 2013-07-24 01:35:26 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 #endif
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.342 2013-07-23 22:00:35 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.342 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.343 2013-07-24 01:35:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.343 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1393,7 +1393,7 @@ main(int argc,char **argv)
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
   /* Copy variable data for non-processed variables */
-  (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+  (void)nco_cpy_fix_var_trv(in_id,out_id,gpe,trv_tbl);  
 
   /* Close first input netCDF file */
   nco_close(in_id);

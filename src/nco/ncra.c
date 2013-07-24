@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.321 2013-03-11 23:09:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.322 2013-07-24 01:35:26 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -157,8 +157,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.321 2013-03-11 23:09:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.321 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.322 2013-07-24 01:35:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.322 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -752,7 +752,6 @@ main(int argc,char **argv)
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
   /* Copy variable data for non-processed variables */
-  /* (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix); */
   (void)nco_msa_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix,lmt_all_lst,nbr_dmn_fl);
 
   /* Close first input netCDF file */
