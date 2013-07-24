@@ -390,5 +390,46 @@ netcdf in_grp {
       } // end g19g4  
           
   } // end g19
+
+
+  //
+  //g20 test cases for ncwa; same variables as ncwa netCDF3 tests
+  //
+  
+  group: g20 {
+  dimensions:
+   lat=2;
+
+   variables:
+   float lat(lat);
+   
+   data:
+   lat=-90,90;
+   
+    group: g20g1 { 
+     variables:
+     float lat_cpy(lat);
+     data:
+     lat_cpy=-90,90;
+
+       group: g20g1g1 { 
+       variables: float lat_wgt(lat);
+       data:
+       lat_wgt=1.,2.;
+
+       } //end g20g1g1
+      
+    } // end g20g1 
+
+
+    group: g20g2 { 
+     variables:
+    
+     data:
+     
+      
+    } // end g20g2
+
+  } //g20
     
 } // end root group

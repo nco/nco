@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.306 2013-07-24 21:11:37 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.307 2013-07-24 21:34:16 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3703,6 +3703,21 @@ print "\n";
     push(@tst_cmd, "SS_OK");
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
+
+#ncwa #44
+#NEW NCO 4.3.3
+#same as #ncwa #33
+# ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy  in_grp_3.nc out.nc
+# ncks -C -H -s '%f' -g g20g1  -v lat_cpy out.nc
+
+    
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -g g20g1 -v lat_cpy $in_pth_arg in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
+    $tst_cmd[1]="ncks -C -H -s '%f' -g g20g1  -v lat_cpy %tmp_fl_00%";;
+    $dsc_sng="(Groups) rms with weights";
+    $tst_cmd[2]="90";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
 
 
 

@@ -1,3 +1,12 @@
+2013-07-24 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add in_grp_3.cdl group data for ncwa testing
+
+	* Add ncwa test #41 (Groups) Dimension reduction with min flag on type float variable
+	* Add ncwa test #42 (Groups) Dimension reduction on type double variable with max switch and missing values
+	* Add ncwa test #43 (Groups) Dimension reduction on type double variable
+	* Add ncwa test #44 (Groups) rms with weights
+
 2013-07-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.3 release procedure:
