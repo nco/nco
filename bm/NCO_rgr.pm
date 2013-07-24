@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.305 2013-07-24 06:27:38 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.306 2013-07-24 21:11:37 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3668,6 +3668,42 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+
+#ncwa #42
+#NEW NCO 4.3.3
+#same as #ncwa #27
+# ncwa -h -O -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc out.nc
+# ncks -C -H --no_blank -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,3 out.nc
+
+    
+# will fail SS - ncks not the last cmd
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon $in_pth_arg in_grp_3.nc %tmp_fl_00%");
+    push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,3 %tmp_fl_00%");
+    # used to cut field 4: ( 1 + 3x1=4) 
+    $dsc_sng="(Groups) Dimension reduction on type double variable with max switch and missing values";
+    push(@tst_cmd, "-99");
+    push(@tst_cmd, "SS_OK");
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # Reset array
+
+#ncwa #43
+#NEW NCO 4.3.3
+#same as #ncwa #28
+# ncwa -h -O  -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc out.nc
+# ncks -C -H -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,4 out.nc 
+    
+# will fail SS - ncks not the last cmd
+    push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon $in_pth_arg in_grp_3.nc %tmp_fl_00%");
+    push(@tst_cmd, "ncks -C -H -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,4 %tmp_fl_00%"); 
+    # used to cut field 5: ( 1 + 4x1=5) 
+    $dsc_sng="(Groups) Dimension reduction on type double variable";
+    $prsrv_fl=1;
+    push(@tst_cmd, "40");
+    push(@tst_cmd, "SS_OK");
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # Reset array
+
 
 
     
