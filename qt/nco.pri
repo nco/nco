@@ -20,7 +20,7 @@ unix {
 }
 
 CONFIG -= qt
-CONFIG += netcdf3
+#CONFIG += netcdf3
 
 win32{
  CONFIG += console 
