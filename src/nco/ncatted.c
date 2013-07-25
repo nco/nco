@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.158 2013-07-23 20:59:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.159 2013-07-25 21:53:52 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -161,8 +161,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.158 2013-07-23 20:59:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.158 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.159 2013-07-25 21:53:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.159 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -398,7 +398,7 @@ main(int argc,char **argv)
     } /* end var_nm */
   } /* end loop over idx */
 
-#else
+#else /* USE_TRV_API */
 
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);
@@ -408,7 +408,6 @@ main(int argc,char **argv)
 
   /* Process attributes  */
   (void)nco_aed_prc_trv(nc_id,aed_lst,nbr_aed,trv_tbl);
-
 
 #endif /* USE_TRV_API */
 

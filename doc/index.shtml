@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.805 2013-07-25 17:25:12 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.806 2013-07-25 21:53:52 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -609,7 +609,7 @@ Optimize diskless files?;</li>
 CDL printing <tt>ncks --cdl</tt>;
 <tt>ncrename -g</tt>;
 <tt>ncwa</tt> groups with <tt>-g -G --unn</tt>;</li>
-<li><b>NCO 4.3.2</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.3.2</b>:
 <tt>ncflint/ncpdq</tt> groups with </tt>-g -G --unn</tt>;
 <tt>ncks -X</tt> <a href="#bug_ncks_aux">bugfix</a>;</li>
 <li><b>NCO 4.3.1</b>:
@@ -964,7 +964,8 @@ The most up-to-date binaries are probably those in the tarball below. Those unfa
 (native build, compiled with <a href="http://www.microsoft.com/visualstudio/en-us/products/2010-editions/express">Visual Studio 2010</a>, use this if unsure)</h3>
 These native Windows executables should be stand-alone, i.e., not
 require users to have any additional software. 
-This is a new feature as of 20120615, please send us feedback. To build from source using MSVC or Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
+This is a new feature as of 20120615, please send us feedback. 
+To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.3.3.windows.mvs.exe -O /tmp/nco-4.3.3.windows.mvs.exe
@@ -973,7 +974,7 @@ wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.3.3.windows.mvs.exe -
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
 scp /tmp/nco-4.3.3.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
 -->
-<li><a href="src/nco-4.3.3.windows.mvs.exe">nco-4.3.3.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.3.3.windows.mvs.exe"-->) : Windows Self-Extracting Installer (NB: UDUnits not yet included, last updated <!--#flastmod file="src/nco-4.3.3.windows.mvs.exe"-->). Maintained by NCO Project.</li>
+<li><a href="src/nco-4.3.3.windows.mvs.exe">nco-4.3.3.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.3.3.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.3.3.windows.mvs.exe"-->). Maintained by NCO Project.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
@@ -1059,18 +1060,16 @@ Pre-built executables of some versions of NCO for the operating
 systems <a href="#Download">described above</a> (Debian-compatible
 GNU/Linux, Fedora/RedHat GNU/Linux, Gentoo GNU/Linux, and
 Mac&nbsp;OS&nbsp;X). 
-If you have an account at UCI or SDSC, try the locations in my
-personal home directories listed below (AIX, IRIX).
-At NCAR, first try <tt>/usr/local/bin</tt> (AIX, IRIX).
-Otherwise, you are on your own.</li>
+Otherwise, you may be on your own.</li>
 <a name="NCAR"></a> <!-- http://nco.sf.net#NCAR -->
 <a name="ncar"></a> <!-- http://nco.sf.net#ncar -->
 <li><i>Does NCAR support NCO?</i>
 The NCAR CISL Technical Consulting Group (TCG) supports NCO like other
 community software packages such as <tt>lapack</tt>. 
 No other NCAR division has coordinated NCO support.
-The NCAR CISL-suported executables are in <tt>/usr/local/bin</tt>.
-If you notice problems with the NCO installation on SCD machines,
+The NCAR CISL-suported executables are made available through
+&ldquo;modules&rdquo; so try <tt>module add nco</tt>.
+If you notice problems with the NCO installation on CISL machines,
 or if you would benefit from a more recent release or patch, then
 inform the relevant system administrators, e.g.,
 <a href="mailto:consult1@ncar.ucar.edu">NCAR User Support</a>.
@@ -1248,7 +1247,8 @@ For Mac OS X with MacPorts:
 </tt>
 </li>
 <li>Once you have installed the pre-requisites as shown above, you may
-  then build the latest stable NCO and install it in <tt>/usr/local</tt> with:
+  then build the latest stable NCO and install it in,
+  e.g., <tt>/usr/local</tt> with: 
 <tt>
 <dt>wget http://dust.ess.uci.edu/nco/nco.tar.gz</dt>
 <dt>tar xvzf nco.tar.gz</dt>
@@ -1260,8 +1260,10 @@ For Mac OS X with MacPorts:
 Please post questions about building or installing NCO to the 
 <a href="http://sf.net/projects/nco/forums/forum/9830">list</a>
 only after reading and attempting to follow these instructions.
-To indicate you have done this, include the word &ldquo;bonobo&rdquo;
-in the first sentence of your post.
+To indicate you have done this, please include the word
+&ldquo;bonobo&rdquo; in the first sentence of your post.
+Yes, &ldquo;bonobo&rdquo;.
+If you do not then we will likely redirect you here.
 For more sophisticated build/install options, see the next section.
 </ul>
 
@@ -1560,12 +1562,11 @@ As of NCO 4.2.0, you may build NCO from source using MSVC and Qt, please see the
 <h2>Using NCO at UCI, NCAR, and other High Performance Computing Centers (HPCCs)</h2>
 <p>UC Irvine and NCAR users <i>may</i> find pre-built,
 <i>almost</i> up-to-date NCO executables in the following locations.
-These executables are <i>unsupported</i> and are almost
-<i>guaranteed</i> to hail from different NCO versions and thus to
-behave slightly differently.
-(They are built from the main trunk, not a tagged version).
-Users at NCAR should try the <i>supported</i> executables with 
-<tt>module load nco</tt> first. 
+Users at NCAR/NWSC should first try the CISL-<i>supported</i>
+executables with <tt>module load nco</tt>. 
+The unsatisfied or adventurous may try my personal executables which
+are built from the &ldquo;main trunk&rdquo; of NCO, not a tagged
+version, and therefore may behave slightly differently.
 <ul>
 <li>UCI ESS <tt>greenplanet.ps.uci.edu</tt> (Linux 2.6.x): <tt>~zender/bin/LINUX</tt></li>
 <li>UCI ESS <tt>dust.ess.uci.edu</tt> (Linux 3.2.x): <tt>~zender/bin/LINUXAMD64</tt></li>
@@ -1619,13 +1620,15 @@ Problems with recent releases:
 <!-- http://nco.sf.net#bug_mm3 -->
 <a name="bug_mm3"></a>
 <li><i><tt>MM3</tt> slowdown:</i>
-A new &ldquo;feature&rdquo; of netCDF3 has been identified that can
-lead to unusually slow performance. 
-Unfortunately, this problem is triggered by an aggregate pattern of
-file access so the workaround must be implemented in the application
-software (i.e., NCO) rather than in the netCDF library itself.  
-It is normally encountered on Multi-record Multi-variable netCDF3
-files (MM3s), so we call this the MM3-workaround.  
+A longstanding &ldquo;feature&rdquo; of netCDF3 was identified in
+March, 2012, and is now known by the tag MM3.
+The MM3 issue can lead to unusually slow performance. 
+The problem is triggered by an aggregate pattern of file access so the
+workaround must be implemented in the application software (e.g., NCO)
+rather than in the netCDF library itself.   
+The name MM3 fits because the problem is normally encountered on
+Multi-record Multi-variable netCDF3 files.
+And we call our &ldquo;solution&rdquo; the MM3-workaround.  
 If you encounter unusually slow NCO performance while using NCO to
 analyze MM3 files on a large blocksize filesystem, 
 chances are you are encountering an MM3-induced slowdown. 

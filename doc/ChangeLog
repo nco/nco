@@ -1,5 +1,7 @@
 2013-07-25  Charlie Zender  <zender@uci.edu>
 
+	* Update old cruft on index.shtml
+
 	* NCO 4.3.4 release procedure:
  	Changes since nco-4_3_3: fxm
 	cd ~/nco;cvs tag -d nco-4_3_4;cvs tag -d nco-4_3_4-1
@@ -8,7 +10,7 @@
 
 	* Fix nco_md5_ini() prototype
 
-	* Impose const'ness on nco_cmp_crd_dpt()
+	* Fix const'ness of nco_cmp_crd_dpt()
 
 	* Apparently C++ (or at least g++) always provides strcasestr()
 

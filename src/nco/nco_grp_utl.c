@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.893 2013-07-25 19:45:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.894 2013-07-25 21:53:52 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3141,25 +3141,6 @@ nco_cmp_crd_dpt /* [fnc] Compare two crd_sct's by group depth */
   else if((*crd1)->grp_dpt < (*crd2)->grp_dpt) return 1;
   else return 0;
 } /* end nco_cmp_crd_dpt() */
-
-#if 0
-int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
-nco_cmp_crd_dpt /* [fnc] Compare two crd_sct's by group depth */
-(const void *val_1, /* I [sct] crd_sct * to compare */
- const void *val_2) /* I [sct] crd_sct * to compare */
-{
-  /* Purpose: Compare two crd_sct's by group depth structure member
-     Function is suitable for argument to ANSI C qsort() routine in stdlib.h
-     crd_sct **crd is an array of pointers to unique dimension coordinates */
-
-  crd_sct **crd1=(crd_sct **)val_1;
-  crd_sct **crd2=(crd_sct **)val_2;
-
-  if((*crd1)->grp_dpt > (*crd2)->grp_dpt) return -1;
-  else if((*crd1)->grp_dpt < (*crd2)->grp_dpt) return 1;
-  else return 0;
-} /* end nco_cmp_crd_dpt() */
-#endif /* endif false */
 
 crd_sct *                             /* O [sct] Coordinate object */
 nco_scp_var_crd                       /* [fnc] Return in scope coordinate for variable  */
