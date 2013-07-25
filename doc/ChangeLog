@@ -1,5 +1,11 @@
 2013-07-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.3.4 release procedure:
+ 	Changes since nco-4_3_3: fxm
+	cd ~/nco;cvs tag -d nco-4_3_4;cvs tag -d nco-4_3_4-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.4 release"
+	cvs tag -c nco-4_3_4;cvs tag -c nco-4_3_4-1
+
 	* NCO 4.3.3 release procedure:
  	Changes since nco-4_3_2: CDL, XML, ncrename/ncwa groups
 	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
