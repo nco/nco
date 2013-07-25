@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.16 2013-07-25 03:39:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.17 2013-07-25 19:50:58 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -22,7 +22,7 @@
 #include "nco_md5.h" /* MD5 digests */
 
 md5_sct * /* [sct] MD5 configuration */
-nco_md5_ini() /* [fnc] Initialize and return MD5 configuration structure */
+nco_md5_ini(void) /* [fnc] Initialize and return MD5 configuration structure */
 {
   /* Purpose: Initialize and return MD5 configuration structure */
   md5_sct *md5; /* [sct] MD5 configuration */
@@ -195,7 +195,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.16 2013-07-25 03:39:59 zender Exp $ */
+/* $Id: nco_md5.c,v 1.17 2013-07-25 19:50:58 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

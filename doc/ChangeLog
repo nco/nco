@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.4 release"
 	cvs tag -c nco-4_3_4;cvs tag -c nco-4_3_4-1
 
+	* Fix nco_md5_ini() prototype
+
 	* Impose const'ness on nco_cmp_crd_dpt()
 
 	* Apparently C++ (or at least g++) always provides strcasestr()

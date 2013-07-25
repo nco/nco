@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.13 2013-07-25 03:39:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.h,v 1.14 2013-07-25 19:50:58 zender Exp $ */
 
 /* Purpose: Description (definition) of MD5 digest functions */
 
@@ -32,7 +32,7 @@
 
 /* MD5 specification defines digest as a 16 byte array 
    Each byte represents a value [0..255] which requires two hexadecimal characters to print 
-   Hence MD5 digest string is 2*16+1 long (where extra one is for NUL-terminator */
+   Hence MD5 digest string is 2*16+1 characters long (extra one is for NUL-terminator */
 #define NCO_MD5_DGS_SZ 16
 
 #ifdef __cplusplus
@@ -40,7 +40,7 @@ extern "C" {
 #endif /* __cplusplus */
   
   md5_sct * /* [sct] MD5 configuration */
-  nco_md5_ini(); /* [fnc] Initialize and return MD5 configuration structure */
+  nco_md5_ini(void); /* [fnc] Initialize and return MD5 configuration structure */
 
   md5_sct * /* [sct] MD5 configuration */
   nco_md5_free /* [fnc] Free MD5 configuration structure */
@@ -93,7 +93,7 @@ extern "C" {
   ghost@aladdin.com
   
 */
-/* $Id: nco_md5.h,v 1.13 2013-07-25 03:39:59 zender Exp $ */
+/* $Id: nco_md5.h,v 1.14 2013-07-25 19:50:58 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   
