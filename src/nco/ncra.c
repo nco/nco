@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.324 2013-07-25 00:39:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.325 2013-07-25 03:39:59 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -156,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.324 2013-07-25 00:39:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.324 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.325 2013-07-25 03:39:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.325 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -165,11 +165,8 @@ main(int argc,char **argv)
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
   ddra_info.flg_ddra=False;
-  md5_sct md5_flg; /* [sct] MD5 configuration */
-  md5_flg.MD5_DIGEST=False;
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.flg_ddra=False};
-  md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
 #endif /* !__cplusplus */
 
   dmn_sct **dim;
@@ -230,6 +227,8 @@ main(int argc,char **argv)
   long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
   long rec_usd_cml=0L; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
   
+  md5_sct *md5=NULL; /* [sct] MD5 configuration */
+
   nco_int base_time_srt=nco_int_CEWI;
   nco_int base_time_crr=nco_int_CEWI;
 
@@ -393,7 +392,8 @@ main(int argc,char **argv)
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
       if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
-        md5_flg.MD5_DIGEST=True;
+        if(!md5) md5=nco_md5_ini();
+	md5->dgs=True;
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
       } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"mro") || !strcmp(opt_crr,"multi_record_output")) FLG_MRO=True; /* [flg] Multi-Record Output */
@@ -861,7 +861,7 @@ main(int argc,char **argv)
 	lmt_all_rec->lmt_dmn[0]->srd=1L;   
 	
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,REC_FRS_GRP,REC_LST_DSR,lmt_rec,md5_flg,nbr_var_prc,nco_op_typ,FLG_BFR_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,REC_FRS_GRP,REC_LST_DSR,lmt_rec,md5,nbr_var_prc,nco_op_typ,FLG_BFR_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  in_id=in_id_arr[omp_get_thread_num()];
@@ -923,7 +923,7 @@ main(int argc,char **argv)
 #endif /* _OPENMP */
 	    if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 	    /* Perform MD5 digest of input and output data if requested */
-	    if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
+	    if(md5) (void)nco_md5_chk(md5,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
 	  } /* end if ncrcat */
 	    
 	  /* Warn if record coordinate, if any, is not monotonic */
@@ -1146,6 +1146,8 @@ main(int argc,char **argv)
     var_prc_out=(var_sct **)nco_free(var_prc_out);
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
+
+    if(md5) md5=(md5_sct *)nco_md5_free(md5);
   } /* !flg_cln */
   
   /* End timer */ 

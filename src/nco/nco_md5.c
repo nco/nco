@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.15 2013-07-25 00:39:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.16 2013-07-25 03:39:59 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -21,9 +21,31 @@
 
 #include "nco_md5.h" /* MD5 digests */
 
+md5_sct * /* [sct] MD5 configuration */
+nco_md5_ini() /* [fnc] Initialize and return MD5 configuration structure */
+{
+  /* Purpose: Initialize and return MD5 configuration structure */
+  md5_sct *md5; /* [sct] MD5 configuration */
+  md5=(md5_sct *)nco_malloc(sizeof(md5_sct));
+  md5->att_nm=(char *)strdup("MD5");
+  md5->dgs=False;
+  md5->wrt=False;
+  return md5;
+} /* end nco_md5_ini() */
+
+md5_sct * /* [sct] MD5 configuration */
+nco_md5_free /* [fnc] Free MD5 configuration structure */
+(md5_sct *md5) /* [sct] MD5 configuration structure to free */
+{
+  /* Purpose: Initialize and return MD5 configuration structure */
+  if(md5->att_nm) md5->att_nm=(char *)nco_free(md5->att_nm);
+  if(md5) md5=(md5_sct *)nco_free(md5);
+  return md5;
+} /* end nco_md5_ini() */
+
 void
 nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab */
-(const md5_sct md5_flg, /* I [sct] MD5 Configuration */
+(const md5_sct * const md5, /* I [sct] MD5 Configuration */
  const char * const var_nm, /* I [sng] Input variable name */
  const long var_sz_byt, /* I [nbr] Size (in bytes) of hyperslab in RAM */
  const int nc_id, /* I [id] netCDF file ID */
@@ -58,12 +80,12 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
      False)
     (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram);
   
-  if(md5_flg.MD5_WRT_ATT){
+  /* Write MD5 attributes */
+  if(md5->wrt){
     /* Test with:
        ncks -O -C -4 -D 1 --md5_wrt -v md5_.? ~/nco/data/in.nc ~/foo.nc */
     aed_sct aed_md5;
-    char md5_sng[]="MD5"; /* [sng] Attribute name for MD5 digest */
-    aed_md5.att_nm=md5_sng;
+    aed_md5.att_nm=md5->att_nm;
     aed_md5.var_nm=NULL;
     (void)nco_inq_varid(nc_id,var_nm,&aed_md5.id);
     aed_md5.sz=NCO_MD5_DGS_SZ*2L;
@@ -72,7 +94,7 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
     aed_md5.mode=aed_overwrite;
     if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Writing MD5 digest to attribute %s of variable %s\n",prg_nm_get(),aed_md5.att_nm,var_nm);
     (void)nco_aed_prc(nc_id,aed_md5.id,aed_md5);
-  } /* !MD5_WRT_ATT */
+  } /* !wrt */
 
   /* NB: Setting this flag significantly increases execution time
      Comparing RAM to disk requires reading hyperslab from disk
@@ -173,7 +195,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.15 2013-07-25 00:39:18 zender Exp $ */
+/* $Id: nco_md5.c,v 1.16 2013-07-25 03:39:59 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.345 2013-07-25 00:39:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.346 2013-07-25 03:39:59 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -13,7 +13,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
- const md5_sct md5_flg, /* I [flg] MD5 Configuration */
+ const md5_sct * const md5, /* I [flg] MD5 Configuration */
  const char *var_nm) /* I [sng] Variable name */
 {
   /* NB: nco_cpy_var_val() contains OpenMP critical region */
@@ -90,7 +90,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     } /* end if var_sz */
   } /* end if variable is an array */
   /* Perform MD5 digest of input and output data if requested */
-  if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
+  if(md5) (void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
   /* Write unformatted binary data */
   if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
 
@@ -269,7 +269,7 @@ void
 nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */
 (const int in_id, /* I [id] netCDF input file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
- const md5_sct md5_flg, /* I [flg] MD5 Configuration */
+ const md5_sct * const md5, /* I [flg] MD5 Configuration */
  CST_X_PTR_CST_PTR_CST_Y(nm_id_sct,var_lst), /* I [sct] Record variables to be extracted */
  const int var_nbr) /* I [nbr] Number of record variables */
 {
@@ -399,7 +399,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
   } /* end loop over records */
 
   /* Corner cases require a loop over variables but not records */
-  if(md5_flg.MD5_DIGEST || fp_bnr){
+  if(md5 || fp_bnr){
     for(var_idx=0;var_idx<var_nbr;var_idx++){
       /* Re-initialize accumulated variables */
       var_sz=1L;
@@ -425,7 +425,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Get variable */
       if(var_sz > 0) nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       /* Perform MD5 digest of input and output data if requested */
-      if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),var_lst[var_idx]->grp_id_out,dmn_srt,dmn_cnt,void_ptr);
+      if(md5) (void)nco_md5_chk(md5,var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),var_lst[var_idx]->grp_id_out,dmn_srt,dmn_cnt,void_ptr);
       /* Write unformatted binary data */
       if(fp_bnr) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,var_sz,var_typ,void_ptr);
       /* Free space that held dimension IDs */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.254 2013-07-17 09:08:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.255 2013-07-25 03:39:59 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -37,8 +37,6 @@
 
    ncdiff -O ~/foo.nc /data/zender/arese/clm/951030_0900_arese_clm.nc foo2.nc;ncks -H foo2.nc | m
  */
-
-
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -118,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.254 2013-07-17 09:08:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.254 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.255 2013-07-25 03:39:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.255 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -130,8 +128,6 @@ main(int argc,char **argv)
 #else /* !__cplusplus */
   ddra_info_sct ddra_info={.flg_ddra=False};
 #endif /* !__cplusplus */
-
-
 
   double ntp_val_out=double_CEWI; /* Option i */
   double wgt_val_1=0.5; /* Option w */
@@ -185,6 +181,7 @@ main(int argc,char **argv)
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt;
 
+  md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -587,13 +584,11 @@ main(int argc,char **argv)
     var_out[var_idx]=nco_var_dpl(var[var_idx]);
   }
 
-
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
 
   /* Store processed and fixed variables info into GTT */
   (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc_1,nbr_var_fix,var_fix,trv_tbl);
-
 
   /* Make output and input files consanguinous */
   if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt_1;
@@ -604,15 +599,11 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-
-
   /* Transfer variable type to table. NOTE: Using var/xtr_nbr containing all variables (processed, fixed) */
   (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);         
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl);   
-
-
+  (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,(char *)NULL,trv_tbl);
 
   /* Copy global attributes */
 #ifdef COPY_ROOT_GLOBAL_ATTRIBUTES

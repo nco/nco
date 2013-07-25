@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.216 2013-07-25 00:39:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.217 2013-07-25 03:39:59 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1164,7 +1164,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 (const int in_id,                   /* I [id] Input group ID */
  const int out_id,                  /* I [id] Output group ID */
  FILE * const fp_bnr,               /* I [flg] Unformatted binary output file handle */
- const md5_sct md5_flg,         /* I [flg] MD5 Configuration */
+ const md5_sct * const md5,         /* I [flg] MD5 Configuration */
  const trv_sct * const var_trv)     /* I [sct] Object to write (variable) */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
@@ -1227,7 +1227,9 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
 
     /* Perform MD5 digest of input and output data if requested */
-    if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
+    if(md5)
+      if(md5->dgs)
+	(void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
 
     /* Write unformatted binary data */
     if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
@@ -1273,7 +1275,9 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ);
 
   /* Perform MD5 digest of input and output data if requested */
-  if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
+  if(md5)
+    if(md5->dgs)
+      (void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
 
   /* Write unformatted binary data */
   if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
@@ -1282,7 +1286,6 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   (void)nco_free(void_ptr);
   (void)nco_free(dmn_map_cnt);
   (void)nco_free(dmn_map_srt);
-
 
   /* Loop dimensions for object (variable)  */
   for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {

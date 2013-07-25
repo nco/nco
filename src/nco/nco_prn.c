@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.143 2013-07-25 00:39:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.144 2013-07-25 03:39:59 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1157,7 +1157,8 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   /* Call super-dooper recursive routine */
   var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
   /* Call also initializes var.sz with final size */
-  if(prn_flg->md5_flg.MD5_DIGEST) (void)nco_md5_chk(prn_flg->md5_flg,var_nm,var.sz*nco_typ_lng(var.type),grp_id,(long *)NULL,(long *)NULL,var.val.vp);
+  if(prn_flg->md5)
+    if(prn_flg->md5->dgs) (void)nco_md5_chk(prn_flg->md5,var_nm,var.sz*nco_typ_lng(var.type),grp_id,(long *)NULL,(long *)NULL,var.val.vp);
 
   /* Warn if variable is packed */
   if(nco_pck_dsk_inq(grp_id,&var)) (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",prg_nm_get(),var_nm);

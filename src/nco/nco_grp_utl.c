@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.891 2013-07-25 00:39:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.892 2013-07-25 03:39:59 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1378,6 +1378,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
  const int cnk_nbr,                  /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                  /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,          /* I [sct] GPE structure */
+ const md5_sct * const md5,          /* I [sct] MD5 configuration */
  const nco_bool CPY_GRP_METADATA,    /* I [flg] Copy group metadata (attributes) */
  const nco_bool CPY_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
  const char * const rec_dmn_nm,      /* I [sng] Record dimension name */
@@ -1525,6 +1526,23 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
       } /* !CPY_VAR_METADATA */
 
+      /* Pre-allocate space for MD5 attributes */
+      if(md5){
+	if(md5->wrt){
+	  /* Save time with netCDF3 files by pre-allocating header space */
+	  aed_sct aed_md5;
+	  char md5_dgs_hxd_sng_ram[]="01234567890123456789012345678901"; /* [sng] Placeholder name for actual digest */
+	  aed_md5.att_nm=md5->att_nm;
+	  aed_md5.var_nm=var_trv.nm;
+	  aed_md5.id=var_out_id;
+	  aed_md5.sz=NCO_MD5_DGS_SZ*2L;
+	  aed_md5.type=NC_CHAR;
+	  aed_md5.val.cp=md5_dgs_hxd_sng_ram;
+	  aed_md5.mode=aed_overwrite;
+	  (void)nco_aed_prc(grp_out_id,var_out_id,aed_md5);
+	} /* !wrt */
+      } /* !md5 */
+
       /* Memory management after current extracted variable */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
@@ -1549,7 +1567,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 (const int nc_in_id,                  /* I [ID] netCDF input file ID */
  const int nc_out_id,                 /* I [ID] netCDF output file ID */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
- const md5_sct md5_flg,           /* I [flg] MD5 Configuration */
+ const md5_sct * const md5,           /* I [flg] MD5 Configuration */
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist ( For convenience, ideally... not needed ) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
@@ -1590,11 +1608,11 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
     for(idx_var=0;idx_var<fix_nbr;idx_var++){
       if(dbg_lvl_get() >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",fix_lst[idx_var]->nm);
       if(dbg_lvl_get() >= nco_dbg_var) (void)fflush(stderr);
-      (void)nco_cpy_var_val(fix_lst[idx_var]->grp_id_in,fix_lst[idx_var]->grp_id_out,fp_bnr,md5_flg,fix_lst[idx_var]->nm);
+      (void)nco_cpy_var_val(fix_lst[idx_var]->grp_id_in,fix_lst[idx_var]->grp_id_out,fp_bnr,md5,fix_lst[idx_var]->nm);
     } /* end loop over idx_var */
 
     /* Copy record data record-by-record */
-    (void)nco_cpy_rec_var_val(nc_in_id,fp_bnr,md5_flg,rec_lst,rec_nbr);
+    (void)nco_cpy_rec_var_val(nc_in_id,fp_bnr,md5,rec_lst,rec_nbr);
 
     /* Extraction lists no longer needed */
     if(fix_lst) fix_lst=(nm_id_sct **)nco_free(fix_lst);
@@ -1618,7 +1636,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
         } /* endif dbg */
 
         /* Copy variable data from input netCDF file to output netCDF file */
-        (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,md5_flg,&trv); 
+        (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,md5,&trv); 
        
       } /* endif */
 
@@ -3621,12 +3639,7 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
  const gpe_sct * const gpe,           /* I [sng] GPE structure */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
-#if defined(__cplusplus) || defined(PGI_CC)
-  md5_sct md5_flg; /* [sct] MD5 configuration */
-  md5_flg.MD5_DIGEST=False;
-#else /* !__cplusplus */
-  md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
-#endif /* !__cplusplus */
+  md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
   char *grp_out_fll; /* [sng] Group name */
 
@@ -3656,7 +3669,7 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
       } /* endif dbg */       
 
       /* Copy variable data */
-      (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,md5_flg,&var_trv);  
+      (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,(FILE *)NULL,md5,&var_trv);  
 
       /* Memory management after current extracted group */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
@@ -3853,12 +3866,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
   }else{ /* Write mode */
 
-#if defined(__cplusplus) || defined(PGI_CC)
-  md5_sct md5_flg; /* [sct] MD5 configuration */
-  md5_flg.MD5_DIGEST=False;
-#else /* !__cplusplus */
-  md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
-#endif /* !__cplusplus */
+    md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
     int has_mss_val; /* [flg] Variable has missing value */
 
@@ -3874,7 +3882,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
     /* Non-processed variable */
     if(prc_typ_1 == fix_typ || prc_typ_2 == fix_typ){
-      if(RNK_1_GTR) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,md5_flg,trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,md5_flg,trv_2);
+      if(RNK_1_GTR) (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,md5,trv_1); else (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_2,grp_out_id,(FILE *)NULL,md5,trv_2);
     } /* endif fix */
 
     /* Processed variable */
@@ -3964,12 +3972,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
   int var_id_1;                  /* [id] Variable ID in input file */
   int var_out_id;                /* [id] Variable ID in output file */
 
-#if defined(__cplusplus) || defined(PGI_CC)
-  md5_sct md5_flg; /* [sct] MD5 configuration */
-  md5_flg.MD5_DIGEST=False;
-#else /* !__cplusplus */
-  md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
-#endif /* !__cplusplus */
+  md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
   var_sct *var_prc_1;            /* [sct] Variable to process in file 1 */
   var_sct *var_prc_out;          /* [sct] Variable to process in output */
@@ -4039,7 +4042,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     (void)nco_inq_varid(grp_out_id,trv_1->nm,&var_out_id);         
 
     /* Copy non-processed variable */
-    (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,md5_flg,trv_1); 
+    (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,md5,trv_1); 
   
   } /* Write mode */
 

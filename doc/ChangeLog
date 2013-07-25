@@ -1,5 +1,7 @@
 2013-07-24  Charlie Zender  <zender@uci.edu>
 
+	* Rewrite MD5 infrastructure the right way, i.e., like GPE: use/pass dynamic structures
+
 2013-07-24 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncwa testing

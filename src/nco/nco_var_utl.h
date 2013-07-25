@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.100 2013-07-24 18:55:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.101 2013-07-25 03:39:59 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -48,7 +48,7 @@ nco_cpy_var_val /* [fnc] Copy variable data from input to output file, no limits
 (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
-   const md5_sct md5_flg, /* I [flg] MD5 Configuration */
+   const md5_sct * const md5, /* I [flg] MD5 Configuration */
    const char *var_nm); /* I [sng] Variable name */
 
 void
@@ -69,7 +69,7 @@ void
 nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from input to output file, no limits */
 (const int in_id, /* I [id] netCDF input file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
-   const md5_sct md5_flg, /* I [flg] MD5 Configuration */
+   const md5_sct * const md5, /* I [flg] MD5 Configuration */
    CST_X_PTR_CST_PTR_CST_Y(nm_id_sct,var_lst), /* I [sct] Record variables to be extracted */
    const int var_nbr); /* I [nbr] Number of record variables */
 

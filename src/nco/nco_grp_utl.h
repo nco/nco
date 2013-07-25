@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.343 2013-07-24 18:55:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.344 2013-07-25 03:39:59 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -28,6 +28,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_att_utl.h" /* Attribute utilities */
 #include "nco_aux.h" /* Auxiliary coordinates */
 #include "nco_cnf_dmn.h" /* Conform dimensions */
 #include "nco_cnk.h" /* Chunking */
@@ -143,7 +144,6 @@ void
 nco_xtr_xcl                          /* [fnc] Convert extraction list to exclusion list */
 (trv_tbl_sct * const trv_tbl);       /* I/O [sct] Traversal table */
 
-
 void
 nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction list */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
@@ -222,6 +222,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
  const int cnk_nbr,                   /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                   /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,           /* I [sng] GPE structure */
+ const md5_sct * const md5,          /* I [sct] MD5 configuration */
  const nco_bool CPY_GRP_METADATA,     /* I [flg] Copy group metadata (attributes) */
  const nco_bool CPY_VAR_METADATA,     /* I [flg] Copy variable metadata (attributes) */
  const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
@@ -232,7 +233,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int nc_out_id,                 /* I [ID] netCDF output file ID */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
- const md5_sct md5_flg,           /* I [flg] MD5 Configuration */
+ const md5_sct * const md5,           /* I [flg] MD5 Configuration */
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
@@ -273,7 +274,6 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 (const int nc_id,                    /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
-
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
 (const int nc_id,                     /* I [ID] netCDF file ID */
@@ -305,7 +305,6 @@ int                                  /* O [nbr] Comparison result */
 nco_cmp_crd_dpt                      /* [fnc] Compare two crd_sct's by group depth */
 (const void *p1,                     /* I [sct] crd_sct* to compare */
  const void *p2);                    /* I [sct] crd_sct* to compare */
-
 
 void                          
 nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (Group Traversal Table) for debugging  */
@@ -453,7 +452,6 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
-
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
 (const int nbr_var_prc,                /* I [nbr] Number of processed variables */
@@ -500,7 +498,6 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
  var_sct **var_prc_out,                /* I [sct] Processed variables */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
-
 void
 nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable */
 (trv_tbl_sct * const trv_tbl,         /* I/O [sct] GTT (Group Traversal Table) */
@@ -512,7 +509,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
  const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
  const nco_bool *dmn_rvr_rdr);        /* I [flg] Reverse dimension */
- 
 
 void
 nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of variable values */
@@ -525,7 +521,6 @@ nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
 (trv_sct var_trv,                     /* I [sct] varible with record dimension name, re-ordered */
  const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
  int * idx_var_mrk_out);              /* O [nbr] Index in GTT where name was found */
-
 
 nco_bool                              /* [flg] Name was found */
 nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable that matches full name */
@@ -551,14 +546,12 @@ nco_var_dmn_scp                        /* [fnc] Is variable in dimension scope a
 (const trv_sct * const var_trv,        /* I [sct] GTT Object Variable */
  const dmn_trv_sct * const dmn_trv);   /* I [sct] GTT unique dimension */
 
-
 void
 nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
 (const int nc_id,                     /* I [id] Input netCDF file ID */
  const aed_sct *aed,                  /* I [sct] Structure containing information necessary to edit */
  const int nbr_aed,                   /* I [nbr] Number of attribute structures */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
 
 var_sct *                             /* O [sct] Variable */  
 nco_var_get_trv                       /* [fnc] Fill-in variable structure for a variable named "var_nm" */
@@ -572,14 +565,12 @@ nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hy
  const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
-
 void                                  /* [fnc] Update all GTT dimensions with hyperslabed size */
 nco_dmn_msa_tbl                       /* [fnc] Define specified variable in output file */
 (const int grp_in_id,                 /* I [id] netCDF input group ID */
  const char * const rec_dmn_nm_cst,   /* I [sng] User-specified record dimension, if any, to create or fix in output file */
  trv_sct *var_trv,                    /* I/O [sct] Object to write (variable) trv_map_dmn_set() is O */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
 
 void                          
 nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions information into GTT  */
