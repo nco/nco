@@ -3234,7 +3234,6 @@ esac
 # End pvmgetarch Compatibility
 
 # Use automake to create Makefiles
-#AM_INIT_AUTOMAKE
 am__api_version='1.13'
 
 # Find a good install program.  We prefer a C program (faster),
@@ -3720,9 +3719,8 @@ fi
 
 
 # Define the identity of the package.
-
- PACKAGE=nco
- VERSION="${nco_version}"
+ PACKAGE='nco'
+ VERSION='4.3.3'
 
 
 cat >>confdefs.h <<_ACEOF
@@ -3773,6 +3771,7 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
+#AM_INIT_AUTOMAKE(nco,"${nco_version}")
 
 # Put preprocessor symbols in config.h
 ac_config_headers="$ac_config_headers config.h"

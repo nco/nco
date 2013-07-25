@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.1 2013-07-25 04:43:28 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.2 2013-07-25 04:51:36 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -145,8 +145,8 @@ esac
 # End pvmgetarch Compatibility
 
 # Use automake to create Makefiles
-#AM_INIT_AUTOMAKE
-AM_INIT_AUTOMAKE(nco,"${nco_version}")
+AM_INIT_AUTOMAKE
+#AM_INIT_AUTOMAKE(nco,"${nco_version}")
 
 # Put preprocessor symbols in config.h
 AM_CONFIG_HEADER(config.h)

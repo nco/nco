@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
 	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
 
+	* Modernize configure.ac and Makefile.am as per automake/autoconf recommendations
+
 	* Rename configure.in to configure.ac
 
 	* Add autobld/test_driver (created with automake --add-missing)
