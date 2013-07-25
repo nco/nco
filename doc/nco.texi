@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.812 2013-07-24 15:04:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.813 2013-07-25 04:26:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.3
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 19 July 2013
+@set update-date 24 July 2013
 @set update-month July 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -5590,7 +5590,7 @@ This support is currently implemented in @command{ncks} and in the
 multifile concantenators @command{ncecat} and @command{ncrcat}.
 Activate it with the @samp{--md5_dgs} or @samp{--md5_digest} long
 options. 
-As of @acronym{NCO} version 4.3.3 (August, 2013), @acronym{NCO} 
+As of @acronym{NCO} version 4.3.3 (July, 2013), @acronym{NCO} 
 will write the @acronym{MD5} digest of each variable as an
 @code{NC_CHAR} attribute named @code{MD5}.
 This support is currently implemented in @command{ncks} and in the
@@ -10721,7 +10721,7 @@ type @code{NC_UINT64}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
 type @code{NC_STRING}.
 Note that @command{ncatted} handles type @code{NC_STRING} attributes
-correctly beginning with version 4.3.3 released in August, 2013. 
+correctly beginning with version 4.3.3 released in July, 2013. 
 Earlier versions fail when asked to handle @code{NC_STRING} attributes.  
 @end table
 @noindent
@@ -12387,9 +12387,9 @@ Also activated using @samp{--noblank} or @samp{--no-blank}.
 @cindex @code{--cdl}
 @cindex CDL
 @item --cdl 
-As of @acronym{NCO} version 4.3.3 (August, 2013), @command{ncks} can
-extracted data and metadata to screen (i.e., @code{stdout}) as valid CDL
-(network Common data form Description Language). 
+As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} will
+print extracted data and metadata to screen (i.e., @code{stdout}) as
+valid CDL (network Common data form Description Language). 
 CDL is the human-readable ``lingua franca'' of netCDF ingested by
 @command{ncgen} and excreted by @command{ncdump}.
 Compare @command{ncks} ``traditional'' with CDL printing:
@@ -12475,9 +12475,9 @@ Also @samp{--units}.
 @cindex @code{--xml}
 @cindex XML
 @item --xml 
-As of @acronym{NCO} version 4.3.3 (August, 2013), @command{ncks} can
-print extracted data and metadata to screen (i.e., @code{stdout}) as 
-valid XML in NcML, the netCDF Markup Language.
+As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} will
+print extracted metadata to screen (i.e., @code{stdout}) as valid XML in
+NcML, the netCDF Markup Language. 
 XML is also exported by @samp{ncdump -x}.
 Compare @command{ncks} ``traditional'' with XML printing:
 @example

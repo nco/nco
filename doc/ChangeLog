@@ -1,5 +1,11 @@
 2013-07-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.3.3 release procedure:
+ 	Changes since nco-4_3_2: CDL, XML, ncrename/ncwa groups
+	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
+	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
+
 	* Rewrite MD5 infrastructure the right way, i.e., like GPE: use/pass dynamic structures
 
 2013-07-24 Pedro Vicente  <pvicente@uci.edu>
@@ -12,12 +18,6 @@
 	* Add ncwa test #44 (Groups) rms with weights
 
 2013-07-24  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.3.3 release procedure:
- 	Changes since nco-4_3_2: CDL, XML, ncrename/ncwa groups
-	cd ~/nco;cvs tag -d nco-4_3_3;cvs tag -d nco-4_3_3-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
-	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
 
 	* Adhere to hdr_pad option when using ncpdq for packing
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1243 2013-07-23 20:59:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1244 2013-07-25 04:26:59 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -713,7 +713,10 @@ A. ncflint now always works when input files are interchanged, i.e.,
 nco1100 Find MSVC 2010 versions of isfinite, snprintf, isnan, isinf
 nco1034. ncatted: option to append md5 attribute to each variable
 nco1101. ncks: md5 digest attributes requested by ocehugo 20130723
-nco1102. 
+nco1102. ncatted handle arrays of NC_STRINGs with embedded delimiters
+	 ncatted -D 5 -O -a new_string_att,att_var,c,sng,"list","of","str,ings" ~/nco/data/in_4.nc ~/foo.nc
+nco1103. 
+
 qrk
 ************************************************************************
 End ncoXXX TODOs

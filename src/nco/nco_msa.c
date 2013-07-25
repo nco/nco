@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.217 2013-07-25 03:39:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.218 2013-07-25 04:26:59 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -752,7 +752,6 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
 
 } /* end nco_msa_var_val_cpy() */
 
-
 void
 nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 (dmn_trv_sct *dmn_trv) /* [sct] Dimension structure from GTT */
@@ -765,8 +764,7 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
   WRP flag set only when list contains dimensions split as above
 
   Tests:
-  ncks -d time,8,2 -v time -H ~/nco/data/in_grp.nc
-  */
+  ncks -d time,8,2 -v time -H ~/nco/data/in_grp.nc */
 
   const char fnc_nm[]="nco_msa_wrp_splt_trv()"; /* [sng] Function name  */
 
