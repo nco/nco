@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.166 2012-10-22 06:07:25 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.167 2013-07-25 04:43:28 zender Exp $ -*-Fundamental-*-
 
 Purpose(s):
 Track status of autobuild features for NCO
@@ -306,9 +306,9 @@ gcc/g++ Developers use --enable-maintainer-mode to verify auto-tools work correc
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 aclocal # Create aclocal.m4 from acinclude.m4
-autoheader # Create config.h.in from configure.in
+autoheader # Create config.h.in from configure.ac
 automake --foreign # Create Makefile.in from Makefile.am
-autoconf # Create ./configure from ./configure.in
+autoconf # Create ./configure from ./configure.ac
 # Debugging
 ./configure --disable-shared --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 # Production

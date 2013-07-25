@@ -6,6 +6,10 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.3 release"
 	cvs tag -c nco-4_3_3;cvs tag -c nco-4_3_3-1
 
+	* Rename configure.in to configure.ac
+
+	* Add autobld/test_driver (created with automake --add-missing)
+
 	* Rewrite MD5 infrastructure the right way, i.e., like GPE: use/pass dynamic structures
 
 2013-07-24 Pedro Vicente  <pvicente@uci.edu>

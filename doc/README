@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.17 2011-02-12 03:05:20 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.18 2013-07-25 04:43:29 zender Exp $ -*-text-*-
 
 # Purpose: NCO README file
 
@@ -47,7 +47,7 @@ The output of these commands from our test machines is available at
 
 http://dust.ess.uci.edu/nco/rgr
 
-Please send us any modifications to the configure.in script that 
+Please send us any modifications to the configure.ac script that 
 might benefit other NCO users. 
 
 Older Manual Makefile Build Procedure:

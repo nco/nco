@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.189 2013-07-12 04:35:37 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.190 2013-07-25 04:43:29 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -88,7 +88,7 @@ patch -p0 < nco_X.Y.Z-3.diff   # Patch destination with Debian diff
 # tags-query replace 4_3_3 with X_Y_Z+1
 # tags-query replace 4.3.3 with X.Y.Z+1
 # If tags-query replace does not work, be sure to manually change
-# versions in configure.in, debian/files, doc/ANNOUNCE, doc/debian.txt,
+# versions in configure.ac, debian/files, doc/ANNOUNCE, doc/debian.txt,
 # doc/index.shtml, doc/nco.texi, bld/nco_dst.pl, doc/VERSION 
    cd ~/nco/debian;dch -b --force-distribution --distribution=unstable -v 4.3.3-1 # Update changelog (-b forces this version number)
    emacs ~/nco/bld/nco.spec # Update changelog

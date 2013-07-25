@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1244 2013-07-25 04:26:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1245 2013-07-25 04:43:29 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -225,7 +225,7 @@ nco294. Globals variable in NCO operators are prg, prg_nm, dbg_lvl
 nco295. Understand/maintain re-entrant behavior of shared library.
 nco298. Localize ncap's three globals: ncap_ncl_dpt_crr, ncap_ln_nbr_crr, ncap_fl_spt_glb?
 nco299. Prefix prg,prg_nm,dbg_lvl globals with nco_ for namespace cleanliness
-nco300. Activate ccmalloc libdl into configure.in for enable-debug-custom
+nco300. Activate ccmalloc libdl into configure.ac for enable-debug-custom
 nco301. Unable to use DDD on autotools NCO executable with --enable-debug-custom
 nco302. Add speedy GCC optimization flags to --enable-optimize-custom
 nco303. Make test suite more comprehensive
@@ -544,7 +544,7 @@ nco911. Periods in attribute names choke OPeNDAP (had to remove att_nm.dot):
 	nco_err_exit(): ERROR Error code is -43. Translation into English with nc_strerror(-43) is "Attribute not found"
 nco912. ncks: print '_' or '_FillValue' instead of numeric values à la ncdump?
 nco913. nco_cmp_get() fails on _AIX with different compiler
-nco915. GCC OpenMP support in configure.in
+nco915. GCC OpenMP support in configure.ac
 nco917. GCC OpenMP with autoconf
 nco919. 'make check' (i.e., nco_bm.pl) breaks when ncap2 disabled (i.e., --disable-nco++) reported by Tim Hoar
 nco920. Add ncwa (ncks?) capability to remove all degenerate dimensions --delete-degenerate-dimensions (ncl-talk 20071205) (assign to hmb?)
@@ -1013,7 +1013,7 @@ bld23. Implement ncra i18n support I18N with autotools: Add .po files, update do
 bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
 bld32. Why have --enable-shared and --enable-static both default true? override one?
 bld33. Use PACKAGE_BUGREPORT, PACKAGE_NAME, PACKAGE_STRING, PACKAGE_TARNAME, PACKAGE_VERSION?
-bld35. Add pgcc, pgCC switches to configure.in 
+bld35. Add pgcc, pgCC switches to configure.ac 
 bld36. Improve precision/wording of nco_ctl.c tokens on shared/static libraries
 bld37. Ensure C99 used by compilers with AX_CFLAGS_SUN_OPTION AX_CFLAGS_HPUX_OPTION AX_CFLAGS_AIX_OPTION AX_CFLAGS_IRIX_OPTION
 bld38. Use OPeNDAP opendap-config script to ease build process, e.g., `opendap-config --cxx --cflags --libs` -o sample sample.c
@@ -1025,12 +1025,12 @@ bld41. Add configure check for libssl functionality, if not found (Fedora) to ex
 bld42. Adopt orphaned Debian NCO http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
 bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to developer's forum 20050201: {$CC} is not tested for xlc* but for (arbitrary_path/xlc*)
 bld44. Add support for autopackage format? http://www.wildgardenseed.com/apkg/
-bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.in and nco_ctl.c
+bld45. Replace ENABLE_LARGEFILE with test for 64-bit offset support (i.e., netCDF 3.6) in configure.ac and nco_ctl.c
 bld47. Add regression test for 64bit file format capability
 bld61. Verify netCDF4 benchmarks work for Ed Hartnett
 bld70. hjm nco_c++ on Mac OS X: Get "make check" working (add -lstdc++, remove -lnco)
 bld74. hjm Do not pass -std=c99 unless GCC=gcc rather than g++
-bld76. Add SMP support switches to configure.in for pathcc, pgicc, icc
+bld76. Add SMP support switches to configure.ac for pathcc, pgicc, icc
 bld77. Make sure C99 switches like -std=c99 do not get passed to CXX
 bld78. Fix CXXFLAGS for icc enable-custom-optimize
 bld79. 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.217 2013-07-23 05:58:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.218 2013-07-25 04:43:29 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -264,7 +264,7 @@ nco_fl_info_get /* [fnc] Determine canonical filename and properties */
   if(rcd != -1 && ((stat_sct.st_mode & S_IFMT) == S_IFLNK)){ /* fxm: This is BSD not POSIX */
 #endif /* NECSX */
 #if (defined HAVE_CANONICALIZE_FILE_NAME) && 0
-    /* 20040619: Function prototype is not found (perhaps due to aggressive standard switches) by NCO, althouth configure.in finds it */
+    /* 20040619: Function prototype is not found (perhaps due to aggressive standard switches) by NCO, althouth configure.ac finds it */
     /* Remember to free() fl_nm_cnc after using it */
     fl_nm_cnc=(char *)canonicalize_file_name(fl_nm_lcl);
     if(fl_nm_cnc){
