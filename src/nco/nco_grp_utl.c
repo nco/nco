@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.892 2013-07-25 03:39:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.893 2013-07-25 19:45:57 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3125,23 +3125,41 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
   return False;
 } /* nco_crd_var_dmn_scp() */
 
-int                                  /* O [nbr] Comparison result */
-nco_cmp_crd_dpt                      /* [fnc] Compare two crd_sct's by group depth */
-(const void *p1,                     /* I [sct] crd_sct* to compare */
- const void *p2)                     /* I [sct] crd_sct* to compare */
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_crd_dpt /* [fnc] Compare two crd_sct's by group depth */
+(const void *val_1, /* I [sct] crd_sct * to compare */
+ const void *val_2) /* I [sct] crd_sct * to compare */
 {
-  /* Purpose: Compare two crd_sct's by group depth structure member, used by qsort()
-     crd_sct **crd of unique dimension of is an array of pointers, not an array of crd_sct structs */
+  /* Purpose: Compare two crd_sct's by group depth structure member
+     Function is suitable for argument to ANSI C qsort() routine in stdlib.h
+     crd_sct **crd is an array of pointers to unique dimension coordinates */
 
-  crd_sct **crd1=(crd_sct **)p1;
-  crd_sct **crd2=(crd_sct **)p2;
+  const crd_sct * const * const crd1=(const crd_sct * const *)val_1;
+  const crd_sct * const * const crd2=(const crd_sct * const *)val_2;
 
-  if ( (*crd1)->grp_dpt > (*crd2)->grp_dpt ) return -1;
-  else if ( (*crd1)->grp_dpt < (*crd2)->grp_dpt ) return 1;
+  if((*crd1)->grp_dpt > (*crd2)->grp_dpt) return -1;
+  else if((*crd1)->grp_dpt < (*crd2)->grp_dpt) return 1;
   else return 0;
-
 } /* end nco_cmp_crd_dpt() */
 
+#if 0
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_crd_dpt /* [fnc] Compare two crd_sct's by group depth */
+(const void *val_1, /* I [sct] crd_sct * to compare */
+ const void *val_2) /* I [sct] crd_sct * to compare */
+{
+  /* Purpose: Compare two crd_sct's by group depth structure member
+     Function is suitable for argument to ANSI C qsort() routine in stdlib.h
+     crd_sct **crd is an array of pointers to unique dimension coordinates */
+
+  crd_sct **crd1=(crd_sct **)val_1;
+  crd_sct **crd2=(crd_sct **)val_2;
+
+  if((*crd1)->grp_dpt > (*crd2)->grp_dpt) return -1;
+  else if((*crd1)->grp_dpt < (*crd2)->grp_dpt) return 1;
+  else return 0;
+} /* end nco_cmp_crd_dpt() */
+#endif /* endif false */
 
 crd_sct *                             /* O [sct] Coordinate object */
 nco_scp_var_crd                       /* [fnc] Return in scope coordinate for variable  */
@@ -3166,28 +3184,23 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
 
   */
 
-  /* If more then 1 coordinate, sort them by group depth */
-  if (dmn_trv->crd_nbr>1){
-    qsort(dmn_trv->crd,(size_t)dmn_trv->crd_nbr,sizeof(crd_sct *),nco_cmp_crd_dpt);
-  }
+  /* If more than one coordinate, sort them by group depth */
+  if(dmn_trv->crd_nbr>1) qsort(dmn_trv->crd,(size_t)dmn_trv->crd_nbr,sizeof(crd_sct *),nco_cmp_crd_dpt);
 
-  /* Loop coordinates; they all have the unique dimension ID of the variable dimension */
+  /* Loop over coordinates; they all have unique dimension ID of variable dimension */
   for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
     crd_sct *crd=dmn_trv->crd[crd_idx];
-
-    /* Absolute match: in scope  */ 
-    if (strcmp(var_trv->nm_fll,crd->crd_nm_fll) == 0){ 
-
-      /* The variable must be a coordinate for this to happen */
+    /* Absolute match: in scope */ 
+    if(!strcmp(var_trv->nm_fll,crd->crd_nm_fll)){ 
+      /* Variable must be coordinate for this to happen */
       assert(var_trv->is_crd_var == True);
       return crd;
-    } 
-    /* Same group: in scope  */ 
-    else if (strcmp(var_trv->grp_nm_fll,crd->crd_grp_nm_fll) == 0){ 
+    }else if(!strcmp(var_trv->grp_nm_fll,crd->crd_grp_nm_fll)){ 
+      /* Same group: in scope  */ 
       return crd;
-    } 
-    /* Level below: in scope  */ 
-    else if (crd->grp_dpt < var_trv->grp_dpt){ 
+    }
+    else if(crd->grp_dpt < var_trv->grp_dpt){
+      /* Level below: in scope  */
       return crd;
     }
   } /* Loop coordinates */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.49 2013-07-25 05:57:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.50 2013-07-25 19:45:57 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic, MSVC macros */
 
@@ -36,6 +36,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+/* Home-brewed functions like rnd_nbr() need no pre-processor token protection since 
+   they will never be defined in system-supplied libraries/headers */
+double /* O [frc] Random fraction in [0,1] */
+rnd_nbr /* [fnc] Generate random fraction in [0,1] */
+(double x); /* I [frc] Immaterial */
+
+float /* O [frc] Random fraction in [0,1] */
+rnd_nbrf /* [fnc] Generate random fraction in [0,1] */
+(float); /* I [frc] Immaterial */
+
+/* Remaining definitions are system-dependent */
 
 /* MSVC does not define isnormal(), isnan(), isinf(), isfinite()
    http://stackoverflow.com/questions/2249110/how-do-i-make-a-portable-isnan-isinf-function */
@@ -130,7 +142,6 @@ trunc /* [fnc] Truncate x to nearest integer not larger in absolute value */
   float erff(float);
   float erfcf(float);
   float gammaf(float);
-  float rnd_nbrf(float);
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
   float acoshf(float);
@@ -151,10 +162,6 @@ trunc /* [fnc] Truncate x to nearest integer not larger in absolute value */
   float truncf(float);
 
 #endif /* !defined(HPUX) && !defined(__INTEL_COMPILER) && !defined(LINUXAMD64) */
-
-double /* O [frc] Random fraction in [0,1] */
-rnd_nbr /* [fnc] Generate random fraction in [0,1] */
-(double x); /* I [frc] Immaterial */
 
 #ifdef __cplusplus
 } /* end extern "C" */

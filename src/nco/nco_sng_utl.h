@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.38 2013-07-20 02:21:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.39 2013-07-25 19:45:57 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -38,22 +38,33 @@ extern "C" {
 #ifdef NEED_STRCASECMP
 int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
 strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
-(const char *sng_1, /* I [sng] First string */
- const char *sng_2); /* I [sng] Second string */
+(const char * const sng_1, /* I [sng] First string */
+ const char * const sng_2); /* I [sng] Second string */
 #endif /* !NEED_STRCASECMP */
 
-#ifdef NEED_STRCASESTR
+#ifndef __cplusplus
+  /* 20130725 Apparently C++ (or at least g++) always provides strcasestr() */
+# ifdef NEED_STRCASESTR
 char * /* O [sng] Pointer to sng_2 in sng_1 */
 strcasestr /* [fnc] Lexicographical case-insensitive string search */
-(const char *sng_1, /* I [sng] First string */
- const char *sng_2); /* I [sng] Second string */
-#endif /* !NEED_STRCASESTR */
+(const char * const sng_1, /* I [sng] First string */
+ const char * const sng_2); /* I [sng] Second string */
+# endif /* !NEED_STRCASESTR */
+#endif /* __cplusplus */
 
 #ifdef NEED_STRDUP
 char * /* O [sng] Copy of input string */
 strdup /* [fnc] Duplicate string */
-(const char *sng_in); /* I [sng] String to duplicate */
+(const char * const sng_in); /* I [sng] String to duplicate */
 #endif /* !NEED_STRDUP */
+
+#ifdef NEED_STRTOLL
+long long int /* O [nbr] String as long long integer */
+strtoll /* [fnc] Convert string to a long long integer */
+(const char * const nptr,
+ char ** const endptr,
+ const int base);
+#endif /* !NEED_STRTOLL */
 
 char * /* O [sng] Parsed command line */
 nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */

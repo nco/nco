@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.55 2013-07-25 04:43:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.56 2013-07-25 19:45:57 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -29,7 +29,7 @@ Makefile.in	Makefile template created from Makefile.am by automake and used by a
 stamp-h1(v)	Time-stamp
 
 Top-level directories:
-nco/autobld	Files related to autotools: autoconf/automake/autolib
+nco/autobld	Files related to and used by autotools: autoconf/automake/autolib
 nco/bin		Binary directory for NCO binary executable
 nco/bld		Build directory for Makefile and ancillary scripts
 nco/bm		Benchmark directory and related plot scripts

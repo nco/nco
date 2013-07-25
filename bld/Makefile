@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.646 2013-07-25 05:26:28 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.647 2013-07-25 19:45:57 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -662,9 +662,9 @@ ${MY_DPN_DIR}/%.d : %.cc
 
 # Manually define autotools tokens normally defined with HAVE_CONFIG_H in config.h 
 # Initialize OS-specific tokens to empty
-CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_GETPAGESIZE -DHAVE_GETRUSAGE
-# GCC 4.7.3 finally includes strcasestr() in string.h
-# -DNEED_STRCASESTR
+CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_GETPAGESIZE -DHAVE_GETRUSAGE -DNEED_STRCASESTR
+# gcc 4.7.3 finally includes strcasestr() in string.h iff _GNU_SOURCE token is defined
+# NB: C++ (or at least g++ 4.7.3) always includes strcasestr()---work around this with tokens in nco_sng_utl.[ch]
 ifneq (${PVM_ARCH},CRAY)
  CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY

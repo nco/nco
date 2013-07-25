@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.50 2013-07-24 05:02:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.51 2013-07-25 19:45:57 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -11,8 +11,8 @@
 #ifdef NEED_STRCASECMP
 int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
 strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
-(const char *sng_1, /* I [sng] First string */
- const char *sng_2) /* I [sng] Second string */
+(const char * const sng_1, /* I [sng] First string */
+ const char * const sng_2) /* I [sng] Second string */
 {
   char chr_1;
   char chr_2;
@@ -26,11 +26,12 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 } /* end strcasecmp() */
 #endif /* !NEED_STRCASECMP */
 
+#ifndef __cplusplus
 #ifdef NEED_STRCASESTR
 char * /* O [sng] Pointer to sng_2 in sng_1 */
 strcasestr /* [fnc] Lexicographical case-insensitive string search */
-(const char *sng_1, /* I [sng] First string */
- const char *sng_2) /* I [sng] Second string */
+(const char * const sng_1, /* I [sng] First string */
+ const char * const sng_2) /* I [sng] Second string */
 {
   /* 20120706 Initial version discards const, triggers compiler warnings
      20120803 Kludge with strdup() to keep const intact */
@@ -59,6 +60,7 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
   return 0;
 } /* end strcasestr() */
 #endif /* !NEED_STRCASESTR */
+#endif /* __cplusplus */
 
 #ifdef NEED_STRDUP
 char * /* [sng] Copy of input string */
@@ -67,7 +69,7 @@ strdup /* [fnc] Duplicate string */
 {
   /* Purpose: Provide strdup() for broken systems 
      Input string must be NUL-terminated */
-  int sng_lng=strlen(sng_in)+1;
+  size_t sng_lng=strlen(sng_in)+1UL;
   /* Use nco_malloc() even though strdup() is system function 
      This ensures all NCO code goes through nco_malloc()  */
   char *sng_out=(char *)nco_malloc(sng_lng*sizeof(char));
@@ -79,9 +81,9 @@ strdup /* [fnc] Duplicate string */
 #ifdef NEED_STRTOLL
 long long int /* O [nbr] String as long long integer */
 strtoll /* [fnc] Convert string to a long long integer */
-(const char *nptr, 
- char **endptr, 
- int base)
+(const char * const nptr,
+ char ** const endptr,
+ const int base)
 {
   /* Purpose: Compatibility function for strtoll()
      Needed by some C++ compilers, e.g., AIX xlC
