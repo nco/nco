@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.321 2013-07-24 18:55:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.322 2013-07-25 00:39:18 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.321 2013-07-24 18:55:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.321 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.322 2013-07-25 00:39:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.322 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -896,7 +896,7 @@ main(int argc,char **argv)
             (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
           } /* end if variable is array */
           /* Perform MD5 digest of input and output data if requested */
-          if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
+          if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
           /* Free current input buffer */
           var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
         } /* end OpenMP critical */

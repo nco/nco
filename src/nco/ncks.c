@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.642 2013-07-24 18:55:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.643 2013-07-25 00:39:18 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -151,8 +151,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.642 2013-07-24 18:55:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.642 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.643 2013-07-25 00:39:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.643 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -421,7 +421,7 @@ main(int argc,char **argv)
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
       } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"md5_wrt_att") || !strcmp(opt_crr,"md5_write_attribute")){
-        md5_flg.MD5_WRT_ATT=True;
+        md5_flg.MD5_WRT_ATT=md5_flg.MD5_DIGEST=True;
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will write MD5 digests as attributes\n",prg_nm_get());
       } /* endif "md5_wrt_att" */
       if(!strcmp(opt_crr,"msa_usr_rdr")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -825,6 +825,7 @@ main(int argc,char **argv)
       PRN_VAR_DATA=False;
     } /* !XML */
     prn_flg.gpe=gpe;
+    prn_flg.md5_flg=md5_flg;
     prn_flg.nbr_zro=0;
     prn_flg.spc_per_lvl=2;
     prn_flg.sxn_fst=2;
@@ -838,7 +839,6 @@ main(int argc,char **argv)
     prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
     // prn_flg.ALPHA_BY_STUB_OBJECT=ALPHA_BY_STUB_OBJECT;
     prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
-    prn_flg.MD5_DIGEST=md5_flg.MD5_DIGEST;
     prn_flg.PRN_DMN_IDX_CRD_VAL=PRN_DMN_IDX_CRD_VAL;
     prn_flg.PRN_DMN_UNITS=PRN_DMN_UNITS;
     prn_flg.PRN_DMN_VAR_NM=PRN_DMN_VAR_NM;

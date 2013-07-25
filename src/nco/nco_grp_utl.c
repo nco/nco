@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.890 2013-07-24 23:09:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.891 2013-07-25 00:39:18 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3807,12 +3807,12 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
   /* Define mode */
   if(flg_def){  
-    char *rec_dmn_nm=NULL;    /* [sng] Record dimension name */
+    char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
 
     nm_tbl_sct *rec_dmn_nm_1=NULL; /* [sct] Record dimension names array */
     nm_tbl_sct *rec_dmn_nm_2=NULL; /* [sct] Record dimension names array */
 
-    nco_bool PCK_ATT_CPY;    /* [flg] Copy attributes "scale_factor", "add_offset" */
+    nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
     PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc_1);
 
@@ -3860,9 +3860,9 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   md5_sct md5_flg={.MD5_DIGEST=False,.MD5_WRT_ATT=False}; /* [sct] MD5 configuration */
 #endif /* !__cplusplus */
 
-    int has_mss_val;      /* [flg] Variable has missing value */
+    int has_mss_val; /* [flg] Variable has missing value */
 
-    ptr_unn mss_val;      /* [sct] Missing value */
+    ptr_unn mss_val; /* [sct] Missing value */
 
     /* Get group ID */
     (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
@@ -4281,7 +4281,6 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 
 } /* nco_prc_cmn_nm() */
 
-
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
 (const int nbr_var_prc,                /* I [nbr] Number of processed variables */
@@ -4356,7 +4355,6 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
   return;
 
 } /* end nco_var_typ_trv() */
-
 
 var_sct *                             /* O [sct] Variable structure */
 nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
@@ -4518,7 +4516,6 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   } /* Loop dimensions */
 
-
   /* Type in memory begins as same type as on disk */
   /* Type of variable in RAM */
   var->type=var->typ_dsk; 
@@ -4546,7 +4543,6 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     if(idx_dmn != var->nbr_dim) break;
   } /* Check variable for duplicate dimensions */
 
-
   /* Variables associated with "bounds" and "coordinates" attributes should, in most cases, be treated as coordinates */
   if(nco_is_spc_in_bnd_att(var->nc_id,var->id)) var->is_crd_var=True;
   if(nco_is_spc_in_crd_att(var->nc_id,var->id)) var->is_crd_var=True;
@@ -4571,7 +4567,6 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   var->undefined=False; /* [flg] Used by ncap parser */
   return var;
 } /* nco_var_fll_trv() */
-
 
 int                                 /* O [id] Output file variable ID */
 nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output file */
@@ -4691,7 +4686,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     (void)fprintf(stdout,"\n");
   }
 
-
   /* Does user want a record dimension to receive special handling? */
   if(rec_dmn_nm_cst){
     /* Create (and later free()) local copy to preserve const-ness of passed value
@@ -4707,7 +4701,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     } /* strncmp() */    
   } /* !rec_dmn_nm_cst */
 
-
   /* If variable has a re-defined record dimension. NOTE: this implies passing NULL as User-specified record dimension parameter  */
   if (var_trv->rec_dmn_nm_out){
 
@@ -4717,7 +4710,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     rec_dmn_nm=(char *)strdup(var_trv->rec_dmn_nm_out);
 
   } /* If variable has a re-defined record dimension */
-
 
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
@@ -4806,7 +4798,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         (void)fprintf(stdout,"%s: DEBUG %s dimension is not visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,
         var_dim_id,dmn_trv->nm_fll);        
     } /* endif dbg */
-
 
     /* Check output group (only) dimensions  */
     (void)nco_inq_dimids(grp_dmn_out_id,&nbr_dmn_out_grp,dmn_out_id_grp,0);
@@ -5121,7 +5112,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   return var_out_id;
 } /* end nco_cpy_var_dfn_trv() */
 
-
 void
 nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
 (const int nc_id,                      /* I [id] netCDF file ID */
@@ -5233,8 +5223,6 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
   return;
 } /* end nco_dmn_lst_ass_var_trv() */
 
-
-
 void
 nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
 (int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
@@ -5291,7 +5279,6 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
   return;
 
 } /* end nco_dmn_rdr_trv() */
-
 
 void
 nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable */
@@ -5439,9 +5426,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
     } /* Loop table */
   } /* Loop processed variables */
 
-
   /* Loop to deal with REDEFINED_RECORD_DIMENSION */
-
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -5511,10 +5496,8 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
             var_trv.nm_fll);        
         } 
 
-
         /* ...get the name of the record dimension on output... stored to GTT in first loop above */
         rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;    
-
 
         /* Loop table, search for other variables that share the same dimension name */
         for(unsigned idx_var_mrk=0;idx_var_mrk<trv_tbl->nbr;idx_var_mrk++){
@@ -5558,14 +5541,12 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 
                 /* Find the index of processed variables that corresponds to the found GTT variable */
-                nco_var_prc_idx_trv(var_trv_mrk.nm_fll,var_prc_out,nbr_var_prc,&idx_var_prc_out);             
+                nco_var_prc_idx_trv(var_trv_mrk.nm_fll,var_prc_out,nbr_var_prc,&idx_var_prc_out);        
 
                 /* Transfer dimension structures to be re-ordered *from* GTT (opposite of above)  */
                 for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
                   dmn_idx_out_in[idx_dmn]=var_trv_mrk.dmn_idx_out_in[idx_dmn];
                 } 
-
-                
 
                 int dmn_out_idx;
                 /* Search all dimensions in variable for new record dimension */
@@ -5680,7 +5661,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
         } /* ...look if there is a record name to find  */
 
-
       } /* Match by full variable name  */
     } /* end loop over var_prc */
   } /* Loop table */
@@ -5700,7 +5680,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         (void)fprintf(stdout,"%s: DEBUG %s variable <%s> has re-defined record <%s>\n",prg_nm_get(),fnc_nm,
           var_trv.nm_fll,rec_dmn_nm_out);  
       }     
-
 
       /* Loop table, search for other variables that share the same dimension name */
       for(unsigned idx_var_mrk=0;idx_var_mrk<trv_tbl->nbr;idx_var_mrk++){
@@ -5753,7 +5732,6 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
 } /* nco_var_dmn_rdr_mtd_trv() */
 
-
 nco_bool                              /* [flg] Name was found */
 nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable that matches full name */
 (const char * const var_nm_fll,       /* I [nbr] Full name of variable */
@@ -5775,12 +5753,10 @@ nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable 
     } /* Match by full variable name  */
   }  /* Loop processed variables  */
 
-
   assert(0);
   return False;
 
 } /* nco_var_prc_idx_trv() */
-
 
 nco_bool                              /* O [flg] Re-define dimension ordering */
 nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
@@ -5823,7 +5799,6 @@ nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
   return False;
 
 } /* nco_had_rdf_dmn_trv() */
-
 
 void
 nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of variable values */
@@ -5895,7 +5870,6 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
             var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,idx_var_dmn,trv_tbl->lst[idx_var].dmn_idx_out_in[idx_var_dmn]);        
         } 
       } /* Loop variable dimensions */
-
 
       /* Initialize variables to reduce indirection */
       /* NB: Number of input and output dimensions are equal for pure re-orders
@@ -6031,7 +6005,6 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
 } /* nco_var_dmn_rdr_val_trv() */
 
-
 nm_id_sct *                         /* O [sct] Dimension list */
 nco_dmn_lst_mk_trv                  /* [fnc] Attach dimension IDs to dimension list */
 (char **dmn_lst_in,                 /* I [sng] User-specified list of dimension names */
@@ -6060,10 +6033,7 @@ nco_dmn_lst_mk_trv                  /* [fnc] Attach dimension IDs to dimension l
     } /* Loop unique dimension list */
   }  /* Loop input dimension name list */
 
-
-
   dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn_out*sizeof(nm_id_sct));
-
 
   /* Loop input dimension name list */
   for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn;idx_dmn_in++){
@@ -6087,10 +6057,8 @@ nco_dmn_lst_mk_trv                  /* [fnc] Attach dimension IDs to dimension l
     } /* Loop unique dimension list */
   }  /* Loop input dimension name list */
 
-
   return dmn_lst;
 } /* end nco_dmn_lst_mk_trv() */
-
 
 nco_bool                               /* O [flg] True if variable has dimensions in scope of GTT dimension */
 nco_var_dmn_scp                        /* [fnc] Variable has dimensions in scope of GTT dimension */
@@ -6118,8 +6086,6 @@ nco_var_dmn_scp                        /* [fnc] Variable has dimensions in scope
   return False;
 } /* nco_crd_var_dmn_scp() */
 
-
-
 nm_id_sct *                         /* O [sct] Dimension list */
 nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dimension names */
 (char **dmn_lst_in,                 /* I [sng] User-specified list of dimension names */
@@ -6136,7 +6102,6 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
   int nbr_dmn_out=0;
   int idx_dmn_out=0;
 
-
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s Input dimension names",prg_nm_get(),fnc_nm);
     /* Loop input dimension name list */
@@ -6147,7 +6112,6 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
     } /* Loop input dimension name list */
     (void)fprintf(stdout,"\n");
   } 
-
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,trv_tbl);
@@ -6240,9 +6204,8 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
                   idx_dmn_out++;
                   /* Increment number of output dimensions */
                   nbr_dmn_out++;
-
-              
-                } /* ID not found */
+         
+		} /* ID not found */
 
               } /* ! First item */
             } /* Is variable in scope of dimension ? */
@@ -6265,7 +6228,6 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
 
 } /* nco_lst_dmn_mk_trv() */
 
-
 void
 nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
 (const int nc_id,                     /* I [id] Input netCDF file ID */
@@ -6276,10 +6238,8 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
 
-
   /* Loop all attribure structure entries */
   for(int idx_aed=0;idx_aed<nbr_aed;idx_aed++){
-
 
     /* Variable name is blank so edit same attribute for all variables ... */
 
@@ -6305,7 +6265,6 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
 
     else if(strpbrk(aed_lst[idx_aed].var_nm,".*^$\\[]()<>+?|{}")){
 
-
       /* Loop table */
       for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
         trv_sct var_trv=trv_tbl->lst[uidx];
@@ -6320,14 +6279,11 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
         } /* Filter variables */
       } /* Loop table */
 
-
       /* End Variable name contains a "regular expression" (rx) ... */
-
 
       /* Variable name indicates a global attribute ... */
 
     }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
-
 
        /* Loop table */
       for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -6343,14 +6299,10 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
         } /* Filter variables */
       } /* Loop table */
 
-
-
       /* End Variable name indicates a global attribute ... */
 
     }else{ 
-
       /* Variable is a normal variable ... */
-
 
       /* Loop table */
       for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -6369,13 +6321,9 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
     }
     /* End Variable is a normal variable ... */
 
-
   } /* Loop all attribure structure entries */
 
-
 } /* nco_aed_prc_trv() */
-
-
 
 var_sct *                             /* O [sct] Variable */  
 nco_var_get_trv                       /* [fnc] Fill-in variable structure for a variable named "var_nm" */
@@ -6438,7 +6386,6 @@ nco_var_get_trv                       /* [fnc] Fill-in variable structure for a 
 
 } /* nco_var_trv() */
 
-
 void
 nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabed size */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
@@ -6464,7 +6411,6 @@ nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hy
 
     } /* If object is an extracted variable... */
   } /* Loop table */
-
 
 } /* end nco_dmn_trv_msa_tbl() */
 
@@ -6544,7 +6490,6 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
     } /* strncmp() */    
   } /* !rec_dmn_nm_cst */
 
-
   /* If variable has a re-defined record dimension. NOTE: this implies passing NULL as User-specified record dimension parameter  */
   if (var_trv->rec_dmn_nm_out){
 
@@ -6554,7 +6499,6 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
     rec_dmn_nm=(char *)strdup(var_trv->rec_dmn_nm_out);
 
   } /* If variable has a re-defined record dimension */
-
 
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
@@ -6590,8 +6534,6 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
     /* Dimension needs to be defined in *this* group? Assume yes... */
     NEED_TO_DEFINE_DIM=True;   
 
-    
-
     /* Dimension ID for variable, used to get dimension object in input list  */
     var_dim_id=dmn_in_id_var[idx_dmn];
 
@@ -6603,7 +6545,6 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
     /* Define dimension in output file if necessary */
     if (NEED_TO_DEFINE_DIM == True){
-
 
       /* Here begins a complex tree to decide a simple, binary output:
       Will current input dimension be defined as an output record dimension or as a fixed dimension?
@@ -6687,10 +6628,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
     } /* end if dimension is not yet defined */
   } /* End of the very important dimension loop */
 
-
 } /* end nco_dmn_msa_tbl() */
-
-
 
 void                          
 nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions information into GTT  */

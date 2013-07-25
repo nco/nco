@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.323 2013-07-24 18:55:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.324 2013-07-25 00:39:18 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -156,8 +156,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.323 2013-07-24 18:55:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.323 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.324 2013-07-25 00:39:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.324 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -923,7 +923,7 @@ main(int argc,char **argv)
 #endif /* _OPENMP */
 	    if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
 	    /* Perform MD5 digest of input and output data if requested */
-	    if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
+	    if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
 	  } /* end if ncrcat */
 	    
 	  /* Warn if record coordinate, if any, is not monotonic */

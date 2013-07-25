@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.342 2013-07-24 21:55:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.343 2013-07-25 00:39:18 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -67,7 +67,6 @@
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-
 int 
 main(int argc,char **argv)
 {
@@ -120,8 +119,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.342 2013-07-24 21:55:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.342 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.343 2013-07-25 00:39:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.343 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -674,13 +673,8 @@ main(int argc,char **argv)
 
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
-  /* If re-ordering */
-  if(IS_REORDER){
-
-    /* Determine and set new dimensionality in metadata of each re-ordered variable */
-    (void)nco_var_dmn_rdr_mtd_trv(trv_tbl,nbr_var_prc,var_prc,var_prc_out,nbr_var_fix,var_fix,dmn_rdr,dmn_rdr_nbr,dmn_rvr_rdr);            
-
-  } /* IS_REORDER */
+  /* Determine and set new dimensionality in metadata of each re-ordered variable */
+  if(IS_REORDER) (void)nco_var_dmn_rdr_mtd_trv(trv_tbl,nbr_var_prc,var_prc,var_prc_out,nbr_var_fix,var_fix,dmn_rdr,dmn_rdr_nbr,dmn_rvr_rdr);            
 
   /* Alter metadata for variables that will be packed */
   if(nco_pck_plc != nco_pck_plc_nil){
@@ -698,14 +692,13 @@ main(int argc,char **argv)
       } /* endif packing */
     } /* end loop over var_prc */
 
-    /* Transfer variable type to table. NOTE: Using processed variables set with the new type. MUST be done before definition  */
+    /* Transfer variable type to table. NOTE: Using processed variables set with new type. MUST be done before definition */
     (void)nco_var_typ_trv(nbr_var_prc,var_prc_out,trv_tbl);    
 
   } /* nco_pck_plc == nco_pck_plc_nil */
 
   /* Define dimensions, extracted groups, variables, and attributes in output file. NOTE. record name is NULL */
   (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,True,True,(char *)NULL,trv_tbl); 
-
 
   /* Copy global attributes */
 #ifdef COPY_ROOT_GLOBAL_ATTRIBUTES
@@ -755,7 +748,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl,trv_tbl,IS_REORDER)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,IS_REORDER)
 #endif /* !_OPENMP */
 
     /* Process all variables in current file */
@@ -894,7 +887,10 @@ main(int argc,char **argv)
           } /* endif variable is newly packed by this operator */
         } /* !nco_pck_plc_alw */
       } /* end loop over var_prc */
-      (void)nco_enddef(out_id);
+
+      /* Take output file out of define mode */
+      if(hdr_pad == 0UL) (void)nco_enddef(out_id); else (void)nco__enddef(out_id,hdr_pad);
+
     } /* nco_pck_plc == nco_pck_plc_nil || nco_pck_plc == nco_pck_plc_upk */
 
     /* Close input netCDF file */
@@ -907,8 +903,6 @@ main(int argc,char **argv)
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
-
-
 
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
@@ -988,5 +982,3 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
-

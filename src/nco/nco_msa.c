@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.215 2013-07-24 18:55:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.216 2013-07-25 00:39:18 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1227,7 +1227,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
 
     /* Perform MD5 digest of input and output data if requested */
-    if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
+    if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
 
     /* Write unformatted binary data */
     if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
@@ -1273,7 +1273,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ);
 
   /* Perform MD5 digest of input and output data if requested */
-  if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
+  if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
 
   /* Write unformatted binary data */
   if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);

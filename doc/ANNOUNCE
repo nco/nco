@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.588 2013-07-24 15:42:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.589 2013-07-25 00:39:18 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.3 are ready. 
 
@@ -34,7 +34,7 @@ A. ncrename will rename groups when compiled against the latest
    This is much faster than using GPE and ncks to rename groups. 
    Note that the location of the new group is the same as the old.
    To move groups around, one still needs to use GPE.
-   ncrename -g g1,obama in.nc out.nc
+   ncrename -g g1,obama in_grp.nc out.nc
    http://nco.sf.net/nco.html#ncrename
    http://nco.sf.net/nco.html#gpe
 
@@ -45,7 +45,8 @@ A. ncatted supports attributes of type NC_STRING.
 
 A. ncks will write the MD5 digest of each variable as an NC_CHAR
    attribute named MD5. Activate it with the --md5_wrt_att
-   or --md5_write_attribute long options. 
+   or --md5_write_attribute long options. Currently works only
+   when writing netCDF4 files.
    ncks -O -C --md5_wrt -v md5_.? ~/nco/data/in.nc ~/out.nc
    http://nco.sf.net/nco.html#md5
 

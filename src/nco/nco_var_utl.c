@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.344 2013-07-24 18:55:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.345 2013-07-25 00:39:18 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -90,7 +90,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     } /* end if var_sz */
   } /* end if variable is an array */
   /* Perform MD5 digest of input and output data if requested */
-  if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
+  if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_srt,dmn_cnt,void_ptr);
   /* Write unformatted binary data */
   if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
 
@@ -425,7 +425,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Get variable */
       if(var_sz > 0) nco_get_vara(var_lst[var_idx]->grp_id_in,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_typ);
       /* Perform MD5 digest of input and output data if requested */
-      if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),var_lst[var_idx]->grp_id_out,dmn_srt,dmn_cnt,void_ptr);
+      if(md5_flg.MD5_DIGEST) (void)nco_md5_chk(md5_flg,var_lst[var_idx]->nm,var_sz*nco_typ_lng(var_typ),var_lst[var_idx]->grp_id_out,dmn_srt,dmn_cnt,void_ptr);
       /* Write unformatted binary data */
       if(fp_bnr) nco_bnr_wrt(fp_bnr,var_lst[var_idx]->nm,var_sz,var_typ,void_ptr);
       /* Free space that held dimension IDs */

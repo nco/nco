@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.374 2013-07-24 15:42:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.375 2013-07-25 00:39:18 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -609,6 +609,7 @@ extern "C" {
     char *fl_in; /* [sng] Input filename */
     char *fl_stb; /* [sng] Input filename stub */
     gpe_sct *gpe; /* I [sng] GPE structure */
+    md5_sct md5_flg; /* [flg] MD5 configuration */
     nco_bool cdl; /* [flg] Print valid CDL */
     nco_bool xml; /* [flg] Print valid XML (NcML) */
     nco_bool trd; /* [flg] Print traditional NCO format */
@@ -628,7 +629,6 @@ extern "C" {
     nco_bool ALPHA_BY_STUB_GROUP; /* [flg] Print alphabetically by stub group */
     nco_bool ALPHA_BY_STUB_OBJECT; /* [flg] Print alphabetically by stub object */
     nco_bool FORTRAN_IDX_CNV; /* Option F */
-    nco_bool MD5_DIGEST; /* [flg] Perform MD5 digests */
     nco_bool PRN_DMN_IDX_CRD_VAL; /* [flg] Print leading dimension/coordinate indices/values Option Q */
     nco_bool PRN_DMN_UNITS; /* [flg] Print dimensional units Option u */
     nco_bool PRN_DMN_VAR_NM; /* [flg] Print dimension/variable names */
