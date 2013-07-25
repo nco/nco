@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.48 2013-07-17 00:07:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.49 2013-07-25 05:57:11 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic, MSVC macros */
 
@@ -105,10 +105,11 @@ trunc /* [fnc] Truncate x to nearest integer not larger in absolute value */
 (double x); /* I [frc] Value to truncate */
 #endif /* !NEED_TRUNC */
 
-#if !defined(HPUX) && !defined(__INTEL_COMPILER)
+#if !defined(HPUX) && !defined(__INTEL_COMPILER) && !defined(LINUXAMD64)
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX
      20040708: HP-UX does not like these 
-     20090223: Intel compilers version 11.x complains about these */
+     20090223: Intel compilers version 11.x complains about these
+     20130724: Yellowstone chokes on these when compiling ncap2 with g++ */
 
   /* Basic math: acos, asin, atan, atan2, cos, exp, fabs, log, log10, pow, sin, sqrt, tan */
   float acosf(float);
@@ -149,7 +150,7 @@ trunc /* [fnc] Truncate x to nearest integer not larger in absolute value */
   float roundf(float);
   float truncf(float);
 
-#endif /* HPUX */
+#endif /* !defined(HPUX) && !defined(__INTEL_COMPILER) && !defined(LINUXAMD64) */
 
 double /* O [frc] Random fraction in [0,1] */
 rnd_nbr /* [fnc] Generate random fraction in [0,1] */
