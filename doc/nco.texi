@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.815 2013-07-26 23:16:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.816 2013-07-26 23:47:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -107,7 +107,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.4
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 24 July 2013
+@set update-date 26 July 2013
 @set update-month July 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -4571,6 +4571,9 @@ ncks -d lon,10.,15. -d lon,15.,20. -d lon,80.,90. in.nc out.nc
 @noindent
 Any number of hyperslabs specifications may be chained together
 to specify the multislab.
+@acronym{MSA} creates an output dimension equal in size to the sum of
+the sizes of the multislabs.
+This can be used to extend and or pad coordinate grids.
 
 @cindex stride
 Users may specify redundant ranges of indices in a multislab, e.g., 
