@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.348 2013-07-25 03:39:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.349 2013-07-26 08:11:39 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -92,6 +92,7 @@ main(int argc,char **argv)
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */
   nco_bool MUST_CONFORM=False; /* [flg] Must nco_var_cnf_dmn() find truly conforming variables? */
@@ -108,7 +109,7 @@ main(int argc,char **argv)
   nco_bool flg_opt_a=False; /* [flg] Option a was invoked */
   nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
+  
 
   char *aux_arg[NC_MAX_DIMS];
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
@@ -135,8 +136,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.348 2013-07-25 03:39:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.348 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.349 2013-07-26 08:11:39 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.349 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -164,8 +165,6 @@ main(int argc,char **argv)
 
   int *in_id_arr;
 
-  int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
-
   int aux_nbr=0; /* [nbr] Number of auxiliary coordinate hyperslabs specified */
   int abb_arg_nbr=0;
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
@@ -178,6 +177,7 @@ main(int argc,char **argv)
   int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
+  int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int idx=int_CEWI;
   int idx_avg;
   int in_id;  
