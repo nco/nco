@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.349 2013-07-26 08:11:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.350 2013-07-26 23:16:59 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -94,6 +94,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */
   nco_bool MUST_CONFORM=False; /* [flg] Must nco_var_cnf_dmn() find truly conforming variables? */
   nco_bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */
@@ -106,11 +107,8 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
-  nco_bool flg_opt_a=False; /* [flg] Option a was invoked */
   nco_bool flg_rdd=False; /* [flg] Retain degenerate dimensions */
-  nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   
-
   char *aux_arg[NC_MAX_DIMS];
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
@@ -136,8 +134,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.349 2013-07-26 08:11:39 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.349 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.350 2013-07-26 23:16:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.350 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -411,14 +409,13 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Dimensions over which to average hyperslab */
-      if(flg_opt_a){
+      if(dmn_avg_lst_in){
         (void)fprintf(fp_stdout,"%s: ERROR Option -a appears more than once\n",prg_nm);
         (void)fprintf(fp_stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",prg_nm);
         (void)nco_usg_prn();
         nco_exit(EXIT_FAILURE);
       } /* endif */
       dmn_avg_lst_in=nco_lst_prs_2D(optarg,",",&dmn_avg_nbr);
-      flg_opt_a=True;
       break;
     case 'B': /* Mask string to be parsed */
       msk_cnd_sng=(char *)strdup(optarg);
@@ -612,9 +609,6 @@ main(int argc,char **argv)
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
   (void)nco_inq_format(in_id,&fl_in_fmt);
-
-
-
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);

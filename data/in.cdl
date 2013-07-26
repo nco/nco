@@ -55,12 +55,12 @@
 
 netcdf in {
 dimensions:
-	dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,time=unlimited;
+  dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,Lon=4,Lat=2,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.169 2013-07-24 05:02:27 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.170 2013-07-26 23:16:59 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -147,6 +147,22 @@ variables:
 	float lon(lon);
 	lon:long_name = "Longitude (typically midpoints)";
 	lon:units = "degrees_east";
+
+	double Lon(Lon);
+	Lon:long_name = "Longitude";
+	Lon:units = "degrees";
+	Lon:purpose = "Longitude coordinate originally stored as -180 to 180";
+	Lon:notes = "Longitude = [-180.0,180.0) is not CF-compliant, yet is common";
+
+	double LatLon(Lat,Lon);
+	LatLon:long_name = "2D variable originally stored on -180 to 180 longitude grid";
+	LatLon:units = "fraction";
+	LatLon:purpose = "Demonstrate remapping of [-180,180) to [0,360) longitude-grid data";
+
+	double Lat(Lat);
+	Lat:long_name = "Latitude";
+	Lat:units = "degrees_north";
+	Lat:purpose = "Latitude paired with Longitude coordinate originally stored as -180 to 180.";
 
 	double lond(lon);
 	lond:long_name = "Longitude (typically midpoints), double precision";
@@ -1054,6 +1070,9 @@ data:
 	lev_var=100.,500.,1000.;
 	lev_wgt=10,2,1;
 	lon=0,90,180,270;
+	Lon=-180,-90,0,90;
+	Lat=-45,45;
+	LatLon=0,1,2,3,4,5,6,7;
 	lond=0,90,180,270;
 	lonf=0,90,180,270;
 	lon_grd=-45,45,135,225,315;

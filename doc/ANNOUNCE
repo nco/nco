@@ -1,26 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.591 2013-07-25 05:26:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.592 2013-07-26 23:16:59 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-The current release brings full group support to ncwa and ncrename. 
-Now seven operators fully support group hierarchies: ncbo, ncecat,
-ncflint, ncks, ncpdq, ncrename, and ncwa.
+The current release brings group support to ncra, ncea, and ncrcat. 
+Now ten operators fully support group hierarchies: ncbo, ncea, ncecat, 
+ncflint, ncks, ncpdq, ncra, ncrcat, ncrename, and ncwa. The operators
+that do no yet fully support group hierarchies are ncatted and ncap2.
 
-ncks has a new, highly-configurable printing mode which displays data 
-from files with groups with friendlier indentation and annotation,
-including in CDL and XML modes. The new formats involve many choices
-for indentation and spacing. We would be happy to learn what format
-changes would make analyzing your data easier. The old "traditional"
-ncks printing format remains the default, though this may change in 
-the future. Please let us know if you find any substantive
-(non-whitespace) differences outputting CDL from ncdump and ncks.
-
-Work on NCO 4.3.4 is underway and includes improved netCDF4 support
-for more NCO operators (ncatted, ncra, ncea, ncrcat) and improved
-support for HDF4 files.
+Work on NCO 4.3.5 is underway and includes improved netCDF4 support
+for more NCO operators (ncatted) and improved support for HDF4 files.
 
 Enjoy,
 Charlie
@@ -29,69 +20,31 @@ Charlie
 
 NEW FEATURES:
 
-A. ncwa now supports groups, Group Path Editing (GPE) and list unions,
-   the same options supported by ncbo, ncecat, ncflint, ncks, and ncpdq.   
+A. ncra, ncea, and ncrcat now supports groups, Group Path Editing
+   (GPE) and list unions, the same options already supported by ncbo,
+   ncecat, ncflint, ncks, ncpdq, and ncwa.  
    Features are controlled by -g, -G and --union, respectively.
-   ncwa -a lon -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
-   http://nco.sf.net/nco.html#ncwa
+   ncra -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
+   ncea -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
+   ncrcat -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
+   http://nco.sf.net/nco.html#ncea
+   http://nco.sf.net/nco.html#ncra
+   http://nco.sf.net/nco.html#ncrcat
+   http://nco.sf.net/nco.html#grp
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
 
-B. ncrename will rename groups when compiled (with
-   -DNC_HAVE_RENAME_GRP) against the latest version (~20130720) of
-   libnetcdf.a (which will eventually be released as version 4.3.1). 
-   This is much faster than using GPE and ncks to rename groups. 
-   Note that the location of the new group is the same as the old.
-   To move groups around, one still needs to use GPE.
-   ncrename -g g1,obama in_grp.nc out.nc
-   http://nco.sf.net/nco.html#ncrename
-   http://nco.sf.net/nco.html#gpe
-
-C. ncks will write the MD5 digest of each variable as an NC_CHAR
-   attribute named MD5. Activate this with the --md5_wrt or
-   --md5_write_attribute long options.  
-   ncks -O -C --md5_wrt -v md5_.? ~/nco/data/in.nc ~/out.nc
-   http://nco.sf.net/nco.html#md5
-
-D. ncks -5 supports a new, group-friendly printing format.
-   This format uses indentation to indicate group level.
-   Groups are arranged alphabetically, and variable metadata and data  
-   are printed alphabetically within each group. Otherwise the
-   information printed is in "traditional" ncks format (but see --cdl
-   switch below for another possibility). Feedback welcome!
-   ncks -5 ~/nco/data/in_grp.nc
-   http://nco.sf.net/nco.html#ncks
-
-E. ncks --cdl prints results in CDL format. CDL is the human-readable
-   lingua franca of netCDF imported by ncgen and exported by ncdump. 
-   "Traditional" ncks printing was designed for flat netCDF3 files,
-   and for examining hyperslabs of data values. CDL printing is
-   friendlier for examining group hierarchies, and the CDL output 
-   is directly usable by ncgen. Moreover, ncks outputs the minimal  
-   CDL that matches the user's request, and CDL mode plays well with
-   other ncks options like hyperslabs: 
-   ncks --cdl ~/nco/data/in_grp.nc
-   ncks --cdl ~/nco/data/in.nc
-   ncks --cdl -v v1 ~/nco/data/in_grp.nc
-   ncks --cdl -v three_dmn_rec_var -d lon,2 ~/nco/data/in_grp.nc
-   http://nco.sf.net/nco.html#cdl
-
-F. ncks --xml prints metadata in NcML XML format.
-   NcML is also exported by ncdump -x. 
-   ncks outputs the minimal NcML that matches the user's request.
-   ncks --xml ~/nco/data/in_grp.nc
-   ncks --xml ~/nco/data/in.nc
-   ncks --xml -v v1 ~/nco/data/in_grp.nc
-   http://nco.sf.net/nco.html#xml
+A. Multi-slab Algorithm user-ordering with --msa is now documented.
+   This eases data re-ordering. A fully documented example uses MSA to
+   rotate from a [-180,180) to a [0,360) longitude grid in two steps:
+   ncks -O --msa -d Lon,0.,180. -d Lon,-180.,-1.0 in.nc out.nc
+   ncap2 -O -s 'where(Lon < 0) Lon=Lon+360' out.nc out.nc
+   http://nco.sf.net/nco.html#msa
+   http://nco.sf.net/nco.html#msa_usr_rdr
 
 BUG FIXES:
 
-A. Fixed potential ncpdq bug packing variables in subgroups.
-
-B. ncatted supports attributes of type NC_STRING.
-   Earlier versions of ncatted fail when handling NC_STRINGs. 
-   ncatted -a string_att,att_var,c,sng,"string, cheese" in.nc out.nc
-   http://nco.sf.net/nco.html#ncatted
+A. fxm.
 
 KNOWN BUGS NOT YET FIXED:
 

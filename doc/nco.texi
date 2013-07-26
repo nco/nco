@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.814 2013-07-25 05:26:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.815 2013-07-26 23:16:59 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4520,6 +4520,9 @@ records.
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
+@cindex @code{--msa}
+@cindex @code{--msa_usr_rdr}
+@cindex @code{--msa_user_order}
 @cartouche
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
@@ -4528,17 +4531,24 @@ Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
 Long options: 
 @samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]},@* 
 @samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
+@samp{--msa_usr_rdr}, @samp{--msa_user_order}@*
 @end cartouche
 A @w{multislab} is a union of one or more hyperslabs.
 One defines multislabs by chaining together hyperslab commands, i.e., 
 @kbd{-d} options (@pxref{Hyperslabs}).
 Support for specifying a @dfn{multi-hyperslab} or @dfn{multislab} for
 any variable was first added to @command{ncks} in late 2002.
-The other operators received @acronym{MSA} capabilities in April 2008.
-Sometimes multi-slabbing is referred to by the acronym @acronym{MSA},
+The other operators received these capabilities in April 2008.
+Multi-slabbing is often referred to by the acronym @acronym{MSA},
 which stands for ``Multi-Slabbing Algorithm''.
+As explained below, the user may additionally request that the
+multislabs be returned in the user-specified order, rather than the
+on-disk storage order. 
+Although @acronym{MSA} user-ordering has been available in all operators
+since 2008, most users were unaware of it since the documentation
+(below, and in the man pages) was not written until July 2013.
 
-Multislabs overcome some restraints that limit hyperslabs.
+Multislabs overcome many restraints that limit simple hyperslabs.
 @w{A single} @kbd{-d} option can only specify a contiguous and/or
 a regularly spaced multi-dimensional data array.
 Multislabs are constructed from multiple @kbd{-d} options and may
@@ -4590,7 +4600,6 @@ algorithm will obtain the intended values.
 Specifying redundant ranges is not encouraged, but may be useful on
 occasion and will not result in unintended consequences.
 
-@w{A final} example shows the real power of multislabs.
 Suppose the @var{Q} variable contains three dimensional arrays of
 distinct chemical constituents in no particular order.
 We are interested in the NOy species in a certain geographic range. 
@@ -4605,6 +4614,94 @@ Multislabs are powerful because they may be specified for every
 dimension at the same time.
 Thus multislabs obsolete the need to execute multiple @command{ncks}
 commands to gather the desired range of data.
+
+@html
+<a name="msa_usr_rdr"></a> <!-- http://nco.sf.net/nco.html#msa_usr_rdr -->
+@end html
+The @acronym{MSA} user-order switch @samp{--msa_usr_rdr} (or
+@samp{--msa_user_order}, both of which shorten to @samp{--msa}) 
+requests that the multislabs be output in the user-specified
+order from the command-line, rather than in the input-file on-disk
+storage order.  
+This allows the user to perform complex data re-ordering in one
+operation that would otherwise require cumbersome steps of
+hyperslabbing, concatenating, and permuting. 
+Consider the recent example of a user who needed to convert datasets
+stored with the longitude coordinate @code{Lon} ranging from
+[@minus{}180,180) to datasets that follow the [0,360) convention.
+@example
+% ncks -H -v Lon in.nc
+Lon[0]=-180
+Lon[1]=-90
+Lon[2]=0
+Lon[3]=90
+@end example
+@noindent
+Although simple in theory, this task requires both mathematics to
+change the numerical value of the longitude coordinate, data
+hyperslabbing to split the input on-disk arrays at Greenwich, and data
+re-ordering within to stitch the western hemisphere onto the eastern
+hemisphere at the date-line.
+The @samp{--msa} user-order switch overrides the default that data are
+output in the same order in which they are stored on-disk in the input
+file, and instead stores them in the same order as the multi-slabs are
+given to the command line.
+This default is intuitive and is not important in most uses.
+However, the @acronym{MSA} user-order switch allows users to meet
+their output order needs by specifying multi-slabs in a certain order.
+Compare the results of default ordering to user-ordering for longitude:
+@example
+% ncks -O -H       -v Lon -d Lon,0.,180. -d Lon,-180.,-1.0 in.nc
+Lon[0]=-180 
+Lon[1]=-90 
+Lon[2]=0 
+Lon[3]=90 
+% ncks -O -H --msa -v Lon -d Lon,0.,180. -d Lon,-180.,-1.0 in.nc
+Lon[0]=0 
+Lon[1]=90 
+Lon[2]=-180 
+Lon[3]=-90 
+@end example
+@noindent
+The two multi-slabs are the same but they can be presented to screen,
+or to an output file, in either order. 
+The second example shows how to place the western hemisphere after the
+eastern hemisphere, although they are stored in the opposite order in
+the input file. 
+
+With this background, one sees that the following commands suffice to
+rotate the input file by 180 degrees longitude:
+@example
+% ncks -O -v LatLon --msa -d Lon,0.,180. -d Lon,-180.,-1.0 in.nc out.nc
+% ncap2 -O -s 'where(Lon < 0) Lon=Lon+360' out.nc out.nc
+% ncks -C -H -v LatLon ~/nco/data/in.nc
+Lat[0]=-45 Lon[0]=-180 LatLon[0]=0 
+Lat[0]=-45 Lon[1]=-90 LatLon[1]=1 
+Lat[0]=-45 Lon[2]=0 LatLon[2]=2 
+Lat[0]=-45 Lon[3]=90 LatLon[3]=3 
+Lat[1]=45 Lon[0]=-180 LatLon[4]=4 
+Lat[1]=45 Lon[1]=-90 LatLon[5]=5 
+Lat[1]=45 Lon[2]=0 LatLon[6]=6 
+Lat[1]=45 Lon[3]=90 LatLon[7]=7 
+% ncks -C -H -v LatLon ~/out.nc
+Lat[0]=-45 Lon[0]=0 LatLon[0]=2 
+Lat[0]=-45 Lon[1]=90 LatLon[1]=3 
+Lat[0]=-45 Lon[2]=180 LatLon[2]=0 
+Lat[0]=-45 Lon[3]=270 LatLon[3]=1 
+Lat[1]=45 Lon[0]=0 LatLon[4]=6 
+Lat[1]=45 Lon[1]=90 LatLon[5]=7 
+Lat[1]=45 Lon[2]=180 LatLon[6]=4 
+Lat[1]=45 Lon[3]=270 LatLon[7]=5 
+@end example
+@noindent
+There are other workable, valid methods to accomplish this rotation, yet
+none are simpler nor more efficient than utilizing @acronym{MSA}
+user-ordering. 
+Some final comments on applying this algorithm:
+Be careful to specify hemispheres that do not overlap, e.g., by
+inadvertently specifying coordinate ranges that both include Greenwich. 
+Some users will find using index-based rather than coordinate-based
+hyperslabs makes this clearer.
 
 @html
 <a name="wrp"></a> <!-- http://nco.sf.net/nco.html#wrp -->
