@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.218 2013-07-25 04:43:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.219 2013-07-26 07:58:35 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -55,19 +55,44 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Careful! Some valid format strings are subsets of other valid format strings */
+#ifdef _MSC_VER
+  if(strstr("classic",fl_fmt_sng) && !strstr(fl_fmt_sng,"netcdf4")){
+#else
   if(strcasestr("classic",fl_fmt_sng) && !strcasestr(fl_fmt_sng,"netcdf4")){
+#endif
     /* If "classic" contains string and string does not contain "netcdf4" */
     *fl_fmt_enm=NC_FORMAT_CLASSIC;
+
+#ifdef _MSC_VER
+  }else if(strstr("64bit",fl_fmt_sng)){
+#else
   }else if(strcasestr("64bit",fl_fmt_sng)){
+#endif
+
     /* If "64bit" contains string */
     *fl_fmt_enm=NC_FORMAT_64BIT;
+#ifdef _MSC_VER
+ }else if(strstr(fl_fmt_sng,"netcdf4")){
+#else
   }else if(strcasestr(fl_fmt_sng,"netcdf4")){
+#endif
     /* If string contains "netcdf4" */
 #ifdef ENABLE_NETCDF4
+
+#ifdef _MSC_VER
+    if(strstr("netcdf4",fl_fmt_sng)){
+#else
     if(strcasestr("netcdf4",fl_fmt_sng)){
+#endif
+
       /* If "netcdf4" contains string */
       *fl_fmt_enm=NC_FORMAT_NETCDF4;
+
+#ifdef _MSC_VER
+    }else if(strstr("netcdf4_classic",fl_fmt_sng)){
+#else
     }else if(strcasestr("netcdf4_classic",fl_fmt_sng)){
+#endif
       /* If "netcdf4_classic" contains string */
       *fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
     } /* endif NETCDF4 */
@@ -75,7 +100,13 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
     (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64bit\" options.\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_NETCDF4 */
+
+#ifdef _MSC_VER
+  }else if(strstr("znetcdf",fl_fmt_sng)){
+#else
   }else if(strcasestr("znetcdf",fl_fmt_sng)){
+#endif
+
 #ifdef ENABLE_ZNETCDF
     /* If "znetcdf" contains string */
     *fl_fmt_enm=NC_COMPRESS;

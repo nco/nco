@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.51 2013-07-25 19:45:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.52 2013-07-26 07:58:35 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -14,14 +14,30 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 (const char * const sng_1, /* I [sng] First string */
  const char * const sng_2) /* I [sng] Second string */
 {
+  /* Copy of (const) input strings */
+  char *sng_1_c=strdup(sng_1);
+  char *sng_2_c=strdup(sng_2);
+
   char chr_1;
   char chr_2;
   while(1){
-    chr_1=tolower(*sng_1++);
-    chr_2=tolower(*sng_2++);
-    if(chr_1 < chr_2) return -1;
-    if(chr_1 > chr_2) return 1;
-    if(chr_1 == 0) return 0;
+    chr_1=tolower(*sng_1_c++);
+    chr_2=tolower(*sng_2_c++);
+    if(chr_1 < chr_2){
+      sng_1_c=(char *)nco_free(sng_1_c);
+      sng_2_c=(char *)nco_free(sng_2_c);
+      return -1;
+    }
+    if(chr_1 > chr_2){
+      sng_1_c=(char *)nco_free(sng_1_c);
+      sng_2_c=(char *)nco_free(sng_2_c);
+      return 1;
+    }
+    if(chr_1 == 0){
+      sng_1_c=(char *)nco_free(sng_1_c);
+      sng_2_c=(char *)nco_free(sng_2_c);
+      return 0;
+    }
   } /* end while */
 } /* end strcasecmp() */
 #endif /* !NEED_STRCASECMP */
