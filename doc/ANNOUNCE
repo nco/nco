@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.592 2013-07-26 23:16:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.593 2013-07-27 01:47:58 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.4 are ready. 
 
@@ -9,6 +9,12 @@ The current release brings group support to ncra, ncea, and ncrcat.
 Now ten operators fully support group hierarchies: ncbo, ncea, ncecat, 
 ncflint, ncks, ncpdq, ncra, ncrcat, ncrename, and ncwa. The operators
 that do no yet fully support group hierarchies are ncatted and ncap2.
+
+Multi-slabbing was introduced to NCO by Henry Butowsky in 2002 and
+I've never really understood all its capabilities. I learned a lot
+more about MSA in the last few weeks, and have now documented it.
+Read the docs referenced below and you too may be surprised at how
+easy MSA makes complex dataset manipulation like rotating grids. 
 
 Work on NCO 4.3.5 is underway and includes improved netCDF4 support
 for more NCO operators (ncatted) and improved support for HDF4 files.
