@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.52 2013-07-26 07:58:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.53 2013-07-27 03:27:10 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -24,25 +24,19 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
     chr_1=tolower(*sng_1_c++);
     chr_2=tolower(*sng_2_c++);
     if(chr_1 < chr_2){
-      sng_1_c=(char *)nco_free(sng_1_c);
-      sng_2_c=(char *)nco_free(sng_2_c);
       return -1;
     }
     if(chr_1 > chr_2){
-      sng_1_c=(char *)nco_free(sng_1_c);
-      sng_2_c=(char *)nco_free(sng_2_c);
       return 1;
     }
     if(chr_1 == 0){
-      sng_1_c=(char *)nco_free(sng_1_c);
-      sng_2_c=(char *)nco_free(sng_2_c);
       return 0;
     }
   } /* end while */
 } /* end strcasecmp() */
 #endif /* !NEED_STRCASECMP */
 
-#ifndef __cplusplus
+
 #ifdef NEED_STRCASESTR
 char * /* O [sng] Pointer to sng_2 in sng_1 */
 strcasestr /* [fnc] Lexicographical case-insensitive string search */
@@ -54,12 +48,6 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
   char *hys_ptr; /* Haystack pointer */
   char *startn=0;
   char *np=0;
-  /* char *sng_1_dpl;
-  char *sng_2_dpl;
-  sng_1_dpl=(char *)strdup(sng_1);
-  sng_2_dpl=(char *)strdup(sng_2);
-  sng_1_dpl=(char *)nco_free(sng_1_dpl);
-  sng_2_dpl=(char *)nco_free(sng_2_dpl); */
   /* Loop exits on NUL */
   for(hys_ptr=(char *)sng_1;*hys_ptr;hys_ptr++){
     if(np){
@@ -76,7 +64,7 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
   return 0;
 } /* end strcasestr() */
 #endif /* !NEED_STRCASESTR */
-#endif /* __cplusplus */
+
 
 #ifdef NEED_STRDUP
 char * /* [sng] Copy of input string */

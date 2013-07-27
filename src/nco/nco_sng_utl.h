@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.39 2013-07-25 19:45:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.40 2013-07-27 03:27:10 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -22,6 +22,11 @@
 #ifdef HAVE_STRINGS_H
 # include <strings.h> /* strcasecmp() */
 #endif /* !HAVE_STRINGS_H */
+
+#ifdef _MSC_VER
+#define NEED_STRCASESTR
+#endif /* !_MSC_VER */
+
 #if defined(NEED_STRCASECMP) || defined(NEED_STRCASESTR)
 # include <ctype.h> /* tolower() */
 #endif /* !NEED_STRCASECMP || !NEED_STRCASESTR */
@@ -42,15 +47,15 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
  const char * const sng_2); /* I [sng] Second string */
 #endif /* !NEED_STRCASECMP */
 
-#ifndef __cplusplus
-  /* 20130725 Apparently C++ (or at least g++) always provides strcasestr() */
+
+/* 20130725 Apparently C++ (or at least g++) always provides strcasestr() */
 # ifdef NEED_STRCASESTR
 char * /* O [sng] Pointer to sng_2 in sng_1 */
 strcasestr /* [fnc] Lexicographical case-insensitive string search */
 (const char * const sng_1, /* I [sng] First string */
  const char * const sng_2); /* I [sng] Second string */
 # endif /* !NEED_STRCASESTR */
-#endif /* __cplusplus */
+
 
 #ifdef NEED_STRDUP
 char * /* O [sng] Copy of input string */
