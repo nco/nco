@@ -1,6 +1,8 @@
 2013-07-29  Charlie Zender  <zender@uci.edu>
 
-	* Add flag to unpack data via NASA convention: output=scale_factor*(input+add_offset)
+	* Re-format CDL printing of NC_CHAR attributes that contain embedded newlines
+
+	* Add flag to unpack data via NASA convention: output=scale_factor*(input-add_offset)
 
 	* NCO 4.3.4 release procedure:
  	Changes since nco-4_3_3: fxm

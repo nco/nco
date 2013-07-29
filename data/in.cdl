@@ -58,9 +58,9 @@ dimensions:
   dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,Lon=4,Lat=2,time=unlimited;
 variables:
 	:Conventions = "CF-1.0";
-	:history = "History global attribute.\n";
+	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.170 2013-07-26 23:16:59 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.171 2013-07-29 23:34:07 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";

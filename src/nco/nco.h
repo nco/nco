@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.376 2013-07-25 03:39:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.377 2013-07-29 23:34:07 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -154,9 +154,6 @@ extern "C" {
 # endif /* !NCO_USE_FILL_VALUE */
 #endif /* NCO_MSS_VAL_SNG */
 
-  /* Call assert() in form assert(expected==) */
-#define NCO_SANITY_CHECK
-
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
   char *nco_not_mss_val_sng_get(void); /* [sng] Not missing value attribute name */
@@ -243,6 +240,9 @@ extern "C" {
      Currently used only in nco_grp_utl.c */
 #ifndef NC_EBADGRPID
 # define NC_EBADGRPID (-116)    /**< Bad group ID. */
+#endif
+#ifndef NC_ENOGRP
+# define NC_ENOGRP        (-125)    /**< No group found. */
 #endif
 
   /* Two backwards-compatibility error codes implemented in 201106 to diagnose problems with DAP
@@ -403,6 +403,13 @@ extern "C" {
     nco_obj_typ_nonatomic_var /*  2, Variable of non-atomic type (vlen, opaque, enum, compound, user-defined) */
   } nco_obj_typ; 
   
+  enum nco_upk_cnv{ /* [enm] Unpacking convention to assume */
+    /* netCDF convention: http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
+       NASA convention :  http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html */
+    netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
+    NASA_SDS /* 1 NASA HDF unpack convention: unpacked=scale_factor*(packed-add_offset)  */
+  }; /* end nco_upk_cnv */
+
   typedef enum aed{ /* [enm] Attribute editor mode */
     aed_append,
     aed_create,

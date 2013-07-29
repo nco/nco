@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.92 2013-07-29 21:22:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.93 2013-07-29 23:34:07 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -1059,7 +1059,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
 
-  nco_bool netCDF_convention_unpack_order=True; /* [flg] netCDF unpack definition: output=(scale_factor*input)+add_offset */
+  nco_bool netCDF_unpack_convention=True; /* [flg] netCDF unpack definition: output=(scale_factor*input)+add_offset */
 
   /* Return if variable in memory is not currently packed */
   if(!var->pck_ram) return var;
@@ -1075,12 +1075,15 @@ nco_var_upk /* [fnc] Unpack variable in memory */
      Hence algorithm create scalar value structures from values of scale_factor, add_offset */
 
   /* 20130729:
-     The rumors are true: 
-     Some NASA data, including NASA MODIS swaths, expect offsets to be added then scaled!
-     This requires a simple re-ordering of the netCDF-standard unpacking algorithm */
+     Rumors are true: 
+     NASA HDF data, including NASA MODIS swaths, expect offsets to be _subtracted_ then scaled!
+     http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html
+     The netCDF convention for packing is opposite:
+     http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
+     Hence unpacking NASA SDS data requires re-ordering and re-defining the netCDF-standard unpacking algorithm */
 
-  if(netCDF_convention_unpack_order){
-    /* netCDF unpack definition: output=(scale_factor*input)+add_offset */
+  if(netCDF_unpack_convention){
+    /* netCDF unpack definition: unpacked=(scale_factor*packed)+add_offset */
     
     if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
       scv_sct scl_fct_scv;
@@ -1104,8 +1107,8 @@ nco_var_upk /* [fnc] Unpack variable in memory */
       (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
     } /* endif has_add_fst */
 
-  }else{ /* !netCDF_convention_unpack_order */
-    /* 20130729: NASA HDF unpack definition: output=scale_factor*(input+add_offset) */
+  }else{ /* !netCDF_unpack_convention */
+    /* 20130729: NASA HDF unpack definition: unpacked=scale_factor*(packed-add_offset) */
 
     if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
       scv_sct add_fst_scv;
@@ -1114,8 +1117,8 @@ nco_var_upk /* [fnc] Unpack variable in memory */
       add_fst_scv=ptr_unn_2_scv(var->typ_upk,var->add_fst);
       /* Convert var to type of scale_factor for expansion */
       var=nco_var_cnf_typ(add_fst_scv.type,var);
-      /* Add add_offset to var */
-      (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
+      /* Subtract add_offset from var */
+      (void)var_scv_sub(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
     } /* endif has_add_fst */
 
     if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
@@ -1129,7 +1132,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
       (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
     } /* endif has_scl_fct */
     
-  } /* !netCDF_convention_unpack_order */
+  } /* !netCDF_unpack_convention */
 
   if(var->has_mss_val) var=nco_cnv_mss_val_typ(var,var->type);
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.144 2013-07-25 03:39:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.145 2013-07-29 23:34:07 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -56,9 +56,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
     /* Which group is this? */
     rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
-#ifdef ENABLE_NETCDF4
     if(rcd == NC_ENOGRP) (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Global"); else (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Group");
-#endif
     if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->sxn_fst;
   }else{
     /* Get name and number of attributes for variable */
@@ -141,6 +139,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    sng_val_sng[0]='\0';
 	  } /* endif new string */
 	  (void)strcat(sng_val_sng,(prn_flg->cdl) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng));
+	  if(prn_flg->cdl){if(chr_val == '\n') (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng,prn_ndn+prn_flg->var_fst,spc_sng);}
 	  if(lmn%sng_lng == sng_lngm1){
 	    (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
 	    /* Print commas after non-final strings */
@@ -190,7 +189,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  /* Print commas after non-final strings */
 	  if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
 	  sng_val_sng=(char *)nco_free(sng_val_sng);
-
 	}else{ /* Traditional */
 	  (void)fprintf(stdout,att_sng_dlm,att[idx].val.sngp[lmn],(lmn != att_szm1) ? cma_sng : "");
 	} /* endelse CDL, XML, Traditional */
@@ -1874,7 +1872,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   } /* end loop over var_idx */
 
   /* Print attribute information for group */
-  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA && !prn_flg->xml) (void)fprintf(stdout,"\n%*s%sattributes:\n",prn_flg->ndn,spc_sng,(prn_flg->cdl) ? "// " : "");
+  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA && !prn_flg->xml) (void)fprintf(stdout,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(prn_flg->cdl) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
   if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
 
   /* Print data for group */

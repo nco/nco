@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.203 2013-07-25 22:35:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.204 2013-07-29 23:34:07 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1777,10 +1777,8 @@ int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){assert(0);ret
 int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){if(grp_nbr) *grp_nbr=0;return NC_NOERR;}
 int nco_inq_grp_full_ncid(const int nc_id,const char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
 int nco_inq_grp_ncid(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
-
-int nco_inq_grp_parent(const int nc_id,int * const prn_id){return NC_NOERR;}
-int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id){return NC_NOERR;}
-
+int nco_inq_grp_parent(const int nc_id,int * const prn_id){assert(0);return NC_ENOGRP;}
+int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id){return NC_ENOGRP;}
 int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
 int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
 int nco_inq_grpname(const int nc_id,char * const grp_nm){if(grp_nm) strcpy(grp_nm,"/");return NC_NOERR;}
