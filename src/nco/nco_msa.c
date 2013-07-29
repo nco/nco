@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.218 2013-07-25 04:26:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.219 2013-07-29 21:22:24 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -446,8 +446,6 @@ void nco_msa_qsort_srt
   (void)qsort(lmt,(size_t)sz,sizeof(lmt_sct *),nco_cmp_lmt_srt);
 } /* end nco_msa_qsort_srt() */
 
-
-
 long /* O [idx] Minimum value */
 nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value */
 (const long * const current, /* I [idx] Current indices */
@@ -530,15 +528,15 @@ do_upk:
   var_in->type=var_in->typ_dsk; /* [enm] Type of variable in RAM */
 
   /* Packing in RAM is now same as packing on disk pck_dbg 
-  fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
+     fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
   (void)nco_pck_dsk_inq(in_id,var_in);
 
   /* Packing/Unpacking */
   if(nco_is_rth_opr(prg_get())){
     /* Arithmetic operators must unpack variables before performing arithmetic
-    Otherwise arithmetic will produce garbage results */
+       Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
-    20050629: Making this region multi-threaded causes no problems */
+       20050629: Making this region multi-threaded causes no problems */
     if(var_in->pck_dsk) var_in=nco_var_upk(var_in);
   } /* endif arithmetic operator */
 
@@ -1444,12 +1442,12 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
 {
   int nbr_dim;
 
+  lmt_msa_sct **lmt_msa;
+  lmt_sct **lmt;
+
   nc_type typ_tmp;
 
   void *void_ptr;
-
-  lmt_msa_sct **lmt_msa;
-  lmt_sct **lmt;
 
   nbr_dim=var_in->nbr_dim;	
   var_in->nc_id=in_id; 
@@ -1504,5 +1502,3 @@ do_upk:
 
   return;
 } /* nco_msa_var_get_trv() */
-
-

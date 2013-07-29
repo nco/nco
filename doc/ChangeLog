@@ -1,3 +1,13 @@
+2013-07-29  Charlie Zender  <zender@uci.edu>
+
+	* Add flag to unpack data via NASA convention: output=scale_factor*(input+add_offset)
+
+	* NCO 4.3.4 release procedure:
+ 	Changes since nco-4_3_3: fxm
+	cd ~/nco;cvs tag -d nco-4_3_4;cvs tag -d nco-4_3_4-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.4 release"
+	cvs tag -c nco-4_3_4;cvs tag -c nco-4_3_4-1
+
 2013-07-26  Charlie Zender  <zender@uci.edu>
 
 	* Document MSA user-ordering --msa_usr_rdr with longitude rotation example
@@ -5,12 +15,6 @@
 2013-07-25  Charlie Zender  <zender@uci.edu>
 
 	* Update old cruft in index.shtml
-
-	* NCO 4.3.4 release procedure:
- 	Changes since nco-4_3_3: fxm
-	cd ~/nco;cvs tag -d nco-4_3_4;cvs tag -d nco-4_3_4-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.4 release"
-	cvs tag -c nco-4_3_4;cvs tag -c nco-4_3_4-1
 
 	* Fix nco_md5_ini() prototype
 

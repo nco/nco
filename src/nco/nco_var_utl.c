@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.346 2013-07-25 03:39:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.347 2013-07-29 21:22:24 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -821,17 +821,17 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
 
   /* 20051021: Removed this potentially critical region by parallelizing 
-  over in_id's in calling code */
+     over in_id's in calling code */
   /* 20051019: nco_get_var*() routines are potentially SMP-critical
-  netCDF library allows parallel reads by different processes, not threads
-  Parallel reads to the same nc_id by different threads are critical because
-  the underlying UNIX file open has limited stdin caching
-  Parallel reads to different nc_id's for same underlying file work because
-  each UNIX file open (for same file) creates own stdin caching */
+     netCDF library allows parallel reads by different processes, not threads
+     Parallel reads to the same nc_id by different threads are critical because
+     the underlying UNIX file open has limited stdin caching
+     Parallel reads to different nc_id's for same underlying file work because
+     each UNIX file open (for same file) creates own stdin caching */
   /* 20050629: Removing this critical region and calling with identical nc_id's causes multiple ncwa/ncra regressions */
   { /* begin potential OpenMP critical */
     /* Block is critical/thread-safe for identical/distinct in_id's */
-
+    
     /* Is stride > 1? */
     for(idx=0;idx<var->nbr_dim;idx++) srd_prd*=var->srd[idx];
 
@@ -844,37 +844,37 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
       (void)nco_get_varm(nc_id,var->id,var->srt,var->cnt,var->srd,(long *)NULL,var->val.vp,var->typ_dsk);
     } /* endif non-unity stride  */
   } /* end potential OpenMP critical */
-
+  
   /* Packing properties initially obtained by nco_pck_dsk_inq() in nco_var_fll()
-  Multi-file operators (MFOs) call nco_var_get() multiple times for each variable
-  In between subsequent calls to nco_var_get(), variable may be unpacked 
-  When this occurs, packing flags in variable structure will not match disk
-  Thus it is important to refresh (some) packing attributes on each read */
-
+     Multi-file operators (MFOs) call nco_var_get() multiple times for each variable
+     In between subsequent calls to nco_var_get(), variable may be unpacked 
+     When this occurs, packing flags in variable structure will not match disk
+     Thus it is important to refresh (some) packing attributes on each read */
+  
   /* Synchronize missing value type with (possibly) new disk type */
   /* fxm nco427: pck_dbg potential big bug on non-packed types in ncra here,
-  due to potential double conversion of missing_value
-  First conversion to typ_dsk occurs when nco_var_fll() reads in mss_val
-  Second conversion occurs here mss_val again converted to typ_dsk
-  fxm nco457: Why not always convert missing_value to variable type, 
-  even when variable is not packed? Answer: because doing this appears
-  to break some ncra tests */
+     due to potential double conversion of missing_value
+     First conversion to typ_dsk occurs when nco_var_fll() reads in mss_val
+     Second conversion occurs here mss_val again converted to typ_dsk
+     fxm nco457: Why not always convert missing_value to variable type, 
+     even when variable is not packed? Answer: because doing this appears
+     to break some ncra tests */
   if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
   /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
-
+  
   /* Type of variable and missing value in memory are now same as type on disk */
   var->type=var->typ_dsk; /* [enm] Type of variable in RAM */
-
+  
   /* Packing in RAM is now same as packing on disk pck_dbg 
-  fxm: Following call to nco_pck_dsk_inq() is never necessary for non-packed variables */
+     fxm: Following call to nco_pck_dsk_inq() is never necessary for non-packed variables */
   (void)nco_pck_dsk_inq(nc_id,var);
-
+  
   /* Packing/Unpacking */
   if(nco_is_rth_opr(prg_get())){
     /* Arithmetic operators must unpack variables before performing arithmetic
-    Otherwise arithmetic will produce garbage results */
+       Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
-    20050629: Making this region multi-threaded causes no problems */
+       20050629: Making this region multi-threaded causes no problems */
     if(var->pck_dsk) var=nco_var_upk(var);
   } /* endif arithmetic operator */
 

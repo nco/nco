@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.895 2013-07-27 03:50:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.896 2013-07-29 21:22:24 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3697,7 +3697,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
- const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   const char fnc_nm[]="nco_prc_cmn()"; /* [sng] Function name */
   char *grp_out_fll;             /* [sng] Group name */
@@ -3737,11 +3737,11 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
 
   /* Edit group name for output */
-  if (flg_grp_1){
+  if(flg_grp_1){
     if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_1->grp_nm_fll); else grp_out_fll=(char *)strdup(trv_1->grp_nm_fll);
-  } else {
+  }else{ /* !flg_grp_1 */
     if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_2->grp_nm_fll); else grp_out_fll=(char *)strdup(trv_2->grp_nm_fll);
-  }
+  } /* !flg_grp_1 */
 
   /* Obtain group ID using full group name */
   (void)nco_inq_grp_full_ncid(nc_id_1,trv_1->grp_nm_fll,&grp_id_1);
@@ -3756,7 +3756,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,trv_2,trv_tbl_2);
 
   if(var_prc_1->nbr_dim >= var_prc_2->nbr_dim) RNK_1_GTR=True; else RNK_1_GTR=False;
-  rnk_gtr = (RNK_1_GTR) ? trv_1 : trv_2;
+  rnk_gtr= (RNK_1_GTR) ? trv_1 : trv_2;
   var_prc_gtr= (RNK_1_GTR) ? var_prc_1 : var_prc_2;
   var_prc_lsr= (RNK_1_GTR) ? var_prc_2 : var_prc_1;
   var_prc_out= (RNK_1_GTR) ? nco_var_dpl(var_prc_1) : nco_var_dpl(var_prc_2);
@@ -3774,13 +3774,11 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     /* Check that all dims in var_prc_lsr are in var_prc_gtr */
     for(dmn_idx_lsr=0;dmn_idx_lsr<var_prc_lsr->nbr_dim;dmn_idx_lsr++){
       for(dmn_idx_gtr=0;dmn_idx_gtr<var_prc_gtr->nbr_dim;dmn_idx_gtr++)  
-        if(!strcmp(var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->dim[dmn_idx_gtr]->nm)){
-          break;
-        }
-        if(dmn_idx_gtr == var_prc_gtr->nbr_dim){
-          (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->nm);
-          nco_exit(EXIT_FAILURE);
-        } /* endif error */
+        if(!strcmp(var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->dim[dmn_idx_gtr]->nm)) break;
+      if(dmn_idx_gtr == var_prc_gtr->nbr_dim){
+	(void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->nm);
+	nco_exit(EXIT_FAILURE);
+      } /* endif error */
     } /* end loop over idx */
 
     /* Read */
@@ -3791,12 +3789,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     typ_hgh=ncap_typ_hgh(var_prc_1->type,var_prc_2->type);
 
     /* Make sure variables conform in type */
-    if(var_prc_1->type != var_prc_2->type){
-      if(dbg_lvl_get() >= nco_dbg_std && flg_def){
-        (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",prg_nm_get(),
-		      var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(typ_hgh));
-      } /* endif dbg */
-    } /* endif type */
+    if(var_prc_1->type != var_prc_2->type)
+      if(dbg_lvl_get() >= nco_dbg_std && flg_dfn) (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",prg_nm_get(),var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(typ_hgh));
 
     typ_hgh=ncap_var_retype(var_prc_1,var_prc_2);
     trv_1->var_typ=trv_2->var_typ=typ_hgh;
@@ -3805,7 +3799,6 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
 
     /* var1 and var2 now conform in size and type to eachother and are in memory */
-
     assert(var_prc_1->type == var_prc_2->type);
     assert(trv_1->var_typ == trv_2->var_typ);
     assert(trv_1->var_typ == var_prc_1->type);
@@ -3813,7 +3806,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   } /* Conform type and rank for process variables */
 
   /* Define mode */
-  if(flg_def){  
+  if(flg_dfn){  
     char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
 
     nm_tbl_sct *rec_dmn_nm_1=NULL; /* [sct] Record dimension names array */
@@ -3838,8 +3831,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) 
-      : nco_cpy_var_dfn_trv(nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
+    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_out_id,grp_id_1,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn_trv(nc_out_id,grp_id_2,grp_out_id,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,rnk_gtr);
@@ -3852,11 +3844,11 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(rec_dmn_nm_1){
       for(int idx=0;idx<rec_dmn_nm_1->nbr;idx++) rec_dmn_nm_1->lst[idx].nm=(char *)nco_free(rec_dmn_nm_1->lst[idx].nm);
       rec_dmn_nm_1=(nm_tbl_sct *)nco_free(rec_dmn_nm_1);
-    }
+    } /* !rec_dmn_nm_1 */
     if(rec_dmn_nm_2){
       for(int idx=0;idx<rec_dmn_nm_2->nbr;idx++) rec_dmn_nm_2->lst[idx].nm=(char *)nco_free(rec_dmn_nm_2->lst[idx].nm);
       rec_dmn_nm_2=(nm_tbl_sct *)nco_free(rec_dmn_nm_2);
-    }
+    } /* !rec_dmn_nm_2 */
 
   }else{ /* Write mode */
 
@@ -3933,7 +3925,6 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   /* Free output path name */
   grp_out_fll=(char *)nco_free(grp_out_fll);
 
-
 } /* nco_prc_cmn() */
 
 void                          
@@ -3955,7 +3946,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  trv_sct *trv_1,                       /* I/O [sct] Table object (nco_cpy_var_dfn_trv) */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   char *grp_out_fll;             /* [sng] Group name */
 
@@ -4006,7 +3997,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
   }
 
   /* Define mode */
-  if(flg_def){  
+  if(flg_dfn){  
 
     nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
@@ -4111,7 +4102,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
  nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
- const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   nco_bool rel_mch; /* [flg] A match was found */
 
@@ -4119,41 +4110,24 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
 
   if(flg_tbl_1){
 
-    /* Loop table 2 */
     for(unsigned uidx=0;uidx<trv_tbl_2->nbr;uidx++){
-
-      /* A relative match was found */
-      if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)) {
-
+      if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)){
         trv_sct *trv_2=&trv_tbl_2->lst[uidx];
-
         rel_mch=True;
-
-        /* Process common object */
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_def);
-
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table 2 */
 
   }else if(!flg_tbl_1){
 
-    /* Loop table 1 */
     for(unsigned uidx=0;uidx<trv_tbl_1->nbr;uidx++){
-
-      /* A relative match was found */
-      if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)) {
-
+      if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)){
         trv_sct *trv_1=&trv_tbl_1->lst[uidx];
-
         rel_mch=True;
-
-        /* Process common object */
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_def);
-
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table 2 */
-
-  }
+  } /* !flg_tbl_1 */
 
   return rel_mch;
 
@@ -4179,7 +4153,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
- const nco_bool flg_def)               /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
  
   const char fnc_nm[]="nco_prc_cmn_nm()"; /* [sng] Function name */
@@ -4207,7 +4181,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
       if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
 
       /* Process common object */
-      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_def);
+      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
 
       /* Both objects exist in the 2 files, both objects are to extract */
     }else{
@@ -4222,10 +4196,10 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try a relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_def);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
 
           /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
-          if(has_mch == False) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
         } /* Object exists only in file 1 and is to extract */
 
@@ -4234,11 +4208,11 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
-          /* Try a relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_def);
+          /* Try relative match in file 1 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
 
-          /* A match was not found in file 2, copy instead object from file 2 as fixed to output */
-          if(has_mch == False) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
+          /* Match was not found in file 2, copy instead object from file 2 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
         } /* Object exists only in file 2 and is to extract */ 
 
@@ -4249,11 +4223,11 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
-          /* Try a relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_def);
+          /* Try relative match in file 2 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
 
-          /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
-          if(has_mch == False) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_def);
+          /* Match was not found in file 2, copy instead object from file 1 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
         } /* Object exists only in file 1 and is to extract */
 
@@ -4262,11 +4236,11 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
-          /* Try a relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_def);
+          /* Try relative match in file 1 */
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
 
-          /* A match was not found in file 2, copy instead object from file 2 as fixed to output */
-          if(has_mch == False) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_def);
+          /* Match was not found in file 2, copy instead object from file 2 as fixed to output */
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
         } /* Object exists only in file 2 and is to extract */ 
 

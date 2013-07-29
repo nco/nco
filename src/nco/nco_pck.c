@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.91 2013-04-03 21:47:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.92 2013-07-29 21:22:24 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -1059,6 +1059,8 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
 
+  nco_bool netCDF_convention_unpack_order=True; /* [flg] netCDF unpack definition: output=(scale_factor*input)+add_offset */
+
   /* Return if variable in memory is not currently packed */
   if(!var->pck_ram) return var;
 
@@ -1069,31 +1071,65 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   } /* endif */
 
   /* Packed variables are not guaranteed to have both scale_factor and add_offset
-     scale_factor is guaranteed to be of type NC_FLOAT or NC_DOUBLE and of size 1 (a scalar) */
+     scale_factor is guaranteed to be of type NC_FLOAT or NC_DOUBLE and of size 1 (a scalar)
+     Hence algorithm create scalar value structures from values of scale_factor, add_offset */
 
-  /* Create scalar value structures from values of scale_factor, add_offset */
-  if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
-    scv_sct scl_fct_scv;
-    var->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
-    (void)nco_get_att(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp,var->typ_upk);
-    scl_fct_scv=ptr_unn_2_scv(var->typ_upk,var->scl_fct);
-    /* Convert var to type of scale_factor for expansion */
-    var=nco_var_cnf_typ(scl_fct_scv.type,var);
-    /* Multiply var by scale_factor */
-    (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
-  } /* endif has_scl_fct */
+  /* 20130729:
+     The rumors are true: 
+     Some NASA data, including NASA MODIS swaths, expect offsets to be added then scaled!
+     This requires a simple re-ordering of the netCDF-standard unpacking algorithm */
 
-  if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
-    scv_sct add_fst_scv;
-    var->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
-    /* fxm TODO nco638 */
-    (void)nco_get_att(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_upk);
-    add_fst_scv=ptr_unn_2_scv(var->typ_upk,var->add_fst);
-    /* Convert var to type of scale_factor for expansion */
-    var=nco_var_cnf_typ(add_fst_scv.type,var);
-    /* Add add_offset to var */
-    (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
-  } /* endif has_add_fst */
+  if(netCDF_convention_unpack_order){
+    /* netCDF unpack definition: output=(scale_factor*input)+add_offset */
+    
+    if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
+      scv_sct scl_fct_scv;
+      var->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
+      (void)nco_get_att(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp,var->typ_upk);
+      scl_fct_scv=ptr_unn_2_scv(var->typ_upk,var->scl_fct);
+      /* Convert var to type of scale_factor for expansion */
+      var=nco_var_cnf_typ(scl_fct_scv.type,var);
+      /* Multiply var by scale_factor */
+      (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
+    } /* endif has_scl_fct */
+    
+    if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
+      scv_sct add_fst_scv;
+      var->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
+      (void)nco_get_att(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_upk);
+      add_fst_scv=ptr_unn_2_scv(var->typ_upk,var->add_fst);
+      /* Convert var to type of scale_factor for expansion */
+      var=nco_var_cnf_typ(add_fst_scv.type,var);
+      /* Add add_offset to var */
+      (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
+    } /* endif has_add_fst */
+
+  }else{ /* !netCDF_convention_unpack_order */
+    /* 20130729: NASA HDF unpack definition: output=scale_factor*(input+add_offset) */
+
+    if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
+      scv_sct add_fst_scv;
+      var->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
+      (void)nco_get_att(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_upk);
+      add_fst_scv=ptr_unn_2_scv(var->typ_upk,var->add_fst);
+      /* Convert var to type of scale_factor for expansion */
+      var=nco_var_cnf_typ(add_fst_scv.type,var);
+      /* Add add_offset to var */
+      (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
+    } /* endif has_add_fst */
+
+    if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
+      scv_sct scl_fct_scv;
+      var->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
+      (void)nco_get_att(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp,var->typ_upk);
+      scl_fct_scv=ptr_unn_2_scv(var->typ_upk,var->scl_fct);
+      /* Convert var to type of scale_factor for expansion */
+      var=nco_var_cnf_typ(scl_fct_scv.type,var);
+      /* Multiply var by scale_factor */
+      (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
+    } /* endif has_scl_fct */
+    
+  } /* !netCDF_convention_unpack_order */
 
   if(var->has_mss_val) var=nco_cnv_mss_val_typ(var,var->type);
 
@@ -1173,4 +1209,3 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
   var_tmp->val.vp=NULL;
   if(var_tmp) var_tmp=nco_var_free(var_tmp);
 } /* end nco_var_upk_swp() */
-

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.254 2013-07-26 23:16:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.255 2013-07-29 21:22:24 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.254 2013-07-26 23:16:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.254 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.255 2013-07-29 21:22:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.255 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -589,7 +589,7 @@ main(int argc,char **argv)
   /* Match 2 tables (find common objects) and export common objects */
   (void)trv_tbl_mch(trv_tbl_1,trv_tbl_2,&cmn_lst,&nbr_cmn_nm);
     
-  /* Process common objects (DEFINE mode, True as flg_def parameter ) */
+  /* Process common objects (DEFINE mode, True as flg_dfn parameter ) */
   (void)nco_prc_cmn_nm(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,(nco_bool)True);
 
   /* Catenate timestamped command line to "history" global attribute */
@@ -607,7 +607,7 @@ main(int argc,char **argv)
     if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
-  /* Process common objects (WRITE mode, False as flg_def parameter ) */
+  /* Process common objects (WRITE mode, False as flg_dfn parameter ) */
   (void)nco_prc_cmn_nm(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,(nco_bool)False);
 
   /* Close input netCDF files */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.344 2013-07-25 03:39:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.345 2013-07-29 21:22:24 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -378,7 +378,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
- const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 void                          
 nco_cpy_fix                            /* [fnc] Copy processing type fixed object (ncbo only) */
@@ -399,7 +399,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  trv_sct *trv_1,                       /* I/O [sct] Table object */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 nco_bool                               /* O [flg] Copy packing attributes */
 nco_pck_cpy_att                        /* [fnc] Inquire about copying packing attributes  */
@@ -428,7 +428,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
  nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
- const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 void                          
 nco_prc_cmn_nm                         /* [fnc] Process common objects from a common mames list  */
@@ -450,7 +450,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
- const nco_bool flg_def);              /* I [flg] Action type (True for define variables, False when write variables ) */
+ const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 void
 nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variables info into GTT */
