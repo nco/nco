@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.346 2013-07-29 03:35:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.347 2013-07-29 06:29:52 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.346 2013-07-29 03:35:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.346 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.347 2013-07-29 06:29:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.347 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -601,7 +601,7 @@ main(int argc,char **argv)
 	dmn_rdr[dmn_rdr_nbr_utl++]=dim[idx]; 
       }else{
 	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
-      } /* /* endelse */ */
+      } /* endelse */
     } /* end loop over idx_rdr */
     dmn_rdr_nbr=dmn_rdr_nbr_utl;
 
