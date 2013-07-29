@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.345 2013-07-26 23:16:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.346 2013-07-29 03:35:08 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.345 2013-07-26 23:16:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.345 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.346 2013-07-29 03:35:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.346 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -546,7 +546,6 @@ main(int argc,char **argv)
   /* Get file format */
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
-
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
 
@@ -573,8 +572,6 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
-  /* ncpdq core */
-
   /* Allocate array of dimensions associated with variables to be extracted with maximum possible size */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));
 
@@ -586,7 +583,7 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
-  } 
+  } /* end loop over extracted dimensions */
 
   /* If re-ordering */
   if(IS_REORDER){
@@ -598,16 +595,13 @@ main(int argc,char **argv)
     dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
     /* Loop over original number of re-order dimensions */
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
-      for(idx=0;idx<nbr_dmn_xtr;idx++){
-        if(!strcmp(dmn_rdr_lst[idx_rdr].nm,dim[idx]->nm)){
-          break;
-        }
-      } /* end loop over idx_rdr */
+      for(idx=0;idx<nbr_dmn_xtr;idx++)
+        if(!strcmp(dmn_rdr_lst[idx_rdr].nm,dim[idx]->nm)) break;
       if(idx != nbr_dmn_xtr){
-        dmn_rdr[dmn_rdr_nbr_utl++]=dim[idx];
-      }else {
-        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
-      }
+	dmn_rdr[dmn_rdr_nbr_utl++]=dim[idx]; 
+      }else{
+	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
+      } /* /* endelse */ */
     } /* end loop over idx_rdr */
     dmn_rdr_nbr=dmn_rdr_nbr_utl;
 
@@ -617,7 +611,7 @@ main(int argc,char **argv)
     /* Dimension list in name-ID format is no longer needed */
     dmn_rdr_lst=nco_nm_id_lst_free(dmn_rdr_lst,dmn_rdr_nbr);
 
-    /* Make sure re-ordering dimensions are specified no more than once */
+    /* Ensure re-ordering dimensions are specified no more than once */
     for(idx=0;idx<dmn_rdr_nbr;idx++){
       for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
         if(idx_rdr != idx){
@@ -645,7 +639,7 @@ main(int argc,char **argv)
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
-  }
+  } /* end loop over variables */
 
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
@@ -701,12 +695,13 @@ main(int argc,char **argv)
   } /* nco_pck_plc == nco_pck_plc_nil */
 
   /* Define dimensions, extracted groups, variables, and attributes in output file. NOTE. record name is NULL */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,(char *)NULL,trv_tbl); 
+  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,(char *)NULL,trv_tbl);
 
   /* Copy global attributes */
 #ifdef COPY_ROOT_GLOBAL_ATTRIBUTES
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); /* Superceded by nco_xtr_dfn() */
-#endif
+#endif /* !COPY_ROOT_GLOBAL_ATTRIBUTES */
+
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
@@ -786,10 +781,8 @@ main(int argc,char **argv)
           nco_exit(EXIT_FAILURE); 
         } /* endif err */
 
-
         /* Change dimensionionality of values */
         (void)nco_var_dmn_rdr_val_trv(var_prc[idx],var_prc_out[idx],trv_tbl);
-
 
         /* Re-ordering required two value buffers, time to free input buffer */
         var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
