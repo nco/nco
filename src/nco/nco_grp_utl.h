@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.345 2013-07-29 21:22:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.346 2013-07-30 03:22:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -576,7 +576,11 @@ void
 nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions information into GTT  */
 (dmn_sct **dmn_dgn,                   /* [sct] Degenerate (size 1) dimensions used by ncwa */
  const int nbr_dmn_dgn,               /* I [nbr] Total number of dimensions in list */
- trv_tbl_sct *trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct *trv_tbl);               /* I/O [sct] GTT (Group Traversal Table) */
+
+void                          
+nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata */
+(const trv_tbl_sct * trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */

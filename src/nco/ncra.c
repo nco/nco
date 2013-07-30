@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.328 2013-07-29 06:36:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.329 2013-07-30 03:22:16 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.328 2013-07-29 06:36:10 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.328 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.329 2013-07-30 03:22:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.329 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1155,6 +1155,14 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
+
+
+  /* Obtain record coordinate metadata */
+  if(prg == ncra || prg == ncrcat){
+
+    (void)nco_dmn_unl_tbl(trv_tbl);         
+
+  } /* Obtain record coordinate metadata */
 
 
 

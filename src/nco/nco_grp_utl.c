@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.896 2013-07-29 21:22:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.897 2013-07-30 03:22:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2840,7 +2840,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
   /* Step 4) Validate...need more here */
 
-#ifdef NCO_SANITY_CHECK
+
   /* Loop table dimensions */
   for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
@@ -2910,7 +2910,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     } /* b) case of dimension only (there is no coordinate variable for this dimension */
   } /* Loop dimensions  */
 
-#endif /* NCO_SANITY_CHECK */
 
 } /* nco_bld_lmt() */
 
@@ -3265,7 +3264,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
   } /* Loop table */
 
   /* Check if bool array is all filled  */
-#ifdef NCO_SANITY_CHECK
+
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
 
@@ -3284,10 +3283,9 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
   } /* Loop table */
-#endif /* NCO_SANITY_CHECK */
+
 
   /* Check if bool array is all filled  */
-#ifdef NCO_SANITY_CHECK
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
 
@@ -3300,7 +3298,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       } /* Loop dimensions for object (variable)  */
     } /* Filter variables  */
   } /* Loop table */
-#endif /* NCO_SANITY_CHECK */
+
 
 } /* nco_bld_var_dmn() */
 
@@ -6619,3 +6617,20 @@ nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions i
   } /* Loop dimensions */
 
 } /* nco_dmn_dgn_tbl() */
+
+
+void                          
+nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata */
+(const trv_tbl_sct * trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+{
+
+  /* Loop unique dimensions list in groups */
+  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
+    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
+
+
+
+
+  } /* Loop unique dimensions list in groups */
+
+} /* nco_wrt_trv_tbl() */

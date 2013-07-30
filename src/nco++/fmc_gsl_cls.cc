@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.64 2013-04-23 18:03:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.65 2013-07-30 03:22:16 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -5275,9 +5275,9 @@ var_sct *nco_gsl_cls::fit_fnd(bool &is_mtd,std::vector<RefAST> &vtr_args,fmc_cls
       var_in[9]->val.dp,
       var_in[10]->val.dp,
       var_in[2]->mss_val.dp); //fill value "double" for variable "y_in" (var_in[2]); can be NULL
-#ifdef NCO_SANITY_CHECK
+
     assert(ret==NCO_GSL_SUCCESS);
-#endif /* NCO_SANITY_CHECK */
+
     break; //NCO_GSL_FUNC1 
   default:
     assert(0);
