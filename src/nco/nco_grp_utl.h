@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.348 2013-07-30 07:20:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.349 2013-07-30 21:26:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -581,7 +581,10 @@ nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions i
 
 void                          
 nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata */
-(const trv_tbl_sct * trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
+(const int nc_id,                     /* I [ID] netCDF input file ID */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ lmt_sct **lmt_rec,                   /* I/O [sct] Limit */
+ const trv_tbl_sct * trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
