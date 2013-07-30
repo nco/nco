@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.40 2013-07-27 03:27:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.41 2013-07-30 01:17:44 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -47,15 +47,13 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
  const char * const sng_2); /* I [sng] Second string */
 #endif /* !NEED_STRCASECMP */
 
-
 /* 20130725 Apparently C++ (or at least g++) always provides strcasestr() */
-# ifdef NEED_STRCASESTR
+#ifdef NEED_STRCASESTR
 char * /* O [sng] Pointer to sng_2 in sng_1 */
 strcasestr /* [fnc] Lexicographical case-insensitive string search */
 (const char * const sng_1, /* I [sng] First string */
  const char * const sng_2); /* I [sng] Second string */
-# endif /* !NEED_STRCASESTR */
-
+#endif /* !NEED_STRCASESTR */
 
 #ifdef NEED_STRDUP
 char * /* O [sng] Copy of input string */

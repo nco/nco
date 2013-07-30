@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.93 2013-07-29 23:34:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.94 2013-07-30 01:17:44 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -1059,8 +1059,6 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
 
-  nco_bool netCDF_unpack_convention=True; /* [flg] netCDF unpack definition: output=(scale_factor*input)+add_offset */
-
   /* Return if variable in memory is not currently packed */
   if(!var->pck_ram) return var;
 
@@ -1082,7 +1080,11 @@ nco_var_upk /* [fnc] Unpack variable in memory */
      http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
      Hence unpacking NASA SDS data requires re-ordering and re-defining the netCDF-standard unpacking algorithm */
 
-  if(netCDF_unpack_convention){
+  /* Test unpacking conventions:
+     ncpdq -O -U       -v pck_.? ~/nco/data/in.nc ~/foo.nc 
+     ncpdq -O -U --hdf -v pck_.? ~/nco/data/in.nc ~/foo.nc */
+
+  if(nco_upk_cnv_get() == nco_upk_netCDF){
     /* netCDF unpack definition: unpacked=(scale_factor*packed)+add_offset */
     
     if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */

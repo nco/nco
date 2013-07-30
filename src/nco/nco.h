@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.377 2013-07-29 23:34:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.378 2013-07-30 01:17:44 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -160,6 +160,7 @@ extern "C" {
   char *prg_nm_get(void);
   int prg_get(void);
   unsigned short dbg_lvl_get(void);
+  unsigned short nco_upk_cnv_get(void);
 
 #ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
   
@@ -173,6 +174,9 @@ extern "C" {
   
   unsigned short dbg_lvl=0; /* [enm] Debugging level */
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
+
+  unsigned short nco_upk_cnv=0; /* [enm] Unpacking convention */
+  unsigned short nco_upk_cnv_get(void){return nco_upk_cnv;} /* [enm] Unpacking convention */
 
 # ifdef NCO_USE_FILL_VALUE
   /* This arcane get()/set() usage necessary because TKN2SNG() macro above is broken. TODO nco905 */
@@ -406,8 +410,8 @@ extern "C" {
   enum nco_upk_cnv{ /* [enm] Unpacking convention to assume */
     /* netCDF convention: http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
        NASA convention :  http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html */
-    netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
-    NASA_SDS /* 1 NASA HDF unpack convention: unpacked=scale_factor*(packed-add_offset)  */
+    nco_upk_netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
+    nco_upk_HDF     /* 1 HDF unpack convention:    unpacked=scale_factor*(packed-add_offset) */
   }; /* end nco_upk_cnv */
 
   typedef enum aed{ /* [enm] Attribute editor mode */

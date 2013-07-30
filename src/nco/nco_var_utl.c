@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.347 2013-07-29 21:22:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.348 2013-07-30 01:17:44 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1629,9 +1629,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     (void)nco_inq_dimname(nc_id,var->dmn_id[idx],dmn_nm);
     /* Search input dimension list for matching name */
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++)
-      if(!strcmp(dmn_nm,dim[dmn_idx]->nm)){
-        break;
-      }
+      if(!strcmp(dmn_nm,dim[dmn_idx]->nm)) break;
 
     if(dmn_idx == nbr_dim){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in list of dimensions available to nco_var_fll()\n",prg_nm_get(),dmn_nm);
@@ -1651,11 +1649,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     var->end[idx]=dim[dmn_idx]->end;
     var->srd[idx]=dim[dmn_idx]->srd;
 
-    if(var->dmn_id[idx] == rec_dmn_id){
-      var->is_rec_var=True;
-    }else{
-      var->sz_rec*=var->cnt[idx];
-    }
+    if(var->dmn_id[idx] == rec_dmn_id) var->is_rec_var=True; else var->sz_rec*=var->cnt[idx];
 
     /* NB: dim[idx]->cid will be uninitialized unless dim[idx] is a coordinate 
     Hence divide this into to sequential if statements so valgrind does not
@@ -1687,7 +1681,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
 
   /* Read deflate levels and chunking (if any) */  
-  if(fl_fmt==NC_FORMAT_NETCDF4 || fl_fmt==NC_FORMAT_NETCDF4_CLASSIC){
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     int deflate; /* [enm] Deflate filter is on */
     int srg_typ; /* [enm] Storage type */
     (void)nco_inq_var_deflate(nc_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    
@@ -1698,7 +1692,6 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   return var;
 } /* end nco_var_fll() */
 
-
 nc_type
 nco_get_typ                           /* [fnc] Obtain netCDF type to define variable from NCO program ID */
 (const var_sct * const var)           /* I [sct] Variable to be defined in output file */
@@ -1708,41 +1701,39 @@ nco_get_typ                           /* [fnc] Obtain netCDF type to define vari
   nc_type typ_out=NC_NAT; /* [enm] Type in output file */
 
   prg_id=prg_get(); /* [enm] Program ID */
-
+  
   /* Checking only nco_is_rth_opr() is too simplistic
-  1. All variables handled by arithmetic operators are currently unpacked on reading
-  2. However "fixed variables" appear in many arithemetic operators
-  ncbo treats coordinate variables as fixed (does not subtract them)
-  ncra treats non-record variables as fixed (does not average them)
-  ncwa treats variables without averaging dimensions as fixed (does not average them)
-  It is best not to alter [un-]pack fixed (non-processed) variables
-  3. ncap, an arithmetic operator, also has "fixed variables", i.e., 
-  pre-existing non-LHS variables copied directly to output.
-  These "fixed" ncap variables should remain unaltered
-  However, this is not presently done
-  nco_var_dfn() needs more information to handle "fixed" variables correctly because
-  Some ncap "fixed" variables appear on RHS in definitions of LHS variables
-  These RHS fixed variables must be separately unpacked during RHS algebra
-  Currently, ncap only calls nco_var_dfn() for fixed variables
-  ncap uses its own routine, ncap_var_write(), for RHS variable definitions
-  4. All variables in non-arithmetic operators (except ncpdq) should remain un-altered
-  5. ncpdq is non-arithmetic operator
-  However, ncpdq specially handles fine-grained control [un-]packing options */
+     1. All variables handled by arithmetic operators are currently unpacked on reading
+     2. However "fixed variables" appear in many arithemetic operators
+     ncbo treats coordinate variables as fixed (does not subtract them)
+     ncra treats non-record variables as fixed (does not average them)
+     ncwa treats variables without averaging dimensions as fixed (does not average them)
+     It is best not to alter [un-]pack fixed (non-processed) variables
+     3. ncap, an arithmetic operator, also has "fixed variables", i.e., 
+     pre-existing non-LHS variables copied directly to output.
+     These "fixed" ncap variables should remain unaltered
+     However, this is not presently done
+     nco_var_dfn() needs more information to handle "fixed" variables correctly because
+     Some ncap "fixed" variables appear on RHS in definitions of LHS variables
+     These RHS fixed variables must be separately unpacked during RHS algebra
+     Currently, ncap only calls nco_var_dfn() for fixed variables
+     ncap uses its own routine, ncap_var_write(), for RHS variable definitions
+     4. All variables in non-arithmetic operators (except ncpdq) should remain un-altered
+     5. ncpdq is non-arithmetic operator
+     However, ncpdq specially handles fine-grained control [un-]packing options */
   if(nco_is_rth_opr(prg_id)){
     /* Arithmetic operators store values as unpacked... */
     typ_out=var->typ_upk; 
     /* ...with two exceptions...
-    ncap [un-]packing precedes nco_var_dfn() call, sets var->type appropriately */
+       ncap [un-]packing precedes nco_var_dfn() call, sets var->type appropriately */
     if(prg_id == ncap) typ_out=var->type;
     /* ...and pass through fixed (non-processed) variables untouched... */
     if(var->is_fix_var) typ_out=var->type;
   }else{
     /* Non-arithmetic operators leave things alone by default
-    ncpdq first modifies var_out->type, then calls nco_var_dfn(), then [un-]packs */
+       ncpdq first modifies var_out->type, then calls nco_var_dfn(), then [un-]packs */
     typ_out=var->type;
   } /* endif arithmetic operator */
-
+  
   return typ_out;
 } /* nco_get_typ() */
-
-

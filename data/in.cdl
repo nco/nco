@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.171 2013-07-29 23:34:07 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.172 2013-07-30 01:17:43 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -354,21 +354,27 @@ variables:
 
 	short pck;
 	pck:long_name = "Scalar variable, double, packed as short";
-	pck:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 3.0 = 2.0d*1s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
+	pck:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value (netCDF convention) should be 3.0 = 2.0d*1s + 1.0d. Unpacked value (HDF convention) should be 0.0 = 2.0d*(1s-1.0d). NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
 	pck:scale_factor = 2.0d;
 	pck:add_offset = 1.0d;
 
 	short pck_3;
 	pck_3:long_name = "Scalar variable, double, packed as short";
-	pck_3:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 3.0 = 2.0d*1s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
+	pck_3:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value (netCDF convention) should be 3.0 = 2.0d*1s + 1.0d. Unpacked value (HDF convention) should be 0.0 = 2.0d*(1s-1.0d). NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
 	pck_3:scale_factor = 2.0d;
 	pck_3:add_offset = 1.0d;
 
 	short pck_5;
 	pck_5:long_name = "Scalar variable, double, packed as short";
-	pck_5:note = "Original packed value was 2s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 5.0 = 2.0d*2s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 5.0d.";
+	pck_5:note = "Original packed value was 2s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value (netCDF convention) should be 5.0 = 2.0d*2s + 1.0d. Unpacked value (HDF convention) should be 0.0 = 2.0d*(1s-1.0d). NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 5.0d.";
 	pck_5:scale_factor = 2.0d;
 	pck_5:add_offset = 1.0d;
+
+	short pck_7;
+	pck_7:long_name = "Scalar variable, double, packed as short";
+	pck_7:note = "Original packed value was 1s with scale_factor = 4.0d and add_offset = 3.0d. Unpacked value (netCDF convention) should be 7.0 = 4.0d*1s + 3.0d. Unpacked value (HDF convention) should be -8.0 = 4.0d*(1s-3.0d). NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 7.0d.";
+	pck_7:scale_factor = 4.0d;
+	pck_7:add_offset = 3.0d;
 
 	short pck_arr(lon);
 	pck_arr:long_name = "Array variable, double, packed as short";
@@ -1121,6 +1127,7 @@ data:
 	pck=1;
 	pck_3=1;
 	pck_5=2;
+	pck_7=1;
 	rec_var_pck_scale_factor_only=1,2,3,4,5,6,7,8,9,10;
 	pck_arr=-32767,0,1,32767;
 	pi=3.1415926535897932384626433832795029;

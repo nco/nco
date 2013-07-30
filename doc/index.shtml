@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.806 2013-07-25 21:53:52 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.807 2013-07-30 01:17:43 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -604,6 +604,8 @@ You can also retrieve the source of tagged versions directly
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.3.4</b>: (<i>In Progress, features completed or being worked on include</i>)
+HDF unpacking <tt>--upk_hdf</tt>;
+CDL printing legibility;
 <tt>ncea/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
 <li><b>NCO 4.3.3</b>: (<i>Current Stable Release</i>)
 CDL printing <tt>ncks --cdl</tt>;

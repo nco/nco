@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.593 2013-07-27 01:47:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.594 2013-07-30 01:17:43 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.4 are ready. 
 
@@ -47,6 +47,25 @@ A. Multi-slab Algorithm user-ordering with --msa is now documented.
    ncap2 -O -s 'where(Lon < 0) Lon=Lon+360' out.nc out.nc
    http://nco.sf.net/nco.html#msa
    http://nco.sf.net/nco.html#msa_usr_rdr
+
+A. Improve CDL legibility of NC_CHAR attributes with embedded newlines
+
+A. CDL printing explicitly notes group vs. global attributes
+
+A. Global --upk_hdf switch implements HDF unpacking convention:
+   netCDF unpack definition: unpacked=(scale_factor*packed)+add_offset.
+   HDF unpack definition:    unpacked=scale_factor*(packed-add_offset).
+   Be sure you know what are doing when you use this switch!
+   NCO automatically unpacks data before performing arithmetic, and by
+   default NCO uses the netCDF convention for unpacking (above).
+   However, if your data originally came from an HDF file (e.g., NASA
+   MODIS or other SDS) then it may well have been packed with the HDF 
+   convention. There is as yet no generic way for NCO to know which
+   convention was used to pack data so the user must tell NCO when to
+   use the HDF convention instead of the netCDF convention.
+   ncbo --upk modis_1.nc modis_2.nc diff.nc
+   ncra --upk modis_200*.nc modis_avg.nc
+   http://nco.sf.net/nco.html#upk
 
 BUG FIXES:
 
