@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.324 2013-07-26 23:16:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.325 2013-07-30 07:20:06 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.324 2013-07-26 23:16:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.324 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.325 2013-07-30 07:20:06 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.325 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -639,7 +639,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
 
     /* Define dimensions, extracted groups, variables, and attributes in output file */
-    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,rec_dmn_nm,trv_tbl);
+    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
 
     /* Copy global attributes */
 #ifdef COPY_ROOT_GLOBAL_ATTRIBUTES
@@ -805,7 +805,7 @@ main(int argc,char **argv)
       /* We now have final list of variables to extract. Phew. */
 
       /* Define extracted groups, variables, and attributes in output file */
-      (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,CPY_GLB_METADATA,(nco_bool)True,rec_dmn_nm,trv_tbl_gpr);
+      (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,CPY_GLB_METADATA,(nco_bool)True,nco_pck_plc_nil,rec_dmn_nm,trv_tbl_gpr);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.256 2013-07-26 23:16:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.257 2013-07-30 07:20:06 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.256 2013-07-26 23:16:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.256 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.257 2013-07-30 07:20:06 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.257 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -604,7 +604,7 @@ main(int argc,char **argv)
   (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);         
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,(char *)NULL,trv_tbl);
+  (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Copy global attributes */
 #ifdef COPY_ROOT_GLOBAL_ATTRIBUTES

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.898 2013-07-30 07:02:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.899 2013-07-30 07:20:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1381,6 +1381,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
  const md5_sct * const md5,          /* I [sct] MD5 configuration */
  const nco_bool CPY_GRP_METADATA,    /* I [flg] Copy group metadata (attributes) */
  const nco_bool CPY_VAR_METADATA,    /* I [flg] Copy variable metadata (attributes) */
+ const int nco_pck_plc,              /* I [enm] Packing policy */
  const char * const rec_dmn_nm,      /* I [sng] Record dimension name */
  trv_tbl_sct * const trv_tbl)        /* I/O [sct] GTT (Group Traversal Table) */
 {
@@ -1551,7 +1552,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* Allocate variable structure and fill with metadata */
         var_prc=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);     
 
-        PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc);
+        PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_plc,var_prc);
 
         (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,PCK_ATT_CPY);
       } /* !CPY_VAR_METADATA */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.350 2013-07-26 23:16:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.351 2013-07-30 07:20:07 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.350 2013-07-26 23:16:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.350 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.351 2013-07-30 07:20:07 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.351 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -793,7 +793,7 @@ main(int argc,char **argv)
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file.  */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,(char *)NULL,trv_tbl);
+  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Add new missing values to output file while in define mode */
   if(msk_nm){

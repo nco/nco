@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.50 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.51 2013-07-30 07:20:07 pvicente Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -33,7 +33,7 @@
 
 /* Packing policies: 
    Handle each packing policy in nco_pck_mtd(), nco_pck_val(), nco_var_dfn(), and end of ncpdq */
-enum nco_pck_plc{ /* [enm] Packing policy */
+enum nco_pck_plc_enm{ /* [enm] Packing policy */
   nco_pck_plc_nil, /* 0 [enm] Do not think about packing */
   nco_pck_plc_all_xst_att, /* 1 [enm] Pack all variables, keep existing packing attributes if any */
   nco_pck_plc_all_new_att, /* 2 [enm] Pack all variables, always generate new packing attributes */
