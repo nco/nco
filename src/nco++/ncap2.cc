@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.170 2013-07-19 12:00:19 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.171 2013-07-30 05:11:09 pvicente Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -76,8 +76,6 @@
 #include <gsl/gsl_rng.h>
 
 #endif // !ENABLE_GSL
-#include <netcdf.h> /* netCDF definitions and C library */
-#include "nco_netcdf.h"  /* NCO wrappers for libnetcdf.a */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
@@ -147,8 +145,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.170 2013-07-19 12:00:19 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.170 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.171 2013-07-30 05:11:09 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.171 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.270 2013-03-27 00:33:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.271 2013-07-30 05:11:08 pvicente Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -59,9 +59,6 @@
 # endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
-/* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions and C library */
-#include "nco_netcdf.h"  /* NCO wrappers for libnetcdf.a */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
@@ -131,8 +128,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.270 2013-03-27 00:33:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.270 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.271 2013-07-30 05:11:08 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.271 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_sct **cnk=NULL_CEWI;

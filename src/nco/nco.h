@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.378 2013-07-30 01:17:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.379 2013-07-30 05:11:08 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -241,7 +241,7 @@ extern "C" {
 #endif
 
   /* Backwards-compatibility error codes for netCDF4
-     Currently used only in nco_grp_utl.c */
+     Currently used only in nco_grp_utl.c and nco_netcdf.c */
 #ifndef NC_EBADGRPID
 # define NC_EBADGRPID (-116)    /**< Bad group ID. */
 #endif

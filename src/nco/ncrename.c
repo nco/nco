@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.155 2013-07-24 05:02:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.156 2013-07-30 05:11:08 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -57,9 +57,6 @@
 # endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
-/* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions and C library */
-#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
@@ -99,8 +96,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.155 2013-07-24 05:02:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.155 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.156 2013-07-30 05:11:08 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.156 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.99 2013-07-24 05:02:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.100 2013-07-30 05:11:08 pvicente Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -26,6 +26,7 @@
 #endif /* !ENABLE_PNETCDF */
 
 /* Personal headers */
+#include "nco.h" /* netCDF Operator (NCO) definitions (needed here for Backwards-compatibility error codes for netCDF4 defined in nco.h) */
 #include "nco_typ.h" /* Type definitions, opaque types */
 
 #ifdef __cplusplus
