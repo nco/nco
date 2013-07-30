@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.897 2013-07-30 03:22:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.898 2013-07-30 07:02:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1399,9 +1399,17 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   int grp_out_id; /* [ID] Group ID in output file */ 
   int nbr_gpe_nm; /* [nbr] Number of GPE entries */
   int var_out_id; /* [ID] Variable ID in output file */
+  int prg_id; /* [enm] Program ID */
+
+  nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
+
+  /* Get Program ID */
+  prg_id=prg_get(); 
 
   nbr_gpe_nm=0;
   gpe_nm=NULL;
+
+  /* Get file format */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
 
   /* Isolate extra complexity of copying group metadata */
@@ -1476,7 +1484,12 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
         /* Copy group attributes */
-        if(grp_trv.nbr_att) (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+        if(grp_trv.nbr_att){
+
+          PCK_ATT_CPY=True;
+
+          (void)nco_att_cpy(grp_id,grp_out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
+        } /* Copy group attributes */
 
         /* Memory management after current extracted group */
         if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
@@ -1505,7 +1518,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Detect duplicate GPE names in advance, then exit with helpful error */
       if(gpe)nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(dbg_lvl_get() >= nco_dbg_vrb){
         (void)fprintf(stdout,"%s: INFO %s defining variable <%s> from ",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
         (void)nco_prt_grp_nm_fll(grp_id);
         (void)fprintf(stdout," to ");   
@@ -1521,9 +1534,26 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
-        int var_id;
+
+        int var_id;        /* [id] Variable ID */
+
+        var_sct *var_prc;  /* [sct] Variable to process */
+      
+        /* Get variable ID */
         (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
-        (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,(nco_bool)True);
+
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+
+        /* Get variable ID */
+        (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+
+        /* Allocate variable structure and fill with metadata */
+        var_prc=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);     
+
+        PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc);
+
+        (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,PCK_ATT_CPY);
       } /* !CPY_VAR_METADATA */
 
       /* Pre-allocate space for MD5 attributes */
