@@ -1,6 +1,6 @@
 2013-07-29  Charlie Zender  <zender@uci.edu>
 
-	* Just learned ncpdq unpacking is completely broken in 4.3.3
+	* ncpdq unpacking is broken in 4.3.2-4.3.3 because packing attributes are still written
 
 	* Explode CDL printing of NC_CHAR attributes that contain embedded newlines
 

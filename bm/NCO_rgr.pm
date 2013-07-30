@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.307 2013-07-24 21:34:16 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.308 2013-07-30 02:58:15 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2474,15 +2474,11 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array       
-  
-  
-  
     
 #####################
 #### ncpdq PACK tests 
 #####################       
     
-
 #ncpdq #29
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -P all_new -v upk $in_pth_arg in.nc %tmp_fl_00%";
@@ -2518,7 +2514,6 @@ print "\n";
 #####################
 #### ncpdq GROUP tests 
 #####################    
-
 
 #NEW NCO 4.3.2
 #ncpdq #11
@@ -2574,7 +2569,6 @@ print "\n";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array    
-    
 
 #NEW NCO 4.3.2
 #ncpdq #13
@@ -2602,7 +2596,6 @@ print "\n";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array      
-     
 
 #NEW NCO 4.3.2
 #ncpdq #14
@@ -2622,7 +2615,6 @@ print "\n";
 # ncks -C -g g19g1 -v two_dmn_var out.nc
 #$tst_cmd[2]="lev[0]=500 lat[0]=90 two_dmn_var[0]=17.5 fraction";
 
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -a lev,lat -v two_dmn_var -d lat,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g1 -v two_dmn_var %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable (no -C , MSA) -v two_dmn_var -a lev,lat";
@@ -2631,17 +2623,12 @@ print "\n";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array      
 
-
-
-
-
 #NEW NCO 4.3.2
 #ncpdq #15
 # two_dmn_rec_var(time,lev) 2D variable with record  (-C , no MSA)
 # ncpdq -O -C -a lev,time -v two_dmn_rec_var in.nc out.nc
 # ncks  -d time,1,1 -d lev,1,1 out.nc
 #$tst_cmd[2]="lev[1] time[1] two_dmn_rec_var[11]=2.1 watt meter-2";
-
 
 # same as previous but with group
     
@@ -2652,7 +2639,6 @@ print "\n";
 # ncpdq -O -g g19g2 -C -a lev,time -v two_dmn_rec_var in_grp_3.nc out.nc
 # ncks  -d time,1,1 -d lev,1,1 out.nc
 
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -C -a lev,time -v two_dmn_rec_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g2 -v two_dmn_rec_var -d time,1,1 -d lev,1,1 %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable with record (-C , no MSA) -v two_dmn_rec_var -C -a lev,time";
@@ -2660,7 +2646,6 @@ print "\n";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array      
-
 
 #NEW NCO 4.3.2
 #ncpdq #37
@@ -2670,7 +2655,6 @@ print "\n";
 # $tst_cmd[2]="lev[1]=500 time[1]=2 two_dmn_rec_var[11]=2.1 watt meter-2";
 
 # same #16 as previous but with group
- 
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g2 -a lev,time -v two_dmn_rec_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g2 -d time,1,1 -d lev,1,1  %tmp_fl_00%";
@@ -2680,7 +2664,6 @@ print "\n";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array      
 
-
 #NEW NCO 4.3.2
 #ncpdq #38
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
@@ -2688,9 +2671,7 @@ print "\n";
 # ncks -g g19g2 -v two_dmn_rec_var out.nc
 #  $tst_cmd[2]="lev[0] time[0] two_dmn_rec_var[0]=2.1 watt meter-2";
 
-
 # same as #17 but with group
- 
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g2 -a lev,time -v two_dmn_rec_var -d time,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g2 -v two_dmn_rec_var  %tmp_fl_00%";
@@ -2699,8 +2680,6 @@ print "\n";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array      
-
-
 
 #NEW NCO 4.3.2
 #ncpdq #39
@@ -2718,8 +2697,6 @@ print "\n";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array      
-
-
 
 #####################
 #### ncpdq PACK GROUP tests 
@@ -2751,7 +2728,6 @@ print "\n";
 
 # same as #30 but with group
 
-
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -g g19g4 -h -O -C -P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g4 -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck -d time,5 %tmp_fl_00%";
    $dsc_sng="(Groups) Unpack 1D variable with MSA -C P upk -v rec_var_dbl_mss_val_dbl_pck -d time,0,4 -d time,6";
@@ -2760,9 +2736,22 @@ print "\n";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array  
 
+    $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
+    $dsc_sng="Unpack 1D variable with netCDF convention";
+    $tst_cmd[2]="7";
+    $tst_cmd[3]="SS_OK";
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    $#tst_cmd=0; # Reset array
 
+    $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk --hdf -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
+    $dsc_sng="Unpack 1D variable with HDF convention";
+    $tst_cmd[2]="-8";
+    $tst_cmd[3]="SS_OK";
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    $#tst_cmd=0; # Reset array
 
-    
 ####################
 #### ncrcat tests ## OK !
 ####################
