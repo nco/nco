@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.807 2013-07-30 01:17:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.808 2013-07-30 03:30:23 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -605,6 +605,7 @@ netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.3.4</b>: (<i>In Progress, features completed or being worked on include</i>)
 HDF unpacking <tt>--upk_hdf</tt>;
+<tt>ncpdq</tt> unpacking <a href="#bug_ncpdq_upk">bugfix</a>;
 CDL printing legibility;
 <tt>ncea/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
 <li><b>NCO 4.3.3</b>: (<i>Current Stable Release</i>)
@@ -1740,6 +1741,23 @@ these versions of NCO.
 </ul>
 
 <ul><b>Older Operator-specific Run-time Problems:</b>
+
+<!-- http://nco.sf.net#bug_ncpdq_upk -->
+<a name="bug_ncpdq_upk"></a>
+<li><i><tt>ncpdq</tt> unpacking bug with auxiliary coordinates:</i>
+Versions 4.3.2&ndash;4.3.3 of <tt>ncpdq</tt> did not correctly 
+store unpacked variables.
+These versions unpacked (when specified with <tt>-U</tt> or <tt>-P
+upk</tt>) the values, but inadvertently stored their original packing
+attributes with the unpacked values. 
+This would lead further operators to assume that the values were still
+packed. 
+Hence consecutive operations could lead to incorrect values.
+Fixed in version 4.3.4.
+All <tt>ncpdq</tt> users are encouraged to upgrade.
+NB: this bug did not affect the other arithmetic operators which
+unpack data prior to arithmetic.
+</li>
 
 <!-- http://nco.sf.net#bug_ncks_aux -->
 <a name="bug_ncks_aux"></a>
