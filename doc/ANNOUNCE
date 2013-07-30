@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.594 2013-07-30 01:17:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.595 2013-07-30 03:05:18 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.4 are ready. 
 
@@ -69,7 +69,8 @@ A. Global --upk_hdf switch implements HDF unpacking convention:
 
 BUG FIXES:
 
-A. fxm.
+A. Fix ncpdq unpacking. 
+   http://nco.sf.net/nco.html#bug_upk
 
 KNOWN BUGS NOT YET FIXED:
 
