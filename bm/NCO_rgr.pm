@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.308 2013-07-30 02:58:15 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.309 2013-07-31 02:52:20 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2092,13 +2092,11 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			          
     
-
 #####################
 #### ncpdq tests #### -OK !
 #####################
     $opr_nm='ncpdq';
 ####################
-    
     
 #####################
 #### ncpdq PERMUTE -a (reverse, re-order) tests 
@@ -2170,8 +2168,6 @@ print "\n";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
     
-    
-  
 #NEW NCO 4.3.2 
 #ncpdq #7 MSA stride
 #ncpdq -h -O -a lat,lon,time  -d time,1,3,2 -d lat,1,1,1 -d lon,1,3,2 -v three_dmn_var_dbl  in.nc out.nc 
@@ -2735,6 +2731,15 @@ print "\n";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array  
+
+    $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_01%";
+    $dsc_sng="Unpack 1D variable twice to verify first unpacking does not inadvertently store packing attributes";
+    $tst_cmd[3]="7";
+    $tst_cmd[4]="SS_OK";
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    $#tst_cmd=0; # Reset array
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.146 2013-07-30 01:17:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.147 2013-07-31 02:52:21 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -139,7 +139,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    sng_val_sng[0]='\0';
 	  } /* endif new string */
 	  (void)strcat(sng_val_sng,(prn_flg->cdl) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng));
-	  if(chr_val == '\n' && prn_flg->cdl) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng,prn_ndn+prn_flg->var_fst,spc_sng);
+	  if(chr_val == '\n' && lmn != att_szm1 && prn_flg->cdl) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng,prn_ndn+prn_flg->var_fst,spc_sng);
 	  if(lmn%sng_lng == sng_lngm1){
 	    (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
 	    /* Print commas after non-final strings */
@@ -1274,7 +1274,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 	      sng_val_sng[0]='\0';
 	    } /* endif new string */
 	    (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
-	    if(chr_val == '\n') (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng,prn_ndn+prn_flg->var_fst,spc_sng);
+	    if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng,prn_ndn+prn_flg->var_fst,spc_sng);
 	    if(lmn%sng_lng == sng_lngm1){
 	      (void)fprintf(stdout,"%s\"",sng_val_sng);
 	      /* Print commas after non-final strings */

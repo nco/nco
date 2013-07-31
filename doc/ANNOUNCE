@@ -1,14 +1,21 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.596 2013-07-30 03:30:23 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.597 2013-07-31 02:52:20 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-The current release brings group support to ncra, ncea, and ncrcat. 
-Now ten operators fully support group hierarchies: ncbo, ncea, ncecat, 
-ncflint, ncks, ncpdq, ncra, ncrcat, ncrename, and ncwa. The operators
-that do no yet fully support group hierarchies are ncatted and ncap2.
+Ooops. The last two releases of ncpdq had broken unpacking.
+It unpacked variables correctly, but inadvertently stored the results
+with the original packing attributes. Hence successive operations 
+could try to unpack the variable twice, leading to incorrect results.
+This is enough of a bugfix to cause us to relase 4.3.4 early, before
+converting any more operators to work with groups. Update recommended
+if you ever use ncpdq to unpack. 
+
+There are also a few new features: including more legible CDL printing
+of strings, and a new switch to override the default netCDF unpacking
+algorithm with the HDF unpacking algorithm. 
 
 Multi-slabbing was introduced to NCO by Henry Butowsky in 2002 and
 I've never really understood all its capabilities. I learned a lot
@@ -26,20 +33,6 @@ Charlie
 
 NEW FEATURES:
 
-A. ncra, ncea, and ncrcat now supports groups, Group Path Editing
-   (GPE) and list unions, the same options already supported by ncbo,
-   ncecat, ncflint, ncks, ncpdq, and ncwa.  
-   Features are controlled by -g, -G and --union, respectively.
-   ncra -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
-   ncea -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
-   ncrcat -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
-   http://nco.sf.net/nco.html#ncea
-   http://nco.sf.net/nco.html#ncra
-   http://nco.sf.net/nco.html#ncrcat
-   http://nco.sf.net/nco.html#grp
-   http://nco.sf.net/nco.html#gpe
-   http://nco.sf.net/nco.html#union
-
 A. Multi-slab Algorithm user-ordering with --msa is now documented.
    This eases data re-ordering. A fully documented example uses MSA to
    rotate from a [-180,180) to a [0,360) longitude grid in two steps:
@@ -49,8 +42,10 @@ A. Multi-slab Algorithm user-ordering with --msa is now documented.
    http://nco.sf.net/nco.html#msa_usr_rdr
 
 A. Improve CDL legibility of NC_CHAR attributes with embedded newlines
+   http://nco.sf.net/nco.html#cdl
 
 A. CDL printing explicitly notes group vs. global attributes
+   http://nco.sf.net/nco.html#cdl
 
 A. Global --hdf_upk switch implements HDF unpacking convention:
    HDF unpack definition:    unpacked=scale_factor*(packed-add_offset).
@@ -65,9 +60,11 @@ A. Global --hdf_upk switch implements HDF unpacking convention:
    to know which convention was used.  The user must tell NCO when to 
    use the HDF convention instead of the netCDF convention to unpack.
    This is what we in the bizness call an interoperability issue.
+   ncl_convert2nc modis_1.hdf; ncl_convert2nc modis_2.hdf
    ncbo --upk modis_1.nc modis_2.nc diff.nc
    ncra --upk modis_200*.nc modis_avg.nc
    http://nco.sf.net/nco.html#upk
+   http://nco.sf.net/nco.html#hdf_upk
 
 BUG FIXES:
 
@@ -149,7 +146,7 @@ D. NOT YET FIXED (requires change to DAP protocol)
    strings so MD5 agreement fails 
 
 E. NOT YET FIXED (NCO problem)
-   Correctly read arrays of NC_STRING in ncatted arguments
+   Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
 
    Demonstration:
    ncatted -D 5 -O -a new_string_att,att_var,c,sng,"list","of","str,ings" ~/nco/data/in_4.nc ~/foo.nc

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.204 2013-07-29 23:34:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.205 2013-07-31 02:52:21 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -60,6 +60,17 @@
 #ifndef NC_NOCHECKSUM
 # define NC_NOCHECKSUM 0
 #endif
+
+/* Some netCDF3 stubs for netCDF4 routines need netCDF4-only return codes
+   These netCDF4 tokens are not defined at all in netCDF3-only netcdf.h */
+#ifndef HAVE_NETCDF4_H
+# ifndef NC_EBADGRPID
+#  define NC_EBADGRPID (-116)    /**< Bad group ID. */
+# endif
+# ifndef NC_ENOGRP
+#  define NC_ENOGRP        (-125)    /**< No group found. */
+# endif
+#endif /* HAVE_NETCDF4_H */
 
 /* netcdf.h replaced NC_EFILLVALUE by case NC_ELATEFILL after about netCDF ~4.2.1 */
 #ifdef HAVE_NETCDF4_H

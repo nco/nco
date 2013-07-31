@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.350 2013-07-30 07:20:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.351 2013-07-31 02:52:21 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.350 2013-07-30 07:20:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.350 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.351 2013-07-31 02:52:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.351 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -494,19 +494,19 @@ main(int argc,char **argv)
   } /* end while loop */
 
   /* Set re-order flag */
-  if(dmn_rdr_nbr > 0 ) IS_REORDER=True; 
+  if(dmn_rdr_nbr > 0) IS_REORDER=True; 
 
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
     if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
     if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
-  }
+  } /* dmn_rdr_nbr != 0 */
 
   /* From this point forward, assume ncpdq operator packs or re-orders, not both */
   if(dmn_rdr_nbr > 0 && nco_pck_plc != nco_pck_plc_nil){
     (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",prg_nm,prg_nm,prg_nm);
     nco_exit(EXIT_FAILURE);
-  } 
+  } /* endif */
 
   /* Create reversed dimension list */
   if(dmn_rdr_nbr > 0 ){

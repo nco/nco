@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.900 2013-07-30 21:26:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.901 2013-07-31 02:52:20 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1535,7 +1535,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
-
         int var_id;        /* [id] Variable ID */
 
         var_sct *var_prc;  /* [sct] Variable to process */
@@ -3840,7 +3839,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
     nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
-    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc_1);
+    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_plc_nil,var_prc_1);
 
     /* If output group does not exist, create it */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -4020,14 +4019,13 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     var_prc_out=(var_sct *)nco_free(var_prc_out);
     grp_out_fll=(char *)nco_free(grp_out_fll);
     return;
-  }
+  } /* endif */
 
   /* Define mode */
   if(flg_dfn){  
-
     nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
-    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_map_nil,var_prc_1);
+    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_plc_nil,var_prc_1);
 
     /* If output group does not exist, create it */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -4074,23 +4072,23 @@ nco_pck_cpy_att                        /* [fnc] Inquire about copying packing at
  const var_sct * const var_prc)        /* I [sct] Variable */
 {
   nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
-
+  
   /* Copy all attributes except in cases where packing/unpacking is involved
-  0. Variable is unpacked on input, unpacked on output
-  --> Copy all attributes
-  1. Variable is packed on input, is not altered, and remains packed on output
-  --> Copy all attributes
-  2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
-  --> Copy all attributes except scale_factor and add_offset
-  3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
-  --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
-  4. Variable is not packed on input, packing is performed, and output is packed
-  --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
+     0. Variable is unpacked on input, unpacked on output
+     --> Copy all attributes
+     1. Variable is packed on input, is not altered, and remains packed on output
+     --> Copy all attributes
+     2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
+     --> Copy all attributes except scale_factor and add_offset
+     3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
+     --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
+     4. Variable is not packed on input, packing is performed, and output is packed
+     --> Copy all attributes, define dummy values for scale_factor and add_offset now, and write those values later, when they are known */
 
   /* Do not copy packing attributes "scale_factor" and "add_offset" 
-  if variable is packed in input file and unpacked in output file 
-  Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
-  Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
+     if variable is packed in input file and unpacked in output file 
+     Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
+     Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
   /* Copy exising packing attributes, if any, unless... */
   if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
     prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
@@ -4099,7 +4097,7 @@ nco_pck_cpy_att                        /* [fnc] Inquire about copying packing at
     PCK_ATT_CPY=False;
 
   /* Do not copy packing attributes when unpacking variables 
-  ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
+     ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
   if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
     PCK_ATT_CPY=False;  
 
