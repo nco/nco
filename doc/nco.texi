@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.824 2013-08-01 06:55:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.825 2013-08-01 17:56:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -55,6 +55,8 @@ cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSI
 # 20120203 Copy all nco.html PNG images (takes additional time)
 cd ~/nco/doc;/usr/bin/scp nco_*.png zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 cd ~/nco/doc;scp -p nco_*.png dust.ess.uci.edu:/var/www/html/nco;cd -
+# 20130801 Copy nco.texi to Ubuntu machine for quick build-tests
+scp ~/nco/doc/nco.texi givre.ess.uci.edu:nco/doc
 
 NB: @cindex references in footnotes propagate to PDF file, but not to
     HTML files, bug-report sent to makeinfo people 20040229
@@ -107,8 +109,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.5
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 31 July 2013
-@set update-month July 2013
+@set update-date 1 August 2013
+@set update-month August 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 
@@ -384,6 +386,7 @@ Charlie Zender
 * Operator Reference Manual::
 * Contributing::
 * CMIP5 Example::
+* Parallel::
 * CCSM Example::
 * mybibnode::
 * General Index::
@@ -463,7 +466,7 @@ March 2008@*
 Grenoble, France@*
 
 @sp 2
-The end of the NSF SEI grant in August, 2008 curtailed @acronym{NCO}
+The end of the @acronym{NSF} SEI grant in August, 2008 curtailed @acronym{NCO}
 development.  
 Fortunately we could justify supporting Henry Butowsky on other research 
 grants until May, 2010 while he developed the key @command{ncap2}
@@ -7432,11 +7435,11 @@ The binary operators are, in order of precedence:
 To see all operators: @pxref{Operator precedence and associativity} 
 Examples:
 @example
-tm1= time>2 && time <7;  // tm1 = 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 ; type double;
-tm2= time==3 || time>=6; // tm2 = 0, 0, 1, 0, 0, 1, 1, 1, 1, 1 ; type double
-tm3= int(!tm1);          // tm3=  1, 1, 0, 0, 0, 0, 1, 1, 1, 1 ; type int 
-tm4= tm1 && tm2;         // tm4=  0, 0, 1, 0, 0, 1, 0, 0, 0, 0 ; type double;
-tm5= !tm4;               // tm5=  1, 1, 0, 1, 1, 0, 1, 1, 1, 1 ; type double;
+tm1=time>2 && time <7;  // tm1=0, 0, 1, 1, 1, 1, 0, 0, 0, 0 double
+tm2=time==3 || time>=6; // tm2=0, 0, 1, 0, 0, 1, 1, 1, 1, 1 double
+tm3=int(!tm1);          // tm3=1, 1, 0, 0, 0, 0, 1, 1, 1, 1 int
+tm4=tm1 && tm2;         // tm4=0, 0, 1, 0, 0, 1, 0, 0, 0, 0 double
+tm5=!tm4;               // tm5=1, 1, 0, 1, 1, 0, 1, 1, 1, 1 double
 @end example
 	
 @noindent @strong{Regular Assign Operator}@*
@@ -7496,8 +7499,8 @@ result.
 
 Example:
 @example
-RDM2= RDM >>100.0; RDM2=100,100,100,100,126,126,100,100,100, 100; // type double
-RDM2= RDM << 90s ; RDM3=  1,  9, 36, 84, 90, 90, 84, 36,  9,   1; // type int
+RDM2=RDM >>100.0 // 100,100,100,100,126,126,100,100,100,100 double
+RDM2=RDM << 90s  // 1, 9, 36, 84, 90, 90, 84, 36, 9, 1 int
 @end example
 
 @html
@@ -7870,8 +7873,10 @@ To stop the attribute being written use the ram_delete() method or use a bogus v
 @end itemize
 
 @example
-prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS;   // prs_mdp gets attributes from PO
-th_min=1.0 + 2*three_dmn_var_dbl.min($time); // th_min  gets attributes from three_dmn_var_dbl
+// prs_mdp inherits attributes from P0:
+prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS;
+// th_min inherits attributes from three_dmn_var_dbl:
+th_min=1.0 + 2*three_dmn_var_dbl.min($time);
 @end example
 
 If the attribute name contains non-regular characters use ID quoting. See @pxref{ID Quoting}
@@ -7978,10 +7983,10 @@ else @{
 all its non-missing value elements must be logically true, i.e.,
 non-zero. 
 The expression can be of any type. 
-Unlike C there is no short-circuiting of an expression with the OR (||)
-AND (&&) operators. 
+@w{Unlike C} there is no short-circuiting of an expression with the 
+OR (@code{||}) and AND (@code{&&}) operators. 
 The whole expression is evaluated regardless if one of the AND/OR
-operands are true/false.   
+operands are True/False.
 @example
 # Simple example
 if(time>0)
@@ -8000,14 +8005,14 @@ if(fl_typ==fl_typ_gcm)@{
   var_nbr_apx=32;
   lmn_nbr=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Variable size */
   if(nco_op_typ==nco_op_typ_avg)@{
-    lmn_nbr_avg=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Averaging block size */
+    lmn_nbr_avg=1.0*var_nbr_apx*varsz_gcm_4D; // Block size
     lmn_nbr_wgt=dmnsz_gcm_lat; /* [nbr] Weight size */
   @} // !nco_op_typ_avg
 @}else if(fl_typ==fl_typ_stl)@{
   var_nbr_apx=8;
   lmn_nbr=1.0*var_nbr_apx*varsz_stl_2D; /* [nbr] Variable size */
   if(nco_op_typ==nco_op_typ_avg)@{
-    lmn_nbr_avg=1.0*var_nbr_apx*varsz_stl_2D; /* [nbr] Averaging block size */
+    lmn_nbr_avg=1.0*var_nbr_apx*varsz_stl_2D; // Block size
     lmn_nbr_wgt=dmnsz_stl_lat; /* [nbr] Weight size */
   @} // !nco_op_typ_avg
 @} // !fl_typ
@@ -8016,7 +8021,8 @@ if(fl_typ==fl_typ_gcm)@{
 @noindent @strong{Conditional Operator @*}
 @example
 // netCDF4 needed for this example
-th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : three_dmn_var_sht.int() ); 
+th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : \
+       three_dmn_var_sht.int()); 
 @end example
 
 @html
@@ -11603,9 +11609,9 @@ the record dimension size if the requested record hyperslab
 @command{ncea} recomputes the record dimension hyperslab limits for
 each input file so that coordinate limits may be used to select equal
 length timeseries from unequal length files.
-@cindex IPCC
-@cindex AR4
-@cindex CMIP
+@cindex @acronym{IPCC}
+@cindex @acronym{AR4}
+@cindex @acronym{CMIP}
 This simplifies analysis of unequal length timeseries from simulation
 ensembles (e.g., the @acronym{CMIP3} @acronym{IPCC} @acronym{AR4}
 archive).   
@@ -14726,7 +14732,7 @@ NCO Spiral Logo
 Single bug reports and fixes
 @cindex Wenshan Wang
 @item Wenshan Wang
-CMIP5 and MODIS processing documentation.
+@acronym{CMIP5} and MODIS processing documentation.
 @end table
 Please let me know if your name was omitted!
 
@@ -14787,16 +14793,28 @@ Comments on the proposals and letters of support are also very welcome.
 @html
 <a name="cmip5"></a> <!-- http://nco.sf.net/nco.html#cmip5 -->
 @end html
-@node CMIP5 Example, CCSM Example, Contributing, Top
-@chapter CMIP5 Example
-@cindex CMIP
+@node CMIP5 Example, Parallel, Contributing, Top
+@chapter @acronym{CMIP5} Example
+@cindex @acronym{CMIP}
 This @uref{http://nco.sf.net/xmp_cesm.html,Wonderful CMIP5 Documentation}
 shows complete processing of the @acronym{CMIP5} dataset.
 
 @html
+<a name="parallel"></a> <!-- http://nco.sf.net/nco.html#parallel -->
+@end html
+@node Parallel, CCSM Example, CMIP5 Example, Top
+@chapter Parallel
+@cindex @command{parallel}
+This section will describe scripting strategies, including the use of
+@acronym{GNU} Parallel, to @acronym{NCO}.
+@example
+ls *historical*.nc | parallel ncks -O -d time,"1950-01-01","2000-01-01" @{@} 50y/@{@}
+@end example
+
+@html
 <a name="ccsm"></a> <!-- http://nco.sf.net/nco.html#ccsm -->
 @end html
-@node CCSM Example, mybibnode, CMIP5 Example, Top
+@node CCSM Example, mybibnode, Parallel, Top
 @chapter CCSM Example
 @cindex CCSM
 
@@ -14979,8 +14997,9 @@ Task 3: Regional processing
 Let's say you are interested in examining the California region.
 Hyperslab your dataset to isolate the appropriate latitude/longitudes.
 
-  ncks -O -D 1 -d lat,30.0,37.0 -d lon,240.0,270.0 \ 
-    $@{drc_out@}/$@{caseid@}_clm_0112.nc $@{drc_out@}/$@{caseid@}_clm_0112_Cal.nc
+ncks -O -D 1 -d lat,30.0,37.0 -d lon,240.0,270.0 \ 
+    $@{drc_out@}/$@{caseid@}_clm_0112.nc \
+    $@{drc_out@}/$@{caseid@}_clm_0112_Cal.nc
 
 The dataset is now much smaller!
 To examine particular metrics.
@@ -14992,12 +15011,14 @@ OPeNDAP server examples:
 
 UCI DAP servers:
 ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
-ncrcat -O -C -D 3 -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
+ncrcat -O -C -D 3 \
+  -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
   -l /tmp in.nc in.nc ~/foo.nc
 
 Unidata DAP servers:
 ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
-ncrcat -O -C -D 3 -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods \
+ncrcat -O -C -D 3 \
+  -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods \
   -l /tmp in.nc in.nc ~/foo.nc
 
 NOAA DAP servers:
