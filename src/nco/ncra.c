@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.331 2013-08-01 02:22:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.332 2013-08-01 03:36:09 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.331 2013-08-01 02:22:22 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.331 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.332 2013-08-01 03:36:09 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.332 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1225,16 +1225,35 @@ main(int argc,char **argv)
   /* Define dimensions, extracted groups, variables, and attributes in output file.  */
   (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
+  /* Turn off default filling behavior to enhance efficiency */
+  (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+
+  /* Take output file out of define mode */
+  if(hdr_pad == 0UL){
+    (void)nco_enddef(out_id);
+  }else{
+    (void)nco__enddef(out_id,hdr_pad);
+    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+  } /* hdr_pad */
+
+  /* Zero start and stride vectors for all output variables */
+  (void)nco_var_srd_srt_set(var_out,xtr_nbr);
+
+   /* Copy variable data for non-processed variables. NOTE. GTT version */
+  (void)nco_cpy_fix_var_trv(in_id,out_id,gpe,trv_tbl);  
+
+  /* Close first input netCDF file */
+  nco_close(in_id);
 
 
 
 
+
+
+  /* Close output file and move it from temporary to permanent location */
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
 #endif /* USE_TRV_API */
-
-
-
-
 
 
   /* Clean memory unless dirty memory allowed */
