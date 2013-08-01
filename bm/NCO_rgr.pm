@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.310 2013-08-01 05:02:06 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.311 2013-08-01 05:05:53 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2733,7 +2733,7 @@ print "\n";
    $#tst_cmd=0; # Reset array  
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_01%";
     $dsc_sng="Unpack 1D variable twice to verify first unpacking does not inadvertently store packing attributes";
     $tst_cmd[3]="7";
