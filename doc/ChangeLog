@@ -1,5 +1,7 @@
 2013-07-31  Charlie Zender  <zender@uci.edu>
 
+	* Add ncpdq regression test to re-pack 1D variable from HDF convention to netCDF convention
+
 	* Move header information from nco_netcdf.c to nco_netcdf.h
 
 	* Tidy UDUnits parsing/handling code

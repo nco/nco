@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.808 2013-07-30 03:30:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.809 2013-08-01 05:19:29 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -142,7 +142,8 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2013 Aug&nbsp;??: NCO 4.3.4 (<tt>ncea</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups) (<i>In progress</i>)
+<li>2013 Aug&nbsp;??: NCO 4.3.5 (<tt>ncea</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups) (<i>In progress</i>)
+<li>2013 Aug&nbsp;??: NCO 4.3.4 (<tt>ncpdq</tt> bugfix)
 <li>2013 Jul&nbsp;24: NCO 4.3.3 (<tt>ncrename</tt>, <tt>ncwa</tt> groups, CDL, XML)
 <li>2013 Jul&nbsp;05: NCO 4.3.2 (<tt>ncflint</tt>, <tt>ncpdq</tt> groups)</li>
 <li>2013 Jun&nbsp;03: Submitted NASA ACCESS 2013 <a href="http://dust.ess.uci.edu/prp/prp_axs/prp_axs.pdf">proposal</a></li>
@@ -600,14 +601,15 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.3.5</b>: (<i>Future</i>) 
+<li><b>NCO 4.3.6</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 Optimize diskless files?;</li>
-<li><b>NCO 4.3.4</b>: (<i>In Progress, features completed or being worked on include</i>)
-HDF unpacking <tt>--upk_hdf</tt>;
-<tt>ncpdq</tt> unpacking <a href="#bug_ncpdq_upk">bugfix</a>;
-CDL printing legibility;
+<li><b>NCO 4.3.5</b>: (<i>In Progress, features completed or being worked on include</i>)
 <tt>ncea/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
+<li><b>NCO 4.3.4</b>: 
+HDF unpacking <tt>--hdf_upk</tt>;
+<tt>ncpdq</tt> unpacking <a href="#bug_ncpdq_upk">bugfix</a>;
+CDL printing legibility;</li>
 <li><b>NCO 4.3.3</b>: (<i>Current Stable Release</i>)
 CDL printing <tt>ncks --cdl</tt>;
 <tt>ncrename -g</tt>;

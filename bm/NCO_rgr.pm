@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.311 2013-08-01 05:05:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.312 2013-08-01 05:19:29 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2754,6 +2754,15 @@ print "\n";
     $dsc_sng="Unpack 1D variable with HDF convention";
     $tst_cmd[2]="-8";
     $tst_cmd[3]="SS_OK";
+    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+    $#tst_cmd=0; # Reset array
+
+    $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P xst_new --hdf -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_01%";
+    $dsc_sng="Re-pack 1D variable from HDF convention to netCDF convention";
+    $tst_cmd[3]="-8";
+    $tst_cmd[4]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
 
