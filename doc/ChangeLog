@@ -1,3 +1,14 @@
+2013-08-01  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.5 release procedure:
+ 	Changes since nco-4_3_4: fxm
+	cd ~/nco;cvs tag -d ncoa-4_3_5;cvs tag -d nco-4_3_5-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.5 release"
+	cvs tag -c nco-4_3_5;cvs tag -c nco-4_3_5-1
+
+	* FC19 will not build current nco.texi, but Ubuntu will. Not sure why.
+	Until fixing this, all documentation must be built on Ubuntu.
+
 2013-07-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.4 release procedure:

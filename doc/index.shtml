@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.810 2013-08-01 06:10:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.811 2013-08-01 06:55:10 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -606,11 +606,11 @@ netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.3.5</b>: (<i>In Progress, features completed or being worked on include</i>)
 <tt>ncea/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
-<li><b>NCO 4.3.4</b>: 
+<li><b>NCO 4.3.4</b>: (<i>Current Stable Release</i>) 
 HDF unpacking <tt>--hdf_upk</tt>;
 <tt>ncpdq</tt> unpacking <a href="#bug_ncpdq_upk">bugfix</a>;
 CDL printing legibility;</li>
-<li><b>NCO 4.3.3</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.3.3</b>:
 CDL printing <tt>ncks --cdl</tt>;
 <tt>ncrename -g</tt>;
 <tt>ncwa</tt> groups with <tt>-g -G --unn</tt>;</li>

@@ -1,90 +1,48 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.599 2013-08-01 06:10:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.600 2013-08-01 06:55:10 zender Exp $ -*-text-*-
 
-The netCDF Operators NCO version 4.3.4 are ready. 
+The netCDF Operators NCO version 4.3.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Ooops. The last two releases of ncpdq had broken unpacking.
-It unpacked variables correctly, but inadvertently stored the results 
-with the original packing attributes. Successive operations would
-therefore unpack the variable twice, leading to incorrect results.
-This annoys us enough to relase 4.3.4 early, before converting any
-more operators to work with groups. Upgrade recommended if you ever
-use ncpdq to unpack.  
+The current release brings group support to ncra, ncea, and ncrcat. 
+Now ten operators fully support group hierarchies: ncbo, ncea, ncecat, 
+ncflint, ncks, ncpdq, ncra, ncrcat, ncrename, and ncwa. The operators
+that do no yet fully support group hierarchies are ncatted and ncap2.
 
-There are also a few new features: including more legible CDL printing
-of strings, and a new switch that overrides the default netCDF
-unpacking algorithm with the HDF unpacking algorithm. 
-
-Multi-slabbing was introduced to NCO by Henry Butowsky in 2002 and
-I've never fully understood all its capabilities. I learned a lot
-more about MSA in the last few weeks, and have now documented it.
-Read the docs referenced below and you too may be surprised at how
-easy MSA makes complex dataset manipulation like rotating grids. 
-
-Work on NCO 4.3.5 is underway and includes improved netCDF4 support
-for more NCO operators (ncatted, ncea, ncra, ncrcat) and improved
-support for HDF4 files. 
+Work on NCO 4.3.6 is underway and includes improved netCDF4 support
+for more NCO operators (ncatted) and improved support for HDF4 files. 
 
 Enjoy,
 Charlie
 
-"New stuff" in 4.3.4 summary (full details always in ChangeLog):
+"New stuff" in 4.3.5 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
-A. Improve CDL legibility of NC_CHAR attributes with embedded newlines
-   http://nco.sf.net/nco.html#cdl
-
-B. Global --hdf_upk switch implements HDF unpacking convention:
-   HDF unpack definition:    unpacked=scale_factor*(packed-add_offset).
-   netCDF unpack definition: unpacked=(scale_factor*packed)+add_offset.
-   See the difference?
-   NCO automatically unpacks data before performing arithmetic, and by
-   default NCO uses the netCDF convention. Data originally from an HDF
-   file (e.g., NASA EOS) may well be packed with the HDF convention
-   and must be unpacked with the same convention. Users must tell NCO
-   when to use the HDF convention instead of the netCDF convention.
-   This is what we in the bizness call an interoperability issue.
-   Know what are doing when you use this switch. The wrong algorithm
-   will hopefully produce _noticeably_ bad results, but maybe not.
-   ncl_convert2nc modis_1.hdf modis_2.hdf modis_200*.hdf
-   ncbo --hdf_upk modis_1.nc modis_2.nc diff.nc
-   ncra --hdf_upk modis_200*.nc modis_avg.nc
-   ncwa --hdf_upk modis_1.hdf modis_avg.nc
-   ncpdq --hdf_upk -P xst_new modis_1.nc modis_1.nc
-   http://nco.sf.net/nco.html#upk
-   http://nco.sf.net/nco.html#hdf_upk
-   http://nco.sf.net/nco.html#ncpdq
-
-C. Multi-slab Algorithm user-ordering with --msa is now documented.
-   This eases data re-ordering. A fully documented example uses MSA to
-   rotate from a [-180,180) to a [0,360) longitude grid in two steps:
-   ncks -O --msa -d Lon,0.,180. -d Lon,-180.,-1.0 in.nc out.nc
-   ncap2 -O -s 'where(Lon < 0) Lon=Lon+360' out.nc out.nc
-   http://nco.sf.net/nco.html#msa
-   http://nco.sf.net/nco.html#msa_usr_rdr
+A. ncra, ncea, and ncrcat now supports groups, Group Path Editing
+   (GPE) and list unions, the same options already supported by ncbo,
+   ncecat, ncflint, ncks, ncpdq, and ncwa.  
+   Features are controlled by -g, -G and --union, respectively.
+   ncra -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
+   ncea -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
+   ncrcat -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
+   http://nco.sf.net/nco.html#ncea
+   http://nco.sf.net/nco.html#ncra
+   http://nco.sf.net/nco.html#ncrcat
+   http://nco.sf.net/nco.html#grp
+   http://nco.sf.net/nco.html#gpe
+   http://nco.sf.net/nco.html#union
 
 BUG FIXES:
 
-A. Fix ncpdq unpacking.
-   Versions 4.3.2-4.3.3 of ncpdq did not correctly store unpacked
-   variables. These versions unpacked (when specified with -U or -P
-   upk) the values, but inadvertently stored their original packing 
-   attributes with the unpacked values. This could lead further
-   operators to assume that the values were still packed. Hence
-   consecutive operations could lead to incorrect values. 
-   All ncpdq users are encouraged to upgrade.
-   NB: this bug did not affect the other arithmetic operators which
-   unpack data prior to arithmetic.
-   http://nco.sf.net/nco.html#bug_ncpdq_upk
+A. Hi
 
 KNOWN BUGS NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.3.4 built/tested with netCDF
+   These problems occur with NCO 4.3.5 built/tested with netCDF
    4.3.0 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
