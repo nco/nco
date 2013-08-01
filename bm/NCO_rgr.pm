@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.312 2013-08-01 05:19:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.313 2013-08-01 05:44:02 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -718,6 +718,22 @@ print "\n";
     $tst_cmd[5]="ncap2 -t1 -h -v -O -s 'n2= ( (fabs(R)<0.01) && (fabs(S)<0.01) && (fabs(T)<0.01) && (fabs(U)<0.01) && (fabs(V)<0.01) && (fabs(W)<0.01) && (fabs(X)<0.01) );print(n2)' %tmp_fl_03% %tmp_fl_04%";
     $tst_cmd[6]="n2 = 1";
     $tst_cmd[7]="NO_SS";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+    
+    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v pck_7 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
+    $dsc_sng="Ensemble mean of variable packed with netCDF convention across three files";
+    $tst_cmd[2]="7";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+    
+    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg --hdf_upk -v pck_7 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
+    $dsc_sng="Ensemble mean of variable packed with HDF convention across three files";
+    $tst_cmd[2]="-8";
+    $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     

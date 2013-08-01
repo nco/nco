@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.819 2013-08-01 05:19:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.820 2013-08-01 05:44:02 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7157,7 +7157,7 @@ in-depth examples of @command{ncap2} solutions to complex problems.
 SYNTAX
 @example
 ncap2 [-3] [-4] [-6] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] 
-[-D @var{dbg}] [-F] [-f] [-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}]
+[-D @var{dbg}] [-F] [-f] [-h] [--hdf] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}]
 [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
 @var{input-file} [@var{output-file}]  
@@ -11573,7 +11573,7 @@ SYNTAX
 @example
 ncea [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [--hdr_pad @var{nbr}] 
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
@@ -11706,7 +11706,7 @@ SYNTAX
 ncecat [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdr_pad @var{nbr}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [-n @var{loop}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
@@ -13031,7 +13031,7 @@ SYNTAX
 ncpdq [-3] [-4] [-6] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
-[-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
+[-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
 [-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-U] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x]
@@ -13588,7 +13588,7 @@ SYNTAX
 ncra [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [-F]
-[-h] [--hdr_pad @var{nbr}][-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
+[-h] [--hdf] [--hdr_pad @var{nbr}][-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rec_apn]
 [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -13837,7 +13837,7 @@ SYNTAX
 @example
 ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
 [-d @var{old_name},@var{new_name}] [-d @dots{}] [-g @var{old_name},@var{new_name}] [-g @dots{}] 
-[-h] [--hdr_pad @var{nbr}] [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
+[-h] [--hdf] [--hdr_pad @var{nbr}] [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-v @var{old_name},@var{new_name}] [-v @dots{}]
 @var{input-file} [[@var{output-file}]]
 @end example
