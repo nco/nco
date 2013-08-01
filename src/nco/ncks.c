@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.646 2013-07-30 07:20:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.647 2013-08-01 05:02:07 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -151,8 +151,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.646 2013-07-30 07:20:06 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.646 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.647 2013-08-01 05:02:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.647 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -431,6 +431,12 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")) PRN_DMN_VAR_NM=False;
       if(!strcmp(opt_crr,"tst_udunits")){ 
+	/* Use this feature with, e.g.,
+	   ncks --tst_udunits=meters,centimeters ~/nco/data/in.nc
+	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',standard ~/nco/data/in.nc
+	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',360_day ~/nco/data/in.nc
+	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',365_day ~/nco/data/in.nc
+	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',366_day ~/nco/data/in.nc */
         char *cp;
         char **args;
         double crr_val;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.380 2013-08-01 02:22:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.381 2013-08-01 05:02:07 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -326,6 +326,8 @@ extern "C" {
 #define NCO_NOERR 1
 /* Internal NCO return code indicating failure */
 #define NCO_ERR 0
+/* UDUnits return code indicating success */
+#define UDUNITS_NOERR 0
 
   /* NB: Use EXIT_SUCCESS and EXIT_FAILURE as return codes to shell (e.g., Bash, Csh), not to other functions
      Shell exit codes (where 0 indicates success) are traditionally opposite C-function (not C-program) exit codes (where 0 indicates failure)
@@ -470,7 +472,7 @@ extern "C" {
     cln_std=1, /* Standard mixed Julian/Gregorian */
     cln_grg, /* Gregorian Calendar */ 
     cln_jul, /* Julian Calendar */ 
-    cln_360 , /* 30 days a month Calendar */ 
+    cln_360, /* 30-day month Calendar */ 
     cln_365, /* No Leap year Calendar */ 
     cln_366, /* Leap year Calendar */ 
     cln_nil /* No calendar found */

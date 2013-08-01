@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.309 2013-07-31 02:52:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.310 2013-08-01 05:02:06 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1105,7 +1105,7 @@ print "\n";
     
 #ncks #11
     
-    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lon_cal -d lon_cal,'1964-3-1 0:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v lon_cal -d lon_cal,'1964-3-1 00:00:0.0','1964-3-4 00:00:0.0' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -O -v -C -s 'lon_cln_ttl=lon_cal.total();print(lon_cln_ttl)' %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="lon_cln_ttl = 10";
     $dsc_sng="dim slice using UDUnits library and cal 365_days (fails without UDUnits library support)";

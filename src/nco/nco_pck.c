@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.94 2013-07-30 01:17:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.95 2013-08-01 05:02:07 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -1081,8 +1081,9 @@ nco_var_upk /* [fnc] Unpack variable in memory */
      Hence unpacking NASA SDS data requires re-ordering and re-defining the netCDF-standard unpacking algorithm */
 
   /* Test unpacking conventions:
-     ncpdq -O -U       -v pck_.? ~/nco/data/in.nc ~/foo.nc 
-     ncpdq -O -U --hdf -v pck_.? ~/nco/data/in.nc ~/foo.nc */
+     ncpdq -O -C -U       -v ^pck_.? ~/nco/data/in.nc ~/foo.nc # Unpack netCDF
+     ncpdq -O -C -U --hdf -v ^pck_.? ~/nco/data/in.nc ~/foo.nc # Unpack HDF
+     ncpdq -O -C -P --hdf -v ^pck_.? ~/nco/data/in.nc ~/foo.nc # Unpack HDF and re-pack netCDF */
 
   if(nco_upk_cnv_get() == nco_upk_netCDF){
     /* netCDF unpack definition: unpacked=(scale_factor*packed)+add_offset */

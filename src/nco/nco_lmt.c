@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.190 2013-07-17 02:29:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.191 2013-08-01 05:02:07 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -440,20 +440,27 @@ nco_lmt_typ /* [fnc] Determine limit type */
 {
   /* Purpose: Determine type of user-specified limit */
 
-  /* Test for UDUnits unit string, then for simple coordinate, 
-  then date/time string (i.e., YYYY-MM-DD), else default to dimensional index */
-  if(strchr(sng,' ')) /* Space delimits user-specified units */
-    return lmt_udu_sng;
-  if(strchr(sng,'.') ) /* Decimal point (most common so check first) */
-    return lmt_crd_val;
-  if(strchr(sng,'E') || strchr(sng,'e') || /* Exponential */
-    strchr(sng,'D') || strchr(sng,'d')) /* Double */
-    /* Limit is "simple" (non-UDUnits) coordinate value */
-    return lmt_crd_val;
+  /* Test for UDUnits unit string, then simple coordinate, 
+     then date/time string (i.e., YYYY-MM-DD), else default to dimensional index */
 
-  /* Check for date-like string */   
-  if(strchr(sng,'-') && ((char *)strchr(sng,'-') != (char *)sng)){
+  /* Space delimits user-specified units, e.g., "3 meters" */
+  if(strchr(sng,' ')) return lmt_udu_sng;
+  /* Colon delimits user-specified units, e.g., '1918-11-11 11:00:0.0' */
+  if(strchr(sng,':')) return lmt_udu_sng;
+
+  /* Decimal point (very common so check early), e.g., "3.0" */
+  if(strchr(sng,'.')) return lmt_crd_val;
+
+  /* Non-decimal (non-UDUnits) coordinate value, e.g., "3e10" or "3d10" */
+  if(strchr(sng,'E') || strchr(sng,'e') || strchr(sng,'D') || strchr(sng,'d')) return lmt_crd_val;
+
+  /* Other date-like strings */
+  if(
+     /* String contains non-leading dash with yyyy-mm-dd */
+     (strchr(sng,'-') && ((char *)strchr(sng,'-') != (char *)sng))
+     || False){
     int yyyy,mm,dd;
+    /* Scan for yyyy-mm-dd */
     if(sscanf(sng,"%d-%d-%d",&yyyy,&mm,&dd) == 3) return lmt_udu_sng;
   }  /* endif date-like string */
 
@@ -483,7 +490,6 @@ nco_lmt_get_udu_att /* Returns specified attribute otherwise NULL */
   } /* endif */
   return fl_udu_sng;
 } /* end nco_lmt_get_udu_att() */
-
 
 void
 nco_prt_lmt                    /* [fnc] Print limit information */
@@ -543,8 +549,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 {
   /* NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
   /* Purpose: Take parsed list of dimension names, minima, and
-  maxima strings and find appropriate indices into dimensions 
-  for formulation of dimension start and count vectors, or fail trying. */
+     maxima strings and find appropriate indices into dimensions 
+     for formulation of dimension start and count vectors, or fail trying. */
 
   char *fl_udu_sng=NULL_CEWI;   /* Store units attribute of coordinate dimension */
   char *msg_sng=NULL_CEWI; /* [sng] Error message */
@@ -591,10 +597,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* endif */
 
   /* Logic on whether to allow skipping current file depends on whether limit
-  is specified for record dimension in multi-file operators.
-  This information is not used in single-file operators, though whether
-  the limit is a record limit may be tested.
-  Program defensively and define this flag in all cases. */
+     is specified for record dimension in multi-file operators.
+     This information is not used in single-file operators, though whether
+     the limit is a record limit may be tested.
+     Program defensively and define this flag in all cases. */
   (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
@@ -704,7 +710,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
-      if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != EXIT_SUCCESS) lmt.origin=0.0;
+      if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
 
@@ -784,8 +790,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         nco_exit(EXIT_FAILURE);
       } /* end if */
 
-      if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val)) nco_exit(EXIT_FAILURE);
-      if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val)) nco_exit(EXIT_FAILURE);
+      if(lmt.min_sng)
+	if(nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val) != NCO_NOERR) 
+	  nco_exit(EXIT_FAILURE);
+
+      if(lmt.max_sng)
+	if(nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val) != NCO_NOERR) 
+	  nco_exit(EXIT_FAILURE);
 
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */
@@ -1233,44 +1244,41 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
  const char * const grp_nm_fll,/* I [sng] Full group name (dimension or coordinate) */
  const char * const nm,        /* I [sng] Name (dimension or coordinate) */
  const size_t sz,              /* I [nbr] Size (dimension or coordinate) */
- const nco_bool is_rec,        /* I [flg] Is a record (dimension or coordinate) ? */
- const nco_bool is_crd,        /* I [flg] Is a coordinate variable ? */
+ const nco_bool is_rec,        /* I [flg] Is a record (dimension or coordinate) */
+ const nco_bool is_crd,        /* I [flg] Is a coordinate variable */
  lmt_sct *lmt_ptr)             /* I/O [sct] Structure from nco_lmt_prs() in input, filled on output  */
 {
+  /* Purpose: Take parsed list of dimension names, minima, and maxima strings 
+     and find appropriate indices into dimensions for formulation of 
+     dimension start and count vectors, or fail trying. 
 
-  /* Purpose: Take parsed list of dimension names, minima, and maxima strings and find appropriate indices into dimensions 
-  for formulation of dimension start and count vectors, or fail trying. 
+     Based on original nco_lmt_evl(). Used for both dimensions and coordinate variables.
 
-  Based on original nco_lmt_evl(). Used for both dimensions and coordinate variables
+     Use case example:
+     /lon(4)
+     /g8/lon(2)
+     ncks -d lon,0,3,1 -v lon -H ~/nco/data/in_grp.nc
+     "-d lon,0,3,1" is valid for /lon(4) but not for /g8/lon(2)
+     
+     Reminder:
+     Coordinate values should be specified using real notation with a decimal point required in the value, 
+     whereas dimension indices are specified using integer notation without a decimal point.
 
-  Use case example:
-  /lon(4)
-  /g8/lon(2)
-  ncks -d lon,0,3,1 -v lon -H ~/nco/data/in_grp.nc
-  "-d lon,0,3,1" is valid for /lon(4) but not for /g8/lon(2)
+     ncks -d lat,-90.,90.,1 -H -v area ~/nco/data/in_grp.nc # limit type is defined as lmt_crd_val
+     ncks -d lat,0,1,1 -H -v area ~/nco/data/in_grp.nc # limit type is defined as lmt_dmn_idx
 
-  Reminder:
-  Coordinate values should be specified using real notation with a decimal point required in the value, 
-  whereas dimension indices are specified using integer notation without a decimal point.
-
-  ncks -d lat,-90.,90.,1 -H -v area ~/nco/data/in_grp.nc  # limit type is defined as lmt_crd_val
-  ncks -d lat,0,1,1 -H -v area ~/nco/data/in_grp.nc  # limit type is defined as lmt_dmn_idx
-
-  lmt_crd_val,  0, Coordinate value limit 
-  lmt_dmn_idx,  1, Dimension index limit 
-  lmt_udu_sng   2, UDUnits string 
-
-  Tests:
-  ncks -D 11 -d lon,0.,90.,1 -v lon -H ~/nco/data/in_grp.nc
-  ncks -D 11 -d lon,0,1,1 -v lon -H ~/nco/data/in_grp.nc
-  */
-
+     lmt_crd_val,  0, Coordinate value limit 
+     lmt_dmn_idx,  1, Dimension index limit 
+     lmt_udu_sng   2, UDUnits string 
+     
+     Tests:
+     ncks -D 11 -d lon,0.,90.,1 -v lon -H ~/nco/data/in_grp.nc
+     ncks -D 11 -d lon,0,1,1 -v lon -H ~/nco/data/in_grp.nc */
   
-
   char *fl_udu_sng=NULL_CEWI;     /* [sng] Store units attribute of coordinate dimension */
   char *msg_sng=NULL_CEWI;        /* [sng] Error message */
   char *sng_cnv_rcd=NULL_CEWI;    /* [sng] strtol()/strtoul() return code */
-
+  
   nco_bool flg_no_data_err=False; /* [flg] True if domain brackets no data (and not an MFO/record coordinate) */
   nco_bool flg_no_data_ok=False;  /* [flg] True if file contains no data for hyperslab */
   nco_bool rec_dmn_and_mfo=False; /* [flg] True if record dimension in multi-file operator */
@@ -1296,8 +1304,6 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
   nc_type var_typ=NC_NAT;          /* [enm] Type of variable */
 
- 
-
   lmt=*lmt_ptr;
 
   prg_id=prg_get(); 
@@ -1313,11 +1319,12 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   /* Obtain group ID using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
-  /* Use parameter to inquire about coordinate. NB. There might be cases where a variable with the same 
-     name as dimension exists, but it's not a "real" coordinate, coordinates are 1D 
+  /* Use parameter to inquire about coordinate. 
+     NB: There might be cases where a variable with the same name as dimension exists, 
+     but it is not a "real" 1-D coordinate. Coordinates must be 1D.
      Use case:
-     ncks -O -v ts -d time,0,1 -d Latitude,40.0 -d Longitude,-105.0 http://hydro1.sci.gsfc.nasa.gov/opendap/hyrax/ncml/LPRM_AMSRE_D_SOILM3_timeSeries.ncml amsre.nc     
-     */
+     ncks -O -v ts -d time,0,1 -d Latitude,40.0 -d Longitude,-105.0 http://hydro1.sci.gsfc.nasa.gov/opendap/hyrax/ncml/LPRM_AMSRE_D_SOILM3_timeSeries.ncml amsre.nc */
+
   if(is_crd){
     /* Obtain coordinate variable ID using group ID */
     (void)nco_inq_varid(grp_id,nm,&var_id);
@@ -1333,10 +1340,10 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   lmt.is_rec_dmn=is_rec;
 
   /* Logic on whether to allow skipping current file depends on whether limit
-  is specified for record dimension in multi-file operators.
-  This information is not used in single-file operators, though whether
-  the limit is a record limit may be tested.
-  Program defensively and define this flag in all cases. */
+     is specified for record dimension in multi-file operators.
+     This information is not used in single-file operators, though whether
+     the limit is a record limit may be tested.
+     Program defensively and define this flag in all cases. */
 
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
 
@@ -1406,7 +1413,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   }else{
     /* min_sng and max_sng are not both NULL */
     /* Limit is coordinate value if string contains decimal point or is in exponential format 
-    Otherwise limit is interpreted as zero-based dimension offset */
+       Otherwise limit is interpreted as zero-based dimension offset */
     if(lmt.min_sng) min_lmt_typ=nco_lmt_typ(lmt.min_sng);
     if(lmt.max_sng) max_lmt_typ=nco_lmt_typ(lmt.max_sng);
 
@@ -1444,7 +1451,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
-      if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != EXIT_SUCCESS) lmt.origin=0.0;
+      if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
 
@@ -1525,8 +1532,13 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
         nco_exit(EXIT_FAILURE);
       } /* end if */
 
-      if(lmt.min_sng && nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val)) nco_exit(EXIT_FAILURE);
-      if(lmt.max_sng && nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val)) nco_exit(EXIT_FAILURE);
+      if(lmt.min_sng)
+	if(nco_cln_clc_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val) != NCO_NOERR) 
+	  nco_exit(EXIT_FAILURE);
+
+      if(lmt.max_sng)
+	if(nco_cln_clc_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val) != NCO_NOERR) 
+	  nco_exit(EXIT_FAILURE);
 
     }else{ /* end UDUnits conversion */
       /* Convert user-specified limits into double precision numeric values, or supply defaults */

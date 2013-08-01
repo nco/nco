@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.205 2013-07-31 02:52:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.206 2013-08-01 05:02:07 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -7,84 +7,6 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
-/* nco_netcdf.h is (nearly) independent of NCO and does not depend on nco.h
-   nco_netcdf.h is an abstraction layer for netcdf.h, plus a few convenience routines
-   A similar abstraction layer must exist for each NCO storage backend, e.g., nco_hdf.h
-
-   1. Utility routines, e.g., nco_typ_lng(), c_typ_nm() (routines with no netCDF library counterpart)
-   2. File-routine wrappers, e.g., nco_open()
-   3. Dimension-routine wrappers, e.g., nco_dimid()
-   4. Variable-routine wrappers, e.g., nco_get_var()
-   5. Attribute-routine wrappers, e.g., nco_put_att()
-
-   Name Convention: Where appropriate, routine name is identical to netCDF C-library name,
-   except nc_ is replaced by nco_
-
-   Argument Ordering Convention: Routines follow same argument order as netCDF C-library
-   Additional arguments, such as nc_type, are appended to end of argument list
-
-   Return value convention: Functions return a success/failure code
-   Errors in netCDF functions cause NCO wrapper to abort, except *_flg() wrappers
-   *_flg() wrappers allow limited, pre-defined, netCDF errors to be non-fatal
-
-   Circularity convention: It is important that none of the error diagnostics
-   in these functions call other nco_??? routines because if everything
-   starts failing then errors will produce circular diagnostics.
-   To ensure this is the case, it is only safe to print diagnostics on
-   variables which are supposed to be valid on input. */
-
-/* NB: 
-   nco_netcdf.c does #include nco_typ.h which #defines some forward-compatibility tokens
-   nco_netcdf.c does not #include nco.h which #defines some forward-compatibility tokens
-   This barrier helps segregate NCO from wrappers
-   Re-define minimal sub-set of tokens for nco_netcdf.c as necessary
-   This is small exception to the barrier */
-#ifndef NC_FORMAT_CLASSIC
-# define NC_FORMAT_CLASSIC (1)
-#endif
-#ifndef NC_FORMAT_64BIT
-# define NC_FORMAT_64BIT   (2)
-#endif
-#ifndef NC_FORMAT_NETCDF4
-# define NC_FORMAT_NETCDF4 (3)
-#endif
-#ifndef NC_FORMAT_NETCDF4_CLASSIC
-# define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
-#endif
-#ifndef NC_CHUNKED
-# define NC_CHUNKED (0)
-#endif
-#ifndef NC_CONTIGUOUS
-# define NC_CONTIGUOUS (1)
-#endif
-#ifndef NC_NOCHECKSUM
-# define NC_NOCHECKSUM 0
-#endif
-
-/* Some netCDF3 stubs for netCDF4 routines need netCDF4-only return codes
-   These netCDF4 tokens are not defined at all in netCDF3-only netcdf.h */
-#ifndef HAVE_NETCDF4_H
-# ifndef NC_EBADGRPID
-#  define NC_EBADGRPID (-116)    /**< Bad group ID. */
-# endif
-# ifndef NC_ENOGRP
-#  define NC_ENOGRP        (-125)    /**< No group found. */
-# endif
-#endif /* HAVE_NETCDF4_H */
-
-/* netcdf.h replaced NC_EFILLVALUE by case NC_ELATEFILL after about netCDF ~4.2.1 */
-#ifdef HAVE_NETCDF4_H
-# ifndef NC_EFILLVALUE
-#  define NC_EFILLVALUE NC_ELATEFILL
-# endif /* NC_EFILLVALUE */
-# ifndef NC_ELATEFILL
-#  define NC_ELATEFILL NC_EFILLVALUE
-# endif /* NC_ELATEFILL */
-#else /* !HAVE_NETCDF4_H */
-# define NC_ELATEFILL     (-122)    /**< Attempt to define fill value when data already exists. */
-# define NC_EFILLVALUE    (-122)    /**< Attempt to define fill value when data already exists. */
-#endif /* !HAVE_NETCDF4_H */
-
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */

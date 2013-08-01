@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.817 2013-07-31 02:52:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.818 2013-08-01 05:02:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5080,7 +5080,7 @@ pre-built binaries on machines with libraries in different locations.
 The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits}
 package documentation describes the supported formats of time
 dimensions. 
-Among the metadata conventions which adhere to these formats are the  
+Among the metadata conventions that adhere to these formats are the  
 @uref{http://cf-pcmdi.llnl.gov, 
 Climate and Forecast (CF) Conventions} and the 
 @uref{http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html,
@@ -5089,14 +5089,27 @@ The following @samp{-d arguments} extract the same data using
 commonly encountered time dimension formats: 
 @c fxm add more formats here
 @example
--d time,"1918-11-11 11:00:0.0","1939-09-09 00:00:0.0"
+-d time,'1918-11-11 00:00:0.0','1939-09-09 00:00:0.0'
+-d time,'1918-11-11 00:00:0.0','1939-09-09 00:00:0.0'
+-d time,'1918-11-11','1939-09-09'
+-d time,'1918-11-11','1939-9-9'
 @end example
 @noindent
 All of these formats include at least one dash @kbd{-} in a
-non-leading character position (a dash in a leading character position
+non-leading character position (a dash in a leading character position 
 is a negative sign). 
-@acronym{NCO} assumes that a non-leading dash in a limit string
-indicates that a UDUnits date conversion is requested.
+@acronym{NCO} assumes that a space, colon, or non-leading dash in a
+limit string indicates that a UDUnits units conversion is requested.
+Some date formats like YYYYMMDD that are valid in UDUnits are ambiguous
+to @acronym{NCO} because it cannot distinguish a purely numerical date
+(i.e., no dashes or text characters in it) from a coordinate or index
+value: 
+@example
+-d time,1918-11-11 # Interpreted as the date November 11, 1918
+-d time,19181111   # Interpreted as time-dimension index 19181111
+-d time,19181111.  # Interpreted as time-coordinate value 19181111.0
+@end example
+Hence, use the YYYY-MM-DD format rather than YYYYMMDD for dates.
 
 @noindent
 As of version 4.0.0 (January, 2010), @acronym{NCO} supports some
@@ -5176,7 +5189,7 @@ file31.nc time:units="hours since 1990-1-31"
 @end example
 
 @example
-// Find mean noontime temperature in January
+// Mean noontime temperature in January
 ncra -v tpt -d time,"1990-1-1 12:00:00","1990-1-31 23:59:59",24 \
       file??.nc noon.nc    
 
@@ -5947,9 +5960,12 @@ Packed data may be deflated to save additional space.
 
 @unnumberedsubsec Packing Algorithm
 @dfn{Packing}
-The standard netCDF packing algorithm is lossy, and produces data with
+The standard netCDF packing algorithm (described
+@uref{http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html, here})
+produces data with
 the same dynamic range as the original but which requires no more than
 half the space to store.
+Like all packing algorithms, it is @emph{lossy}.
 The packed variable is stored (usually) as type @code{NC_SHORT}
 with the two attributes required to unpack the variable,
 @code{scale_factor} and @code{add_offset}, stored at the original
@@ -5980,7 +5996,7 @@ given type of packed variable.
 The theoretical maximum value for @var{ndrv} is two raised to the
 number of bits used to store the packed variable.
 Thus if the variable is packed into type @code{NC_SHORT}, a two-byte
-datatype, then there are at most @math{2^16 = 65536} distinct values
+datatype, then there are at most @math{2^{16} = 65536} distinct values
 representable.
 In practice, the number of discretely representible values is taken
 to be two less than the theoretical maximum.
@@ -6031,45 +6047,61 @@ unpacked data, i.e., @code{int}, @code{float} or @code{double}.
 @unnumberedsubsec Default Handling of Packed Data
 @cindex interoperability
 @cindex @acronym{HDF} unpacking
-Many @acronym{HDF} files use a packing/unpacking algorithm incompatible
-with the netCDF packing algorithm described above.
-The ``@acronym{HDF} unpacking algorithm'' is
+Many @acronym{HDF} files use the @acronym{HDF} packing/unpacking
+algorithm that is incompatible with the netCDF packing algorithm
+described above.   
+The unpacking component of the @acronym{HDF} algorithm (described
+@uref{http://www.hdfgroup.org/HDF5/doc/UG, here}) is
 @tex
 $$
 \rm
 \eqalign{\hbox{upk} &= \hbox{scale\_factor}\times(\hbox{pck} - \hbox{add\_offset})\cr 
-&= {\hbox{pck}\times(\hbox{max}-\hbox{min})\over\hbox{ndrv}} + {\hbox{min}+\hbox{max}\over2}\cr}
 $$
 @end tex
 @ifnottex
 @sp 1
-@var{upk} = @var{scale_factor}*(@var{pck} - @var{add_offset}) = (@var{max}-@var{min})*@var{pck}/@var{ndrv} + 0.5*(@var{min}+@var{max})@*
+@var{upk} = @var{scale_factor}*(@var{pck} - @var{add_offset})@*
 @sp 1
 @end ifnottex
-Confusingly, this ``@acronym{HDF} packing algorithm'' stores its
-parameters in attributes with the same names as the netCDF algorithm. 
-Data packed with one algorithm (e.g., netCDF) should never be unpack ed
-with the other algorithm (@acronym{HDF} in this case). 
-Doing so will result in incorrect answers.
-Unfortunately, many users are unaware that their datasets are packed,
-and few know the details of the packing algorithm employed.
-This is what we in the bizness call an interoperability issue.
+Confusingly, the (incompatible) netCDF and @acronym{HDF} algorithms both 
+store their parameters in attributes with the same names
+(@code{scale_factor} and @code{add_offset}).
+Data packed with one algorithm should never be unpacked with the other;
+doing so will result in incorrect answers.
+Unfortunately, few users are aware that their datasets may be packed,
+and fewer know the details of the packing algorithm employed.
+This is what we in the ``bizness'' call an @dfn{interoperability} issue
+because it hampers data analysis performed on heterogeneous systems.
 
 As described below, @acronym{NCO} automatically unpacks data before
-performing arithmetic, and by default @acronym{NCO} uses the netCDF
-convention (above).  
-This unpacking occurs silently (as a convenience to the user) since
-there is usually no reason to bother users with these details.
+performing arithmetic.
+This automatic unpacking occurs silently since there is usually no
+reason to bother users with these details. 
 There is as yet no generic way for @acronym{NCO} to know which
-convention was used, so @acronym{NCO} assumes the netCDF convention
-was used unless told otherwise.
-The user must explicitly tell @acronym{NCO} when to use the
-@acronym{HDF} convention instead of the netCDF convention to unpack.  
+packing convention was used, so @acronym{NCO} @emph{assumes} the netCDF 
+convention was used. 
+The same
+convention for unpacking unless explicitly told otherwise with 
+the @samp{--hdf_upk} (also @samp{--hdf_unpack}) switch.
+Until and unless a method of automatically detecting the packing method 
+is devised, it must remain the user's responsibility to tell
+@acronym{NCO} when to use the @acronym{HDF} convention instead of the
+netCDF convention to unpack. 
 
 If your data originally came from an @acronym{HDF} file (e.g.,
 @acronym{NASA} @acronym{EOS}) then it was likely packed with the
-@acronym{HDF} convention and must be unpacked with the same convention.   
-Use the @samp{--hdf_upk} (also @samp{--hdf_unpack}) for this.
+@acronym{HDF} convention and must be unpacked with the same convention.
+Our recommendation is to only request @acronym{HDF} unpacking when you 
+are certain. 
+Most packed datasets encountered by @acronym{NCO} will have used the
+netCDF convention.
+Those that were not will hopefully produce noticeably weird values when
+unpacked by the wrong algorithm.
+Before or after panicking, treat this as a clue to re-try your commands
+with the @samp{--hdf_upk} switch.
+See @ref{ncpdq netCDF Permute Dimensions Quickly} for an easy technique
+to unpack data packed with the @acronym{HDF} convention, and then
+re-pack it with the netCDF convention.
 
 @unnumberedsubsec Default Handling of Packed Data
 All @acronym{NCO} arithmetic operators understand packed data.
@@ -13374,6 +13406,29 @@ Many different packing maps may be used to construct a given file
 by performing the packing on subsets of variables (e.g., with @samp{-v}) 
 and using the append feature with @samp{-A} (@pxref{Appending Variables}).
 
+Users may wish to unpack data packed with the @acronym{HDF} convention,
+and then re-pack it with the netCDF convention so that all their
+datasets use the same packing convention prior to intercomparison.
+@cindex @command{ncl_convert2nc}
+@cindex @acronym{NCL}
+@example
+# Convert HDF file to netCDF file
+ncl_convert2nc modis.hdf
+# Unpack using HDF convention and repack using netCDF convention
+ncpdq --hdf_upk -P xst_new modis.nc modis.nc
+@end example
+The @command{ncl_convert2nc} command distributed with @acronym{NCL}
+is a commonly used tool for converting @acronym{HDF} files to netCDF.
+In this case it produces an output file @file{modis.nc} which preserves
+the @acronym{HDF} packing used in the input file.
+The @command{ncpdq} command first unpacks all packed variables using the
+@acronym{HDF} unpacking algorithm (as specified by @samp{--hdf_upk}), 
+and then repacks those same variables using the netCDF algorithm
+(because that is the only algorithm @acronym{NCO} packs with).
+As described above the @samp{--P xst_new} packing policy only repacks
+variables that are already packed. 
+Not-packed variables are copied directly without loss of precision.
+
 Re-order file @file{in.nc} so that the dimension @code{lon} always
 precedes the dimension @code{lat} and store the results in
 @file{out.nc}:  
@@ -13490,8 +13545,9 @@ ncks -O --mk_rec_dmn time in.nc out.nc # Change "time" to record dimension
 Prior to 4.0.1, the procedure to change an existing fixed dimension into
 a record dimension required three separate commands,
 @command{ncecat} followed by @command{ncpdq}, and then @command{ncwa}.
-It is still instructive to present the original procedure, as it shows
-how multiple operators can achieve the same ends by different means:
+The recommended method is now to use @samp{ncks --fix_rec_dmn}, yet it
+is still instructive to present the original procedure, as it shows how
+multiple operators can achieve the same ends by different means: 
 @cindex degenerate dimension
 @example
 ncecat -O in.nc out.nc # Add degenerate record dimension named "record"

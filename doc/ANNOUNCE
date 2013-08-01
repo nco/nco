@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.597 2013-07-31 02:52:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.598 2013-08-01 05:02:07 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.4 are ready. 
 
@@ -51,20 +51,22 @@ A. Global --hdf_upk switch implements HDF unpacking convention:
    HDF unpack definition:    unpacked=scale_factor*(packed-add_offset).
    netCDF unpack definition: unpacked=(scale_factor*packed)+add_offset.
    See the difference?
-   Be sure you know what are doing when you use this switch!
    NCO automatically unpacks data before performing arithmetic, and by
-   default NCO uses the netCDF convention (above).
-   If your data originally came from an HDF file (e.g., NASA EOS) then
-   it was likely packed with the HDF convention and must be unpacked
-   with the same convention.  There is as yet no generic way for NCO
-   to know which convention was used.  The user must tell NCO when to 
-   use the HDF convention instead of the netCDF convention to unpack.
+   default NCO uses the netCDF convention. Data originally from an HDF
+   file (e.g., NASA EOS) may well be packed with the HDF convention
+   and must be unpacked with the same convention. Users must tell NCO
+   when to use the HDF convention instead of the netCDF convention.
    This is what we in the bizness call an interoperability issue.
-   ncl_convert2nc modis_1.hdf; ncl_convert2nc modis_2.hdf
-   ncbo --upk modis_1.nc modis_2.nc diff.nc
-   ncra --upk modis_200*.nc modis_avg.nc
+   Know what are doing when you use this switch. The wrong algorithm
+   will hopefully produce _noticeably_ bad results, but maybe not.
+   ncl_convert2nc modis_1.hdf modis_2.hdf modis_200*.hdf
+   ncbo --hdf_upk modis_1.nc modis_2.nc diff.nc
+   ncra --hdf_upk modis_200*.nc modis_avg.nc
+   ncwa --hdf_upk modis_1.hdf modis_avg.nc
+   ncpdq --hdf_upk -P xst_new modis_1.nc modis_1.nc
    http://nco.sf.net/nco.html#upk
    http://nco.sf.net/nco.html#hdf_upk
+   http://nco.sf.net/nco.html#ncpdq
 
 BUG FIXES:
 
