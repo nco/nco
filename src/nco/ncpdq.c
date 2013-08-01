@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.351 2013-07-31 02:52:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.352 2013-08-01 21:06:16 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.351 2013-07-31 02:52:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.351 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.352 2013-08-01 21:06:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.352 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -143,6 +143,8 @@ main(int argc,char **argv)
   Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
+
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
   int **dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
 
@@ -168,7 +170,6 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
-  
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
@@ -203,8 +204,6 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
-
-  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -509,7 +508,7 @@ main(int argc,char **argv)
   } /* endif */
 
   /* Create reversed dimension list */
-  if(dmn_rdr_nbr > 0 ){
+  if(dmn_rdr_nbr > 0){
     /* Create reversed dimension list */
     dmn_rvr_rdr=(nco_bool *)nco_malloc(dmn_rdr_nbr*sizeof(nco_bool));
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
@@ -756,6 +755,7 @@ main(int argc,char **argv)
       int grp_id;        /* [ID] Group ID */
       int grp_out_id;    /* [ID] Group ID (output) */
       int var_out_id;    /* [ID] Variable ID (output) */
+
       trv_sct *var_trv;  /* [sct] Variable GTT object */
 
       in_id=in_id_arr[omp_get_thread_num()];
@@ -859,8 +859,7 @@ main(int argc,char **argv)
         /* Get variable ID */
         (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
-        /* nco_var_dfn() pre-defined dummy packing attributes in output file 
-	   only for input variables considered "packable" */
+        /* nco_var_dfn() pre-defined dummy packing attributes in output file only for "packable" input variables */
         if(nco_pck_plc_typ_get(nco_pck_map,var_prc[idx]->typ_upk,(nc_type *)NULL)){
           /* Verify input variable was newly packed by this operator
 	     Writing pre-existing (non-re-packed) attributes here would fail because

@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.826 2013-08-01 19:00:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.827 2013-08-01 21:06:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5094,6 +5094,7 @@ commonly encountered time dimension formats:
 @example
 -d time,'1918-11-11 00:00:0.0','1939-09-09 00:00:0.0'
 -d time,'1918-11-11 00:00:0.0','1939-09-09 00:00:0.0'
+-d time,'1918-11-11T00:00:0.0Z','1939-09-09T00:00:0.0Z'
 -d time,'1918-11-11','1939-09-09'
 -d time,'1918-11-11','1939-9-9'
 @end example
@@ -5116,7 +5117,7 @@ Hence, use the YYYY-MM-DD format rather than YYYYMMDD for dates.
 
 @noindent
 As of version 4.0.0 (January, 2010), @acronym{NCO} supports some
-calendar attributes specified by the CF conventions. 
+calendar attributes specified by the @acronym{CF} conventions. 
 @table @asis
 @item @strong{Supported types:} 
 "365_day"/"noleap", "360_day", "gregorian", "standard" 
@@ -12231,7 +12232,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-3] [-4] [-6] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
+ncks [-3] [-4] [-5] [-6] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
@@ -12257,15 +12258,19 @@ netCDF format to @var{output-file}.
 
 @command{ncks} will print netCDF data in @acronym{ASCII} format to
 @code{stdout}, like @command{ncdump}, but with these differences: 
-@command{ncks} prints data in a tabular format intended to be easy to
-search for the data you want, one datum per screen line, with all
-dimension subscripts and coordinate values (if any) preceding the datum.
-Option @samp{-s} (or long options @samp{--sng_fmt} and @samp{--string})
-lets the user format the data using C-style format strings. 
+By default @command{ncks} prints data in a tabular format intended to be
+easy to search for the data you want, one datum per screen line, with
+all dimension subscripts and coordinate values (if any) preceding the
+datum. 
+Option @samp{-s} (or long options @samp{--sng_fmt} and @samp{--string}) 
+lets the user format the data using C-style format strings, while option
+@samp{--cdl} outputs @acronym{CDL} like @command{ncdump} but in a more
+finely tunable way.
 
-Options @samp{-a}, @samp{-F} , @samp{-H}, @samp{-M}, @samp{-m},
-@samp{-P}, @samp{-Q}, @samp{-q}, @samp{-s}, and @samp{-u} (and their
-long option counterparts) control the formatted appearance of the data.
+Options @samp{-a}, @samp{--cdl}, @samp{-F} , @samp{-H}, @samp{-M}, @samp{-m},
+@samp{-P}, @samp{-Q}, @samp{-q}, @samp{-s}, @samp{-u}, @samp{--xml} (and
+their long option counterparts) control the formatted appearance of the
+data. 
 
 @cindex global attributes
 @cindex attributes, global
@@ -12360,6 +12365,18 @@ Features common to many operators are described in
 @ref{Common features}. 
 
 @table @samp
+
+@html
+<a name="-5"></a> <!-- http://nco.sf.net/nco.html#-5 -->
+@end html
+@cindex @code{-5}
+@item -5 
+Print data to screen alphabetically by group, and alphabetically by
+variable within each group.
+This ordering here is used by default in @acronym{CDL}-mode printing,
+and may be selected for traditional mode printing with @samp{-5}
+(The switch for invocation may change to something more descriptive in
+the future). 
 
 @cindex alphabetization
 @cindex sort alphabetically
@@ -12605,7 +12622,7 @@ netcdf in @{
 
 @} // group /
 @end example
-@command{ncgen} converts @acronym{CDL} mode output into a netCDF file:
+@command{ncgen} converts @acronym{CDL}-mode output into a netCDF file:
 @example
 ncks --cdl -v one ~/nco/data/in.nc > ~/in.cdl
 ncgen -k netCDF-4 -b -o ~/in.nc ~/in.cdl
@@ -12614,7 +12631,7 @@ ncks -v one ~/in.nc
 The @acronym{HDF} version of @command{ncgen} converts @acronym{CDL} into an
 @acronym{HDF} file:
 @example
-ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen
+/usr/local/hdf4/bin/ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen
 hdp dumpsds ~/in.hdf
 @end example
 

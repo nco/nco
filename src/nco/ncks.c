@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.647 2013-08-01 05:02:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.648 2013-08-01 21:06:16 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -151,8 +151,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.647 2013-08-01 05:02:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.647 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.648 2013-08-01 21:06:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.648 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -432,7 +432,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")) PRN_DMN_VAR_NM=False;
       if(!strcmp(opt_crr,"tst_udunits")){ 
 	/* Use this feature with, e.g.,
-	   ncks --tst_udunits=meters,centimeters ~/nco/data/in.nc
+	   ncks --tst_udunits='5 meters',centimeters ~/nco/data/in.nc
 	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',standard ~/nco/data/in.nc
 	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',360_day ~/nco/data/in.nc
 	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',365_day ~/nco/data/in.nc
@@ -447,7 +447,7 @@ main(int argc,char **argv)
         cp=strdup(optarg); 
         args=nco_lst_prs_1D(cp,",",&lmt_nbr);         
         nco_cln_clc_org(args[0],args[1],(lmt_nbr > 2 ? nco_cln_get_cln_typ(args[2]) : cln_nil),&crr_val);        
-        (void)fprintf(stdout,"Units in=%s, units out=%s, difference=%f\n",args[0],args[1],crr_val);
+        (void)fprintf(stdout,"Units in=%s, units out=%s, difference (date) or conversion (non-date) = %f\n",args[0],args[1],crr_val);
         if(cp) cp=(char *)nco_free(cp);
         nco_exit(EXIT_SUCCESS);
       } /* endif "tst_udunits" */

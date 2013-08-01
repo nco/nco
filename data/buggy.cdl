@@ -19,8 +19,6 @@
 netcdf buggy {
 
  dimensions:
-  lat=2;
-  lon=4;
   tm2=unlimited;
   tm3=unlimited;
 
@@ -34,7 +32,47 @@ netcdf buggy {
   // 20130127: Braces are required to disambiguate correct record dimension sizes, but brace syntax was not supported by ncgen until netCDF snapshots ~201211, i.e., post netCDF 4.2.1.1. Uggh.
   tm2_tm3={1.,2.,3.},{4.,5.,6.};
 
- group: g12 { // Level 1
+ group: g1 {
+  dimensions:
+    lat=2;
+    lon=4;
+  variables:
+    double lat(lat);
+    double lon(lon);
+  data:
+    lat=-45,45;
+    lon=0,90,180,270;
+  } // /g1
+
+ group: g2 {
+  dimensions:
+    lat=3;
+    lon=3;
+  variables:
+    double lat(lat);
+    double lon(lon);
+  data:
+    lat=-60,0,60;
+    lon=0,120,240;
+  } // /g2
+
+ group: g3 {
+    dimensions:
+    lat=1;
+    lon=1;
+  variables:
+    float latlon(lat,lon);
+    // float lat2lon4(/g1/lat,/g1/lon);
+    //    float lat3lon3(/g2/lat,/g2/lon);
+    //    float lat2lon3(/g1/lat,/g2/lon);
+  data:
+    latlon=1;
+    // lat2lon4=1,2,3,4,5,6,7,8;
+    // lat3lon3=1,2,3,4,5,6,7,8,9;
+    //    lat2lon3=1,2,3,4,5,6;
+  } // /g3
+
+ group: g12 {
     // Purpose: Test netCDF4 vlen type
     // 20130208: ncgen from netCDF 4.2.1- broken for vlen types
     // Probably broken on all snapshots until ~201211 because brace-handling broken
