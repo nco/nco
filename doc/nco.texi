@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.821 2013-08-01 06:10:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.822 2013-08-01 06:21:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12602,7 +12602,7 @@ ncks -v one ~/in.nc
 @end example
 The @acronym{HDF} version of @command{ncgen} converts @acronym{CDL} into an
 @acronym{HDF} file:
-@begin example
+@example
 ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen
 hdp dumpsds ~/in.hdf
 @end example
