@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.379 2013-07-30 05:11:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.380 2013-08-01 02:22:22 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -830,8 +830,9 @@ extern "C" {
     unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
 
     /* Following are members only used by transformation operators (non-ncks) */
-    dmn_sct **dmn_dgn;      /* [sct] Degenerate (size 1) dimensions used by ncwa */
-    int nbr_dmn_dgn;        /* [sct] Number of degenerate (size 1) dimensions used by ncwa */
+    dmn_sct **dmn_dgn;      /* [sct] (ncwa) Degenerate (size 1) dimensions */
+    int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate (size 1) dimensions */
+    lmt_sct *lmt_rec;       /* [sct] (ncra) Record dimension */
 
 
   } trv_tbl_sct;

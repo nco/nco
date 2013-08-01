@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.901 2013-07-31 02:52:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.902 2013-08-01 02:22:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4939,6 +4939,28 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         } /* found_dim */
       } /* ncwa */
 
+       /* ncra */
+      if (prg_id == ncra){
+
+        if (trv_tbl->lmt_rec && trv_tbl->lmt_rec->id == var_dim_id) {
+          long cnt;
+          if(var_trv->var_dmn[idx_dmn].is_crd_var){
+            cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+          } else {
+            cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+          }
+
+          /* Set size to 1 */
+          cnt=1;
+          dmn_cnt=1;
+
+          (void)nco_dmn_set_msa(var_dim_id,cnt,trv_tbl); 
+
+        }
+
+
+      } /* ncra */
+
 
       /* Always define, except maybe for ncwa */
       if (DEFINE_DIM[idx_dmn]) {
@@ -4955,6 +4977,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         } /* endif dbg */
 
       } /* Always define, except maybe for ncwa */
+
+     
 
         
 
@@ -6649,12 +6673,13 @@ void
 nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- lmt_sct **lmt_rec,                   /* I/O [sct] Limit */
- const trv_tbl_sct * trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * trv_tbl)               /* I/O [sct] GTT (Group Traversal Table) */
 {
   int rcd=NC_NOERR;        /* [rcd] Return code */
   int var_id;              /* [id] Variable ID */
   int grp_id;              /* [id] Group ID */
+  
+  lmt_sct *lmt_rec;        /* [sct] Record dimension to GTT */
 
   nm_tbl_sct *rec_dmn_nm;  /* [sct] Record dimension names array */
 
@@ -6713,15 +6738,21 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
           } /*  Match name */
         }/* Loop dimensions of  variable  */
 
-        (*lmt_rec)=nco_lmt_sct_mk(grp_id,dmn_id,NULL,(int) 0,FORTRAN_IDX_CNV);
+        lmt_rec=nco_lmt_sct_mk(grp_id,dmn_id,NULL,(int) 0,FORTRAN_IDX_CNV);
 
-        (*lmt_rec)->rbs_sng=nco_lmt_get_udu_att(grp_id,var_id,"units"); 
+        lmt_rec->rbs_sng=nco_lmt_get_udu_att(grp_id,var_id,"units"); 
         cln_att_sng=nco_lmt_get_udu_att(grp_id,var_id,"calendar"); 
-        (*lmt_rec)->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
+        lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
         if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
+
+        lmt_rec->id=dmn_id;
+
+        /* Transfer to GTT */
+        trv_tbl->lmt_rec=lmt_rec;
+
 #ifndef ENABLE_UDUNITS
-        if((*lmt_rec)->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",
-          prg_nm_get(),(*lmt_rec)->nm,prg_nm_get());
+        if(lmt_rec->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",
+          prg_nm_get(),lmt_rec->nm,prg_nm_get());
 #endif /* !ENABLE_UDUNITS */
       }else{ /* endif record coordinate exists */
         /* Record dimension but not record coordinate exists. This is fine. Reset return code. */

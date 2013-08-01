@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.330 2013-07-30 21:26:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.331 2013-08-01 02:22:22 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.330 2013-07-30 21:26:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.330 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.331 2013-08-01 02:22:22 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.331 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1166,9 +1166,67 @@ main(int argc,char **argv)
   /* Obtain record coordinate metadata */
   if(prg == ncra || prg == ncrcat){
 
-    (void)nco_dmn_unl_tbl(in_id,FORTRAN_IDX_CNV,&lmt_rec,trv_tbl);   
+    (void)nco_dmn_unl_tbl(in_id,FORTRAN_IDX_CNV,trv_tbl);   
 
   } /* Obtain record coordinate metadata */
+
+  /* Is this an ARM-format data file? */
+  CNV_ARM=nco_cnv_arm_inq(in_id);
+  /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
+  if(CNV_ARM) base_time_srt=nco_cnv_arm_base_time_get(in_id);
+
+  /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
+  var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
+
+  /* Duplicate to output array */
+  var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
+  for(idx=0;idx<xtr_nbr;idx++){
+    var_out[idx]=nco_var_dpl(var[idx]);
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
+  }
+
+  /* Refresh var_out with dim_out data */
+  (void)nco_var_dmn_refresh(var_out,xtr_nbr);
+
+  /* Divide variable lists into lists of fixed variables and variables to be processed */
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+
+  /* Store processed and fixed variables info into GTT */
+  (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc,nbr_var_fix,var_fix,trv_tbl);
+
+  /* Make output and input files consanguinous */
+  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+
+  /* Verify output file format supports requested actions */
+  (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
+
+  /* Open output file */
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+
+  if(REC_APN){
+    /* Append records directly to output file */
+    int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
+    nco_inq_dimid(out_id,lmt_rec->nm,&rec_dmn_out_id);
+    nco_inq_dimlen(out_id,rec_dmn_out_id,&idx_rec_out);
+  } /* !REC_APN */
+
+  /* Copy global attributes */
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+
+  /* Catenate time-stamped command line to "history" global attribute */
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+
+  /* Add input file list global attribute */
+  if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+
+  /* Define dimensions, extracted groups, variables, and attributes in output file.  */
+  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
+
+
+
 
 
 
@@ -1184,11 +1242,13 @@ main(int argc,char **argv)
     /* Record file-specific memory cleanup */
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED) lmt_rec=nco_lmt_free(lmt_rec);
 
+#ifndef USE_TRV_API
     /* Free lmt, lmt_dmn, and lmt_all_lst structures and lists */
     for(idx=0;idx<nbr_dmn_fl;idx++)
       for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
         lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);   
+    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
+#endif
     lmt=(lmt_sct**)nco_free(lmt); 
 
     /* NCO-generic clean-up */
