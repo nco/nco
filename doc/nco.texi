@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.825 2013-08-01 17:56:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.826 2013-08-01 19:00:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6007,8 +6007,8 @@ This leaves space for a missing value and solves potential problems with
 rounding that may occur during the unpacking of the variable.
 Thus for @code{NC_SHORT}, @math{ndrv = 65536 - 2 = 65534}.
 Less often, the variable may be packed into type @code{NC_CHAR}, 
-where @math{ndrv = 256 - 2 = 254}, or type @code{NC_INT} where
-where @math{ndrv = 4294967295 - 2 = 4294967293}.
+where @math{ndrv = 2^{8} - 2 = 256 - 2 = 254}, or type @code{NC_INT} where
+where @math{ndrv = 2^{32} - 2 = 4294967295 - 2 = 4294967293}.
 One useful feature of (lossy) netCDF packing algorithm is that
 additional, loss-less packing algorithms perform well on top of it. 
 
@@ -6048,10 +6048,15 @@ An attribute's @code{scale_factor} and @code{add_offset} and
 unpacked data, i.e., @code{int}, @code{float} or @code{double}. 
 
 @unnumberedsubsec Default Handling of Packed Data
+@html
+<a name="hdf_upk"></a> <!-- http://nco.sf.net/nco.html#hdf_upk -->
+<a name="hdf_unpack"></a> <!-- http://nco.sf.net/nco.html#hdf_unpack -->
+@end html
 @cindex interoperability
 @cindex @acronym{HDF} unpacking
-Many @acronym{HDF} files use the @acronym{HDF} packing/unpacking
-algorithm that is incompatible with the netCDF packing algorithm
+Most files originally written in @acronym{HDF} format use the
+@acronym{HDF} packing/unpacking algorithm.
+This algorithm is incompatible with the netCDF packing algorithm 
 described above.   
 The unpacking component of the @acronym{HDF} algorithm (described
 @uref{http://www.hdfgroup.org/HDF5/doc/UG, here}) is
@@ -13186,39 +13191,44 @@ Five packing maps are currently implemented:@*
 @cindex @samp{nxt_lsr}
 @cindex @code{NC_DOUBLE}
 @cindex @code{NC_FLOAT}
+@cindex @code{NC_INT64}
+@cindex @code{NC_UINT64}
 @cindex @code{NC_INT}
+@cindex @code{NC_UINT}
 @cindex @code{NC_SHORT}
+@cindex @code{NC_USHORT}
 @cindex @code{NC_CHAR}
 @cindex @code{NC_BYTE}
+@cindex @code{NC_UBYTE}
 @table @dfn
 @item Pack Floating Precisions to @code{NC_SHORT} [@emph{default}]
 Definition: Pack floating precision types to @code{NC_SHORT}@*
 Map: Pack [@code{NC_DOUBLE},@code{NC_FLOAT}] to @code{NC_SHORT}@*
-Types copied instead of packed: [@code{NC_INT},@code{NC_SHORT},@code{NC_CHAR},@code{NC_BYTE}]@*
+Types copied instead of packed: [@code{NC_INT64},@code{NC_UINT64},@code{NC_INT},@code{NC_UINT},@code{NC_SHORT},@code{NC_USHORT},@code{NC_CHAR},@code{NC_BYTE},@code{NC_UBYTE}]@*
 @var{pck_map} key values: @samp{flt_sht}, @samp{pck_map_flt_sht}@*
 @item Pack Floating Precisions to @code{NC_BYTE}
 Definition: Pack floating precision types to @code{NC_BYTE}@*
 Map: Pack [@code{NC_DOUBLE},@code{NC_FLOAT}] to @code{NC_BYTE}@* 
-Types copied instead of packed: [@code{NC_INT},@code{NC_SHORT},@code{NC_CHAR},@code{NC_BYTE}]@*
+Types copied instead of packed: [@code{NC_INT64},@code{NC_UINT64},@code{NC_INT},@code{NC_UINT},@code{NC_SHORT},@code{NC_USHORT},@code{NC_CHAR},@code{NC_BYTE},@code{NC_UBYTE}]@*
 @var{pck_map} key values: @samp{flt_byt}, @samp{pck_map_flt_byt}@*
 @item Pack Higher Precisions to @code{NC_SHORT}
 Definition: Pack higher precision types to @code{NC_SHORT}@*
 Map: 
-Pack [@code{NC_DOUBLE},@code{NC_FLOAT},@code{NC_INT}] to @code{NC_SHORT}@*
-Types copied instead of packed: [@code{NC_SHORT},@code{NC_CHAR},@code{NC_BYTE}]@*
+Pack [@code{NC_DOUBLE},@code{NC_FLOAT},@code{NC_INT64},@code{NC_UINT64},@code{NC_INT},@code{NC_UINT}] to @code{NC_SHORT}@*
+Types copied instead of packed: [@code{NC_SHORT},@code{NC_USHORT},@code{NC_CHAR},@code{NC_BYTE},@code{NC_UBYTE}]@*
 @var{pck_map} key values: @samp{hgh_sht}, @samp{pck_map_hgh_sht}@*
 @item Pack Higher Precisions to @code{NC_BYTE}
 Definition: Pack higher precision types to @code{NC_BYTE}@*
 Map: 
-Pack [@code{NC_DOUBLE},@code{NC_FLOAT},@code{NC_INT},@code{NC_SHORT}] to @code{NC_BYTE}@*
-Types copied instead of packed: [@code{NC_CHAR},@code{NC_BYTE}]@*
+Pack [@code{NC_DOUBLE},@code{NC_FLOAT},@code{NC_INT64},@code{NC_UINT64},@code{NC_INT},@code{NC_UINT},@code{NC_SHORT},@code{NC_USHORT}] to @code{NC_BYTE}@*
+Types copied instead of packed: [@code{NC_CHAR},@code{NC_BYTE},@code{NC_UBYTE}]@*
 @var{pck_map} key values: @samp{hgh_byt}, @samp{pck_map_hgh_byt}@*
 @item Pack to Next Lesser Precision
 Definition: Pack each type to type of next lesser size@*
-Map: Pack @code{NC_DOUBLE} to @code{NC_INT}. 
-Pack [@code{NC_FLOAT},@code{NC_INT}] to @code{NC_SHORT}.
-Pack @code{NC_SHORT} to @code{NC_BYTE}.@*
-Types copied instead of packed: [@code{NC_CHAR},@code{NC_BYTE}]@*
+Map: Pack [@code{NC_DOUBLE},@code{NC_INT64},@code{NC_UINT64}], to @code{NC_INT}. 
+Pack [@code{NC_FLOAT},@code{NC_INT},@code{NC_UINT}] to @code{NC_SHORT}.
+Pack [@code{NC_SHORT},@code{NC_USHORT}] to @code{NC_BYTE}.@*
+Types copied instead of packed: [@code{NC_CHAR},@code{NC_BYTE},@code{NC_UBYTE}]@*
 @var{pck_map} key values: @samp{nxt_lsr}, @samp{pck_map_nxt_lsr}@*
 @end table
 @noindent
@@ -13440,7 +13450,13 @@ and then repacks those same variables using the netCDF algorithm
 (because that is the only algorithm @acronym{NCO} packs with).
 As described above the @samp{--P xst_new} packing policy only repacks
 variables that are already packed. 
-Not-packed variables are copied directly without loss of precision.
+Not-packed variables are copied directly without loss of precision
+@footnote{@command{ncpdq} does not support packing data using the
+@acronym{HDF} convention.
+Although it is now straightforward to support this, we think it might
+sow more confusion than it reaps. 
+Let us know if you disagree and would like @acronym{NCO} to support
+packing data with @acronym{HDF} algorithm.}.
 
 Re-order file @file{in.nc} so that the dimension @code{lon} always
 precedes the dimension @code{lat} and store the results in
