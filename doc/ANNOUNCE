@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.598 2013-08-01 05:02:07 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.599 2013-08-01 06:10:43 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.4 are ready. 
 
@@ -6,25 +6,26 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 Ooops. The last two releases of ncpdq had broken unpacking.
-It unpacked variables correctly, but inadvertently stored the results
-with the original packing attributes. Hence successive operations 
-could try to unpack the variable twice, leading to incorrect results.
-This is enough of a bugfix to cause us to relase 4.3.4 early, before
-converting any more operators to work with groups. Update recommended
-if you ever use ncpdq to unpack. 
+It unpacked variables correctly, but inadvertently stored the results 
+with the original packing attributes. Successive operations would
+therefore unpack the variable twice, leading to incorrect results.
+This annoys us enough to relase 4.3.4 early, before converting any
+more operators to work with groups. Upgrade recommended if you ever
+use ncpdq to unpack.  
 
 There are also a few new features: including more legible CDL printing
-of strings, and a new switch to override the default netCDF unpacking
-algorithm with the HDF unpacking algorithm. 
+of strings, and a new switch that overrides the default netCDF
+unpacking algorithm with the HDF unpacking algorithm. 
 
 Multi-slabbing was introduced to NCO by Henry Butowsky in 2002 and
-I've never really understood all its capabilities. I learned a lot
+I've never fully understood all its capabilities. I learned a lot
 more about MSA in the last few weeks, and have now documented it.
 Read the docs referenced below and you too may be surprised at how
 easy MSA makes complex dataset manipulation like rotating grids. 
 
 Work on NCO 4.3.5 is underway and includes improved netCDF4 support
-for more NCO operators (ncatted) and improved support for HDF4 files.
+for more NCO operators (ncatted, ncea, ncra, ncrcat) and improved
+support for HDF4 files. 
 
 Enjoy,
 Charlie
@@ -33,21 +34,10 @@ Charlie
 
 NEW FEATURES:
 
-A. Multi-slab Algorithm user-ordering with --msa is now documented.
-   This eases data re-ordering. A fully documented example uses MSA to
-   rotate from a [-180,180) to a [0,360) longitude grid in two steps:
-   ncks -O --msa -d Lon,0.,180. -d Lon,-180.,-1.0 in.nc out.nc
-   ncap2 -O -s 'where(Lon < 0) Lon=Lon+360' out.nc out.nc
-   http://nco.sf.net/nco.html#msa
-   http://nco.sf.net/nco.html#msa_usr_rdr
-
 A. Improve CDL legibility of NC_CHAR attributes with embedded newlines
    http://nco.sf.net/nco.html#cdl
 
-A. CDL printing explicitly notes group vs. global attributes
-   http://nco.sf.net/nco.html#cdl
-
-A. Global --hdf_upk switch implements HDF unpacking convention:
+B. Global --hdf_upk switch implements HDF unpacking convention:
    HDF unpack definition:    unpacked=scale_factor*(packed-add_offset).
    netCDF unpack definition: unpacked=(scale_factor*packed)+add_offset.
    See the difference?
@@ -67,6 +57,14 @@ A. Global --hdf_upk switch implements HDF unpacking convention:
    http://nco.sf.net/nco.html#upk
    http://nco.sf.net/nco.html#hdf_upk
    http://nco.sf.net/nco.html#ncpdq
+
+C. Multi-slab Algorithm user-ordering with --msa is now documented.
+   This eases data re-ordering. A fully documented example uses MSA to
+   rotate from a [-180,180) to a [0,360) longitude grid in two steps:
+   ncks -O --msa -d Lon,0.,180. -d Lon,-180.,-1.0 in.nc out.nc
+   ncap2 -O -s 'where(Lon < 0) Lon=Lon+360' out.nc out.nc
+   http://nco.sf.net/nco.html#msa
+   http://nco.sf.net/nco.html#msa_usr_rdr
 
 BUG FIXES:
 

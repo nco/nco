@@ -1,6 +1,12 @@
 2013-07-31  Charlie Zender  <zender@uci.edu>
 
-	* Document and test --hdf_upk
+	* NCO 4.3.4 release procedure:
+ 	Changes since nco-4_3_3: CDL legibility, ncpdq -U fix, --hdf_upk
+	cd ~/nco;cvs tag -d nco-4_3_4;cvs tag -d nco-4_3_4-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.4 release"
+	cvs tag -c nco-4_3_4;cvs tag -c nco-4_3_4-1
+
+	* Document and test --hdf_upk in all other applicable operators
 
 	* Add ncpdq regression test to re-pack 1D variable from HDF convention to netCDF convention
 
@@ -17,12 +23,6 @@
 	* Explode CDL printing of NC_CHAR attributes that contain embedded newlines
 
 	* --hdf_upk flag uses HDF unpack convention: unpacked=scale_factor*(packed-add_offset)
-
-	* NCO 4.3.4 release procedure:
- 	Changes since nco-4_3_3: fxm
-	cd ~/nco;cvs tag -d nco-4_3_4;cvs tag -d nco-4_3_4-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.4 release"
-	cvs tag -c nco-4_3_4;cvs tag -c nco-4_3_4-1
 
 2013-07-26  Charlie Zender  <zender@uci.edu>
 

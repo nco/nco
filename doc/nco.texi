@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.820 2013-08-01 05:44:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.821 2013-08-01 06:10:43 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12565,14 +12565,15 @@ Also activated using @samp{--noblank} or @samp{--no-blank}.
 @cindex @command{ncgen}
 @cindex @command{ncdump}
 @cindex @code{--cdl}
-@cindex CDL
+@cindex @acronym{CDL}
+@cindex @acronym{HDF}
 @item --cdl 
 As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} will
 print extracted data and metadata to screen (i.e., @code{stdout}) as
-valid CDL (network Common data form Description Language). 
-CDL is the human-readable ``lingua franca'' of netCDF ingested by
+valid @acronym{CDL} (network Common data form Description Language). 
+@acronym{CDL} is the human-readable ``lingua franca'' of netCDF ingested by
 @command{ncgen} and excreted by @command{ncdump}.
-Compare @command{ncks} ``traditional'' with CDL printing:
+Compare @command{ncks} ``traditional'' with @acronym{CDL} printing:
 @example
 zender@@roulee:~$ ncks -v one ~/nco/data/in.nc
 one: type NC_FLOAT, 0 dimensions, 1 attribute, chunked? no, compressed? no, packed? no
@@ -12593,11 +12594,17 @@ netcdf in @{
 
 @} // group /
 @end example
-@command{ncgen} converts CDL mode output into a netCDF file:
+@command{ncgen} converts @acronym{CDL} mode output into a netCDF file:
 @example
 ncks --cdl -v one ~/nco/data/in.nc > ~/in.cdl
 ncgen -k netCDF-4 -b -o ~/in.nc ~/in.cdl
 ncks -v one ~/in.nc
+@end example
+The @acronym{HDF} version of @command{ncgen} converts @acronym{CDL} into an
+@acronym{HDF} file:
+@begin example
+ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen
+hdp dumpsds ~/in.hdf
 @end example
 
 @cindex @code{-P}
