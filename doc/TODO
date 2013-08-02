@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1246 2013-08-01 21:06:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1247 2013-08-02 00:23:38 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -709,7 +709,6 @@ A. ncflint now always works when input files are interchanged, i.e.,
    fl_1 than in fl_2 then both these work:
    ncflint -v v1 -w 0.5 fl_1.nc fl_2.nc out.nc # Now works too!
    ncflint -v v1 -w 0.5 fl_2.nc fl_1.nc out.nc # Always worked
-nco1034. ncatted: option to append md5 attribute to each variable
 nco1102. ncatted handle arrays of NC_STRINGs with embedded delimiters
 	 ncatted -D 5 -O -a new_string_att,att_var,c,sng,"list","of","str,ings" ~/nco/data/in_4.nc ~/foo.nc
 nco1103. 

@@ -19,10 +19,17 @@
 netcdf buggy {
 
  dimensions:
+  lat=2;
+  lon=4;
   tm2=unlimited;
   tm3=unlimited;
 
  variables:
+  float lat_tm2(lat,tm2);
+  float lat_tm3(lat,tm3);
+  float tm2_lat(tm2,lat);
+  float tm3_lat(tm3,lat);
+
   float tm2_tm3(tm2,tm3);
   tm2_tm3:purpose = "a variable containing mutiple record dimensions";
   tm2_tm3:note = "ncdump prior to snapshot 20121116 and/or release netCDF 4.3 fails to print braces required to dis-ambiguate data sizes of mutiple record dimensions";
@@ -30,6 +37,11 @@ netcdf buggy {
 
  data:
   // 20130127: Braces are required to disambiguate correct record dimension sizes, but brace syntax was not supported by ncgen until netCDF snapshots ~201211, i.e., post netCDF 4.2.1.1. Uggh.
+  lat_tm2={1,2},{3,4}; // NB: Unlimited dimensions (other than the first) must be enclosed in braces
+  lat_tm3={1,2,3},{4,5,6}; // NB: Unlimited dimensions (other than the first) must be enclosed in braces
+  tm2_lat=1,2,3,4; // NB: Braces forbidden when unlimited dimension is first. sizeof(tm2)=sizeof(whole)/$lat
+  tm3_lat=1,2,3,4,5,6; // NB: Braces forbidden when unlimited dimension is first. sizeof(tm2)=sizeof(whole)/$lat
+
   tm2_tm3={1.,2.,3.},{4.,5.,6.};
 
  group: g1 {

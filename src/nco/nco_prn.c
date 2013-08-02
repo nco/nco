@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.147 2013-07-31 02:52:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.148 2013-08-02 00:23:38 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1137,10 +1137,10 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   /* Get type of variable (get also name and number of dimensions for validation against parameter object) */
   (void)nco_inq_var(grp_id,var.id,var_nm,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
 
-  /* "GTT" Just make sure we got the right variable */
+  /* Ensure we have correct variable */
   assert(var_trv->nco_typ == nco_obj_typ_var);
   assert(var.nbr_dim == var_trv->nbr_dmn);
-  assert(strcmp(var_nm,var_trv->nm) == 0);
+  assert(!strcmp(var_nm,var_trv->nm));
 
   /* Scalars */
   if(var.nbr_dim == 0){
@@ -1220,6 +1220,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   if(prn_flg->cdl){
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     long chr_idx;
+    nco_bool is_compound; /* [flg] Variable is compound (multiple record dimensions) */
     (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
     (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,var_nm);
     var_szm1=var.sz-1L;
@@ -1410,8 +1411,6 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
       for(int jdx=idx;jdx<var.nbr_dim;jdx++)
         mod_map_cnt[idx]*=lmt_msa[jdx]->dmn_cnt;
 
-    /* "GTT" Use Object parameter instead of "var_sct var" to get possible coordinate variables */
-
     /* Read coordinate dimensions if required */
     if(prn_flg->PRN_DMN_IDX_CRD_VAL){
 
@@ -1424,24 +1423,16 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
         dim[idx].val.vp=NULL;
         dim[idx].nm=lmt_msa[idx]->dmn_nm;
 
-        /* Dimension does not have a coordinate variable, do not read... */
+        /* Dimension does not have coordinate variable, do not read... */
         if(!var_trv->var_dmn[idx].is_crd_var){
-
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"...<%s> is not a coordinate variable\n",var_trv->var_dmn[idx].dmn_nm_fll);
-
           dim[idx].is_crd_dmn=False;
           dim[idx].cid=-1;
           continue;
-
         }else if(var_trv->var_dmn[idx].is_crd_var){
-          /* Dimension has a coordinate variable, read it... */
-
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"coordinate variable <%s> found\n",var_trv->var_dmn[idx].dmn_nm_fll);
+          /* Dimension is a coordinate */
 
           /* Get coordinate from table */
           crd_sct *crd=var_trv->var_dmn[idx].crd;
-
-          /* MSA "var_sct" members needed to read coordinate read are only: group ID, variable ID, variable type */
 
           /* Obtain group ID using full group name */
           (void)nco_inq_grp_full_ncid(nc_id,crd->crd_grp_nm_fll,&var_crd.nc_id);
@@ -1466,7 +1457,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
  
         /* Typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
-      }/* end for */
+      } /* end for */
     } /* end if */
 
     for(lmn=0;lmn<var.sz;lmn++){
