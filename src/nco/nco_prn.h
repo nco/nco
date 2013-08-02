@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.46 2013-08-02 05:16:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.47 2013-08-02 19:33:07 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -83,7 +83,8 @@ void
 nco_prn_var_val_trv             /* [fnc] Print variable data */
 (const int nc_id,                   /* I [ID] netCDF file ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
- const trv_sct * const var_trv);    /* I [sct] Object to print (variable) */
+ const trv_sct * const var_trv,    /* I [sct] Object to print (variable) */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
@@ -98,9 +99,11 @@ nco_grp_prn /* [fnc] Recursively print group contents */
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
-nco_bool /* O [flg] Variable is compound */
-nco_prn_cpd_chk /* [fnc] Check whether variable is compound */
-(const trv_sct * const var_trv); /* I [sct] Variable to check */
+
+nco_bool                            /* O [flg] Variable is compound */
+nco_prn_cpd_chk                     /* [fnc] Check whether variable is compound */
+(const trv_sct * const var_trv,     /* I [sct] Variable to check */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */ 
 
 #ifdef __cplusplus
 } /* end extern "C" */

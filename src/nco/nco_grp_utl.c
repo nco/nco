@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.902 2013-08-01 02:22:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.903 2013-08-02 19:33:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1257,7 +1257,7 @@ nco_prn_xtr_val                       /* [fnc] Print variable data */
       if(!prn_flg->dlm_sng && var_trv.grp_dpt > 0) (void)fprintf(stdout,"%s\n",var_trv.nm_fll);
       
       /* Print variable values */
-      (void)nco_prn_var_val_trv(nc_id,prn_flg,&var_trv);
+      (void)nco_prn_var_val_trv(nc_id,prn_flg,&var_trv,trv_tbl);
     } /* End flg_xtr */
   } /* End Loop variables in table */
 
@@ -6770,3 +6770,4 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
   } /* Loop table */
 
 } /* nco_dmn_unl_tbl() */
+

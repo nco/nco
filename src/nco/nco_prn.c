@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.149 2013-08-02 05:16:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.150 2013-08-02 19:33:07 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1033,7 +1033,8 @@ void
 nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 (const int nc_id,                   /* I [ID] netCDF file ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
- const trv_sct * const var_trv)     /* I [sct] Object to print (variable) */
+ const trv_sct * const var_trv,     /* I [sct] Object to print (variable) */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose:
      Get variable with limits from input file
@@ -1227,7 +1228,7 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
     (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
     (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,var_nm);
     var_szm1=var.sz-1L;
-    is_compound=nco_prn_cpd_chk(var_trv);
+    is_compound=nco_prn_cpd_chk(var_trv,trv_tbl);
 
     /* Pre-compute elements that need brace punctuation */
     if(is_compound){
@@ -1889,7 +1890,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
     (void)fprintf(stdout,"\n%*sdata:\n",prn_flg->ndn,spc_sng);
     for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) 
-      (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id]);
+      (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
   } /* end if */
 
   /* Variable list no longer needed */
@@ -1937,20 +1938,44 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   return rcd;
 } /* end nco_grp_prn() */
 
-nco_bool /* O [flg] Variable is compound */
-nco_prn_cpd_chk /* [fnc] Check whether variable is compound */
-(const trv_sct * const var_trv) /* I [sct] Variable to check */
+
+nco_bool                            /* O [flg] Variable is compound */
+nco_prn_cpd_chk                     /* [fnc] Check whether variable is compound */
+(const trv_sct * const var_trv,     /* I [sct] Variable to check */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */ 
 {
-  /* Purpose: Check whether variable dimensionality is compound, i.e., 
-     whether variable needs extra printed braces in CDL output.
-     For purposes of this routine, a variable is compound iff it contains 
-     a record dimension as any but the leading dimension. */
+  /* Purpose: Check whether variable dimensionality is compound, i.e.,
+  whether variable needs extra printed braces in CDL output.
+  For purposes of this routine, a variable is compound iff it contains
+  a record dimension as any but the leading dimension. */
 
-  int dmn_idx;
+  int nbr_rec;          /* [nbr] Number of entries in array */  
 
-  for(dmn_idx=1;dmn_idx<var_trv->nbr_dmn;dmn_idx++) /* NB: dimension index starts at 1 */
-    if(var_trv->var_dmn[dmn_idx].is_crd_var) break; /* fxm: change to is_rec_var */
+  dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */  
 
-  if(dmn_idx != var_trv->nbr_dmn) return True; else return False;
+  assert(var_trv->nco_typ == nco_obj_typ_var);
+
+  nbr_rec=0;
+
+  if (var_trv->nbr_dmn == 1)
+    return False;
+
+  /* NB: dimension index starts at 1 */
+  for(int idx_dmn=1;idx_dmn<var_trv->nbr_dmn;idx_dmn++) {
+
+    /* Get unique dimension object from unique dimension ID, in input list */
+    dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[idx_dmn].dmn_id,trv_tbl);
+
+    /* Dimension is a record dimension */
+    if (dmn_trv->is_rec_dmn){
+
+      nbr_rec++;
+
+    } /* Dimension is a record dimension */
+  } /* Loop dimensions for object (variable)  */
+
+
+
+  if(nbr_rec) return True; else return False;
 
 } /* end nco_prn_cpd_chk() */

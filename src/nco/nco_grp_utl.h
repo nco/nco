@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.350 2013-08-01 02:22:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.351 2013-08-02 19:33:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -584,6 +584,11 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
+
+nco_bool                            /* O [flg] Variable is compound */
+nco_prn_cpd_chk                     /* [fnc] Check whether variable is compound */
+(const trv_sct * const var_trv,     /* I [sct] Variable to check */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */ 
 
 #ifdef __cplusplus
 } /* end extern "C" */
