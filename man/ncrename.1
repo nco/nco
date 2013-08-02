@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.16 2013-07-23 05:58:56 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.17 2013-08-02 05:16:41 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncrename
 .\" Usage:
 .\" nroff -man ~/nco/man/ncrename.1 | less
@@ -113,6 +113,17 @@ and
 values. 
 This option may be specified more than once.
 .TP
+.B \-g 
+.IR old_name ,
+.I "new_name"
+Group renaming. 
+The old and new names of the group are specified by the associated
+.I old_name
+and 
+.I new_name
+values. 
+This option may be specified more than once.
+.TP
 .B \-v 
 .IR old_name ,
 .I "new_name"
@@ -180,7 +191,7 @@ ncrename \-a _FillValue,missing_value \-a Zaire,Congo in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.16 2013-07-23 05:58:56 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrename.1,v 1.17 2013-08-02 05:16:41 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

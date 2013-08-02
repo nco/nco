@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.381 2013-08-01 05:02:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.382 2013-08-02 05:16:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -668,18 +668,11 @@ extern "C" {
     nco_bool is_usr_spc_cnk; /* [flg] Chunk size was user-specified */
   } cnk_sct;
   
-  /* GTT structure to break a full path name into components */
+  /* GTT structure to break full path name into components */
   typedef struct{ 
     char *nm;       /* [sng] Path component */
     int psn;        /* [nbr] Position of path component */
   } sng_pth_sct; 
-
-  /* Match token structure for finding if a variable is in scope of coordinate */
-  typedef struct{ 
-    char *nm;           /* [sng] Path token. A token is a component of a path (e.g /g1/ ) */
-    int tkn_var_idx;    /* [nbr] Index of token for first full name */
-    int tkn_crd_idx;    /* [nbr] Index of token for second full name */
-  } mtc_tkn_sct; 
 
   /* MSA Limits structure:
      GTT has a member for every unique dimension and for every coordinate variable */
@@ -714,27 +707,27 @@ extern "C" {
   typedef struct{ 
     char *grp_nm_fll;        /* [sng] Full group name where dimension was defined */
     char *nm_fll;            /* [sng] Dimension fully qualified name (path) */
-    char nm[NC_MAX_NAME+1L]; /* [sng] Name of dimension (if coordinate variable, also name of variable) */
+    char nm[NC_MAX_NAME+1L]; /* [sng] Dimension name */
     nco_bool is_rec_dmn;     /* [flg] Is a record dimension? */
     size_t sz;               /* [nbr] Size of dimension */   
     int crd_nbr;             /* [nbr] Number of coordinate structures */
-    crd_sct **crd;           /* [sct] List of coordinate structures associated with *this* dimension */
+    crd_sct **crd;           /* [sct] List of coordinate structures */
     lmt_msa_sct lmt_msa;     /* [sct] MSA Limits structure (implicit that is for non-coordinate case) */
-    int dmn_id;              /* [ID] Unique ID for dimension; same as "var_dmn_sct.id", obtained from API "nc_inq_dimid" */
-    nco_bool has_crd_scp;    /* [flg] Is there a variable with same name in dimension's scope? */
+    int dmn_id;              /* [ID] Dimension ID; same as "var_dmn_sct.id" from nc_inq_dimid() */
+    nco_bool has_crd_scp;    /* [flg] Does variable with same name exist in dimension's scope? */
     nco_bool flg_xtr;        /* [flg] Extract dimension */
   } dmn_trv_sct; 
 
   /* GTT Variable dimensions:
-     A dimension has a name and a size, and it can have an associated variable (coordinate variable) */
+     Dimension have name and size, and can have an associated variable (coordinate variable) */
   typedef struct{ 
-    char *dmn_nm_fll;        /* [sng] Full dimension name  */
+    char *dmn_nm_fll;        /* [sng] Full dimension name */
     char *dmn_nm;            /* [sng] Dimension name */
-    char *grp_nm_fll;        /* [sng] Full group where dimension is located  */   
-    nco_bool is_crd_var;     /* [flg] Is this *name* a coordinate variable or just a *non coordinate* dimension? */
-    crd_sct *crd;            /* [sct] Pointer to *coordinate variable* if coordinate variable */
-    dmn_trv_sct *ncd;        /* [sct] Pointer to "non-coordinate dimension" (mutually exclusive from "crd" )*/
-    int dmn_id;              /* [ID] Unique ID for dimension; same as "dmn_trv_sct.id", obtained from API "nc_inq_vardimid" */
+    char *grp_nm_fll;        /* [sng] Full group where dimension is defined */
+    nco_bool is_crd_var;     /* [flg] Dimension has an associated coordinate variable */
+    crd_sct *crd;            /* [sct] Pointer to coordinate variable if any */
+    dmn_trv_sct *ncd;        /* [sct] Pointer to non-coordinate dimension if any */
+    int dmn_id;              /* [ID] Dimension ID; same as dmn_trv_sct.id from nc_inq_vardimid() */
   } var_dmn_sct; 
 
   /* Processing type enumerator */
@@ -792,14 +785,11 @@ extern "C" {
     nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimension (ncpdq) */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
-
   } trv_sct;
 
-
-
   /* Fill actual value of dmn_sct structure in nco_dmn_fll()
-  free() each pointer member of dmn_sct structure in nco_dmn_free()
-  deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
+     free() each pointer member of dmn_sct structure in nco_dmn_free()
+     deep-copy each pointer member of dmn_sct structure in nco_dmn_dpl() */
   /* Dimension structure */
   typedef struct dmn_sct_tag{ /* dmn_sct */
     char *nm; /* [sng] Dimension name */
@@ -819,8 +809,6 @@ extern "C" {
     size_t cnk_sz; /* [nbr] Chunk size */
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
-
-
  
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)

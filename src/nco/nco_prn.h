@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.45 2013-07-20 02:21:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.46 2013-08-02 05:16:41 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -97,6 +97,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
+nco_bool /* O [flg] Variable is compound */
+nco_prn_cpd_chk /* [fnc] Check whether variable is compound */
+(const trv_sct * const var_trv); /* I [sct] Variable to check */
 
 #ifdef __cplusplus
 } /* end extern "C" */

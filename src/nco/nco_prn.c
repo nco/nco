@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.148 2013-08-02 00:23:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.149 2013-08-02 05:16:41 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1220,10 +1220,28 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
   if(prn_flg->cdl){
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     long chr_idx;
-    nco_bool is_compound; /* [flg] Variable is compound (multiple record dimensions) */
+    int cpd_rec_dmn_idx[NC_MAX_DIMS]; /* [idx] Indices of non-leading record dimensions */
+    int cpd_nbr=0; /* [nbr] Number of non-leading record dimensions */
+    nco_bool is_compound; /* [flg] Variable is compound (has non-leading record dimension) */
+    nco_bool cpd_rec_dmn[NC_MAX_DIMS]; /* [flg] Dimension is compound */
     (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
     (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,var_nm);
     var_szm1=var.sz-1L;
+    is_compound=nco_prn_cpd_chk(var_trv);
+
+    /* Pre-compute elements that need brace punctuation */
+    if(is_compound){
+      /* Create brace list */
+      for(dmn_idx=1;dmn_idx<var.nbr_dim;dmn_idx++){ /* NB: dimension index starts at 1 */
+	cpd_rec_dmn[dmn_idx]=False;
+	if(var_trv->var_dmn[dmn_idx].is_crd_var){ /* fxm: change to is_rec_dmn */
+	  cpd_rec_dmn[dmn_idx]=True; 
+	  cpd_rec_dmn_idx[cpd_nbr]=dmn_idx;
+	  cpd_nbr++;
+	} /* endif */
+      } /* end loop over dimensions */
+    } /* !is_compound */
+
     for(lmn=0;lmn<var.sz;lmn++){
 
       /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
@@ -1918,3 +1936,21 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   return rcd;
 } /* end nco_grp_prn() */
+
+nco_bool /* O [flg] Variable is compound */
+nco_prn_cpd_chk /* [fnc] Check whether variable is compound */
+(const trv_sct * const var_trv) /* I [sct] Variable to check */
+{
+  /* Purpose: Check whether variable dimensionality is compound, i.e., 
+     whether variable needs extra printed braces in CDL output.
+     For purposes of this routine, a variable is compound iff it contains 
+     a record dimension as any but the leading dimension. */
+
+  int dmn_idx;
+
+  for(dmn_idx=1;dmn_idx<var_trv->nbr_dmn;dmn_idx++) /* NB: dimension index starts at 1 */
+    if(var_trv->var_dmn[dmn_idx].is_crd_var) break; /* fxm: change to is_rec_var */
+
+  if(dmn_idx != var_trv->nbr_dmn) return True; else return False;
+
+} /* end nco_prn_cpd_chk() */

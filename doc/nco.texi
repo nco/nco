@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.827 2013-08-01 21:06:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.828 2013-08-02 05:16:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3614,17 +3614,17 @@ specified simultaneously and @acronym{NCO} will, by default, extract the
 intersection of the lists, i.e., the specified variables found in the
 specified groups
 @footnote{
-Intersection mode can also be explicitly invoked with the @samp{--nsx}
+Intersection-mode can also be explicitly invoked with the @samp{--nsx}
 or @samp{--intersection} switches.
 These switches are supplied for clarity and consistency and do
-absolutely nothing since intersection mode is the default.}.
+absolutely nothing since intersection-mode is the default.}.
 The @samp{--unn} option causes @acronym{NCO} to extract the
 union, rather than the intersection, of the specified groups and
 variables. 
 Consider the following commands (which may be assumed to end with
 @samp{in.nc out.nc}):
 @example       
-# Intersection mode subsetting (default)
+# Intersection-mode subsetting (default)
 ncks -g  g1  -v v1 # Yes: /g1/v1, /g2/g1/v1. No: /v1, /g2/v1
 ncks -g /g1  -v v1 # Yes: /g1/v1, /g1/g2/v1. No: /v1, /g2/v1, /g2/g1/v1
 ncks -g  g1/ -v v1 # Yes: /g1/v1, /g2/g1/v1. No: /v1, /g2/v1, /g1/g2/v1
@@ -3632,7 +3632,7 @@ ncks -v  g1/v1     # Yes: /g1/v1, /g2/g1/v1. No: /v1, /g2/v1, /g1/g2/v1
 ncks -g /g1/ -v v1 # Yes: /g1/v1. No: /g2/g1/v1, /v1, /g2/v1 ...
 ncks -v /g1/v1     # Yes: /g1/v1. No: /g2/g1/v1, /v1, /g2/v1 ...
 
-# Union mode subsetting (invoke with --unn or --union)
+# Union-mode subsetting (invoke with --unn or --union)
 ncks -g  g1  -v v1 --unn # All variables in  g1 or progeny, or named v1
 ncks -g /g1  -v v1 --unn # All variables in /g1 or progeny, or named v1
 ncks -g  g1/ -v v1 --unn # All variables in  g1 or named v1
@@ -3647,7 +3647,7 @@ The third and fourth commands are equivalent ways of extracting
 descendents). 
 The fifth and sixth commands are equivalent ways of extracting the 
 variable @file{v1} only from the root group named @file{g1}.
-Subsetting in union mode (with @samp{--unn}) causes all variables to be
+Subsetting in union-mode (with @samp{--unn}) causes all variables to be
 extracted which meet either one or both of the specifications of the 
 variable and group specifications.
 Union-mode subsetting is simply the logical ``OR'' of intersection-mode
@@ -3920,7 +3920,7 @@ required to indicate it is a @var{lvl_nbr} arugment and not a
 
 If the at-sign separator character @code{@@} is used instead of the colon
 separator character @code{:}, then the following @var{lvl_nbr} arugment 
-must be positive and it will be assumed to refer to Truncation Mode.
+must be positive and it will be assumed to refer to Truncation-Mode.
 Hence, @samp{-G :-1} is the same as @samp{-G @@1}. 
 This is simply a way of making the @var{lvl_nbr} argument
 positive-definite. 
@@ -3933,10 +3933,10 @@ positive-definite.
 @acronym{GPE} has three editing modes: Deletion, Truncation, and
 Flattening.
 Select one of @acronym{GPE}'s three editing modes by supplying a
-@var{lvl_nbr} that is positive, negative, or zero for Deletion, 
-Truncation, and Flattening mode, respectively. 
+@var{lvl_nbr} that is positive, negative, or zero for Deletion-, 
+Truncation- and Flattening-mode, respectively. 
 
-In Deletion Mode, @var{lvl_nbr} is a positive integer which specifies
+In Deletion-mode, @var{lvl_nbr} is a positive integer which specifies
 the maximum number of group path components (i.e., groups) that
 @acronym{GPE} will try to delete from the head of @var{grp_pth}. 
 For example @math{@var{lvl_nbr} = 3} changes the input path
@@ -3950,7 +3950,7 @@ components to delete.
 It deletes as many as possible, without complaint, and then begins to
 flatten the file (which will fail if namespace conflicts arise).
 
-In Truncation Mode, @var{lvl_nbr} is a negative integer which specifies
+In Truncation-mode, @var{lvl_nbr} is a negative integer which specifies
 the maximum number of group path components (i.e., groups) that
 @acronym{GPE} will try to truncate from the tail of @var{grp_pth}. 
 For example @math{@var{lvl_nbr} = -3} changes the input path
@@ -3959,7 +3959,7 @@ Input paths with @var{lvl_nbr} or fewer components (groups)
 are completely erased and the output path commences from the root  
 level. 
 
-In Flattening Mode, indicated by the separator character alone
+In Flattening-mode, indicated by the separator character alone
 or with @math{@var{lvl_nbr} = 0}, @acronym{GPE} removes the entire group
 path from the input file and constructs the output path beginning at the
 root level.  
@@ -3970,7 +3970,7 @@ path @file{/g1} for all variables.
 
 Subsequent to the alteration of the input path by the specified
 editing mode, if any, @acronym{GPE} prepends (in Deletion Mode)
-or Appends (in Truncation Mode) any specifed @var{grp_pth} to the output
+or Appends (in Truncation-mode) any specifed @var{grp_pth} to the output
 path. 
 For example @code{-G g2} changes the input paths @file{/} and @file{/g1}
 to @file{/g2} and @file{/g1/g2}, respectively.
@@ -4001,7 +4001,7 @@ ncks -G o1       -v v1 # /g?/v1 -> /o1/g?/v1
 ncks -G o1 -g g1 -v v1 # /g1/v1 -> /o1/g1/v1
 ncks -G g1 -g /  -v v1 # /v1    -> /g1/v1
 ncks -G g1/g2    -v v1 # /g?/v1 -> /g1/g2/g?/v1
-# Deletion Mode: Delete from and Prepend to path head
+# Deletion-mode: Delete from and Prepend to path head
 # Syntax: -G [ppn]:lvl_nbr = # of levels to delete
 ncks -G :1    -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G :1    -g g1/g1 -v v1 # /g1/g1/v1 -> /g1/v1
@@ -4011,7 +4011,7 @@ ncks -G g2:1  -g g1    -v v1 # /g1/v1    -> /g2/v1
 ncks -G g2:2  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
 ncks -G g2:1  -g       -v v1 # /v1       -> /g2/v1
 ncks -G g2:1  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/g1/v1
-# Flattening Mode: Remove all input path components
+# Flattening-mode: Remove all input path components
 # Syntax: -G [apn]: colon without numerical argument
 ncks -G :            -v v1 # /g?/v1    -> /v1
 ncks -G :   -g g1    -v v1 # /g1/v1    -> /v1
@@ -4019,7 +4019,7 @@ ncks -G :   -g g1/g1 -v v1 # /g1/g1/v1 -> /v1
 ncks -G g2:          -v v1 # /g?/v1    -> /g2/v1
 ncks -G g2:                # /g?/v?    -> /g2/v?
 ncks -G g2: -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
-# Truncation Mode: Truncate from and Append to path tail
+# Truncation-mode: Truncate from and Append to path tail
 # Syntax: -G [apn]:-lvl_nbr = # of levels to truncate
 # NB: -G [apn]:-lvl_nbr is equivalent to -G [apn]@@lvl_nbr
 ncks -G :-1   -g g1    -v v1 # /g1/v1    -> /v1
@@ -12267,10 +12267,10 @@ lets the user format the data using C-style format strings, while option
 @samp{--cdl} outputs @acronym{CDL} like @command{ncdump} but in a more
 finely tunable way.
 
-Options @samp{-a}, @samp{--cdl}, @samp{-F} , @samp{-H}, @samp{-M}, @samp{-m},
-@samp{-P}, @samp{-Q}, @samp{-q}, @samp{-s}, @samp{-u}, @samp{--xml} (and
-their long option counterparts) control the formatted appearance of the
-data. 
+Options @samp{-5}, @samp{-a}, @samp{--cdl}, @samp{-F} , @samp{-H},
+@samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q}, @samp{-q}, @samp{-s},
+@samp{-u}, @samp{--xml} (and their long option counterparts) control the
+formatted appearance of the data. 
 
 @cindex global attributes
 @cindex attributes, global
@@ -12406,11 +12406,6 @@ Activate native machine binary output writing to binary file
 Also @samp{--fl_bnr} and @samp{--binary-file}.
 Writing packed variables in binary format is not supported.
 
-@cindex stride
-@item -d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
-Add @dfn{stride} argument to hyperslabber. 
-For a complete description of the @var{stride} argument, @xref{Stride}.
-
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->
 <a name="fix_rec_dmn"></a> <!-- http://nco.sf.net/nco.html#fix_rec_dmn -->
@@ -12437,6 +12432,55 @@ This keeps the code simple, and is symmetric with the syntax for
 @code{--mk_rec_dmn}, described next.
 
 @html
+<a name="cdl"></a> <!-- http://nco.sf.net/nco.html#cdl -->
+@end html
+@cindex @command{hdp}
+@cindex @command{ncgen}
+@cindex @command{ncdump}
+@cindex @code{--cdl}
+@cindex @acronym{CDL}
+@cindex @acronym{HDF}
+@item --cdl 
+As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} can
+print extracted data and metadata to screen (i.e., @code{stdout}) as
+valid @acronym{CDL} (network Common data form Description Language). 
+@acronym{CDL} is the human-readable ``lingua franca'' of netCDF ingested by
+@command{ncgen} and excreted by @command{ncdump}.
+Compare @command{ncks} ``traditional'' with @acronym{CDL} printing:
+@example
+zender@@roulee:~$ ncks -v one ~/nco/data/in.nc
+one: type NC_FLOAT, 0 dimensions, 1 attribute, chunked? no, compressed? no, packed? no
+one size (RAM) = 1*sizeof(NC_FLOAT) = 1*4 = 4 bytes
+one attribute 0: long_name, size = 3 NC_CHAR, value = one
+
+one = 1 
+
+zender@@roulee:~$ ncks --cdl -v one ~/nco/data/in.nc
+netcdf in @{
+
+  variables:
+    float one ;
+    one:long_name = "one" ;
+
+  data:
+    one = 1 ;
+
+@} // group /
+@end example
+@command{ncgen} converts @acronym{CDL}-mode output into a netCDF file:
+@example
+ncks --cdl -v one ~/nco/data/in.nc > ~/in.cdl
+ncgen -k netCDF-4 -b -o ~/in.nc ~/in.cdl
+ncks -v one ~/in.nc
+@end example
+The @acronym{HDF} version of @command{ncgen} converts @acronym{CDL} into an
+@acronym{HDF} file:
+@example
+/usr/local/hdf4/bin/ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen
+hdp dumpsds ~/in.hdf
+@end example
+
+@html
 <a name="dmn_rec_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_rec_mk -->
 <a name="mk_rec_dmn"></a> <!-- http://nco.sf.net/nco.html#mk_rec_dmn -->
 @end html
@@ -12446,6 +12490,8 @@ This keeps the code simple, and is symmetric with the syntax for
 @cindex @code{--mk_rec_dmn @var{dim}}
 @item --mk_rec_dmn @var{dim}
 Change existing dimension @var{dim} to a record dimension in the output file.
+This is the most straightforward way of changing a dimension to a/the
+record dimension, and works fine in most cases.
 See @ref{ncecat netCDF Ensemble Concatenator} and 
 @ref{ncpdq netCDF Permute Dimensions Quickly} for other methods of
 changing variable dimensionality, including the record dimension. 
@@ -12587,54 +12633,6 @@ To enable the old behavior of printing the numeric representation of
 missing values (e.g., @code{1.0e36}), use the @samp{--no_blank} switch.
 Also activated using @samp{--noblank} or @samp{--no-blank}.
 
-@html
-<a name="cdl"></a> <!-- http://nco.sf.net/nco.html#cdl -->
-@end html
-@cindex @command{ncgen}
-@cindex @command{ncdump}
-@cindex @code{--cdl}
-@cindex @acronym{CDL}
-@cindex @acronym{HDF}
-@item --cdl 
-As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} will
-print extracted data and metadata to screen (i.e., @code{stdout}) as
-valid @acronym{CDL} (network Common data form Description Language). 
-@acronym{CDL} is the human-readable ``lingua franca'' of netCDF ingested by
-@command{ncgen} and excreted by @command{ncdump}.
-Compare @command{ncks} ``traditional'' with @acronym{CDL} printing:
-@example
-zender@@roulee:~$ ncks -v one ~/nco/data/in.nc
-one: type NC_FLOAT, 0 dimensions, 1 attribute, chunked? no, compressed? no, packed? no
-one size (RAM) = 1*sizeof(NC_FLOAT) = 1*4 = 4 bytes
-one attribute 0: long_name, size = 3 NC_CHAR, value = one
-
-one = 1 
-
-zender@@roulee:~$ ncks --cdl -v one ~/nco/data/in.nc
-netcdf in @{
-
-  variables:
-    float one ;
-    one:long_name = "one" ;
-
-  data:
-    one = 1 ;
-
-@} // group /
-@end example
-@command{ncgen} converts @acronym{CDL}-mode output into a netCDF file:
-@example
-ncks --cdl -v one ~/nco/data/in.nc > ~/in.cdl
-ncgen -k netCDF-4 -b -o ~/in.nc ~/in.cdl
-ncks -v one ~/in.nc
-@end example
-The @acronym{HDF} version of @command{ncgen} converts @acronym{CDL} into an
-@acronym{HDF} file:
-@example
-/usr/local/hdf4/bin/ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen
-hdp dumpsds ~/in.hdf
-@end example
-
 @cindex @code{-P}
 @cindex @code{--print}
 @cindex @code{--prn}
@@ -12686,15 +12684,15 @@ Also @samp{--units}.
 @html
 <a name="xml"></a> <!-- http://nco.sf.net/nco.html#xml -->
 @end html
-@cindex @command{ncdump}
 @cindex @code{--xml}
-@cindex XML
+@cindex @acronym{XML}
+@cindex @acronym{NcML}
 @item --xml 
-As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} will
-print extracted metadata to screen (i.e., @code{stdout}) as valid XML in
-NcML, the netCDF Markup Language. 
+As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} can
+print extracted metadata to screen (i.e., @code{stdout}) as valid 
+@acronym{XML} in @acronym{NcML}, the netCDF Markup Language. 
 XML is also exported by @samp{ncdump -x}.
-Compare @command{ncks} ``traditional'' with XML printing:
+Compare @command{ncks} ``traditional'' with @acronym{XML} printing:
 @example
 zender@@roulee:~$ ncks -v one ~/nco/data/in.nc
 one: type NC_FLOAT, 0 dimensions, 1 attribute, chunked? no, compressed? no, packed? no
@@ -12712,10 +12710,11 @@ zender@@roulee:~$ ncks --xml -v one ~/nco/data/in.nc
     </variable>
 </netcdf>
 @end example
-Note that XML mode only prints variable metadata, not variable data.
-This is because @samp{ncdump -x} does the same, and we do not know
-what the NcML format for the data is.
-If printing data in XML would be useful to you, please let us know.
+@acronym{XML}-mode only prints variable metadata, not variable data.
+This is because @samp{ncdump -x} does the same, and we are unsure how to 
+format @acronym{NcML} data.
+Please let us know if more @acronym{XML}/@acronym{NcML} printing
+features would be useful to you.
 @end table
 
 @html
@@ -13871,11 +13870,13 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncrcat netCDF Record Concatenator, Operator Reference Manual
 @section @command{ncrename} netCDF Renamer
 @cindex renaming variables
+@cindex renaming groups
 @cindex renaming dimensions
 @cindex renaming attributes
 @cindex variable names
 @cindex dimension names
 @cindex attribute names
+@cindex group names
 @findex ncrename
 v
 @noindent
@@ -13974,6 +13975,13 @@ The old and new names of the dimension are specified with @samp{-d}
 and @var{new_name} values.  
 This option may be specified more than once.
  
+@item -g @var{old_name},@var{new_name}
+Group renaming. 
+The old and new names of the dimension are specified with @samp{-g}
+(or @samp{--grp}, @samp{--group}) by the associated @var{old_name}
+and @var{new_name} values.  
+This option may be specified more than once.
+ 
 @item -v @var{old_name},@var{new_name}
 Variable renaming. 
 The old and new names of the variable are specified with @samp{-v}
@@ -14002,9 +14010,9 @@ variable @code{u}, and no other variables in netCDF @file{in.nc}.
 ncrename -a u@@long_name,largo_nombre in.nc
 @end example
  
-Rename the group @code{g1} to @code{obama} in netCDF @file{in.nc}. 
+Rename group @code{g8} to @code{g20} in netCDF @file{in.nc}. 
 @example
-ncrename -g g1,obama in_grp.nc
+ncrename -g g8,g20 in_grp.nc
 @end example
  
 @cindex coordinate variables
