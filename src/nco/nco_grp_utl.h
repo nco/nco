@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.351 2013-08-02 19:33:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.352 2013-08-02 19:52:33 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -561,12 +561,12 @@ nco_var_get_trv                       /* [fnc] Fill-in variable structure for a 
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void
-nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabed size */
+nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabbed size */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
-void                                  /* [fnc] Update all GTT dimensions with hyperslabed size */
+void                                  /* [fnc] Update all GTT dimensions with hyperslabbed size */
 nco_dmn_msa_tbl                       /* [fnc] Define specified variable in output file */
 (const int grp_in_id,                 /* I [id] netCDF input group ID */
  const char * const rec_dmn_nm_cst,   /* I [sng] User-specified record dimension, if any, to create or fix in output file */

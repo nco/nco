@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.382 2013-08-02 05:16:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.383 2013-08-02 19:52:33 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -814,17 +814,16 @@ extern "C" {
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
      2) lst_dmn: All unique dimensions (in groups) in file tree (netCDF addition to HDF5) */
   typedef struct{
+    /* Members used by all operators */
     trv_sct *lst;           /* [sct] Array of trv_sct */
     unsigned int nbr;       /* [nbr] Number of trv_sct elements */   
     dmn_trv_sct *lst_dmn;   /* [sct] Array of dmn_trv_sct */
     unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
 
-    /* Following are members only used by transformation operators (non-ncks) */
+    /* Members used only by transformation operators (non-ncks) */
     dmn_sct **dmn_dgn;      /* [sct] (ncwa) Degenerate (size 1) dimensions */
     int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate (size 1) dimensions */
     lmt_sct *lmt_rec;       /* [sct] (ncra) Record dimension */
-
-
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */

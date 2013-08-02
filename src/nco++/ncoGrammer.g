@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.201 2013-07-17 18:26:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.202 2013-08-02 19:52:33 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -2984,7 +2984,7 @@ var=NULL_CEWI;
            nco_mss_val_cp(var_rhs,var);
            
           /* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
-             a hyperslabed var and not a regular var  -- It shouldn't cause 
+             a hyperslabbed var and not a regular var  -- It shouldn't cause 
              any abberant behaviour!! */ 
            var->has_dpl_dmn=-1;  
 

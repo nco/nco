@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.150 2013-08-02 19:33:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.151 2013-08-02 19:52:33 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -932,7 +932,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
       /* Get coordinate from table */
       crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
 
-      /* Use the hyperslabed size */
+      /* Use the hyperslabbed size */
       dmn_sz[dmn_idx]=crd->lmt_msa.dmn_cnt;
 
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=crd->is_rec_dmn;
@@ -944,7 +944,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
 
       dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
 
-      /* Use the hyperslabed size */
+      /* Use the hyperslabbed size */
       dmn_sz[dmn_idx]=dmn_trv->lmt_msa.dmn_cnt;
 
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=dmn_trv->is_rec_dmn;
@@ -996,7 +996,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
         /* Coordinate dimension */
         crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
 
-        /* NOTE: Use hyperslabed sizes for dimension size */
+        /* NOTE: Use hyperslabbed sizes for dimension size */
         if(srg_typ == NC_CHUNKED){
           (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li %s, chunksize = %zu (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->lmt_msa.dmn_cnt,nco_typ_sng(crd->var_typ),cnk_sz[dmn_idx]);
         }else {
@@ -1010,7 +1010,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
         /* Non-coordinate dimension */
         dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
 
-        /* NOTE: Use hyperslabed sizes for dimension size */
+        /* NOTE: Use hyperslabbed sizes for dimension size */
         if(srg_typ == NC_CHUNKED){
           (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li, chunksize = %zu (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(dmn_trv->grp_nm_fll,var_trv->grp_nm_fll)) ? dmn_trv->nm : dmn_trv->nm_fll,dmn_trv->lmt_msa.dmn_cnt,cnk_sz[dmn_idx]);
         }else {
@@ -1030,11 +1030,11 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
 } /* end nco_prn_var_dfn() */
 
 void
-nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
-(const int nc_id,                   /* I [ID] netCDF file ID */
+nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
+(const int nc_id, /* I [ID] netCDF file ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
- const trv_sct * const var_trv,     /* I [sct] Object to print (variable) */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+ const trv_sct * const var_trv, /* I [sct] Object to print (variable) */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose:
      Get variable with limits from input file
@@ -1220,9 +1220,10 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
 
   if(prn_flg->cdl){
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
-    long chr_idx;
+    dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
     int cpd_rec_dmn_idx[NC_MAX_DIMS]; /* [idx] Indices of non-leading record dimensions */
     int cpd_nbr=0; /* [nbr] Number of non-leading record dimensions */
+    long chr_idx;
     nco_bool is_compound; /* [flg] Variable is compound (has non-leading record dimension) */
     nco_bool cpd_rec_dmn[NC_MAX_DIMS]; /* [flg] Dimension is compound */
     (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
@@ -1234,8 +1235,9 @@ nco_prn_var_val_trv             /* [fnc] Print variable data (GTT version) */
     if(is_compound){
       /* Create brace list */
       for(dmn_idx=1;dmn_idx<var.nbr_dim;dmn_idx++){ /* NB: dimension index starts at 1 */
+	dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl); 
 	cpd_rec_dmn[dmn_idx]=False;
-	if(var_trv->var_dmn[dmn_idx].is_crd_var){ /* fxm: change to is_rec_dmn */
+	if(dmn_trv->is_rec_dmn){
 	  cpd_rec_dmn[dmn_idx]=True; 
 	  cpd_rec_dmn_idx[cpd_nbr]=dmn_idx;
 	  cpd_nbr++;
@@ -1938,7 +1940,6 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   return rcd;
 } /* end nco_grp_prn() */
 
-
 nco_bool                            /* O [flg] Variable is compound */
 nco_prn_cpd_chk                     /* [fnc] Check whether variable is compound */
 (const trv_sct * const var_trv,     /* I [sct] Variable to check */
@@ -1949,33 +1950,15 @@ nco_prn_cpd_chk                     /* [fnc] Check whether variable is compound 
   For purposes of this routine, a variable is compound iff it contains
   a record dimension as any but the leading dimension. */
 
-  int nbr_rec;          /* [nbr] Number of entries in array */  
+  int dmn_idx;
+  dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
 
-  dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */  
+  if(var_trv->nbr_dmn <= 1) return False;
 
-  assert(var_trv->nco_typ == nco_obj_typ_var);
+  for(dmn_idx=1;dmn_idx<var_trv->nbr_dmn;dmn_idx++){ /* NB: dimension index starts at 1 */
+    dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl); 
+    if(dmn_trv->is_rec_dmn) break; /* fxm: change to var_dmn->is_rec_var */
+  } /* end loop over dimensions */
 
-  nbr_rec=0;
-
-  if (var_trv->nbr_dmn == 1)
-    return False;
-
-  /* NB: dimension index starts at 1 */
-  for(int idx_dmn=1;idx_dmn<var_trv->nbr_dmn;idx_dmn++) {
-
-    /* Get unique dimension object from unique dimension ID, in input list */
-    dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[idx_dmn].dmn_id,trv_tbl);
-
-    /* Dimension is a record dimension */
-    if (dmn_trv->is_rec_dmn){
-
-      nbr_rec++;
-
-    } /* Dimension is a record dimension */
-  } /* Loop dimensions for object (variable)  */
-
-
-
-  if(nbr_rec) return True; else return False;
-
+  if(dmn_idx != var_trv->nbr_dmn) return True; else return False;
 } /* end nco_prn_cpd_chk() */

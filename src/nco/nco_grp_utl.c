@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.903 2013-08-02 19:33:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.904 2013-08-02 19:52:33 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1751,7 +1751,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         (void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
         (void)fprintf(stdout,"%s:",var_trv.nm_fll); 
         (void)fprintf(stdout," %d dimensions:\n",var_trv.nbr_dmn);
-      }
+      } /* endif dbg */
 
       /* Full dimension names for each variable */
       for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++){
@@ -1764,8 +1764,8 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,var_trv.var_dmn[idx_dmn_var].dmn_nm,var_dmn_id);    
           (void)fprintf(stdout,"<%s>\n",dmn_trv->nm_fll);
-        }
-        if (strcmp(var_trv.var_dmn[idx_dmn_var].dmn_nm,dmn_trv->nm) != 0){
+        } /* endif dbg */
+        if(strcmp(var_trv.var_dmn[idx_dmn_var].dmn_nm,dmn_trv->nm)){
 
         /* Test case generates duplicated dimension IDs in netCDF file
 
@@ -1819,7 +1819,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].grp_nm_fll=strdup(dmn_trv->grp_nm_fll);
       }
 
-    } /* Filter variables  */
+    } /* Filter variables */
   } /* Variables */
 
 } /* end nco_blb_dmn_ids_trv() */
@@ -4367,7 +4367,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   int prg_id;                    /* [enm] Program ID */
   int dmn_id;                    /* [nbr] Dimension ID */
   
-  long dmn_cnt;                  /* [nbr] Dimensio hyperslabed count (size) */
+  long dmn_cnt;                  /* [nbr] Dimensio hyperslabbed count (size) */
   long dmn_sz;                   /* [nbr] Dimension size  */  
 
   var_sct *var;                  /* [sct] Variable structure (output) */   
@@ -4442,7 +4442,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     assert((size_t)dmn_sz == dmn_trv->sz);
     assert(strcmp(dmn_nm,dmn_trv->nm) == 0);
 
-    /* Get hyperslabed count */
+    /* Get hyperslabbed count */
     dmn_cnt=-1;
     if(var_trv->var_dmn[idx_dmn].crd){
       dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
@@ -4471,7 +4471,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     assert((size_t)dim->sz == dmn_trv->sz);  
     assert(dim->id == var->dmn_id[idx_dmn]);  
 
-    /* Set the hyperslabed size for this dimension */
+    /* Set the hyperslabbed size for this dimension */
     dim->cnt=dmn_cnt;
 
     /* Set the *real* size for this dimension */
@@ -6406,7 +6406,7 @@ nco_var_get_trv                       /* [fnc] Fill-in variable structure for a 
 } /* nco_var_trv() */
 
 void
-nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabed size */
+nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabbed size */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const char * const rec_dmn_nm,       /* I [sng] Record dimension name */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
@@ -6434,13 +6434,13 @@ nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hy
 } /* end nco_dmn_trv_msa_tbl() */
 
 void                                  
-nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hyperslabed size */
+nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hyperslabbed size */
 (const int grp_in_id,                 /* I [id] netCDF input group ID */
  const char * const rec_dmn_nm_cst,   /* I [sng] User-specified record dimension, if any, to create or fix in output file */
  trv_sct *var_trv,                    /* I/O [sct] Object to write (variable) trv_map_dmn_set() is O */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Update all GTT dimensions with hyperslabed size; logic based in nco_cpy_var_dfn_trv() */
+  /* Purpose: Update all GTT dimensions with hyperslabbed size; logic based in nco_cpy_var_dfn_trv() */
 
   const char fnc_nm[]="nco_dmn_msa_tbl()"; /* [sng] Function name */
 
@@ -6457,7 +6457,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   int prg_id;                            /* [enm] Program ID */
   int var_dim_id;                        /* [id] Variable dimension ID */   
  
-  long dmn_cnt;                          /* [sng] Hyperslabed dimension size  */  
+  long dmn_cnt;                          /* [sng] Hyperslabbed dimension size  */  
   long dmn_sz;                           /* [sng] Dimension size  */  
 
   nc_type var_typ;                       /* [enm] netCDF type in input variable (usually same as output) */
@@ -6727,7 +6727,7 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
             dmn_trv=nco_dmn_trv_sct(var_trv.var_dmn[idx_dmn].dmn_id,trv_tbl);
 
             /* Is record */
-            assert( dmn_trv->is_rec_dmn);
+            assert(dmn_trv->is_rec_dmn);
 
             dmn_id=var_trv.var_dmn[idx_dmn].dmn_id;
 
