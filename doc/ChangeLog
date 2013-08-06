@@ -1,5 +1,7 @@
 2013-08-06  Charlie Zender  <zender@uci.edu>
 
+	* Add missing semi-colon to nco_mmr.c line 520 so Cygwin can build
+
 	* Tweak attribute indentation with -5 printing and prn_flg->trd
 
 2013-08-05  Charlie Zender  <zender@uci.edu>

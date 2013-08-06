@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.54 2013-07-09 18:10:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.55 2013-08-06 23:55:56 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -517,7 +517,7 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
      Otherwise use the sysconf() macro on _SC_PAGESIZE */
   //     sz_pg=getpagesize();
 # ifdef PAGESIZE
-  sz_pg=PAGESIZE
+  sz_pg=PAGESIZE;
 # else /* !PAGESIZE */
   sz_pg=sysconf(_SC_PAGESIZE);
 #  ifndef __GNUG__
