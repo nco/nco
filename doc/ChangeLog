@@ -1,3 +1,7 @@
+2013-08-06  Charlie Zender  <zender@uci.edu>
+
+	* Tweak attribute indentation with -5 printing and prn_flg->trd
+
 2013-08-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.5 release procedure:
@@ -4400,9 +4404,9 @@
 	* cd ~/nco;cvs tag -d nco-3_9_2;cvs tag -d nco-3_9_2-1
 	  cd ~/nco;cvs commit -m "Preparing nco-3.9.2 release"
 	  cvs tag -c nco-3_9_2;cvs tag -c nco-3_9_2-1
-	  Changes since nco-3_9_1: GPL3, UDUnits2, _FillValue, 
+	  Changes since nco-3_9_1: GPL3, UDUnits2, _FillValue,
 	  ncap2 printing
-	
+
 	* Support nco_put/get_att_string/ubyte() now in netCDF4
 
 	* Update to netCDF4 daily snapshot 20070822
@@ -4410,7 +4414,7 @@
 	* Abandon TKN2SNG(x) method for nco_mss_val_sng
 	  Use direct global variable to get rid of superfluous double quotes
 	  This fixes all regressions with _FillValue<->missing_value switch
-	
+
 2007-08-29  Charlie Zender  <zender@uci.edu>
 
 	* Regressions with _FillValue<->missing_value switch
