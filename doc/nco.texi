@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.828 2013-08-02 05:16:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.829 2013-08-07 00:52:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -14837,8 +14837,165 @@ Comments on the proposals and letters of support are also very welcome.
 @node CMIP5 Example, Parallel, Contributing, Top
 @chapter @acronym{CMIP5} Example
 @cindex @acronym{CMIP}
+@ignore
 This @uref{http://nco.sf.net/xmp_cesm.html,Wonderful CMIP5 Documentation}
 shows complete processing of the @acronym{CMIP5} dataset.
+@end ignore
+
+The @uref{http://cmip-pcmdi.llnl.gov/cmip5/index.html?submenuheader=0, fifth phase of the Coupled Model Intercomparison Project (@acronym{CMIP5})} 
+provides a multi-model framework for comparing the mechanisms and responses of climate models from around the world. 
+However, the workload of retrieving a certain climate statistic from all these models, each of which includes several ensemble members, is tremendous. 
+Not only that, it is too often a repetitive process which impedes new research and hypothesis testing. 
+Our NASA ACCESS project is designed to simplify and accelerate this process. 
+To begin, we have documented below a prototypical example of @acronym{CMIP5} analysis and 
+evaluation using traditional @acronym{NCO} commands on netCDF3-format model and @acronym{HDF-EOS} format observational (@acronym{NASA} @acronym{MODIS} satellite instrument) datasets. 
+These examples complement the NCO User's Guide by detailing in-depth data analysis in a frequently encountered “real world” context. 
+Graphical representations of the results (@acronym{NCL} scripts available upon request) are provided to illustrate physical meaning of the analysis. 
+Over the summer of 2013, we will add scripts which make use of new @acronym{NCO} features 
+that combine all the loops in the analysis into single commands by exploiting @acronym{NCO}'s new group aggregation and arithmetic features. 
+
+@menu
+* Combine Files::
+* Global Distribution of Long-term Average::
+* Annual Average over Regions::
+* Monthly Cycle::
+* Regrid MODIS Data::
+* Add Coordinates to MODIS Data::
+* Permute MODIS Coordinates::
+* Hierarchical Data Files::
+@end menu
+
+@node Combine Files, Global Distribution of Long-term Average, CMIP5 Example, CMIP5 Example
+@section Combine Files
+@cindex Combine files
+Sometimes, the data of one ensemble member will be stored in several files to reduce single file size. 
+This script illustrates how to concatenate these files into one, including:
+@enumerate
+@item Obtain the number and names (or partial names) of files in directory; 
+@item Concatenate files along record dimension (the left-most dimension) using 
+@command{ncrcat} (@pxref{ncrcat netCDF Record Concatenator}).
+@end enumerate
+@example
+@verbatiminclude xmp/combine_file.sh
+@end example
+
+@node Global Distribution of Long-term Average, Annual Average over Regions, Combine Files, CMIP5 Example
+@section Global Distribution of Long-term Average
+@cindex Global Distribution of Long-term Average
+@float Figure,fig:glb
+@image{xmp/fig1,3.5in} 
+@caption{Global Distribution of Long-term Average.}
+@end float
+This section illustrates how to calculate global distribution of long-term average (@pxref{fig:glb}), including:
+@enumerate
+@item Average the ensemble members of each model using @command{ncea} (@pxref{ncea netCDF Ensemble Averager});
+@item Average along the record dimension (the left-most) using @command{ncra} (@pxref{ncra netCDF Record Averager});
+@item Store the results of one model as a group in the output file using @command{ncecat} (@pxref{ncrcat netCDF Record Concatenator}) with the option of @samp{--gag}.
+@end enumerate
+@example
+@verbatiminclude xmp/global_avg.sh
+@end example
+
+@node Annual Average over Regions, Monthly Cycle, Global Distribution of Long-term Average, CMIP5 Example
+@section Annual Average over Regions
+@cindex Annual Average over Regions
+@float Figure,fig:anl
+@image{xmp/fig2,4in}
+@caption{Annual Average over Regions.}
+@end float
+This section illustrates how to calculate the annual average over specific region(s) (@pxref{fig:anl}), including:
+@enumerate
+@item Spatial average using @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor}) and @command{ncwa} (@pxref{ncwa netCDF Weighted Averager}); 
+@item Change the order of dimensions using @command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly});
+@item Annual average using @command{ncra} (@pxref{ncra netCDF Record Averager});
+@item Anomaly from long-term average using @command{ncbo} (@pxref{ncbo netCDF Binary Operator});
+@item Standard deviation using @command{ncbo} (@pxref{ncbo netCDF Binary Operator}) and @command{ncea} (@pxref{ncea netCDF Ensemble Averager});
+@item Rename variables using @command{ncrename} (@pxref{ncrename netCDF Renamer});
+@item Edit attributions using @command{ncatted} (@pxref{ncatted netCDF Attribute Editor});
+@item Linear regression using @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor});
+@item Use @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor}) with commands file (i.e., .nco file);
+@item Move variables around using @command{ncks} (@pxref{ncks netCDF Kitchen Sink}).
+@end enumerate
+@example
+## Main Script
+@verbatiminclude xmp/annual_avg.sh
+## gsl_rgr.nco
+@verbatiminclude xmp/gsl_rgr.nco
+@end example
+
+@node Monthly Cycle, Regrid MODIS Data, Annual Average over Regions, CMIP5 Example
+@section Monthly Cycle
+@cindex Monthly Cycle
+@float Figure,fig:mon
+@image{xmp/fig3,4in}
+@caption{Monthly Cycle.}
+@end float
+This scripts illustrate how to calculate the monthly anomaly from the annual average (@pxref{fig:mon}).
+@example
+@verbatiminclude xmp/monthly_cycle.sh
+@end example
+
+@node Regrid MODIS Data, Add Coordinates to MODIS Data, Monthly Cycle, CMIP5 Example
+@section Regrid MODIS Data
+@cindex Regrid MODIS Data
+In order to compare the results between MODIS and CMIP5 models,
+you might want to regrid one of the datasets so that the spatial resolutions match.
+Here, the script illustrates how to regrid MODIS data, including:
+@enumerate
+@item Regrid using bilinear interpolation (@pxref{Bilinear interpolation});
+@item Rename variables, dimensions and attributions using @command{ncrename} (@pxref{ncrename netCDF Renamer}).
+@end enumerate
+@example
+## Main Script
+@verbatiminclude xmp/regrid.sh
+## bi_interp.nco
+@verbatiminclude xmp/bi_interp.nco
+@end example
+
+@node Add Coordinates to MODIS Data, Permute MODIS Coordinates, Regrid MODIS Data, CMIP5 Example
+@section Add Coordinates to MODIS Data
+@cindex Add Coordinates to MODIS Data
+@example
+## Main Script
+@verbatiminclude xmp/add_coor.sh
+## coor.nco
+@verbatiminclude xmp/coor.nco
+@end example
+
+@node Permute MODIS Coordinates, Hierarchical Data Files, Add Coordinates to MODIS Data, CMIP5 Example
+@section Permute MODIS Coordinates
+@cindex Permute MODIS Coordinates
+The latitude of MODIS data is from 90@textdegree{}N to -90@textdegree{}N, 
+and the longitude is from -180@textdegree{}E to 180@textdegree{}E. 
+However, CMIP5 is from -90@textdegree{}N to 90@textdegree{}N, 
+and from 0@textdegree{}E to 360@textdegree{}E. 
+So this script illustrates how to change MODIS coordinate to that of CMIP5.
+@example
+@verbatiminclude xmp/permute_coor.sh
+@end example
+
+@node Hierarchical Data Files,  , Permute MODIS Coordinates, CMIP5 Example
+@section Hierarchical Data Files
+@cindex Hierarchical Data Files
+Hierarchical Data Files support arbitrarily nested groups.
+The following NCO operators now can work recursively through all groups:
+@itemize @bullet
+@item @pxref{ncbo netCDF Binary Operator}
+@item @pxref{ncecat netCDF Ensemble Concatenator}
+@item @pxref{ncks netCDF Kitchen Sink}
+@item @pxref{ncpdq netCDF Permute Dimensions Quickly}
+@item @pxref{ncwa netCDF Weighted Averager}
+@end itemize
+Here is an example showing:
+@enumerate
+@item How to create a hierarchical data file from multiple files using @command{ncecat} (@pxref{ncecat netCDF Ensemble Concatenator}) or @command{ncks} (@pxref{ncks netCDF Kitchen Sink});
+@item Hyperslabs using @command{ncks} (@pxref{ncks netCDF Kitchen Sink});
+@item Spatial average and time average using @command{ncwa} (@pxref{ncwa netCDF Weighted Averager});
+@item Anomaly from average using @command{ncbo} (@pxref{ncbo netCDF Binary Operator}).
+@end enumerate
+@example
+@verbatiminclude xmp/grp.sh
+@end example
 
 @html
 <a name="parallel"></a> <!-- http://nco.sf.net/nco.html#parallel -->
