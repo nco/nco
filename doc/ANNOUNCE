@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.600 2013-08-01 06:55:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.601 2013-08-07 16:16:32 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.5 are ready. 
 
@@ -33,6 +33,14 @@ A. ncra, ncea, and ncrcat now supports groups, Group Path Editing
    http://nco.sf.net/nco.html#grp
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
+
+A. CDL-mode prints more verbose information as comments (after '// ')  
+   as the debugging level increases (i.e., ncks --cdl -D 1).
+   Currently this includes a file summary, the ncgen command required
+   to convert back to netCDF, and full path names for all groups.
+   ncks --cdl -D 1 ~/nco/data/in_grp.nc
+   ncks --cdl -D 3 ~/nco/data/in_grp.nc
+   http://nco.sf.net/nco.html#cdl
 
 BUG FIXES:
 

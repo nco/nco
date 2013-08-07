@@ -1,3 +1,7 @@
+2013-08-07  Charlie Zender  <zender@uci.edu>
+
+	* Print file summary in CDL-mode when dbg_lvl >= 1
+
 2013-08-06  Charlie Zender  <zender@uci.edu>
 
 	* Integrate Wenshan's CMIP5 documentation into nco.texi

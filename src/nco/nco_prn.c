@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.152 2013-08-06 19:41:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.153 2013-08-07 16:16:32 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1799,7 +1799,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   }else{ /* !xml */
     if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
     if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(stdout,"\n");
-      if(grp_dpt == 0 && prn_flg->nfo_cdl) (void)fprintf(stdout,"%*s// ncgen -k netCDF-4 -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->fl_stb,prn_flg->fl_stb);
+    if(grp_dpt == 0 && prn_flg->nfo_cdl) (void)fprintf(stdout,"%*s// %s",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
+    if(grp_dpt == 0 && prn_flg->nfo_cdl) (void)fprintf(stdout,"%*s// ncgen -k netCDF-4 -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->fl_stb,prn_flg->fl_stb);
   } /* !xml */
 
   /* Print dimension information for group */
@@ -1870,7 +1871,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
 
     /* Print variable full name */
-    if(var_trv.grp_dpt > 0 && prn_flg->fll_pth) (void)fprintf(stdout,"%*s%s\n",prn_flg->ndn,spc_sng,var_trv.nm_fll);
+    if(var_trv.grp_dpt > 0 && prn_flg->fll_pth && prn_flg->trd) (void)fprintf(stdout,"%*s%s\n",prn_flg->ndn,spc_sng,var_trv.nm_fll);
 
     /* Print variable metadata */ 
     if(prn_flg->PRN_VAR_METADATA || prn_flg->cdl) (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
