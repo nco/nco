@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.829 2013-08-07 00:52:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.830 2013-08-07 03:25:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -29,7 +29,7 @@ Irvine, CA 92697-3100
 
 After editing any hyperlink locations, Emacs users update indices with
 C-c C-u C-a	texinfo-all-menus-update
-C-c C-u C-e	texinfo-every-node-update
+C-c C-u C-e	texinfo-every-node-updatexb
 
 Multiple files:
 M-x texinfo-multiple-files-update
@@ -52,6 +52,8 @@ texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
+# 20130806 Copy CMIP5 images (takes additional time)
+cd ~/nco/doc/xmp;/usr/bin/scp fig*.png fig*.eps zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 # 20120203 Copy all nco.html PNG images (takes additional time)
 cd ~/nco/doc;/usr/bin/scp nco_*.png zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 cd ~/nco/doc;scp -p nco_*.png dust.ess.uci.edu:/var/www/html/nco;cd -
@@ -109,7 +111,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.5
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 1 August 2013
+@set update-date 6 August 2013
 @set update-month August 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -338,7 +340,8 @@ Irvine, CA 92697-3100@*
 contains the complete NCO documentation.</b> 
 <br>This HTML documentation is equivalent except it refers you to the
 printed (i.e., DVI, PostScript, and PDF) documentation for description
-of complex mathematical expressions. 
+of complex mathematical expressions. Also some images are only in the
+PDF document.
 @end html
 @end cartouche
 @end ifhtml
@@ -349,7 +352,8 @@ of complex mathematical expressions.
 contains the complete @acronym{NCO} documentation.}
 This Info documentation is equivalent except it refers you to the 
 printed (i.e., DVI, PostScript, and PDF) documentation for description 
-of complex mathematical expressions. 
+of complex mathematical expressions. Also some images are only in the
+PDF document.
 @end ifnothtml
 
 The netCDF Operators, or @acronym{NCO}, are a suite of programs known as 
