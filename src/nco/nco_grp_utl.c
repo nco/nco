@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.905 2013-08-08 18:22:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.906 2013-08-08 20:11:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6683,7 +6683,7 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
 
   nm_tbl_sct *rec_dmn_nm;  /* [sct] Record dimension names array */
 
-  char *rec_dmn_nm_in;     /* [sng] Record dimension name */ 
+  char *rec_dmn_nm_in=NULL;/* [sng] Record dimension name */ 
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -6785,9 +6785,10 @@ nco_dmn_xtr_avg_trv                    /* [fnc] Create list of all dimensions as
 {
   /* Purpose: Create list of all dimensions associated with input variable list; create list of averaged dimensions from -a input */
 
-  const char fnc_nm[]="nco_dmn_lst_ass_var_trv()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_dmn_xtr_avg_trv()"; /* [sng] Function name */
 
-  int nbr_xtr_dmn;          /* [nbr] Number of dimensions associated with variables to be extracted */
+  int nbr_xtr_dmn;      /* [nbr] Number of dimensions associated with variables to be extracted */
+  int nbr_avg_dmn;      /* [nbr] Number of averaged dimensions */
 
   long dmn_cnt;         /* [nbr] Hyperslabbed size of dimension */  
   long dmn_sz;          /* [nbr] Size of dimension  */  
@@ -6800,6 +6801,7 @@ nco_dmn_xtr_avg_trv                    /* [fnc] Create list of all dimensions as
   assert(prg_get() == ncpdq || prg_get() == ncwa);
 
   nbr_xtr_dmn=0;
+  nbr_avg_dmn=0;
 
   /* Traverse table and match relative dimension names */
 
@@ -6885,6 +6887,9 @@ nco_dmn_xtr_avg_trv                    /* [fnc] Create list of all dimensions as
             /* Match relative name  */
             if(strcmp(dmn_trv->nm,dmn_lst_in[idx_dmn_in]) == 0){
 
+              /* Duplicate this dimension */
+              (*dmn_avg)[nbr_avg_dmn]=nco_dmn_dpl((*dmn_xtr)[nbr_xtr_dmn-1]);
+              nbr_avg_dmn++;
 
             } /* Match relative name  */
           } /* Loop input dimension name list */
