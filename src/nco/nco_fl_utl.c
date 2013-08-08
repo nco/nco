@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.220 2013-07-27 03:27:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.221 2013-08-08 17:39:57 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -58,26 +58,16 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
   if(strcasestr("classic",fl_fmt_sng) && !strcasestr(fl_fmt_sng,"netcdf4")){
     /* If "classic" contains string and string does not contain "netcdf4" */
     *fl_fmt_enm=NC_FORMAT_CLASSIC;
-
   }else if(strcasestr("64bit",fl_fmt_sng)){
-
-
     /* If "64bit" contains string */
     *fl_fmt_enm=NC_FORMAT_64BIT;
-
   }else if(strcasestr(fl_fmt_sng,"netcdf4")){
-
     /* If string contains "netcdf4" */
 #ifdef ENABLE_NETCDF4
-
     if(strcasestr("netcdf4",fl_fmt_sng)){
-
       /* If "netcdf4" contains string */
       *fl_fmt_enm=NC_FORMAT_NETCDF4;
-
-
     }else if(strcasestr("netcdf4_classic",fl_fmt_sng)){
-
       /* If "netcdf4_classic" contains string */
       *fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
     } /* endif NETCDF4 */
@@ -85,10 +75,7 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
     (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64bit\" options.\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_NETCDF4 */
-
   }else if(strcasestr("znetcdf",fl_fmt_sng)){
-
-
 #ifdef ENABLE_ZNETCDF
     /* If "znetcdf" contains string */
     *fl_fmt_enm=NC_COMPRESS;

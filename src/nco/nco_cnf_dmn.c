@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.84 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.85 2013-08-08 17:39:57 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -86,15 +86,11 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     } /* end if ranks are equal */
 
     /* 20060425: Weight re-use will not occur if wgt_crr is free()'d here
-    Some DDRA benchmarks need to know cost of broadcasting weights
-    To turn off weight re-use and cause broadcasting, execute "else" block below
-    by (temporarily) using in following condition
-
-    if(*DO_CONFORM && False){
-
-    instead of
-
-    if(*DO_CONFORM){ */
+       Some DDRA benchmarks need to know cost of broadcasting weights
+       To turn off weight re-use and cause broadcasting, execute "else" block below
+       by (temporarily) using 
+              if(*DO_CONFORM && False){ ....instead of.... if(*DO_CONFORM){ 
+       in following condition */
     if(*DO_CONFORM){
       wgt_out=wgt_crr;
     }else{

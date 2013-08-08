@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.831 2013-08-08 01:08:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.832 2013-08-08 17:37:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7928,8 +7928,7 @@ n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
 @end example 
 
 @table @asis
-@item
-@strong{netCDF3/4 Types}
+@item @strong{netCDF3/4 Types}
 @item b|B	 
   @code{NC_BYTE}, a signed 1-byte integer 
 @item none	 
@@ -7942,9 +7941,7 @@ n6@@units="kelvin" // attribute will be type @code{NC_CHAR}
   @code{NC_FLOAT}, a single-precision (4-byte) floating point number 
 @item d|D
   @code{NC_DOUBLE}, a double-precision (8-byte) floating point number 
-@item
-@item
-@strong{netCDF4 Types}
+@item @strong{netCDF4 Types}
 @item ub|UB	 
   @code{NC_UBYTE}, an unsigned 1-byte integer 
 @item us|US 
@@ -8312,8 +8309,7 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 @noindent These methods allow @command{ncap2} to convert variables and attributes to the different netcdf types. For more details on automatic and manual type conversion see (@pxref{Type Conversion}). You can only use the new netCDF4 types if you have compiled/links @acronym{NCO} with the netCDF4 library and the Output file is HDF5.
 
 @table @code
-@item
-@strong{netCDF3/4 Types}
+@item @strong{netCDF3/4 Types}
 @item byte()	 
 @cindex byte()
  convert to @code{NC_BYTE},  a signed 1-byte integer 
@@ -8332,9 +8328,7 @@ lat_2D_rrg_new=0,90,-30,30,-30,30,-90,0
 @item double() 
 @cindex double()
  convert to @code{NC_DOUBLE}, a double-precision (8-byte) floating point number 
-@item
-@item
-@strong{netCDF4 Types}
+@item @strong{netCDF4 Types}
 @item ubyte()	 
 @cindex ubyte()
  convert to @code{NC_UBYTE}, an unsigned 1-byte integer 
