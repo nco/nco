@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.830 2013-08-07 03:25:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.831 2013-08-08 01:08:27 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -340,8 +340,8 @@ Irvine, CA 92697-3100@*
 contains the complete NCO documentation.</b> 
 <br>This HTML documentation is equivalent except it refers you to the
 printed (i.e., DVI, PostScript, and PDF) documentation for description
-of complex mathematical expressions. Also some images are only in the
-PDF document.
+of complex mathematical expressions. Also, images appear only in the
+PDF document due to SourceForge limitations.
 @end html
 @end cartouche
 @end ifhtml
@@ -352,8 +352,8 @@ PDF document.
 contains the complete @acronym{NCO} documentation.}
 This Info documentation is equivalent except it refers you to the 
 printed (i.e., DVI, PostScript, and PDF) documentation for description 
-of complex mathematical expressions. Also some images are only in the
-PDF document.
+of complex mathematical expressions. Also, images appear only in the
+PDF document due to SourceForge limitations.
 @end ifnothtml
 
 The netCDF Operators, or @acronym{NCO}, are a suite of programs known as 
@@ -14777,7 +14777,7 @@ NCO Spiral Logo
 Single bug reports and fixes
 @cindex Wenshan Wang
 @item Wenshan Wang
-@acronym{CMIP5} and MODIS processing documentation.
+@acronym{CMIP5} and @acronym{MODIS} processing documentation.
 @end table
 Please let me know if your name was omitted!
 
@@ -14830,7 +14830,7 @@ We are interested in obtaining @acronym{NASA} support for
 We plan to submit a proposal to the next suitable @acronym{NASA}
 @acronym{NRA} or @acronym{NSF} opportunity. 
 
-We are considering a lot of interesting ideas for still more proposals.
+We are considering other interesting ideas for still more proposals.
 Please contact us if you wish to be involved with any future
 @acronym{NCO}-related proposals.  
 Comments on the proposals and letters of support are also very welcome.
@@ -14840,23 +14840,37 @@ Comments on the proposals and letters of support are also very welcome.
 @end html
 @node CMIP5 Example, Parallel, Contributing, Top
 @chapter @acronym{CMIP5} Example
-@cindex @acronym{CMIP}
+@cindex @acronym{CMIP5}
 @ignore
 This @uref{http://nco.sf.net/xmp_cesm.html,Wonderful CMIP5 Documentation}
 shows complete processing of the @acronym{CMIP5} dataset.
 @end ignore
 
-The @uref{http://cmip-pcmdi.llnl.gov/cmip5/index.html?submenuheader=0, fifth phase of the Coupled Model Intercomparison Project (@acronym{CMIP5})} 
-provides a multi-model framework for comparing the mechanisms and responses of climate models from around the world. 
-However, the workload of retrieving a certain climate statistic from all these models, each of which includes several ensemble members, is tremendous. 
-Not only that, it is too often a repetitive process which impedes new research and hypothesis testing. 
-Our NASA ACCESS project is designed to simplify and accelerate this process. 
-To begin, we have documented below a prototypical example of @acronym{CMIP5} analysis and 
-evaluation using traditional @acronym{NCO} commands on netCDF3-format model and @acronym{HDF-EOS} format observational (@acronym{NASA} @acronym{MODIS} satellite instrument) datasets. 
-These examples complement the NCO User's Guide by detailing in-depth data analysis in a frequently encountered “real world” context. 
-Graphical representations of the results (@acronym{NCL} scripts available upon request) are provided to illustrate physical meaning of the analysis. 
-Over the summer of 2013, we will add scripts which make use of new @acronym{NCO} features 
-that combine all the loops in the analysis into single commands by exploiting @acronym{NCO}'s new group aggregation and arithmetic features. 
+The fifth phase of the Coupled Model Intercomparison Project 
+(@uref{http://cmip-pcmdi.llnl.gov/cmip5/index.html?submenuheader=0, @acronym{CMIP5}} 
+provides a multi-model framework for comparing the mechanisms and
+responses of climate models from around the world.   
+However, it is a tremendous workload to retrieve a single climate
+statistic from all these models, each of which includes several ensemble 
+members.  
+Not only that, it is too often a repetitive process which impedes new
+research and hypothesis testing.  
+Our @acronym{NASA} @acronym{ACCESS} project is designed to simplify and
+accelerate this process.  
+To begin, we document below a prototypical example of @acronym{CMIP5}
+analysis and evaluation using traditional @acronym{NCO} commands on
+netCDF3-format model and @acronym{HDF-EOS} format observational
+(@acronym{NASA} @acronym{MODIS} satellite instrument) datasets.
+These examples complement the @acronym{NCO} User's Guide by detailing
+in-depth data analysis in a frequently encountered ``real world''
+context.   
+Graphical representations of the results (@acronym{NCL} scripts
+available upon request) are provided to illustrate physical meaning of
+the analysis.
+Over the summer of 2013, we will add scripts which make use of new
+@acronym{NCO} features that combine all the loops in the analysis into
+single commands by exploiting @acronym{NCO}'s new group aggregation and
+arithmetic features.  
 
 @menu
 * Combine Files::
@@ -14872,11 +14886,13 @@ that combine all the loops in the analysis into single commands by exploiting @a
 @node Combine Files, Global Distribution of Long-term Average, CMIP5 Example, CMIP5 Example
 @section Combine Files
 @cindex Combine files
-Sometimes, the data of one ensemble member will be stored in several files to reduce single file size. 
-This script illustrates how to concatenate these files into one, including:
+Sometimes, the data of one ensemble member will be stored in several
+files to reduce single file size.
+This script illustrates how to concatenate these into one file.
+Key steps include: 
 @enumerate
-@item Obtain the number and names (or partial names) of files in directory; 
-@item Concatenate files along record dimension (the left-most dimension) using 
+@item Obtain number and names (or partial names) of files in a directory
+@item Concatenate files along the record dimension (usually time) using 
 @command{ncrcat} (@pxref{ncrcat netCDF Record Concatenator}).
 @end enumerate
 @example
@@ -14886,15 +14902,17 @@ This script illustrates how to concatenate these files into one, including:
 @node Global Distribution of Long-term Average, Annual Average over Regions, Combine Files, CMIP5 Example
 @section Global Distribution of Long-term Average
 @cindex Global Distribution of Long-term Average
-@float Figure,fig:glb
+@float Figure,fgr:glb
 @image{xmp/fig1,3.5in} 
 @caption{Global Distribution of Long-term Average.}
 @end float
-This section illustrates how to calculate global distribution of long-term average (@pxref{fig:glb}), including:
+This section illustrates how to calculate the global distribution of
+long-term average (@pxref{fgr:glb}).
+Key steps include: 
 @enumerate
-@item Average the ensemble members of each model using @command{ncea} (@pxref{ncea netCDF Ensemble Averager});
-@item Average along the record dimension (the left-most) using @command{ncra} (@pxref{ncra netCDF Record Averager});
-@item Store the results of one model as a group in the output file using @command{ncecat} (@pxref{ncrcat netCDF Record Concatenator}) with the option of @samp{--gag}.
+@item Average ensemble members of each model using @command{ncea} (@pxref{ncea netCDF Ensemble Averager})
+@item Average the record dimension using @command{ncra} (@pxref{ncra netCDF Record Averager})
+@item Store results of each model as a distinct group in a single output file using @command{ncecat} (@pxref{ncrcat netCDF Record Concatenator}) with the @samp{--gag} option
 @end enumerate
 @example
 @verbatiminclude xmp/global_avg.sh
@@ -14903,21 +14921,23 @@ This section illustrates how to calculate global distribution of long-term avera
 @node Annual Average over Regions, Monthly Cycle, Global Distribution of Long-term Average, CMIP5 Example
 @section Annual Average over Regions
 @cindex Annual Average over Regions
-@float Figure,fig:anl
+@float Figure,fgr:anl
 @image{xmp/fig2,4in}
 @caption{Annual Average over Regions.}
 @end float
-This section illustrates how to calculate the annual average over specific region(s) (@pxref{fig:anl}), including:
+This section illustrates how to calculate the annual average over
+specific regions (@pxref{fgr:anl}).
+Key steps include: 
 @enumerate
 @item Spatial average using @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor}) and @command{ncwa} (@pxref{ncwa netCDF Weighted Averager}); 
-@item Change the order of dimensions using @command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly});
+@item Change dimension order using @command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly});
 @item Annual average using @command{ncra} (@pxref{ncra netCDF Record Averager});
 @item Anomaly from long-term average using @command{ncbo} (@pxref{ncbo netCDF Binary Operator});
 @item Standard deviation using @command{ncbo} (@pxref{ncbo netCDF Binary Operator}) and @command{ncea} (@pxref{ncea netCDF Ensemble Averager});
 @item Rename variables using @command{ncrename} (@pxref{ncrename netCDF Renamer});
 @item Edit attributions using @command{ncatted} (@pxref{ncatted netCDF Attribute Editor});
 @item Linear regression using @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor});
-@item Use @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor}) with commands file (i.e., .nco file);
+@item Use @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor}) with commands file (i.e., @file{.nco} file);
 @item Move variables around using @command{ncks} (@pxref{ncks netCDF Kitchen Sink}).
 @end enumerate
 @example
@@ -14930,23 +14950,26 @@ This section illustrates how to calculate the annual average over specific regio
 @node Monthly Cycle, Regrid MODIS Data, Annual Average over Regions, CMIP5 Example
 @section Monthly Cycle
 @cindex Monthly Cycle
-@float Figure,fig:mon
+@float Figure,fgr:mon
 @image{xmp/fig3,4in}
 @caption{Monthly Cycle.}
 @end float
-This scripts illustrate how to calculate the monthly anomaly from the annual average (@pxref{fig:mon}).
+This script illustrates how to calculate the monthly anomaly from the
+annual average (@pxref{fgr:mon}). 
 @example
 @verbatiminclude xmp/monthly_cycle.sh
 @end example
 
 @node Regrid MODIS Data, Add Coordinates to MODIS Data, Monthly Cycle, CMIP5 Example
-@section Regrid MODIS Data
-@cindex Regrid MODIS Data
-In order to compare the results between MODIS and CMIP5 models,
-you might want to regrid one of the datasets so that the spatial resolutions match.
-Here, the script illustrates how to regrid MODIS data, including:
+@section Regrid @acronym{MODIS} Data
+@cindex Regrid @acronym{MODIS} Data
+In order to compare the results between @acronym{MODIS} and
+@acronym{CMIP5} models, one usually regrids one or both datasets so 
+that the spatial resolutions match. 
+Here, the script illustrates how to regrid @acronym{MODIS} data.
+Key steps include:
 @enumerate
-@item Regrid using bilinear interpolation (@pxref{Bilinear interpolation});
+@item Regrid using bilinear interpolation (@pxref{Bilinear interpolation})
 @item Rename variables, dimensions and attributions using @command{ncrename} (@pxref{ncrename netCDF Renamer}).
 @end enumerate
 @example
@@ -14957,8 +14980,8 @@ Here, the script illustrates how to regrid MODIS data, including:
 @end example
 
 @node Add Coordinates to MODIS Data, Permute MODIS Coordinates, Regrid MODIS Data, CMIP5 Example
-@section Add Coordinates to MODIS Data
-@cindex Add Coordinates to MODIS Data
+@section Add Coordinates to @acronym{MODIS} Data
+@cindex Add Coordinates to @acronym{MODIS} Data
 @example
 ## Main Script
 @verbatiminclude xmp/add_coor.sh
@@ -14967,13 +14990,16 @@ Here, the script illustrates how to regrid MODIS data, including:
 @end example
 
 @node Permute MODIS Coordinates, Hierarchical Data Files, Add Coordinates to MODIS Data, CMIP5 Example
-@section Permute MODIS Coordinates
-@cindex Permute MODIS Coordinates
-The latitude of MODIS data is from 90@textdegree{}N to -90@textdegree{}N, 
-and the longitude is from -180@textdegree{}E to 180@textdegree{}E. 
-However, CMIP5 is from -90@textdegree{}N to 90@textdegree{}N, 
-and from 0@textdegree{}E to 360@textdegree{}E. 
-So this script illustrates how to change MODIS coordinate to that of CMIP5.
+@section Permute @acronym{MODIS} Coordinates
+@cindex Permute @acronym{MODIS} Coordinates
+@acronym{MODIS} orders latitude data from 90@textdegree{}N to
+-90@textdegree{}N, and longitude from -180@textdegree{}E to
+180@textdegree{}E.   
+However, @acronym{CMIP5} orders latitude from -90@textdegree{}N to
+90@textdegree{}N, and longitude from 0@textdegree{}E to
+360@textdegree{}E.  
+This script changes the @acronym{MODIS} coordinates to the
+@acronym{CMIP5} convention.
 @example
 @verbatiminclude xmp/permute_coor.sh
 @end example
@@ -14982,7 +15008,7 @@ So this script illustrates how to change MODIS coordinate to that of CMIP5.
 @section Hierarchical Data Files
 @cindex Hierarchical Data Files
 Hierarchical Data Files support arbitrarily nested groups.
-The following NCO operators now can work recursively through all groups:
+The following@acronym{NCO} operators now can work recursively through all groups:
 @itemize @bullet
 @item @pxref{ncbo netCDF Binary Operator}
 @item @pxref{ncecat netCDF Ensemble Concatenator}
