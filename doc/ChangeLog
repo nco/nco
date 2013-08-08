@@ -1,5 +1,7 @@
 2013-08-08  Charlie Zender  <zender@uci.edu>
 
+	* Cleanup ncflint
+
 	* NCO 4.3.5 release procedure:
  	Changes since nco-4_3_4: fxm
 	cd ~/nco;cvs tag -d ncoa-4_3_5;cvs tag -d nco-4_3_5-1

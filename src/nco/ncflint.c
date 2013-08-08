@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.258 2013-08-01 05:44:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.259 2013-08-08 17:50:08 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.258 2013-08-01 05:44:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.258 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.259 2013-08-08 17:50:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.259 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -782,11 +782,10 @@ main(int argc,char **argv)
     var_trv_1=trv_tbl_var_nm_fll(var_prc_1[idx]->nm_fll,trv_tbl);
     var_trv_2=trv_tbl_var_nm_fll(var_prc_2[idx]->nm_fll,trv_tbl);
 
-    assert(var_trv_1);
-    if(var_trv_2 == NULL){
-      (void)fprintf(fp_stdout,"%s: ERROR Variable <%s> is not present in second input file. ncflint assumes same structure for processed objects in both files\n",prg_nm_get(),var_trv_1->nm_fll);
+    if(!var_trv_2){
+      (void)fprintf(fp_stdout,"%s: ERROR Variable %s is not present in second input file. ncflint assumes same structure for processed objects in both files\n",prg_nm_get(),var_trv_1->nm_fll);
       nco_exit(EXIT_FAILURE);
-    }
+    } /* endif */
 
     /* Obtain group ID using full group name */
     (void)nco_inq_grp_full_ncid(in_id_1,var_trv_1->grp_nm_fll,&grp_id_1);
@@ -797,7 +796,6 @@ main(int argc,char **argv)
     /* Read */
     (void)nco_msa_var_get_trv(grp_id_1,var_prc_1[idx],var_trv_1);
     (void)nco_msa_var_get_trv(grp_id_2,var_prc_2[idx],var_trv_2);
-
 
     /* Set var_prc_1 and var_prc_2 to correct size */
     var_prc_1[idx]->sz=var_prc_out[idx]->sz;       
@@ -831,7 +829,6 @@ main(int argc,char **argv)
     /* Re-cast output variable to original type */
     var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);
 
-
     /* Edit group name for output */
     if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv_1->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv_1->grp_nm_fll);
 
@@ -847,18 +844,8 @@ main(int argc,char **argv)
     /* Store the output variable ID */
     var_prc_out[idx]->id=var_out_id;
 
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(fp_stdout,"%s: INFO reports variable to write <%s>\n",prg_nm_get(),var_trv_1->nm_fll);
-    }
-
-
-
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      var_sct *v=var_prc_out[idx];
-      for(int idx_dmn=0;idx_dmn<v->nbr_dim;idx_dmn++){
-        (void)fprintf(fp_stdout,"%s: DEBUG output count for dim %d=%ld\n",prg_nm_get(),idx_dmn,v->cnt[idx_dmn]);     
-      } 
-    }
+    if(dbg_lvl_get() >= nco_dbg_dev)
+      for(int idx_dmn=0;idx_dmn<var_prc_out[idx]->nbr_dim;idx_dmn++) (void)fprintf(fp_stdout,"%s: DEBUG output count for dim %d=%ld\n",prg_nm_get(),idx_dmn,var_prc_out[idx]->cnt[idx_dmn]);     
 
 #ifdef _OPENMP
 # pragma omp critical
@@ -902,9 +889,6 @@ main(int argc,char **argv)
     if(wgt_2) wgt_2=(var_sct *)nco_var_free(wgt_2);
     if(wgt_out_1) wgt_out_1=(var_sct *)nco_var_free(wgt_out_1);
     if(wgt_out_2) wgt_out_2=(var_sct *)nco_var_free(wgt_out_2);
-
-
-
     lmt=(lmt_sct**)nco_free(lmt); 
 
     /* NCO-generic clean-up */
