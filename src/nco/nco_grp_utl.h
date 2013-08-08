@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.352 2013-08-02 19:52:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.353 2013-08-08 18:22:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -585,10 +585,16 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
 
-nco_bool                            /* O [flg] Variable is compound */
-nco_prn_cpd_chk                     /* [fnc] Check whether variable is compound */
-(const trv_sct * const var_trv,     /* I [sct] Variable to check */
- const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */ 
+void
+nco_dmn_xtr_avg_trv                    /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq, ncwa) */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ char **dmn_lst_in,                    /* I [sng] User-specified list of dimension names (from -a) */
+ const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list  (above array) */
+ const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ int *nbr_dmn_xtr,                     /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
+ dmn_sct ***dmn_xtr,                   /* O [sct] Array of dimensions associated associated with variables to be extracted  */
+ int *nbr_dmn_avg,                     /* O [nbr] Number of averaged dimensions */
+ dmn_sct ***dmn_avg);                  /* O [sct] Array of averaged dimensions */
 
 #ifdef __cplusplus
 } /* end extern "C" */

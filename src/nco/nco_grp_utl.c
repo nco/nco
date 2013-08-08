@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.904 2013-08-02 19:52:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.905 2013-08-08 18:22:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6135,9 +6135,9 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,trv_tbl);
 
-   dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn_fl*sizeof(nm_id_sct));
+  dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn_fl*sizeof(nm_id_sct));
 
-   /* Loop input dimension name list */
+  /* Loop input dimension name list */
   for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
 
     /* Loop GTT dimensions  */
@@ -6223,8 +6223,8 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
                   idx_dmn_out++;
                   /* Increment number of output dimensions */
                   nbr_dmn_out++;
-         
-		} /* ID not found */
+
+                } /* ID not found */
 
               } /* ! First item */
             } /* Is variable in scope of dimension ? */
@@ -6770,4 +6770,132 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
   } /* Loop table */
 
 } /* nco_dmn_unl_tbl() */
+
+
+void
+nco_dmn_xtr_avg_trv                    /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq, ncwa) */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ char **dmn_lst_in,                    /* I [sng] User-specified list of dimension names (from -a) */
+ const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list  (above array) */
+ const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ int *nbr_dmn_xtr,                     /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
+ dmn_sct ***dmn_xtr,                   /* O [sct] Array of dimensions associated associated with variables to be extracted  */
+ int *nbr_dmn_avg,                     /* O [nbr] Number of averaged dimensions */
+ dmn_sct ***dmn_avg)                   /* O [sct] Array of averaged dimensions */
+{
+  /* Purpose: Create list of all dimensions associated with input variable list; create list of averaged dimensions from -a input */
+
+  const char fnc_nm[]="nco_dmn_lst_ass_var_trv()"; /* [sng] Function name */
+
+  int nbr_xtr_dmn;          /* [nbr] Number of dimensions associated with variables to be extracted */
+
+  long dmn_cnt;         /* [nbr] Hyperslabbed size of dimension */  
+  long dmn_sz;          /* [nbr] Size of dimension  */  
+
+  nco_bool flg_dmn_xtr; /* [flg] Is dimension already inserted in output array  */  
+
+  dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object  */  
+
+  /* Used only by ncpdq , ncwa */
+  assert(prg_get() == ncpdq || prg_get() == ncwa);
+
+  nbr_xtr_dmn=0;
+
+  /* Traverse table and match relative dimension names */
+
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    /* If GTT variable object is to extract */
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){ 
+
+      /* Loop variable dimensions  */
+      for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++){
+
+        flg_dmn_xtr=False;
+
+        /* Get unique dimension object from unique dimension ID */
+        dmn_trv=nco_dmn_trv_sct(var_trv.var_dmn[idx_dmn_var].dmn_id,trv_tbl);
+
+        assert(dmn_trv);
+        assert(strcmp(dmn_trv->nm,var_trv.var_dmn[idx_dmn_var].dmn_nm) == 0);
+
+        /* Loop constructed array of output dimensions to see if already inserted  */
+        for(int idx_dmn_out=0;idx_dmn_out<nbr_xtr_dmn;idx_dmn_out++){
+
+          /* Match by ID */
+          if(var_trv.var_dmn[idx_dmn_var].dmn_id==(*dmn_xtr)[idx_dmn_out]->id){
+
+            if(dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
+              (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> already inserted\n",prg_nm_get(),fnc_nm,
+                var_trv.var_dmn[idx_dmn_var].dmn_id,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
+            } 
+
+            flg_dmn_xtr=True;
+            break;
+          }  /* Match by ID */
+        } /* Loop constructed array of output dimensions to see if already inserted  */ 
+
+        /* If this dimension is not in output array */
+        if (flg_dmn_xtr == False){
+
+          /* Add one more element to array  */
+          (*dmn_xtr)[nbr_xtr_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+
+          /* Get size from GTT. NOTE use index idx_dmn_var */
+          if(var_trv.var_dmn[idx_dmn_var].is_crd_var){
+            dmn_cnt=var_trv.var_dmn[idx_dmn_var].crd->lmt_msa.dmn_cnt;
+            dmn_sz=var_trv.var_dmn[idx_dmn_var].crd->sz;
+            (*dmn_xtr)[nbr_xtr_dmn]->is_crd_dmn=True;
+          }else {
+            dmn_cnt=var_trv.var_dmn[idx_dmn_var].ncd->lmt_msa.dmn_cnt;
+            dmn_sz=var_trv.var_dmn[idx_dmn_var].ncd->sz;
+            (*dmn_xtr)[nbr_xtr_dmn]->is_crd_dmn=False;
+          }
+
+          (*dmn_xtr)[nbr_xtr_dmn]->nm=(char *)strdup(var_trv.var_dmn[idx_dmn_var].dmn_nm);
+          (*dmn_xtr)[nbr_xtr_dmn]->id=var_trv.var_dmn[idx_dmn_var].dmn_id;
+          (*dmn_xtr)[nbr_xtr_dmn]->nc_id=nc_id;
+          (*dmn_xtr)[nbr_xtr_dmn]->xrf=NULL;
+          (*dmn_xtr)[nbr_xtr_dmn]->val.vp=NULL;
+          (*dmn_xtr)[nbr_xtr_dmn]->is_rec_dmn=dmn_trv->is_rec_dmn;
+          (*dmn_xtr)[nbr_xtr_dmn]->cnt=dmn_cnt;
+          (*dmn_xtr)[nbr_xtr_dmn]->sz=dmn_sz;
+          (*dmn_xtr)[nbr_xtr_dmn]->srt=0L;
+          (*dmn_xtr)[nbr_xtr_dmn]->end=dmn_cnt-1L;
+          (*dmn_xtr)[nbr_xtr_dmn]->srd=1L;
+
+          (*dmn_xtr)[nbr_xtr_dmn]->cid=-1;
+          (*dmn_xtr)[nbr_xtr_dmn]->cnk_sz=0L;
+          (*dmn_xtr)[nbr_xtr_dmn]->type=(nc_type)-1;
+
+          if(dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
+            (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> inserted\n",prg_nm_get(),fnc_nm,
+              var_trv.var_dmn[idx_dmn_var].dmn_id,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
+          } 
+
+          nbr_xtr_dmn++;
+
+          /* Loop input dimension name list */
+          for(int idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
+
+            /* Match relative name  */
+            if(strcmp(dmn_trv->nm,dmn_lst_in[idx_dmn_in]) == 0){
+
+
+            } /* Match relative name  */
+          } /* Loop input dimension name list */
+        } /* If this dimension is not in output array */
+      } /* Loop variable dimensions  */
+    } /* Filter variables  */
+  } /* Loop table */
+
+  /* Export */
+  *nbr_dmn_xtr=nbr_xtr_dmn;
+
+  return;
+} /* end nco_dmn_xtr_avg_trv() */
 
