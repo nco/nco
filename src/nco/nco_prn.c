@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.155 2013-08-09 04:26:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.156 2013-08-09 22:04:36 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1007,7 +1007,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
         if(srg_typ == NC_CHUNKED){
           (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li %s, chunksize = %lu (",
             prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->lmt_msa.dmn_cnt,nco_typ_sng(crd->var_typ),cnk_sz_lon);
-        }else {
+        }else{
           (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li %s (",
             prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->lmt_msa.dmn_cnt,nco_typ_sng(crd->var_typ));
         }

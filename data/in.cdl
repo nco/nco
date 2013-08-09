@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.173 2013-08-01 05:02:07 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.174 2013-08-09 22:04:36 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -194,6 +194,29 @@ variables:
 	lat_cal:long_name = "lat_cal";
 	lat_cal:units = "days since 1964-2-28"; 
 	lat_cal:calendar = "360_day";
+
+	double tm_std;
+        tm_std:units = "days since 2013-01-01";
+
+	double tm_grg;
+        tm_grg:units = "days since 2013-01-01";
+        tm_grg:calendar = "gregorian"; // Same as "standard"
+
+	double tm_jln;
+        tm_jln:units = "days since 2013-01-01";
+        tm_jln:calendar = "julian";
+
+	double tm_360;
+        tm_360:units = "days since 2013-01-01";
+        tm_360:calendar = "360_day";
+
+	double tm_365;
+        tm_365:units = "days since 2013-01-01";
+        tm_365:calendar = "365_day"; // Same as "noleap"
+
+	double tm_366;
+        tm_366:units = "days since 2013-01-01";
+        tm_366:calendar = "366_day"; // Same as "all_leap"
 
 	float lsmlev(lsmlev);
 	lsmlev:purpose = "Homebrew level coordinate for LSM";
@@ -1273,6 +1296,12 @@ data:
 	three_dmn_var_crd=0.,1.,2.,3.,12.,13.,14.,15.,4.,5.,6.,7.,16.,17.,18.,19.,8.,9.,10.,11.,20.,21.,22.,23.;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	time_bnds=0.5,1.5,1.5,2.5,2.5,3.5,3.5,4.5,4.5,5.5,5.5,6.5,6.5,7.5,7.5,8.5,8.5,9.5,9.5,10.5;
+	tm_std=59;
+	tm_grg=59;
+	tm_jln=59;
+	tm_360=59;
+	tm_365=59;
+	tm_366=59;
 	od=20,22,24,26,28,30,32,34,36,38;
 	tpt=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,273.9,274.0;
 	two=2.;
