@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.907 2013-08-09 16:42:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.908 2013-08-09 17:01:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1232,7 +1232,6 @@ nco_prn_xtr_mtd /* [fnc] Print variable metadata */
       (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
       /* Print variable attributes */
-      /* fxm pvn: rewrite with NC_ID and OBJ */
       (void)nco_prn_att(grp_id,prn_flg,var_id);
     } /* end flg_xtr */
   } /* end uidx */
