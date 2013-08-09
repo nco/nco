@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.154 2013-08-08 23:24:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.155 2013-08-09 04:26:39 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -995,11 +995,12 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   if(prn_flg->trd){
     for(dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
 
-      /* Define a "unsigned long" type instead of "size_t" for output, since %zu is only avaulable for C99, using %lu common C89 version */
+      /* Define a "unsigned long" type instead of "size_t" for output, since %zu is only available for C99, using %lu common C89 version */
       unsigned long cnk_sz_lon=(unsigned long)cnk_sz[dmn_idx];
 
-      if(var_trv->var_dmn[dmn_idx].is_crd_var){
-        /* Coordinate dimension */
+      /* Coordinate dimension */
+      if(var_trv->var_dmn[dmn_idx].is_crd_var == True ){
+
         crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
 
         /* NOTE: Use hyperslabbed sizes for dimension size */
@@ -1010,12 +1011,12 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
           (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li %s (",
             prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->lmt_msa.dmn_cnt,nco_typ_sng(crd->var_typ));
         }
-        
+
         (void)fprintf(stdout,"%soordinate is %s)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record c" : "C",(!strcmp(crd->crd_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->crd_nm_fll);
 
+        /* Non-coordinate dimension */
       }else if(var_trv->var_dmn[dmn_idx].is_crd_var == False){
 
-        /* Non-coordinate dimension */
         dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
 
         /* NOTE: Use hyperslabbed sizes for dimension size */
@@ -1026,7 +1027,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
         }
         (void)fprintf(stdout,"%son-coordinate dimension)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record n" : "N");
 
-      } /* end if plain dimension */
+      } /* end non-coordinate dimension */
       (void)fprintf(stdout,"\n"); 
     } /* end loop over dimensions */
 
