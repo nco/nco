@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.352 2013-08-01 05:44:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.353 2013-08-09 16:42:30 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.352 2013-08-01 05:44:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.352 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.353 2013-08-09 16:42:30 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.353 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -637,8 +637,6 @@ main(int argc,char **argv)
     (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
-
-  /* ncwa core */
 
 
   /* Allocate array of dimensions associated with variables to be extracted with maximum possible size */
