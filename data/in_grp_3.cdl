@@ -24,7 +24,11 @@
 // list_filevars(id_in)
 // ncks --get_file_info  ~/nco/data/in_grp_3.nc
 
-netcdf in_grp {
+//NOTE: Must be tested with 
+//ncks --lbr
+//Linked to netCDF library version 4.1.1, compiled Nov  7 2011 11:35:16
+
+netcdf in_grp_3 {
 
  variables:
   :Conventions = "CF-1.0";
@@ -431,5 +435,48 @@ netcdf in_grp {
     } // end g20g2
 
   } //g20
+  
+  //
+  // protoype problem from ACCESS 
+  //
+  
+  group: g21 { 
+  dimensions:
+    lat=2;
+    lon=4;
+  variables:
+  float lat(lat);
+  lat:units = "degrees_north";
+  float lon(lon);
+  lon:units = "degrees_east";
+  float snc(lat,lon);
+  snc:long_name = "Snow Cover";
+  data:
+  lat=-45,45;
+  lon=0,90,180,270;
+  snc=1,2,3,4,5,6,7,8;
+  } // end g21
+  
+  //
+  // protoype problem from ACCESS 
+  //
+  
+  group: g22 { 
+  dimensions:
+    lat=3;
+    lon=3;
+  variables:
+  float lat(lat);
+  lat:units = "degrees_north";
+  float lon(lon);
+  lon:units = "degrees_east";
+  float snc(lat,lon);
+  snc:long_name = "Snow Cover";
+  data:
+  lat=-60,0,60;
+  lon=0,120,240;
+  snc=1,2,3,4,5,6,7,8,9;
+  } // end g22
+  
     
 } // end root group
