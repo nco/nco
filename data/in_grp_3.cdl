@@ -437,7 +437,7 @@ netcdf in_grp_3 {
   } //g20
   
   //
-  // protoype problem from ACCESS 
+  // prototype problem from ACCESS 
   //
   
   group: g21 { 
@@ -458,7 +458,7 @@ netcdf in_grp_3 {
   } // end g21
   
   //
-  // protoype problem from ACCESS 
+  // prototype problem from ACCESS 
   //
   
   group: g22 { 
