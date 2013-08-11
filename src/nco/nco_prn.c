@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.156 2013-08-09 22:04:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.157 2013-08-11 17:04:54 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -85,6 +85,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
     
     if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s%s:%s = ",prn_ndn,spc_sng,(att[idx].type == NC_STRING) ? "string " : "",src_sng,att[idx].nm); 
+    /* 20130811: fxm bizarre extra whitespace on grele/glace: ncks -v lat -m ~/nco/data/in_grp.nc */
+    // (void)fprintf(stdout,"prn_ndn = %i, spc_sng = %s, src_sng = %s\n",prn_ndn,spc_sng,src_sng); 
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
     if(prn_flg->xml) (void)fprintf(stdout,"%*s<attribute name=\"%s\" value=\"",prn_ndn,spc_sng,att[idx].nm); 
     
