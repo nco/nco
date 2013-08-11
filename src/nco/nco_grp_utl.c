@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.908 2013-08-09 17:01:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.909 2013-08-11 03:09:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2455,8 +2455,8 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
     (void)fprintf(stdout,"(#%d%s)",dmn_trv.dmn_id,dmn_trv.nm_fll);
 
     /* Filter output */
-    if (dmn_trv.is_rec_dmn == True) (void)fprintf(stdout," record dimension(%li):: ",dmn_trv.sz);
-    else if (dmn_trv.is_rec_dmn == False) (void)fprintf(stdout," dimension(%li):: ",dmn_trv.sz);
+    if (dmn_trv.is_rec_dmn == True) (void)fprintf(stdout," record dimension(%lu):: ",(unsigned long)dmn_trv.sz);
+    else if (dmn_trv.is_rec_dmn == False) (void)fprintf(stdout," dimension(%lu):: ",(unsigned long)dmn_trv.sz);
 
     nbr_crd_var+=dmn_trv.crd_nbr;
 

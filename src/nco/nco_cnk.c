@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.62 2013-07-16 22:24:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.63 2013-08-11 03:09:55 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -875,11 +875,6 @@ nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT ve
 
   /* Loop dimensions */
   for(int dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-   
-    if(dbg_lvl_get() == nco_dbg_old){
-      (void)fprintf(stdout,"%s: INFO %s dimension [%d]:%s(%li)\n",prg_nm_get(),fnc_nm,
-        dmn_idx,dmn_cmn[dmn_idx].nm,dmn_cmn[dmn_idx].sz);
-    }
 
     /* Is this the record dimension? */
     if(dmn_cmn[dmn_idx].is_rec_dmn == True){
@@ -944,7 +939,7 @@ cnk_xpl_override: /* end goto */
           if(dmn_cmn[dmn_idx].BASIC_DMN){
             if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
               (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed record dimension size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",
-                prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,dmn_cmn[dmn_idx].sz);
+                prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,(unsigned long)dmn_cmn[dmn_idx].sz);
             } /* endif too big */
           }else{ /* !BASIC_DMN */
             if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].dmn_cnt){
@@ -957,7 +952,7 @@ cnk_xpl_override: /* end goto */
             /* dmn_sz of record dimension may (will) be zero in output file
             Non-record dimensions, though, must have cnk_sz <= dmn_sz */
             (void)fprintf(stderr,"%s: WARNING %s trimming user-specified chunksize = %lu to %s size = %lu\n",
-              prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,dmn_cmn[dmn_idx].sz);
+              prg_nm_get(),fnc_nm,(unsigned long)cnk[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,(unsigned long)dmn_cmn[dmn_idx].sz);
             /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
             cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
           } /* endif */
