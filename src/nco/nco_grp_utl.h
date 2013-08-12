@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.354 2013-08-09 16:42:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.355 2013-08-12 14:24:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -585,6 +585,10 @@ nco_dmn_xtr_avg_trv                   /* [fnc] Create list of all dimensions ass
  int *nbr_dmn_avg,                    /* O [nbr] Number of averaged dimensions */
  dmn_sct ***dmn_avg);                 /* O [sct] Array of averaged dimensions */
 
+nco_bool                              /* O [flg] True if variable is in scope of dimension */
+nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope and has dimensions that match unique dimension GTT */
+(const trv_sct * const var_trv,       /* I [sct] GTT Object Variable */
+ const dmn_trv_sct * const dmn_trv);  /* I [sct] GTT unique dimension */
 
 nm_id_sct *                           /* O [sct] Dimension list */
 nco_lst_dmn_mk_trv                    /* [fnc] Build Name-ID array from input dimension names */
