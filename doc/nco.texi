@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.832 2013-08-08 17:37:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.833 2013-08-12 02:38:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6093,9 +6093,9 @@ reason to bother users with these details.
 There is as yet no generic way for @acronym{NCO} to know which
 packing convention was used, so @acronym{NCO} @emph{assumes} the netCDF 
 convention was used. 
-The same
-convention for unpacking unless explicitly told otherwise with 
-the @samp{--hdf_upk} (also @samp{--hdf_unpack}) switch.
+@acronym{NCO} uses the same convention for unpacking unless explicitly
+told otherwise with the @samp{--hdf_upk} (also @samp{--hdf_unpack})
+switch. 
 Until and unless a method of automatically detecting the packing method 
 is devised, it must remain the user's responsibility to tell
 @acronym{NCO} when to use the @acronym{HDF} convention instead of the
