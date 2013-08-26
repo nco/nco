@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.355 2013-08-12 14:24:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.356 2013-08-26 22:30:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -486,13 +486,6 @@ nco_cpy_var_dfn_trv                    /* [fnc] Define specified variable in out
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 void
-nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
-(const int nc_id,                      /* I [id] netCDF file ID */
- const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- int *nbr_dmn_xtr,                     /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
- dmn_sct ***dim);                      /* O [sct] Array of dimensions associated associated with variables to be extracted  */
-
-void
 nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */
 (int **dmn_idx_out_in,                 /* I [idx] Dimension correspondence, output->input, output of nco_var_dmn_rdr_mtd() */
  const int nbr_var_prc,                /* I [nbr] Size of above array (number of processed variables) */
@@ -595,6 +588,22 @@ nco_lst_dmn_mk_trv                    /* [fnc] Build Name-ID array from input di
 (char **dmn_lst_in,                   /* I [sng] User-specified list of dimension names */
  const int nbr_dmn_in,                /* I [nbr] Total number of dimensions in input list */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+
+void
+nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ int *nbr_dmn_xtr,                     /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
+ dmn_sct ***dim);                      /* O [sct] Array of dimensions associated with variables to be extracted  */
+
+void
+nco_dmn_sct_mk                         /* [fnc] Build dimension array from input dimension names */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ char **obj_lst_in,                    /* I [sng] User-specified list of dimension names */
+ const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list */
+ const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ int *nbr_dmn,                         /* O [nbr] Number of dimensions on output  */
+ dmn_sct ***dmn);                      /* O [sct] Array of dimensions  */
 
 #ifdef __cplusplus
 } /* end extern "C" */
