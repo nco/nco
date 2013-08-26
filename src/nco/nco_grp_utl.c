@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.911 2013-08-26 22:30:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.912 2013-08-26 22:55:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7034,7 +7034,7 @@ nco_dmn_sct_mk                         /* [fnc] Build dimension array from input
             if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_var_cnd){
 
               /* Loop constructed array of output dimensions to see if already inserted  */
-              for(int idx_dmn_out=0;idx_dmn_out<trv_obj.nbr_dmn;idx_dmn_out++){
+              for(int idx_dmn_out=0;idx_dmn_out<nbr_dmn;idx_dmn_out++){
 
                 dmn_flg=False;
 
@@ -7103,6 +7103,17 @@ nco_dmn_sct_mk                         /* [fnc] Build dimension array from input
 
   /* Export */
   *nbr_dmn_out=nbr_dmn;
+
+
+  if(dbg_lvl_get() >= nco_dbg_dev){ 
+    (void)fprintf(stdout,"%s: DEBUG %s dimensions to extract: ",prg_nm_get(),fnc_nm);        
+    /* Loop constructed array of output dimensions to see if already inserted  */
+    for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+      (void)fprintf(stdout,"#%d<%s> : ",(*dmn)[idx_dmn]->id,(*dmn)[idx_dmn]->nm);        
+    }
+    (void)fprintf(stdout,"\n");        
+  } 
+
 
   return;
 
