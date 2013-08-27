@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.358 2013-08-27 17:19:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.359 2013-08-27 21:47:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -609,6 +609,7 @@ void
 nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep on output */
 (dmn_sct **dmn_xtr,                    /* I [sct] Array of dimensions associated with variables to be extracted  */
  const int nbr_dmn_xtr,                /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
+ const nco_bool flg_rdd,               /* I [flg] Retain degenerate dimensions */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  dmn_sct ***dmn_out,                   /* O [sct] Array of dimensions on ouput */
  int *nbr_dmn_out);                    /* O [nbr] Number of dimensions on output (size of above array) */

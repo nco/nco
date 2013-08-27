@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.916 2013-08-27 20:14:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.917 2013-08-27 21:47:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7136,6 +7136,7 @@ void
 nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep on output */
 (dmn_sct **dmn_xtr,                    /* I [sct] Array of dimensions associated with variables to be extracted  */
  const int nbr_dmn_xtr,                /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
+ const nco_bool flg_rdd,               /* I [flg] Retain degenerate dimensions */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  dmn_sct ***dmn_out,                   /* O [sct] Array of dimensions on ouput */
  int *nbr_dmn_out)                     /* O [nbr] Number of dimensions on output (size of above array) */
@@ -7165,8 +7166,8 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<trv_obj.nbr_dmn;idx_var_dmn++){
 
-        /* This dimension is not to be averaged, it is to be kept on output */
-        if (trv_obj.var_dmn[idx_var_dmn].flg_dmn_avg_out==False) {
+        /* This dimension is not to be averaged, it is to be kept on output, or, to be retained as a degenerate dimension (size 1) */
+        if (trv_obj.var_dmn[idx_var_dmn].flg_dmn_avg_out == False || flg_rdd) {
 
           /* Search dimensions to be extracted  */
           for(int idx_xtr_dmn=0;idx_xtr_dmn<nbr_dmn_xtr;idx_xtr_dmn++){
@@ -7183,7 +7184,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
               for(int idx_dmn_out=0;idx_dmn_out<nbr_out_dmn;idx_dmn_out++){
 
                 /* Match by ID */
-                if(dmn_id==(*dmn_out)[idx_dmn_out]->id){
+                if(dmn_id == (*dmn_out)[idx_dmn_out]->id){
 
                   if(dbg_lvl_get() >= nco_dbg_dev){
                     (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,trv_obj.nm_fll);        
@@ -7202,6 +7203,11 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
                 /* Output list comprises non-averaged and, if specified, degenerate dimensions */
                 (*dmn_out)[nbr_out_dmn]=nco_dmn_dpl(dmn_xtr[idx_xtr_dmn]);
                 (void)nco_dmn_xrf(dmn_xtr[idx_xtr_dmn],(*dmn_out)[nbr_out_dmn]);
+                if(flg_rdd){
+                  /* Cut degenerate dimensions down to size */
+                  (*dmn_out)[nbr_out_dmn]->cnt=1L;
+                  (*dmn_out)[nbr_out_dmn]->srt=(*dmn_out)[nbr_out_dmn]->end=0L;
+                } /* !flg_rdd */
                 nbr_out_dmn++;
 
               }  /* If this dimension is not in output array */

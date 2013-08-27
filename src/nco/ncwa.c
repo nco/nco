@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.356 2013-08-27 20:14:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.357 2013-08-27 21:47:34 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -39,7 +39,7 @@
    ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc ~/foo.nc;ncks -H foo.nc
    scp ~/nco/src/nco/ncwa.c esmf.ess.uci.edu:nco/src/nco */
 
-#if 0
+#if 1
 #define TRV_DMN_AVG /* Traversal averaged/keep dimensions (under development) */
 #endif
 
@@ -138,8 +138,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.356 2013-08-27 20:14:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.356 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.357 2013-08-27 21:47:34 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.357 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -747,7 +747,7 @@ main(int argc,char **argv)
   (void)nco_dmn_avg_mk(in_id,dmn_avg_lst_in,dmn_avg_nbr,trv_tbl,&dmn_avg,&dmn_avg_nbr);
 
   /* Create list of dimensions to keep on output */
-  (void)nco_dmn_out_mk(dim,nbr_dmn_xtr,trv_tbl,&dmn_out,&nbr_dmn_out);
+  (void)nco_dmn_out_mk(dim,nbr_dmn_xtr,flg_rdd,trv_tbl,&dmn_out,&nbr_dmn_out);
 #endif /* TRV_DMN_AVG */
 
   /* Transfer degenerated dimensions information into GTT  */
