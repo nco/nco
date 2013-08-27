@@ -1,3 +1,13 @@
+2013-08-27 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncwa test #42 Retain degenerate dimensions
+	
+	* nco_dmn_avg_mk() Build dimensions to average array from input dimension names 
+	
+	* nco_dmn_out_mk() Build dimensions array to keep on output 
+	
+	* nco_dmn_id_mk() Mark flag average for all dimensions that have the input ID 
+	
 2013-08-27  Charlie Zender  <zender@uci.edu>
 
 	* Fix memory leak in strcasecmp.c
