@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.385 2013-08-27 05:58:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.386 2013-08-27 19:56:03 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
+
+#if 0
+#define TRV_DMN_AVG /* Traversal averaged/keep dimensions (under development) */
+#endif
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.354 2013-08-27 05:58:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.355 2013-08-27 19:56:03 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -38,10 +38,6 @@
    ncwa -O -R -p /ZENDER/tmp -l ~/nco/data in.nc ~/foo.nc
    ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc ~/foo.nc;ncks -H foo.nc
    scp ~/nco/src/nco/ncwa.c esmf.ess.uci.edu:nco/src/nco */
-
-#if 0
-#define TRV_DMN_AVG /* Traversal averaged/keep dimensions (under development) */
-#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -138,8 +134,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.354 2013-08-27 05:58:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.354 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.355 2013-08-27 19:56:03 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.355 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -734,7 +730,8 @@ main(int argc,char **argv)
     } /* end if */
 
   } /* dmn_avg_nbr <= 0 */
-#else
+
+#else /* TRV_DMN_AVG */
 
   /* Allocate array of dimensions to average with maximum possible size */
   dmn_avg=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));
@@ -747,23 +744,7 @@ main(int argc,char **argv)
 
   /* Create list of dimensions to keep on output */
   (void)nco_dmn_out_mk(dim,nbr_dmn_xtr,trv_tbl,&dmn_out,&nbr_dmn_out);
-
-
-#endif
-
-
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG output dimensions: ",prg_nm_get());
-    for(int idx_dmn=0;idx_dmn<nbr_dmn_out;idx_dmn++){
-      (void)fprintf(stdout,"%s :",dmn_out[idx_dmn]->nm);
-    }
-    (void)fprintf(stdout,"\n");
-    (void)fprintf(stdout,"%s: DEBUG averaged dimensions: ",prg_nm_get());
-    for(int idx_dmn=0;idx_dmn<dmn_avg_nbr;idx_dmn++){
-      (void)fprintf(stdout,"%s :",dmn_avg[idx_dmn]->nm);
-    }
-    (void)fprintf(stdout,"\n");
-  } /* endif dbg */
+#endif /* TRV_DMN_AVG */
 
   /* Transfer degenerated dimensions information into GTT  */
   (void)nco_dmn_dgn_tbl(dmn_out,nbr_dmn_out,trv_tbl);
