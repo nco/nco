@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.359 2013-08-27 21:47:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.360 2013-08-27 23:26:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -566,17 +566,6 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
-
-void
-nco_dmn_xtr_avg_trv                   /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq, ncwa) */
-(const int nc_id,                     /* I [id] netCDF file ID */
- char **dmn_lst_in,                   /* I [sng] User-specified list of dimension names (from -a) */
- const int nbr_dmn_in,                /* I [nbr] Total number of dimensions in input list  (above array) */
- const trv_tbl_sct * const trv_tbl,   /* I [sct] GTT (Group Traversal Table) */
- int *nbr_dmn_xtr,                    /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
- dmn_sct ***dmn_xtr,                  /* O [sct] Array of dimensions associated associated with variables to be extracted  */
- int *nbr_dmn_avg,                    /* O [nbr] Number of averaged dimensions */
- dmn_sct ***dmn_avg);                 /* O [sct] Array of averaged dimensions */
 
 nco_bool                              /* O [flg] True if variable is in scope of dimension */
 nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope and has dimensions that match unique dimension GTT */
