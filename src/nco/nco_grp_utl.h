@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.356 2013-08-26 22:30:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.357 2013-08-27 05:58:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -593,17 +593,25 @@ void
 nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
 (const int nc_id,                      /* I [id] netCDF file ID */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- int *nbr_dmn_xtr,                     /* O [nbr] Number of dimensions associated associated with variables to be extracted  */
+ int *nbr_dmn_xtr,                     /* O [nbr] Number of dimensions associated with variables to be extracted  */
  dmn_sct ***dim);                      /* O [sct] Array of dimensions associated with variables to be extracted  */
 
 void
-nco_dmn_sct_mk                         /* [fnc] Build dimension array from input dimension names */
+nco_dmn_avg_mk                         /* [fnc] Build dimensions to average array from input dimension names */
 (const int nc_id,                      /* I [id] netCDF file ID */
- char **obj_lst_in,                    /* I [sng] User-specified list of dimension names */
- const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list */
+ char **obj_lst_in,                    /* I [sng] User-specified list of dimension names (-a names) */
+ const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list (size of above array) */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
- int *nbr_dmn,                         /* O [nbr] Number of dimensions on output  */
- dmn_sct ***dmn);                      /* O [sct] Array of dimensions  */
+ dmn_sct ***dmn_avg,                   /* O [sct] Array of dimensions to average */
+ int *nbr_dmn_avg);                    /* O [nbr] Number of dimensions to average (size of above array) */
+
+void
+nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep on output */
+(dmn_sct **dmn_xtr,                    /* I [sct] Array of dimensions associated with variables to be extracted  */
+ const int nbr_dmn_xtr,                /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
+ const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
+ dmn_sct ***dmn_out,                   /* O [sct] Array of dimensions on ouput */
+ int *nbr_dmn_out);                    /* O [nbr] Number of dimensions on output (size of above array) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
