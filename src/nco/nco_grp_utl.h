@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.357 2013-08-27 05:58:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.358 2013-08-27 17:19:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -612,6 +612,11 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  dmn_sct ***dmn_out,                   /* O [sct] Array of dimensions on ouput */
  int *nbr_dmn_out);                    /* O [nbr] Number of dimensions on output (size of above array) */
+
+void
+nco_dmn_id_mk                          /* [fnc] Mark flag average for all dimensions that have the input ID */
+(const int dmn_id,                     /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
