@@ -1,3 +1,9 @@
+2013-08-27  Charlie Zender  <zender@uci.edu>
+
+	* Fix memory leak in strcasecmp.c
+
+	* Never build private version of strcasecmp() with g++
+
 2013-08-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.5 release procedure:

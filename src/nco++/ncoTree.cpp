@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (20120518): "ncoGrammer.g" -> "ncoTree.cpp"$ */
+/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoTree.cpp"$ */
 #include "ncoTree.hpp"
 #include <antlr/Token.hpp>
 #include <antlr/AST.hpp>
@@ -4126,7 +4126,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			nco_mss_val_cp(var_rhs,var);
 			
 			/* a hack - we set var->has_dpl_dmn=-1 so we know we are dealing with 
-			a hyperslabed var and not a regular var  -- It shouldn't cause 
+			a hyperslabbed var and not a regular var  -- It shouldn't cause 
 			any abberant behaviour!! */ 
 			var->has_dpl_dmn=-1;  
 			

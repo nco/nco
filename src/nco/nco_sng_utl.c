@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.54 2013-07-30 01:17:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.55 2013-08-27 21:07:40 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -24,19 +24,28 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
     chr_1=tolower(*sng_1_c++);
     chr_2=tolower(*sng_2_c++);
     if(chr_1 < chr_2){
+      /* Use free() not nco_free() to keep this more like a generic (non-NCO) library function */
+      sng_1_c=(char *)free(sng_1_c);
+      sng_2_c=(char *)free(sng_2_c);
       return -1;
     }
     if(chr_1 > chr_2){
+      sng_1_c=(char *)free(sng_1_c);
+      sng_2_c=(char *)free(sng_2_c);
       return 1;
     }
     if(chr_1 == 0){
+      sng_1_c=(char *)free(sng_1_c);
+      sng_2_c=(char *)free(sng_2_c);
       return 0;
     }
   } /* end while */
 } /* end strcasecmp() */
 #endif /* !NEED_STRCASECMP */
 
-#ifdef NEED_STRCASESTR
+/* 20130827 GNU g++ always provides strcasestr(), MSVC never does */
+#ifndef __GNUG__
+# ifdef NEED_STRCASESTR
 char * /* O [sng] Pointer to sng_2 in sng_1 */
 strcasestr /* [fnc] Lexicographical case-insensitive string search */
 (const char * const sng_1, /* I [sng] First string */
@@ -63,7 +72,8 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
   } /* end loop over haystack */
   return 0;
 } /* end strcasestr() */
-#endif /* !NEED_STRCASESTR */
+# endif /* !NEED_STRCASESTR */
+#endif /* __GNUG__ */
 
 #ifdef NEED_STRDUP
 char * /* [sng] Copy of input string */
