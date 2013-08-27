@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.914 2013-08-27 17:19:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.915 2013-08-27 19:40:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6975,6 +6975,11 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average arra
     for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
       trv_sct trv_obj=trv_tbl->lst[idx_tbl];
+
+      /* Initialize defaults for current candidate path to match */
+      flg_pth_srt_bnd=False;
+      flg_pth_end_bnd=False;
+      flg_var_cnd=False;
 
       /* Variable to extract */
       if (trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){

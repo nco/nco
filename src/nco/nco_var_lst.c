@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.153 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.154 2013-08-27 19:40:46 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -982,7 +982,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
           } /* end if */
         } /* end loop over idx_dmn */
         /* Fix variables with no altered (averaged, re-ordered, reversed) dimensions */
-        if(idx_dmn == var[idx]->nbr_dim) var_op_typ[idx]=fix_typ;
+        if(idx_dmn == var[idx]->nbr_dim){
+          var_op_typ[idx]=fix_typ;
+        }
       } /* endif averaging or re-ordering */
       break;
     default: nco_dfl_case_prg_id_err(); break;
