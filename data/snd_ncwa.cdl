@@ -1,0 +1,2086 @@
+netcdf snd_ncwa {
+
+// global attributes:
+		:institution = "NCAR (National Center for Atmospheric Research) Boulder, CO, USA" ;
+		:institute_id = "NCAR" ;
+		:experiment_id = "historical" ;
+		:source = "CCSM4" ;
+		:model_id = "CCSM4" ;
+		:forcing = "Sl GHG Vl SS Ds SD BC MD OC Oz AA LU" ;
+		:parent_experiment_id = "piControl" ;
+		:parent_experiment_rip = "r1i1p1" ;
+		:branch_time = 937. ;
+		:contact = "cesm_data@ucar.edu" ;
+		:references = "Gent P. R., et.al. 2011: The Community Climate System Model version 4. J. Climate, doi: 10.1175/2011JCLI4083.1" ;
+		:initialization_method = 1 ;
+		:physics_version = 1 ;
+		:tracking_id = "2d733abb-3a88-4669-8961-fa994c714e0f" ;
+		:acknowledgements = "The CESM project is supported by the National Science Foundation and the Office of Science (BER) of the U.S. Department of Energy. NCAR is sponsored by the National Science Foundation. Computing resources were provided by the Climate Simulation Laboratory at the NCAR Computational and Information Systems Laboratory (CISL), sponsored by the National Science Foundation and other agencies." ;
+		:cesm_casename = "b40.20th.track1.1deg.008" ;
+		:cesm_repotag = "ccsm4_0_beta43" ;
+		:cesm_compset = "B20TRCN" ;
+		:resolution = "f09_g16 (0.9x1.25_gx1v6)" ;
+		:forcing_note = "Additional information on the external forcings used in this experiment can be found at http://www.cesm.ucar.edu/CMIP5/forcing_information" ;
+		:processed_by = "strandwg on silver.cgd.ucar.edu at 20120406  -155706.724" ;
+		:processing_code_information = "Last Changed Rev: 677 Last Changed Date: 2012-04-05 11:56:11 -0600 (Thu, 05 Apr 2012) Repository UUID: d2181dbe-5796-6825-dc7f-cbd98591f93d" ;
+		:product = "output" ;
+		:experiment = "historical" ;
+		:frequency = "mon" ;
+		:creation_date = "2012-04-06T21:57:07Z" ;
+		:history = "Tue Aug 27 14:55:01 2013: ncecat --gag snd_LImon_CCSM4_historical_r1i1p1_199001-200512.nc snd_LImon_CESM1-BGC_esmHistorical_r1i1p1_199001-200512.nc snd_LImon_CESM1-BGC_historical_r1i1p1_199001-200512.nc snd_LImon_CESM1-CAM5_historical_r1i1p1_199001-200512.nc snd_LImon_CESM1-FASTCHEM_historical_r1i1p1_199001-200512.nc snd_LImon_CESM1-WACCM_historical_r1i1p1_199001-200512.nc snd.nc\nSun Dec 30 18:37:33 2012: ncks -d time,1990-01-01 00:00:0.0, /media/grele_data/wenshan/cesm/historical-exp/snd_LImon_CCSM4_historical_r1i1p1_185001-200512.nc /media/grele_data/wenshan/cesm/historical-exp/snd_LImon_CCSM4_historical_r1i1p1_199001-200512.nc\n2012-04-06T21:57:07Z CMOR rewrote data to comply with CF standards and CMIP5 requirements." ;
+		:Conventions = "CF-1.4" ;
+		:project_id = "CMIP5" ;
+		:table_id = "Table LImon (12 January 2012) 429410275cb5466e41180ad9466db1bf" ;
+		:title = "CCSM4 model output prepared for CMIP5 historical" ;
+		:parent_experiment = "pre-industrial control" ;
+		:modeling_realm = "landIce land" ;
+		:realization = 1 ;
+		:cmor_version = "2.8.1" ;
+		:NCO = "20121231" ;
+		:nco_openmp_thread_number = 1 ;
+
+group: snd_LImon_CCSM4_historical_r1i1p1_199001-200512 {
+  dimensions:
+  	bnds = 2 ;
+  	time = 192 ;
+  variables:
+  	double lat ;
+  		lat:bounds = "lat_bnds" ;
+  		lat:units = "degrees_north" ;
+  		lat:axis = "Y" ;
+  		lat:long_name = "latitude" ;
+  		lat:standard_name = "latitude" ;
+  	double lat_bnds(bnds) ;
+  	double lon ;
+  		lon:bounds = "lon_bnds" ;
+  		lon:units = "degrees_east" ;
+  		lon:axis = "X" ;
+  		lon:long_name = "longitude" ;
+  		lon:standard_name = "longitude" ;
+  	double lon_bnds(bnds) ;
+  	float snd(time) ;
+  		snd:standard_name = "surface_snow_thickness" ;
+  		snd:long_name = "Snow Depth" ;
+  		snd:comment = "SNOWDP unchanged, CMIP5_table_comment: where land over land, this is computed as the mean thickness of snow in the land portion of the grid cell (averaging over the entire land portion, including the snow-free fraction).  Reported as 0.0 where the land fraction is 0." ;
+  		snd:units = "m" ;
+  		snd:original_name = "SNOWDP" ;
+  		snd:cell_methods = "time: mean (interval: 30 days) area: mean where land" ;
+  		snd:cell_measures = "area: areacella" ;
+  		snd:history = "2012-04-06T21:57:06Z altered by CMOR: replaced missing value flag (1e+36) with standard missing value (1e+20)." ;
+  		snd:missing_value = 1.e+20f ;
+  		snd:_FillValue = 1.e+20f ;
+  		snd:associated_files = "baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_landIce_fx_CCSM4_historical_r0i0p0.nc areacella: areacella_fx_CCSM4_historical_r0i0p0.nc" ;
+  	double time(time) ;
+  		time:bounds = "time_bnds" ;
+  		time:units = "days since 1850-01-01 00:00:00" ;
+  		time:calendar = "noleap" ;
+  		time:axis = "T" ;
+  		time:long_name = "time" ;
+  		time:standard_name = "time" ;
+  	double time_bnds(time, bnds) ;
+
+  // group attributes:
+  		:institution = "NCAR (National Center for Atmospheric Research) Boulder, CO, USA" ;
+  		:institute_id = "NCAR" ;
+  		:experiment_id = "historical" ;
+  		:source = "CCSM4" ;
+  		:model_id = "CCSM4" ;
+  		:forcing = "Sl GHG Vl SS Ds SD BC MD OC Oz AA LU" ;
+  		:parent_experiment_id = "piControl" ;
+  		:parent_experiment_rip = "r1i1p1" ;
+  		:branch_time = 937. ;
+  		:contact = "cesm_data@ucar.edu" ;
+  		:references = "Gent P. R., et.al. 2011: The Community Climate System Model version 4. J. Climate, doi: 10.1175/2011JCLI4083.1" ;
+  		:initialization_method = 1 ;
+  		:physics_version = 1 ;
+  		:tracking_id = "2d733abb-3a88-4669-8961-fa994c714e0f" ;
+  		:acknowledgements = "The CESM project is supported by the National Science Foundation and the Office of Science (BER) of the U.S. Department of Energy. NCAR is sponsored by the National Science Foundation. Computing resources were provided by the Climate Simulation Laboratory at the NCAR Computational and Information Systems Laboratory (CISL), sponsored by the National Science Foundation and other agencies." ;
+  		:cesm_casename = "b40.20th.track1.1deg.008" ;
+  		:cesm_repotag = "ccsm4_0_beta43" ;
+  		:cesm_compset = "B20TRCN" ;
+  		:resolution = "f09_g16 (0.9x1.25_gx1v6)" ;
+  		:forcing_note = "Additional information on the external forcings used in this experiment can be found at http://www.cesm.ucar.edu/CMIP5/forcing_information" ;
+  		:processed_by = "strandwg on silver.cgd.ucar.edu at 20120406  -155706.724" ;
+  		:processing_code_information = "Last Changed Rev: 677 Last Changed Date: 2012-04-05 11:56:11 -0600 (Thu, 05 Apr 2012) Repository UUID: d2181dbe-5796-6825-dc7f-cbd98591f93d" ;
+  		:product = "output" ;
+  		:experiment = "historical" ;
+  		:frequency = "mon" ;
+  		:creation_date = "2012-04-06T21:57:07Z" ;
+  		:history = "Sun Dec 30 18:37:33 2012: ncks -d time,1990-01-01 00:00:0.0, /media/grele_data/wenshan/cesm/historical-exp/snd_LImon_CCSM4_historical_r1i1p1_185001-200512.nc /media/grele_data/wenshan/cesm/historical-exp/snd_LImon_CCSM4_historical_r1i1p1_199001-200512.nc\n2012-04-06T21:57:07Z CMOR rewrote data to comply with CF standards and CMIP5 requirements." ;
+  		:Conventions = "CF-1.4" ;
+  		:project_id = "CMIP5" ;
+  		:table_id = "Table LImon (12 January 2012) 429410275cb5466e41180ad9466db1bf" ;
+  		:title = "CCSM4 model output prepared for CMIP5 historical" ;
+  		:parent_experiment = "pre-industrial control" ;
+  		:modeling_realm = "landIce land" ;
+  		:realization = 1 ;
+  		:cmor_version = "2.8.1" ;
+  		:NCO = "20121231" ;
+  data:
+
+   lat = 0 ;
+
+   lat_bnds = -0.46875, 0.46875 ;
+
+   lon = 179.375 ;
+
+   lon_bnds = 178.752170138889, 180 ;
+
+   snd = 0.2724146, 0.2805385, 0.2834768, 0.2745424, 0.2557565, 0.2344869, 
+      0.2219715, 0.2190395, 0.2220945, 0.2319131, 0.2463375, 0.2607701, 
+      0.2692722, 0.2770566, 0.2791537, 0.270516, 0.2546696, 0.2335674, 
+      0.2220806, 0.2187323, 0.2211094, 0.2305807, 0.245944, 0.2600244, 
+      0.271029, 0.279032, 0.2794289, 0.2702961, 0.2552496, 0.237448, 
+      0.2218089, 0.2197413, 0.2226625, 0.2303976, 0.2442853, 0.2594771, 
+      0.2717321, 0.2789153, 0.2786778, 0.2703565, 0.2531038, 0.2326569, 
+      0.2209008, 0.219136, 0.2223255, 0.2321512, 0.2464486, 0.2593269, 
+      0.2708381, 0.2783013, 0.2802042, 0.2727805, 0.2562031, 0.2376942, 
+      0.2238919, 0.220717, 0.2240804, 0.2324936, 0.2460135, 0.2600223, 
+      0.2709923, 0.2776637, 0.2802023, 0.2731161, 0.257625, 0.2380173, 
+      0.2234037, 0.2204858, 0.2234626, 0.2327554, 0.2484348, 0.2632856, 
+      0.2738608, 0.2827595, 0.2846874, 0.2719233, 0.2554669, 0.2337054, 
+      0.2223311, 0.219457, 0.2217831, 0.2305832, 0.2449607, 0.2592558, 
+      0.2693018, 0.2794678, 0.2849715, 0.2747917, 0.2536268, 0.2352346, 
+      0.2220949, 0.2188839, 0.221791, 0.2320456, 0.2468438, 0.2612689, 
+      0.2724337, 0.2812943, 0.2816801, 0.2718139, 0.2545425, 0.2339947, 
+      0.2233207, 0.220883, 0.2228399, 0.2329358, 0.2485441, 0.262383, 
+      0.2728364, 0.2801743, 0.2834518, 0.2755635, 0.2572154, 0.23524, 
+      0.2241858, 0.2201564, 0.2231563, 0.2329302, 0.2466877, 0.2606887, 
+      0.2712987, 0.2797104, 0.280265, 0.270669, 0.2512513, 0.2314375, 
+      0.2210067, 0.2190172, 0.2205743, 0.2274242, 0.2413106, 0.2553834, 
+      0.2651053, 0.2752735, 0.2759885, 0.2626066, 0.2487948, 0.2309431, 
+      0.2209402, 0.2188502, 0.2205875, 0.2297206, 0.2438147, 0.2585448, 
+      0.2680849, 0.2761216, 0.2784539, 0.2673648, 0.2469543, 0.2282923, 
+      0.2180633, 0.2160996, 0.2179174, 0.2250961, 0.2379094, 0.2522934, 
+      0.264903, 0.272292, 0.2732264, 0.265145, 0.2500148, 0.2297041, 
+      0.2185939, 0.2163664, 0.2192902, 0.2271949, 0.2400659, 0.2554764, 
+      0.266905, 0.2749299, 0.2785495, 0.2679975, 0.2518781, 0.2328067, 
+      0.2180953, 0.2168675, 0.2205294, 0.2292409, 0.2434324, 0.2566255, 
+      0.2681567, 0.2755063, 0.2762004, 0.2689444, 0.2509382, 0.232049, 
+      0.2202254, 0.2178997, 0.2200232, 0.2298912, 0.2441406, 0.2583995 ;
+
+   time = 51115.5, 51145, 51174.5, 51205, 51235.5, 51266, 51296.5, 51327.5, 
+      51358, 51388.5, 51419, 51449.5, 51480.5, 51510, 51539.5, 51570, 
+      51600.5, 51631, 51661.5, 51692.5, 51723, 51753.5, 51784, 51814.5, 
+      51845.5, 51875, 51904.5, 51935, 51965.5, 51996, 52026.5, 52057.5, 
+      52088, 52118.5, 52149, 52179.5, 52210.5, 52240, 52269.5, 52300, 
+      52330.5, 52361, 52391.5, 52422.5, 52453, 52483.5, 52514, 52544.5, 
+      52575.5, 52605, 52634.5, 52665, 52695.5, 52726, 52756.5, 52787.5, 
+      52818, 52848.5, 52879, 52909.5, 52940.5, 52970, 52999.5, 53030, 
+      53060.5, 53091, 53121.5, 53152.5, 53183, 53213.5, 53244, 53274.5, 
+      53305.5, 53335, 53364.5, 53395, 53425.5, 53456, 53486.5, 53517.5, 
+      53548, 53578.5, 53609, 53639.5, 53670.5, 53700, 53729.5, 53760, 
+      53790.5, 53821, 53851.5, 53882.5, 53913, 53943.5, 53974, 54004.5, 
+      54035.5, 54065, 54094.5, 54125, 54155.5, 54186, 54216.5, 54247.5, 
+      54278, 54308.5, 54339, 54369.5, 54400.5, 54430, 54459.5, 54490, 
+      54520.5, 54551, 54581.5, 54612.5, 54643, 54673.5, 54704, 54734.5, 
+      54765.5, 54795, 54824.5, 54855, 54885.5, 54916, 54946.5, 54977.5, 
+      55008, 55038.5, 55069, 55099.5, 55130.5, 55160, 55189.5, 55220, 
+      55250.5, 55281, 55311.5, 55342.5, 55373, 55403.5, 55434, 55464.5, 
+      55495.5, 55525, 55554.5, 55585, 55615.5, 55646, 55676.5, 55707.5, 
+      55738, 55768.5, 55799, 55829.5, 55860.5, 55890, 55919.5, 55950, 
+      55980.5, 56011, 56041.5, 56072.5, 56103, 56133.5, 56164, 56194.5, 
+      56225.5, 56255, 56284.5, 56315, 56345.5, 56376, 56406.5, 56437.5, 
+      56468, 56498.5, 56529, 56559.5, 56590.5, 56620, 56649.5, 56680, 
+      56710.5, 56741, 56771.5, 56802.5, 56833, 56863.5, 56894, 56924.5 ;
+
+   time_bnds =
+  51100, 51131,
+  51131, 51159,
+  51159, 51190,
+  51190, 51220,
+  51220, 51251,
+  51251, 51281,
+  51281, 51312,
+  51312, 51343,
+  51343, 51373,
+  51373, 51404,
+  51404, 51434,
+  51434, 51465,
+  51465, 51496,
+  51496, 51524,
+  51524, 51555,
+  51555, 51585,
+  51585, 51616,
+  51616, 51646,
+  51646, 51677,
+  51677, 51708,
+  51708, 51738,
+  51738, 51769,
+  51769, 51799,
+  51799, 51830,
+  51830, 51861,
+  51861, 51889,
+  51889, 51920,
+  51920, 51950,
+  51950, 51981,
+  51981, 52011,
+  52011, 52042,
+  52042, 52073,
+  52073, 52103,
+  52103, 52134,
+  52134, 52164,
+  52164, 52195,
+  52195, 52226,
+  52226, 52254,
+  52254, 52285,
+  52285, 52315,
+  52315, 52346,
+  52346, 52376,
+  52376, 52407,
+  52407, 52438,
+  52438, 52468,
+  52468, 52499,
+  52499, 52529,
+  52529, 52560,
+  52560, 52591,
+  52591, 52619,
+  52619, 52650,
+  52650, 52680,
+  52680, 52711,
+  52711, 52741,
+  52741, 52772,
+  52772, 52803,
+  52803, 52833,
+  52833, 52864,
+  52864, 52894,
+  52894, 52925,
+  52925, 52956,
+  52956, 52984,
+  52984, 53015,
+  53015, 53045,
+  53045, 53076,
+  53076, 53106,
+  53106, 53137,
+  53137, 53168,
+  53168, 53198,
+  53198, 53229,
+  53229, 53259,
+  53259, 53290,
+  53290, 53321,
+  53321, 53349,
+  53349, 53380,
+  53380, 53410,
+  53410, 53441,
+  53441, 53471,
+  53471, 53502,
+  53502, 53533,
+  53533, 53563,
+  53563, 53594,
+  53594, 53624,
+  53624, 53655,
+  53655, 53686,
+  53686, 53714,
+  53714, 53745,
+  53745, 53775,
+  53775, 53806,
+  53806, 53836,
+  53836, 53867,
+  53867, 53898,
+  53898, 53928,
+  53928, 53959,
+  53959, 53989,
+  53989, 54020,
+  54020, 54051,
+  54051, 54079,
+  54079, 54110,
+  54110, 54140,
+  54140, 54171,
+  54171, 54201,
+  54201, 54232,
+  54232, 54263,
+  54263, 54293,
+  54293, 54324,
+  54324, 54354,
+  54354, 54385,
+  54385, 54416,
+  54416, 54444,
+  54444, 54475,
+  54475, 54505,
+  54505, 54536,
+  54536, 54566,
+  54566, 54597,
+  54597, 54628,
+  54628, 54658,
+  54658, 54689,
+  54689, 54719,
+  54719, 54750,
+  54750, 54781,
+  54781, 54809,
+  54809, 54840,
+  54840, 54870,
+  54870, 54901,
+  54901, 54931,
+  54931, 54962,
+  54962, 54993,
+  54993, 55023,
+  55023, 55054,
+  55054, 55084,
+  55084, 55115,
+  55115, 55146,
+  55146, 55174,
+  55174, 55205,
+  55205, 55235,
+  55235, 55266,
+  55266, 55296,
+  55296, 55327,
+  55327, 55358,
+  55358, 55388,
+  55388, 55419,
+  55419, 55449,
+  55449, 55480,
+  55480, 55511,
+  55511, 55539,
+  55539, 55570,
+  55570, 55600,
+  55600, 55631,
+  55631, 55661,
+  55661, 55692,
+  55692, 55723,
+  55723, 55753,
+  55753, 55784,
+  55784, 55814,
+  55814, 55845,
+  55845, 55876,
+  55876, 55904,
+  55904, 55935,
+  55935, 55965,
+  55965, 55996,
+  55996, 56026,
+  56026, 56057,
+  56057, 56088,
+  56088, 56118,
+  56118, 56149,
+  56149, 56179,
+  56179, 56210,
+  56210, 56241,
+  56241, 56269,
+  56269, 56300,
+  56300, 56330,
+  56330, 56361,
+  56361, 56391,
+  56391, 56422,
+  56422, 56453,
+  56453, 56483,
+  56483, 56514,
+  56514, 56544,
+  56544, 56575,
+  56575, 56606,
+  56606, 56634,
+  56634, 56665,
+  56665, 56695,
+  56695, 56726,
+  56726, 56756,
+  56756, 56787,
+  56787, 56818,
+  56818, 56848,
+  56848, 56879,
+  56879, 56909,
+  56909, 56940 ;
+  } // group snd_LImon_CCSM4_historical_r1i1p1_199001-200512
+
+group: snd_LImon_CESM1-BGC_esmHistorical_r1i1p1_199001-200512 {
+  dimensions:
+  	bnds = 2 ;
+  	time = 192 ;
+  variables:
+  	double lat ;
+  		lat:bounds = "lat_bnds" ;
+  		lat:units = "degrees_north" ;
+  		lat:axis = "Y" ;
+  		lat:long_name = "latitude" ;
+  		lat:standard_name = "latitude" ;
+  	double lat_bnds(bnds) ;
+  	double lon ;
+  		lon:bounds = "lon_bnds" ;
+  		lon:units = "degrees_east" ;
+  		lon:axis = "X" ;
+  		lon:long_name = "longitude" ;
+  		lon:standard_name = "longitude" ;
+  	double lon_bnds(bnds) ;
+  	float snd(time) ;
+  		snd:standard_name = "surface_snow_thickness" ;
+  		snd:long_name = "Snow Depth" ;
+  		snd:comment = "SNOWDP unchanged, CMIP5_table_comment: where land over land, this is computed as the mean thickness of snow in the land portion of the grid cell (averaging over the entire land portion, including the snow-free fraction).  Reported as 0.0 where the land fraction is 0." ;
+  		snd:units = "m" ;
+  		snd:original_name = "SNOWDP" ;
+  		snd:cell_methods = "time: mean (interval: 30 days) area: mean where land" ;
+  		snd:cell_measures = "area: areacella" ;
+  		snd:history = "2012-05-09T19:57:47Z altered by CMOR: replaced missing value flag (1e+36) with standard missing value (1e+20)." ;
+  		snd:missing_value = 1.e+20f ;
+  		snd:_FillValue = 1.e+20f ;
+  		snd:associated_files = "baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_landIce_fx_CESM1-BGC_esmHistorical_r0i0p0.nc areacella: areacella_fx_CESM1-BGC_esmHistorical_r0i0p0.nc" ;
+  	double time(time) ;
+  		time:bounds = "time_bnds" ;
+  		time:units = "days since 1850-01-01 00:00:00" ;
+  		time:calendar = "noleap" ;
+  		time:axis = "T" ;
+  		time:long_name = "time" ;
+  		time:standard_name = "time" ;
+  	double time_bnds(time, bnds) ;
+
+  // group attributes:
+  		:institution = "NSF/DOE NCAR (National Center for Atmospheric Research) Boulder, CO, USA" ;
+  		:institute_id = "NSF-DOE-NCAR" ;
+  		:experiment_id = "esmHistorical" ;
+  		:source = "CESM1-BGC" ;
+  		:model_id = "CESM1-BGC" ;
+  		:forcing = "Sl GHG Vl SS Ds SD BC MD OC Oz AA LU" ;
+  		:parent_experiment_id = "piControl" ;
+  		:parent_experiment_rip = "r1i1p1" ;
+  		:branch_time = 1. ;
+  		:contact = "cesm_data@ucar.edu" ;
+  		:comment = "CESM home page: http://www.cesm.ucar.edu" ;
+  		:references = "TBD\n See also http://www.cesm.ucar.edu/publications" ;
+  		:initialization_method = 1 ;
+  		:physics_version = 1 ;
+  		:tracking_id = "4a0d95f4-418e-4b2f-bd18-25d83dd02599" ;
+  		:acknowledgements = "The CESM project is supported by the National Science Foundation and the Office of Science (BER) of the U.S. Department of Energy. NCAR is sponsored by the National Science Foundation. Computing resources were provided by the Climate Simulation Laboratory at the NCAR Computational and Information Systems Laboratory (CISL), sponsored by the National Science Foundation and other agencies." ;
+  		:cesm_casename = "b40.20th.1deg.coup.001" ;
+  		:cesm_repotag = "unknown" ;
+  		:cesm_compset = "unknown" ;
+  		:resolution = "f09_g16 (0.9x1.25_gx1v6)" ;
+  		:forcing_note = "Additional information on the external forcings used in this experiment can be found at http://www.cesm.ucar.edu/CMIP5/forcing_information" ;
+  		:processed_by = "strandwg on silver.cgd.ucar.edu at 20120509  -135747.834" ;
+  		:processing_code_information = "Last Changed Rev: 757 Last Changed Date: 2012-05-09 13:01:12 -0600 (Wed, 09 May 2012) Repository UUID: d2181dbe-5796-6825-dc7f-cbd98591f93d" ;
+  		:product = "output" ;
+  		:experiment = "ESM historical" ;
+  		:frequency = "mon" ;
+  		:creation_date = "2012-05-09T19:57:54Z" ;
+  		:history = "Sun Dec 30 18:38:21 2012: ncks -d time,1990-01-01 00:00:0.0, /media/grele_data/wenshan/cesm/historical-exp/snd_LImon_CESM1-BGC_esmHistorical_r1i1p1_185001-200512.nc /media/grele_data/wenshan/cesm/historical-exp/snd_LImon_CESM1-BGC_esmHistorical_r1i1p1_199001-200512.nc\n2012-05-09T19:57:54Z CMOR rewrote data to comply with CF standards and CMIP5 requirements." ;
+  		:Conventions = "CF-1.4" ;
+  		:project_id = "CMIP5" ;
+  		:table_id = "Table LImon (12 January 2012) 429410275cb5466e41180ad9466db1bf" ;
+  		:title = "CESM1-BGC model output prepared for CMIP5 ESM historical" ;
+  		:parent_experiment = "pre-industrial control" ;
+  		:modeling_realm = "landIce land" ;
+  		:realization = 1 ;
+  		:cmor_version = "2.8.1" ;
+  		:NCO = "20121231" ;
+  data:
+
+   lat = 0 ;
+
+   lat_bnds = -0.46875, 0.46875 ;
+
+   lon = 179.375 ;
+
+   lon_bnds = 178.752170138889, 180 ;
+
+   snd = 0.2680996, 0.2774232, 0.2773497, 0.2678236, 0.2523736, 0.2353036, 
+      0.2241789, 0.2202552, 0.222204, 0.2306893, 0.2446921, 0.2576785, 
+      0.2682439, 0.2751035, 0.277965, 0.2696223, 0.2531217, 0.2362053, 
+      0.2236448, 0.2213705, 0.223623, 0.2329047, 0.2455211, 0.2591642, 
+      0.2693312, 0.2794877, 0.2825508, 0.2744004, 0.254947, 0.2357145, 
+      0.2242698, 0.2229662, 0.2258033, 0.2355103, 0.2489066, 0.2639475, 
+      0.2739551, 0.282854, 0.285384, 0.2742695, 0.2558796, 0.2363208, 
+      0.2251717, 0.2235664, 0.2253847, 0.2336286, 0.2477256, 0.262718, 
+      0.273165, 0.2797343, 0.280659, 0.2718306, 0.2566107, 0.2371835, 
+      0.2254015, 0.2228705, 0.2243886, 0.2328582, 0.247127, 0.2616663, 
+      0.2728699, 0.2804817, 0.2821359, 0.2728669, 0.2567041, 0.2372598, 
+      0.2235135, 0.2211705, 0.2232186, 0.2304765, 0.2452655, 0.2588243, 
+      0.2686609, 0.2770467, 0.28127, 0.2719267, 0.2565492, 0.2370524, 
+      0.2241652, 0.2221043, 0.2240341, 0.232785, 0.2474582, 0.2619536, 
+      0.271959, 0.2789219, 0.2804725, 0.2712795, 0.2545575, 0.2343643, 
+      0.2228464, 0.2208607, 0.222697, 0.2307697, 0.2453604, 0.2603765, 
+      0.270963, 0.2783473, 0.2791822, 0.2671294, 0.2513891, 0.2327273, 
+      0.2230895, 0.2215021, 0.2227538, 0.2310819, 0.2444584, 0.2590207, 
+      0.269716, 0.2776413, 0.2770783, 0.269074, 0.2532291, 0.2348496, 
+      0.2231196, 0.2215401, 0.2229901, 0.2301446, 0.2427478, 0.2571933, 
+      0.2685693, 0.2760618, 0.2773207, 0.2689409, 0.2521003, 0.2327903, 
+      0.2218084, 0.2191039, 0.2212152, 0.2275012, 0.2422791, 0.2555068, 
+      0.2664767, 0.2757832, 0.2764494, 0.2647938, 0.2490902, 0.2317704, 
+      0.2224389, 0.2204234, 0.2224246, 0.2305548, 0.2446094, 0.2598239, 
+      0.2725414, 0.2792821, 0.2792836, 0.2694865, 0.2504343, 0.2331266, 
+      0.2226404, 0.2204186, 0.2220359, 0.2297373, 0.2448198, 0.2600302, 
+      0.270699, 0.2782437, 0.2768129, 0.2677913, 0.2520528, 0.2336722, 
+      0.2226274, 0.2207537, 0.2224943, 0.2297986, 0.2440405, 0.2572867, 
+      0.2677648, 0.2762023, 0.2748129, 0.2662947, 0.2533411, 0.2347853, 
+      0.2230045, 0.2207553, 0.2227484, 0.230375, 0.2443826, 0.2584139, 
+      0.2697071, 0.2758932, 0.2760971, 0.2664725, 0.2526272, 0.2326955, 
+      0.2209367, 0.2194094, 0.2209915, 0.228255, 0.2412456, 0.2555254 ;
+
+   time = 51115.5, 51145, 51174.5, 51205, 51235.5, 51266, 51296.5, 51327.5, 
+      51358, 51388.5, 51419, 51449.5, 51480.5, 51510, 51539.5, 51570, 
+      51600.5, 51631, 51661.5, 51692.5, 51723, 51753.5, 51784, 51814.5, 
+      51845.5, 51875, 51904.5, 51935, 51965.5, 51996, 52026.5, 52057.5, 
+      52088, 52118.5, 52149, 52179.5, 52210.5, 52240, 52269.5, 52300, 
+      52330.5, 52361, 52391.5, 52422.5, 52453, 52483.5, 52514, 52544.5, 
+      52575.5, 52605, 52634.5, 52665, 52695.5, 52726, 52756.5, 52787.5, 
+      52818, 52848.5, 52879, 52909.5, 52940.5, 52970, 52999.5, 53030, 
+      53060.5, 53091, 53121.5, 53152.5, 53183, 53213.5, 53244, 53274.5, 
+      53305.5, 53335, 53364.5, 53395, 53425.5, 53456, 53486.5, 53517.5, 
+      53548, 53578.5, 53609, 53639.5, 53670.5, 53700, 53729.5, 53760, 
+      53790.5, 53821, 53851.5, 53882.5, 53913, 53943.5, 53974, 54004.5, 
+      54035.5, 54065, 54094.5, 54125, 54155.5, 54186, 54216.5, 54247.5, 
+      54278, 54308.5, 54339, 54369.5, 54400.5, 54430, 54459.5, 54490, 
+      54520.5, 54551, 54581.5, 54612.5, 54643, 54673.5, 54704, 54734.5, 
+      54765.5, 54795, 54824.5, 54855, 54885.5, 54916, 54946.5, 54977.5, 
+      55008, 55038.5, 55069, 55099.5, 55130.5, 55160, 55189.5, 55220, 
+      55250.5, 55281, 55311.5, 55342.5, 55373, 55403.5, 55434, 55464.5, 
+      55495.5, 55525, 55554.5, 55585, 55615.5, 55646, 55676.5, 55707.5, 
+      55738, 55768.5, 55799, 55829.5, 55860.5, 55890, 55919.5, 55950, 
+      55980.5, 56011, 56041.5, 56072.5, 56103, 56133.5, 56164, 56194.5, 
+      56225.5, 56255, 56284.5, 56315, 56345.5, 56376, 56406.5, 56437.5, 
+      56468, 56498.5, 56529, 56559.5, 56590.5, 56620, 56649.5, 56680, 
+      56710.5, 56741, 56771.5, 56802.5, 56833, 56863.5, 56894, 56924.5 ;
+
+   time_bnds =
+  51100, 51131,
+  51131, 51159,
+  51159, 51190,
+  51190, 51220,
+  51220, 51251,
+  51251, 51281,
+  51281, 51312,
+  51312, 51343,
+  51343, 51373,
+  51373, 51404,
+  51404, 51434,
+  51434, 51465,
+  51465, 51496,
+  51496, 51524,
+  51524, 51555,
+  51555, 51585,
+  51585, 51616,
+  51616, 51646,
+  51646, 51677,
+  51677, 51708,
+  51708, 51738,
+  51738, 51769,
+  51769, 51799,
+  51799, 51830,
+  51830, 51861,
+  51861, 51889,
+  51889, 51920,
+  51920, 51950,
+  51950, 51981,
+  51981, 52011,
+  52011, 52042,
+  52042, 52073,
+  52073, 52103,
+  52103, 52134,
+  52134, 52164,
+  52164, 52195,
+  52195, 52226,
+  52226, 52254,
+  52254, 52285,
+  52285, 52315,
+  52315, 52346,
+  52346, 52376,
+  52376, 52407,
+  52407, 52438,
+  52438, 52468,
+  52468, 52499,
+  52499, 52529,
+  52529, 52560,
+  52560, 52591,
+  52591, 52619,
+  52619, 52650,
+  52650, 52680,
+  52680, 52711,
+  52711, 52741,
+  52741, 52772,
+  52772, 52803,
+  52803, 52833,
+  52833, 52864,
+  52864, 52894,
+  52894, 52925,
+  52925, 52956,
+  52956, 52984,
+  52984, 53015,
+  53015, 53045,
+  53045, 53076,
+  53076, 53106,
+  53106, 53137,
+  53137, 53168,
+  53168, 53198,
+  53198, 53229,
+  53229, 53259,
+  53259, 53290,
+  53290, 53321,
+  53321, 53349,
+  53349, 53380,
+  53380, 53410,
+  53410, 53441,
+  53441, 53471,
+  53471, 53502,
+  53502, 53533,
+  53533, 53563,
+  53563, 53594,
+  53594, 53624,
+  53624, 53655,
+  53655, 53686,
+  53686, 53714,
+  53714, 53745,
+  53745, 53775,
+  53775, 53806,
+  53806, 53836,
+  53836, 53867,
+  53867, 53898,
+  53898, 53928,
+  53928, 53959,
+  53959, 53989,
+  53989, 54020,
+  54020, 54051,
+  54051, 54079,
+  54079, 54110,
+  54110, 54140,
+  54140, 54171,
+  54171, 54201,
+  54201, 54232,
+  54232, 54263,
+  54263, 54293,
+  54293, 54324,
+  54324, 54354,
+  54354, 54385,
+  54385, 54416,
+  54416, 54444,
+  54444, 54475,
+  54475, 54505,
+  54505, 54536,
+  54536, 54566,
+  54566, 54597,
+  54597, 54628,
+  54628, 54658,
+  54658, 54689,
+  54689, 54719,
+  54719, 54750,
+  54750, 54781,
+  54781, 54809,
+  54809, 54840,
+  54840, 54870,
+  54870, 54901,
+  54901, 54931,
+  54931, 54962,
+  54962, 54993,
+  54993, 55023,
+  55023, 55054,
+  55054, 55084,
+  55084, 55115,
+  55115, 55146,
+  55146, 55174,
+  55174, 55205,
+  55205, 55235,
+  55235, 55266,
+  55266, 55296,
+  55296, 55327,
+  55327, 55358,
+  55358, 55388,
+  55388, 55419,
+  55419, 55449,
+  55449, 55480,
+  55480, 55511,
+  55511, 55539,
+  55539, 55570,
+  55570, 55600,
+  55600, 55631,
+  55631, 55661,
+  55661, 55692,
+  55692, 55723,
+  55723, 55753,
+  55753, 55784,
+  55784, 55814,
+  55814, 55845,
+  55845, 55876,
+  55876, 55904,
+  55904, 55935,
+  55935, 55965,
+  55965, 55996,
+  55996, 56026,
+  56026, 56057,
+  56057, 56088,
+  56088, 56118,
+  56118, 56149,
+  56149, 56179,
+  56179, 56210,
+  56210, 56241,
+  56241, 56269,
+  56269, 56300,
+  56300, 56330,
+  56330, 56361,
+  56361, 56391,
+  56391, 56422,
+  56422, 56453,
+  56453, 56483,
+  56483, 56514,
+  56514, 56544,
+  56544, 56575,
+  56575, 56606,
+  56606, 56634,
+  56634, 56665,
+  56665, 56695,
+  56695, 56726,
+  56726, 56756,
+  56756, 56787,
+  56787, 56818,
+  56818, 56848,
+  56848, 56879,
+  56879, 56909,
+  56909, 56940 ;
+  } // group snd_LImon_CESM1-BGC_esmHistorical_r1i1p1_199001-200512
+
+group: snd_LImon_CESM1-BGC_historical_r1i1p1_199001-200512 {
+  dimensions:
+  	bnds = 2 ;
+  	time = 192 ;
+  variables:
+  	double lat ;
+  		lat:bounds = "lat_bnds" ;
+  		lat:units = "degrees_north" ;
+  		lat:axis = "Y" ;
+  		lat:long_name = "latitude" ;
+  		lat:standard_name = "latitude" ;
+  	double lat_bnds(bnds) ;
+  	double lon ;
+  		lon:bounds = "lon_bnds" ;
+  		lon:units = "degrees_east" ;
+  		lon:axis = "X" ;
+  		lon:long_name = "longitude" ;
+  		lon:standard_name = "longitude" ;
+  	double lon_bnds(bnds) ;
+  	float snd(time) ;
+  		snd:standard_name = "surface_snow_thickness" ;
+  		snd:long_name = "Snow Depth" ;
+  		snd:comment = "SNOWDP unchanged, CMIP5_table_comment: where land over land, this is computed as the mean thickness of snow in the land portion of the grid cell (averaging over the entire land portion, including the snow-free fraction).  Reported as 0.0 where the land fraction is 0." ;
+  		snd:units = "m" ;
+  		snd:original_name = "SNOWDP" ;
+  		snd:cell_methods = "time: mean (interval: 30 days) area: mean where land" ;
+  		snd:cell_measures = "area: areacella" ;
+  		snd:history = "2012-05-09T19:58:41Z altered by CMOR: replaced missing value flag (1e+36) with standard missing value (1e+20)." ;
+  		snd:missing_value = 1.e+20f ;
+  		snd:_FillValue = 1.e+20f ;
+  		snd:associated_files = "baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_landIce_fx_CESM1-BGC_historical_r0i0p0.nc areacella: areacella_fx_CESM1-BGC_historical_r0i0p0.nc" ;
+  	double time(time) ;
+  		time:bounds = "time_bnds" ;
+  		time:units = "days since 1850-01-01 00:00:00" ;
+  		time:calendar = "noleap" ;
+  		time:axis = "T" ;
+  		time:long_name = "time" ;
+  		time:standard_name = "time" ;
+  	double time_bnds(time, bnds) ;
+
+  // group attributes:
+  		:institution = "NSF/DOE NCAR (National Center for Atmospheric Research) Boulder, CO, USA" ;
+  		:institute_id = "NSF-DOE-NCAR" ;
+  		:experiment_id = "historical" ;
+  		:source = "CESM1-BGC" ;
+  		:model_id = "CESM1-BGC" ;
+  		:forcing = "Sl GHG Vl SS Ds SD BC MD OC Oz AA LU" ;
+  		:parent_experiment_id = "piControl" ;
+  		:parent_experiment_rip = "r1i1p1" ;
+  		:branch_time = 1. ;
+  		:contact = "cesm_data@ucar.edu" ;
+  		:comment = "CESM home page: http://www.cesm.ucar.edu" ;
+  		:references = "TBD\n See also http://www.cesm.ucar.edu/publications" ;
+  		:initialization_method = 1 ;
+  		:physics_version = 1 ;
+  		:tracking_id = "71321285-8e0d-4615-87db-35dd436c1ca7" ;
+  		:acknowledgements = "The CESM project is supported by the National Science Foundation and the Office of Science (BER) of the U.S. Department of Energy. NCAR is sponsored by the National Science Foundation. Computing resources were provided by the Climate Simulation Laboratory at the NCAR Computational and Information Systems Laboratory (CISL), sponsored by the National Science Foundation and other agencies." ;
+  		:cesm_casename = "b40.20th.1deg.bdrd.001" ;
+  		:cesm_repotag = "unknown" ;
+  		:cesm_compset = "unknown" ;
+  		:resolution = "f09_g16 (0.9x1.25_gx1v6)" ;
+  		:forcing_note = "Additional information on the external forcings used in this experiment can be found at http://www.cesm.ucar.edu/CMIP5/forcing_information" ;
+  		:processed_by = "strandwg on silver.cgd.ucar.edu at 20120509  -135841.391" ;
+  		:processing_code_information = "Last Changed Rev: 757 Last Changed Date: 2012-05-09 13:01:12 -0600 (Wed, 09 May 2012) Repository UUID: d2181dbe-5796-6825-dc7f-cbd98591f93d" ;
+  		:product = "output" ;
+  		:experiment = "historical" ;
+  		:frequency = "mon" ;
+  		:creation_date = "2012-05-09T19:59:01Z" ;
+  		:history = "Thu Jan 24 16:59:53 2013: ncks -d time,1990-01-01 00:00:0.0, snd_LImon_CESM1-BGC_historical_r1i1p1_185001-200512.nc snd_LImon_CESM1-BGC_historical_r1i1p1_199001-200512.nc\n2012-05-09T19:59:01Z CMOR rewrote data to comply with CF standards and CMIP5 requirements." ;
+  		:Conventions = "CF-1.4" ;
+  		:project_id = "CMIP5" ;
+  		:table_id = "Table LImon (12 January 2012) 429410275cb5466e41180ad9466db1bf" ;
+  		:title = "CESM1-BGC model output prepared for CMIP5 historical" ;
+  		:parent_experiment = "pre-industrial control" ;
+  		:modeling_realm = "landIce land" ;
+  		:realization = 1 ;
+  		:cmor_version = "2.8.1" ;
+  		:NCO = "20130125" ;
+  data:
+
+   lat = 0 ;
+
+   lat_bnds = -0.46875, 0.46875 ;
+
+   lon = 179.375 ;
+
+   lon_bnds = 178.752170138889, 180 ;
+
+   snd = 0.2679237, 0.2765716, 0.2792061, 0.269538, 0.2549225, 0.2356643, 
+      0.2239816, 0.2214208, 0.2232746, 0.2330443, 0.2482322, 0.2618538, 
+      0.2718751, 0.2784872, 0.2816284, 0.2744199, 0.2547633, 0.2358269, 
+      0.2238155, 0.2212213, 0.2229176, 0.2314795, 0.2445377, 0.2586936, 
+      0.2689886, 0.2767572, 0.2793723, 0.2701983, 0.2571563, 0.2410009, 
+      0.2276393, 0.2232079, 0.2254889, 0.2328709, 0.246804, 0.2621065, 
+      0.2749951, 0.2822544, 0.2840958, 0.2735372, 0.2571335, 0.2369379, 
+      0.2245413, 0.2230619, 0.2254388, 0.2328702, 0.2470193, 0.2612281, 
+      0.273309, 0.2807706, 0.2803822, 0.2722653, 0.2537876, 0.2356591, 
+      0.2237536, 0.221576, 0.2239067, 0.2312796, 0.2460659, 0.2598847, 
+      0.2710848, 0.2802893, 0.2828076, 0.2704725, 0.2541187, 0.2350643, 
+      0.2240993, 0.2223159, 0.2238365, 0.2320055, 0.2454544, 0.2591887, 
+      0.2701084, 0.2796279, 0.2826913, 0.2736143, 0.2549144, 0.2370585, 
+      0.2247572, 0.2223565, 0.2238854, 0.231767, 0.2443522, 0.2578636, 
+      0.2712161, 0.2780971, 0.2755284, 0.2660622, 0.2495453, 0.2318953, 
+      0.2233751, 0.2216059, 0.223766, 0.23187, 0.246279, 0.2603699, 
+      0.2707274, 0.2787572, 0.2818029, 0.2734509, 0.2564729, 0.2358576, 
+      0.2246435, 0.2225418, 0.2250151, 0.231232, 0.2457517, 0.2608106, 
+      0.2720586, 0.2782162, 0.2794435, 0.2731014, 0.2584612, 0.2379365, 
+      0.2251921, 0.2220701, 0.2250715, 0.2343054, 0.2491052, 0.2627716, 
+      0.2734136, 0.279099, 0.2794518, 0.2727314, 0.2575629, 0.2346312, 
+      0.2223997, 0.2212141, 0.2226047, 0.2319023, 0.2452941, 0.258326, 
+      0.2698498, 0.2775199, 0.2788604, 0.2690693, 0.252148, 0.232261, 
+      0.2235355, 0.2229979, 0.2245945, 0.2310091, 0.2443134, 0.2585285, 
+      0.2701935, 0.2781954, 0.2802249, 0.2686754, 0.2521832, 0.2358972, 
+      0.2247827, 0.2217561, 0.2242245, 0.2330889, 0.2470436, 0.2605419, 
+      0.2706355, 0.2782127, 0.2791632, 0.2685546, 0.2515925, 0.2346935, 
+      0.2236731, 0.2211577, 0.2231798, 0.230194, 0.2433317, 0.257083, 
+      0.2682059, 0.2764317, 0.2791491, 0.2723773, 0.255015, 0.2332694, 
+      0.2229499, 0.2207035, 0.2225349, 0.2303905, 0.2440189, 0.2581901, 
+      0.2682388, 0.2741917, 0.2765204, 0.267206, 0.2482102, 0.232184, 
+      0.2224177, 0.2212571, 0.2237087, 0.2322933, 0.2465013, 0.260654 ;
+
+   time = 51115.5, 51145, 51174.5, 51205, 51235.5, 51266, 51296.5, 51327.5, 
+      51358, 51388.5, 51419, 51449.5, 51480.5, 51510, 51539.5, 51570, 
+      51600.5, 51631, 51661.5, 51692.5, 51723, 51753.5, 51784, 51814.5, 
+      51845.5, 51875, 51904.5, 51935, 51965.5, 51996, 52026.5, 52057.5, 
+      52088, 52118.5, 52149, 52179.5, 52210.5, 52240, 52269.5, 52300, 
+      52330.5, 52361, 52391.5, 52422.5, 52453, 52483.5, 52514, 52544.5, 
+      52575.5, 52605, 52634.5, 52665, 52695.5, 52726, 52756.5, 52787.5, 
+      52818, 52848.5, 52879, 52909.5, 52940.5, 52970, 52999.5, 53030, 
+      53060.5, 53091, 53121.5, 53152.5, 53183, 53213.5, 53244, 53274.5, 
+      53305.5, 53335, 53364.5, 53395, 53425.5, 53456, 53486.5, 53517.5, 
+      53548, 53578.5, 53609, 53639.5, 53670.5, 53700, 53729.5, 53760, 
+      53790.5, 53821, 53851.5, 53882.5, 53913, 53943.5, 53974, 54004.5, 
+      54035.5, 54065, 54094.5, 54125, 54155.5, 54186, 54216.5, 54247.5, 
+      54278, 54308.5, 54339, 54369.5, 54400.5, 54430, 54459.5, 54490, 
+      54520.5, 54551, 54581.5, 54612.5, 54643, 54673.5, 54704, 54734.5, 
+      54765.5, 54795, 54824.5, 54855, 54885.5, 54916, 54946.5, 54977.5, 
+      55008, 55038.5, 55069, 55099.5, 55130.5, 55160, 55189.5, 55220, 
+      55250.5, 55281, 55311.5, 55342.5, 55373, 55403.5, 55434, 55464.5, 
+      55495.5, 55525, 55554.5, 55585, 55615.5, 55646, 55676.5, 55707.5, 
+      55738, 55768.5, 55799, 55829.5, 55860.5, 55890, 55919.5, 55950, 
+      55980.5, 56011, 56041.5, 56072.5, 56103, 56133.5, 56164, 56194.5, 
+      56225.5, 56255, 56284.5, 56315, 56345.5, 56376, 56406.5, 56437.5, 
+      56468, 56498.5, 56529, 56559.5, 56590.5, 56620, 56649.5, 56680, 
+      56710.5, 56741, 56771.5, 56802.5, 56833, 56863.5, 56894, 56924.5 ;
+
+   time_bnds =
+  51100, 51131,
+  51131, 51159,
+  51159, 51190,
+  51190, 51220,
+  51220, 51251,
+  51251, 51281,
+  51281, 51312,
+  51312, 51343,
+  51343, 51373,
+  51373, 51404,
+  51404, 51434,
+  51434, 51465,
+  51465, 51496,
+  51496, 51524,
+  51524, 51555,
+  51555, 51585,
+  51585, 51616,
+  51616, 51646,
+  51646, 51677,
+  51677, 51708,
+  51708, 51738,
+  51738, 51769,
+  51769, 51799,
+  51799, 51830,
+  51830, 51861,
+  51861, 51889,
+  51889, 51920,
+  51920, 51950,
+  51950, 51981,
+  51981, 52011,
+  52011, 52042,
+  52042, 52073,
+  52073, 52103,
+  52103, 52134,
+  52134, 52164,
+  52164, 52195,
+  52195, 52226,
+  52226, 52254,
+  52254, 52285,
+  52285, 52315,
+  52315, 52346,
+  52346, 52376,
+  52376, 52407,
+  52407, 52438,
+  52438, 52468,
+  52468, 52499,
+  52499, 52529,
+  52529, 52560,
+  52560, 52591,
+  52591, 52619,
+  52619, 52650,
+  52650, 52680,
+  52680, 52711,
+  52711, 52741,
+  52741, 52772,
+  52772, 52803,
+  52803, 52833,
+  52833, 52864,
+  52864, 52894,
+  52894, 52925,
+  52925, 52956,
+  52956, 52984,
+  52984, 53015,
+  53015, 53045,
+  53045, 53076,
+  53076, 53106,
+  53106, 53137,
+  53137, 53168,
+  53168, 53198,
+  53198, 53229,
+  53229, 53259,
+  53259, 53290,
+  53290, 53321,
+  53321, 53349,
+  53349, 53380,
+  53380, 53410,
+  53410, 53441,
+  53441, 53471,
+  53471, 53502,
+  53502, 53533,
+  53533, 53563,
+  53563, 53594,
+  53594, 53624,
+  53624, 53655,
+  53655, 53686,
+  53686, 53714,
+  53714, 53745,
+  53745, 53775,
+  53775, 53806,
+  53806, 53836,
+  53836, 53867,
+  53867, 53898,
+  53898, 53928,
+  53928, 53959,
+  53959, 53989,
+  53989, 54020,
+  54020, 54051,
+  54051, 54079,
+  54079, 54110,
+  54110, 54140,
+  54140, 54171,
+  54171, 54201,
+  54201, 54232,
+  54232, 54263,
+  54263, 54293,
+  54293, 54324,
+  54324, 54354,
+  54354, 54385,
+  54385, 54416,
+  54416, 54444,
+  54444, 54475,
+  54475, 54505,
+  54505, 54536,
+  54536, 54566,
+  54566, 54597,
+  54597, 54628,
+  54628, 54658,
+  54658, 54689,
+  54689, 54719,
+  54719, 54750,
+  54750, 54781,
+  54781, 54809,
+  54809, 54840,
+  54840, 54870,
+  54870, 54901,
+  54901, 54931,
+  54931, 54962,
+  54962, 54993,
+  54993, 55023,
+  55023, 55054,
+  55054, 55084,
+  55084, 55115,
+  55115, 55146,
+  55146, 55174,
+  55174, 55205,
+  55205, 55235,
+  55235, 55266,
+  55266, 55296,
+  55296, 55327,
+  55327, 55358,
+  55358, 55388,
+  55388, 55419,
+  55419, 55449,
+  55449, 55480,
+  55480, 55511,
+  55511, 55539,
+  55539, 55570,
+  55570, 55600,
+  55600, 55631,
+  55631, 55661,
+  55661, 55692,
+  55692, 55723,
+  55723, 55753,
+  55753, 55784,
+  55784, 55814,
+  55814, 55845,
+  55845, 55876,
+  55876, 55904,
+  55904, 55935,
+  55935, 55965,
+  55965, 55996,
+  55996, 56026,
+  56026, 56057,
+  56057, 56088,
+  56088, 56118,
+  56118, 56149,
+  56149, 56179,
+  56179, 56210,
+  56210, 56241,
+  56241, 56269,
+  56269, 56300,
+  56300, 56330,
+  56330, 56361,
+  56361, 56391,
+  56391, 56422,
+  56422, 56453,
+  56453, 56483,
+  56483, 56514,
+  56514, 56544,
+  56544, 56575,
+  56575, 56606,
+  56606, 56634,
+  56634, 56665,
+  56665, 56695,
+  56695, 56726,
+  56726, 56756,
+  56756, 56787,
+  56787, 56818,
+  56818, 56848,
+  56848, 56879,
+  56879, 56909,
+  56909, 56940 ;
+  } // group snd_LImon_CESM1-BGC_historical_r1i1p1_199001-200512
+
+group: snd_LImon_CESM1-CAM5_historical_r1i1p1_199001-200512 {
+  dimensions:
+  	bnds = 2 ;
+  	time = 192 ;
+  variables:
+  	double lat ;
+  		lat:bounds = "lat_bnds" ;
+  		lat:units = "degrees_north" ;
+  		lat:axis = "Y" ;
+  		lat:long_name = "latitude" ;
+  		lat:standard_name = "latitude" ;
+  	double lat_bnds(bnds) ;
+  	double lon ;
+  		lon:bounds = "lon_bnds" ;
+  		lon:units = "degrees_east" ;
+  		lon:axis = "X" ;
+  		lon:long_name = "longitude" ;
+  		lon:standard_name = "longitude" ;
+  	double lon_bnds(bnds) ;
+  	float snd(time) ;
+  		snd:standard_name = "surface_snow_thickness" ;
+  		snd:long_name = "Snow Depth" ;
+  		snd:comment = "SNOWDP unchanged, CMIP5_table_comment: where land over land, this is computed as the mean thickness of snow in the land portion of the grid cell (averaging over the entire land portion, including the snow-free fraction).  Reported as 0.0 where the land fraction is 0." ;
+  		snd:units = "m" ;
+  		snd:original_name = "SNOWDP" ;
+  		snd:cell_methods = "time: mean (interval: 30 days) area: mean where land" ;
+  		snd:cell_measures = "area: areacella" ;
+  		snd:history = "2012-05-18T15:39:16Z altered by CMOR: replaced missing value flag (1e+36) with standard missing value (1e+20)." ;
+  		snd:missing_value = 1.e+20f ;
+  		snd:_FillValue = 1.e+20f ;
+  		snd:associated_files = "baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_landIce_fx_CESM1-CAM5_historical_r0i0p0.nc areacella: areacella_fx_CESM1-CAM5_historical_r0i0p0.nc" ;
+  	double time(time) ;
+  		time:bounds = "time_bnds" ;
+  		time:units = "days since 1850-01-01 00:00:00" ;
+  		time:calendar = "noleap" ;
+  		time:axis = "T" ;
+  		time:long_name = "time" ;
+  		time:standard_name = "time" ;
+  	double time_bnds(time, bnds) ;
+
+  // group attributes:
+  		:institution = "NSF/DOE NCAR (National Center for Atmospheric Research) Boulder, CO, USA" ;
+  		:institute_id = "NSF-DOE-NCAR" ;
+  		:experiment_id = "historical" ;
+  		:source = "CESM1-CAM5" ;
+  		:model_id = "CESM1-CAM5" ;
+  		:forcing = "Sl GHG Vl SS Ds SD BC MD OC Oz AA LU" ;
+  		:parent_experiment_id = "piControl" ;
+  		:parent_experiment_rip = "r1i1p1" ;
+  		:branch_time = 2. ;
+  		:contact = "cesm_data@ucar.edu" ;
+  		:comment = "CESM home page: http://www.cesm.ucar.edu" ;
+  		:references = "Neale, R., et.al. 2012: Coupled simulations from CESM1 using the Community Atmosphere Model version 5: (CAM5). See also http://www.cesm.ucar.edu/publications" ;
+  		:initialization_method = 1 ;
+  		:physics_version = 1 ;
+  		:tracking_id = "76783d9a-c5da-46c0-bc92-51c6cc1be100" ;
+  		:acknowledgements = "The CESM project is supported by the National Science Foundation and the Office of Science (BER) of the U.S. Department of Energy. NCAR is sponsored by the National Science Foundation. This research used resources of the Oak Ridge Leadership Computing Facility, located in the National Center for Computational Sciences at Oak Ridge National Laboratory, which is supported by the Office of Science (BER) of the Department of Energy under Contract DE-AC05-00OR22725." ;
+  		:cesm_casename = "b40_20th_1d_b08c5cn_138j" ;
+  		:cesm_repotag = "cesm1_0_beta08" ;
+  		:cesm_compset = "B20TRC5CN" ;
+  		:resolution = "f09_g16 (0.9x1.25_gx1v6)" ;
+  		:forcing_note = "Additional information on the external forcings used in this experiment can be found at http://www.cesm.ucar.edu/CMIP5/forcing_information" ;
+  		:processed_by = "strandwg on silver.cgd.ucar.edu at 20120518  -093916.416" ;
+  		:processing_code_information = "Last Changed Rev: 776 Last Changed Date: 2012-05-17 09:36:52 -0600 (Thu, 17 May 2012) Repository UUID: d2181dbe-5796-6825-dc7f-cbd98591f93d" ;
+  		:product = "output" ;
+  		:experiment = "historical" ;
+  		:frequency = "mon" ;
+  		:creation_date = "2012-05-18T15:39:18Z" ;
+  		:history = "Sun Dec 30 19:53:37 2012: ncks -d time,1990-01-01 00:00:0.0, /media/grele_data/wenshan/cesm/historical-exp/snd_LImon_CESM1-CAM5_historical_r1i1p1_185001-200512.nc /media/grele_data/wenshan/cesm/historical-exp/snd_LImon_CESM1-CAM5_historical_r1i1p1_199001-200512.nc\n2012-05-18T15:39:18Z CMOR rewrote data to comply with CF standards and CMIP5 requirements." ;
+  		:Conventions = "CF-1.4" ;
+  		:project_id = "CMIP5" ;
+  		:table_id = "Table LImon (12 January 2012) 429410275cb5466e41180ad9466db1bf" ;
+  		:title = "CESM1-CAM5 model output prepared for CMIP5 historical" ;
+  		:parent_experiment = "pre-industrial control" ;
+  		:modeling_realm = "landIce land" ;
+  		:realization = 1 ;
+  		:cmor_version = "2.8.1" ;
+  		:NCO = "20121231" ;
+  data:
+
+   lat = 0 ;
+
+   lat_bnds = -0.46875, 0.46875 ;
+
+   lon = 179.375 ;
+
+   lon_bnds = 178.752170138889, 180 ;
+
+   snd = 0.256985, 0.2632169, 0.2638666, 0.2571382, 0.2397551, 0.2226972, 
+      0.2117357, 0.2092562, 0.2110159, 0.2187275, 0.232471, 0.2451041, 
+      0.25559, 0.262308, 0.263666, 0.2530842, 0.2354192, 0.219715, 0.2109925, 
+      0.2091601, 0.2101545, 0.2170589, 0.2314613, 0.2463234, 0.2565176, 
+      0.2618284, 0.2628052, 0.2544692, 0.2387005, 0.2239094, 0.2126885, 
+      0.2100891, 0.2110389, 0.2183972, 0.2327309, 0.2458724, 0.256275, 
+      0.2631488, 0.2623489, 0.2537029, 0.238484, 0.2220767, 0.2126471, 
+      0.2098042, 0.211005, 0.2187067, 0.2322753, 0.2455713, 0.2557092, 
+      0.2640642, 0.2651167, 0.2535568, 0.2382084, 0.2209739, 0.2110021, 
+      0.2091861, 0.2104682, 0.217094, 0.2318764, 0.2454598, 0.2558737, 
+      0.262004, 0.2621183, 0.251463, 0.2369802, 0.2199399, 0.2108326, 
+      0.2090928, 0.2101073, 0.2165558, 0.2288471, 0.2424463, 0.2511085, 
+      0.2579598, 0.259104, 0.2501604, 0.2355066, 0.2208411, 0.212263, 
+      0.2098267, 0.2107716, 0.2182428, 0.2311743, 0.2435891, 0.2561887, 
+      0.2622698, 0.263788, 0.2558271, 0.2375138, 0.219795, 0.2111067, 
+      0.2092032, 0.2103797, 0.2178221, 0.2317605, 0.2452588, 0.2536525, 
+      0.2633139, 0.2622121, 0.2538035, 0.2367099, 0.2219658, 0.2114051, 
+      0.2088391, 0.2098973, 0.2176176, 0.2312553, 0.2448709, 0.2537117, 
+      0.2602636, 0.2637344, 0.255207, 0.2373102, 0.2211185, 0.2105945, 
+      0.2085426, 0.2093321, 0.2157642, 0.230161, 0.2424657, 0.2527601, 
+      0.2596833, 0.2605767, 0.251743, 0.2345774, 0.2186949, 0.2102133, 
+      0.208804, 0.2099326, 0.2175232, 0.2300847, 0.2435895, 0.2554428, 
+      0.2614534, 0.2630322, 0.2531208, 0.2380999, 0.2227041, 0.2116546, 
+      0.2091951, 0.2100595, 0.2192327, 0.2322452, 0.2459539, 0.2574637, 
+      0.2654756, 0.2652414, 0.2546236, 0.2371593, 0.2209351, 0.2105269, 
+      0.2089383, 0.2106287, 0.2186315, 0.2323946, 0.2462126, 0.256966, 
+      0.2630634, 0.2635241, 0.2521529, 0.2369699, 0.2197802, 0.2101604, 
+      0.2086898, 0.2099109, 0.2181743, 0.2330967, 0.245994, 0.2564292, 
+      0.2634324, 0.2634153, 0.2549918, 0.237323, 0.2208854, 0.2105953, 
+      0.2081383, 0.2095932, 0.2168244, 0.2312412, 0.244787, 0.2550615, 
+      0.2624009, 0.2624273, 0.2522097, 0.2344595, 0.2187714, 0.2107309, 
+      0.208405, 0.2093614, 0.2174629, 0.2313699, 0.246277 ;
+
+   time = 51115.5, 51145, 51174.5, 51205, 51235.5, 51266, 51296.5, 51327.5, 
+      51358, 51388.5, 51419, 51449.5, 51480.5, 51510, 51539.5, 51570, 
+      51600.5, 51631, 51661.5, 51692.5, 51723, 51753.5, 51784, 51814.5, 
+      51845.5, 51875, 51904.5, 51935, 51965.5, 51996, 52026.5, 52057.5, 
+      52088, 52118.5, 52149, 52179.5, 52210.5, 52240, 52269.5, 52300, 
+      52330.5, 52361, 52391.5, 52422.5, 52453, 52483.5, 52514, 52544.5, 
+      52575.5, 52605, 52634.5, 52665, 52695.5, 52726, 52756.5, 52787.5, 
+      52818, 52848.5, 52879, 52909.5, 52940.5, 52970, 52999.5, 53030, 
+      53060.5, 53091, 53121.5, 53152.5, 53183, 53213.5, 53244, 53274.5, 
+      53305.5, 53335, 53364.5, 53395, 53425.5, 53456, 53486.5, 53517.5, 
+      53548, 53578.5, 53609, 53639.5, 53670.5, 53700, 53729.5, 53760, 
+      53790.5, 53821, 53851.5, 53882.5, 53913, 53943.5, 53974, 54004.5, 
+      54035.5, 54065, 54094.5, 54125, 54155.5, 54186, 54216.5, 54247.5, 
+      54278, 54308.5, 54339, 54369.5, 54400.5, 54430, 54459.5, 54490, 
+      54520.5, 54551, 54581.5, 54612.5, 54643, 54673.5, 54704, 54734.5, 
+      54765.5, 54795, 54824.5, 54855, 54885.5, 54916, 54946.5, 54977.5, 
+      55008, 55038.5, 55069, 55099.5, 55130.5, 55160, 55189.5, 55220, 
+      55250.5, 55281, 55311.5, 55342.5, 55373, 55403.5, 55434, 55464.5, 
+      55495.5, 55525, 55554.5, 55585, 55615.5, 55646, 55676.5, 55707.5, 
+      55738, 55768.5, 55799, 55829.5, 55860.5, 55890, 55919.5, 55950, 
+      55980.5, 56011, 56041.5, 56072.5, 56103, 56133.5, 56164, 56194.5, 
+      56225.5, 56255, 56284.5, 56315, 56345.5, 56376, 56406.5, 56437.5, 
+      56468, 56498.5, 56529, 56559.5, 56590.5, 56620, 56649.5, 56680, 
+      56710.5, 56741, 56771.5, 56802.5, 56833, 56863.5, 56894, 56924.5 ;
+
+   time_bnds =
+  51100, 51131,
+  51131, 51159,
+  51159, 51190,
+  51190, 51220,
+  51220, 51251,
+  51251, 51281,
+  51281, 51312,
+  51312, 51343,
+  51343, 51373,
+  51373, 51404,
+  51404, 51434,
+  51434, 51465,
+  51465, 51496,
+  51496, 51524,
+  51524, 51555,
+  51555, 51585,
+  51585, 51616,
+  51616, 51646,
+  51646, 51677,
+  51677, 51708,
+  51708, 51738,
+  51738, 51769,
+  51769, 51799,
+  51799, 51830,
+  51830, 51861,
+  51861, 51889,
+  51889, 51920,
+  51920, 51950,
+  51950, 51981,
+  51981, 52011,
+  52011, 52042,
+  52042, 52073,
+  52073, 52103,
+  52103, 52134,
+  52134, 52164,
+  52164, 52195,
+  52195, 52226,
+  52226, 52254,
+  52254, 52285,
+  52285, 52315,
+  52315, 52346,
+  52346, 52376,
+  52376, 52407,
+  52407, 52438,
+  52438, 52468,
+  52468, 52499,
+  52499, 52529,
+  52529, 52560,
+  52560, 52591,
+  52591, 52619,
+  52619, 52650,
+  52650, 52680,
+  52680, 52711,
+  52711, 52741,
+  52741, 52772,
+  52772, 52803,
+  52803, 52833,
+  52833, 52864,
+  52864, 52894,
+  52894, 52925,
+  52925, 52956,
+  52956, 52984,
+  52984, 53015,
+  53015, 53045,
+  53045, 53076,
+  53076, 53106,
+  53106, 53137,
+  53137, 53168,
+  53168, 53198,
+  53198, 53229,
+  53229, 53259,
+  53259, 53290,
+  53290, 53321,
+  53321, 53349,
+  53349, 53380,
+  53380, 53410,
+  53410, 53441,
+  53441, 53471,
+  53471, 53502,
+  53502, 53533,
+  53533, 53563,
+  53563, 53594,
+  53594, 53624,
+  53624, 53655,
+  53655, 53686,
+  53686, 53714,
+  53714, 53745,
+  53745, 53775,
+  53775, 53806,
+  53806, 53836,
+  53836, 53867,
+  53867, 53898,
+  53898, 53928,
+  53928, 53959,
+  53959, 53989,
+  53989, 54020,
+  54020, 54051,
+  54051, 54079,
+  54079, 54110,
+  54110, 54140,
+  54140, 54171,
+  54171, 54201,
+  54201, 54232,
+  54232, 54263,
+  54263, 54293,
+  54293, 54324,
+  54324, 54354,
+  54354, 54385,
+  54385, 54416,
+  54416, 54444,
+  54444, 54475,
+  54475, 54505,
+  54505, 54536,
+  54536, 54566,
+  54566, 54597,
+  54597, 54628,
+  54628, 54658,
+  54658, 54689,
+  54689, 54719,
+  54719, 54750,
+  54750, 54781,
+  54781, 54809,
+  54809, 54840,
+  54840, 54870,
+  54870, 54901,
+  54901, 54931,
+  54931, 54962,
+  54962, 54993,
+  54993, 55023,
+  55023, 55054,
+  55054, 55084,
+  55084, 55115,
+  55115, 55146,
+  55146, 55174,
+  55174, 55205,
+  55205, 55235,
+  55235, 55266,
+  55266, 55296,
+  55296, 55327,
+  55327, 55358,
+  55358, 55388,
+  55388, 55419,
+  55419, 55449,
+  55449, 55480,
+  55480, 55511,
+  55511, 55539,
+  55539, 55570,
+  55570, 55600,
+  55600, 55631,
+  55631, 55661,
+  55661, 55692,
+  55692, 55723,
+  55723, 55753,
+  55753, 55784,
+  55784, 55814,
+  55814, 55845,
+  55845, 55876,
+  55876, 55904,
+  55904, 55935,
+  55935, 55965,
+  55965, 55996,
+  55996, 56026,
+  56026, 56057,
+  56057, 56088,
+  56088, 56118,
+  56118, 56149,
+  56149, 56179,
+  56179, 56210,
+  56210, 56241,
+  56241, 56269,
+  56269, 56300,
+  56300, 56330,
+  56330, 56361,
+  56361, 56391,
+  56391, 56422,
+  56422, 56453,
+  56453, 56483,
+  56483, 56514,
+  56514, 56544,
+  56544, 56575,
+  56575, 56606,
+  56606, 56634,
+  56634, 56665,
+  56665, 56695,
+  56695, 56726,
+  56726, 56756,
+  56756, 56787,
+  56787, 56818,
+  56818, 56848,
+  56848, 56879,
+  56879, 56909,
+  56909, 56940 ;
+  } // group snd_LImon_CESM1-CAM5_historical_r1i1p1_199001-200512
+
+group: snd_LImon_CESM1-FASTCHEM_historical_r1i1p1_199001-200512 {
+  dimensions:
+  	bnds = 2 ;
+  	time = 192 ;
+  variables:
+  	double lat ;
+  		lat:bounds = "lat_bnds" ;
+  		lat:units = "degrees_north" ;
+  		lat:axis = "Y" ;
+  		lat:long_name = "latitude" ;
+  		lat:standard_name = "latitude" ;
+  	double lat_bnds(bnds) ;
+  	double lon ;
+  		lon:bounds = "lon_bnds" ;
+  		lon:units = "degrees_east" ;
+  		lon:axis = "X" ;
+  		lon:long_name = "longitude" ;
+  		lon:standard_name = "longitude" ;
+  	double lon_bnds(bnds) ;
+  	float snd(time) ;
+  		snd:standard_name = "surface_snow_thickness" ;
+  		snd:long_name = "Snow Depth" ;
+  		snd:comment = "SNOWDP unchanged, CMIP5_table_comment: where land over land, this is computed as the mean thickness of snow in the land portion of the grid cell (averaging over the entire land portion, including the snow-free fraction).  Reported as 0.0 where the land fraction is 0." ;
+  		snd:units = "m" ;
+  		snd:original_name = "SNOWDP" ;
+  		snd:cell_methods = "time: mean (interval: 30 days) area: mean where land" ;
+  		snd:cell_measures = "area: areacella" ;
+  		snd:history = "2012-05-17T14:29:34Z altered by CMOR: replaced missing value flag (1e+36) with standard missing value (1e+20)." ;
+  		snd:missing_value = 1.e+20f ;
+  		snd:_FillValue = 1.e+20f ;
+  		snd:associated_files = "baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_landIce_fx_CESM1-FASTCHEM_historical_r0i0p0.nc areacella: areacella_fx_CESM1-FASTCHEM_historical_r0i0p0.nc" ;
+  	double time(time) ;
+  		time:bounds = "time_bnds" ;
+  		time:units = "days since 1850-01-01 00:00:00" ;
+  		time:calendar = "noleap" ;
+  		time:axis = "T" ;
+  		time:long_name = "time" ;
+  		time:standard_name = "time" ;
+  	double time_bnds(time, bnds) ;
+
+  // group attributes:
+  		:institution = "NSF/DOE NCAR (National Center for Atmospheric Research) Boulder, CO, USA" ;
+  		:institute_id = "NSF-DOE-NCAR" ;
+  		:experiment_id = "historical" ;
+  		:source = "CESM1-FASTCHEM" ;
+  		:model_id = "CESM1-FASTCHEM" ;
+  		:forcing = "Sl GHG Vl SS Ds SD BC MD OC Oz AA LU" ;
+  		:parent_experiment_id = "piControl" ;
+  		:parent_experiment_rip = "r1i1p1" ;
+  		:branch_time = 0. ;
+  		:contact = "cesm_data@ucar.edu" ;
+  		:comment = "CESM home page: http://www.cesm.ucar.edu" ;
+  		:references = "TBD" ;
+  		:initialization_method = 1 ;
+  		:physics_version = 1 ;
+  		:tracking_id = "1a30898b-bd4c-455f-998d-eb85be033c6a" ;
+  		:acknowledgements = "The CESM project is supported by the National Science Foundation and the Office of Science (BER) of the U.S. Department of Energy. NCAR is sponsored by the National Science Foundation. Computing resources were provided by the Climate Simulation Laboratory at the NCAR Computational and Information Systems Laboratory (CISL), sponsored by the National Science Foundation and other agencies." ;
+  		:cesm_casename = "b40.20th.1deg.fschem.002" ;
+  		:cesm_repotag = "ccsm4_0_beta55" ;
+  		:cesm_compset = "B20TRCNCHM" ;
+  		:resolution = "f09_g16 (0.9x1.25_gx1v6)" ;
+  		:forcing_note = "Additional information on the external forcings used in this experiment can be found at http://www.cesm.ucar.edu/CMIP5/forcing_information" ;
+  		:processed_by = "strandwg on silver.cgd.ucar.edu at 20120517  -082934.541" ;
+  		:processing_code_information = "Last Changed Rev: 774 Last Changed Date: 2012-05-16 16:39:53 -0600 (Wed, 16 May 2012) Repository UUID: d2181dbe-5796-6825-dc7f-cbd98591f93d" ;
+  		:product = "output" ;
+  		:experiment = "historical" ;
+  		:frequency = "mon" ;
+  		:creation_date = "2012-05-17T14:29:36Z" ;
+  		:history = "Sun Dec 30 18:45:12 2012: ncks -d time,1990-01-01 00:00:0.0, /media/grele_data/wenshan/cesm/atmos-his/snd_LImon_CESM1-FASTCHEM_historical_r1i1p1_185001-200512.nc /media/grele_data/wenshan/cesm/atmos-his/snd_LImon_CESM1-FASTCHEM_historical_r1i1p1_199001-200512.nc\n2012-05-17T14:29:36Z CMOR rewrote data to comply with CF standards and CMIP5 requirements." ;
+  		:Conventions = "CF-1.4" ;
+  		:project_id = "CMIP5" ;
+  		:table_id = "Table LImon (12 January 2012) 429410275cb5466e41180ad9466db1bf" ;
+  		:title = "CESM1-FASTCHEM model output prepared for CMIP5 historical" ;
+  		:parent_experiment = "pre-industrial control" ;
+  		:modeling_realm = "landIce land" ;
+  		:realization = 1 ;
+  		:cmor_version = "2.8.1" ;
+  		:NCO = "20121231" ;
+  data:
+
+   lat = 0 ;
+
+   lat_bnds = -0.46875, 0.46875 ;
+
+   lon = 179.375 ;
+
+   lon_bnds = 178.752170138889, 180 ;
+
+   snd = 0.2750264, 0.2827012, 0.2836201, 0.2763774, 0.2556965, 0.2349145, 
+      0.2234712, 0.2218066, 0.2237734, 0.2314995, 0.2457788, 0.2601142, 
+      0.2716116, 0.2805784, 0.2814254, 0.2727282, 0.2564223, 0.2354449, 
+      0.223776, 0.2213256, 0.2240499, 0.2317501, 0.2467353, 0.2610167, 
+      0.272912, 0.2800703, 0.2806183, 0.2709811, 0.2541679, 0.2351057, 
+      0.2241215, 0.2218101, 0.2238038, 0.2330264, 0.2465664, 0.2609607, 
+      0.2734672, 0.2807797, 0.2816935, 0.2728434, 0.2560812, 0.2344272, 
+      0.2257501, 0.2231447, 0.2256618, 0.2338017, 0.2485296, 0.2631541, 
+      0.2738454, 0.2821576, 0.2848077, 0.2726309, 0.25622, 0.2365833, 
+      0.2243394, 0.2223225, 0.2245991, 0.2321757, 0.247523, 0.261483, 
+      0.270463, 0.2779397, 0.2782156, 0.2700277, 0.2551512, 0.2355088, 
+      0.2250358, 0.2232409, 0.224447, 0.2324292, 0.2463789, 0.260181, 
+      0.2702854, 0.2781136, 0.2786251, 0.2687235, 0.2518046, 0.2330264, 
+      0.2247491, 0.2227924, 0.2249915, 0.232993, 0.2472644, 0.2602928, 
+      0.2687927, 0.2750922, 0.2785683, 0.2708525, 0.2517959, 0.235072, 
+      0.2242447, 0.221228, 0.2225715, 0.2302298, 0.2436894, 0.2583888, 
+      0.2672615, 0.274336, 0.2765679, 0.2675373, 0.252947, 0.2337484, 
+      0.223468, 0.2225862, 0.2247808, 0.2328842, 0.2476225, 0.2629686, 
+      0.2737435, 0.2814075, 0.2808386, 0.2706385, 0.2559216, 0.2358668, 
+      0.2237674, 0.2215497, 0.2237885, 0.2306668, 0.2450456, 0.2596844, 
+      0.2692972, 0.2774424, 0.2796294, 0.2698047, 0.2524751, 0.2342875, 
+      0.2246875, 0.2223008, 0.2244863, 0.231443, 0.246162, 0.2601232, 
+      0.2702578, 0.2776871, 0.2774735, 0.2698084, 0.2528532, 0.2328277, 
+      0.2224298, 0.2205528, 0.2226472, 0.2315841, 0.2467164, 0.2583822, 
+      0.2682005, 0.2759511, 0.278217, 0.2702186, 0.2537842, 0.2342858, 
+      0.2223947, 0.2199988, 0.2225848, 0.229691, 0.2416748, 0.255105, 
+      0.2672125, 0.2748722, 0.2774377, 0.2681693, 0.2483882, 0.2303857, 
+      0.222295, 0.219738, 0.2214673, 0.2295648, 0.242586, 0.2567997, 
+      0.2672747, 0.2748377, 0.2768176, 0.2680204, 0.2507775, 0.2316573, 
+      0.2215038, 0.2195645, 0.2214504, 0.2289246, 0.2421537, 0.2563136, 
+      0.2659799, 0.2741868, 0.2763584, 0.2664885, 0.2485915, 0.2309204, 
+      0.2217642, 0.2195142, 0.2208287, 0.2281606, 0.2420237, 0.2576153 ;
+
+   time = 51115.5, 51145, 51174.5, 51205, 51235.5, 51266, 51296.5, 51327.5, 
+      51358, 51388.5, 51419, 51449.5, 51480.5, 51510, 51539.5, 51570, 
+      51600.5, 51631, 51661.5, 51692.5, 51723, 51753.5, 51784, 51814.5, 
+      51845.5, 51875, 51904.5, 51935, 51965.5, 51996, 52026.5, 52057.5, 
+      52088, 52118.5, 52149, 52179.5, 52210.5, 52240, 52269.5, 52300, 
+      52330.5, 52361, 52391.5, 52422.5, 52453, 52483.5, 52514, 52544.5, 
+      52575.5, 52605, 52634.5, 52665, 52695.5, 52726, 52756.5, 52787.5, 
+      52818, 52848.5, 52879, 52909.5, 52940.5, 52970, 52999.5, 53030, 
+      53060.5, 53091, 53121.5, 53152.5, 53183, 53213.5, 53244, 53274.5, 
+      53305.5, 53335, 53364.5, 53395, 53425.5, 53456, 53486.5, 53517.5, 
+      53548, 53578.5, 53609, 53639.5, 53670.5, 53700, 53729.5, 53760, 
+      53790.5, 53821, 53851.5, 53882.5, 53913, 53943.5, 53974, 54004.5, 
+      54035.5, 54065, 54094.5, 54125, 54155.5, 54186, 54216.5, 54247.5, 
+      54278, 54308.5, 54339, 54369.5, 54400.5, 54430, 54459.5, 54490, 
+      54520.5, 54551, 54581.5, 54612.5, 54643, 54673.5, 54704, 54734.5, 
+      54765.5, 54795, 54824.5, 54855, 54885.5, 54916, 54946.5, 54977.5, 
+      55008, 55038.5, 55069, 55099.5, 55130.5, 55160, 55189.5, 55220, 
+      55250.5, 55281, 55311.5, 55342.5, 55373, 55403.5, 55434, 55464.5, 
+      55495.5, 55525, 55554.5, 55585, 55615.5, 55646, 55676.5, 55707.5, 
+      55738, 55768.5, 55799, 55829.5, 55860.5, 55890, 55919.5, 55950, 
+      55980.5, 56011, 56041.5, 56072.5, 56103, 56133.5, 56164, 56194.5, 
+      56225.5, 56255, 56284.5, 56315, 56345.5, 56376, 56406.5, 56437.5, 
+      56468, 56498.5, 56529, 56559.5, 56590.5, 56620, 56649.5, 56680, 
+      56710.5, 56741, 56771.5, 56802.5, 56833, 56863.5, 56894, 56924.5 ;
+
+   time_bnds =
+  51100, 51131,
+  51131, 51159,
+  51159, 51190,
+  51190, 51220,
+  51220, 51251,
+  51251, 51281,
+  51281, 51312,
+  51312, 51343,
+  51343, 51373,
+  51373, 51404,
+  51404, 51434,
+  51434, 51465,
+  51465, 51496,
+  51496, 51524,
+  51524, 51555,
+  51555, 51585,
+  51585, 51616,
+  51616, 51646,
+  51646, 51677,
+  51677, 51708,
+  51708, 51738,
+  51738, 51769,
+  51769, 51799,
+  51799, 51830,
+  51830, 51861,
+  51861, 51889,
+  51889, 51920,
+  51920, 51950,
+  51950, 51981,
+  51981, 52011,
+  52011, 52042,
+  52042, 52073,
+  52073, 52103,
+  52103, 52134,
+  52134, 52164,
+  52164, 52195,
+  52195, 52226,
+  52226, 52254,
+  52254, 52285,
+  52285, 52315,
+  52315, 52346,
+  52346, 52376,
+  52376, 52407,
+  52407, 52438,
+  52438, 52468,
+  52468, 52499,
+  52499, 52529,
+  52529, 52560,
+  52560, 52591,
+  52591, 52619,
+  52619, 52650,
+  52650, 52680,
+  52680, 52711,
+  52711, 52741,
+  52741, 52772,
+  52772, 52803,
+  52803, 52833,
+  52833, 52864,
+  52864, 52894,
+  52894, 52925,
+  52925, 52956,
+  52956, 52984,
+  52984, 53015,
+  53015, 53045,
+  53045, 53076,
+  53076, 53106,
+  53106, 53137,
+  53137, 53168,
+  53168, 53198,
+  53198, 53229,
+  53229, 53259,
+  53259, 53290,
+  53290, 53321,
+  53321, 53349,
+  53349, 53380,
+  53380, 53410,
+  53410, 53441,
+  53441, 53471,
+  53471, 53502,
+  53502, 53533,
+  53533, 53563,
+  53563, 53594,
+  53594, 53624,
+  53624, 53655,
+  53655, 53686,
+  53686, 53714,
+  53714, 53745,
+  53745, 53775,
+  53775, 53806,
+  53806, 53836,
+  53836, 53867,
+  53867, 53898,
+  53898, 53928,
+  53928, 53959,
+  53959, 53989,
+  53989, 54020,
+  54020, 54051,
+  54051, 54079,
+  54079, 54110,
+  54110, 54140,
+  54140, 54171,
+  54171, 54201,
+  54201, 54232,
+  54232, 54263,
+  54263, 54293,
+  54293, 54324,
+  54324, 54354,
+  54354, 54385,
+  54385, 54416,
+  54416, 54444,
+  54444, 54475,
+  54475, 54505,
+  54505, 54536,
+  54536, 54566,
+  54566, 54597,
+  54597, 54628,
+  54628, 54658,
+  54658, 54689,
+  54689, 54719,
+  54719, 54750,
+  54750, 54781,
+  54781, 54809,
+  54809, 54840,
+  54840, 54870,
+  54870, 54901,
+  54901, 54931,
+  54931, 54962,
+  54962, 54993,
+  54993, 55023,
+  55023, 55054,
+  55054, 55084,
+  55084, 55115,
+  55115, 55146,
+  55146, 55174,
+  55174, 55205,
+  55205, 55235,
+  55235, 55266,
+  55266, 55296,
+  55296, 55327,
+  55327, 55358,
+  55358, 55388,
+  55388, 55419,
+  55419, 55449,
+  55449, 55480,
+  55480, 55511,
+  55511, 55539,
+  55539, 55570,
+  55570, 55600,
+  55600, 55631,
+  55631, 55661,
+  55661, 55692,
+  55692, 55723,
+  55723, 55753,
+  55753, 55784,
+  55784, 55814,
+  55814, 55845,
+  55845, 55876,
+  55876, 55904,
+  55904, 55935,
+  55935, 55965,
+  55965, 55996,
+  55996, 56026,
+  56026, 56057,
+  56057, 56088,
+  56088, 56118,
+  56118, 56149,
+  56149, 56179,
+  56179, 56210,
+  56210, 56241,
+  56241, 56269,
+  56269, 56300,
+  56300, 56330,
+  56330, 56361,
+  56361, 56391,
+  56391, 56422,
+  56422, 56453,
+  56453, 56483,
+  56483, 56514,
+  56514, 56544,
+  56544, 56575,
+  56575, 56606,
+  56606, 56634,
+  56634, 56665,
+  56665, 56695,
+  56695, 56726,
+  56726, 56756,
+  56756, 56787,
+  56787, 56818,
+  56818, 56848,
+  56848, 56879,
+  56879, 56909,
+  56909, 56940 ;
+  } // group snd_LImon_CESM1-FASTCHEM_historical_r1i1p1_199001-200512
+
+group: snd_LImon_CESM1-WACCM_historical_r1i1p1_199001-200512 {
+  dimensions:
+  	bnds = 2 ;
+  	time = 192 ;
+  variables:
+  	double lat ;
+  		lat:bounds = "lat_bnds" ;
+  		lat:units = "degrees_north" ;
+  		lat:axis = "Y" ;
+  		lat:long_name = "latitude" ;
+  		lat:standard_name = "latitude" ;
+  	double lat_bnds(bnds) ;
+  	double lon ;
+  		lon:bounds = "lon_bnds" ;
+  		lon:units = "degrees_east" ;
+  		lon:axis = "X" ;
+  		lon:long_name = "longitude" ;
+  		lon:standard_name = "longitude" ;
+  	double lon_bnds(bnds) ;
+  	float snd(time) ;
+  		snd:standard_name = "surface_snow_thickness" ;
+  		snd:long_name = "Snow Depth" ;
+  		snd:comment = "SNOWDP unchanged, CMIP5_table_comment: where land over land, this is computed as the mean thickness of snow in the land portion of the grid cell (averaging over the entire land portion, including the snow-free fraction).  Reported as 0.0 where the land fraction is 0." ;
+  		snd:units = "m" ;
+  		snd:original_name = "SNOWDP" ;
+  		snd:cell_methods = "time: mean (interval: 30 days) area: mean where land" ;
+  		snd:cell_measures = "area: areacella" ;
+  		snd:history = "2012-05-31T13:28:31Z altered by CMOR: replaced missing value flag (1e+36) with standard missing value (1e+20)." ;
+  		snd:missing_value = 1.e+20f ;
+  		snd:_FillValue = 1.e+20f ;
+  		snd:associated_files = "baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_landIce_fx_CESM1-WACCM_historical_r0i0p0.nc areacella: areacella_fx_CESM1-WACCM_historical_r0i0p0.nc" ;
+  	double time(time) ;
+  		time:bounds = "time_bnds" ;
+  		time:units = "days since 1850-01-01 00:00:00" ;
+  		time:calendar = "noleap" ;
+  		time:axis = "T" ;
+  		time:long_name = "time" ;
+  		time:standard_name = "time" ;
+  	double time_bnds(time, bnds) ;
+
+  // group attributes:
+  		:institution = "NSF/DOE NCAR (National Center for Atmospheric Research) Boulder, CO, USA" ;
+  		:institute_id = "NSF-DOE-NCAR" ;
+  		:experiment_id = "historical" ;
+  		:source = "CESM1-WACCM" ;
+  		:model_id = "CESM1-WACCM" ;
+  		:forcing = "Sl GHG Vl SS Ds SD BC MD OC Oz AA LU" ;
+  		:parent_experiment_id = "piControl" ;
+  		:parent_experiment_rip = "r1i1p1" ;
+  		:branch_time = 1. ;
+  		:contact = "cesm_data@ucar.edu" ;
+  		:comment = "CESM home page: http://www.cesm.ucar.edu" ;
+  		:references = "Marsh, D., et.al. 2012: WACCM4 simulations of atmospheric trends from 1850 to present. See also http://www.cesm.ucar.edu/publications" ;
+  		:initialization_method = 1 ;
+  		:physics_version = 1 ;
+  		:tracking_id = "6e463115-a801-48c5-9545-b48c3a7a180c" ;
+  		:acknowledgements = "The CESM project is supported by the National Science Foundation and the Office of Science (BER) of the U.S. Department of Energy. NCAR is sponsored by the National Science Foundation. Computing resources were provided by the Climate Simulation Laboratory at the NCAR Computational and Information Systems Laboratory (CISL), sponsored by the National Science Foundation and other agencies." ;
+  		:cesm_casename = "b40.20th.track1.2deg.wcm.007" ;
+  		:cesm_repotag = "ccsm4_0_beta52" ;
+  		:cesm_compset = "BW20TRCN" ;
+  		:resolution = "f19_g16 (1.9x2.5_gx1v6)" ;
+  		:forcing_note = "Additional information on the external forcings used in this experiment can be found at http://www.cesm.ucar.edu/CMIP5/forcing_information" ;
+  		:processed_by = "strandwg on mirage3 at 20120531  -072831.809" ;
+  		:processing_code_information = "Last Changed Rev: 820 Last Changed Date: 2012-05-30 15:07:51 -0600 (Wed, 30 May 2012) Repository UUID: d2181dbe-5796-6825-dc7f-cbd98591f93d" ;
+  		:product = "output" ;
+  		:experiment = "historical" ;
+  		:frequency = "mon" ;
+  		:creation_date = "2012-05-31T13:28:32Z" ;
+  		:history = "Sun Dec 30 18:45:22 2012: ncks -d time,1990-01-01 00:00:0.0, /media/grele_data/wenshan/cesm/atmos-his/snd_LImon_CESM1-WACCM_historical_r1i1p1_185001-200512.nc /media/grele_data/wenshan/cesm/atmos-his/snd_LImon_CESM1-WACCM_historical_r1i1p1_199001-200512.nc\n2012-05-31T13:28:32Z CMOR rewrote data to comply with CF standards and CMIP5 requirements." ;
+  		:Conventions = "CF-1.4" ;
+  		:project_id = "CMIP5" ;
+  		:table_id = "Table LImon (12 January 2012) 429410275cb5466e41180ad9466db1bf" ;
+  		:title = "CESM1-WACCM model output prepared for CMIP5 historical" ;
+  		:parent_experiment = "pre-industrial control" ;
+  		:modeling_realm = "landIce land" ;
+  		:realization = 1 ;
+  		:cmor_version = "2.8.1" ;
+  		:NCO = "20121231" ;
+  data:
+
+   lat = 0 ;
+
+   lat_bnds = -0.9375, 0.9375 ;
+
+   lon = 178.75 ;
+
+   lon_bnds = 177.508680555556, 180 ;
+
+   snd = 0.2741823, 0.2824234, 0.2835466, 0.2758278, 0.2592108, 0.2445476, 
+      0.2362207, 0.2327209, 0.2339729, 0.2415667, 0.254081, 0.2668318, 
+      0.2776704, 0.2833323, 0.2829214, 0.2750239, 0.2579146, 0.2433279, 
+      0.2357496, 0.2334602, 0.2348245, 0.2426183, 0.2551862, 0.2685837, 
+      0.2790258, 0.2836361, 0.285545, 0.275064, 0.2617241, 0.2459763, 
+      0.2361272, 0.2328044, 0.2343751, 0.2408614, 0.252481, 0.26551, 
+      0.2758977, 0.2821526, 0.2819755, 0.2731315, 0.258273, 0.2410503, 
+      0.233101, 0.231459, 0.2328015, 0.2411605, 0.2531981, 0.2657311, 
+      0.2766429, 0.2822783, 0.2826326, 0.2742737, 0.2595432, 0.2434109, 
+      0.232832, 0.23026, 0.2317569, 0.2397589, 0.2518112, 0.2638411, 
+      0.2744505, 0.2813324, 0.2845167, 0.2752372, 0.2618941, 0.2432088, 
+      0.2331954, 0.2315808, 0.2335714, 0.2393669, 0.2510756, 0.2645056, 
+      0.2758176, 0.2837704, 0.2843393, 0.2761432, 0.261086, 0.2405482, 
+      0.2322877, 0.2305892, 0.232166, 0.2392834, 0.2511204, 0.2637244, 
+      0.273531, 0.2796766, 0.278335, 0.2708297, 0.2571437, 0.2404203, 
+      0.2339079, 0.2320844, 0.2327563, 0.2394752, 0.25227, 0.263505, 
+      0.2719481, 0.2777592, 0.2775739, 0.2676228, 0.2544996, 0.2402884, 
+      0.233513, 0.2325867, 0.2333694, 0.2403591, 0.2521506, 0.265958, 
+      0.2759033, 0.2837518, 0.2859447, 0.2791762, 0.2582048, 0.2420362, 
+      0.2324883, 0.2315544, 0.2337006, 0.2415399, 0.2543033, 0.2681247, 
+      0.2802576, 0.286882, 0.2876555, 0.2765487, 0.2582408, 0.2420035, 
+      0.2330316, 0.231646, 0.2335648, 0.2413843, 0.2534434, 0.265111, 
+      0.2754072, 0.2803425, 0.2803829, 0.2729563, 0.2566476, 0.2419513, 
+      0.2342586, 0.2317768, 0.2327354, 0.2401332, 0.2524537, 0.2648278, 
+      0.2770981, 0.2830914, 0.2829121, 0.2730316, 0.2579781, 0.2424567, 
+      0.2336262, 0.231944, 0.2337552, 0.2398906, 0.2512689, 0.2645685, 
+      0.2760909, 0.2815068, 0.2858039, 0.2779543, 0.2627673, 0.24641, 
+      0.2342154, 0.2320748, 0.2330589, 0.2381751, 0.2505077, 0.2635954, 
+      0.275107, 0.2803818, 0.2799959, 0.2725537, 0.2562479, 0.2409138, 
+      0.2329532, 0.2315231, 0.2334719, 0.2396966, 0.2507728, 0.2636725, 
+      0.2738827, 0.2803729, 0.2779124, 0.2681367, 0.2545889, 0.2406674, 
+      0.2332186, 0.2320741, 0.233371, 0.2389776, 0.2515268, 0.2643626 ;
+
+   time = 51115.5, 51145, 51174.5, 51205, 51235.5, 51266, 51296.5, 51327.5, 
+      51358, 51388.5, 51419, 51449.5, 51480.5, 51510, 51539.5, 51570, 
+      51600.5, 51631, 51661.5, 51692.5, 51723, 51753.5, 51784, 51814.5, 
+      51845.5, 51875, 51904.5, 51935, 51965.5, 51996, 52026.5, 52057.5, 
+      52088, 52118.5, 52149, 52179.5, 52210.5, 52240, 52269.5, 52300, 
+      52330.5, 52361, 52391.5, 52422.5, 52453, 52483.5, 52514, 52544.5, 
+      52575.5, 52605, 52634.5, 52665, 52695.5, 52726, 52756.5, 52787.5, 
+      52818, 52848.5, 52879, 52909.5, 52940.5, 52970, 52999.5, 53030, 
+      53060.5, 53091, 53121.5, 53152.5, 53183, 53213.5, 53244, 53274.5, 
+      53305.5, 53335, 53364.5, 53395, 53425.5, 53456, 53486.5, 53517.5, 
+      53548, 53578.5, 53609, 53639.5, 53670.5, 53700, 53729.5, 53760, 
+      53790.5, 53821, 53851.5, 53882.5, 53913, 53943.5, 53974, 54004.5, 
+      54035.5, 54065, 54094.5, 54125, 54155.5, 54186, 54216.5, 54247.5, 
+      54278, 54308.5, 54339, 54369.5, 54400.5, 54430, 54459.5, 54490, 
+      54520.5, 54551, 54581.5, 54612.5, 54643, 54673.5, 54704, 54734.5, 
+      54765.5, 54795, 54824.5, 54855, 54885.5, 54916, 54946.5, 54977.5, 
+      55008, 55038.5, 55069, 55099.5, 55130.5, 55160, 55189.5, 55220, 
+      55250.5, 55281, 55311.5, 55342.5, 55373, 55403.5, 55434, 55464.5, 
+      55495.5, 55525, 55554.5, 55585, 55615.5, 55646, 55676.5, 55707.5, 
+      55738, 55768.5, 55799, 55829.5, 55860.5, 55890, 55919.5, 55950, 
+      55980.5, 56011, 56041.5, 56072.5, 56103, 56133.5, 56164, 56194.5, 
+      56225.5, 56255, 56284.5, 56315, 56345.5, 56376, 56406.5, 56437.5, 
+      56468, 56498.5, 56529, 56559.5, 56590.5, 56620, 56649.5, 56680, 
+      56710.5, 56741, 56771.5, 56802.5, 56833, 56863.5, 56894, 56924.5 ;
+
+   time_bnds =
+  51100, 51131,
+  51131, 51159,
+  51159, 51190,
+  51190, 51220,
+  51220, 51251,
+  51251, 51281,
+  51281, 51312,
+  51312, 51343,
+  51343, 51373,
+  51373, 51404,
+  51404, 51434,
+  51434, 51465,
+  51465, 51496,
+  51496, 51524,
+  51524, 51555,
+  51555, 51585,
+  51585, 51616,
+  51616, 51646,
+  51646, 51677,
+  51677, 51708,
+  51708, 51738,
+  51738, 51769,
+  51769, 51799,
+  51799, 51830,
+  51830, 51861,
+  51861, 51889,
+  51889, 51920,
+  51920, 51950,
+  51950, 51981,
+  51981, 52011,
+  52011, 52042,
+  52042, 52073,
+  52073, 52103,
+  52103, 52134,
+  52134, 52164,
+  52164, 52195,
+  52195, 52226,
+  52226, 52254,
+  52254, 52285,
+  52285, 52315,
+  52315, 52346,
+  52346, 52376,
+  52376, 52407,
+  52407, 52438,
+  52438, 52468,
+  52468, 52499,
+  52499, 52529,
+  52529, 52560,
+  52560, 52591,
+  52591, 52619,
+  52619, 52650,
+  52650, 52680,
+  52680, 52711,
+  52711, 52741,
+  52741, 52772,
+  52772, 52803,
+  52803, 52833,
+  52833, 52864,
+  52864, 52894,
+  52894, 52925,
+  52925, 52956,
+  52956, 52984,
+  52984, 53015,
+  53015, 53045,
+  53045, 53076,
+  53076, 53106,
+  53106, 53137,
+  53137, 53168,
+  53168, 53198,
+  53198, 53229,
+  53229, 53259,
+  53259, 53290,
+  53290, 53321,
+  53321, 53349,
+  53349, 53380,
+  53380, 53410,
+  53410, 53441,
+  53441, 53471,
+  53471, 53502,
+  53502, 53533,
+  53533, 53563,
+  53563, 53594,
+  53594, 53624,
+  53624, 53655,
+  53655, 53686,
+  53686, 53714,
+  53714, 53745,
+  53745, 53775,
+  53775, 53806,
+  53806, 53836,
+  53836, 53867,
+  53867, 53898,
+  53898, 53928,
+  53928, 53959,
+  53959, 53989,
+  53989, 54020,
+  54020, 54051,
+  54051, 54079,
+  54079, 54110,
+  54110, 54140,
+  54140, 54171,
+  54171, 54201,
+  54201, 54232,
+  54232, 54263,
+  54263, 54293,
+  54293, 54324,
+  54324, 54354,
+  54354, 54385,
+  54385, 54416,
+  54416, 54444,
+  54444, 54475,
+  54475, 54505,
+  54505, 54536,
+  54536, 54566,
+  54566, 54597,
+  54597, 54628,
+  54628, 54658,
+  54658, 54689,
+  54689, 54719,
+  54719, 54750,
+  54750, 54781,
+  54781, 54809,
+  54809, 54840,
+  54840, 54870,
+  54870, 54901,
+  54901, 54931,
+  54931, 54962,
+  54962, 54993,
+  54993, 55023,
+  55023, 55054,
+  55054, 55084,
+  55084, 55115,
+  55115, 55146,
+  55146, 55174,
+  55174, 55205,
+  55205, 55235,
+  55235, 55266,
+  55266, 55296,
+  55296, 55327,
+  55327, 55358,
+  55358, 55388,
+  55388, 55419,
+  55419, 55449,
+  55449, 55480,
+  55480, 55511,
+  55511, 55539,
+  55539, 55570,
+  55570, 55600,
+  55600, 55631,
+  55631, 55661,
+  55661, 55692,
+  55692, 55723,
+  55723, 55753,
+  55753, 55784,
+  55784, 55814,
+  55814, 55845,
+  55845, 55876,
+  55876, 55904,
+  55904, 55935,
+  55935, 55965,
+  55965, 55996,
+  55996, 56026,
+  56026, 56057,
+  56057, 56088,
+  56088, 56118,
+  56118, 56149,
+  56149, 56179,
+  56179, 56210,
+  56210, 56241,
+  56241, 56269,
+  56269, 56300,
+  56300, 56330,
+  56330, 56361,
+  56361, 56391,
+  56391, 56422,
+  56422, 56453,
+  56453, 56483,
+  56483, 56514,
+  56514, 56544,
+  56544, 56575,
+  56575, 56606,
+  56606, 56634,
+  56634, 56665,
+  56665, 56695,
+  56695, 56726,
+  56726, 56756,
+  56756, 56787,
+  56787, 56818,
+  56818, 56848,
+  56848, 56879,
+  56879, 56909,
+  56909, 56940 ;
+  } // group snd_LImon_CESM1-WACCM_historical_r1i1p1_199001-200512
+}
