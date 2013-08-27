@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.915 2013-08-27 19:40:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.916 2013-08-27 20:14:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7146,6 +7146,8 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
 
   int nbr_out_dmn;          /* [nbr] Number of dimensions to keep in output */
 
+  nco_bool flg_dmn_ins;     /* [flg] Is dimension already inserted in output array  */  
+
   /* Used only by ncpdq , ncwa */
   assert(prg_get() == ncpdq || prg_get() == ncwa);
 
@@ -7175,13 +7177,35 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
             /* Match by ID */
             if(dmn_id==dmn_xtr[idx_xtr_dmn]->id){
 
-              /* Output list comprises non-averaged and, if specified, degenerate dimensions */
-              (*dmn_out)[nbr_out_dmn]=nco_dmn_dpl(dmn_xtr[idx_xtr_dmn]);
-              (void)nco_dmn_xrf(dmn_xtr[idx_xtr_dmn],(*dmn_out)[nbr_out_dmn]);
-              nbr_out_dmn++;
+              flg_dmn_ins=False;
 
+              /* Loop constructed array of averaged output dimensions to see if already inserted  */
+              for(int idx_dmn_out=0;idx_dmn_out<nbr_out_dmn;idx_dmn_out++){
+
+                /* Match by ID */
+                if(dmn_id==(*dmn_out)[idx_dmn_out]->id){
+
+                  if(dbg_lvl_get() >= nco_dbg_dev){
+                    (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,trv_obj.nm_fll);        
+                    (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> already inserted\n",prg_nm_get(),fnc_nm,
+                      trv_obj.var_dmn[idx_var_dmn].dmn_id,trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll);        
+                  } 
+
+                  flg_dmn_ins=True;
+                  break;
+                }  /* Match by ID */
+              } /* Loop constructed array of output dimensions to see if already inserted  */ 
+
+              /* If this dimension is not in output array */
+              if (flg_dmn_ins == False){
+
+                /* Output list comprises non-averaged and, if specified, degenerate dimensions */
+                (*dmn_out)[nbr_out_dmn]=nco_dmn_dpl(dmn_xtr[idx_xtr_dmn]);
+                (void)nco_dmn_xrf(dmn_xtr[idx_xtr_dmn],(*dmn_out)[nbr_out_dmn]);
+                nbr_out_dmn++;
+
+              }  /* If this dimension is not in output array */
             } /* Match by ID */
-
           } /* Search dimensions to be extracted  */
         } /* This dimension is not to be averaged, it is to be kept on output */ 
       } /* Loop variable dimensions */ 

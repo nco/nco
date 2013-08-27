@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.355 2013-08-27 19:56:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.356 2013-08-27 20:14:27 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -38,6 +38,10 @@
    ncwa -O -R -p /ZENDER/tmp -l ~/nco/data in.nc ~/foo.nc
    ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc ~/foo.nc;ncks -H foo.nc
    scp ~/nco/src/nco/ncwa.c esmf.ess.uci.edu:nco/src/nco */
+
+#if 0
+#define TRV_DMN_AVG /* Traversal averaged/keep dimensions (under development) */
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -134,8 +138,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.355 2013-08-27 19:56:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.355 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.356 2013-08-27 20:14:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.356 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
