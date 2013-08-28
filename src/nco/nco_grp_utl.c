@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.923 2013-08-28 04:45:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.924 2013-08-28 05:12:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6788,7 +6788,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 } /* end nco_dmn_lst_ass_var_trv() */
 
 void
-nco_dmn_avg_mk                         /* [fnc] Build dimensions to average array from input dimension names */
+nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa)/re-order(ncpdq) array from input dimension names */
 (const int nc_id,                      /* I [id] netCDF file ID */
  char **obj_lst_in,                    /* I [sng] User-specified list of dimension names (-a names) */
  const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list (size of above array) */
