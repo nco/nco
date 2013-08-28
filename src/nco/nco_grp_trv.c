@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.205 2013-08-02 19:52:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.206 2013-08-28 22:25:17 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -41,7 +41,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
   /* Object (group/variable) list */
 
-  for(idx=0;idx<tbl->nbr;idx++){
+  for(unsigned idx=0;idx<tbl->nbr;idx++){
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
     tbl->lst[idx].rec_dmn_nm_out=(char *)nco_free(tbl->lst[idx].rec_dmn_nm_out);
@@ -79,6 +79,16 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   } 
 
   tbl->lst_dmn=(dmn_trv_sct *)nco_free(tbl->lst_dmn);
+
+  /* Members used only by transformation operators (non-ncks) */
+
+  /* (ncra) Record dimensions */
+  for(int idx=0;idx<tbl->nbr_rec_dmn;idx++){
+    tbl->lmt_rec_dmn[idx]=nco_lmt_free(tbl->lmt_rec_dmn[idx]);
+  }
+
+  /* (ncwa) Degenerate dimensions */
+  tbl->dmn_dgn=nco_dmn_lst_free(tbl->dmn_dgn,tbl->nbr_dmn_dgn); 
 
   tbl=(trv_tbl_sct *)nco_free(tbl);
 } /* end trv_tbl_free() */

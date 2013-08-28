@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.925 2013-08-28 20:25:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.926 2013-08-28 22:25:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1954,6 +1954,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   /* Degenerate dimensions used by ncwa */
   trv_tbl->nbr_dmn_dgn=0;
   trv_tbl->dmn_dgn=NULL;
+
+  /* Record dimensions used by ncra */
+  trv_tbl->nbr_rec_dmn=0;
+  trv_tbl->lmt_rec_dmn=NULL;
 
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
@@ -4958,21 +4962,33 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
        /* ncra */
       if (prg_id == ncra){
 
-        if (trv_tbl->lmt_rec && trv_tbl->lmt_rec->id == var_dim_id) {
-          long cnt;
-          if(var_trv->var_dmn[idx_dmn].is_crd_var){
-            cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
-          } else {
-            cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
-          }
+        if (trv_tbl->lmt_rec_dmn == NULL) {
 
-          /* Set size to 1 */
-          cnt=1;
-          dmn_cnt=1;
-
-          (void)nco_dmn_set_msa(var_dim_id,cnt,trv_tbl); 
+          /* (TO_DO ) */
 
         }
+
+        /* Find record dimension */
+        for(int idx_rec_dmn=0;idx_rec_dmn<trv_tbl->nbr_rec_dmn;idx_rec_dmn++){
+          /* Match by ID */
+          if (trv_tbl->lmt_rec_dmn[idx_rec_dmn]->id == var_dim_id) {
+            long cnt;
+            if(var_trv->var_dmn[idx_dmn].is_crd_var){
+              cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
+            } else {
+              cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
+            }
+
+            /* Set size to 1 */
+            cnt=1;
+            dmn_cnt=1;
+
+            (void)nco_dmn_set_msa(var_dim_id,cnt,trv_tbl); 
+
+            break;
+
+          } /* Match by ID */
+        }  /* Find record dimension */
       } /* ncra */
 
 
@@ -6433,7 +6449,7 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
       /* Get array of record names for object */
       (void)nco_get_rec_dmn_nm(&var_trv,trv_tbl,&rec_dmn_nm);                
 
-      /* Use for record dimension name the first in array */
+      /* Use for record dimension name the first in array (TO_DO) */
       if(rec_dmn_nm->lst){
         rec_dmn_nm_in=(char *)strdup(rec_dmn_nm->lst[0].nm);
       }
@@ -6483,8 +6499,10 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
 
         lmt_rec->id=dmn_id;
 
-        /* Transfer to GTT */
-        trv_tbl->lmt_rec=lmt_rec;
+        /* Add to GTT */
+        trv_tbl->lmt_rec_dmn=(lmt_sct **)nco_realloc(trv_tbl->lmt_rec_dmn,(trv_tbl->nbr_rec_dmn+1)*sizeof(lmt_sct *));
+        trv_tbl->lmt_rec_dmn[trv_tbl->nbr_rec_dmn]=lmt_rec;
+        trv_tbl->nbr_rec_dmn++;
 
 #ifndef ENABLE_UDUNITS
         if(lmt_rec->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.334 2013-08-28 21:05:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.335 2013-08-28 22:25:18 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -138,7 +138,7 @@ main(int argc,char **argv)
   nco_bool REC_SRD_LST=False; /* [flg] Record belongs to last stride of current file */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
-  nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
 
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.334 2013-08-28 21:05:36 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.334 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.335 2013-08-28 22:25:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.335 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -206,7 +206,7 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_dmn_fl;
-  int nbr_dmn_xtr;
+  int nbr_dmn_xtr=0;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
@@ -1309,6 +1309,7 @@ main(int argc,char **argv)
     var_fix_out=(var_sct **)nco_free(var_fix_out);
 
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
+    (void)trv_tbl_free(trv_tbl);
   } /* !flg_cln */
 
   /* End timer */ 
