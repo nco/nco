@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.835 2013-08-28 20:11:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.836 2013-08-28 22:09:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6389,6 +6389,11 @@ specified, always implement the @code{rmssdn} procedure when asked.
 
 @c 20130827: Fedora Core 19 (FC19) breaks here with "./nco.texi:6389: Missing dollarsign inserted."
 @c Ubuntu continues to build nco.texi fine, and must be used to produce nco.pdf
+@c Problem is related to number of dollarsigns used in TeX mode
+@c Adding a dollarsign character right breaks Ubuntu builds too
+@c Hence I must carefully spell-out the word dollarsign instead
+@c 20130829: Making many smaller TeX environments does not solve the problem
+@c Breakage always occurs near here
 The square root of the mean of~$\xxx$ (@code{-y sqrt}) is 
 $$
 \bar \xxx_{\jjj} = \sqrt{ {\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
