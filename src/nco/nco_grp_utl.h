@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.364 2013-08-28 05:12:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.365 2013-08-28 20:25:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -566,17 +566,6 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
-
-nco_bool                              /* O [flg] True if variable is in scope of dimension */
-nco_var_dmn_scp                       /* [fnc] Is variable in dimension scope and has dimensions that match unique dimension GTT */
-(const trv_sct * const var_trv,       /* I [sct] GTT Object Variable */
- const dmn_trv_sct * const dmn_trv);  /* I [sct] GTT unique dimension */
-
-nm_id_sct *                           /* O [sct] Dimension list */
-nco_lst_dmn_mk_trv                    /* [fnc] Build Name-ID array from input dimension names */
-(char **dmn_lst_in,                   /* I [sng] User-specified list of dimension names */
- const int nbr_dmn_in,                /* I [nbr] Total number of dimensions in input list */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 void
 nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
