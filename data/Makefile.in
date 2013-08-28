@@ -15,7 +15,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.in,v 1.89 2013-08-28 23:27:29 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.in,v 1.90 2013-08-28 23:36:34 pvicente Exp $ -*-makefile-*-
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -436,7 +436,7 @@ snd_ncwa.nc : snd_ncwa.cdl
 snc_grp.nc : snc_grp.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
-snc_grp.nc : snc_grp.cdl
+snd_grp.nc : snd_grp.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 snc.nc : snc.cdl

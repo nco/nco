@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.22 2013-08-28 23:27:29 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.23 2013-08-28 23:36:34 pvicente Exp $ -*-makefile-*-
 
 test_data = big.nc in.nc in_rec_zero.nc
 
@@ -41,7 +41,7 @@ snd_ncwa.nc : snd_ncwa.cdl
 snc_grp.nc : snc_grp.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
-snc_grp.nc : snc_grp.cdl
+snd_grp.nc : snd_grp.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 snc.nc : snc.cdl
