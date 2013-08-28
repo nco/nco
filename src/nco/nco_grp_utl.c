@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.918 2013-08-27 23:26:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.919 2013-08-28 00:23:23 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6657,7 +6657,6 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
 
   /* Check valid input (nbr_dmn_in == nbr_dmn_out ) */
   if (nbr_dmn_in != nbr_dmn_out){
-
     (void)fprintf(stderr,"%s: ERROR input dimensions not valid\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   }  /* Check valid input */
@@ -6665,7 +6664,6 @@ nco_lst_dmn_mk_trv                  /* [fnc] Build Name-ID array from input dime
   return dmn_lst;
 
 } /* nco_lst_dmn_mk_trv() */
-
 
 void
 nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq, ncwa) */

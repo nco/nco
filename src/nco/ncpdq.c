@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.352 2013-08-01 21:06:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.353 2013-08-28 00:23:23 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.352 2013-08-01 21:06:16 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.352 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.353 2013-08-28 00:23:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.353 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -666,7 +666,6 @@ main(int argc,char **argv)
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   /* Determine and set new dimensionality in metadata of each re-ordered variable */
@@ -694,11 +693,6 @@ main(int argc,char **argv)
 
   /* Define dimensions, extracted groups, variables, and attributes in output file. NOTE. record name is NULL */
   (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc,(char *)NULL,trv_tbl);
-
-  /* Copy global attributes */
-#ifdef COPY_ROOT_GLOBAL_ATTRIBUTES
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); /* Superceded by nco_xtr_dfn() */
-#endif /* !COPY_ROOT_GLOBAL_ATTRIBUTES */
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);

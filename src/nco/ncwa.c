@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.357 2013-08-27 21:47:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.358 2013-08-28 00:23:23 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -30,8 +30,7 @@
    University of California, Irvine
    Irvine, CA 92697-3100 */
 
-/* fxm: 19981202 -n and -W switches were deactivated but code left in place
-   while I rethink the normalization switches */
+/* fxm: 19981202 deactivated -n and -W switches and code left in place to rethink normalization switches */
 
 /* Usage:
    ncwa -O -a lon ~/nco/data/in.nc ~/foo.nc
@@ -138,8 +137,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.357 2013-08-27 21:47:34 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.357 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.358 2013-08-28 00:23:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.358 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -792,16 +791,12 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
   if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
-  /* Copy all global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+  /* Define dimensions, extracted groups, variables, and attributes in output file.  */
+  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-
-  /* Define dimensions, extracted groups, variables, and attributes in output file.  */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Add new missing values to output file while in define mode */
   if(msk_nm){

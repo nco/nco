@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.259 2013-08-08 17:50:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.260 2013-08-28 00:23:23 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.259 2013-08-08 17:50:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.259 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.260 2013-08-28 00:23:23 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.260 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -609,10 +609,6 @@ main(int argc,char **argv)
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
-  /* Copy global attributes */
-#ifdef COPY_ROOT_GLOBAL_ATTRIBUTES
-  (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True); /* Superceded by nco_xtr_dfn() */
-#endif
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
@@ -631,7 +627,6 @@ main(int argc,char **argv)
   /* Assign zero to start and unity to stride vectors in output variables */
   (void)nco_var_srd_srt_set(var_out,xtr_nbr);
 
-
   /* Copy variable data for non-processed variables */
   (void)nco_cpy_fix_var_trv(in_id_1,out_id,gpe,trv_tbl);  
 
@@ -649,8 +644,6 @@ main(int argc,char **argv)
     /* Turn arrival point into pseudo-variable */
     val_gnr_unn.d=ntp_val_out; /* Generic container for arrival point or weight */
     ntp_var_out=scl_mk_var(val_gnr_unn,NC_DOUBLE);
-
-
 
     int grp_id_1;      /* [ID] Group ID */
     int grp_id_2;      /* [ID] Group ID */
@@ -689,9 +682,6 @@ main(int argc,char **argv)
     /* Read */
     (void)nco_msa_var_get_trv(grp_id_1,ntp_1,var_trv_1);
     (void)nco_msa_var_get_trv(grp_id_2,ntp_2,var_trv_2);
-
-
-
 
     /* Currently, only support scalar variables */
     if(ntp_1->sz > 1 || ntp_2->sz > 1){
