@@ -1,3 +1,7 @@
+2013-08-28 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add in_grp_3.cdl group data for ncra testing
+	
 2013-08-27 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncwa test #41 Retain degenerate dimensions (one variable)

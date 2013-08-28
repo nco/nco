@@ -487,6 +487,8 @@ netcdf in_grp_3 {
   time231=unlimited;
   time232=unlimited;
   variables:
+  double time231(time231);
+  double time232(time232);
   int one_dmn_rec_var1(time231);
   int one_dmn_rec_var2(time232);
   data:
