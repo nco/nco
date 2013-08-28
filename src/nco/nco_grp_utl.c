@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.919 2013-08-28 00:23:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.920 2013-08-28 02:04:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6929,7 +6929,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average arra
               for(int idx_dmn_out=0;idx_dmn_out<nbr_avg_dmn;idx_dmn_out++){
 
                 /* Match by ID */
-                if(dmn_id==(*dmn_avg)[idx_dmn_out]->id){
+                if(dmn_id == (*dmn_avg)[idx_dmn_out]->id){
 
                   if(dbg_lvl_get() >= nco_dbg_dev){
                     (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,trv_obj.nm_fll);        
@@ -7058,11 +7058,12 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
             int dmn_id=trv_obj.var_dmn[idx_var_dmn].dmn_id;
 
             /* Match by ID */
-            if(dmn_id==dmn_xtr[idx_xtr_dmn]->id){
+            if(dmn_id == dmn_xtr[idx_xtr_dmn]->id){
 
+              /* Assume dimension is not yet inserted in array */
               flg_dmn_ins=False;
 
-              /* Loop constructed array of averaged output dimensions to see if already inserted  */
+              /* Loop constructed array of output dimensions to see if already inserted  */
               for(int idx_dmn_out=0;idx_dmn_out<nbr_out_dmn;idx_dmn_out++){
 
                 /* Match by ID */
@@ -7074,6 +7075,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
                       trv_obj.var_dmn[idx_var_dmn].dmn_id,trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll);        
                   } 
 
+                  /* Mark as inserted in array */
                   flg_dmn_ins=True;
                   break;
                 }  /* Match by ID */
@@ -7089,6 +7091,11 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
                   /* Cut degenerate dimensions down to size */
                   (*dmn_out)[nbr_out_dmn]->cnt=1L;
                   (*dmn_out)[nbr_out_dmn]->srt=(*dmn_out)[nbr_out_dmn]->end=0L;
+
+                  /* Broadcast retain degenerate using dimension ID; variables share dimensions */
+
+
+
                 } /* !flg_rdd */
                 nbr_out_dmn++;
 
@@ -7122,7 +7129,7 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average for all dimens
 (const int dmn_id,                     /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Create list of dimensions from list of dimension name strings (function based in nco_xtr_mk() ) */
+  /* Purpose: Mark flag average for all dimensions that have the input ID */
 
   const char fnc_nm[]="nco_dmn_id_mk()"; /* [sng] Function name  */
 
