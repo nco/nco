@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.58 2013-08-28 00:23:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.59 2013-08-28 01:51:01 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -59,12 +59,12 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
 {
   /* 20120706 Initial version discards const, triggers compiler warnings
      20120803 Kludge with strdup() to try to keep const intact. Fail.
-     20130827 Remove superfluous (char *) cast */
+     20130827 Add (char *) cast (compile error in MSVC) */
   char *hys_ptr; /* Haystack pointer */
   char *startn=0;
   char *np=0;
   /* Loop exits on NUL */
-  for(hys_ptr=sng_1;*hys_ptr;hys_ptr++){
+  for(hys_ptr=(char *)sng_1;*hys_ptr;hys_ptr++){
     if(np){
       if(toupper(*hys_ptr) == toupper(*np)){
 	if(!*++np) return startn;
@@ -72,7 +72,7 @@ strcasestr /* [fnc] Lexicographical case-insensitive string search */
 	np=0;
       } /* endif uppercases match */
     }else if(toupper(*hys_ptr) == toupper(*sng_2)){
-      np=sng_2+1;
+      np=(char *)sng_2+1;
       startn=hys_ptr;
     } /* else if */
   } /* end loop over haystack */
