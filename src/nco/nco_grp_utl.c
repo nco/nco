@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.921 2013-08-28 02:34:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.922 2013-08-28 03:15:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4917,6 +4917,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
         nco_bool found_dim=False;
 
+
         /* Degenerated dimensions */
         for(int idx_dmn_dgn=0;idx_dmn_dgn<trv_tbl->nbr_dmn_dgn;idx_dmn_dgn++){
 
@@ -4928,7 +4929,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
             dmn_cnt=trv_tbl->dmn_dgn[idx_dmn_dgn]->cnt;
 
             if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s dimension dgn %s size=%li\n",prg_nm_get(),fnc_nm,
+              (void)fprintf(stdout,"%s: DEBUG %s degenerated dimension %s size=%li\n",prg_nm_get(),fnc_nm,
                 dmn_trv->nm_fll,dmn_cnt);
             } /* endif dbg */
 
@@ -4936,6 +4937,16 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
           } /* Compare ID */
         } /* Degenerated dimensions */
+
+
+
+        if (var_trv->var_dmn[idx_dmn].flg_rdd == True ){
+
+          found_dim=True;
+          dmn_cnt=1;
+
+        }
+
 
         if (found_dim == False){
           DEFINE_DIM[idx_dmn]=False;
@@ -4962,8 +4973,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           (void)nco_dmn_set_msa(var_dim_id,cnt,trv_tbl); 
 
         }
-
-
       } /* ncra */
 
 
@@ -6783,6 +6792,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average arra
 (const int nc_id,                      /* I [id] netCDF file ID */
  char **obj_lst_in,                    /* I [sng] User-specified list of dimension names (-a names) */
  const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list (size of above array) */
+ const nco_bool flg_rdd,               /* I [flg] Retain degenerate dimensions */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  dmn_sct ***dmn_avg,                   /* O [sct] Array of dimensions to average */
  int *nbr_dmn_avg)                     /* O [nbr] Number of dimensions to average (size of above array) */
@@ -6989,7 +6999,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average arra
                 nbr_avg_dmn++;
 
                 /* Broadcast flag average/keep using dimension ID; variables share dimensions */
-                (void)nco_dmn_id_mk(dmn_id,True,False,trv_tbl);
+                (void)nco_dmn_id_mk(dmn_id,flg_rdd,trv_tbl);
 
               }  /* If this dimension is not in output array */
             } /* Must meet necessary flags */
@@ -7050,8 +7060,8 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<trv_obj.nbr_dmn;idx_var_dmn++){
 
-        /* This dimension is not to be averaged, it is to be kept on output, or, to be retained as a degenerate dimension (size 1) */
-        if (trv_obj.var_dmn[idx_var_dmn].flg_dmn_avg_out == False || flg_rdd) {
+        /* This dimension is not to be averaged, it is to be kept on output */
+        if (trv_obj.var_dmn[idx_var_dmn].flg_dmn_avg_out == False) {
 
           /* Search dimensions to be extracted  */
           for(int idx_xtr_dmn=0;idx_xtr_dmn<nbr_dmn_xtr;idx_xtr_dmn++){
@@ -7094,9 +7104,6 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
                   (*dmn_out)[nbr_out_dmn]->cnt=1L;
                   (*dmn_out)[nbr_out_dmn]->srt=(*dmn_out)[nbr_out_dmn]->end=0L;
 
-                  /* Broadcast retain degenerate using dimension ID; variables share dimensions */
-                  (void)nco_dmn_id_mk(dmn_id,False,True,trv_tbl);
-
                 } /* !flg_rdd */
                 nbr_out_dmn++;
 
@@ -7126,24 +7133,17 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
 
 
 void
-nco_dmn_id_mk                          /* [fnc] Mark either flag average OR flag degenerate for all dimensions that have the input ID */
+nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally flag degenerate for all dimensions that have the input ID */
 (const int dmn_id,                     /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
- const nco_bool flg_dmn_avg_out,       /* I [flg] Mark flag average dimension */
  const nco_bool flg_rdd,               /* I [flg] Mark flag retain degenerate dimension */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Mark flag average OR flag retain degenerate dimension for all dimensions that have the input ID */
 
-  /* NOTE: This function has 2 distinct purposes, mutually exclusive: mark either the average flag OR retain degenerate dimension flag,
-  the reason for both functionalites to be in the same function is just to save some real estate function space */
-
   const char fnc_nm[]="nco_dmn_id_mk()"; /* [sng] Function name  */
 
   /* Used only by ncpdq , ncwa */
   assert(prg_get() == ncpdq || prg_get() == ncwa);
-
-  if (flg_dmn_avg_out == True)  assert(flg_rdd == False);
-  if (flg_dmn_avg_out == False) assert(flg_rdd == True);
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -7160,15 +7160,17 @@ nco_dmn_id_mk                          /* [fnc] Mark either flag average OR flag
         if (dmn_id == trv_obj.var_dmn[idx_var_dmn].dmn_id){
 
           /* Change flag to mark that dimension is to be averaged instead of to keep on output */
-          if (flg_dmn_avg_out == True) trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg_out=True;
+          trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg_out=True;
 
           /* Change flag to retain degenerate dimension */
-          if (flg_rdd == True) trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_rdd=True;
+          if (flg_rdd == True){
+            trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_rdd=True;
+          }
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s variable <%s>: ",prg_nm_get(),fnc_nm,trv_obj.nm_fll);        
             (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> marked for average\n",prg_nm_get(),fnc_nm,
-              trv_obj.var_dmn[idx_var_dmn].dmn_id,trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll);        
+              trv_obj.var_dmn[idx_var_dmn].dmn_id,trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll);
           } 
 
         } /* Match ID */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.358 2013-08-28 00:23:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.359 2013-08-28 03:15:21 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.358 2013-08-28 00:23:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.358 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.359 2013-08-28 03:15:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.359 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -743,7 +743,7 @@ main(int argc,char **argv)
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));
 
   /* Create list of dimensions to average */
-  (void)nco_dmn_avg_mk(in_id,dmn_avg_lst_in,dmn_avg_nbr,trv_tbl,&dmn_avg,&dmn_avg_nbr);
+  (void)nco_dmn_avg_mk(in_id,dmn_avg_lst_in,dmn_avg_nbr,flg_rdd,trv_tbl,&dmn_avg,&dmn_avg_nbr);
 
   /* Create list of dimensions to keep on output */
   (void)nco_dmn_out_mk(dim,nbr_dmn_xtr,flg_rdd,trv_tbl,&dmn_out,&nbr_dmn_out);
