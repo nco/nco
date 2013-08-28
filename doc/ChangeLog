@@ -1,6 +1,8 @@
 2013-08-27 Pedro Vicente  <pvicente@uci.edu>
 
-	* Add ncwa test #42 Retain degenerate dimensions
+	* Add ncwa test #41 Retain degenerate dimensions (one variable)
+	
+	* Add ncwa test #42 Retain degenerate dimensions (all variables)
 
 	* nco_dmn_avg_mk() Build dimensions to average array from input dimension names
 

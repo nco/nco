@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.314 2013-08-27 23:10:39 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.315 2013-08-28 04:45:27 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3675,13 +3675,23 @@ print "\n";
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -b -v lon $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -v lon %tmp_fl_00%";
-    $dsc_sng="Retain degenerate dimensions";
+    $dsc_sng="Retain degenerate dimensions (one variable)";
     $tst_cmd[2]="lon[0]=135";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
-
+	
 #ncwa #42
+    
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a lon -b  $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -v lon %tmp_fl_00%";
+    $dsc_sng="Retain degenerate dimensions (all variables)";
+    $tst_cmd[2]="lon[0]=135";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
+
+#ncwa #43
 #NEW NCO 4.3.3
 #same as #ncwa #25
 #ncwa -h -O -y min -g g10 -v three_dmn_rec_var in_grp.nc out.nc
@@ -3700,7 +3710,7 @@ print "\n";
     $#tst_cmd=0; # Reset array
 
 
-#ncwa #43
+#ncwa #44
 #NEW NCO 4.3.3
 #same as #ncwa #27
 # ncwa -h -O -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc out.nc
@@ -3717,7 +3727,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
 
-#ncwa #44
+#ncwa #45
 #NEW NCO 4.3.3
 #same as #ncwa #28
 # ncwa -h -O  -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc out.nc
@@ -3734,7 +3744,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
 
-#ncwa #45
+#ncwa #46
 #NEW NCO 4.3.3
 #same as #ncwa #33
 # ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy  in_grp_3.nc out.nc

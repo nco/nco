@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.922 2013-08-28 03:15:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.923 2013-08-28 04:45:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7030,7 +7030,6 @@ void
 nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep on output */
 (dmn_sct **dmn_xtr,                    /* I [sct] Array of dimensions associated with variables to be extracted  */
  const int nbr_dmn_xtr,                /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
- const nco_bool flg_rdd,               /* I [flg] Retain degenerate dimensions */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
  dmn_sct ***dmn_out,                   /* O [sct] Array of dimensions on ouput */
  int *nbr_dmn_out)                     /* O [nbr] Number of dimensions on output (size of above array) */
@@ -7099,12 +7098,6 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
                 /* Output list comprises non-averaged and, if specified, degenerate dimensions */
                 (*dmn_out)[nbr_out_dmn]=nco_dmn_dpl(dmn_xtr[idx_xtr_dmn]);
                 (void)nco_dmn_xrf(dmn_xtr[idx_xtr_dmn],(*dmn_out)[nbr_out_dmn]);
-                if(flg_rdd){
-                  /* Cut degenerate dimensions down to size */
-                  (*dmn_out)[nbr_out_dmn]->cnt=1L;
-                  (*dmn_out)[nbr_out_dmn]->srt=(*dmn_out)[nbr_out_dmn]->end=0L;
-
-                } /* !flg_rdd */
                 nbr_out_dmn++;
 
               }  /* If this dimension is not in output array */
