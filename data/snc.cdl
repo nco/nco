@@ -1,0 +1,133 @@
+netcdf snc {
+dimensions:
+	time = 192 ;
+variables:
+	double lat ;
+		lat:bounds = "lat_bnds" ;
+		lat:units = "degrees_north" ;
+		lat:axis = "Y" ;
+		lat:long_name = "latitude" ;
+		lat:standard_name = "latitude" ;
+	double lon ;
+		lon:bounds = "lon_bnds" ;
+		lon:units = "degrees_east" ;
+		lon:axis = "X" ;
+		lon:long_name = "longitude" ;
+		lon:standard_name = "longitude" ;
+	float snc(time) ;
+		snc:standard_name = "surface_snow_area_fraction" ;
+		snc:long_name = "Snow Area Fraction" ;
+		snc:comment = "FSNO, CMIP5_table_comment: Fraction of each grid cell that is occupied by snow that rests on land portion of cell." ;
+		snc:units = "%" ;
+		snc:original_name = "FSNO" ;
+		snc:cell_methods = "time: mean (interval: 30 days)" ;
+		snc:cell_measures = "area: areacella" ;
+		snc:history = "2012-04-06T21:56:45Z altered by CMOR: replaced missing value flag (1e+36) with standard missing value (1e+20)." ;
+		snc:missing_value = 1.e+20f ;
+		snc:_FillValue = 1.e+20f ;
+		snc:associated_files = "baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_landIce_fx_CCSM4_historical_r0i0p0.nc areacella: areacella_fx_CCSM4_historical_r0i0p0.nc" ;
+	double time(time) ;
+		time:bounds = "time_bnds" ;
+		time:units = "days since 1850-01-01 00:00:00" ;
+		time:calendar = "noleap" ;
+		time:axis = "T" ;
+		time:long_name = "time" ;
+		time:standard_name = "time" ;
+
+// global attributes:
+		:institution = "NCAR (National Center for Atmospheric Research) Boulder, CO, USA" ;
+		:institute_id = "NCAR" ;
+		:experiment_id = "historical" ;
+		:source = "CCSM4" ;
+		:model_id = "CCSM4" ;
+		:forcing = "Sl GHG Vl SS Ds SD BC MD OC Oz AA LU" ;
+		:parent_experiment_id = "piControl" ;
+		:parent_experiment_rip = "r1i1p1" ;
+		:branch_time = 937. ;
+		:contact = "cesm_data@ucar.edu" ;
+		:references = "Gent P. R., et.al. 2011: The Community Climate System Model version 4. J. Climate, doi: 10.1175/2011JCLI4083.1" ;
+		:initialization_method = 1 ;
+		:physics_version = 1 ;
+		:tracking_id = "a905e243-27f1-4172-93f0-820be7cbecf0" ;
+		:acknowledgements = "The CESM project is supported by the National Science Foundation and the Office of Science (BER) of the U.S. Department of Energy. NCAR is sponsored by the National Science Foundation. Computing resources were provided by the Climate Simulation Laboratory at the NCAR Computational and Information Systems Laboratory (CISL), sponsored by the National Science Foundation and other agencies." ;
+		:cesm_casename = "b40.20th.track1.1deg.008" ;
+		:cesm_repotag = "ccsm4_0_beta43" ;
+		:cesm_compset = "B20TRCN" ;
+		:resolution = "f09_g16 (0.9x1.25_gx1v6)" ;
+		:forcing_note = "Additional information on the external forcings used in this experiment can be found at http://www.cesm.ucar.edu/CMIP5/forcing_information" ;
+		:processed_by = "strandwg on silver.cgd.ucar.edu at 20120406  -155645.062" ;
+		:processing_code_information = "Last Changed Rev: 677 Last Changed Date: 2012-04-05 11:56:11 -0600 (Thu, 05 Apr 2012) Repository UUID: d2181dbe-5796-6825-dc7f-cbd98591f93d" ;
+		:product = "output" ;
+		:experiment = "historical" ;
+		:frequency = "mon" ;
+		:creation_date = "2012-04-06T21:56:48Z" ;
+		:history = "Wed Aug 28 15:35:58 2013: ncks -4 -O -v snc snc_LImon_CCSM4_historical_r1i1p1_199001-200512.nc snc.nc\nSun Dec 30 18:36:26 2012: ncks -d time,1990-01-01 00:00:0.0, /media/grele_data/wenshan/cesm/historical-exp/snc_LImon_CCSM4_historical_r1i1p1_185001-200512.nc /media/grele_data/wenshan/cesm/historical-exp/snc_LImon_CCSM4_historical_r1i1p1_199001-200512.nc\n2012-04-06T21:56:48Z CMOR rewrote data to comply with CF standards and CMIP5 requirements." ;
+		:Conventions = "CF-1.4" ;
+		:project_id = "CMIP5" ;
+		:table_id = "Table LImon (12 January 2012) 429410275cb5466e41180ad9466db1bf" ;
+		:title = "CCSM4 model output prepared for CMIP5 historical" ;
+		:parent_experiment = "pre-industrial control" ;
+		:modeling_realm = "landIce land" ;
+		:realization = 1 ;
+		:cmor_version = "2.8.1" ;
+		:NCO = "20130828" ;
+		:nco_openmp_thread_number = 1 ;
+data:
+
+ lat = 0 ;
+
+ lon = 179.375 ;
+
+ snc = 61.37692, 60.05015, 58.4291, 52.22442, 45.59546, 38.34413, 33.19439, 
+    32.58879, 36.96843, 46.77308, 55.4712, 60.32861, 61.04955, 60.44368, 
+    57.63164, 52.03623, 44.6402, 37.95646, 33.34058, 32.47639, 35.50756, 
+    46.31984, 53.72991, 58.95955, 60.95681, 61.11084, 57.52742, 51.32803, 
+    45.14587, 40.29467, 33.73788, 32.70026, 37.01862, 45.55758, 54.71373, 
+    59.162, 60.49402, 60.44479, 58.98337, 52.96589, 45.39301, 38.34033, 
+    33.43645, 33.21604, 36.51387, 46.52538, 54.32355, 58.58232, 60.87978, 
+    61.41938, 57.53942, 51.85412, 45.21275, 39.17278, 34.27933, 33.29999, 
+    38.14444, 45.14943, 53.41065, 59.09114, 60.27861, 59.60844, 56.82986, 
+    51.97681, 45.15635, 39.0167, 33.56191, 32.95903, 37.38646, 46.47746, 
+    55.41323, 58.8252, 60.78623, 60.38117, 57.39877, 51.70517, 45.06911, 
+    38.33918, 33.48069, 32.87983, 35.75778, 45.74866, 54.30301, 59.07576, 
+    61.49643, 60.46125, 58.06967, 52.55259, 45.21442, 38.55085, 33.19324, 
+    32.48174, 36.98698, 45.74392, 54.11422, 59.98495, 61.07553, 60.54321, 
+    57.67136, 52.29048, 45.42659, 38.75619, 34.01928, 33.5902, 36.57975, 
+    46.28279, 53.94093, 59.1823, 59.90117, 60.60514, 58.14232, 51.95426, 
+    45.31351, 38.22518, 33.69085, 32.81738, 36.91416, 45.93295, 53.72042, 
+    58.92241, 60.5704, 59.9584, 57.54922, 51.54271, 44.41114, 37.51797, 
+    33.28756, 32.99597, 34.97438, 43.05939, 53.61963, 58.91531, 60.3945, 
+    61.40278, 57.09048, 48.77563, 43.52256, 36.93203, 33.11032, 32.41613, 
+    35.42476, 46.7383, 54.30549, 59.32918, 61.34241, 60.01548, 57.78593, 
+    51.88309, 44.22643, 36.99844, 32.54312, 32.08076, 35.33289, 43.7334, 
+    52.8833, 59.13483, 60.68259, 59.88637, 56.71269, 50.60006, 44.79, 
+    38.0248, 32.8781, 32.3756, 36.24483, 44.34415, 54.8398, 59.24604, 
+    60.13624, 60.5146, 57.35886, 51.2986, 44.53012, 38.94698, 32.69814, 
+    32.66948, 36.62969, 45.27304, 53.99754, 57.90419, 61.03916, 59.86766, 
+    55.66969, 51.11906, 44.3401, 38.34132, 33.50579, 32.66288, 36.10672, 
+    46.07471, 53.37682, 59.08301 ;
+
+ time = 51115.5, 51145, 51174.5, 51205, 51235.5, 51266, 51296.5, 51327.5, 
+    51358, 51388.5, 51419, 51449.5, 51480.5, 51510, 51539.5, 51570, 51600.5, 
+    51631, 51661.5, 51692.5, 51723, 51753.5, 51784, 51814.5, 51845.5, 51875, 
+    51904.5, 51935, 51965.5, 51996, 52026.5, 52057.5, 52088, 52118.5, 52149, 
+    52179.5, 52210.5, 52240, 52269.5, 52300, 52330.5, 52361, 52391.5, 
+    52422.5, 52453, 52483.5, 52514, 52544.5, 52575.5, 52605, 52634.5, 52665, 
+    52695.5, 52726, 52756.5, 52787.5, 52818, 52848.5, 52879, 52909.5, 
+    52940.5, 52970, 52999.5, 53030, 53060.5, 53091, 53121.5, 53152.5, 53183, 
+    53213.5, 53244, 53274.5, 53305.5, 53335, 53364.5, 53395, 53425.5, 53456, 
+    53486.5, 53517.5, 53548, 53578.5, 53609, 53639.5, 53670.5, 53700, 
+    53729.5, 53760, 53790.5, 53821, 53851.5, 53882.5, 53913, 53943.5, 53974, 
+    54004.5, 54035.5, 54065, 54094.5, 54125, 54155.5, 54186, 54216.5, 
+    54247.5, 54278, 54308.5, 54339, 54369.5, 54400.5, 54430, 54459.5, 54490, 
+    54520.5, 54551, 54581.5, 54612.5, 54643, 54673.5, 54704, 54734.5, 
+    54765.5, 54795, 54824.5, 54855, 54885.5, 54916, 54946.5, 54977.5, 55008, 
+    55038.5, 55069, 55099.5, 55130.5, 55160, 55189.5, 55220, 55250.5, 55281, 
+    55311.5, 55342.5, 55373, 55403.5, 55434, 55464.5, 55495.5, 55525, 
+    55554.5, 55585, 55615.5, 55646, 55676.5, 55707.5, 55738, 55768.5, 55799, 
+    55829.5, 55860.5, 55890, 55919.5, 55950, 55980.5, 56011, 56041.5, 
+    56072.5, 56103, 56133.5, 56164, 56194.5, 56225.5, 56255, 56284.5, 56315, 
+    56345.5, 56376, 56406.5, 56437.5, 56468, 56498.5, 56529, 56559.5, 
+    56590.5, 56620, 56649.5, 56680, 56710.5, 56741, 56771.5, 56802.5, 56833, 
+    56863.5, 56894, 56924.5 ;
+}
