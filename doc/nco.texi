@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.834 2013-08-27 21:07:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.835 2013-08-28 20:11:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6387,7 +6387,7 @@ Therefore when @code{-y rmssdn} is requested and weights are specified,
 @command{ncea} and @command{ncra}, which do not allow weights to be
 specified, always implement the @code{rmssdn} procedure when asked.
 
-@c 20130827: Fedora Core 19 (FC19) breaks here with "./nco.texi:6389: Missing $ inserted."
+@c 20130827: Fedora Core 19 (FC19) breaks here with "./nco.texi:6389: Missing dollarsign inserted."
 @c Ubuntu continues to build nco.texi fine, and must be used to produce nco.pdf
 The square root of the mean of~$\xxx$ (@code{-y sqrt}) is 
 $$
