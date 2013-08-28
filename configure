@@ -20066,6 +20066,12 @@ $as_echo "$as_me: Creating sample netCDF data files for self-tests" >&6;}
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_2.nc data/in_2.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/cmip5.nc data/cmip5.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/obs.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snd_ncwa.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snc_ncwa.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snc_grp.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snd_grp.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snc.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snd.cdl
     fi
 
     for fl in 85.nc 86.nc 87.nc 88.nc 89.nc h0001.nc h0002.nc h0003.nc; do

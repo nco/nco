@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.6 2013-08-12 14:48:34 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.7 2013-08-28 23:21:12 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1033,6 +1033,12 @@ if test "${PATH_TO_NCGEN}"; then
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/in_2.nc data/in_2.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/cmip5.nc data/cmip5.cdl
         ${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/obs.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snd_ncwa.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snc_ncwa.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snc_grp.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snd_grp.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snc.cdl
+		${PATH_TO_NCGEN} -k netCDF-4 -b -o data/obs.nc data/snd.cdl
     fi
     AC_SUBST(PATH_TO_NCGEN)
     for fl in 85.nc 86.nc 87.nc 88.nc 89.nc h0001.nc h0002.nc h0003.nc; do
