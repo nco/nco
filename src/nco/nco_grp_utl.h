@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.360 2013-08-27 23:26:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.361 2013-08-28 02:34:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -604,8 +604,10 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
  int *nbr_dmn_out);                    /* O [nbr] Number of dimensions on output (size of above array) */
 
 void
-nco_dmn_id_mk                          /* [fnc] Mark flag average for all dimensions that have the input ID */
+nco_dmn_id_mk                          /* [fnc] Mark either flag average OR flag degenerate for all dimensions that have the input ID */
 (const int dmn_id,                     /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
+ const nco_bool flg_dmn_avg_out,       /* I [flg] Mark flag average dimension */
+ const nco_bool flg_rdd,               /* I [flg] Mark flag retain degenerate dimension */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus

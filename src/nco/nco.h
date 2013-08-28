@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.387 2013-08-27 20:14:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.388 2013-08-28 02:34:01 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -733,6 +733,7 @@ extern "C" {
     /* Following are members only used by transformation operators (non-ncks) */
 
     nco_bool flg_dmn_avg_out;/* [flg] Diferentiate between dimensions to average or keep for this variable (ncwa) */  
+    nco_bool flg_rdd;        /* [flg] Retain dimension as degenerate (size 1) (ncwa) */  
 
   } var_dmn_sct; 
 

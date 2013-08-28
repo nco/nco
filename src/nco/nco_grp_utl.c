@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.920 2013-08-28 02:04:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.921 2013-08-28 02:34:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1948,6 +1948,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;
     /* Assume dimension is to keep on output */
     trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg_out=False;
+    trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;   
   }
 
   /* Degenerate dimensions used by ncwa */
@@ -2044,6 +2045,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;
       /* Assume dimension is to keep on output */
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg_out=False;
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;   
     }
 
     /* Variable dimensions; store what we know at this time: relative name and ID */
@@ -6987,7 +6989,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average arra
                 nbr_avg_dmn++;
 
                 /* Broadcast flag average/keep using dimension ID; variables share dimensions */
-                (void)nco_dmn_id_mk(dmn_id,trv_tbl);
+                (void)nco_dmn_id_mk(dmn_id,True,False,trv_tbl);
 
               }  /* If this dimension is not in output array */
             } /* Must meet necessary flags */
@@ -7093,8 +7095,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
                   (*dmn_out)[nbr_out_dmn]->srt=(*dmn_out)[nbr_out_dmn]->end=0L;
 
                   /* Broadcast retain degenerate using dimension ID; variables share dimensions */
-
-
+                  (void)nco_dmn_id_mk(dmn_id,False,True,trv_tbl);
 
                 } /* !flg_rdd */
                 nbr_out_dmn++;
@@ -7125,16 +7126,24 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
 
 
 void
-nco_dmn_id_mk                          /* [fnc] Mark flag average for all dimensions that have the input ID */
+nco_dmn_id_mk                          /* [fnc] Mark either flag average OR flag degenerate for all dimensions that have the input ID */
 (const int dmn_id,                     /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
+ const nco_bool flg_dmn_avg_out,       /* I [flg] Mark flag average dimension */
+ const nco_bool flg_rdd,               /* I [flg] Mark flag retain degenerate dimension */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Mark flag average for all dimensions that have the input ID */
+  /* Purpose: Mark flag average OR flag retain degenerate dimension for all dimensions that have the input ID */
+
+  /* NOTE: This function has 2 distinct purposes, mutually exclusive: mark either the average flag OR retain degenerate dimension flag,
+  the reason for both functionalites to be in the same function is just to save some real estate function space */
 
   const char fnc_nm[]="nco_dmn_id_mk()"; /* [sng] Function name  */
 
   /* Used only by ncpdq , ncwa */
   assert(prg_get() == ncpdq || prg_get() == ncwa);
+
+  if (flg_dmn_avg_out == True)  assert(flg_rdd == False);
+  if (flg_dmn_avg_out == False) assert(flg_rdd == True);
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -7151,7 +7160,10 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average for all dimens
         if (dmn_id == trv_obj.var_dmn[idx_var_dmn].dmn_id){
 
           /* Change flag to mark that dimension is to be averaged instead of to keep on output */
-          trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg_out=True;
+          if (flg_dmn_avg_out == True) trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg_out=True;
+
+          /* Change flag to retain degenerate dimension */
+          if (flg_rdd == True) trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_rdd=True;
 
           if(dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG %s variable <%s>: ",prg_nm_get(),fnc_nm,trv_obj.nm_fll);        
