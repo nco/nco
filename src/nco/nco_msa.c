@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.219 2013-07-29 21:22:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.220 2013-08-29 22:16:14 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1476,8 +1476,8 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   var_in->type=typ_tmp;
   var_in->val.vp=void_ptr;
 
-  (void)nco_free(lmt_msa);
-  (void)nco_free(lmt);
+  lmt_msa=(lmt_msa_sct **)nco_free(lmt_msa);
+  lmt=(lmt_sct **)nco_free(lmt);
 
 do_upk:
   /* Following code copied from nco_var_get() */

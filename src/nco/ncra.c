@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.339 2013-08-29 21:47:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.340 2013-08-29 22:16:14 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.339 2013-08-29 21:47:06 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.339 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.340 2013-08-29 22:16:14 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.340 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -224,7 +224,6 @@ main(int argc,char **argv)
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
   
-
 #ifndef USE_TRV_API
   lmt_sct *lmt_rec=NULL_CEWI;
   lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
@@ -257,7 +256,9 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
 
-  trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+  trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
+
+  trv_sct *var_trv; /* [sct] Variable GTT object */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
@@ -1361,11 +1362,7 @@ main(int argc,char **argv)
 
           char *grp_out_fll=NULL; /* [sng] Group name */
 
-          int grp_id;        /* [ID] Group ID */
-          int grp_out_id;    /* [ID] Group ID (output) */
-          int var_out_id;    /* [ID] Variable ID (output) */
-
-          trv_sct *var_trv;  /* [sct] Variable GTT object */
+          int grp_id;             /* [ID] Group ID */
 
           in_id=in_id_arr[omp_get_thread_num()];
           if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
