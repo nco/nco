@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.927 2013-08-28 22:40:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.928 2013-08-29 20:01:52 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -587,8 +587,9 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   
   char **obj_lst_in; /* [sng] User-specified list of objects */
 
-  char *sbs_srt; /* [sng] Location of user-string match start in object path */
   char *sbs_end; /* [sng] Location of user-string match end   in object path */
+  char *sbs_srt; /* [sng] Location of user-string match start in object path */
+  char *sbs_srt_nxt; /* [sng] String to search next for match */
   char *usr_sng; /* [sng] User-supplied object name */
   char *var_mch_srt; /* [sng] Location of variable short name in user-string */
   
@@ -696,8 +697,25 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
             flg_ncr_mch_crr=True;
 
             /* Look for partial match, not necessarily on path boundaries */
-            if((sbs_srt=strstr(trv_obj.nm_fll,usr_sng))){
+	    /* 20130829: Variables and group names may be proper subsets of ancestor group names
+	       e.g., variable named g9 in group named g90 is /g90/g9
+	       e.g., group named g1 in group named g10 is g10/g1
+	       Search algorithm must test same full name multiple times in such cases
+	       For variables, only final match (closest to end full name) need be fully tested */
+	    sbs_srt=NULL;
+	    sbs_srt_nxt=trv_obj.nm_fll;
+            while((sbs_srt_nxt=strstr(sbs_srt_nxt,usr_sng))){
+	      /* Object name contains usr_sng at least once */
+	      /* Complete path checking below will begin at this substring ... */
+	      sbs_srt=sbs_srt_nxt; 
+	      /* ...for groups always at first occurence of substring... */
+	      if(obj_typ == nco_obj_typ_grp) break;
+	      /* ...and also here for variables unless match is found in next iteration after advancing substring... */
+	      if(sbs_srt_nxt+usr_sng_lng <= trv_obj.nm_fll+trv_obj.nm_fll_lng) sbs_srt_nxt+=usr_sng_lng; else break;
+	    } /* end while */
 
+	    /* Object name contains usr_sng. Full path-check starts at current substring */
+            if(sbs_srt){
               /* Ensure match spans (begins and ends on) whole path-component boundaries */
 
               /* Does match begin at path component boundary ... directly on a slash? */

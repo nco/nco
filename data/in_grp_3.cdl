@@ -504,8 +504,5 @@ netcdf in_grp_3 {
   data:
   g9=1,2; 
   } // end g90
-  
-  
-  
     
 } // end root group

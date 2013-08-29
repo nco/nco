@@ -1,11 +1,15 @@
+2013-08-29  Charlie Zender  <zender@uci.edu>
+
+	* nco_xtr_mk() correctly matches variable names that are proper subsets of ancestor group names
+
 2013-08-28 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncra testing
-	
+
 2013-08-27 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncwa test #41 Retain degenerate dimensions (one variable)
-	
+
 	* Add ncwa test #42 Retain degenerate dimensions (all variables)
 
 	* nco_dmn_avg_mk() Build dimensions to average array from input dimension names
