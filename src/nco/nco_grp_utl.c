@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.928 2013-08-29 20:01:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.929 2013-08-29 20:07:37 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -706,7 +706,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 	    sbs_srt_nxt=trv_obj.nm_fll;
             while((sbs_srt_nxt=strstr(sbs_srt_nxt,usr_sng))){
 	      /* Object name contains usr_sng at least once */
-	      /* Complete path checking below will begin at this substring ... */
+	      /* Complete path-check below will begin at this substring ... */
 	      sbs_srt=sbs_srt_nxt; 
 	      /* ...for groups always at first occurence of substring... */
 	      if(obj_typ == nco_obj_typ_grp) break;
@@ -714,9 +714,10 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 	      if(sbs_srt_nxt+usr_sng_lng <= trv_obj.nm_fll+trv_obj.nm_fll_lng) sbs_srt_nxt+=usr_sng_lng; else break;
 	    } /* end while */
 
-	    /* Object name contains usr_sng. Full path-check starts at current substring */
+	    /* Does object name contain usr_sng? */
             if(sbs_srt){
-              /* Ensure match spans (begins and ends on) whole path-component boundaries */
+	      /* Ensure match spans (begins and ends on) whole path-component boundaries
+		 Full path-check starts at current substring */
 
               /* Does match begin at path component boundary ... directly on a slash? */
               if(*sbs_srt == sls_chr) flg_pth_srt_bnd=True;
