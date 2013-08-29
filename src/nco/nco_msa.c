@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.220 2013-08-29 22:16:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.221 2013-08-29 23:28:00 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1326,7 +1326,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       /* If limits, make space for them */
       if (lmt_dmn_nbr) (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
 
-      /* And deep-copy the structure made while building limits  */
+      /* And copy the structure made while building limits  */
       (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.BASIC_DMN;
       (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.dmn_cnt;
       (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].crd->nm);
@@ -1380,7 +1380,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       /* If limits, make space for them */
       if (lmt_dmn_nbr) (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
 
-      /* And deep-copy the structure made while building limits  */
+      /* And copy the structure made while building limits  */
       (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.BASIC_DMN;
       (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.dmn_cnt;
       (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].ncd->nm);
@@ -1476,6 +1476,13 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
   var_in->type=typ_tmp;
   var_in->val.vp=void_ptr;
 
+  /* Free  */
+  for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++) {
+    for(int lmt_idx=0;lmt_idx<lmt_msa[idx_dmn]->lmt_dmn_nbr;lmt_idx++){
+      lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]);
+    }
+    lmt_msa[idx_dmn]=(lmt_msa_sct *)nco_free(lmt_msa[idx_dmn]);
+  }
   lmt_msa=(lmt_msa_sct **)nco_free(lmt_msa);
   lmt=(lmt_sct **)nco_free(lmt);
 
