@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.389 2013-08-28 22:25:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.390 2013-08-29 20:15:28 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -731,8 +731,7 @@ extern "C" {
     int dmn_id;              /* [ID] Dimension ID; same as dmn_trv_sct.id from nc_inq_vardimid() */
 
     /* Following are members only used by transformation operators (non-ncks) */
-
-    nco_bool flg_dmn_avg_out;/* [flg] Diferentiate between dimensions to average or keep for this variable (ncwa) */  
+    nco_bool flg_dmn_avg;    /* [flg] Diferentiate between dimensions to average or keep for this variable (ncwa) */  
     nco_bool flg_rdd;        /* [flg] Retain dimension as degenerate (size 1) (ncwa) */  
 
   } var_dmn_sct; 
@@ -830,8 +829,8 @@ extern "C" {
     /* Members used only by transformation operators (non-ncks) */
     dmn_sct **dmn_dgn;      /* [sct] (ncwa) Degenerate dimensions */
     int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate dimensions (size of above array) */
-    lmt_sct **lmt_rec_dmn;  /* [sct] (ncra) Record dimensions */
-    int nbr_rec_dmn;        /* [sct] (ncra) Number of record dimensions (size of above array) */
+    lmt_sct **lmt_rec;      /* [sct] (ncra) Record dimensions */
+    int nbr_rec;            /* [sct] (ncra) Number of record dimensions (size of above array) */
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */

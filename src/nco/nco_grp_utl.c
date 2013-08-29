@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.929 2013-08-29 20:07:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.930 2013-08-29 20:15:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1966,7 +1966,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_dmn[idx_dmn_var].ncd=NULL;
     trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;
     /* Assume dimension is to keep on output */
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg_out=False;
+    trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg=False;
     trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;   
   }
 
@@ -1975,8 +1975,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->dmn_dgn=NULL;
 
   /* Record dimensions used by ncra */
-  trv_tbl->nbr_rec_dmn=0;
-  trv_tbl->lmt_rec_dmn=NULL;
+  trv_tbl->nbr_rec=0;
+  trv_tbl->lmt_rec=NULL;
 
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
@@ -2067,7 +2067,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].ncd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;
       /* Assume dimension is to keep on output */
-      trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg_out=False;
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg=False;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;   
     }
 
@@ -4961,15 +4961,10 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           } /* Compare ID */
         } /* Degenerated dimensions */
 
-
-
         if (var_trv->var_dmn[idx_dmn].flg_rdd == True ){
-
           found_dim=True;
           dmn_cnt=1;
-
         }
-
 
         if (found_dim == False){
           DEFINE_DIM[idx_dmn]=False;
@@ -4981,16 +4976,16 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
        /* ncra */
       if (prg_id == ncra){
 
-        if (trv_tbl->lmt_rec_dmn == NULL) {
+        if (trv_tbl->lmt_rec == NULL) {
 
           /* (TO_DO ) */
 
         }
 
         /* Find record dimension */
-        for(int idx_rec_dmn=0;idx_rec_dmn<trv_tbl->nbr_rec_dmn;idx_rec_dmn++){
+        for(int idx_rec_dmn=0;idx_rec_dmn<trv_tbl->nbr_rec;idx_rec_dmn++){
           /* Match by ID */
-          if (trv_tbl->lmt_rec_dmn[idx_rec_dmn]->id == var_dim_id) {
+          if (trv_tbl->lmt_rec[idx_rec_dmn]->id == var_dim_id) {
             long cnt;
             if(var_trv->var_dmn[idx_dmn].is_crd_var){
               cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
@@ -5010,7 +5005,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         }  /* Find record dimension */
       } /* ncra */
 
-
       /* Always define, except maybe for ncwa */
       if (DEFINE_DIM[idx_dmn]) {
 
@@ -5024,12 +5018,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           (void)fprintf(stdout,"%s: DEBUG %s defined dimension [%d] new ##%d:<%s> with size %li\n",prg_nm_get(),fnc_nm,
             idx_dmn,dmn_id_out,dmn_trv->nm_fll,dmn_cnt);
         } /* endif dbg */
-
       } /* Always define, except maybe for ncwa */
-
-     
-
-        
 
       /* Memory management after defining current output dimension */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
@@ -6569,7 +6558,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   nco_dmn_out_mk() Build dimensions array to keep on output
   nco_dmn_id_mk()  Mark flag average for all dimensions that have the input ID 
 
-  nco_dmn_avg_mk() parses -a names and exports an array of dmn_sct; it marks the flag "flg_dmn_avg_out" of "var_dmn_sct"
+  nco_dmn_avg_mk() parses -a names and exports an array of dmn_sct; it marks the flag "flg_dmn_avg" of "var_dmn_sct"
   as True, if the dimension is to be averaged.
 
   Since variables share dimensions, this flag has to be marked to all variable's dimensions that have it;
@@ -6721,7 +6710,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
               if (flg_dmn_ins == False){
 
                 /* Change flag to mark that dimension is to be averaged instead of to keep on output */
-                trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg_out=True;
+                trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg=True;
 
                 /* Add one more element to array  */
                 (*dmn_avg)[nbr_avg_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
@@ -6823,7 +6812,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
       for(int idx_var_dmn=0;idx_var_dmn<trv_obj.nbr_dmn;idx_var_dmn++){
 
         /* This dimension is not to be averaged, it is to be kept on output */
-        if (trv_obj.var_dmn[idx_var_dmn].flg_dmn_avg_out == False) {
+        if (trv_obj.var_dmn[idx_var_dmn].flg_dmn_avg == False) {
 
           /* Search dimensions to be extracted  */
           for(int idx_xtr_dmn=0;idx_xtr_dmn<nbr_dmn_xtr;idx_xtr_dmn++){
@@ -6916,7 +6905,7 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
         if (dmn_id == trv_obj.var_dmn[idx_var_dmn].dmn_id){
 
           /* Change flag to mark that dimension is to be averaged instead of to keep on output */
-          trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg_out=True;
+          trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg=True;
 
           /* Change flag to retain degenerate dimension */
           if (flg_rdd == True){
@@ -7017,10 +7006,10 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
         flg_dmn_ins=False;
 
         /* Loop constructed array of record dimensions to see if already inserted  */
-        for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec_dmn;idx_rec++){
+        for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
 
           /* Match by ID */
-          if(dmn_id == trv_tbl->lmt_rec_dmn[idx_rec]->id){
+          if(dmn_id == trv_tbl->lmt_rec[idx_rec]->id){
 
             if(dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"%s: DEBUG %s variable <%s>: ",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
@@ -7047,9 +7036,9 @@ nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata
           lmt_rec->id=dmn_id;
 
           /* Add to GTT */
-          trv_tbl->lmt_rec_dmn=(lmt_sct **)nco_realloc(trv_tbl->lmt_rec_dmn,(trv_tbl->nbr_rec_dmn+1)*sizeof(lmt_sct *));
-          trv_tbl->lmt_rec_dmn[trv_tbl->nbr_rec_dmn]=lmt_rec;
-          trv_tbl->nbr_rec_dmn++;
+          trv_tbl->lmt_rec=(lmt_sct **)nco_realloc(trv_tbl->lmt_rec,(trv_tbl->nbr_rec+1)*sizeof(lmt_sct *));
+          trv_tbl->lmt_rec[trv_tbl->nbr_rec]=lmt_rec;
+          trv_tbl->nbr_rec++;
 
 #ifndef ENABLE_UDUNITS
           if(lmt_rec->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.336 2013-08-29 18:40:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.337 2013-08-29 20:15:28 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.336 2013-08-29 18:40:51 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.336 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.337 2013-08-29 20:15:28 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.337 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1307,7 +1307,11 @@ main(int argc,char **argv)
 
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
 
+#ifdef REPLACE_LMT_ALL
       rec_dmn_sz=lmt_rec->rec_dmn_sz;
+#else
+      rec_dmn_sz=trv_tbl->lmt_rec[0]->rec_dmn_sz;
+#endif
       rec_rmn_prv_drn=lmt_rec->rec_rmn_prv_drn; /* Local copy may be decremented later */
       idx_rec_crr_in= (rec_rmn_prv_drn > 0L) ? 0L : lmt_rec->srt;
 
