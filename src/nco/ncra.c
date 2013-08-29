@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.338 2013-08-29 20:59:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.339 2013-08-29 21:47:06 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.338 2013-08-29 20:59:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.338 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.339 2013-08-29 21:47:06 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.339 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1288,14 +1288,11 @@ main(int argc,char **argv)
     /* Variables may have different ID, missing_value, type, in each file */
     for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
 
-    /* Files may have different numbers of records to process
-    NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
-      (void)nco_lmt_evl(in_id,trv_tbl->lmt_rec[0],rec_usd_cml,FORTRAN_IDX_CNV);
-      /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
-      if(FLG_MRO) trv_tbl->lmt_rec[0]->flg_mro=True;
-      if(trv_tbl->lmt_rec[0]->flg_mro) FLG_MRO=True;
-    } /* rec_dmn_id */
+    /* Fill record array */
+    (void)nco_lmt_evl(in_id,trv_tbl->lmt_rec[0],rec_usd_cml,FORTRAN_IDX_CNV);
+    /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
+    if(FLG_MRO) trv_tbl->lmt_rec[0]->flg_mro=True;
+    if(trv_tbl->lmt_rec[0]->flg_mro) FLG_MRO=True;
 
     /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
     if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
@@ -1361,16 +1358,31 @@ main(int argc,char **argv)
 #pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,REC_FRS_GRP,REC_LST_DSR,trv_tbl->lmt_rec,md5,nbr_var_prc,nco_op_typ,FLG_BFR_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
         for(idx=0;idx<nbr_var_prc;idx++){
+
+          char *grp_out_fll=NULL; /* [sng] Group name */
+
+          int grp_id;        /* [ID] Group ID */
+          int grp_out_id;    /* [ID] Group ID (output) */
+          int var_out_id;    /* [ID] Variable ID (output) */
+
+          trv_sct *var_trv;  /* [sct] Variable GTT object */
+
           in_id=in_id_arr[omp_get_thread_num()];
           if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
           if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
           /* Retrieve variable from disk into memory */
-          /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 #ifdef REPLACE_LMT_ALL
           (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 #else
+          /* Obtain variable GTT object using full variable name */
+          var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
+          /* Obtain group ID using full group name */
+          (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+
+          /* Retrieve variable from disk into memory */
+          (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
 #endif
           if(prg == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
