@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.207 2013-08-29 20:15:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.208 2013-08-29 23:51:22 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -66,6 +66,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
       tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]);
     }
 
+    /* Coordinate structures */ 
     for(int crd_idx=0;crd_idx<tbl->lst_dmn[dmn_idx].crd_nbr;crd_idx++){
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll);
@@ -75,7 +76,11 @@ trv_tbl_free                           /* [fnc] GTT free memory */
       for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;lmt_idx++){
         tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]);
       }  
-    } 
+
+      tbl->lst_dmn[dmn_idx].crd[crd_idx]=(crd_sct *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]);
+
+    }  /* Coordinate structures */
+    tbl->lst_dmn[dmn_idx].crd=(crd_sct **)nco_free(tbl->lst_dmn[dmn_idx].crd);
   } 
 
   tbl->lst_dmn=(dmn_trv_sct *)nco_free(tbl->lst_dmn);
