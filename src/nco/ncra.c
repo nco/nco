@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.337 2013-08-29 20:15:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.338 2013-08-29 20:59:04 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.337 2013-08-29 20:15:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.337 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.338 2013-08-29 20:59:04 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.338 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -223,9 +223,10 @@ main(int argc,char **argv)
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
   lmt_sct **lmt=NULL_CEWI;
-  lmt_sct *lmt_rec=NULL_CEWI;
+  
 
 #ifndef USE_TRV_API
+  lmt_sct *lmt_rec=NULL_CEWI;
   lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
   lmt_msa_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
 #endif
@@ -1210,7 +1211,7 @@ main(int argc,char **argv)
   if(REC_APN){
     /* Append records directly to output file */
     int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
-    nco_inq_dimid(out_id,lmt_rec->nm,&rec_dmn_out_id);
+    nco_inq_dimid(out_id,trv_tbl->lmt_rec[0]->nm,&rec_dmn_out_id);
     nco_inq_dimlen(out_id,rec_dmn_out_id,&idx_rec_out);
   } /* !REC_APN */
 
@@ -1290,10 +1291,10 @@ main(int argc,char **argv)
     /* Files may have different numbers of records to process
     NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
-      (void)nco_lmt_evl(in_id,lmt_rec,rec_usd_cml,FORTRAN_IDX_CNV);
+      (void)nco_lmt_evl(in_id,trv_tbl->lmt_rec[0],rec_usd_cml,FORTRAN_IDX_CNV);
       /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
-      if(FLG_MRO) lmt_rec->flg_mro=True;
-      if(lmt_rec->flg_mro) FLG_MRO=True;
+      if(FLG_MRO) trv_tbl->lmt_rec[0]->flg_mro=True;
+      if(trv_tbl->lmt_rec[0]->flg_mro) FLG_MRO=True;
     } /* rec_dmn_id */
 
     /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
@@ -1303,17 +1304,14 @@ main(int argc,char **argv)
     if(False) (void)nco_fl_cmp_err_chk();
 
     /* This file may be superfluous though valid data will be found in upcoming files */
-    if(dbg_lvl >= nco_dbg_std && (rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (lmt_rec->srt > lmt_rec->end) && (lmt_rec->rec_rmn_prv_drn == 0L)) (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+    if(dbg_lvl >= nco_dbg_std && (rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (trv_tbl->lmt_rec[0]->srt > trv_tbl->lmt_rec[0]->end) && (trv_tbl->lmt_rec[0]->rec_rmn_prv_drn == 0L)) (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
 
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
 
-#ifdef REPLACE_LMT_ALL
-      rec_dmn_sz=lmt_rec->rec_dmn_sz;
-#else
       rec_dmn_sz=trv_tbl->lmt_rec[0]->rec_dmn_sz;
-#endif
-      rec_rmn_prv_drn=lmt_rec->rec_rmn_prv_drn; /* Local copy may be decremented later */
-      idx_rec_crr_in= (rec_rmn_prv_drn > 0L) ? 0L : lmt_rec->srt;
+
+      rec_rmn_prv_drn=trv_tbl->lmt_rec[0]->rec_rmn_prv_drn; /* Local copy may be decremented later */
+      idx_rec_crr_in= (rec_rmn_prv_drn > 0L) ? 0L : trv_tbl->lmt_rec[0]->srt;
 
       /* Master loop over records in current file */
       while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
@@ -1334,13 +1332,13 @@ main(int argc,char **argv)
         REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with ncea normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR. */
 
         /* Last stride in file has distinct index-augmenting behavior */
-        if(idx_rec_crr_in >= lmt_rec->end) REC_SRD_LST=True; else REC_SRD_LST=False;
+        if(idx_rec_crr_in >= trv_tbl->lmt_rec[0]->end) REC_SRD_LST=True; else REC_SRD_LST=False;
         /* Even strides commence group beginnings */
         if(rec_rmn_prv_drn == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;
         /* Each group comprises DRN records */
-        if(REC_FRS_GRP) rec_rmn_prv_drn=lmt_rec->drn;
+        if(REC_FRS_GRP) rec_rmn_prv_drn=trv_tbl->lmt_rec[0]->drn;
         /* Final record triggers normalization regardless of its location within group */
-        if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L)) REC_LST_DSR=True;
+        if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(trv_tbl->lmt_rec[0]->end+trv_tbl->lmt_rec[0]->drn-1L,rec_dmn_sz-1L)) REC_LST_DSR=True;
         /* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
         if(rec_rmn_prv_drn == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
 
@@ -1360,7 +1358,7 @@ main(int argc,char **argv)
 #endif
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,REC_FRS_GRP,REC_LST_DSR,lmt_rec,md5,nbr_var_prc,nco_op_typ,FLG_BFR_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,REC_FRS_GRP,REC_LST_DSR,trv_tbl->lmt_rec,md5,nbr_var_prc,nco_op_typ,FLG_BFR_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
         for(idx=0;idx<nbr_var_prc;idx++){
           in_id=in_id_arr[omp_get_thread_num()];
@@ -1377,12 +1375,12 @@ main(int argc,char **argv)
           if(prg == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
           /* Re-base record coordinate and bounds if necessary (e.g., time, time_bnds) */
-          if(lmt_rec->origin != 0.0 && (var_prc[idx]->is_crd_var || nco_is_spc_in_bnd_att(in_id,var_prc[idx]->id))){
+          if(trv_tbl->lmt_rec[0]->origin != 0.0 && (var_prc[idx]->is_crd_var || nco_is_spc_in_bnd_att(in_id,var_prc[idx]->id))){
             var_sct *var_crd;
             scv_sct scv;
             /* De-reference */
             var_crd=var_prc[idx];
-            scv.val.d=lmt_rec->origin;              
+            scv.val.d=trv_tbl->lmt_rec[0]->origin;              
             scv.type=NC_DOUBLE;  
             /* Convert scalar to variable type */
             nco_scv_cnf_typ(var_crd->type,&scv);
@@ -1465,20 +1463,20 @@ main(int argc,char **argv)
         if(REC_SRD_LST){
           /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
           long end_max_crr;
-          end_max_crr=min_lng(lmt_rec->idx_end_max_abs-rec_in_cml,min_lng(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L));
+          end_max_crr=min_lng(trv_tbl->lmt_rec[0]->idx_end_max_abs-rec_in_cml,min_lng(trv_tbl->lmt_rec[0]->end+trv_tbl->lmt_rec[0]->drn-1L,rec_dmn_sz-1L));
           if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
         }else{ /* !REC_SRD_LST */
-          if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd-lmt_rec->drn+1L;
+          if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=trv_tbl->lmt_rec[0]->srd-trv_tbl->lmt_rec[0]->drn+1L;
         } /* !REC_SRD_LST */
 
       } /* end master while loop over records in current file */
 
       rec_in_cml+=rec_dmn_sz; /* [nbr] Cumulative number of records in all files opened so far */
-      lmt_rec->rec_rmn_prv_drn=rec_rmn_prv_drn;
+      trv_tbl->lmt_rec[0]->rec_rmn_prv_drn=rec_rmn_prv_drn;
 
       if(fl_idx == fl_nbr-1){
         /* Warn if other than number of requested records were read */
-        if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
+        if(trv_tbl->lmt_rec[0]->lmt_typ == lmt_dmn_idx && trv_tbl->lmt_rec[0]->is_usr_spc_min && trv_tbl->lmt_rec[0]->is_usr_spc_max){
           long drn_grp_nbr_max; /* [nbr] Duration groups that start within range */
           long rec_nbr_rqs; /* Number of records user requested */
           long rec_nbr_rqs_max; /* [nbr] Records that would be used by drn_grp_nbr_max groups */
@@ -1487,14 +1485,14 @@ main(int argc,char **argv)
           long rec_nbr_trn; /* [nbr] Records truncated in last group */
           long srd_nbr_flr; /* [nbr] Whole strides that fit within specified range */
           /* Number of whole strides that fit within specified range */
-          srd_nbr_flr=(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd;
+          srd_nbr_flr=(trv_tbl->lmt_rec[0]->max_idx-trv_tbl->lmt_rec[0]->min_idx)/trv_tbl->lmt_rec[0]->srd;
           drn_grp_nbr_max=1L+srd_nbr_flr;
           /* Number of records that would be used by N groups */
-          rec_nbr_rqs_max=drn_grp_nbr_max*lmt_rec->drn;
+          rec_nbr_rqs_max=drn_grp_nbr_max*trv_tbl->lmt_rec[0]->drn;
           /* Minimum record number spanned by N groups of size D is N-1 strides, plus D-1 trailing members of last group */
-          rec_nbr_spn_max=lmt_rec->srd*(drn_grp_nbr_max-1L)+lmt_rec->drn;
+          rec_nbr_spn_max=trv_tbl->lmt_rec[0]->srd*(drn_grp_nbr_max-1L)+trv_tbl->lmt_rec[0]->drn;
           /* Actual number of records available within range */
-          rec_nbr_spn_act=1L+lmt_rec->max_idx-lmt_rec->min_idx;
+          rec_nbr_spn_act=1L+trv_tbl->lmt_rec[0]->max_idx-trv_tbl->lmt_rec[0]->min_idx;
           /* Number truncated in last group */
           rec_nbr_trn=max_int(rec_nbr_spn_max-rec_nbr_spn_act,0L);
           /* Records requested is maximum minus any truncated in last group */
@@ -1525,7 +1523,7 @@ main(int argc,char **argv)
 #endif
       } /* endif record dimension exists */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,lmt_rec,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,trv_tbl->lmt_rec,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
       for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
         in_id=in_id_arr[omp_get_thread_num()];
@@ -1562,7 +1560,7 @@ main(int argc,char **argv)
 
     /* Our data tanks are already full */
     if(prg == ncra || prg == ncrcat){
-      if(lmt_rec->flg_input_complete){
+      if(trv_tbl->lmt_rec[0]->flg_input_complete){
         /* NB: TODO nco1066 move input_complete break to precede record loop but remember to close open filehandles */
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested records were found within the first %d input file%s, next file was opened then skipped, and remaining %d input file%s will not be opened\n",prg_nm_get(),fl_idx,(fl_idx == 1) ? "" : "s",fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
         break;
@@ -1572,7 +1570,7 @@ main(int argc,char **argv)
   } /* end loop over fl_idx */
 
   if(prg == ncra || prg == ncrcat) /* fxm: Remove this or make DBG when crd_val DRN/MRO is predictable? */
-    if(lmt_rec->drn != 1L && (lmt_rec->lmt_typ == lmt_crd_val || lmt_rec->lmt_typ == lmt_udu_sng)) (void)fprintf(stderr,"\n%s: WARNING Duration argument DRN used in hyperslab specification for %s which will be determined based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first DRN elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ DRN elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of DRN records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",prg_nm_get(),lmt_rec->nm);
+    if(trv_tbl->lmt_rec[0]->drn != 1L && (trv_tbl->lmt_rec[0]->lmt_typ == lmt_crd_val || trv_tbl->lmt_rec[0]->lmt_typ == lmt_udu_sng)) (void)fprintf(stderr,"\n%s: WARNING Duration argument DRN used in hyperslab specification for %s which will be determined based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first DRN elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ DRN elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of DRN records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",prg_nm_get(),trv_tbl->lmt_rec[0]->nm);
 
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
   except ncra normalizes after every DRN records, while ncea normalizes once, after all files.
@@ -1619,10 +1617,9 @@ main(int argc,char **argv)
 
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
+#ifndef USE_TRV_API
     /* Record file-specific memory cleanup */
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED) lmt_rec=nco_lmt_free(lmt_rec);
-
-#ifndef USE_TRV_API
     /* Free lmt, lmt_dmn, and lmt_all_lst structures and lists */
     for(idx=0;idx<nbr_dmn_fl;idx++)
       for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
