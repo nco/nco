@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.315 2013-08-28 04:45:27 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.316 2013-08-30 22:39:59 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3020,6 +3020,8 @@ print "\n";
 ####################
     $opr_nm='ncra';
 ####################
+
+# ncra #01
     
 #        if($mpi_prc == 0 || ($mpi_prc > 0 && $localhostname !~ /sand/)){ # test hangs because of ncrcat TODO nco772
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_01% 2> %tmp_fl_00%";
@@ -3033,6 +3035,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 #    } else { print "NB: Current mpncra test skipped on sand because mpncrcat step hangs fxm TODO nco593\n";}
+
+# ncra #02
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
@@ -3041,6 +3045,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #03	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3049,6 +3055,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #04	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_int %tmp_fl_00%";
@@ -3057,6 +3065,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #05	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int %tmp_fl_00%";
@@ -3065,6 +3075,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #06	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_int %tmp_fl_00%";
@@ -3073,6 +3085,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #07
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_flt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt %tmp_fl_00%";
@@ -3081,6 +3095,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #08	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_flt $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v rec_var_int_mss_val_flt %tmp_fl_00%";
@@ -3089,6 +3105,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #09	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_mss_val_dbl_pck %tmp_fl_00%";
@@ -3097,6 +3115,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #10	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_dbl_pck %tmp_fl_00%";
@@ -3105,6 +3125,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #11	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%3.2f' -v rec_var_flt_pck %tmp_fl_00%";
@@ -3113,6 +3135,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #12	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v pck,one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v pck %tmp_fl_00%";
@@ -3121,6 +3145,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #13
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y avg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3129,6 +3155,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #14
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3137,6 +3165,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #15	
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y max -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3145,6 +3175,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #16
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3153,6 +3185,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #17
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%1.5f' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
@@ -3161,6 +3195,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #18
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v time %tmp_fl_00%";
@@ -3169,6 +3205,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #19
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v time,one_dmn_rec_var $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
@@ -3177,6 +3215,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #20	
 
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -X 0.,180.,-30.,30. -v gds_3dvar $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%8.1f' -v gds_3dvar %tmp_fl_00%";
@@ -3185,6 +3225,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #21
 	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra  $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
@@ -3197,6 +3239,8 @@ print "\n";
     $tst_cmd[7]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+# ncra #22
     
     $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncra $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
