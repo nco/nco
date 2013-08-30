@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.160 2013-08-30 00:26:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.161 2013-08-30 01:00:50 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1691,14 +1691,7 @@ lbl_chr_prn:
   if(prn_flg->nwl_pst_val) (void)fprintf(stdout,"\n");
 
   /* Free  */
-  for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++) {
-    for(int lmt_idx=0;lmt_idx<lmt_msa[idx_dmn]->lmt_dmn_nbr;lmt_idx++){
-      lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]);
-    }
-    lmt_msa[idx_dmn]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[idx_dmn]->lmt_dmn);
-    lmt_msa[idx_dmn]=(lmt_msa_sct *)nco_free(lmt_msa[idx_dmn]);
-  }
-  lmt_msa=(lmt_msa_sct **)nco_free(lmt_msa);
+  (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
   lmt=(lmt_sct **)nco_free(lmt);
 
 } /* end nco_prn_var_val_trv() */
