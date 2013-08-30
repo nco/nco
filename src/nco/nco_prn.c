@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.158 2013-08-11 22:02:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.159 2013-08-30 00:07:44 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1703,8 +1703,8 @@ lbl_chr_prn:
 
   /* Finally... */
   if(var.nbr_dim > 0){
-    (void)nco_free(lmt_msa);
-    (void)nco_free(lmt);
+    lmt_msa=(lmt_msa_sct **)nco_free(lmt_msa);
+    lmt=(lmt_sct **)nco_free(lmt);
   } /* end if */
 
   if(prn_flg->nwl_pst_val) (void)fprintf(stdout,"\n");
