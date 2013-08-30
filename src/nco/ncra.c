@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.342 2013-08-30 16:59:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.343 2013-08-30 18:00:50 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.342 2013-08-30 16:59:59 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.342 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.343 2013-08-30 18:00:50 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.343 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -258,7 +258,11 @@ main(int argc,char **argv)
 
   trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
 
-  trv_sct *var_trv; /* [sct] Variable GTT object */
+  char *grp_out_fll=NULL; /* [sng] Group name */
+  int grp_id;        /* [ID] Group ID */
+  int grp_out_id;    /* [ID] Group ID (output) */
+  int var_out_id;    /* [ID] Variable ID (output) */
+  trv_sct *var_trv;  /* [sct] Variable GTT object */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
@@ -1359,9 +1363,27 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
         for(idx=0;idx<nbr_var_prc;idx++){
 
-          char *grp_out_fll=NULL; /* [sng] Group name */
+           /* Obtain variable GTT object using full variable name */
+          var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
-          int grp_id;             /* [ID] Group ID */
+          /* Obtain group ID using full group name */
+          (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+
+          /* Edit group name for output */
+          if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+
+          /* Obtain output group ID using full group name */
+          (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+
+          /* Memory management after current extracted group */
+          if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+
+          /* Get variable ID */
+          (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+          /* Store the output variable ID */
+          var_prc_out[idx]->id=var_out_id;
+
 
           in_id=in_id_arr[omp_get_thread_num()];
           if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -1371,12 +1393,6 @@ main(int argc,char **argv)
 #ifdef REPLACE_LMT_ALL
           (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 #else
-          /* Obtain variable GTT object using full variable name */
-          var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
-
-          /* Obtain group ID using full group name */
-          (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-
           /* Retrieve variable from disk into memory */
           (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
 
@@ -1433,9 +1449,10 @@ main(int argc,char **argv)
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-            if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
+            if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); 
+            else (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
             /* Perform MD5 digest of input and output data if requested */
-            if(md5) (void)nco_md5_chk(md5,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
+            if(md5) (void)nco_md5_chk(md5,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),grp_out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
           } /* end if ncrcat */
 
           /* Warn if record coordinate, if any, is not monotonic */
@@ -1459,8 +1476,9 @@ main(int argc,char **argv)
           for(idx=0;idx<nbr_var_prc;idx++){
             var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
             /* Packing/Unpacking */
-            if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
-            if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+            if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
+            if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); 
+            else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
           } /* end loop over idx */
           idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
         } /* end if normalize and write */
@@ -1591,19 +1609,20 @@ main(int argc,char **argv)
   if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out);
 
   /* Manually fix YYMMDD date which was mangled by averaging */
-  if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(out_id,var_out,xtr_nbr);
+  if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(grp_out_id,var_out,xtr_nbr);
 
   /* Add time variable to output file
   NB: nco_cnv_arm_time_install() contains OpenMP critical region */
-  if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt,dfl_lvl);
+  if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(grp_out_id,base_time_srt,dfl_lvl);
 
   /* Copy averages to output file for ncea always and for ncra when trailing file(s) was/were superfluous */
   if(FLG_BFR_NRM){
     for(idx=0;idx<nbr_var_prc;idx++){
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       /* Packing/Unpacking */
-      if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
-      if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+      if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
+      if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); 
+      else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
     } /* end loop over idx */
   } /* end if ncea */
 
