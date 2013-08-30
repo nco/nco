@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.346 2013-08-30 22:00:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.347 2013-08-30 22:09:57 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.346 2013-08-30 22:00:51 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.346 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.347 2013-08-30 22:09:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.347 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1433,7 +1433,7 @@ main(int argc,char **argv)
               break;
             } /* Match current record by name (TO_DO, full name or ID match )  */
           } /* Loop dimensions */
-#endif
+#endif /* REPLACE_LMT_ALL */
           if(prg == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
           /* Re-base record coordinate and bounds if necessary (e.g., time, time_bnds) */
@@ -1597,9 +1597,49 @@ main(int argc,char **argv)
         /* Retrieve variable from disk into memory */
 #ifdef REPLACE_LMT_ALL
         (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
-#else
+#else 
 
-#endif
+        /* Define an artificial MSA limit that corresponds to 1 element to read, since nco_msa_var_get_trv() reads all elements */ 
+        /* Loop dimensions */
+        for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+          /* Match current record by name (TO_DO, full name or ID match )  */
+          if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm,trv_tbl->lmt_rec[0]->nm) == 0){
+            /* Case of dimension being coordinate variable */
+            if (var_trv->var_dmn[idx_dmn].is_crd_var == True){
+              /* Alloc 1 dummy limit */
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=1;
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+              /* Initialize NULL/invalid */
+              (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
+              /* And set start,count,stride to match current record ...Jesuzz */
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->cnt=1;
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srd=1;
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
+            } /* Case of dimension being coordinate variable */
+            break;
+          } /* Match current record by name (TO_DO, full name or ID match )  */
+        } /* Loop dimensions */
+
+        /* Retrieve variable from disk into memory */
+        (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
+
+        /* Free the artificial limit and reset the number of limits */
+        for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+          /* Match current record by name (TO_DO, full name or ID match )  */
+          if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm,trv_tbl->lmt_rec[0]->nm) == 0){
+            /* Case of dimension being coordinate variable */
+            if (var_trv->var_dmn[idx_dmn].is_crd_var == True){
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=0;
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
+              var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn);         
+            } /* Case of dimension being coordinate variable */
+            break;
+          } /* Match current record by name (TO_DO, full name or ID match )  */
+        } /* Loop dimensions */
+#endif /* REPLACE_LMT_ALL */
 
         /* Convert char, short, long, int types to doubles before arithmetic
         Output variable type is "sticky" so only convert on first record */
