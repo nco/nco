@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.42 2013-08-01 05:02:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.43 2013-08-30 04:36:07 pvicente Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -467,6 +467,8 @@ nco_cln_get_cln_typ /*  [fnc]  Calendar type or cln_nil if not found */
   else if(strstr(lcl_sng,"360_day")) ret_typ=cln_360;
   else if(strstr(lcl_sng,"noleap") || strstr(lcl_sng,"365_day")) ret_typ=cln_365;
   else if(strstr(lcl_sng,"all_leap") || strstr(lcl_sng,"366_day")) ret_typ=cln_366;
+
+  lcl_sng=(char *)nco_free(lcl_sng);
   
   return ret_typ;
 } /* end nco_cln_get_cln_typ() */

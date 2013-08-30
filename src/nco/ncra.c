@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.340 2013-08-29 22:16:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.341 2013-08-30 04:36:07 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.340 2013-08-29 22:16:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.340 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.341 2013-08-30 04:36:07 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.341 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -360,9 +360,6 @@ main(int argc,char **argv)
   /* MO files should be in ${LOCALEDIR}/es/LC_MESSAGES */
   textdomain("nco"); /* PACKAGE is name of program */
 #endif /* not _LIBINTL_H */
-
-  /* Initialize traversal table */ 
-  trv_tbl_init(&trv_tbl);
 
   /* Start timer and save command line */ 
   ddra_info.tmr_flg=nco_tmr_srt;
@@ -609,7 +606,6 @@ main(int argc,char **argv)
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
 #ifndef USE_TRV_API
-
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
 
@@ -1140,6 +1136,9 @@ main(int argc,char **argv)
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
 #else /* USE_TRV_API */
+
+  /* Initialize traversal table */ 
+  trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
@@ -1673,7 +1672,7 @@ main(int argc,char **argv)
     var_fix_out=(var_sct **)nco_free(var_fix_out);
 
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
-#ifndef USE_TRV_API
+#ifdef USE_TRV_API
     (void)trv_tbl_free(trv_tbl);
 #endif
   } /* !flg_cln */
