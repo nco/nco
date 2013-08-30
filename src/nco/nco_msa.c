@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.223 2013-08-30 01:00:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.224 2013-08-30 21:50:45 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -28,8 +28,6 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 
   if(nbr_slb == 1){
     lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[0];
-    /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
-    /* ncks -O -g g4g1g1 -v time3 ~/nco/data/in_grp.nc dies in next statement ... */
     vp=nco_msa_rcr_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
     return vp;
   } /* end if */
