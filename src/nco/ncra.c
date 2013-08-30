@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.341 2013-08-30 04:36:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.342 2013-08-30 16:59:59 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.341 2013-08-30 04:36:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.341 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.342 2013-08-30 16:59:59 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.342 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1379,6 +1379,9 @@ main(int argc,char **argv)
 
           /* Retrieve variable from disk into memory */
           (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
+
+          /* Allocate space for only one record */
+          var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
 #endif
           if(prg == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
