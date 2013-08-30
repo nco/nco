@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.221 2013-08-29 23:28:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.222 2013-08-30 00:26:29 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1283,21 +1283,16 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   (void)nco_free(dmn_map_cnt);
   (void)nco_free(dmn_map_srt);
 
-  /* Loop dimensions for object (variable)  */
-  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++) {
-    /* Allocated number of limits */
-    int lmt_dmn_nbr=lmt_msa[dmn_idx_var]->lmt_dmn_nbr;
-
-    /* Loop needed limits */
-    for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
-      lmt_msa[dmn_idx_var]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[dmn_idx_var]->lmt_dmn[lmt_idx]);
-    } /* End Loop needed limits */
-
-    lmt_msa[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[dmn_idx_var]->lmt_dmn);
-  }/* End Loop limits */
-
-  (void)nco_free(lmt_msa);
-  (void)nco_free(lmt);
+  /* Free  */
+  for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++) {
+    for(int lmt_idx=0;lmt_idx<lmt_msa[idx_dmn]->lmt_dmn_nbr;lmt_idx++){
+      lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]);
+    }
+    lmt_msa[idx_dmn]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[idx_dmn]->lmt_dmn);
+    lmt_msa[idx_dmn]=(lmt_msa_sct *)nco_free(lmt_msa[idx_dmn]);
+  }
+  lmt_msa=(lmt_msa_sct **)nco_free(lmt_msa);
+  lmt=(lmt_sct **)nco_free(lmt);
 
   return;
 } /* end nco_cpy_var_val_mlt_lmt_trv() */
@@ -1481,6 +1476,7 @@ nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking 
     for(int lmt_idx=0;lmt_idx<lmt_msa[idx_dmn]->lmt_dmn_nbr;lmt_idx++){
       lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]);
     }
+    lmt_msa[idx_dmn]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[idx_dmn]->lmt_dmn);
     lmt_msa[idx_dmn]=(lmt_msa_sct *)nco_free(lmt_msa[idx_dmn]);
   }
   lmt_msa=(lmt_msa_sct **)nco_free(lmt_msa);

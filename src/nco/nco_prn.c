@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.159 2013-08-30 00:07:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.160 2013-08-30 00:26:29 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1424,7 +1424,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         } /* end switch */
       } /* !PRN_DMN_VAR_NM */
     } /* !is_mss_val */
-    //(void)fprintf(stdout,"\n");
   } /* end if variable is scalar, byte, or character */
 
   if(var.nbr_dim > 0 && !dlm_sng && !prn_flg->cdl){
@@ -1687,27 +1686,20 @@ lbl_chr_prn:
 
   if(MALLOC_UNITS_SNG) unit_sng=(char *)nco_free(unit_sng);
 
-  /* Loop dimensions for object (variable) */
-  for(int dmn_idx_var=0;dmn_idx_var<var_trv->nbr_dmn;dmn_idx_var++){
-    /* Allocated number of limits */
-    int lmt_dmn_nbr=lmt_msa[dmn_idx_var]->lmt_dmn_nbr;
-
-    /* Loop needed limits */
-    for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++)
-      lmt_msa[dmn_idx_var]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[dmn_idx_var]->lmt_dmn[lmt_idx]);
-
-    lmt_msa[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[dmn_idx_var]->lmt_dmn);
-  } /* End Loop limits */
-
   if(dlm_sng) dlm_sng=(char *)nco_free(dlm_sng);
 
-  /* Finally... */
-  if(var.nbr_dim > 0){
-    lmt_msa=(lmt_msa_sct **)nco_free(lmt_msa);
-    lmt=(lmt_sct **)nco_free(lmt);
-  } /* end if */
-
   if(prn_flg->nwl_pst_val) (void)fprintf(stdout,"\n");
+
+  /* Free  */
+  for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++) {
+    for(int lmt_idx=0;lmt_idx<lmt_msa[idx_dmn]->lmt_dmn_nbr;lmt_idx++){
+      lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]=nco_lmt_free(lmt_msa[idx_dmn]->lmt_dmn[lmt_idx]);
+    }
+    lmt_msa[idx_dmn]->lmt_dmn=(lmt_sct **)nco_free(lmt_msa[idx_dmn]->lmt_dmn);
+    lmt_msa[idx_dmn]=(lmt_msa_sct *)nco_free(lmt_msa[idx_dmn]);
+  }
+  lmt_msa=(lmt_msa_sct **)nco_free(lmt_msa);
+  lmt=(lmt_sct **)nco_free(lmt);
 
 } /* end nco_prn_var_val_trv() */
 
