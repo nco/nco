@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.930 2013-08-29 20:15:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.931 2013-08-31 21:04:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6863,7 +6863,6 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
   /* Export */
   *nbr_dmn_out=nbr_out_dmn;
 
-
   if(dbg_lvl_get() >= nco_dbg_dev){ 
     (void)fprintf(stdout,"%s: DEBUG %s dimensions to keep on output: ",prg_nm_get(),fnc_nm);        
     for(int idx_dmn=0;idx_dmn<nbr_out_dmn;idx_dmn++){
@@ -6927,138 +6926,118 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
 
 } /* nco_dmn_id_mk() */
 
-
 void                          
-nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata */
+nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * trv_tbl)               /* I/O [sct] GTT (Group Traversal Table) */
 {
-  const char fnc_nm[]="nco_dmn_unl_tbl()"; /* [sng] Function name  */
+  const char fnc_nm[]="nco_bld_rec_dmn()"; /* [sng] Function name  */
 
-  char *rec_dmn_nm_in=NULL;/* [sng] Record dimension name */ 
-
-  int rcd=NC_NOERR;        /* [rcd] Return code */
   int var_id;              /* [id] Variable ID */
   int grp_id;              /* [id] Group ID */
 
   nco_bool flg_dmn_ins;    /* [flg] Is dimension already inserted in output array  */  
 
-  lmt_sct *lmt_rec;        /* [sct] Record dimension to GTT */
-
-  nm_tbl_sct *rec_dmn_nm;  /* [sct] Record dimension names array */
+  dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
   /* Used only by ncra */
   assert(prg_get() == ncra);
 
   /* Loop table */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-    trv_sct var_trv=trv_tbl->lst[idx_var];
+  for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
-    /* Filter variables to extract */
-    if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr) {
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
-      rec_dmn_nm=NULL;
+    /* Variable to extract */
+    if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-      /* Get array of record names for object */
-      (void)nco_get_rec_dmn_nm(&var_trv,trv_tbl,&rec_dmn_nm);                
+      /* Loop variable dimensions */
+      for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
-      /* Use for record dimension name the first in array (TO_DO) */
-      if(rec_dmn_nm->lst){
-        rec_dmn_nm_in=(char *)strdup(rec_dmn_nm->lst[0].nm);
-      }
-
-      /* Obtain group ID from netCDF API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-
-      /* Obtain record coordinate metadata */
-      rcd=nco_inq_varid_flg(grp_id,rec_dmn_nm_in,&var_id);
-
-      if(rcd == NC_NOERR){ 
-        char *cln_att_sng=NULL;
-
-        int dmn_id=-1; 
-
-        /* Get dimension ID */
-
-        /* Loop dimensions of  variable  */
-        for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-
-          dmn_trv_sct *dmn_trv;
-
-          /*  Match name */
-          if (strcmp(var_trv.var_dmn[idx_dmn].dmn_nm,rec_dmn_nm_in) == 0){ 
-
-            /* Get unique dimension object from unique dimension ID, in input list */
-            dmn_trv=nco_dmn_trv_sct(var_trv.var_dmn[idx_dmn].dmn_id,trv_tbl);
-
-            /* Is record */
-            assert(dmn_trv->is_rec_dmn);
-
-            dmn_id=var_trv.var_dmn[idx_dmn].dmn_id;
-
-            assert(dmn_id == dmn_trv->dmn_id);
-            break;
-
-          } /*  Match name */
-        }/* Loop dimensions of  variable  */
-
+        /* Assume dimension is not yet inserted in array */
         flg_dmn_ins=False;
 
-        /* Loop constructed array of record dimensions to see if already inserted  */
-        for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+        /* Dimension ID */
+        int dmn_id=var_trv.var_dmn[idx_var_dmn].dmn_id;
 
-          /* Match by ID */
-          if(dmn_id == trv_tbl->lmt_rec[idx_rec]->id){
+        /* Get unique dimension object from unique dimension ID, in input list */
+        dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
 
-            if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s variable <%s>: ",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
-              (void)fprintf(stdout,"%s: DEBUG %s record #%d already inserted\n",prg_nm_get(),fnc_nm,dmn_id);        
-            } 
+        /* Is record */
+        if (dmn_trv->is_rec_dmn){
 
-            flg_dmn_ins=True;
-            break;
-          }  /* Match by ID */
-        } /* Loop constructed array of record dimensions to see if already inserted  */
+          /* Loop constructed array of output dimensions to see if already inserted  */
+          for(int idx_dmn_out=0;idx_dmn_out<trv_tbl->nbr_rec;idx_dmn_out++){
 
+            /* Match by ID */
+            if(dmn_id == trv_tbl->lmt_rec[idx_dmn_out]->id){
 
-        /* If this dimension is not in output array */
-        if (flg_dmn_ins == False){
+              if(dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
+                (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> already inserted\n",prg_nm_get(),fnc_nm,
+                  var_trv.var_dmn[idx_var_dmn].dmn_id,var_trv.var_dmn[idx_var_dmn].dmn_nm_fll);        
+              } 
 
-          lmt_rec=nco_lmt_sct_mk(grp_id,dmn_id,NULL,(int) 0,FORTRAN_IDX_CNV);
+              /* Mark as inserted in array */
+              flg_dmn_ins=True;
+              break;
+            }  /* Match by ID */
+          } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
-          lmt_rec->rbs_sng=nco_lmt_get_udu_att(grp_id,var_id,"units"); 
-          cln_att_sng=nco_lmt_get_udu_att(grp_id,var_id,"calendar"); 
-          lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
-          if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
+          /* If this dimension is not in output array */
+          if (flg_dmn_ins == False){
 
-          /* Store ID */
-          lmt_rec->id=dmn_id;
+            /* Add to GTT */
+            trv_tbl->lmt_rec=(lmt_sct **)nco_realloc(trv_tbl->lmt_rec,(trv_tbl->nbr_rec+1)*sizeof(lmt_sct *));
 
-          /* Add to GTT */
-          trv_tbl->lmt_rec=(lmt_sct **)nco_realloc(trv_tbl->lmt_rec,(trv_tbl->nbr_rec+1)*sizeof(lmt_sct *));
-          trv_tbl->lmt_rec[trv_tbl->nbr_rec]=lmt_rec;
-          trv_tbl->nbr_rec++;
+            /* Obtain group ID using full group name */
+            (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+
+            /* Create stand-alone limit structure for given dimension */
+            trv_tbl->lmt_rec[trv_tbl->nbr_rec]=nco_lmt_sct_mk(grp_id,dmn_id,NULL,(int) 0,FORTRAN_IDX_CNV);
+
+            /* Check if coordinate variable */
+            int rcd=nco_inq_varid_flg(grp_id,var_trv.var_dmn[idx_var_dmn].dmn_nm,&var_id);
+
+            /* Obtain record coordinate metadata */
+            if(rcd == NC_NOERR){ 
+              char *cln_att_sng=NULL;     
+              trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng=nco_lmt_get_udu_att(grp_id,var_id,"units"); 
+              cln_att_sng=nco_lmt_get_udu_att(grp_id,var_id,"calendar"); 
+              trv_tbl->lmt_rec[trv_tbl->nbr_rec]->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
+              if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
+            }
+
+            /* Store ID */
+            trv_tbl->lmt_rec[trv_tbl->nbr_rec]->id=dmn_id;
 
 #ifndef ENABLE_UDUNITS
-          if(lmt_rec->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",
-            prg_nm_get(),lmt_rec->nm,prg_nm_get());
+            if(trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",
+              prg_nm_get(),trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm,prg_nm_get());
 #endif /* !ENABLE_UDUNITS */
 
-        } /* If this dimension is not in output array */
+            /* Increase array size */
+            trv_tbl->nbr_rec++;
 
-      }else{ /* endif record coordinate exists */
-        /* Record dimension but not record coordinate exists. This is fine. Reset return code. */
-        rcd=NC_NOERR;
-      } /* endif record coordinate exists */
+          }  /* If this dimension is not in output array */
 
-      /* Memory management for record dimension names */
-      if(rec_dmn_nm){
-        for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
-        rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
-      } /* Memory management for record dimension names */
-
-    } /* Filter variables to extract */
+        } /* Is record */
+      } /* Loop variable dimensions */ 
+    } /* Variable to extract */
   } /* Loop table */
 
-} /* nco_dmn_unl_tbl() */
+
+  if(dbg_lvl_get() >= nco_dbg_dev){ 
+    (void)fprintf(stdout,"%s: DEBUG %s record dimensions to process: ",prg_nm_get(),fnc_nm);        
+    for(int idx_dmn=0;idx_dmn<trv_tbl->nbr_rec;idx_dmn++){
+      (void)fprintf(stdout,"#%d<%s> : ",trv_tbl->lmt_rec[idx_dmn]->id,trv_tbl->lmt_rec[idx_dmn]->nm);        
+    }
+    (void)fprintf(stdout,"\n");       
+  } 
+
+  return;
+
+} /* nco_bld_rec_dmn() */
+
+

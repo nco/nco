@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.365 2013-08-28 20:25:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.366 2013-08-31 21:04:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -561,12 +561,6 @@ nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions i
  const int nbr_dmn_dgn,               /* I [nbr] Total number of dimensions in list */
  trv_tbl_sct *trv_tbl);               /* I/O [sct] GTT (Group Traversal Table) */
 
-void                          
-nco_dmn_unl_tbl                       /* [fnc] Obtain record coordinate metadata */
-(const int nc_id,                     /* I [ID] netCDF input file ID */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- trv_tbl_sct * trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
-
 void
 nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions associated with input variable list  (ncpdq only) */
 (const int nc_id,                      /* I [id] netCDF file ID */
@@ -597,6 +591,12 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
 (const int dmn_id,                     /* I [nbr] Number of dimensions associated with variables to be extracted (size of above array) */
  const nco_bool flg_rdd,               /* I [flg] Mark flag retain degenerate dimension */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+
+void                          
+nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
+(const int nc_id,                     /* I [ID] netCDF input file ID */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ trv_tbl_sct * trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
