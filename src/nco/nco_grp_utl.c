@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.931 2013-08-31 21:04:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.932 2013-08-31 23:55:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4586,6 +4586,17 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     (void)nco_inq_var_deflate(grp_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    
     (void)nco_inq_var_chunking(grp_id,var->id,&srg_typ,var->cnk_sz);   
   } /* endif */
+
+
+  /* Get enm_prc_typ from GTT (is_fix_var defaults to True) */  
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(strcmp(var->nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
+      if(trv_tbl->lst[uidx].enm_prc_typ == prc_typ) {
+        var->is_fix_var=prc_typ;
+      }
+      break;
+    }
+  }
 
   var->undefined=False; /* [flg] Used by ncap parser */
   return var;

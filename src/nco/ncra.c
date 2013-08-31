@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.351 2013-08-31 22:08:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.352 2013-08-31 23:55:48 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.351 2013-08-31 22:08:20 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.351 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.352 2013-08-31 23:55:48 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.352 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1183,7 +1183,7 @@ main(int argc,char **argv)
   /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
   if(CNV_ARM) base_time_srt=nco_cnv_arm_base_time_get(in_id);
 
-  /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
+  /* Fill-in variable structure list for all extracted variables */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
   /* Duplicate to output array */
