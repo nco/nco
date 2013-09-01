@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.933 2013-09-01 00:52:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.934 2013-09-01 23:42:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6955,7 +6955,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
   /* Used only by ncra */
-  assert(prg_get() == ncra);
+  assert(prg_get() == ncra || prg_get() == ncrcat || prg_get() == ncea );
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
