@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.932 2013-08-31 23:55:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.933 2013-09-01 00:52:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4588,12 +4588,14 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   } /* endif */
 
 
-  /* Get enm_prc_typ from GTT (is_fix_var defaults to True) */  
+  /* Get enm_prc_typ from GTT */  
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(strcmp(var->nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
       if(trv_tbl->lst[uidx].enm_prc_typ == prc_typ) {
-        var->is_fix_var=prc_typ;
-      }
+        var->is_fix_var=0;
+      } else if(trv_tbl->lst[uidx].enm_prc_typ == fix_typ) {
+        var->is_fix_var=1;
+      } 
       break;
     }
   }
