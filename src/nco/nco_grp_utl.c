@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.934 2013-09-01 23:42:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.935 2013-09-02 21:53:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6962,8 +6962,8 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
-    /* Variable to extract */
-    if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+    /* Is variable (extract records regardless of variable is to be extracted) */
+    if (var_trv.nco_typ == nco_obj_typ_var){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
