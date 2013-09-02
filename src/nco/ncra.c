@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.353 2013-09-01 23:42:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.354 2013-09-02 19:10:49 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.353 2013-09-01 23:42:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.353 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.354 2013-09-02 19:10:49 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.354 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1656,6 +1656,7 @@ main(int argc,char **argv)
               var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
               /* Initialize NULL/invalid */
               (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
+
               /* And set start,count,stride to match record limits (NOTE, differs from ncra, ncrcat) */
               var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srt=trv_tbl->lmt_rec[0]->srt;
               var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->end=trv_tbl->lmt_rec[0]->end;
@@ -1674,11 +1675,15 @@ main(int argc,char **argv)
               var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
               /* Initialize NULL/invalid */
               (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
-              /* And set start,count,stride to match current record ...Jesuzz */
-              var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
-              var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
-              var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->cnt=1;
-              var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srd=1;
+
+              /* And set start,count,stride to match record limits (NOTE, differs from ncra, ncrcat) */
+              var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srt=trv_tbl->lmt_rec[0]->srt;
+              var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->end=trv_tbl->lmt_rec[0]->end;
+              var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->cnt=trv_tbl->lmt_rec[0]->cnt;
+              var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srd=trv_tbl->lmt_rec[0]->srd;
+
+              var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt=trv_tbl->lmt_rec[0]->cnt;
+
               var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
             } /* Case of dimension not being coordinate variable */
 
