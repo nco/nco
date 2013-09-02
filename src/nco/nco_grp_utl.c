@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.935 2013-09-02 21:53:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.936 2013-09-02 23:36:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5107,6 +5107,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* netCDF type in output variable (usually same as input) */ 
   var_typ_out=var_typ;
 
+  /* TO_DO */
+
   /* But...some operators change the output netCDF variable type */
   if (prg_id == ncflint || prg_id == ncpdq){
 
@@ -5115,13 +5117,29 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       var_typ_out=var_trv->var_typ_out;
     } else {
       var_typ_out=var_typ;
-    }
-
-    if(dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with output type %s\n",prg_nm_get(),fnc_nm,
-        var_trv->nm_fll,nco_typ_sng(var_typ_out));
-    }
+    }  
   } /* But...some operators change the output netCDF variable type */
+
+  else if (prg_id != ncbo ){
+    int var_id;        /* [id] Variable ID */
+
+    var_sct *var_prc;  /* [sct] Variable to process */
+
+    /* Get variable ID */
+    (void)nco_inq_varid(grp_in_id,var_trv->nm,&var_id);
+
+    /* Allocate variable structure and fill with metadata */
+    var_prc=nco_var_fll_trv(grp_in_id,var_id,var_trv,trv_tbl);     
+
+    /* Obtain netCDF type to define variable from NCO program ID */
+    var_typ_out=nco_get_typ(var_prc);
+
+  }
+
+  if(dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with output type %s\n",prg_nm_get(),fnc_nm,
+      var_trv->nm_fll,nco_typ_sng(var_typ_out));
+  }
 
 
   if(dbg_lvl_get() >= nco_dbg_dev){
