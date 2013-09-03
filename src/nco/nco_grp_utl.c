@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.937 2013-09-03 02:41:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.938 2013-09-03 03:24:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7012,6 +7012,27 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
             /* Create stand-alone limit structure for given dimension */
             trv_tbl->lmt_rec[trv_tbl->nbr_rec]=nco_lmt_sct_mk(grp_id,dmn_id,NULL,(int) 0,FORTRAN_IDX_CNV);
+
+            /* Store any user specified limits */
+
+            /* Has coordinate */
+            if(dmn_trv->crd_nbr){
+              /* Loop coordinates */
+              for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
+                crd_sct *crd=dmn_trv->crd[crd_idx];
+                /* Match ID */ 
+                if(dmn_id ==  crd->dmn_id){
+                  if (crd->lmt_msa.lmt_dmn != NULL && crd->lmt_msa.lmt_dmn[crd_idx] != NULL ) {
+                    trv_tbl->lmt_rec[trv_tbl->nbr_rec]=crd->lmt_msa.lmt_dmn[crd_idx];
+                  }
+                } /* Match ID */ 
+              }/* Loop coordinates */
+            } else {
+              if (dmn_trv->lmt_msa.lmt_dmn != NULL && dmn_trv->lmt_msa.lmt_dmn[idx_var_dmn] != NULL) {
+                trv_tbl->lmt_rec[trv_tbl->nbr_rec]=dmn_trv->lmt_msa.lmt_dmn[idx_var_dmn];
+              }
+            } /* ! Has coordinate */
+
 
             /* Check if coordinate variable */
             int rcd=nco_inq_varid_flg(grp_id,var_trv.var_dmn[idx_var_dmn].dmn_nm,&var_id);
