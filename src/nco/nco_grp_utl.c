@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.936 2013-09-02 23:36:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.937 2013-09-03 02:41:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4659,7 +4659,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int dmn_out_id_tmp[NC_MAX_DIMS];       /* [idx] Copy of dmn_out_id (ncpdq) */
 
   long dmn_cnt;                          /* [nbr] Hyperslabbed size of dimension */  
-  long dmn_cnt_dbg[NC_MAX_DIMS];         /* [nbr] Hyperslabbed size of dimension */  
   long dmn_sz;                           /* [nbr] Size of dimension (on input)  */  
   long dmn_sz_grp;                       /* [sng] Dimension size for group  */  
 
@@ -5044,10 +5043,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
-    long cnt=nco_dmn_get_msa(var_dim_id,trv_tbl);       
-
-    dmn_cnt_dbg[idx_dmn]=cnt;
-
   } /* End of the very important dimension loop */
 
   /* If variable needs dimension re-ordering */
@@ -5141,16 +5136,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       var_trv->nm_fll,nco_typ_sng(var_typ_out));
   }
 
-
-  if(dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with new dimension IDs: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
-    for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-      if (DEFINE_DIM[idx_dmn]) {
-        (void)fprintf(stdout,"##%d<%s> size=%li: ",dmn_out_id[idx_dmn],var_trv->var_dmn[idx_dmn].dmn_nm,dmn_cnt_dbg[idx_dmn]);
-      }
-    }
-    (void)fprintf(stdout,"\n");
-  }
 
   /* Special case for ncwa */
   if (prg_id == ncwa){

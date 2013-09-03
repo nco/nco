@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.355 2013-09-02 21:53:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.356 2013-09-03 02:41:10 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.355 2013-09-02 21:53:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.355 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.356 2013-09-03 02:41:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.356 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -960,7 +960,8 @@ main(int argc,char **argv)
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-            if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
+            if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); 
+            else (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
             /* Perform MD5 digest of input and output data if requested */
             if(md5) (void)nco_md5_chk(md5,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
           } /* end if ncrcat */
@@ -1002,7 +1003,11 @@ main(int argc,char **argv)
           /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
           long end_max_crr;
           end_max_crr=min_lng(lmt_rec->idx_end_max_abs-rec_in_cml,min_lng(lmt_rec->end+lmt_rec->drn-1L,rec_dmn_sz-1L));
-          if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
+          if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max_crr){
+            idx_rec_crr_in++;
+          } else {
+            break;
+          }
         }else{ /* !REC_SRD_LST */
           if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec->srd-lmt_rec->drn+1L;
         } /* !REC_SRD_LST */
@@ -1549,7 +1554,11 @@ main(int argc,char **argv)
           /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
           long end_max_crr;
           end_max_crr=min_lng(trv_tbl->lmt_rec[0]->idx_end_max_abs-rec_in_cml,min_lng(trv_tbl->lmt_rec[0]->end+trv_tbl->lmt_rec[0]->drn-1L,rec_dmn_sz-1L));
-          if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
+          if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max_crr){
+            idx_rec_crr_in++;
+          } else {
+            break;
+          }
         }else{ /* !REC_SRD_LST */
           if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=trv_tbl->lmt_rec[0]->srd-trv_tbl->lmt_rec[0]->drn+1L;
         } /* !REC_SRD_LST */
