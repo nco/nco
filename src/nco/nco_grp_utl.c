@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.939 2013-09-03 19:36:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.940 2013-09-03 21:19:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2713,6 +2713,9 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
             /* Initialize this entry */
             (void)nco_lmt_init(trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]);
 
+            /* Store dimension ID */
+            lmt[lmt_idx]->id=crd->dmn_id;
+
             /* Store this valid input; deep-copy to table */ 
             (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_crr]);
 
@@ -2748,6 +2751,9 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
           /* Initialize this entry */
           (void)nco_lmt_init(trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn[lmt_crr]);
+
+          /* Store dimension ID */
+          lmt[lmt_idx]->id=dmn_trv.dmn_id;
 
           /* Store this valid input; deep-copy to table */ 
           (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst_dmn[idx_dmn].lmt_msa.lmt_dmn[lmt_crr]);
@@ -6946,8 +6952,6 @@ void
 nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- lmt_sct **lmt,                       /* I [sct] User-specified dimension limits */
- int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits (size of above array) */
  trv_tbl_sct * trv_tbl)               /* I/O [sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_bld_rec_dmn()"; /* [sng] Function name  */
@@ -7012,8 +7016,6 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
             /* Obtain group ID using full group name */
             (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-            /* Create stand-alone limit structure for given dimension */
-            trv_tbl->lmt_rec[trv_tbl->nbr_rec]=nco_lmt_sct_mk(grp_id,dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
 
             /* Has coordinate */
             if(dmn_trv->crd_nbr){
@@ -7022,13 +7024,17 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
                 crd_sct *crd=dmn_trv->crd[crd_idx];
                 /* Match ID */ 
                 if(dmn_id ==  crd->dmn_id){
-                  /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
-                  (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,trv_tbl->lmt_rec[trv_tbl->nbr_rec]);
+
+                  /* Create stand-alone limit structure for given dimension */
+                  trv_tbl->lmt_rec[trv_tbl->nbr_rec]=nco_lmt_sct_mk(grp_id,dmn_id,crd->lmt_msa.lmt_dmn,crd->lmt_msa.lmt_dmn_nbr,FORTRAN_IDX_CNV);
+
                 } /* Match ID */ 
               }/* Loop coordinates */
             } else {
-              /* Parse user-specified limits into hyperslab specifications. NOTE: Use False parameter and "dmn" */
-              (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,dmn_trv->grp_nm_fll,dmn_trv->nm,dmn_trv->sz,dmn_trv->is_rec_dmn,False,trv_tbl->lmt_rec[trv_tbl->nbr_rec]);
+
+              /* Create stand-alone limit structure for given dimension */
+              trv_tbl->lmt_rec[trv_tbl->nbr_rec]=nco_lmt_sct_mk(grp_id,dmn_id,dmn_trv->lmt_msa.lmt_dmn,dmn_trv->lmt_msa.lmt_dmn_nbr,FORTRAN_IDX_CNV);
+
             } /* ! Has coordinate */
 
 

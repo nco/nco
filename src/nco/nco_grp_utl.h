@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.367 2013-09-03 19:36:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.368 2013-09-03 21:19:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -596,8 +596,6 @@ void
 nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- lmt_sct **lmt,                       /* I [sct] User-specified dimension limits */
- int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits (size of above array) */
  trv_tbl_sct * trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
