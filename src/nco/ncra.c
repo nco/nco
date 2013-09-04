@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.358 2013-09-03 21:19:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.359 2013-09-04 20:15:40 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -50,7 +50,7 @@
    ncea -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    ncea -O -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
    ncea -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
-
+ 
 #if 0
 #define USE_TRV_API
 #endif
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.358 2013-09-03 21:19:01 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.358 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.359 2013-09-04 20:15:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.359 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1394,70 +1394,114 @@ main(int argc,char **argv)
           (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 #else
           /* Define an artificial MSA limit that corresponds to 1 element to read, since nco_msa_var_get_trv() reads all elements */ 
+
+          nco_bool flg_lmt=False; /* [flg] Allocate a custom limit */
+
           /* Loop dimensions */
           for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-            
+
             /* Match current record by ID */
             if(var_trv->var_dmn[idx_dmn].dmn_id == trv_tbl->lmt_rec[0]->id){
 
               /* Case of dimension being coordinate variable */
               if (var_trv->var_dmn[idx_dmn].is_crd_var == True){
-                /* Alloc 1 dummy limit */
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=1;
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-                /* Initialize NULL/invalid */
-                (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
-                /* And set start,count,stride to match current record ...Jesuzz */
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->cnt=1;
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srd=1;
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
+
+                int lmt_dmn_nbr=var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr;
+
+                /* Case of previously existing limits */
+                if (lmt_dmn_nbr > 0){
+
+                  /* Loop limits */
+                  for(int idx_lmt=0;idx_lmt<lmt_dmn_nbr;idx_lmt++){
+                    /* And set start,count,stride to match current record ...Jesuzz */
+                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->srt=idx_rec_crr_in;
+                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->end=idx_rec_crr_in;
+                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1;
+                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->srd=1;
+                  } /* Loop limits */
+
+                  /* ! Case of previously existing limits */
+                } else {
+                  flg_lmt=True;
+                  /* Alloc 1 dummy limit */
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=1;
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+                  /* Initialize NULL/invalid */
+                  (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
+                  /* And set start,count,stride to match current record ...Jesuzz */
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->cnt=1;
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srd=1;
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
+                } /* ! Case of previously existing limits */
               } /* Case of dimension being coordinate variable */
 
               else if (var_trv->var_dmn[idx_dmn].is_crd_var == False){
-                /* Alloc 1 dummy limit */
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr=1;
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-                /* Initialize NULL/invalid */
-                (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
-                /* And set start,count,stride to match current record ...Jesuzz */
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->cnt=1;
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srd=1;
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
+
+                int lmt_dmn_nbr=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr;
+
+                /* Case of previously existing limits */
+                if (lmt_dmn_nbr > 0){
+
+                  /* Loop limits */
+                  for(int idx_lmt=0;idx_lmt<lmt_dmn_nbr;idx_lmt++){
+                    /* And set start,count,stride to match current record ...Jesuzz */
+                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->srt=idx_rec_crr_in;
+                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->end=idx_rec_crr_in;
+                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1;
+                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->srd=1;
+                  } /* Loop limits */
+
+                  /* ! Case of previously existing limits */
+                } else {
+                  flg_lmt=True;
+                  /* Alloc 1 dummy limit */
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr=1;
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+                  /* Initialize NULL/invalid */
+                  (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
+                  /* And set start,count,stride to match current record ...Jesuzz */
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->cnt=1;
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srd=1;
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
+                } /* ! Case of previously existing limits */
               } /* Case of dimension not being coordinate variable */
 
               break;
             } /* Match current record by name (TO_DO, full name or ID match )  */
           } /* Loop dimensions */
-          
+
           /* Retrieve variable from disk into memory */
           (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
 
           /* Free the artificial limit and reset the number of limits */
           for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-
             /* Match current record by ID */
             if(var_trv->var_dmn[idx_dmn].dmn_id == trv_tbl->lmt_rec[0]->id){
-
-              /* Case of dimension being coordinate variable */
-              if (var_trv->var_dmn[idx_dmn].is_crd_var == True){
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=0;
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
-                var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn);         
-              } /* Case of dimension being coordinate variable */
-              else if (var_trv->var_dmn[idx_dmn].is_crd_var == False){
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr=0;
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
-                var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn);    
-              } /* Case of dimension not being coordinate variable */
-              break;
+              /* Custom limit */
+              if (flg_lmt == True) {
+                /* Case of dimension being coordinate variable */
+                if (var_trv->var_dmn[idx_dmn].is_crd_var == True){
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=0;
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
+                  var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn);         
+                } /* Case of dimension being coordinate variable */
+                else if (var_trv->var_dmn[idx_dmn].is_crd_var == False){
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr=0;
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
+                  var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn);    
+                } /* Case of dimension not being coordinate variable */
+                break;
+              } /* Custom limit */
             } /* Match current record  */
           } /* Loop dimensions */
+
+
 #endif /* REPLACE_LMT_ALL */
           if(prg == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
