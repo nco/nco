@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.191 2013-08-01 05:02:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.192 2013-09-04 01:39:44 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -425,6 +425,9 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     lmt[idx]->origin=0.0;
     lmt[idx]->rbs_sng=NULL_CEWI;
     lmt[idx]->lmt_cln=cln_nil;
+
+    /* 20130903: Initialize cumulative number of records in all files opened so far (multi-file record dimension only) */
+    lmt[idx]->rec_in_cml=0L;
 
     /* Free current pointer array to strings, leaving untouched the strings themselves
     They will be free()'d with limit structures in nco_lmt_lst_free() */
