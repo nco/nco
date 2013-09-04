@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.174 2013-08-09 22:04:36 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.175 2013-09-04 20:02:50 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -795,6 +795,14 @@ variables:
 	tpt:units = "kelvin";
 	tpt:hieght = "Leave hieght mispelled for NCO User's guide example";
 
+	double tpt_dbl(time);
+	tpt_dbl:long_name = "Temperature stored as double precision floating point";
+	tpt_dbl:units = "kelvin";
+
+	float tpt_flt(time);
+	tpt_flt:long_name = "Temperature stored as single precision floating point";
+	tpt_flt:units = "kelvin";
+
 	double rec_var_dbl_mss_val_dbl_upk(time);
 	rec_var_dbl_mss_val_dbl_upk:long_name = "record variable, double, with double missing values";
 	rec_var_dbl_mss_val_dbl_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_dbl_pck, so its _FillValue should not be out of range, i.e., it should be representable by a short. However, the _FillValue should itself be the same type as the unpacked variable, NC_DOUBLE in this case.";
@@ -1304,6 +1312,8 @@ data:
 	tm_366=59;
 	od=20,22,24,26,28,30,32,34,36,38;
 	tpt=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,273.9,274.0;
+	tpt_flt=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,273.9,274.0;
+	tpt_dbl=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,273.9,274.0;
 	two=2.;
 	two_dmn_var=1.5,5.5,9.5,13.5,17.5,21.5;
 	u=1.,0.,1.,0.,1.,0.,1.,0.,1.,0.;
