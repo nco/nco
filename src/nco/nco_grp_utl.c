@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.940 2013-09-03 21:19:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.941 2013-09-04 22:47:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2895,78 +2895,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       if(dbg_lvl_get() >= nco_dbg_fl){
 	if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[idx_dmn].nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),trv_tbl->lst_dmn[idx_dmn].nm); 
       } /* endif dbg */
-
-    } /* b) case of dimension only (there is no coordinate variable for this dimension */
-  } /* Loop dimensions  */
-
-  /* Step 4) Validate...need more here */
-
-
-  /* Loop table dimensions */
-  for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
-
-    /*  The limits have to be separated to */
-
-    /* a) case where the dimension has coordinate variables */
-    if (dmn_trv.crd_nbr){
-
-      /* Loop coordinates */
-      for(int crd_idx=0;crd_idx<dmn_trv.crd_nbr;crd_idx++){
-        crd_sct *crd=dmn_trv.crd[crd_idx];
-
-        if(dbg_lvl_get() == nco_dbg_old && crd->lmt_msa.lmt_dmn_nbr){
-          (void)fprintf(stdout,"%s: INFO %s checking limits for coordinate <%s>:\n",prg_nm_get(),fnc_nm,crd->crd_nm_fll);
-        }
-
-        /* lmt_dmn_nbr can be incremented for wrapped limits; always sync   */
-        assert(crd->lmt_msa.lmt_crr == crd->lmt_msa.lmt_dmn_nbr);
-
-        /* Loop limits for each coordinate */
-        for(int lmt_idx=0;lmt_idx<crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
-          if(dbg_lvl_get() == nco_dbg_old){
-            (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
-              lmt_idx,
-              crd->lmt_msa.lmt_dmn[lmt_idx]->nm,
-              crd->lmt_msa.lmt_dmn[lmt_idx]->srt,
-              crd->lmt_msa.lmt_dmn[lmt_idx]->end,
-              crd->lmt_msa.lmt_dmn[lmt_idx]->srd);
-          }
-
-          /* Need more MRA sanity checks here; checking srt <= end now */
-          assert(crd->lmt_msa.lmt_dmn[lmt_idx]->srt <= crd->lmt_msa.lmt_dmn[lmt_idx]->end);
-          assert(crd->lmt_msa.lmt_dmn[lmt_idx]->srd >= 1);
-        } /* End Loop limits for each dimension */
-
-      } /* Loop coordinates */
-    }else{
-
-      /* Number of dimension limits for table dimension  */
-      int lmt_dmn_nbr=dmn_trv.lmt_msa.lmt_dmn_nbr;
-
-      /* Current index of dimension limits for table dimension  */
-      int lmt_crr=dmn_trv.lmt_msa.lmt_crr;
-
-      if(dbg_lvl_get() == nco_dbg_old && lmt_dmn_nbr) (void)fprintf(stdout,"%s: INFO %s checking limits for dimension <%s>:\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);
-
-      /* lmt_dmn_nbr can be incremented for wrapped limits; always sync   */
-      assert(lmt_crr == lmt_dmn_nbr);
-
-      /* Loop limits for each dimension */
-      for(int lmt_idx=0;lmt_idx<dmn_trv.lmt_msa.lmt_dmn_nbr;lmt_idx++){
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s checking limit[%d]:%s:(%li,%li,%li)\n",prg_nm_get(),fnc_nm,
-            lmt_idx,
-            dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->nm,
-            dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->srt,
-            dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->end,
-            dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->srd);
-        }
-
-        /* Need more MRA sanity checks here; checking srt <= end now */
-        assert(dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->srt <= dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->end);
-        assert(dmn_trv.lmt_msa.lmt_dmn[lmt_idx]->srd >= 1);
-      }/* End Loop limits for each dimension */
 
     } /* b) case of dimension only (there is no coordinate variable for this dimension */
   } /* Loop dimensions  */
