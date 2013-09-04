@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.362 2013-09-04 22:58:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.363 2013-09-04 23:31:08 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.362 2013-09-04 22:58:22 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.362 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.363 2013-09-04 23:31:08 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.363 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1291,7 +1291,13 @@ main(int argc,char **argv)
     in_id=in_id_arr[0];
 
     /* Variables may have different ID, missing_value, type, in each file */
-    for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
+    for(idx=0;idx<nbr_var_prc;idx++){
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+      /* Obtain group ID using full group name */
+      (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+      (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
+    }
 
     /* Fill record array */
     (void)nco_lmt_evl(in_id,trv_tbl->lmt_rec[0],rec_usd_cml,FORTRAN_IDX_CNV);

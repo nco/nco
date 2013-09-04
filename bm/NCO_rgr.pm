@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.317 2013-09-03 02:41:10 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.318 2013-09-04 23:31:08 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3313,6 +3313,18 @@ print "\n";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+	
+# ncra #23
+# same as ncra #02, for groups
+    
+    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%d' -g g4 -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="(Groups) record mean of int across two files";
+    $tst_cmd[2]="6";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
 	
 #print "paused - hit return to continue"; my $wait=<STDIN>;
 #print "<<<STOP>>>- hit return to continue"; my $wait=<STDIN>;

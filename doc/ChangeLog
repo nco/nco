@@ -1,3 +1,7 @@
+2013-09-04 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncra regression #23 (group case)
+
 2013-09-04  Charlie Zender  <zender@uci.edu>
 
 	* Add tpt_flt and tpt_dbl to in.nc to demonstrate precision issues
