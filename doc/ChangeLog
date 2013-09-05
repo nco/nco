@@ -1,3 +1,9 @@
+2013-09-05 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncrcat regression #22 (group case)
+	
+	* Add ncea regression #11 (group case)
+
 2013-09-05  Charlie Zender  <zender@uci.edu>
 
 	* Get ncra.c OpenMP to compile. netCDF4 group traversal OpenMP needs testing.
