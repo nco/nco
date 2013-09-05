@@ -1,3 +1,9 @@
+2013-09-05  Charlie Zender  <zender@uci.edu>
+
+	* Get ncra.c OpenMP to compile. netCDF4 group traversal OpenMP needs testing.
+
+	* ncra.c whitespace changes
+
 2013-09-04 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncra regression #23 (group case)
@@ -162,7 +168,7 @@
 
 	* Place MD5 flags in md5_flg structure
 
-	* Fix ncwa OpenMP
+	* Get ncwa OpenMP to compile. netCDF4 group traversal OpenMP needs testing.
 
 	* Document new ncatted, ncrename, ncks, ncwa features in man pages, nco.texi
 

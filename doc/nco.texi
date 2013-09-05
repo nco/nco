@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.836 2013-08-28 22:09:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.837 2013-09-05 19:02:48 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7495,6 +7495,10 @@ weight_avg@@units= (weight_avg == 1 ? "kilo" : "kilos");
 PS_nw=PS-(PS.min() > 100000 ? 100000 : 0);
 @end example
 
+@html
+<a name="clp"></a> <!-- http://nco.sf.net/nco.html#clp -->
+<a name="clipping"></a> <!-- http://nco.sf.net/nco.html#clipping -->
+@end html
 @noindent @strong{Clipping Operators}
 @cindex clipping operators
 @table @asis
@@ -7516,17 +7520,18 @@ result.
 
 Example:
 @example
-RDM2=RDM >>100.0 // 100,100,100,100,126,126,100,100,100,100 double
-RDM2=RDM << 90s  // 1, 9, 36, 84, 90, 90, 84, 36, 9, 1 int
+RDM2=RDM >> 100.0 // 100,100,100,100,126,126,100,100,100,100 double
+RDM2=RDM <<  90s  // 1, 9, 36, 84, 90, 90, 84, 36, 9, 1 int
 @end example
 
 @html
 <a name="ncap_dims"></a> <!-- http://nco.sf.net/nco.html#ncap_dims -->
+<a name="defdim"></a> <!-- http://nco.sf.net/nco.html#defdim -->
 @end html
 @node Dimensions, Left hand casting, Expressions, ncap2 netCDF Arithmetic Processor
 @subsection Dimensions
-@cindex dimensions in @command{ncap2}
-@cindex defdim()
+@cindex defining dimensions in @command{ncap2}
+@cindex @code{defdim()}
 Dimensions are defined in Output using the @code{defdim()} function.
 @example
 defdim("cnt",10);
@@ -8124,7 +8129,7 @@ with a variable.
 They only work on variables in Output. 
 @table @code
 @item set_miss(expr)
-@cindex set_miss()
+@cindex @code{set_miss()}
  The numeric argument @var{expr} becomes the new missing value,
  overwriting the old missing value, if any.
  The argument given is converted if necessary to the variable type.
@@ -8133,25 +8138,27 @@ They only work on variables in Output.
  are no long considered missing values.
  They are ``orphaned''.
  Thus @code{set_miss()} is normally used only when creating new
- variables, not when editing values of existing variables.
+ variables.
+ The intrinsic function @code{change_miss()} (see below) is typically 
+ used to edit values of existing variables.
 @item change_miss(expr)
-@cindex change_miss()
- Sets or changes (any pre-existing) missing value attribute and missing
+@cindex @code{change_miss()}
+ Sets or changes (any pre-existing) missing value attribute and missing 
  data values to @var{expr}. 
  NB: This is an expensive function since all values must be examined. 
  Use this function when changing missing values for pre-existing
  variables. 
 @item get_miss() 
-@cindex get_miss()
+@cindex @code{get_miss()}
  Returns the missing value of a variable. 
  If the variable exists in Input and Output then the missing value of
  the variable in Output is returned. 
  If the variable has no missing value then an error is returned.   
 @item delete_miss()
-@cindex delete_miss()
+@cindex @code{delete_miss()}
  Deletes the missing value associated with a variable.
 @item number_miss()
-@cindex number_miss()
+@cindex @code{number_miss()}
  Counts the number of missing values a variable contains.
 @end table
 
