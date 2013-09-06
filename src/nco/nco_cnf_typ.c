@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.69 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.70 2013-09-06 23:38:41 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -111,22 +111,39 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
   /* Purpose: Convert char, short, long, int types to doubles for arithmetic
      Conversions are performed unless arithmetic operation type is min or max
      Floats (and doubles, of course) are not converted for performance reasons
-     Convert back after weighting and arithmetic are complete! */
+     Remember to convert back after weighting and arithmetic are complete! */
 
   /* Variables which are unpacked into NC_FLOAT should remain NC_FLOAT here
      Unpacking happens 'transparently' when original data are read by nco_var_get() 
      Output structures (i.e., var_prc_out) often correspond to original input type
-     Thus var may have typ_upk=NC_FLOAT and type=NC_SHORT
+     Thus var structure may have typ_upk=NC_FLOAT and type=NC_SHORT
      In that case, promote based on typ_upk rather than on type
      Otherwise most var's that had been unpacked would be converted to NC_DOUBLE here
      That would put them in conflict with corresponding var_out, which is usually
      based on typ_upk
      Check this first, then proceed with normal non-float->double conversion */
-  if(var->typ_upk == NC_FLOAT){
-    var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
-  }else{ /* Conversion only for appropriate operation types */ 
-    if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
-  } /* end if */
+
+  /* 20130906:
+     Users have long been uncomfortable with not implicitly converting floats to doubles
+     A new section of the manual that describes the advantages and disadvantages:
+     http://nco.sf.net/nco.html#fxm
+     Implementing --dbl switch on ncwa, ncra, ncea (ncap2?) to force implicit conversion */
+  if(nco_rth_cnv_get() == nco_rth_flt_flt){
+
+    /* Traditional NCO convention: promote, where necessary, anything but floats and doubles */
+    if(var->typ_upk == NC_FLOAT){
+      var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
+    }else{ /* Conversion only for appropriate operation types */ 
+      if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
+    } /* end if */
+
+  }else{ /* !nco_rth_flt_flt */
+
+    /* User-specified new convention: promote, where necessary, anything but doubles */
+    /* Conversion only for appropriate operation types */ 
+    if(var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
+    
+  } /* !nco_rth_flt_flt */
   
   return var;
 } /* nco_typ_cnv_rth() */

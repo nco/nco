@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.390 2013-08-29 20:15:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.391 2013-09-06 23:38:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -160,6 +160,7 @@ extern "C" {
   char *prg_nm_get(void);
   int prg_get(void);
   unsigned short dbg_lvl_get(void);
+  unsigned short nco_rth_cnv_get(void);
   unsigned short nco_upk_cnv_get(void);
 
 #ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
@@ -174,6 +175,9 @@ extern "C" {
   
   unsigned short dbg_lvl=0; /* [enm] Debugging level */
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
+
+  unsigned short nco_rth_cnv=0; /* [enm] Arithmetic convention */
+  unsigned short nco_rth_cnv_get(void){return nco_rth_cnv;} /* [enm] Arithmetic convention */
 
   unsigned short nco_upk_cnv=0; /* [enm] Unpacking convention */
   unsigned short nco_upk_cnv_get(void){return nco_upk_cnv;} /* [enm] Unpacking convention */
@@ -407,7 +411,7 @@ extern "C" {
     nco_obj_typ_grp,    /*  0, Group */
     nco_obj_typ_var,    /*  1, Variable of atomic type */
     nco_obj_typ_nonatomic_var /*  2, Variable of non-atomic type (vlen, opaque, enum, compound, user-defined) */
-  } nco_obj_typ; 
+  } nco_obj_typ;
   
   enum nco_upk_cnv{ /* [enm] Unpacking convention to assume */
     /* netCDF convention: http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
@@ -415,6 +419,11 @@ extern "C" {
     nco_upk_netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
     nco_upk_HDF     /* 1 HDF unpack convention:    unpacked=scale_factor*(packed-add_offset) */
   }; /* end nco_upk_cnv */
+
+  enum nco_rth_cnv{ /* [enm] Arithmetic convention to assume */
+    nco_rth_flt_flt, /* 0 Keep single precision floating point (default and NCO historical norm) */
+    nco_rth_flt_dbl  /* 1 Promote single-precision floating point to double before arithmetic */
+  }; /* end nco_rth_cnv */
 
   typedef enum aed{ /* [enm] Attribute editor mode */
     aed_append,

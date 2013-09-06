@@ -1,7 +1,13 @@
+2013-09-06  Charlie Zender  <zender@uci.edu>
+
+	* Document Arithmetic Convention
+
+	* Add new global variable nco_rth_cnv for Arithmetic Convention
+
 2013-09-05 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncrcat regression #22 (group case)
-	
+
 	* Add ncea regression #11 (group case)
 
 2013-09-05  Charlie Zender  <zender@uci.edu>
