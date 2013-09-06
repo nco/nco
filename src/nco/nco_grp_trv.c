@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.209 2013-08-30 01:00:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.210 2013-09-06 22:30:36 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -37,7 +37,6 @@ void
 trv_tbl_free                           /* [fnc] GTT free memory */
 (trv_tbl_sct *tbl)                     /* I [sct] Traversal table */
 {
-  unsigned int idx;
 
   /* Object (group/variable) list */
 
@@ -479,23 +478,15 @@ nco_dmn_trv_sct                       /* [fnc] Return unique dimension object fr
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Search table dimension list and compare IDs */
-  for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++)
-    if(dmn_id == trv_tbl->lst_dmn[dmn_lst_idx].dmn_id) return &trv_tbl->lst_dmn[dmn_lst_idx];
+  for(unsigned int idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++)
+    if(dmn_id == trv_tbl->lst_dmn[idx_dmn].dmn_id){
+      return &trv_tbl->lst_dmn[idx_dmn];
+    }
 
-  return NULL;
+    assert(0);
+    return NULL;
 } /* nco_dmn_trv_sct() */
 
-char *                                /* O [id] Unique dimension full name */
-nco_dmn_fll_nm_id                     /* [fnc] Return unique dimension full name from unique ID  */
-(const int dmn_id,                    /* I [id] Unique dimension ID */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
-{
-  /* Search table dimension list and compare IDs */
-  for(unsigned int dmn_lst_idx=0;dmn_lst_idx<trv_tbl->nbr_dmn;dmn_lst_idx++)
-    if(dmn_id == trv_tbl->lst_dmn[dmn_lst_idx].dmn_id) return trv_tbl->lst_dmn[dmn_lst_idx].nm_fll;
-
-  return NULL;
-} /* nco_dmn_fll_nm_id() */
 
 void                                  
 nco_dmn_set_msa                       /* [fnc] Update dimension with hyperslabbed size */
