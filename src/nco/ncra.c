@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.365 2013-09-05 22:39:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.366 2013-09-06 07:52:27 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.365 2013-09-05 22:39:59 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.365 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.366 2013-09-06 07:52:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.366 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -1295,36 +1295,9 @@ main(int argc,char **argv)
       (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
     } /* end loop over variables */
 
-#if 1
+
     /* Fill record array */
     (void)nco_lmt_evl(in_id,trv_tbl->lmt_rec[0],rec_usd_cml,FORTRAN_IDX_CNV);
-#else
-    /* Get unique dimension object from unique dimension ID, in input list */
-    dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(trv_tbl->lmt_rec[0]->id,trv_tbl);
-
-    /* Fill record array */
-
-    /* Is coordinate case */
-    if(dmn_trv->crd_nbr){
-      /* Loop coordinates */
-      for(int crd_idx=0;crd_idx<dmn_trv->crd_nbr;crd_idx++){
-        crd_sct *crd=dmn_trv->crd[crd_idx];
-        /* Match  */ 
-        if(trv_tbl->lmt_rec[0]->id == crd->dmn_id){
-          /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
-          (void)nco_lmt_evl_dmn_crd(in_id,rec_usd_cml,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,trv_tbl->lmt_rec[0]);
-        } /* Match  */ 
-      } /* ! Is coordinate case */
-    } else {
-
-      /* Match  */ 
-      if(trv_tbl->lmt_rec[0]->id == dmn_trv->dmn_id){
-        /* Parse user-specified limits into hyperslab specifications. NOTE: Use False parameter and "dmn" */
-        (void)nco_lmt_evl_dmn_crd(in_id,rec_usd_cml,FORTRAN_IDX_CNV,dmn_trv->grp_nm_fll,dmn_trv->nm,dmn_trv->sz,dmn_trv->is_rec_dmn,False,trv_tbl->lmt_rec[0]);
-        /* Match  */ 
-      }
-    } /* ! Is coordinate case */
-#endif
 
     /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
     if(FLG_MRO) trv_tbl->lmt_rec[0]->flg_mro=True;

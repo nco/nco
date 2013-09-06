@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.192 2013-09-04 01:39:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.193 2013-09-06 07:52:27 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -575,6 +575,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   int rcd=NC_NOERR; /* [enm] Return code */
   int rec_dmn_id; /* [idx] Variable ID of record dimension, if any */
 
+  int dmn_ids_ult[NC_MAX_DIMS]; /* [nbr] Unlimited dimensions IDs array */
+  int nbr_dmn_ult; /* [nbr] Number of unlimited dimensions */
+  int fl_fmt; /* [nbr] File format */
+
   long dmn_sz;
   long cnt_rmn_crr=-1L; /* Records to extract from current file */
   long cnt_rmn_ttl=-1L; /* Total records to be read from this and all remaining files */
@@ -604,7 +608,28 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      This information is not used in single-file operators, though whether
      the limit is a record limit may be tested.
      Program defensively and define this flag in all cases. */
-  (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
+
+  (void)nco_inq_format(nc_id,&fl_fmt);
+
+   /* Obtain unlimited dimensions */
+  (void)nco_inq_unlimdims(nc_id,&nbr_dmn_ult,dmn_ids_ult);
+
+  rec_dmn_id=-1; 
+
+  if(fl_fmt == NC_FORMAT_NETCDF4){
+    /* Loop dimensions */
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_ult;idx_dmn++){
+      /* Match ID found by name; name is the same for multi -file operators  */
+      if (lmt.id == dmn_ids_ult[idx_dmn]){
+        rec_dmn_id=dmn_ids_ult[idx_dmn];
+      } /* Match ID found by name  */
+    } /* Loop dimensions */
+
+    /* NetCDF3 case */
+  } else {
+    rec_dmn_id=dmn_ids_ult[0];
+  } /* NetCDF3 case */
+
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
 
