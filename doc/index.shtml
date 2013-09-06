@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.812 2013-08-01 17:32:39 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.813 2013-09-06 18:22:46 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1222,7 +1222,7 @@ This is easy on modern package-oriented OSs.
 For Debian-based systems:
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
-<dt>sudo aptitude install libcurl4-gnutls-dev libexpat1-dev libxml2-dev # DAP-prereqs</dt>
+<dt>sudo aptitude install libcurl4-gnutls-dev libexpat1-dev libxml2-dev # DAP-prereqs (curl, expat XML parser) </dt>
 <dt>sudo aptitude install bison flex gcc g++ # GNU toolchain</dt>
 <dt>sudo aptitude install gsl-bin libgsl0-dev # GSL</dt>
 <dt>sudo aptitude install libnetcdf6 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>
@@ -1234,6 +1234,7 @@ For RPM-based systems:
 <tt>
 <dt>sudo yum install antlr antlr-C++ # ANTLR</dt>
 <dt>sudo yum install curl-devel libxml2-devel # DAP-prereqs</dt>
+<dt>sudo yum install expat expat-devel # expat XML parser </dt>
 <dt>sudo yum install libdap libdap-devel # DAP</dt>
 <dt>sudo yum install bison flex gcc gcc-c++ # GNU toolchain</dt>
 <dt>sudo yum install gsl gsl-devel # GSL</dt>
