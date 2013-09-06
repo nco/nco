@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.941 2013-09-04 22:47:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.942 2013-09-06 23:26:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4918,38 +4918,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           nbr_dmn_var_out--;    
         } /* found_dim */
       } /* ncwa */
-
-       /* ncra */
-      if (prg_id == ncra){
-
-        if (trv_tbl->lmt_rec == NULL) {
-
-          /* (TO_DO ) */
-
-        }
-
-        /* Find record dimension */
-        for(int idx_rec_dmn=0;idx_rec_dmn<trv_tbl->nbr_rec;idx_rec_dmn++){
-          /* Match by ID */
-          if (trv_tbl->lmt_rec[idx_rec_dmn]->id == var_dim_id) {
-            long cnt;
-            if(var_trv->var_dmn[idx_dmn].is_crd_var){
-              cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
-            } else {
-              cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
-            }
-
-            /* Set size to 1 */
-            cnt=1;
-            dmn_cnt=1;
-
-            (void)nco_dmn_set_msa(var_dim_id,cnt,trv_tbl); 
-
-            break;
-
-          } /* Match by ID */
-        }  /* Find record dimension */
-      } /* ncra */
 
       /* Always define, except maybe for ncwa */
       if (DEFINE_DIM[idx_dmn]) {
