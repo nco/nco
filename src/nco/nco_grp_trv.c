@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.210 2013-09-06 22:30:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.211 2013-09-06 22:44:15 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -478,13 +478,14 @@ nco_dmn_trv_sct                       /* [fnc] Return unique dimension object fr
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Search table dimension list and compare IDs */
-  for(unsigned int idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++)
+  for(unsigned int idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
     if(dmn_id == trv_tbl->lst_dmn[idx_dmn].dmn_id){
       return &trv_tbl->lst_dmn[idx_dmn];
     }
+  }
 
-    assert(0);
-    return NULL;
+  assert(0);
+  return NULL;
 } /* nco_dmn_trv_sct() */
 
 
@@ -495,8 +496,11 @@ nco_dmn_set_msa                       /* [fnc] Update dimension with hyperslabbe
  const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Search table dimension list and compared IDs */
-  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
-    if(dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id) trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt=dmn_cnt;
+  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    if(dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id){
+      trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt=dmn_cnt;
+    }
+  }
 
   return;
 } /* nco_dmn_set_msa() */
@@ -508,8 +512,11 @@ nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabbe
 {
 
   /* Search table dimension list and compare IDs */
-  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
-    if(dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id) return trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt;
+  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    if(dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id){
+      return trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt;
+    }
+  }
      
   assert(0);
   return -1;
