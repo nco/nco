@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.366 2013-09-06 07:52:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.367 2013-09-06 21:01:12 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.366 2013-09-06 07:52:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.366 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.367 2013-09-06 21:01:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.367 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -1371,21 +1371,16 @@ main(int argc,char **argv)
 
           /* Obtain variable GTT object using full variable name */
           var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
-
           /* Obtain group ID using full group name */
           (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-
           /* Edit group name for output */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
-
           /* Obtain output group ID using full group name */
           (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
-
-          /* Memory management after current extracted group */
-          if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-
           /* Get variable ID */
           (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+          /* Memory management after current extracted group */
+          if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
           /* Store the output variable ID */
           var_prc_out[idx]->id=var_out_id;
@@ -1579,6 +1574,16 @@ main(int argc,char **argv)
 
           /* Copy averages to output file */
           for(idx=0;idx<nbr_var_prc;idx++){
+
+            /* Obtain variable GTT object using full variable name */
+            var_trv=trv_tbl_var_nm_fll(var_prc_out[idx]->nm_fll,trv_tbl);
+            /* Edit group name for output */
+            if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+            /* Obtain output group ID using full group name */
+            (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+            /* Memory management after current extracted group */
+            if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+
             var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
             /* Packing/Unpacking */
             if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
@@ -1664,19 +1669,14 @@ main(int argc,char **argv)
 
         /* Obtain variable GTT object using full variable name */
         var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
-
         /* Obtain group ID using full group name */
         (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
-
         /* Obtain output group ID using full group name */
         (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
-
         /* Memory management after current extracted group */
         if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-
         /* Get variable ID */
         (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
@@ -1743,6 +1743,16 @@ main(int argc,char **argv)
   /* Copy averages to output file for ncea always and for ncra when trailing file(s) was/were superfluous */
   if(FLG_BFR_NRM){
     for(idx=0;idx<nbr_var_prc;idx++){
+
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var_prc_out[idx]->nm_fll,trv_tbl);
+      /* Edit group name for output */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+      /* Obtain output group ID using full group name */
+      (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+      /* Memory management after current extracted group */
+      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       /* Packing/Unpacking */
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
