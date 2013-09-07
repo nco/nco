@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.943 2013-09-07 01:30:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.944 2013-09-07 02:37:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1977,6 +1977,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   /* Record dimensions used by ncra */
   trv_tbl->nbr_rec=0;
   trv_tbl->lmt_rec=NULL;
+  trv_tbl->flg_rec=NULL;
 
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
@@ -6979,20 +6980,22 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
 
 void                          
-nco_bld_rec_idx                       /* [fnc] Choose a record to process  */
-(const trv_tbl_sct * const trv_tbl,   /* I[sct] GTT (Group Traversal Table) */
- int * rec_idx_out)                   /* O[nbr] Index of record to process  */
+nco_bld_rec                           /* [fnc] Build flags of records to process   */
+(trv_tbl_sct *trv_tbl)                /* I/O[sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_bld_rec_idx()"; /* [sng] Function name  */
 
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
-  int rec_idx;
-
-  rec_idx=-1;
-
   /* Used only by ncra */
   assert(prg_get() == ncra || prg_get() == ncrcat || prg_get() == ncea );
+
+  trv_tbl->flg_rec=(nco_bool *)nco_malloc(trv_tbl->nbr_rec*sizeof(nco_bool));
+
+  /* Initialize to False */
+  for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+    trv_tbl->flg_rec[idx_rec]=False;
+  }
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -7015,12 +7018,12 @@ nco_bld_rec_idx                       /* [fnc] Choose a record to process  */
         if (dmn_trv->is_rec_dmn){
 
           /* Loop table record array */
-          for(int idx_dmn_out=0;idx_dmn_out<trv_tbl->nbr_rec;idx_dmn_out++){
+          for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
 
             /* Match by ID */
-            if(dmn_id == trv_tbl->lmt_rec[idx_dmn_out]->id){
+            if(dmn_id == trv_tbl->lmt_rec[idx_rec]->id){
 
-              rec_idx=idx_dmn_out;
+              trv_tbl->flg_rec[idx_rec]=True;
 
             } /* Match by ID */
           } /* Loop table record array */
@@ -7031,19 +7034,24 @@ nco_bld_rec_idx                       /* [fnc] Choose a record to process  */
 
 
   if(dbg_lvl_get() >= nco_dbg_dev){ 
-    if (rec_idx != -1 ) {
-      (void)fprintf(stdout,"%s: DEBUG %s record to process: ",prg_nm_get(),fnc_nm);
-      (void)fprintf(stdout,"#%d<%s> : ",trv_tbl->lmt_rec[rec_idx]->id,trv_tbl->lmt_rec[rec_idx]->nm);      
-    } 
+    (void)fprintf(stdout,"%s: DEBUG %s records to process: ",prg_nm_get(),fnc_nm);
+    for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+      (void)fprintf(stdout,"#%d<%s> : ",trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm); 
+    }
+  } 
+
+  nco_bool flg_has_rec=False;
+  for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+    if (trv_tbl->flg_rec[idx_rec] == True){
+      flg_has_rec=True;
+    }
+
   }
 
-  if (rec_idx == -1 ){
+  if (flg_has_rec == False ){
     (void)fprintf(stdout,"%s: ERROR %s no records found to process: ",prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   }
-
-  /* Export */
-  *rec_idx_out=rec_idx;
 
   return;
 

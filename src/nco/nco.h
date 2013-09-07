@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.391 2013-09-06 23:38:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.392 2013-09-07 02:37:02 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -840,6 +840,7 @@ extern "C" {
     int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate dimensions (size of above array) */
     lmt_sct **lmt_rec;      /* [sct] (ncra) Record dimensions */
     int nbr_rec;            /* [sct] (ncra) Number of record dimensions (size of above array) */
+    nco_bool *flg_rec;      /* [sct] (ncra) Array of flags that show record is to be processed */
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */
