@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.946 2013-09-07 20:26:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.947 2013-09-07 22:09:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2532,12 +2532,32 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
+ char **grp_lst_in,                   /* I [sng] User-specified list of groups */
+ const int grp_lst_in_nbr,            /* I [nbr] Number of groups in list */
+ char **var_lst_in,                   /* I [sng] User-specified list of variables */
+ const int var_xtr_nbr,               /* I [nbr] Number of variables in list */
+ const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
+ const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
+ const nco_bool EXCLUDE_INPUT_LIST,  /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
+ const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
 
   /* Construct traversal table objects (groups,variables) */
   (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
+
+   /* Check -v and -g input names and create extraction list */
+  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
+
+  /* Change included variables to excluded variables */
+  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
+
+  /* Add all coordinate variables to extraction list */
+  if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
+
+  /* Extract coordinates associated with extracted variables */
+  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(nc_id,trv_tbl);
 
   /* Print table in debug mode */
   if(dbg_lvl_get() == nco_dbg_old) (void)nco_prt_trv_tbl(nc_id,trv_tbl);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.326 2013-08-31 23:55:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.327 2013-09-07 22:09:07 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.326 2013-08-31 23:55:47 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.326 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.327 2013-09-07 22:09:07 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.327 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -531,22 +531,10 @@ main(int argc,char **argv)
     (void)nco_inq_format(in_id,&fl_in_fmt); 
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-    (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
+    (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
 
     /* Get number of variables, dimensions, and global attributes in file, file format */
     (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
-
-    /* Check -v and -g input names and create extraction list */
-    (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
-
-    /* Change included variables to excluded variables */
-    if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
-
-    /* Add all coordinate variables to extraction list */
-    if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
-
-    /* Extract coordinates associated with extracted variables */
-    if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
 
     /* Is this a CCM/CCSM/CF-format history tape? */
     CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
@@ -751,23 +739,11 @@ main(int argc,char **argv)
       trv_tbl_init(&trv_tbl_gpr);
 
       /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-      (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl_gpr);
+      (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr_rgn,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl_gpr);
 
       /* Get number of variables, dimensions, and global attributes in file, file format */
       (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl_gpr);
       (void)nco_inq_format(in_id,&fl_in_fmt);
-
-      /* Check -v and -g input names and create extraction list */
-      nco_xtr_mk(grp_lst_in,grp_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl_gpr);
-
-      /* Change included variables to excluded variables */
-      if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl_gpr);
-
-      /* Add all coordinate variables to extraction list */
-      if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl_gpr);
-
-      /* Extract coordinates associated with extracted variables */
-      if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl_gpr);
 
       /* Is this a CCM/CCSM/CF-format history tape? */
       CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);

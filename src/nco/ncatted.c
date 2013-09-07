@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.161 2013-07-31 02:52:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.162 2013-09-07 22:09:07 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -97,10 +97,6 @@
    Verify results:
    ncks -C -h ~/foo.nc | m */
 
-#if 0
-#define USE_TRV_API
-#endif
-
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
@@ -161,8 +157,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.161 2013-07-31 02:52:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.161 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.162 2013-09-07 22:09:07 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.162 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -365,8 +361,6 @@ main(int argc,char **argv)
   rcd+=nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&nc_id);
   (void)nco_redef(nc_id);
 
-#ifndef USE_TRV_API
-
   /* Get number of variables in file */
   (void)nco_inq(nc_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
 
@@ -397,19 +391,6 @@ main(int argc,char **argv)
       (void)nco_aed_prc(nc_id,aed_lst[idx].id,aed_lst[idx]);
     } /* end var_nm */
   } /* end loop over idx */
-
-#else /* USE_TRV_API */
-
-  /* Initialize traversal table */
-  (void)trv_tbl_init(&trv_tbl);
-
-  /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(nc_id,"/",(nco_bool)False,(int)0,(lmt_sct**)NULL,(nco_bool)False,(int)0,(char **)NULL,trv_tbl);
-
-  /* Process attributes  */
-  (void)nco_aed_prc_trv(nc_id,aed_lst,nbr_aed,trv_tbl);
-
-#endif /* USE_TRV_API */
 
   /* Catenate the timestamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);

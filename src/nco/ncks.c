@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.652 2013-08-28 22:25:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.653 2013-09-07 22:09:07 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.652 2013-08-28 22:25:17 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.652 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.653 2013-09-07 22:09:07 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.653 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -642,8 +642,8 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
-  /* Construct GTT, Group Traversal Table (groups, variables, dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
+  /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
+  (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file */
   (void)trv_tbl_inq(&att_glb_nbr,&att_grp_nbr,&att_var_nbr,&dmn_nbr_fl,&dmn_rec_fl,&grp_dpt_fl,&grp_nbr_fl,&var_ntm_fl,&var_nbr_fl,trv_tbl);
@@ -651,9 +651,6 @@ main(int argc,char **argv)
   /* Make output and input files consanguinous */
   (void)nco_inq_format(in_id,&fl_in_fmt);
   if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
-
-  /* Check -v and -g input names and create extraction list */
-  (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,trv_tbl);
 
   /* Process -z option if requested */ 
   if(GET_LIST){ 
@@ -969,15 +966,7 @@ main(int argc,char **argv)
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
     if(smr_sng) smr_sng=(char *)nco_free(smr_sng);
   } /* !flg_cln */
-  
-  if(dbg_lvl_get() == 14 && fl_out){
-    int out_id;
-    (void)trv_tbl_init(&trv_tbl);
-    (void)nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&out_id);
-    (void)nco_bld_trv_tbl(out_id,trv_pth,MSA_USR_RDR,0,(lmt_sct **)NULL,FORTRAN_IDX_CNV,aux_nbr,aux_arg,trv_tbl);
-    (void)nco_wrt_trv_tbl(out_id,trv_tbl,False);
-    (void)trv_tbl_free(trv_tbl);
-  }
+
   
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */

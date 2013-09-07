@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.370 2013-09-07 02:37:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.371 2013-09-07 22:09:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -260,6 +260,14 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
+ char **grp_lst_in,                   /* I [sng] User-specified list of groups */
+ const int grp_lst_in_nbr,            /* I [nbr] Number of groups in list */
+ char **var_lst_in,                   /* I [sng] User-specified list of variables */
+ const int var_xtr_nbr,               /* I [nbr] Number of variables in list */
+ const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
+ const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
+ const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
+ const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void                      
