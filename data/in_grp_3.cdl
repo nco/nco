@@ -349,9 +349,10 @@ netcdf in_grp_3 {
  
      group: g19g3 { 
      variables:
-     double three_dmn_var_dbl(time,lat,lon);
-	   three_dmn_var_dbl:long_name = "three dimensional record variable of type double";
-	   three_dmn_var_dbl:units = "watt meter-2";
+	 double three_dmn_var_dbl(time,lat,lon);
+	 three_dmn_var_dbl:long_name = "three dimensional record variable of type double";
+	 three_dmn_var_dbl:units = "watt meter-2";
+	 three_dmn_var_dbl:_FillValue = -99.;
 
 
      data:

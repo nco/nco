@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.945 2013-09-07 04:02:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.946 2013-09-07 20:26:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6994,6 +6994,10 @@ nco_bld_rec                           /* [fnc] Build flags of records to process
 
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
+  nco_bool flg_has_rec;    /* [flg] Are there any records to process */
+
+  flg_has_rec=False;
+
   /* Used only by ncra */
   assert(prg_get() == ncra || prg_get() == ncrcat || prg_get() == ncea );
 
@@ -7039,15 +7043,15 @@ nco_bld_rec                           /* [fnc] Build flags of records to process
       (void)fprintf(stdout,"#%d<%s> : ",trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm); 
     }
   } 
-
-  nco_bool flg_has_rec=False;
+ 
+  /* Check if records to process  */
   for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
     if (trv_tbl->flg_rec[idx_rec] == True){
       flg_has_rec=True;
     }
-
   }
 
+  /* No records to process */
   if (flg_has_rec == False ){
     (void)fprintf(stdout,"%s: ERROR %s no records found to process: ",prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
@@ -7055,6 +7059,6 @@ nco_bld_rec                           /* [fnc] Build flags of records to process
 
   return;
 
-} /* nco_bld_rec_idx() */
+} /* nco_bld_rec() */
 
 
