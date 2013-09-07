@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.942 2013-09-06 23:26:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.943 2013-09-07 01:30:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6976,5 +6976,77 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   return;
 
 } /* nco_bld_rec_dmn() */
+
+
+void                          
+nco_bld_rec_idx                       /* [fnc] Choose a record to process  */
+(const trv_tbl_sct * const trv_tbl,   /* I[sct] GTT (Group Traversal Table) */
+ int * rec_idx_out)                   /* O[nbr] Index of record to process  */
+{
+  const char fnc_nm[]="nco_bld_rec_idx()"; /* [sng] Function name  */
+
+  dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
+
+  int rec_idx;
+
+  rec_idx=-1;
+
+  /* Used only by ncra */
+  assert(prg_get() == ncra || prg_get() == ncrcat || prg_get() == ncea );
+
+  /* Loop table */
+  for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];
+
+    /* Is variable to extract  */
+    if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+
+      /* Loop variable dimensions */
+      for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
+
+        /* Dimension ID */
+        int dmn_id=var_trv.var_dmn[idx_var_dmn].dmn_id;
+
+        /* Get unique dimension object from unique dimension ID, in input list */
+        dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
+
+        /* Is record */
+        if (dmn_trv->is_rec_dmn){
+
+          /* Loop table record array */
+          for(int idx_dmn_out=0;idx_dmn_out<trv_tbl->nbr_rec;idx_dmn_out++){
+
+            /* Match by ID */
+            if(dmn_id == trv_tbl->lmt_rec[idx_dmn_out]->id){
+
+              rec_idx=idx_dmn_out;
+
+            } /* Match by ID */
+          } /* Loop table record array */
+        } /* Is record */
+      } /* Loop variable dimensions */ 
+    } /* Variable to extract */
+  } /* Loop table */
+
+
+  if(dbg_lvl_get() >= nco_dbg_dev){ 
+    if (rec_idx != -1 ) {
+      (void)fprintf(stdout,"%s: DEBUG %s record to process: ",prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"#%d<%s> : ",trv_tbl->lmt_rec[rec_idx]->id,trv_tbl->lmt_rec[rec_idx]->nm);      
+    } 
+  }
+
+  if (rec_idx == -1 ){
+    (void)fprintf(stdout,"%s: ERROR %s no records found to process: ",prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  }
+
+  /* Export */
+  *rec_idx_out=rec_idx;
+
+  return;
+
+} /* nco_bld_rec_idx() */
 
 
