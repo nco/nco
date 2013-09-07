@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.944 2013-09-07 02:37:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.945 2013-09-07 04:02:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6974,6 +6974,13 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
     (void)fprintf(stdout,"\n");       
   } 
 
+  trv_tbl->flg_rec=(nco_bool *)nco_malloc(trv_tbl->nbr_rec*sizeof(nco_bool));
+
+  /* Initialize to False */
+  for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+    trv_tbl->flg_rec[idx_rec]=False;
+  }
+
   return;
 
 } /* nco_bld_rec_dmn() */
@@ -6989,13 +6996,6 @@ nco_bld_rec                           /* [fnc] Build flags of records to process
 
   /* Used only by ncra */
   assert(prg_get() == ncra || prg_get() == ncrcat || prg_get() == ncea );
-
-  trv_tbl->flg_rec=(nco_bool *)nco_malloc(trv_tbl->nbr_rec*sizeof(nco_bool));
-
-  /* Initialize to False */
-  for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
-    trv_tbl->flg_rec[idx_rec]=False;
-  }
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
