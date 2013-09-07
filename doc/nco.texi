@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.838 2013-09-06 23:38:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.839 2013-09-07 02:47:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2096,8 +2096,8 @@ perform the arithmetic, then demote back to the original integer type
 after arithmetic.
 This preserves the on-disk storage type while obtaining the accuracy
 advantages of floating point arithmetic. 
-Single-precision floating point variables however are not promoted to
-double precision prior to arithmetic.
+Single-precision floating point variables however are not by default
+promoted to double precision prior to arithmetic.
 Hence, the sustained memory required for integer variables are two or 
 four-times their on-disk, uncompressed, unpacked sizes if they meet the
 rules for automatic internal promotion.
@@ -6567,7 +6567,7 @@ Type conversion (often called @dfn{promotion} or @dfn{demotion}) refers
 to the casting of one fundamental data type to another, e.g., converting
 @code{NC_SHORT} (two bytes) to @code{NC_DOUBLE} (eight bytes). 
 Type conversion is automatic when the language carries out this
-promotion according to an internal set of rules without explicit user
+promotion according to an internal set of rules without explicit user 
 intervention. 
 In contrast, manual type conversion refers to explicit user commands to
 change the type of a variable or attribute.
@@ -6585,10 +6585,11 @@ which manual type conversion is advantageous.
 As a general rule, automatic type conversions should be avoided for at
 least two reasons. 
 First, type conversions are expensive since they require creating
-(temporary) buffers and casting each element of a variable from 
-the type it was stored at to some other type.
-Second, the dataset's creator probably had a good reason
-for storing data as, say, @code{NC_FLOAT} rather than @code{NC_DOUBLE}. 
+(temporary) buffers and casting each element of a variable from the type
+it was stored at to some other type and then, often, converting it back
+to its original type. 
+Second, the dataset's creator probably had a good reason for storing
+data as, say, @code{NC_FLOAT} rather than @code{NC_DOUBLE}.  
 In a scientific framework there is no reason to store data with more
 precision than the observations merit.
 Thus @acronym{NCO} tries to avoid performing automatic type conversions
@@ -6597,7 +6598,7 @@ when performing arithmetic.
 @cindex C language
 @cindex Fortran
 Automatic type conversion during arithmetic in the @w{languages C} and
-Fortran is performed only when necessary.
+Fortran is, by default, performed only when necessary.
 All operands in an operation are converted to the most precise type
 before the operation takes place.
 However, following this parsimonious conversion rule dogmatically
@@ -6628,8 +6629,8 @@ what is purest.
 Thus, unlike C and Fortran, but like many other higher level interpreted
 languages, @acronym{NCO} arithmetic operators will perform automatic type
 conversion when all the following conditions are met
-@footnote{Operators began performing type conversions before arithmetic
-in @acronym{NCO} @w{version 1.2}, August, 2000. 
+@footnote{Operators began performing automatic type conversions before
+arithmetic in @acronym{NCO} @w{version 1.2}, August, 2000. 
 Previous versions never performed unnecessary type conversion for
 arithmetic.}: 
 @enumerate
@@ -6644,11 +6645,13 @@ Type conversion does not benefit searching for minima and maxima
 @code{NC_SHORT}, or @code{NC_INT}.
 Type @code{NC_DOUBLE} is not type converted because there is no type of
 higher precision.
-Type @code{NC_FLOAT} is not type converted because, in our judgement,
-the performance penalty of always doing so would outweigh the potential
-benefits.   
+Type @code{NC_FLOAT} is not type converted by default because, in our
+judgement, the performance penalty of always doing so would outweigh the
+potential benefits.   
 @c fxm Add NR C citation to bibliography
-The book Numerical Recipes in C discusses this point.
+The book ``Numerical Recipes @w{in C}'' discusses this point under the
+section ``Implicit Conversion of Float to Double''
+@footnote{See @w{page 21} in Section 1.2 of the First edition.}.
 @end enumerate
 
 When these criteria are all met, the operator promotes the variable in
@@ -6705,6 +6708,14 @@ $n \le x < n+1$
 @clear flg
 @end ifset
 will have the value @var{n} when converted to an integer.
+
+@node Promoting Single Precision to Double
+@subsection Promoting Single Precision to Double
+@cindex promotion
+@cindex implicit conversion
+@cindex @code{--dbl}
+@cindex @code{--rth_dbl}
+
 
 @node Manual type conversion,  , Automatic type conversion, Type Conversion
 @subsection Manual type conversion
