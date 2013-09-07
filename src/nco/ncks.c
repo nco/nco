@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.653 2013-09-07 22:09:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.654 2013-09-07 23:00:21 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.653 2013-09-07 22:09:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.653 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.654 2013-09-07 23:00:21 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.654 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -671,15 +671,6 @@ main(int argc,char **argv)
     (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d atomic-type variables, %d non-atomic variables\n",grp_nbr_fl,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,att_glb_nbr+att_glb_nbr,var_nbr_fl,var_ntm_fl);
     goto close_and_free; 
   } /* end GET_FILE_INFO */
-
-  /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
-
-  /* Add all coordinate variables to extraction list */
-  if(EXTRACT_ALL_COORDINATES) (void)nco_xtr_crd_add(trv_tbl);
-
-  /* Extract coordinates associated with extracted variables */
-  if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(in_id,trv_tbl);
 
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
