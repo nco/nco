@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.839 2013-09-07 02:47:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.840 2013-09-08 20:59:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6585,28 +6585,41 @@ which manual type conversion is advantageous.
 As a general rule, automatic type conversions should be avoided for at
 least two reasons. 
 First, type conversions are expensive since they require creating
-(temporary) buffers and casting each element of a variable from the type
-it was stored at to some other type and then, often, converting it back
-to its original type. 
-Second, the dataset's creator probably had a good reason for storing
+(temporary) buffers and casting each element of a variable from its 
+storage type to some other type and then, often, converting it back.
+Second, the dataset's creator perhaps had a good reason for storing 
 data as, say, @code{NC_FLOAT} rather than @code{NC_DOUBLE}.  
 In a scientific framework there is no reason to store data with more
 precision than the observations merit.
-Thus @acronym{NCO} tries to avoid performing automatic type conversions
-when performing arithmetic. 
+Thus @acronym{NCO} defaults to avoid performing automatic type
+conversions when performing arithmetic. 
+That said, there are situations in which implicit conversion of say,
+single- to double-precision is warranted.
+Understanding the narrowness of these situations takes time, and we
+hope the reader appreciates the following detailed discussion.
 
 @cindex C language
 @cindex Fortran
-Automatic type conversion during arithmetic in the @w{languages C} and
-Fortran is, by default, performed only when necessary.
+Automatic type conversion during arithmetic in the Fortran language is,
+by default, performed only when necessary. 
 All operands in an operation are converted to the most precise type
-before the operation takes place.
-However, following this parsimonious conversion rule dogmatically
-results in numerous headaches.
-For example, the average of the two @code{NC_SHORT}s @code{17000s} and
-@code{17000s} results in garbage since the intermediate value which
-holds their sum is also of type @code{NC_SHORT} and thus cannot
-represent values greater than 32,767
+before an arithmetic operation.
+The @w{C language} is by default much more aggressive (and
+thus wasteful) than Fortran, and will implicitly convert single-
+to double precision numbers for no good reason.
+All real-number standard @{C library} functions are double precision, 
+and @{C programmers} must take extra steps to only utilize single
+precision arithmetic.
+Before discussion these difficult and contentious floating point issues, 
+let us first examine how following parsimonious conversion rules
+dogmatically can cause problems, and what @acronym{NCO} does about
+that. 
+
+Consider the average of the two @code{NC_SHORT}s @code{17000s} and
+@code{17000s}.
+A straightforward average without promotion results in garbage since the
+intermediate value which holds their sum is also of type @code{NC_SHORT}
+and thus cannot represent values greater than 32,767
 @footnote{
 @set flg
 @tex
@@ -6715,7 +6728,33 @@ will have the value @var{n} when converted to an integer.
 @cindex implicit conversion
 @cindex @code{--dbl}
 @cindex @code{--rth_dbl}
-
+Promotion of real numbers from single- to double-precision is
+fundamental to scientific computing.
+When it should occur depends on the precision of the inputs and the
+number of operations.
+Single precision (four-byte) numbers contain about seven significant
+figures, while double precision contain about sixteen.
+More, err, precisely, the @acronym{IEEE} single precision representation
+gives from 6 to 9 significant decimal digits precision
+@footnote{According to Wikipedia's summary of @acronym{IEEE} standard
+754, ``If a decimal string with at most 6 significant decimal is
+converted to IEEE 754 single precision and then converted back to the
+same number of significant decimal, then the final string should match
+the original; and if an IEEE 754 single precision is converted to a
+decimal string with at least 9 significant decimal and then converted
+back to single, then the final number must match the original''.}.
+And the @acronym{IEEE} double precision representation
+gives from 15 to 17 significant decimal digits precision
+@footnote{According to Wikipedia's summary of @acronym{IEEE} standard
+754, ``If a decimal string with at most 15 significant digits is
+converted to IEEE 754 double precision representation and then converted
+back to a string with the same number of significant digits, then the
+final string should match the original; and if an IEEE 754 double
+precision is converted to a decimal string with at least 17 significant
+digits and then converted back to double, then the final number must
+match the original''.}. 
+Hence double precision numbers represent about nine digits more
+precision than single precision numbers.
 
 @node Manual type conversion,  , Automatic type conversion, Type Conversion
 @subsection Manual type conversion
