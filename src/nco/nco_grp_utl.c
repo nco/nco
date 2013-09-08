@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.952 2013-09-08 07:41:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.953 2013-09-08 22:40:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4512,11 +4512,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         for(int idx_dmn_dgn=0;idx_dmn_dgn<trv_tbl->nbr_dmn_dgn;idx_dmn_dgn++){
 
           /* Compare ID */
-          if (trv_tbl->dmn_dgn[idx_dmn_dgn]->id == var_dim_id){
+          if (trv_tbl->dmn_dgn[idx_dmn_dgn].id == var_dim_id){
 
             found_dim=True;
 
-            dmn_cnt=trv_tbl->dmn_dgn[idx_dmn_dgn]->cnt;
+            dmn_cnt=trv_tbl->dmn_dgn[idx_dmn_dgn].cnt;
 
             if(dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"%s: DEBUG %s degenerated dimension %s size=%li\n",prg_nm_get(),fnc_nm,
@@ -5956,12 +5956,13 @@ nco_dmn_dgn_tbl                       /* [fnc] Transfer degenerated dimensions i
 {
 
   trv_tbl->nbr_dmn_dgn=nbr_dmn_dgn;
-  trv_tbl->dmn_dgn=(dmn_sct **)nco_malloc(nbr_dmn_dgn*sizeof(dmn_sct *));
+  trv_tbl->dmn_dgn=(dmn_sct *)nco_malloc(nbr_dmn_dgn*sizeof(dmn_sct));
 
   /* Loop dimensions */
   for(int idx_dmn=0;idx_dmn<nbr_dmn_dgn;idx_dmn++){
 
-    trv_tbl->dmn_dgn[idx_dmn]=dmn_dgn[idx_dmn];
+    trv_tbl->dmn_dgn[idx_dmn].id=dmn_dgn[idx_dmn]->id;
+    trv_tbl->dmn_dgn[idx_dmn].cnt=dmn_dgn[idx_dmn]->cnt;
  
   } /* Loop dimensions */
 

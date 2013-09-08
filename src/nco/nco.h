@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.392 2013-09-07 02:37:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.393 2013-09-08 22:40:49 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -824,7 +824,7 @@ extern "C" {
     size_t cnk_sz; /* [nbr] Chunk size */
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
- 
+
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
      2) lst_dmn: All unique dimensions (in groups) in file tree (netCDF addition to HDF5) */
@@ -836,8 +836,9 @@ extern "C" {
     unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
 
     /* Members used only by transformation operators (non-ncks) */
-    dmn_sct **dmn_dgn;      /* [sct] (ncwa) Degenerate dimensions */
+    dmn_sct *dmn_dgn;       /* [sct] (ncwa) Degenerate dimensions */
     int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate dimensions (size of above array) */
+
     lmt_sct **lmt_rec;      /* [sct] (ncra) Record dimensions */
     int nbr_rec;            /* [sct] (ncra) Number of record dimensions (size of above array) */
     nco_bool *flg_rec;      /* [sct] (ncra) Array of flags that show record is to be processed */
@@ -871,9 +872,6 @@ extern "C" {
     increasing, /* 1 */
     not_checked /* 2 */
   } monotonic_direction_enm;
-
- 
-  
   
   /* Initialize default value of each member of var_sct structure in var_dfl_set()
      Fill actual value of var_sct structure in nco_var_fll()
