@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.371 2013-09-07 22:09:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.372 2013-09-08 05:12:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -250,26 +250,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
  char * const grp_nm_fll,              /* I [sng] Absolute group name (path) */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
-void
-nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- char * const grp_pth,                /* I [sng] Absolute group path where to start build (root typically) */
- nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
- char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
- char **grp_lst_in,                   /* I [sng] User-specified list of groups */
- const int grp_lst_in_nbr,            /* I [nbr] Number of groups in list */
- char **var_lst_in,                   /* I [sng] User-specified list of variables */
- const int var_xtr_nbr,               /* I [nbr] Number of variables in list */
- const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
- const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
- const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
- const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
 void                      
 nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for all variables */
 (const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
@@ -282,15 +262,6 @@ void
 nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
 (const int nc_id,                    /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
-
-void
-nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void                          
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */
@@ -609,6 +580,39 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 void                          
 nco_bld_rec                           /* [fnc] Build flags of records to process   */
 (trv_tbl_sct *trv_tbl);               /* I/O[sct] GTT (Group Traversal Table) */
+
+void
+nco_prt_tbl_lmt                       /* [fnc] Print table limits */
+(trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ char * const grp_pth,                /* I [sng] Absolute group path where to start build (root typically) */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
+ char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
+ char **grp_lst_in,                   /* I [sng] User-specified list of groups */
+ const int grp_lst_in_nbr,            /* I [nbr] Number of groups in list */
+ char **var_lst_in,                   /* I [sng] User-specified list of variables */
+ const int var_xtr_nbr,               /* I [nbr] Number of variables in list */
+ const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
+ const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
+ const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
+ const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 
 #ifdef __cplusplus
