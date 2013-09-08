@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.951 2013-09-08 06:36:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.952 2013-09-08 07:41:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6711,18 +6711,34 @@ nco_prt_tbl_lmt                       /* [fnc] Print table limits */
         /* a) case where the dimension has coordinate variables */
         if (var_trv.var_dmn[idx_var_dmn].crd){
 
-          int lmt_dmn_nbr=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr;
+          crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd;
 
-          if (lmt_dmn_nbr)
-            (void)fprintf(stdout,"%s: INFO %s : <%s> : %s : limits: %d\n",prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);
+          int lmt_dmn_nbr=crd->lmt_msa.lmt_dmn_nbr;
+
+          if (lmt_dmn_nbr){
+            (void)fprintf(stdout,"%s: INFO %s : <%s> : %s : limits:%d ->",prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);
+            for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){ 
+              lmt_sct *lmt_dmn=crd->lmt_msa.lmt_dmn[lmt_idx];
+              (void)fprintf(stdout," [%d]%s(%li,%li,%li) :",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
+            }
+            (void)fprintf(stdout,"\n");
+          }
 
           /* b) case of dimension only (there is no coordinate variable for this dimension */
         }else{
 
-          int lmt_dmn_nbr=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr;
+          dmn_trv_sct *ncd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd;
 
-          if (lmt_dmn_nbr)
-            (void)fprintf(stdout,"%s: INFO %s : <%s> : %s : limits: %d\n",prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);     
+          int lmt_dmn_nbr=ncd->lmt_msa.lmt_dmn_nbr;
+
+          if (lmt_dmn_nbr){
+            (void)fprintf(stdout,"%s: INFO %s : <%s> : %s :limits: %d->",prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);
+            for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){ 
+              lmt_sct *lmt_dmn=ncd->lmt_msa.lmt_dmn[lmt_idx];
+              (void)fprintf(stdout," [%d]%s(%li,%li,%li) :",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
+            }
+            (void)fprintf(stdout,"\n");
+          }
 
         } /* b) case of dimension only (there is no coordinate variable for this dimension */
 
@@ -6838,9 +6854,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   if(dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: INFO %s reports %d input dimension limits: ",prg_nm_get(),fnc_nm,lmt_nbr);
     for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++)(void)fprintf(stdout,"[%d]%s: ",lmt_idx,lmt[lmt_idx]->nm);
-    (void)fprintf(stdout,"\n");    
-
-    (void)nco_prt_tbl_lmt(trv_tbl);      
+    (void)fprintf(stdout,"\n");     
   } /* endif dbg */
 
 
@@ -6871,15 +6885,11 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               /* Increment number of dimension limits for this dimension */
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr++;
 
-              if(dbg_lvl_get() >= nco_dbg_dev) (void)nco_prt_tbl_lmt(trv_tbl);
-
               /* b) case of dimension only (there is no coordinate variable for this dimension */
             }else{
 
               /* Increment number of dimension limits for this dimension */
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr++; 
-
-              if(dbg_lvl_get() >= nco_dbg_dev) (void)nco_prt_tbl_lmt(trv_tbl);
 
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
 
@@ -7151,5 +7161,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
       } /* Loop variable dimensions */
     } /* Is variable to extract  */
   } /* Loop table step 3 */
+
+  if(dbg_lvl_get() >= nco_dbg_dev) (void)nco_prt_tbl_lmt(trv_tbl);
 
 } /* nco_bld_lmt() */
