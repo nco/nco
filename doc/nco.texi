@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.841 2013-09-08 21:01:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.842 2013-09-08 21:02:22 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6576,10 +6576,11 @@ which manual type conversion is advantageous.
 
 @menu
 * Automatic type conversion::
+* Promoting Single Precision to Double::
 * Manual type conversion::
 @end menu
 
-@node Automatic type conversion, Manual type conversion, Type Conversion, Type Conversion
+@node Automatic type conversion, Promoting Single Precision to Double, Type Conversion, Type Conversion
 @subsection Automatic type conversion
 
 As a general rule, automatic type conversions should be avoided for at
@@ -6722,7 +6723,7 @@ $n \le x < n+1$
 @end ifset
 will have the value @var{n} when converted to an integer.
 
-@node Promoting Single Precision to Double
+@node Promoting Single Precision to Double, Manual type conversion, Automatic type conversion, Type Conversion
 @subsection Promoting Single Precision to Double
 @cindex promotion
 @cindex implicit conversion
@@ -6756,7 +6757,7 @@ match the original''.}.
 Hence double precision numbers represent about nine digits more
 precision than single precision numbers.
 
-@node Manual type conversion,  , Automatic type conversion, Type Conversion
+@node Manual type conversion,  , Promoting Single Precision to Double, Type Conversion
 @subsection Manual type conversion
 @cindex @command{ncap2}
 @command{ncap2} provides intrinsic functions for performing manual type
