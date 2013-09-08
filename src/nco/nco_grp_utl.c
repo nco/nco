@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.953 2013-09-08 22:40:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.954 2013-09-08 23:54:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2457,17 +2457,10 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
       /* Full dimension names for each variable */
       for(int idx_dmn_var=0;idx_dmn_var<trv.nbr_dmn;idx_dmn_var++){
-
-        /* Table can be printed before full dimension names are known, while debugging; in this case use relative name */
-        if (trv.var_dmn[idx_dmn_var].dmn_nm_fll != NULL)
-          (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,trv.var_dmn[idx_dmn_var].dmn_nm_fll,trv.var_dmn[idx_dmn_var].dmn_id); 
-        else
-          (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,trv.var_dmn[idx_dmn_var].dmn_nm,trv.var_dmn[idx_dmn_var].dmn_id); 
-
+        (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,trv.var_dmn[idx_dmn_var].dmn_nm_fll,trv.var_dmn[idx_dmn_var].dmn_id); 
         /* Filter output */
         if (trv.var_dmn[idx_dmn_var].is_crd_var == True) (void)fprintf(stdout," (coordinate) : ");
       }
-
       (void)fprintf(stdout,"\n");
 
     } /* Filter variables  */
@@ -2501,11 +2494,9 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
       (void)fprintf(stdout,"(#%d%s) ",crd->dmn_id,crd->dmn_nm_fll);
 
       /* Limits */
-      if (crd->lmt_msa.lmt_dmn_nbr){
-        for(int lmt_idx=0;lmt_idx<crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){ 
-          lmt_sct *lmt_dmn=crd->lmt_msa.lmt_dmn[lmt_idx];
-          (void)fprintf(stdout," [%d]%s(%li,%li,%li) ",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
-        }
+      for(int lmt_idx=0;lmt_idx<crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){ 
+        lmt_sct *lmt_dmn=crd->lmt_msa.lmt_dmn[lmt_idx];
+        (void)fprintf(stdout," [%d]%s(%li,%li,%li) ",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
       }/* Limits */
 
       /* Terminate this coordinate with "::" */
