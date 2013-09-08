@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.840 2013-09-08 20:59:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.841 2013-09-08 21:01:35 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6607,8 +6607,8 @@ before an arithmetic operation.
 The @w{C language} is by default much more aggressive (and
 thus wasteful) than Fortran, and will implicitly convert single-
 to double precision numbers for no good reason.
-All real-number standard @{C library} functions are double precision, 
-and @{C programmers} must take extra steps to only utilize single
+All real-number standard @w{C library} functions are double precision, 
+and @w{C programmers} must take extra steps to only utilize single
 precision arithmetic.
 Before discussion these difficult and contentious floating point issues, 
 let us first examine how following parsimonious conversion rules
@@ -6735,7 +6735,7 @@ number of operations.
 Single precision (four-byte) numbers contain about seven significant
 figures, while double precision contain about sixteen.
 More, err, precisely, the @acronym{IEEE} single precision representation
-gives from 6 to 9 significant decimal digits precision
+gives from @w{6 to 9} significant decimal digits precision
 @footnote{According to Wikipedia's summary of @acronym{IEEE} standard
 754, ``If a decimal string with at most 6 significant decimal is
 converted to IEEE 754 single precision and then converted back to the
@@ -6744,7 +6744,7 @@ the original; and if an IEEE 754 single precision is converted to a
 decimal string with at least 9 significant decimal and then converted
 back to single, then the final number must match the original''.}.
 And the @acronym{IEEE} double precision representation
-gives from 15 to 17 significant decimal digits precision
+gives from @w{15 to 17} significant decimal digits precision
 @footnote{According to Wikipedia's summary of @acronym{IEEE} standard
 754, ``If a decimal string with at most 15 significant digits is
 converted to IEEE 754 double precision representation and then converted
