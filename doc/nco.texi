@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.842 2013-09-08 21:02:22 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.843 2013-09-08 23:06:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6723,6 +6723,10 @@ $n \le x < n+1$
 @end ifset
 will have the value @var{n} when converted to an integer.
 
+@html
+<a name="sp_dp"></a> <!-- http://nco.sf.net/nco.html#sp_dp -->
+<a name="dbl"></a> <!-- http://nco.sf.net/nco.html#dbl -->
+@end html
 @node Promoting Single Precision to Double, Manual type conversion, Automatic type conversion, Type Conversion
 @subsection Promoting Single Precision to Double
 @cindex promotion

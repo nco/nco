@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.601 2013-08-07 16:16:32 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.602 2013-09-08 23:06:53 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.5 are ready. 
 
@@ -41,6 +41,24 @@ A. CDL-mode prints more verbose information as comments (after '// ')
    ncks --cdl -D 1 ~/nco/data/in_grp.nc
    ncks --cdl -D 3 ~/nco/data/in_grp.nc
    http://nco.sf.net/nco.html#cdl
+
+A. Forced conversion of float to double.
+   NCO has always converted integers and single precision reals (i.e.,
+   floats) to double precision reals (i.e., doubles) prior to
+   arithmetic when it would preserve precision of the result (the
+   results are converted back to the original type after arithmetic).
+   Until now, NCO never implicitly converted floats to doubles unless
+   doubles were involved in the computation (because, well, GIGO).
+   However, such promotion is warranted in some circumstances.
+   Now NCO allows a new arithmetic convention to implement this.
+   The convention is manually invoked with --dbl:
+   ncra --dbl in*.nc out.nc
+   ncwa --dbl in.nc  out.nc
+   NB: Invoking arithmetic promotion of NC_FLOAT to NC_DOUBLE
+   increases RAM memory usage by a factor of two, and slows down
+   multi-file operators, although the slow-down may be negligible
+   compared to I/O time.
+   http://nco.sf.net/nco.html#dbl
 
 BUG FIXES:
 

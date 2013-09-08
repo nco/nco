@@ -1,7 +1,12 @@
+2013-09-08  Charlie Zender  <zender@uci.edu>
+
+	* Verify new --dbl switch solves thermonuclear ncwa issue reported
+	by Lori Sentman, Mark Flanner, and Gary Strand.
+	Proof is in ~/netcdf_examples/bugs/ncwa_3528514/tst_gavg_nco.sh
+
 2013-09-07 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncks regression #70, #71 (limits, group case)
-
 
 2013-09-06  Charlie Zender  <zender@uci.edu>
 
