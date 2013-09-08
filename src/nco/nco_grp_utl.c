@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.947 2013-09-07 22:09:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.948 2013-09-08 00:04:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2547,7 +2547,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Construct traversal table objects (groups,variables) */
   (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
 
-   /* Check -v and -g input names and create extraction list */
+  /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
 
   /* Change included variables to excluded variables */
@@ -2562,9 +2562,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Print table in debug mode */
   if(dbg_lvl_get() == nco_dbg_old) (void)nco_prt_trv_tbl(nc_id,trv_tbl);
 
-  /* Parse auxiliary coordinates */
-  if(aux_nbr) (void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
-
   /* Build dimension information for all variables (match dimension IDs) */
   (void)nco_bld_dmn_ids_trv(nc_id,trv_tbl);
 
@@ -2574,16 +2571,21 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Build GTT "crd_sct" coordinate variable structure */
   (void)nco_bld_crd_var_trv(trv_tbl);
 
-  /* Add dimension limits to traversal table; must be done before nco_bld_var_dmn() */
-  if(lmt_nbr) (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
-
   /* Variables in dimension's scope?   */
   (void)nco_has_crd_dmn_scp(trv_tbl);
 
-  /* Assign variables dimensions to either coordinates or dimension structs; must be done last */
+  /* Assign variables dimensions to either coordinates or dimension structs */
   (void)nco_bld_var_dmn(trv_tbl);
 
+  /* Parse auxiliary coordinates */
+  if(aux_nbr) (void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
+
+  /* Add dimension limits */
+  if(lmt_nbr) (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
+
+
 } /* nco_bld_trv_tbl() */
+
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
@@ -2922,6 +2924,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 
 } /* nco_bld_lmt() */
+
+
 
 void                          
 nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name in dimension's scope?   */
