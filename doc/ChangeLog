@@ -1,3 +1,8 @@
+2013-09-07 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncks regression #70, #71 (limits, group case)
+
+
 2013-09-06  Charlie Zender  <zender@uci.edu>
 
 	* Document Arithmetic Convention
