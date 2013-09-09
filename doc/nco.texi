@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.843 2013-09-08 23:06:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.844 2013-09-09 07:01:03 woodllan Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -14966,7 +14966,7 @@ Key steps include:
 @section Global Distribution of Long-term Average
 @cindex Global Distribution of Long-term Average
 @float Figure,fgr:glb
-@image{xmp/fig1,3.5in} 
+@image{xmp/fgr1,3.5in} 
 @caption{Global Distribution of Long-term Average.}
 @end float
 This section illustrates how to calculate the global distribution of
@@ -14985,7 +14985,7 @@ Key steps include:
 @section Annual Average over Regions
 @cindex Annual Average over Regions
 @float Figure,fgr:anl
-@image{xmp/fig2,4in}
+@image{xmp/fgr2,4in}
 @caption{Annual Average over Regions.}
 @end float
 This section illustrates how to calculate the annual average over
@@ -15014,7 +15014,7 @@ Key steps include:
 @section Monthly Cycle
 @cindex Monthly Cycle
 @float Figure,fgr:mon
-@image{xmp/fig3,4in}
+@image{xmp/fgr3,4in}
 @caption{Monthly Cycle.}
 @end float
 This script illustrates how to calculate the monthly anomaly from the
