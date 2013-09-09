@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.955 2013-09-09 00:41:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.956 2013-09-09 01:53:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6807,6 +6807,12 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Extract coordinates associated with extracted variables */
   if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(nc_id,trv_tbl);
+
+  /* Mark extracted dimensions */
+  if(True) (void)nco_xtr_dmn_mrk(trv_tbl);
+
+  /* Mark extracted groups */
+  if(True) (void)nco_xtr_grp_mrk(trv_tbl);
 
   /* Print table in debug mode */
   if(dbg_lvl_get() == nco_dbg_old) (void)nco_prt_trv_tbl(nc_id,trv_tbl);
