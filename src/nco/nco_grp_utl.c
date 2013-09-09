@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.954 2013-09-08 23:54:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.955 2013-09-09 00:41:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2396,6 +2396,17 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 
 } /* nco_blb_crd_var_trv() */
 
+
+static void
+prt_lmt                             /* [fnc] Print limit  */
+(const int lmt_idx,                 /* I [sct] Index */
+ lmt_sct *lmt)                      /* I [sct] Limit */
+{
+  (void)fprintf(stdout," LIMIT[%d]%s(%li,%li,%li) ",lmt_idx,lmt->nm,lmt->srt,lmt->cnt,lmt->srd);
+} /* prt_lmt() */
+
+
+
 void                          
 nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
 (const int nc_id,                    /* I [ID] File ID */
@@ -2435,32 +2446,62 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
   (void)fprintf(stdout,"%s: INFO reports variable information\n",prg_nm_get());
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
 
-    /* Filter variables  */
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var){
-      trv_sct trv=trv_tbl->lst[idx_var];   
+    trv_sct var_trv=trv_tbl->lst[idx_var];   
 
-      (void)fprintf(stdout,"%s:",trv.nm_fll); 
+    /* Filter variables  */
+    if(var_trv.nco_typ == nco_obj_typ_var){
+
+      (void)fprintf(stdout,"%s:",var_trv.nm_fll); 
 
       /* Filter output */
-      if (trv.is_crd_var == True){
+      if (var_trv.is_crd_var == True){
         (void)fprintf(stdout," (coordinate)");
         nbr_crd++;
       }
 
       /* Filter output */
-      if (trv.is_rec_var == True) (void)fprintf(stdout," (record)");
+      if (var_trv.is_rec_var == True) (void)fprintf(stdout," (record)");
 
       /* If record variable must be coordinate variable */
-      if (trv.is_rec_var == True) assert(trv.is_crd_var == True);
+      if (var_trv.is_rec_var == True) assert(var_trv.is_crd_var == True);
 
-      (void)fprintf(stdout," %d dimensions: ",trv.nbr_dmn); 
+      (void)fprintf(stdout," %d dimensions: ",var_trv.nbr_dmn); 
 
-      /* Full dimension names for each variable */
-      for(int idx_dmn_var=0;idx_dmn_var<trv.nbr_dmn;idx_dmn_var++){
-        (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,trv.var_dmn[idx_dmn_var].dmn_nm_fll,trv.var_dmn[idx_dmn_var].dmn_id); 
+      /* Dimensions */
+      for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++){
+
+        var_dmn_sct var_dmn=var_trv.var_dmn[idx_dmn_var];
+
+        (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,var_dmn.dmn_nm_fll,var_dmn.dmn_id); 
         /* Filter output */
-        if (trv.var_dmn[idx_dmn_var].is_crd_var == True) (void)fprintf(stdout," (coordinate) : ");
-      }
+        if (var_dmn.is_crd_var == True) (void)fprintf(stdout," (coordinate) : ");
+
+        /*  The limits have to be separated to */
+
+        /* a) case where the dimension has coordinate variables */
+        if (var_dmn.crd){
+
+          crd_sct *crd=var_dmn.crd;
+
+          /* Limits */
+          for(int lmt_idx=0;lmt_idx<crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){ 
+            (void)prt_lmt(lmt_idx,crd->lmt_msa.lmt_dmn[lmt_idx]);
+          }/* Limits */
+
+          /* ! case where the dimension has coordinate variables */
+        } else {
+
+          dmn_trv_sct *ncd=var_dmn.ncd;
+
+          /* Limits */
+          for(int lmt_idx=0;lmt_idx<ncd->lmt_msa.lmt_dmn_nbr;lmt_idx++){ 
+            (void)prt_lmt(lmt_idx,ncd->lmt_msa.lmt_dmn[lmt_idx]);
+          }/* Limits */
+
+        } /* ! case where the dimension has coordinate variables */
+      } /* Dimensions */
+
+      /* End this variable */
       (void)fprintf(stdout,"\n");
 
     } /* Filter variables  */
@@ -2495,8 +2536,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
       /* Limits */
       for(int lmt_idx=0;lmt_idx<crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){ 
-        lmt_sct *lmt_dmn=crd->lmt_msa.lmt_dmn[lmt_idx];
-        (void)fprintf(stdout," [%d]%s(%li,%li,%li) ",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
+        (void)prt_lmt(lmt_idx,crd->lmt_msa.lmt_dmn[lmt_idx]);
       }/* Limits */
 
       /* Terminate this coordinate with "::" */
@@ -6679,10 +6719,6 @@ nco_prt_tbl_lmt                       /* [fnc] Print table limits */
 {
   const char fnc_nm[]="nco_prt_tbl_lmt()"; /* [sng] Function name  */
 
-  dmn_trv_sct *dmn_trv;
-
-  int dmn_id;
-
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
@@ -6693,12 +6729,6 @@ nco_prt_tbl_lmt                       /* [fnc] Print table limits */
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
-
-        /* Dimension ID */
-        dmn_id=var_trv.var_dmn[idx_var_dmn].dmn_id;
-
-        /* Get unique dimension object from unique dimension ID, in input list */
-        dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
 
         /* a) case where the dimension has coordinate variables */
         if (var_trv.var_dmn[idx_var_dmn].crd){
