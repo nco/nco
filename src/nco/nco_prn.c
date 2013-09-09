@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.161 2013-08-30 01:00:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.162 2013-09-09 00:59:48 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1169,7 +1169,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(prn_flg->md5->dgs) (void)nco_md5_chk(prn_flg->md5,var_nm,var.sz*nco_typ_lng(var.type),grp_id,(long *)NULL,(long *)NULL,var.val.vp);
 
   /* Warn if variable is packed */
-  if(nco_pck_dsk_inq(grp_id,&var)) (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",prg_nm_get(),var_nm);
+  if(dbg_lvl_get() > 0) {
+    if(nco_pck_dsk_inq(grp_id,&var)){
+      (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",prg_nm_get(),var_nm);
+    }
+  }
 
   /* Refresh number of attributes and missing value attribute, if any */
   var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
@@ -1185,10 +1189,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     (void)sng_ascii_trn(dlm_sng);
 
     /* Assume -s argument (dlm_sng) formats entire string
-       Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
-       and that user is only allowed to affect text between fields. 
-       This would be accomplished with:
-       (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
+    Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
+    and that user is only allowed to affect text between fields. 
+    This would be accomplished with:
+    (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
 
     /* Find replacement format string at most once, then re-use */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
@@ -1244,13 +1248,13 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(is_compound){
       /* Create brace list */
       for(dmn_idx=1;dmn_idx<var.nbr_dim;dmn_idx++){ /* NB: dimension index starts at 1 */
-	dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl); 
-	cpd_rec_dmn[dmn_idx]=False;
-	if(dmn_trv->is_rec_dmn){
-	  cpd_rec_dmn[dmn_idx]=True; 
-	  cpd_rec_dmn_idx[cpd_nbr]=dmn_idx;
-	  cpd_nbr++;
-	} /* endif */
+        dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl); 
+        cpd_rec_dmn[dmn_idx]=False;
+        if(dmn_trv->is_rec_dmn){
+          cpd_rec_dmn[dmn_idx]=True; 
+          cpd_rec_dmn_idx[cpd_nbr]=dmn_idx;
+          cpd_nbr++;
+        } /* endif */
       } /* end loop over dimensions */
     } /* !is_compound */
 
@@ -1264,56 +1268,56 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       }else{ /* !is_mss_val */
         switch(var.type){
         case NC_FLOAT: 
-	  val_flt=var.val.fp[lmn];
-	  if(isfinite(val_flt)){
-	    rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
-	    (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
-	  }else{
-	    if(isnan(val_flt)) (void)sprintf(val_sng,"NaN"); else if(isinf(val_flt)) (void)sprintf(val_sng,"%sInfinity",(val_flt < 0.0f) ? "-" : "");
-	  } /* endelse */
-	  break;
+          val_flt=var.val.fp[lmn];
+          if(isfinite(val_flt)){
+            rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
+            (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
+          }else{
+            if(isnan(val_flt)) (void)sprintf(val_sng,"NaN"); else if(isinf(val_flt)) (void)sprintf(val_sng,"%sInfinity",(val_flt < 0.0f) ? "-" : "");
+          } /* endelse */
+          break;
         case NC_DOUBLE:
-	  val_dbl=var.val.dp[lmn];
-	  if(isfinite(val_dbl)){
-	    rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_dbl);
-	    (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
-	  }else{
-	    if(isnan(val_dbl)) (void)sprintf(val_sng,"NaN"); else if(isinf(val_dbl)) (void)sprintf(val_sng,"%sInfinity",(val_dbl < 0.0) ? "-" : "");
-	  } /* endelse */
-	  break;
+          val_dbl=var.val.dp[lmn];
+          if(isfinite(val_dbl)){
+            rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_dbl);
+            (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
+          }else{
+            if(isnan(val_dbl)) (void)sprintf(val_sng,"NaN"); else if(isinf(val_dbl)) (void)sprintf(val_sng,"%sInfinity",(val_dbl < 0.0) ? "-" : "");
+          } /* endelse */
+          break;
         case NC_SHORT: (void)sprintf(val_sng,fmt_sng,var.val.sp[lmn]); break;
         case NC_INT: (void)sprintf(val_sng,fmt_sng,var.val.ip[lmn]); break;
         case NC_CHAR: 
-	  chr_val=var.val.cp[lmn];
-	  if(var.nbr_dim == 0){
-	    (void)fprintf(stdout,"\"");
-	    if(chr_val != '\0') (void)fprintf(stdout,"%s",chr2sng_cdl(chr_val,val_sng));
-	    (void)fprintf(stdout,"\"");
-	    val_sng[0]='\0';
-	  }else{ /* var.nbr_dim > 0 */
-	    /* Multi-dimensional string arrays of NC_CHAR */
-	    val_sng[0]='\0';
-	    if(lmn == 0L){
-	      sng_lng=lmt_msa[var.nbr_dim-1]->dmn_cnt;
-	      sng_lngm1=sng_lng-1UL;
-	      /* Worst case is printable strings are four times longer than unformatted, i.e. '\\' == "\\\\" */
-	      sng_val_sng=(char *)nco_malloc(4*sng_lng+1UL);
-	    } /* endif first element of string array */
-	    /* New string begins each element where penultimate dimension changes */
-	    if(lmn%sng_lng == 0L){
-	      (void)fprintf(stdout,"\"");
-	      sng_val_sng[0]='\0';
-	    } /* endif new string */
-	    (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
-	    if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng,prn_ndn+prn_flg->var_fst,spc_sng);
-	    if(lmn%sng_lng == sng_lngm1){
-	      (void)fprintf(stdout,"%s\"",sng_val_sng);
-	      /* Print commas after non-final strings */
-	      if(lmn != var_szm1) (void)fprintf(stdout,"%s",cma_sng);
-	    } /* endif string end */
-	    if(lmn == var_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
-	  } /* var.nbr_dim > 0 */
-	  break;
+          chr_val=var.val.cp[lmn];
+          if(var.nbr_dim == 0){
+            (void)fprintf(stdout,"\"");
+            if(chr_val != '\0') (void)fprintf(stdout,"%s",chr2sng_cdl(chr_val,val_sng));
+            (void)fprintf(stdout,"\"");
+            val_sng[0]='\0';
+          }else{ /* var.nbr_dim > 0 */
+            /* Multi-dimensional string arrays of NC_CHAR */
+            val_sng[0]='\0';
+            if(lmn == 0L){
+              sng_lng=lmt_msa[var.nbr_dim-1]->dmn_cnt;
+              sng_lngm1=sng_lng-1UL;
+              /* Worst case is printable strings are four times longer than unformatted, i.e. '\\' == "\\\\" */
+              sng_val_sng=(char *)nco_malloc(4*sng_lng+1UL);
+            } /* endif first element of string array */
+            /* New string begins each element where penultimate dimension changes */
+            if(lmn%sng_lng == 0L){
+              (void)fprintf(stdout,"\"");
+              sng_val_sng[0]='\0';
+            } /* endif new string */
+            (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+            if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng,prn_ndn+prn_flg->var_fst,spc_sng);
+            if(lmn%sng_lng == sng_lngm1){
+              (void)fprintf(stdout,"%s\"",sng_val_sng);
+              /* Print commas after non-final strings */
+              if(lmn != var_szm1) (void)fprintf(stdout,"%s",cma_sng);
+            } /* endif string end */
+            if(lmn == var_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
+          } /* var.nbr_dim > 0 */
+          break;
         case NC_BYTE: (void)sprintf(val_sng,fmt_sng,var.val.bp[lmn]); break;
         case NC_UBYTE: (void)sprintf(val_sng,fmt_sng,var.val.ubp[lmn]); break;
         case NC_USHORT: (void)sprintf(val_sng,fmt_sng,var.val.usp[lmn]); break;
@@ -1321,23 +1325,23 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         case NC_INT64: (void)sprintf(val_sng,fmt_sng,var.val.i64p[lmn]); break;
         case NC_UINT64: (void)sprintf(val_sng,fmt_sng,var.val.ui64p[lmn]); break;
         case NC_STRING: 
-	  sng_val=var.val.sngp[lmn];
-	  sng_lng=strlen(sng_val);
-	  sng_lngm1=sng_lng-1UL;
-	  /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
-	  sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
-	  (void)fprintf(stdout,"\"");
-	  sng_val_sng[0]='\0';
-	  for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
-	    val_sng[0]='\0';
-	    chr_val=sng_val[chr_idx];
-	    (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
-	  } /* end loop over character */
-	  (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
-	  /* Print commas after non-final strings */
-	  if(lmn != var_szm1) (void)fprintf(stdout,"%s",cma_sng);
-	  sng_val_sng=(char *)nco_free(sng_val_sng);
-	  break;
+          sng_val=var.val.sngp[lmn];
+          sng_lng=strlen(sng_val);
+          sng_lngm1=sng_lng-1UL;
+          /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
+          sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
+          (void)fprintf(stdout,"\"");
+          sng_val_sng[0]='\0';
+          for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
+            val_sng[0]='\0';
+            chr_val=sng_val[chr_idx];
+            (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+          } /* end loop over character */
+          (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
+          /* Print commas after non-final strings */
+          if(lmn != var_szm1) (void)fprintf(stdout,"%s",cma_sng);
+          sng_val_sng=(char *)nco_free(sng_val_sng);
+          break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
@@ -1377,7 +1381,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       if(prn_flg->PRN_DMN_VAR_NM) (void)fprintf(stdout,"%*s%s = %s %s\n",prn_ndn,spc_sng,var_nm,mss_val_sng,unit_sng); else (void)fprintf(stdout,"%*s%s\n",prn_ndn,spc_sng,mss_val_sng); 
     }else{ /* !is_mss_val */
       if(prn_flg->PRN_DMN_VAR_NM){
-	switch(var.type){
+        switch(var.type){
         case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
         case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
         case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
@@ -1483,7 +1487,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
           /* Ooopssy */ 
         }else assert(0);
- 
+
         /* Typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
       } /* end for */
@@ -1496,7 +1500,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
       /* Calculate RAM indices from current limit */
       for(int idx=0;idx<var.nbr_dim;idx++)
-	dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
+        dmn_sbs_ram[idx]=(lmn%mod_map_cnt[idx])/(idx == var.nbr_dim-1 ? 1L : mod_map_cnt[idx+1]);
 
       /* Calculate disk indices from RAM indices */
       (void)nco_msa_ram_2_dsk(dmn_sbs_ram,lmt_msa,var.nbr_dim,dmn_sbs_dsk,(lmn == var.sz-1L));

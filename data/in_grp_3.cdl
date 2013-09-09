@@ -237,11 +237,13 @@ netcdf in_grp_3 {
   //g18
   //
   group: g18 { 
+  
     dimensions:
-    time=unlimited;
+    time=unlimited; // NB: no coordinate for this dimension
     lat=2;
     lon=4;  
     gds_crd=8;
+	
     variables:
     float lat(lat);
     float lon(lon); 
@@ -269,7 +271,6 @@ netcdf in_grp_3 {
     gds_3dvar:units = "meter";
     gds_3dvar:coordinates = "lat_gds lon_gds";
     gds_3dvar:purpose = "Test auxiliary coordinates like those that define geodesic grids";
-    
     
     data:
     gds_crd=0,1,2,3,4,5,6,7;
@@ -493,6 +494,8 @@ netcdf in_grp_3 {
   int one_dmn_rec_var1(time231);
   int one_dmn_rec_var2(time232);
   data:
+  time231=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+  time232=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   one_dmn_rec_var1=1,2,3,4,5,6,7,8,9,10;
   one_dmn_rec_var2=1,2,3,4,5,6,7,8,9,10;  
   } // end g23
