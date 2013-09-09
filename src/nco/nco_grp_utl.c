@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.956 2013-09-09 01:53:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.957 2013-09-09 06:25:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6787,11 +6787,13 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const int var_xtr_nbr,               /* I [nbr] Number of variables in list */
  const nco_bool EXTRACT_ALL_COORDINATES,  /* I [flg] Process all coordinates */ 
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
- const nco_bool EXCLUDE_INPUT_LIST,  /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
+ const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
+
+  nco_bool CNV_CCM_CCSM_CF;      /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 
   /* Construct traversal table objects (groups,variables) */
   (void)nco_grp_itr(nc_id,grp_pth,trv_tbl);
@@ -6807,6 +6809,14 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Extract coordinates associated with extracted variables */
   if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(nc_id,trv_tbl);
+
+  /* Is this a CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(nc_id);
+  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+    /* Implement CF "coordinates" and "bounds" conventions */
+    (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
+    (void)nco_xtr_cf_add(nc_id,"bounds",trv_tbl);
+  } /* CNV_CCM_CCSM_CF */
 
   /* Mark extracted dimensions */
   if(True) (void)nco_xtr_dmn_mrk(trv_tbl);

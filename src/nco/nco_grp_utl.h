@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.372 2013-09-08 05:12:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.373 2013-09-09 06:25:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -38,6 +38,7 @@
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 #include "nco_prn.h" /* Print variables, attributes, metadata */
 #include "nco_var_lst.h" /* Variable list utilities */
+#include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */
 
 /* Dynamic array implementation of group stack */
 typedef struct {

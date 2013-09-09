@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.327 2013-09-07 22:09:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.328 2013-09-09 06:25:23 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.327 2013-09-07 22:09:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.327 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.328 2013-09-09 06:25:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.328 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -536,14 +536,6 @@ main(int argc,char **argv)
     /* Get number of variables, dimensions, and global attributes in file, file format */
     (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
 
-    /* Is this a CCM/CCSM/CF-format history tape? */
-    CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-    if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-      /* Implement CF "coordinates" and "bounds" conventions */
-      (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
-      (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
-    } /* CNV_CCM_CCSM_CF */
-
     /* Fill-in variable structure list for all extracted variables */
     var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
@@ -744,14 +736,6 @@ main(int argc,char **argv)
       /* Get number of variables, dimensions, and global attributes in file, file format */
       (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl_gpr);
       (void)nco_inq_format(in_id,&fl_in_fmt);
-
-      /* Is this a CCM/CCSM/CF-format history tape? */
-      CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-      if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-        /* Implement CF "coordinates" and "bounds" conventions */
-        (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl_gpr);
-        (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl_gpr);
-      } /* CNV_CCM_CCSM_CF */
 
       /* We now have final list of variables to extract. Phew. */
 

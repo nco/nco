@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.261 2013-09-07 22:09:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.262 2013-09-09 06:25:23 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.261 2013-09-07 22:09:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.261 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.262 2013-09-09 06:25:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.262 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -557,14 +557,6 @@ main(int argc,char **argv)
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
-
-  /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
-  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-    /* Implement CF "coordinates" and "bounds" conventions */
-    (void)nco_xtr_cf_add(in_id_1,"coordinates",trv_tbl);
-    (void)nco_xtr_cf_add(in_id_1,"bounds",trv_tbl);
-  } /* CNV_CCM_CCSM_CF */
 
   /* Fill-in variable structure list for all extracted variables */
   var=nco_fll_var_trv(in_id_1,&xtr_nbr,trv_tbl);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.364 2013-09-07 22:09:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.365 2013-09-09 06:25:23 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.364 2013-09-07 22:09:08 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.364 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.365 2013-09-09 06:25:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.365 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -619,15 +619,6 @@ main(int argc,char **argv)
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
-
-  /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
-  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-    /* Implement CF "coordinates" and "bounds" conventions */
-    (void)nco_xtr_cf_add(in_id,"coordinates",trv_tbl);
-    (void)nco_xtr_cf_add(in_id,"bounds",trv_tbl);
-  } /* CNV_CCM_CCSM_CF */
-
 
   /* Allocate array of dimensions associated with variables to be extracted with maximum possible size */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));

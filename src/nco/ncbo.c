@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.258 2013-09-07 22:09:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.259 2013-09-09 06:25:23 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.258 2013-09-07 22:09:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.258 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.259 2013-09-09 06:25:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.259 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -537,19 +537,6 @@ main(int argc,char **argv)
 
   (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
   (void)nco_inq_format(in_id_2,&fl_in_fmt_2);
-
-  /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
-  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-    /* Implement CF "coordinates" and "bounds" conventions */
-    (void)nco_xtr_cf_add(in_id_1,"coordinates",trv_tbl_1);
-    (void)nco_xtr_cf_add(in_id_1,"bounds",trv_tbl_1);
-  } /* CNV_CCM_CCSM_CF */
-  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
-    /* Implement CF "coordinates" and "bounds" conventions */
-    (void)nco_xtr_cf_add(in_id_2,"coordinates",trv_tbl_2);
-    (void)nco_xtr_cf_add(in_id_2,"bounds",trv_tbl_2);
-  } /* CNV_CCM_CCSM_CF */
 
   /* We now have final list of variables to extract. Phew. */
 
