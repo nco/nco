@@ -31,16 +31,8 @@ for fn in $( ls MCD43C3.*.nc ); do		## loop over files
   ncap2 -O -S inverse-lat.nco ${fn} ${fn}						## inverse latitude
   
   ## lon
-  ## break into east and west hemispheres in order to switch the two
-  ncks -O -d lon,0.0,180.0 ${fn} ${sfx}.part1.nc
-  ncks -O -d lon,-180.0,-1.25 ${fn} ${sfx}.part2.nc
-  ## make longitude the record dimension
-  ncpdq -O -a lon,lat,time ${sfx}.part1.nc ${sfx}.part1.nc
-  ncpdq -O -a lon,lat,time ${sfx}.part2.nc ${sfx}.part2.nc
-  ## concatenate the two hemispheres along longitude
-  ncrcat -O ${sfx}.part?.nc ${fn}
-  ## reorder dimensions
-  ncpdq -O -a time,lat,lon ${fn} ${fn}
+  ncks -O --msa -d lon,0.0,180.0 -d lon,-180.0,-1.25 ${fn} ${fn}
+
   ## add new longitude coordinates
   ncap2 -O -s 'lon=array(0.0,1.25,$lon)' ${fn} ${fn}
 done
