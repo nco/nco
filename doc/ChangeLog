@@ -1,3 +1,7 @@
+2013-09-09  Charlie Zender  <zender@uci.edu>
+
+	* Move table of contents from bottom to top of documentation
+
 2013-09-08  Charlie Zender  <zender@uci.edu>
 
 	* Verify new --dbl switch solves thermonuclear ncwa issue reported

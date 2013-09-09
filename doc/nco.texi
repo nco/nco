@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.845 2013-09-09 07:56:47 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.846 2013-09-09 22:33:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -326,6 +326,10 @@ Irvine, CA 92697-3100@*
 @sp 2
 @c Cover art by Robynn Rudel
 @end titlepage
+
+@c Print table of contents
+@contents
+
 @node Top, Foreword, (dir), (dir)
 @ifinfo
 @top NCO User's Guide
@@ -485,14 +489,15 @@ People introduce themselves, shake my hand and extol, sometimes rather
 effusively, these time-saving tools.
 These exchanges lighten me like anti-gravity.
 Sometimes I daydream how many hours @acronym{NCO} has turned from grunt
-work to productive research, or from research into early happy hours.
+work to productive research for researchers world-wide, or from research
+into early happy hours. 
 It's a cool feeling.
 
 @c @uref{http://www.nasa.gov/mission_pages/IPY/main/PolarExploration.html,NNX07AR23G}.@*
 @sp 1
 @noindent
 Charlie Zender@*
-2012@*
+April, 2012@*
 Irvine, California@*
 
 @html
@@ -15443,9 +15448,6 @@ Level III: Many derived products from level II, e.g.,
 
 @syncodeindex fn cp
 @printindex cp
-
-@c Print table of contents
-@contents
 
 @c TTFN (Ta ta for now)
 @bye
