@@ -5,7 +5,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.844 2013-09-09 07:01:03 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.845 2013-09-09 07:56:47 woodllan Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -15047,7 +15047,7 @@ Key steps include:
 @cindex Add Coordinates to @acronym{MODIS} Data
 @example
 ## Main Script
-@verbatiminclude xmp/add_coor.sh
+@verbatiminclude xmp/add_crd.sh
 ## coor.nco
 @verbatiminclude xmp/coor.nco
 @end example
