@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.366 2013-09-10 22:36:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.367 2013-09-10 23:46:27 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.366 2013-09-10 22:36:48 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.366 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.367 2013-09-10 23:46:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.367 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -863,10 +863,7 @@ main(int argc,char **argv)
       (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
 
       /* Retrieve variable from disk into memory */
-      if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
-
-      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
-      (void)nco_var_get(grp_id,var_prc[idx]);
+      (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
 
       if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
 
