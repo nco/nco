@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.960 2013-09-11 09:01:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.961 2013-09-11 20:19:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6640,8 +6640,8 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
   if(dbg_lvl_get() >= nco_dbg_dev){ 
     (void)fprintf(stdout,"%s: DEBUG %s record dimensions to process: ",prg_nm_get(),fnc_nm);        
-    for(int idx_dmn=0;idx_dmn<trv_tbl->nbr_rec;idx_dmn++){
-      (void)fprintf(stdout,"#%d<%s/%s> : ",trv_tbl->lmt_rec[idx_dmn]->id,trv_tbl->lmt_rec[idx_dmn]->grp_nm_fll,trv_tbl->lmt_rec[idx_dmn]->nm);        
+    for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+      (void)fprintf(stdout,"#%d<%s/%s> : ",trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,trv_tbl->lmt_rec[idx_rec]->nm);        
     }
     (void)fprintf(stdout,"\n");       
   } 

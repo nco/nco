@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.379 2013-09-11 18:21:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.380 2013-09-11 20:19:42 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.379 2013-09-11 18:21:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.379 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.380 2013-09-11 20:19:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.380 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1280,9 +1280,9 @@ main(int argc,char **argv)
     /* Variables may have different ID, missing_value, type, in each file */
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Obtain variable GTT object using full variable name */
-      var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+      trv_sct *trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
       /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+      (void)nco_inq_grp_full_ncid(in_id,trv->grp_nm_fll,&grp_id);
       (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
     } /* end loop over variables */
 
@@ -1465,8 +1465,15 @@ main(int argc,char **argv)
               } /* Case of dimension not being coordinate variable */
 
               break;
-            } /* Match current record by name (TO_DO, full name or ID match ) */
+            } /* Match current record by name */
           } /* Loop dimensions */
+
+          if(dbg_lvl_get() >= nco_dbg_dev){ 
+            lmt_sct *lmt= trv_tbl->lmt_rec[idx_rec];
+            (void)fprintf(stdout,"%s: DEBUG reading: ",prg_nm_get());        
+            (void)fprintf(stdout,"variable <%s> ",var_prc[idx]->nm_fll);              
+            (void)fprintf(stdout,"record #%d<%s/%s>(%ld->%ld,%ld)\n",lmt->id,lmt->grp_nm_fll,lmt->nm,lmt->srt,lmt->end,lmt->cnt);              
+          } 
 
           /* Retrieve variable from disk into memory */
           (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
