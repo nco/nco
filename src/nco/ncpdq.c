@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.358 2013-09-11 22:07:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.359 2013-09-11 23:28:46 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -73,7 +73,6 @@ main(int argc,char **argv)
   aed_sct *aed_lst_add_fst=NULL_CEWI;
   aed_sct *aed_lst_scl_fct=NULL_CEWI;
 
-  nco_bool **dmn_rvr_in=NULL; /* [flg] Reverse dimension */
   nco_bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimension */
   nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
@@ -119,8 +118,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.358 2013-09-11 22:07:11 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.358 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.359 2013-09-11 23:28:46 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.359 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -145,8 +144,6 @@ main(int argc,char **argv)
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
-
-  int **dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
 
   int *in_id_arr;
 
@@ -684,7 +681,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,IS_REORDER)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_rdr_nbr,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,IS_REORDER)
 #endif /* !_OPENMP */
 
     /* Process all variables in current file */
@@ -838,13 +835,6 @@ main(int argc,char **argv)
   if(flg_cln){
     /* ncpdq-specific memory cleanup */
     if(dmn_rdr_nbr > 0){
-      /* Free dimension correspondence list */
-      for(idx=0;idx<nbr_var_prc;idx++){
-        dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
-        dmn_rvr_in[idx]=(nco_bool *)nco_free(dmn_rvr_in[idx]);
-      } /* end loop over idx */
-      if(dmn_idx_out_in) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
-      if(dmn_rvr_in) dmn_rvr_in=(nco_bool **)nco_free(dmn_rvr_in);
       if(dmn_rvr_rdr) dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
       if(dmn_rdr_nbr_in > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
       /* Free dimension list pointers */
