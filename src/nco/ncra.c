@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.375 2013-09-11 02:07:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.376 2013-09-11 02:56:23 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.375 2013-09-11 02:07:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.375 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.376 2013-09-11 02:56:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.376 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1161,11 +1161,6 @@ main(int argc,char **argv)
 
   /* Build record dimensions array */
   (void)nco_bld_rec_dmn(in_id,FORTRAN_IDX_CNV,trv_tbl);  
-
-  if(prg == ncra || prg == ncrcat){
-    /* Build records to process  */
-    (void)nco_bld_rec(trv_tbl);
-  }
 
   /* Is this an ARM-format data file? */
   CNV_ARM=nco_cnv_arm_inq(in_id);

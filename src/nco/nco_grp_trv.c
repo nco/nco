@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.213 2013-09-08 22:40:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.214 2013-09-11 02:56:23 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -92,7 +92,6 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   for(int idx=0;idx<tbl->nbr_rec;idx++){
     tbl->lmt_rec[idx]=nco_lmt_free(tbl->lmt_rec[idx]);
   }
-  tbl->flg_rec=(nco_bool *)nco_free(tbl->flg_rec);
 
   /* (ncwa) Degenerate dimensions */
   tbl->dmn_dgn=(dmn_sct *)nco_free(tbl->dmn_dgn); 
