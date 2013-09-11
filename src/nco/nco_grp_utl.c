@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.959 2013-09-11 05:56:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.960 2013-09-11 09:01:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6589,6 +6589,10 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               /* Create stand-alone limit structure for given dimension */
               trv_tbl->lmt_rec[trv_tbl->nbr_rec]=nco_lmt_sct_mk(grp_id,dmn_id,crd->lmt_msa.lmt_dmn,crd->lmt_msa.lmt_dmn_nbr,FORTRAN_IDX_CNV);
 
+              /* Insert full group name, key for group ID match */
+              trv_tbl->lmt_rec[trv_tbl->nbr_rec]->grp_nm_fll=(char *)strdup(crd->crd_grp_nm_fll);
+
+
               /* b) case of dimension only (there is no coordinate variable for this dimension */
             }else{
 
@@ -6596,6 +6600,9 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
               /* Create stand-alone limit structure for given dimension */
               trv_tbl->lmt_rec[trv_tbl->nbr_rec]=nco_lmt_sct_mk(grp_id,dmn_id,ncd->lmt_msa.lmt_dmn,ncd->lmt_msa.lmt_dmn_nbr,FORTRAN_IDX_CNV);
+
+              /* Insert full group name, key for group ID match */
+              trv_tbl->lmt_rec[trv_tbl->nbr_rec]->grp_nm_fll=(char *)strdup(ncd->grp_nm_fll);
 
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
 
@@ -6634,7 +6641,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   if(dbg_lvl_get() >= nco_dbg_dev){ 
     (void)fprintf(stdout,"%s: DEBUG %s record dimensions to process: ",prg_nm_get(),fnc_nm);        
     for(int idx_dmn=0;idx_dmn<trv_tbl->nbr_rec;idx_dmn++){
-      (void)fprintf(stdout,"#%d<%s> : ",trv_tbl->lmt_rec[idx_dmn]->id,trv_tbl->lmt_rec[idx_dmn]->nm);        
+      (void)fprintf(stdout,"#%d<%s/%s> : ",trv_tbl->lmt_rec[idx_dmn]->id,trv_tbl->lmt_rec[idx_dmn]->grp_nm_fll,trv_tbl->lmt_rec[idx_dmn]->nm);        
     }
     (void)fprintf(stdout,"\n");       
   } 

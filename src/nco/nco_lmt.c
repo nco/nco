@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.193 2013-09-06 07:52:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.194 2013-09-11 09:01:01 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -13,6 +13,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
 (lmt_sct *lmt) /* I/O [sct] Limit structure to initialize */
 {
   lmt->nm=NULL;              /* [sng] Dimension name */
+  lmt->grp_nm_fll=NULL;      /* [sng] Dimension name */
   lmt->drn_sng=NULL;         /* [sng] User-specified string for dimension duration */
   lmt->max_sng=NULL;         /* [sng] User-specified string for dimension maximum */
   lmt->min_sng=NULL;         /* [sng] User-specified string for dimension minimum */
@@ -107,6 +108,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   (void)nco_lmt_init(lmt2);
 
   lmt2->nm=(char *)strdup(lmt1->nm);
+  if(lmt1->grp_nm_fll) lmt2->grp_nm_fll=(char *)strdup(lmt1->grp_nm_fll);
   if(lmt1->drn_sng) lmt2->drn_sng=(char *)strdup(lmt1->drn_sng);      
   if(lmt1->max_sng) lmt2->max_sng=(char *)strdup(lmt1->max_sng);
   if(lmt1->min_sng) lmt2->min_sng=(char *)strdup(lmt1->min_sng);
@@ -153,6 +155,7 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with dynamically allocated limit structure */
   lmt->nm=(char *)nco_free(lmt->nm);
+  lmt->grp_nm_fll=(char *)nco_free(lmt->grp_nm_fll);
   lmt->drn_sng=(char *)nco_free(lmt->drn_sng);
   lmt->max_sng=(char *)nco_free(lmt->max_sng);
   lmt->min_sng=(char *)nco_free(lmt->min_sng);

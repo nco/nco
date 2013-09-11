@@ -1,3 +1,7 @@
+2013-09-11 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncra regression #24 (records, group case)
+	
 2013-09-10  Charlie Zender  <zender@uci.edu>
 
 	* Document groups for ncea, ncra, ncrcat

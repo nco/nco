@@ -491,9 +491,52 @@ netcdf in_grp_3 {
   //
   
   group: g23 { 
-  
-  
+   dimensions:
+    lat=2;
+    lon=3;
+	time=unlimited;
+    variables:
+    float lat(lat);
+    lat:units = "degrees_north";
+    float lon(lon);
+    lon:units = "degrees_east";
+	double time(time);
+    float snd(time,lat,lon);
+    data:
+    lat=-60,0;
+    lon=0,120,240;
+	time=1,2,3,4;
+    snd=1,1,1,1,1,1,
+	    1,1,1,1,1,1,
+		1,1,1,1,1,1,
+		1,1,1,1,1,1;
   } // end g23
+  
+  //
+  // ncra test case
+  //
+  
+  group: g24 { 
+   dimensions:
+    lat=2;
+    lon=3;
+	time=unlimited;
+    variables:
+    float lat(lat);
+    lat:units = "degrees_north";
+    float lon(lon);
+    lon:units = "degrees_east";
+	double time(time);
+    float snd(time,lat,lon);
+    data:
+    lat=-60,0;
+    lon=0,120,240;
+	time=1,2,3,4;
+    snd=2,2,2,2,2,2,
+	    2,2,2,2,2,2,
+		2,2,2,2,2,2,
+		2,2,2,2,2,2;
+  } // end g24
   
     
 } // end root group

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.394 2013-09-11 02:56:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.395 2013-09-11 09:01:01 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -495,6 +495,7 @@ extern "C" {
     char *min_sng; /* User-specified string for dimension minimum */
     char *mro_sng; /* User-specified string for multi-record output */
     char *nm; /* [sng] Dimension name */
+    char *grp_nm_fll; /* [sng] Full group where dimension is defined. Added for group support from original netCDF3 */
     char *rbs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
     char *srd_sng; /* User-specified string for dimension stride */
     double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
