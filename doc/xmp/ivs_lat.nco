@@ -1,0 +1,5 @@
+// included by miscellany.sh
+// inverse lat from (90,-90) to (-90,90)
+bsa_sw=bsa_sw.reverse($lat);
+wsa_sw=wsa_sw.reverse($lat);
+lat=lat.reverse($lat);
