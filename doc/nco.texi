@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.852 2013-09-11 21:57:51 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.853 2013-09-11 23:26:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1355,8 +1355,9 @@ statistical packages, and are often more suitable for archival and
 dissemination to the scientific community.
 @acronym{NCO} performs a suite of operations useful in manipulating data
 from the primary to the second level state.
-@cindex @acronym{NCL}
 @cindex @acronym{IDL}
+@cindex Matlab
+@cindex @acronym{NCL}
 @cindex Perl
 @cindex Yorick
 Higher level interpretive languages (e.g., @acronym{IDL}, Yorick,
@@ -2098,13 +2099,13 @@ to the memory requirements.
 Further note that some operators perform internal type-promotion on some
 variables prior to arithmetic (@pxref{Type Conversion}).
 For example, @command{ncra} and @command{ncea} both promote integer
-types to double precision floating point prior to arithmetic, then
+types to double-precision floating point prior to arithmetic, then
 perform the arithmetic, then demote back to the original integer type
 after arithmetic.
 This preserves the on-disk storage type while obtaining the accuracy
 advantages of floating point arithmetic. 
 Single-precision floating point variables however are not by default
-promoted to double precision prior to arithmetic.
+promoted to double-precision prior to arithmetic.
 Hence, the sustained memory required for integer variables are two or 
 four-times their on-disk, uncompressed, unpacked sizes if they meet the
 rules for automatic internal promotion.
@@ -4229,7 +4230,7 @@ hyperslab elements based on coordinate value rather than index.
 
 @cindex @code{NC_BYTE}
 @cindex @code{NC_CHAR}
-User-specified coordinate limits are promoted to double precision values 
+User-specified coordinate limits are promoted to double-precision values 
 while searching for the indices which bracket the range. 
 Thus, hyperslabs on coordinates of type @code{NC_BYTE} and
 @code{NC_CHAR} are computed numerically rather than lexically, so the
@@ -6568,17 +6569,21 @@ less required by the @command{ncbo} operation in the third step.
 @section Type Conversion
 @cindex type conversion
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
-@command{ncra}, @command{ncwa}@* 
+Availability (automatic type conversion): @command{ncap2}, @command{ncbo}, @command{ncea},
+@command{ncflint}, @command{ncra}, @command{ncwa}@* 
+Short options: None (it's @emph{automatic})@*
+Availability (manual type conversion): @command{ncea}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
+Long options: @samp{--dbl}, @samp{--rth_dbl}@* 
 @end cartouche
 @cindex promotion
 @cindex demotion
 @cindex automatic type conversion
 @cindex manual type conversion
 Type conversion (often called @dfn{promotion} or @dfn{demotion}) refers
-to the casting of one fundamental data type to another, e.g., converting
-@code{NC_SHORT} (two bytes) to @code{NC_DOUBLE} (eight bytes). 
+to the casting or coercion of one fundamental or atomic data type to
+another, e.g., converting @code{NC_SHORT} (two bytes) to
+@code{NC_DOUBLE} (eight bytes).  
 Type conversion is automatic when the language carries out this
 promotion according to an internal set of rules without explicit user 
 intervention. 
@@ -6589,51 +6594,43 @@ which manual type conversion is advantageous.
 
 @menu
 * Automatic type conversion::
-* Promoting Single Precision to Double::
+* Promoting Single-precision to Double::
 * Manual type conversion::
 @end menu
 
-@node Automatic type conversion, Promoting Single Precision to Double, Type Conversion, Type Conversion
+@node Automatic type conversion, Promoting Single-precision to Double, Type Conversion, Type Conversion
 @subsection Automatic type conversion
 
-As a general rule, automatic type conversions should be avoided for at
-least two reasons. 
+There are at least two reasons to avoid type conversions.
 First, type conversions are expensive since they require creating
 (temporary) buffers and casting each element of a variable from its 
 storage type to some other type and then, often, converting it back.
-Second, the dataset's creator perhaps had a good reason for storing 
+Second, a dataset's creator perhaps had a good reason for storing 
 data as, say, @code{NC_FLOAT} rather than @code{NC_DOUBLE}.  
 In a scientific framework there is no reason to store data with more
 precision than the observations merit.
-Thus @acronym{NCO} defaults to avoid performing automatic type
-conversions when performing arithmetic. 
-That said, there are situations in which implicit conversion of say,
-single- to double-precision is warranted.
+The reasons to engage in type conversion include avoiding rounding 
+errors and out-of-range limitations of less-precise types.
+This is the case with most integers.
+Thus @acronym{NCO} defaults to automatically promote integer types to
+floating point when performing lengthy arithmetic, yet @acronym{NCO}
+defaults to not promoting single to double-precision floats.
+
+Before discussing the more difficult and contentious floating point
+issues, we first examine integer promotion.
+We will show how following parsimonious conversion rules dogmatically
+can cause problems, and what @acronym{NCO} does about that. 
+That said, there are situations in which implicit conversion of
+single- to double-precision is also warranted.
 Understanding the narrowness of these situations takes time, and we
 hope the reader appreciates the following detailed discussion.
-
-@cindex C language
-@cindex Fortran
-Automatic type conversion during arithmetic in the Fortran language is,
-by default, performed only when necessary. 
-All operands in an operation are converted to the most precise type
-before an arithmetic operation.
-The @w{C language} is by default much more aggressive (and
-thus wasteful) than Fortran, and will implicitly convert single-
-to double precision numbers for no good reason.
-All real-number standard @w{C library} functions are double precision, 
-and @w{C programmers} must take extra steps to only utilize single
-precision arithmetic.
-Before discussion these difficult and contentious floating point issues, 
-let us first examine how following parsimonious conversion rules
-dogmatically can cause problems, and what @acronym{NCO} does about
-that. 
 
 Consider the average of the two @code{NC_SHORT}s @code{17000s} and
 @code{17000s}.
 A straightforward average without promotion results in garbage since the
 intermediate value which holds their sum is also of type @code{NC_SHORT}
-and thus cannot represent values greater than 32,767
+and thus overflows on (i.e., cannot represent) values greater than
+32,767 
 @footnote{
 @set flg
 @tex
@@ -6655,30 +6652,30 @@ the @acronym{NCO} philosophy is to make operators do what you want, not
 what is purest.
 Thus, unlike C and Fortran, but like many other higher level interpreted
 languages, @acronym{NCO} arithmetic operators will perform automatic type
-conversion when all the following conditions are met
+conversion on integers when all the following conditions are met
 @footnote{Operators began performing automatic type conversions before
 arithmetic in @acronym{NCO} @w{version 1.2}, August, 2000. 
 Previous versions never performed unnecessary type conversion for
 arithmetic.}: 
 @enumerate
-@item The operator is @command{ncbo}, @command{ncea}, @command{ncra}, or
-@command{ncwa}.  
+@item The requested operation is arithmetic.
+This is why type conversion is limited to the operators @command{ncap2}, 
+@command{ncbo}, @command{ncea}, @command{ncflint}, @command{ncra}, and
+@command{ncwa}.   
 @item The arithmetic operation could benefit from type conversion.
-Operations that could benefit (e.g., from larger representable sums) 
-include averaging, summation, or any "hard" arithmetic. 
+Operations that could benefit include averaging, summation, or any
+"hard" arithmetic that could overflow or underflow.  
+Larger representable sums help avoid overflow, and more precision
+helps to avoid underflow.
 Type conversion does not benefit searching for minima and maxima
 (@samp{-y min}, or @samp{-y max}).
 @item The variable on disk is of type @code{NC_BYTE}, @code{NC_CHAR},
 @code{NC_SHORT}, or @code{NC_INT}.
-Type @code{NC_DOUBLE} is not type converted because there is no type of
+Type @code{NC_DOUBLE} is not promoted because there is no type of
 higher precision.
-Type @code{NC_FLOAT} is not type converted by default because, in our
-judgement, the performance penalty of always doing so would outweigh the
-potential benefits.   
-@c fxm Add NR C citation to bibliography
-The book ``Numerical Recipes @w{in C}'' discusses this point under the
-section ``Implicit Conversion of Float to Double''
-@footnote{See @w{page 21} in Section 1.2 of the First edition.}.
+Conversion of type @code{NC_FLOAT} is discussed in detail below. 
+When it occurs, it follows the same procedure (promotion then
+arithmetic then demotion) as conversion of integer types.
 @end enumerate
 
 When these criteria are all met, the operator promotes the variable in
@@ -6701,47 +6698,74 @@ Similarly, the total (e.g., @samp{-y ttl}) of @code{17000s} and
 the final result (the true total) of @math{34000} is outside the range
 of type @code{NC_SHORT}.  
 
-@cindex @code{floor}
-Type conversions use the @code{floor} function to convert floating point
-number to integers.
-Type conversions do not attempt to round floating point numbers to the
-nearest integer.
-Thus the average of @code{1s} and @code{2s} is computed in double
-precisions arithmetic as 
-@math{(@code{1.0d} + @code{1.5d})/2) = @code{1.5d}}.
-This result is converted to @code{NC_SHORT} and stored on disk as 
-@math{@code{floor(1.5d)} = @code{1s}}
+@cindex @code{trunc()}
+After arithmetic is computed in double-precision for promoted variables,
+the intermediate double-precision values must be demoted to the
+variables' original storage type (e.g., from @code{NC_DOUBLE} to
+@code{NC_SHORT}). 
+@acronym{NCO} has handled this demotion in three ways in its history.
+Prior to October, 2011 (version 4.0.8), @acronym{NCO} employed the
+@w{C library} truncate function, @code{trunc()}
 @footnote{
 @cindex C language
-The actual type conversions are handled by intrinsic C-language type
-conversion, so the @code{floor()} function is not explicitly called, 
-though the results would be the same if it were.}.
-Thus no "rounding up" is performed. 
-The type conversion rules @w{of C} can be stated as follows:
-If @var{n} is an integer then any floating point value @var{x}
-satisfying 
-@set flg
-@tex
-$n \le x < n+1$
-@clear flg
-@end tex
-@ifinfo
-@math{n <= x < n+1} 
-@clear flg
-@end ifinfo
-@ifset flg
-@c texi2html does not like @math{}
-@var{n} <= @var{x} < @var{n+1}
-@clear flg
-@end ifset
-will have the value @var{n} when converted to an integer.
+The actual type conversions with trunction were handled by intrinsic
+type conversion, so the @code{trunc()} function was never explicitly
+called, although the results would be the same if it were.}.
+Truncation rounds @var{x} to the nearest integer not larger in absolute 
+value.
+For example, truncation rounds @code{1.0d}, @code{1.5d}, and
+@code{1.8d} to the same value, @code{1s}. 
+Clearly, truncation does not round floating point numbers to the nearest
+integer! 
+Yet truncation is how the @w{C language} performs implicit conversion of 
+real numbers to integers.
+
+@cindex Neil Davis
+@acronym{NCO} stopped using truncation for demotion when an alert user
+(Neil Davis) informed us that this caused a small bias in the packing
+algorithm employed by @command{ncpdq}.
+This led to @acronym{NCO} adopting rounding functions for demotion.
+Rounding functions eliminated the small bias in the packing algorithm.
+
+@findex @code{lround()}. 
+From February, 2012 through March, 2013 (versions 4.0.9--4.2.6),
+@acronym{NCO} employed the @w{C library} family of rounding functions,
+@code{lround()}. 
+These functions round @var{x} to the nearest integer, halfway cases away
+from zero.
+The problem with @code{lround()} is that it always rounds real values
+ending in @code{.5} away from zero.
+This rounds, for example, @code{1.5d} and @code{2.5d} to @code{1s}
+and @code{2s}, respectively.
+
+@findex @code{lrint()}. 
+@cindex @acronym{IEEE}
+Since April, 2013 (version 4.3.0), @acronym{NCO} has employed the 
+other @w{C library} family of rounding functions, @code{lrint()}. 
+This algorithm rounds @var{x} to the nearest integer, using the current 
+rounding direction.
+Halfway cases are rounded to the nearest even integer.
+This rounds, for example, both @code{1.5d} and @code{2.5d} to the same
+value, @code{2s}, as recommended by the @acronym{IEEE}.
+This rounding is symmetric: up half the time, down half the time.
+This is the current and hopefully final demotion algorithm employed by  
+@acronym{NCO}.
+
+Hence because of automatic conversion, @acronym{NCO} will compute the
+average of @code{2s} and @code{3s} in double-precision arithmetic as 
+@math{(@code{2.0d} + @code{3.0d})/@code{2.0d}) = @code{2.5d}}.
+It then demotes this intermediate result back to @code{NC_SHORT} and
+stores it on disk as  
+@math{@code{trunc(2.5d)} = @code{2s}} (versions up to 4.0.8), 
+@math{@code{lround(2.5d)} = @code{3s}} (versions 4.0.9--4.2.6), and
+@math{@code{lrint(2.5d)} = @code{2s}} (versions 4.3.0 and later).
 
 @html
 <a name="sp_dp"></a> <!-- http://nco.sf.net/nco.html#sp_dp -->
 <a name="dbl"></a> <!-- http://nco.sf.net/nco.html#dbl -->
 @end html
-@node Promoting Single Precision to Double, Manual type conversion, Automatic type conversion, Type Conversion
-@subsection Promoting Single Precision to Double
+@node Promoting Single-precision to Double, Manual type conversion, Automatic type conversion, Type Conversion
+@subsection Promoting Single-precision to Double
 @cindex promotion
 @cindex implicit conversion
 @cindex @code{--dbl}
@@ -6750,31 +6774,105 @@ Promotion of real numbers from single- to double-precision is
 fundamental to scientific computing.
 When it should occur depends on the precision of the inputs and the
 number of operations.
-Single precision (four-byte) numbers contain about seven significant
-figures, while double precision contain about sixteen.
-More, err, precisely, the @acronym{IEEE} single precision representation
+Single-precision (four-byte) numbers contain about seven significant
+figures, while double-precision contain about sixteen.
+More, err, precisely, the @acronym{IEEE} single-precision representation
 gives from @w{6 to 9} significant decimal digits precision
 @footnote{According to Wikipedia's summary of @acronym{IEEE} standard
-754, ``If a decimal string with at most 6 significant decimal is
-converted to IEEE 754 single precision and then converted back to the
+754, ``If a decimal string with at most 6 significant digits is
+converted to IEEE 754 single-precision and then converted back to the
 same number of significant decimal, then the final string should match
-the original; and if an IEEE 754 single precision is converted to a
+the original; and if an IEEE 754 single-precision is converted to a
 decimal string with at least 9 significant decimal and then converted
 back to single, then the final number must match the original''.}.
-And the @acronym{IEEE} double precision representation
+And the @acronym{IEEE} double-precision representation
 gives from @w{15 to 17} significant decimal digits precision
 @footnote{According to Wikipedia's summary of @acronym{IEEE} standard
 754, ``If a decimal string with at most 15 significant digits is
-converted to IEEE 754 double precision representation and then converted
+converted to IEEE 754 double-precision representation and then converted
 back to a string with the same number of significant digits, then the
 final string should match the original; and if an IEEE 754 double
 precision is converted to a decimal string with at least 17 significant
 digits and then converted back to double, then the final number must
 match the original''.}. 
-Hence double precision numbers represent about nine digits more
-precision than single precision numbers.
+Hence double-precision numbers represent about nine digits more
+precision than single-precision numbers.
 
-@node Manual type conversion,  , Promoting Single Precision to Double, Type Conversion
+Given these properties, there are at least two possible arithmetic
+conventions for the treatment of real numbers:
+@cindex C language
+@cindex Fortran
+@enumerate
+@item Conservative, aka Fortran Convention
+Automatic type conversion during arithmetic in the Fortran language is,
+by default, performed only when necessary. 
+All operands in an operation are converted to the most precise type
+involved the operation before the arithmetic operation.
+Expressions which involve only single-precision numbers are computed
+entirely in single-precision.
+Expressions involving mixed precision types are computed in the type
+of higher precision.
+@acronym{NCO} by default employs the Fortan Convention for promotion.
+@item Aggressive, aka C Convention
+The @w{C language} is by default much more aggressive (and thus
+wasteful) than Fortran, and will always implicitly convert single- 
+to double-precision numbers for no good reason.
+All real-number standard @w{C library} functions are double-precision, 
+and @w{C programmers} must take extra steps to only utilize single
+precision arithmetic.
+The high level interpreted data analysis languages @acronym{IDL},
+Matlab, and @acronym{NCL} all adopt the @w{C Convention}.
+@end enumerate
+
+@acronym{NCO} does not automatically promote @code{NC_FLOAT} because, in
+our judgement, the performance penalty of always doing so would outweigh
+the potential benefits. 
+The now-classic text ``Numerical Recipes @w{in C}'' discusses this point
+under the section ``Implicit Conversion of Float to Double''
+@footnote{See @w{page 21} in Section 1.2 of the First edition.}.
+That said, such promotion is warranted in some circumstances.
+
+For example, rounding errors can accumulate to worrisome levels during
+arithmetic performed on large arrays of single-precision floats. 
+This use-case occurs often in geoscientific studies of climate where
+thousands-to-millions of gridpoints may contribute to a single average.
+If the inputs are all single-precision, then so should be the output.
+However the intermediate results where running sums are accumulated may  
+suffer from too much rounding or from underflow unless computed in
+double-precision. 
+
+The order of operations matters to floating point math even when the
+analytic expressions are equal. 
+Differences in the final bits of answer can be disquieting to cautious 
+users.
+For example, averaging arrays in multiple stages produces different
+answers than averaging them in one step. 
+The @acronym{NCO} test file @file{in.nc} contains single- and
+double-precision representations of the same temperature field as
+@code{tpt_flt} and @code{tpt_dbl}.  
+@example
+# Show that tpt_flt and tpt_dbl are identical except for precision
+ncks --cdl -C -v tpt_flt,tpt_dbl ~/nco/data/in.nc
+# Create file with five "ten-month years" (i.e., 50 timesteps) of temperature data
+ncrcat -O -v tpt_flt,tpt_dbl -p ~/nco/data in.nc in.nc in.nc in.nc in.nc ~/foo.nc
+# Average 1st five "Januaries" (elements 1, 11, 21, 31, 41)
+ncra -O -F -d time,1,,10 ~/foo.nc ~/foo_avg1.nc
+# Average 2nd five "Januaries" (elements 2, 12, 22, 32, 42)
+ncra -O -F -d time,2,,10 ~/foo.nc ~/foo_avg2.nc
+# Average 3rd five "Januaries" (elements 3, 13, 23, 33, 43)
+ncra -O -F -d time,3,,10 ~/foo.nc ~/foo_avg3.nc
+# Method 1: Obtain ensemble January average by averaging the averages
+ncra -O ~/foo_avg1.nc ~/foo_avg2.nc ~/foo_avg3.nc ~/foo_avg_mth1.nc
+# Method 2: Obtain ensemble January average by averaging the raw data
+# Employ ncra's "duration" feature (http://nco.sf.net/nco.html#drn)
+ncra -O -F -d time,1,,10,3 ~/foo.nc ~/foo_avg_mth2.nc
+# Difference the two methods
+ncbo -O ~/foo_avg_mth1.nc ~/foo_avg_mth2.nc ~/foo_avg_dff.nc
+# Show differences
+ncks --cdl ~/foo_avg_dff.nc
+@end example
+
+@node Manual type conversion,  , Promoting Single-precision to Double, Type Conversion
 @subsection Manual type conversion
 @cindex @command{ncap2}
 @command{ncap2} provides intrinsic functions for performing manual type
@@ -9852,9 +9950,9 @@ This function returns var_in with integers from the chosen rng algorithm. The mi
 @item gsl_rng_uniform_int(var_in)
 This function returns var_in with random integers from 0 to n-1. The value n must be less than or equal to the maximium value of the chosen rng algorithm. 
 @item gsl_rng_uniform(var_in)
-This function returns var_in with double precision numbers in the range [0.0,1). The range includes 0.0 and excludes 1.0.
+This function returns var_in with double-precision numbers in the range [0.0,1). The range includes 0.0 and excludes 1.0.
 @item gsl_rng_uniform_pos(var_in)
-This function returns var_in with double precision numbers in the range (0.0,1), excluding both 0.0 and 1.0.
+This function returns var_in with double-precision numbers in the range (0.0,1), excluding both 0.0 and 1.0.
 @end table
 
 @noindent Below are examples of @code{gsl_rng_get()} and @code{gsl_rng_uniform_int()} in action.
@@ -10608,13 +10706,13 @@ and are indicated with an asterisk
 @cindex @code{ANSI C}
 @cindex @code{float}
 @cindex precision
-@cindex quadruple precision
-@cindex single precision
-@cindex double precision
+@cindex quadruple-precision
+@cindex single-precision
+@cindex double-precision
 @cindex @code{long double}
 @cindex @code{NC_DOUBLE}
 @footnote{
-@w{ANSI C} compilers are guaranteed to support double precision versions
+@w{ANSI C} compilers are guaranteed to support double-precision versions
 of these functions.
 These functions normally operate on netCDF variables of type @code{NC_DOUBLE}
 without having to perform intrinsic conversions.
@@ -14179,7 +14277,8 @@ ncwa [-3] [-4] [-6] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}] [-I]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [-T @var{mask_comp}]
-[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x]
+[-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
 
@@ -15447,6 +15546,7 @@ Level III: Many derived products from level II, e.g.,
 @mybibitem{WZJ074} Wang, D. L., C. S. Zender and S. F. Jenks (2007), A System for Scripted Data Analysis at Remote Data Centers, Eos Trans. AGU, 88(52), Fall Meet. Suppl., Abstract IN11B-0469.
 @mybibitem{WZJ081} Wang, D. L., C. S. Zender and S. F. Jenks (2008), Cluster Workflow Execution of Retargeted Data Analysis Scripts, Proceedings of the 8th IEEE Int'l Symposium on Cluster Computing and the Grid (IEEE CCGRID '08), pp. 449-458, Lyon, France, May 2008.
 @mybibitem{WZJ091} Wang, D. L., C. S. Zender, and S. F. Jenks (2009), Efficient Clustered Server-side Data Analysis Workflows using SWAMP, Earth Sci. Inform., 2(3), 141-155, doi:10.1007/s12145-009-0021-z.
+@mybibitem{PFT88} Press, Flannery, Teukolsky, and Vetterling (1988), Numerical Recipes in C, Cambridge Univ. Press, New York, NY.
 @end itemize
 
 @c @node Name Index, General Index, Operators, Top

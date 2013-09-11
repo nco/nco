@@ -1,7 +1,17 @@
+2013-09-11  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.5 release procedure:
+ 	Changes since nco-4_3_4: ncea/ncra/ncrcat groups, --dbl, ncwa fix
+	cd ~/nco;cvs tag -d ncoa-4_3_5;cvs tag -d nco-4_3_5-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.5 release"
+	cvs tag -c nco-4_3_5;cvs tag -c nco-4_3_5-1
+
+	* More documention on type conversion and precision
+
 2013-09-11 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncra regression #24 (records, group case)
-	
+
 2013-09-10  Charlie Zender  <zender@uci.edu>
 
 	* Document groups for ncea, ncra, ncrcat
@@ -9,8 +19,7 @@
 	* Stop nco.texi from triggering texinfo.tex bug just fixed by Karl Berry
 	Bug not present in texinfo.tex version 2008-04-18.10 (used by Ubuntu 13.04)
 	Bug     present in texinfo.tex version 2013-02-01.11 (used by FC19)
-	Bug just fixed  in texinfo.tex version 2013-09-11 (committed by Karl)
-	Real ix is install texinfo.tex version 2013-09-11+ (committed by Karl)
+	Real fix:  install texinfo.tex version 2013-09-11+ (committed by Karl)
 	Workaround is to remove apostrophe from manual title in "User's Guide"
 	Workaround done to preserve build compatibility with broken texinfo.tex
 	nco/autobld/texinfo.tex is now fixed version
@@ -79,19 +88,13 @@
 
 	* Restore history attribute to ncwa, consolidate global attribute copying
 
-	* Build and successful test of GIT-tree versions of libnetcdf.a and libnetcdff.a
+	* Build and successfully test GIT-tree versions of libnetcdf.a and libnetcdff.a
 
 	* Fix memory leak in strcasecmp.c
 
 	* Never build private version of strcasecmp() with g++
 
 2013-08-11  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.3.5 release procedure:
- 	Changes since nco-4_3_4: fxm
-	cd ~/nco;cvs tag -d ncoa-4_3_5;cvs tag -d nco-4_3_5-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.5 release"
-	cvs tag -c nco-4_3_5;cvs tag -c nco-4_3_5-1
 
 	* Verify that mysterious ncks whitespace printing bug related to shared libraries
 

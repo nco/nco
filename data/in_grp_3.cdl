@@ -502,6 +502,7 @@ netcdf in_grp_3 {
     lon:units = "degrees_east";
 	double time(time);
     float snd(time,lat,lon);
+    snd:long_name = "Snow Depth timeseries";
     data:
     lat=-60,0;
     lon=0,120,240;
@@ -527,6 +528,7 @@ netcdf in_grp_3 {
     lon:units = "degrees_east";
 	double time(time);
     float snd(time,lat,lon);
+    snd:long_name = "Snow Depth timeseries";
     data:
     lat=-60,0;
     lon=0,120,240;

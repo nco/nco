@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.602 2013-09-08 23:06:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.603 2013-09-11 23:26:32 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.5 are ready. 
 
@@ -9,6 +9,24 @@ The current release brings group support to ncra, ncea, and ncrcat.
 Now ten operators fully support group hierarchies: ncbo, ncea, ncecat, 
 ncflint, ncks, ncpdq, ncra, ncrcat, ncrename, and ncwa. The operators
 that do no yet fully support group hierarchies are ncatted and ncap2.
+
+Rounding errors can accumulate to worrisome levels during arithmetic
+performed on large arrays of single precision floats. 
+Now NCO has the --dbl switch that forces operators to coerce
+single-precision numbers to double-precision for arithemetic.
+If you want your NCO answers to always agree exactly with other
+tools---like NCL, Matlab, or IDL--then use this switch.
+It is expensive in terms of time and RAM, and often not warranted.
+The manual now contains a detailed discussion of the issues and
+appropriate use cases.
+
+Unfortunately this rapid progress has come at a price in bugs.
+We just discovered and fixed a nasty bug in ncwa 4.3.3 and 4.3.4.
+By nasty I mean that it could produce wrong answers that look right.
+This could only occur when simultaneously averaging and hyperslabbing,
+e.g., ncwa -a lat,lon -d lat,0.,90. in.nc out.nc.
+Such users should immediately upgrade to 4.3.5 and re-check results.
+Full details below.
 
 Work on NCO 4.3.6 is underway and includes improved netCDF4 support
 for more NCO operators (ncatted) and improved support for HDF4 files. 
@@ -48,21 +66,24 @@ A. Forced conversion of float to double.
    arithmetic when it would preserve precision of the result (the
    results are converted back to the original type after arithmetic).
    Until now, NCO never implicitly converted floats to doubles unless
-   doubles were involved in the computation (because, well, GIGO).
+   doubles were involved in the computation, because, well, GIGO.
    However, such promotion is warranted in some circumstances.
    Now NCO allows a new arithmetic convention to implement this.
    The convention is manually invoked with --dbl:
+   ncea --dbl in*.nc out.nc
    ncra --dbl in*.nc out.nc
    ncwa --dbl in.nc  out.nc
    NB: Invoking arithmetic promotion of NC_FLOAT to NC_DOUBLE
    increases RAM memory usage by a factor of two, and slows down
-   multi-file operators, although the slow-down may be negligible
-   compared to I/O time.
+   arithmetic, perhaps negligibly compared to I/O time.
+   The manual now contains a detailed discussion of the issues and 
+   appropriate use cases.
    http://nco.sf.net/nco.html#dbl
 
 BUG FIXES:
 
-A. Hi
+A. All group operators now correctly match variable names that are
+   proper subsets of ancestor group names
 
 KNOWN BUGS NOT YET FIXED:
 
