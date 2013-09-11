@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.357 2013-09-09 06:25:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.358 2013-09-11 22:07:11 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.357 2013-09-09 06:25:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.357 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.358 2013-09-11 22:07:11 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.358 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -692,7 +692,6 @@ main(int argc,char **argv)
 
       char *grp_out_fll=NULL; /* [sng] Group name */
 
-      int grp_id;        /* [ID] Group ID */
       int grp_out_id;    /* [ID] Group ID (output) */
       int var_out_id;    /* [ID] Variable ID (output) */
 
@@ -707,11 +706,8 @@ main(int argc,char **argv)
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
-      /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-
       /* Retrieve variable from disk into memory */
-      (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
+      (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 
       /* If re-ordering */
       if(IS_REORDER){

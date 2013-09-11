@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.380 2013-09-11 20:19:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.381 2013-09-11 22:07:11 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.380 2013-09-11 20:19:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.380 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.381 2013-09-11 22:07:11 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.381 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1470,13 +1470,14 @@ main(int argc,char **argv)
 
           if(dbg_lvl_get() >= nco_dbg_dev){ 
             lmt_sct *lmt= trv_tbl->lmt_rec[idx_rec];
+
             (void)fprintf(stdout,"%s: DEBUG reading: ",prg_nm_get());        
             (void)fprintf(stdout,"variable <%s> ",var_prc[idx]->nm_fll);              
             (void)fprintf(stdout,"record #%d<%s/%s>(%ld->%ld,%ld)\n",lmt->id,lmt->grp_nm_fll,lmt->nm,lmt->srt,lmt->end,lmt->cnt);              
           } 
 
           /* Retrieve variable from disk into memory */
-          (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
+          (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 
           /* Free the artificial limit and reset the number of limits */
           for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
@@ -1691,7 +1692,7 @@ main(int argc,char **argv)
         (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 #else /* !REPLACE_LMT_ALL */
         /* Retrieve variable from disk into memory */
-        (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
+        (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 #endif /* !REPLACE_LMT_ALL */
 
         /* Convert char, short, long, int types to doubles before arithmetic

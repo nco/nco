@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.961 2013-09-11 20:19:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.962 2013-09-11 22:07:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3428,14 +3428,14 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       for(dmn_idx_gtr=0;dmn_idx_gtr<var_prc_gtr->nbr_dim;dmn_idx_gtr++)  
         if(!strcmp(var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->dim[dmn_idx_gtr]->nm)) break;
       if(dmn_idx_gtr == var_prc_gtr->nbr_dim){
-	(void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->nm);
-	nco_exit(EXIT_FAILURE);
+        (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->nm);
+        nco_exit(EXIT_FAILURE);
       } /* endif error */
     } /* end loop over idx */
 
     /* Read */
-    (void)nco_msa_var_get_trv(grp_id_1,var_prc_1,trv_1);
-    (void)nco_msa_var_get_trv(grp_id_2,var_prc_2,trv_2);
+    (void)nco_msa_var_get_trv(nc_id_1,var_prc_1,trv_tbl_1);
+    (void)nco_msa_var_get_trv(nc_id_2,var_prc_2,trv_tbl_2);
 
     nc_type typ_hgh;
     typ_hgh=ncap_typ_hgh(var_prc_1->type,var_prc_2->type);

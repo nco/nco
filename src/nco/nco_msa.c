@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.224 2013-08-30 21:50:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.225 2013-09-11 22:07:11 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1422,28 +1422,37 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
 
 void
 nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking account of multihyperslabs */
-(const int in_id,                   /* I [id] netCDF input location ID */
+(const int nc_id,                   /* I [ID] netCDF file ID */
  var_sct *var_in,                   /* I/O [sct] Variable */
- const trv_sct * const var_trv)     /* I [sct] Object to read (variable) */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
   int nbr_dim;
+  int grp_id;
 
   lmt_msa_sct **lmt_msa;
   lmt_sct **lmt;
+  trv_sct *var_trv;
 
   nc_type typ_tmp;
 
   void *void_ptr;
 
+  /* Obtain variable GTT object using full variable name */
+  var_trv=trv_tbl_var_nm_fll(var_in->nm_fll,trv_tbl);
+
+  /* Obtain group ID using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
+
   nbr_dim=var_in->nbr_dim;	
-  var_in->nc_id=in_id; 
+  var_in->nc_id=grp_id; 
 
   assert(nbr_dim == var_trv->nbr_dmn);
+  assert(strcmp(var_in->nm_fll,var_trv->nm_fll) == 0);
 
   /* Scalars */
   if(nbr_dim == 0){
     var_in->val.vp=nco_malloc(nco_typ_lng(var_in->typ_dsk));
-    (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
+    (void)nco_get_var1(var_in->nc_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
     goto do_upk;
   } /* end if scalar */
 
@@ -1476,7 +1485,7 @@ do_upk:
 
   /* Packing in RAM is now same as packing on disk pck_dbg 
   fxm: This nco_pck_dsk_inq() call is never necessary for non-packed variables */
-  (void)nco_pck_dsk_inq(in_id,var_in);
+  (void)nco_pck_dsk_inq(grp_id,var_in);
 
   /* Packing/Unpacking */
   if(nco_is_rth_opr(prg_get())){

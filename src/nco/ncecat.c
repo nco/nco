@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.328 2013-09-09 06:25:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.329 2013-09-11 22:07:10 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.328 2013-09-09 06:25:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.328 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.329 2013-09-11 22:07:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.329 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -787,7 +787,6 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(int idx=0;idx<nbr_var_prc;idx++){
-        int grp_id;        /* [ID] Group ID */
         int grp_out_id;    /* [ID] Group ID (output) */
         int var_out_id;    /* [ID] Variable ID (output) */
         trv_sct *var_trv;  /* [sct] Variable GTT object */
@@ -801,11 +800,8 @@ main(int argc,char **argv)
 
         assert(var_trv);
 
-        /* Obtain group ID using full group name */
-        (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-
         /* Read */
-        (void)nco_msa_var_get_trv(grp_id,var_prc[idx],var_trv);
+        (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 
         /* Size of record dimension is 1 in output file */
         var_prc_out[idx]->cnt[0]=1L;

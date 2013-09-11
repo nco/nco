@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.262 2013-09-09 06:25:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.263 2013-09-11 22:07:10 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.262 2013-09-09 06:25:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.262 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.263 2013-09-11 22:07:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.263 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -623,13 +623,8 @@ main(int argc,char **argv)
     val_gnr_unn.d=ntp_val_out; /* Generic container for arrival point or weight */
     ntp_var_out=scl_mk_var(val_gnr_unn,NC_DOUBLE);
 
-    int grp_id_1;      /* [ID] Group ID */
-    int grp_id_2;      /* [ID] Group ID */
     int xtr_nbr_ntp_1;
     int xtr_nbr_ntp_2;
-   
-    trv_sct *var_trv_1;/* [sct] Variable GTT object */
-    trv_sct *var_trv_2;/* [sct] Variable GTT object */
 
     var_sct ** var_ntp_1;
     var_sct ** var_ntp_2; 
@@ -645,21 +640,10 @@ main(int argc,char **argv)
       (void)fprintf(fp_stdout,"%s: ERROR Variable <%s> is not present in input file. ncflint assumes same file structure for both input files\n",prg_nm_get(),ntp_nm);
       nco_exit(EXIT_FAILURE);
     }
-
-     /* Obtain variable GTT object using full variable name */
-    var_trv_1=trv_tbl_var_nm_fll(ntp_1->nm_fll,trv_tbl);
-    var_trv_2=trv_tbl_var_nm_fll(ntp_2->nm_fll,trv_tbl);
-
-    assert(var_trv_1);
-    assert(var_trv_2);
     
-    /* Obtain group ID using full group name */
-    (void)nco_inq_grp_full_ncid(in_id_1,var_trv_1->grp_nm_fll,&grp_id_1);
-    (void)nco_inq_grp_full_ncid(in_id_2,var_trv_2->grp_nm_fll,&grp_id_2);
-
     /* Read */
-    (void)nco_msa_var_get_trv(grp_id_1,ntp_1,var_trv_1);
-    (void)nco_msa_var_get_trv(grp_id_2,ntp_2,var_trv_2);
+    (void)nco_msa_var_get_trv(in_id_1,ntp_1,trv_tbl);
+    (void)nco_msa_var_get_trv(in_id_2,ntp_2,trv_tbl);
 
     /* Currently, only support scalar variables */
     if(ntp_1->sz > 1 || ntp_2->sz > 1){
@@ -762,8 +746,8 @@ main(int argc,char **argv)
     (void)nco_var_mtd_refresh(grp_id_2,var_prc_2[idx]);
 
     /* Read */
-    (void)nco_msa_var_get_trv(grp_id_1,var_prc_1[idx],var_trv_1);
-    (void)nco_msa_var_get_trv(grp_id_2,var_prc_2[idx],var_trv_2);
+    (void)nco_msa_var_get_trv(in_id_1,var_prc_1[idx],trv_tbl);
+    (void)nco_msa_var_get_trv(in_id_2,var_prc_2[idx],trv_tbl);
 
     /* Set var_prc_1 and var_prc_2 to correct size */
     var_prc_1[idx]->sz=var_prc_out[idx]->sz;       
