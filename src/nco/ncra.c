@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.376 2013-09-11 02:56:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.377 2013-09-11 05:56:15 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.376 2013-09-11 02:56:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.376 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.377 2013-09-11 05:56:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.377 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -269,6 +269,8 @@ main(int argc,char **argv)
   trv_sct *var_trv;  /* [sct] Variable GTT object */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
+
+  nco_bool flg_rec_all; /*[flg] Retrieve all records */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -1159,8 +1161,10 @@ main(int argc,char **argv)
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
 
+  flg_rec_all = (prg == ncra || prg == ncrcat) ? False : True;
+
   /* Build record dimensions array */
-  (void)nco_bld_rec_dmn(in_id,FORTRAN_IDX_CNV,trv_tbl);  
+  (void)nco_bld_rec_dmn(in_id,FORTRAN_IDX_CNV,flg_rec_all,trv_tbl);  
 
   /* Is this an ARM-format data file? */
   CNV_ARM=nco_cnv_arm_inq(in_id);
@@ -1710,8 +1714,9 @@ main(int argc,char **argv)
 
   } /* end loop over fl_idx */
 
-  if(prg == ncra || prg == ncrcat) /* fxm: Remove this or make DBG when crd_val DRN/MRO is predictable? */
+  if(prg == ncra || prg == ncrcat){ /* fxm: Remove this or make DBG when crd_val DRN/MRO is predictable? */
     if(trv_tbl->lmt_rec[idx_rec]->drn != 1L && (trv_tbl->lmt_rec[idx_rec]->lmt_typ == lmt_crd_val || trv_tbl->lmt_rec[idx_rec]->lmt_typ == lmt_udu_sng)) (void)fprintf(stderr,"\n%s: WARNING Duration argument DRN used in hyperslab specification for %s which will be determined based on coordinate values rather than dimension indices. The behavior of the duration hyperslab argument is ambiguous for coordinate-based hyperslabs---it could mean select the first DRN elements that are within the min and max coordinate values beginning with each strided point, or it could mean always select the first _consecutive_ DRN elements beginning with each strided point (regardless of their values relative to min and max). For such hyperslabs, NCO adopts the latter definition and always selects the group of DRN records beginning with each strided point. Strided points are guaranteed to be within the min and max coordinates, but the subsequent members of each group are not, though this is only the case if the record coordinate is not monotonic. The record coordinate is almost always monotonic, so surprises are only expected in a corner case unlikely to affect the vast majority of users. You have been warned. Use at your own risk.\n",prg_nm_get(),trv_tbl->lmt_rec[idx_rec]->nm);
+  }
 
   /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
   except ncra normalizes after every DRN records, while ncea normalizes once, after all files.

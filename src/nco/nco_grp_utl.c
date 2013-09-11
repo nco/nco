@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.958 2013-09-11 02:56:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.959 2013-09-11 05:56:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6514,7 +6514,8 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
 void                          
 nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool flg_rec_all,          /* I [flg] Retrieve all records */
  trv_tbl_sct * trv_tbl)               /* I/O [sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_bld_rec_dmn()"; /* [sng] Function name  */
@@ -6534,8 +6535,8 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
-    /* Is variable (extract records regardless of variable is to be extracted) */
-    if (var_trv.nco_typ == nco_obj_typ_var){
+    /* Is variable (extract records regardless of variable is to be extracted or only if to be extracted ) */
+    if ( flg_rec_all ? (var_trv.nco_typ == nco_obj_typ_var) :  (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr) ){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -6641,9 +6642,6 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   return;
 
 } /* nco_bld_rec_dmn() */
-
-
-
 
 void
 nco_prt_tbl_lmt                       /* [fnc] Print table limits */

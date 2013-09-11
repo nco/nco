@@ -54,20 +54,16 @@ netcdf in_grp_3 {
  group: g3 {
   dimensions:
     rlev=3;
-    time2=unlimited;
   variables:
     :g3_group_attribute = "g3_group_attribute";
     
     //coordinate variable (/g3/rlev)
     float rlev(rlev);
     rlev:purpose = "Monotonically decreasing coordinate pressure";
-    
-    //coordinate variable (/g3/time2)
-    double time2(time2);
+
     float rz(rlev);  
     float scl;
   data:
-    time2=1.,2.;
     rz=0,5000,17000;
     scl=1.3;
     rlev=1000.,500.,100.;
@@ -239,7 +235,7 @@ netcdf in_grp_3 {
   group: g18 { 
   
     dimensions:
-    time=unlimited; // NB: no coordinate for this dimension
+    time=unlimited; // NB: no coordinate for this dimension  
     lat=2;
     lon=4;  
     gds_crd=8;
@@ -480,25 +476,6 @@ netcdf in_grp_3 {
   snc=1,2,3,4,5,6,7,8,9;
   } // end g22
   
-  //
-  // ncra test case: a group with 2 record dimensions
-  //
-  
-  group: g23 { 
-  dimensions:
-  time231=unlimited;
-  time232=unlimited;
-  variables:
-  double time231(time231);
-  double time232(time232);
-  int one_dmn_rec_var1(time231);
-  int one_dmn_rec_var2(time232);
-  data:
-  time231=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
-  time232=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
-  one_dmn_rec_var1=1,2,3,4,5,6,7,8,9,10;
-  one_dmn_rec_var2=1,2,3,4,5,6,7,8,9,10;  
-  } // end g23
   
   group: g90 {
   dimensions:
@@ -508,5 +485,15 @@ netcdf in_grp_3 {
   data:
   g9=1,2; 
   } // end g90
+  
+  //
+  // ncra test case
+  //
+  
+  group: g23 { 
+  
+  
+  } // end g23
+  
     
 } // end root group

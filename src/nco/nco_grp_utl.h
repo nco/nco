@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.374 2013-09-11 02:56:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.375 2013-09-11 05:56:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -575,7 +575,8 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
 void                          
 nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool flg_rec_all,          /* I [flg] Retrieve all records */
  trv_tbl_sct * trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
 
 void
