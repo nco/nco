@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.850 2013-09-11 03:56:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.851 2013-09-11 21:45:49 woodllan Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -14976,7 +14976,7 @@ Key steps include:
 @command{ncrcat} (@pxref{ncrcat netCDF Record Concatenator}).
 @end enumerate
 @example
-@verbatiminclude xmp/combine_file.sh
+@verbatiminclude xmp/cmb_fl.sh
 @end example
 
 @node Global Distribution of Long-term Average, Annual Average over Regions, Combine Files, CMIP5 Example
@@ -14995,7 +14995,7 @@ Key steps include:
 @item Store results of each model as a distinct group in a single output file using @command{ncecat} (@pxref{ncrcat netCDF Record Concatenator}) with the @samp{--gag} option
 @end enumerate
 @example
-@verbatiminclude xmp/global_avg.sh
+@verbatiminclude xmp/glb_avg.sh
 @end example
 
 @node Annual Average over Regions, Monthly Cycle, Global Distribution of Long-term Average, CMIP5 Example
@@ -15022,7 +15022,7 @@ Key steps include:
 @end enumerate
 @example
 ## Main Script
-@verbatiminclude xmp/annual_avg.sh
+@verbatiminclude xmp/ann_avg.sh
 ## gsl_rgr.nco
 @verbatiminclude xmp/gsl_rgr.nco
 @end example
@@ -15037,7 +15037,7 @@ Key steps include:
 This script illustrates how to calculate the monthly anomaly from the
 annual average (@pxref{fgr:mon}). 
 @example
-@verbatiminclude xmp/monthly_cycle.sh
+@verbatiminclude xmp/mcc.sh
 @end example
 
 @node Regrid MODIS Data, Add Coordinates to MODIS Data, Monthly Cycle, CMIP5 Example
@@ -15065,8 +15065,8 @@ Key steps include:
 @example
 ## Main Script
 @verbatiminclude xmp/add_crd.sh
-## coor.nco
-@verbatiminclude xmp/coor.nco
+## crd.nco
+@verbatiminclude xmp/crd.nco
 @end example
 
 @node Permute MODIS Coordinates, Hierarchical Data Files, Add Coordinates to MODIS Data, CMIP5 Example
@@ -15081,7 +15081,7 @@ However, @acronym{CMIP5} orders latitude from -90@textdegree{}N to
 This script changes the @acronym{MODIS} coordinates to the
 @acronym{CMIP5} convention.
 @example
-@verbatiminclude xmp/permute_coor.sh
+@verbatiminclude xmp/pmt_crd.sh
 @end example
 
 @node Hierarchical Data Files,  , Permute MODIS Coordinates, CMIP5 Example
