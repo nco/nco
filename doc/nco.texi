@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.849 2013-09-11 02:07:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.850 2013-09-11 03:56:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6394,9 +6394,8 @@ Therefore when @code{-y rmssdn} is requested and weights are specified,
 @command{ncea} and @command{ncra}, which do not allow weights to be
 specified, always implement the @code{rmssdn} procedure when asked.
 
-@c 20130827: Fedora Core 19 (FC19) breaks here with "./nco.texi:6394: Missing dollarsign inserted."
-@c Ubuntu continues to build nco.texi fine, and must be used to produce nco.pdf
-@c Problem is related to number of dollarsigns used in TeX mode?
+@c 20130827: Fedora Core 19 (FC19) broke here with "./nco.texi:6394: Missing dollarsign inserted."
+@c Ubuntu always built nco.texi fine
 @c Adding a dollarsign character right here breaks Ubuntu builds too
 @c Hence I must carefully spell-out the word dollarsign instead
 @c 20130829: Making many smaller TeX environments does not solve problem

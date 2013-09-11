@@ -2,13 +2,14 @@
 
 	* Document groups for ncea, ncra, ncrcat
 
-	* Stop nco.texi from triggering texinfo.tex bug uncovered by Karl Berry
-	Workaround consists of removing apostrophe from manual title in "User's Guide"
+	* Stop nco.texi from triggering texinfo.tex bug just fixed by Karl Berry
 	Bug not present in texinfo.tex version 2008-04-18.10 (used by Ubuntu 13.04)
 	Bug     present in texinfo.tex version 2013-02-01.11 (used by FC19)
-	Real fix is install texinfo.tex verion 2013-09-11+ (committed by Karl)
 	Bug just fixed  in texinfo.tex version 2013-09-11 (committed by Karl)
-	nco/autobld/texinfo.tex now contains fixed version
+	Real ix is install texinfo.tex version 2013-09-11+ (committed by Karl)
+	Workaround is to remove apostrophe from manual title in "User's Guide"
+	Workaround done to preserve build compatibility with broken texinfo.tex
+	nco/autobld/texinfo.tex is now fixed version
 
 2013-09-09  Charlie Zender  <zender@uci.edu>
 

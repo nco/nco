@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.814 2013-09-06 23:38:40 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.815 2013-09-11 03:56:18 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -606,6 +606,8 @@ netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.3.5</b>: (<i>In Progress, features completed or being worked on include</i>)
 <tt>ncea/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
+<tt>ncea/ncra/ncwa</tt> float&rightarrow;double coercion with <tt><a href="http://nco.sf.net/nco.html#dbl">--dbl</a></tt>;</li>
+<tt>ncwa -d</tt> <a href="#bug_ncwa_lmt">bugfix</a>;
 <li><b>NCO 4.3.4</b>: (<i>Current Stable Release</i>) 
 HDF unpacking <tt>--hdf_upk</tt>;
 <tt>ncpdq</tt> unpacking <a href="#bug_ncpdq_upk">bugfix</a>;
@@ -1263,6 +1265,8 @@ For Mac OS X with MacPorts:
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>
+<dt>export PATH=/usr/local/bin\:${PATH}</dt>
+<dt>export LD_LIBRARY_PATH=/usr/local/lib\:${LD_LIBRARY_PATH}</dt>
 </tt>
 Please post questions about building or installing NCO to the 
 <a href="http://sf.net/projects/nco/forums/forum/9830">list</a>
