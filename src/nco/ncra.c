@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.378 2013-09-11 09:01:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.379 2013-09-11 18:21:29 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.378 2013-09-11 09:01:01 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.378 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.379 2013-09-11 18:21:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.379 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1298,7 +1298,7 @@ main(int argc,char **argv)
     if(trv_tbl->lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
 
     /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
-    if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
+    if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(grp_id);
 
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
@@ -1497,7 +1497,7 @@ main(int argc,char **argv)
           if(prg == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
           /* Re-base record coordinate and bounds if necessary (e.g., time, time_bnds) */
-          if(trv_tbl->lmt_rec[idx_rec]->origin != 0.0 && (var_prc[idx]->is_crd_var || nco_is_spc_in_bnd_att(in_id,var_prc[idx]->id))){
+          if(trv_tbl->lmt_rec[idx_rec]->origin != 0.0 && (var_prc[idx]->is_crd_var || nco_is_spc_in_bnd_att(grp_id,var_prc[idx]->id))){
             var_sct *var_crd;
             scv_sct scv;
             /* De-reference */
