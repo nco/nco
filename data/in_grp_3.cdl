@@ -505,10 +505,9 @@ netcdf in_grp_3 {
     data:
     lat=-60,0;
     lon=0,120,240;
-	time=1,2,3,4;
+	time=1,2,3;
     snd=1,1,1,1,1,1,
 	    1,1,1,1,1,1,
-		1,1,1,1,1,1,
 		1,1,1,1,1,1;
   } // end g23
   
@@ -518,8 +517,8 @@ netcdf in_grp_3 {
   
   group: g24 { 
    dimensions:
-    lat=1;
-    lon=2;
+    lat=2;
+    lon=3;
 	time=unlimited;
     variables:
     float lat(lat);
@@ -529,12 +528,11 @@ netcdf in_grp_3 {
 	double time(time);
     float snd(time,lat,lon);
     data:
-    lat=90;
-    lon=180,360;
-	time=5,6,7;
-    snd=2,2,
-	    2,2,
-		2,2;
+    lat=-60,0;
+    lon=0,120,240;
+	time=4,5;
+    snd=1,1,1,1,1,1,
+		1,1,1,1,1,1;
   } // end g24
   
     
