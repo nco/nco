@@ -1,11 +1,13 @@
 \input texinfo @c -*-texinfo-*- 
+@c \input /home/zender/texinfo_fedora.tex
+@c \input /home/zender/texinfo_ubuntu.tex
 
 @c 19980817: TeX-based systems (texi2dvi, texi2dvi --pdf) require texinfo.tex
 @c Hyper-text systems (texi2html, makeinfo) do not require texinfo.tex
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.848 2013-09-10 17:42:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.849 2013-09-11 02:07:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -114,7 +116,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set update-date 10 September 2013
 @set update-month September 2013
 
-@settitle @acronym{NCO} @value{nco-edition} User's Guide
+@settitle @acronym{NCO} @value{nco-edition} User Guide
 
 @c Uncomment following line to produce guide in smallbook format
 @c @smallbook
@@ -201,7 +203,7 @@ x
 @c install-info installs NCO info into this category
 @dircategory netCDF
 @direntry
-* NCO::        User's Guide for the netCDF Operator suite
+* NCO::        User Guide for the netCDF Operator suite
 @end direntry
 @iftex
 @tolerance 10000
@@ -238,7 +240,7 @@ manipulate and analyze netCDF files.
 
 Copyright @copyright{} @value{copyright-years} Charlie Zender
 
-This is the first edition of the @cite{NCO User's Guide},@*
+This is the first edition of the @cite{NCO User Guide},@*
 and is consistent with @w{version 2} of @file{texinfo.tex}.
 
 Permission is granted to copy, distribute and/or modify this document 
@@ -270,7 +272,7 @@ notice identical to this one except for the removal of this paragraph
 @titlepage
 @html
 <meta name="Author" content="Charlie Zender">
-<meta name="Keywords" content="NCO documentation, NCO User's Guide,
+<meta name="Keywords" content="NCO documentation, NCO User Guide,
 netCDF, operator, GCM, CCM, scientific data, ncbo, ncea, ncecat,
 ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @end html
@@ -280,7 +282,7 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @end html
 @ignore
 @end ignore
-@title NCO User's Guide
+@title NCO User Guide
 @subtitle A suite of netCDF operators
 @subtitle Edition @value{doc-edition}, for @acronym{NCO} Version @value{nco-edition}
 @subtitle @value{update-month}
@@ -299,7 +301,7 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 Copyright @copyright{} @value{copyright-years} Charlie Zender.
 
 @sp 2
-This is the first edition of the @cite{NCO User's Guide},@*
+This is the first edition of the @cite{NCO User Guide},@*
 and is consistent with @w{version 2} of @file{texinfo.tex}.
 @sp 2
 
@@ -332,14 +334,14 @@ Irvine, CA 92697-3100@*
 
 @node Top, Foreword, (dir), (dir)
 @ifinfo
-@top NCO User's Guide
+@top NCO User Guide
 @c node format: node-name, next, previous, up
 
 @ifhtml
 @cartouche
 @html
-<p><b>Note to readers of the NCO User's Guide in HTML format</b>: 
-<b>The <a href="./nco.pdf">NCO User's Guide in PDF format</a> 
+<p><b>Note to readers of the NCO User Guide in HTML format</b>: 
+<b>The <a href="./nco.pdf">NCO User Guide in PDF format</a> 
 (also on <a href="http://nco.sf.net/nco.pdf">SourceForge</a>)
 contains the complete NCO documentation.</b> 
 <br>This HTML documentation is equivalent except it refers you to the
@@ -350,8 +352,8 @@ PDF document due to SourceForge limitations.
 @end cartouche
 @end ifhtml
 @ifnothtml
-@emph{Note to readers of the NCO User's Guide in Info format}: 
-@emph{The @uref{./nco.pdf,NCO User's Guide in PDF format}
+@emph{Note to readers of the NCO User Guide in Info format}: 
+@emph{The @uref{./nco.pdf,NCO User Guide in PDF format}
 (also on @uref{http://nco.sf.net/nco.pdf,SourceForge})
 contains the complete @acronym{NCO} documentation.}
 This Info documentation is equivalent except it refers you to the 
@@ -371,7 +373,7 @@ renaming), and outputs a processed netCDF file.
 Although most users of netCDF data are involved in scientific research,
 these data formats, and thus @acronym{NCO}, are generic and are equally
 useful in fields from agriculture to zoology.
-The @acronym{NCO} User's Guide illustrates @acronym{NCO} use with
+The @acronym{NCO} User Guide illustrates @acronym{NCO} use with
 examples from the field of climate modeling and analysis. 
 The @acronym{NCO} homepage is @uref{http://nco.sf.net}, and
 there is a mirror at @uref{http://dust.ess.uci.edu/nco}.
@@ -416,7 +418,7 @@ development of @acronym{NCO}.
 Thanks espcially to Jan Polcher, Keith Lindsay, Arlindo @w{da Silva},
 John Sheldon, and William Weibel for stimulating suggestions and
 correspondence. 
-Your encouragment motivated me to complete the @cite{NCO User's Guide}.
+Your encouragment motivated me to complete the @cite{NCO User Guide}.
 So if you like @acronym{NCO}, send me a note!
 @w{I should} mention that @acronym{NCO} is not connected to or
 officially endorsed by Unidata, @acronym{ACD}, @acronym{ASP},
@@ -561,11 +563,11 @@ with @samp{tar -xvzf nco.tar.gz}.
 @cindex @acronym{HTML}
 @cindex @TeX{}info
 @cindex Info
-@cindex @cite{User's Guide}
-@cindex @cite{NCO User's Guide}
+@cindex @cite{User Guide}
+@cindex @cite{NCO User Guide}
 The documentation for @acronym{NCO} is called the 
-@cite{NCO User's Guide}. 
-The @cite{User's Guide} is available in Postscript, @acronym{HTML},
+@cite{NCO User Guide}. 
+The @cite{User Guide} is available in Postscript, @acronym{HTML},
 @acronym{DVI}, @TeX{}info, and Info formats.
 These formats are included in the source distribution in the files
 @file{nco.ps}, @file{nco.html}, @file{nco.dvi}, @file{nco.texi}, and
@@ -604,7 +606,7 @@ If you want to quickly see what the latest improvements in @acronym{NCO}
 are (without downloading the entire source distribution), visit the
 @acronym{NCO} homepage at 
 @uref{http://nco.sf.net}.
-The @acronym{HTML} version of the @cite{User's Guide} is also available 
+The @acronym{HTML} version of the @cite{User Guide} is also available 
 online through the World Wide Web at @acronym{URL}
 @uref{http://nco.sf.net/nco.html}.
 @cindex netCDF
@@ -3075,7 +3077,7 @@ network-transparent data access.
 hyperslabbing and server-side processing via @dfn{constraint expressions}.
 If you know more about this, please consider writing a section
 on "@acronym{OPeNDAP} Capabilities of Interest to @acronym{NCO} Users"
-for incorporation in the @cite{NCO User's Guide}.}.
+for incorporation in the @cite{NCO User Guide}.}.
 
 Once @acronym{NCO} is @acronym{DAP}-enabled the operators are
 @acronym{OPeNDAP} clients.  
@@ -6392,12 +6394,19 @@ Therefore when @code{-y rmssdn} is requested and weights are specified,
 @command{ncea} and @command{ncra}, which do not allow weights to be
 specified, always implement the @code{rmssdn} procedure when asked.
 
-@c 20130827: Fedora Core 19 (FC19) breaks here with "./nco.texi:6389: Missing dollarsign inserted."
+@c 20130827: Fedora Core 19 (FC19) breaks here with "./nco.texi:6394: Missing dollarsign inserted."
 @c Ubuntu continues to build nco.texi fine, and must be used to produce nco.pdf
 @c Problem is related to number of dollarsigns used in TeX mode?
 @c Adding a dollarsign character right here breaks Ubuntu builds too
 @c Hence I must carefully spell-out the word dollarsign instead
-@c 20130829: Making many smaller TeX environments does not solve the problem
+@c 20130829: Making many smaller TeX environments does not solve problem
+@c 20130910: Using latest texinfo.tex from GNU does not solve problem
+@c 20130910: Karl Berry solved problem by fixing bug in texinfo.tex
+@c Bug was triggered in Fedora by apostrophe in "User's Guide" (manual title)
+@c Bug not present in texinfo.tex version 2008-04-18.10 (used by Ubuntu 13.04)
+@c Bug     present in texinfo.tex version 2013-02-01.11 (used by FC19)
+@c Bug just fixed  in texinfo.tex version 2013-09-11 (committed by Karl)
+@c nco/autobld/texinfo.tex now contains fixed version
 @c Breakage always occurs near here
 The square root of the mean of~$\xxx$ (@code{-y sqrt}) is 
 $$
@@ -8742,7 +8751,7 @@ hyperslab is quite different.
 cat > ~/ncap2_foo.nco << 'EOF'
 // Purpose: Save irregular 1-D regions based on variable values
 
-// Included in NCO User's Guide at http://nco.sf.net/nco.html#sort
+// Included in NCO User Guide at http://nco.sf.net/nco.html#sort
 
 /* NB: Single quotes around EOF above turn off shell parameter 
     expansion in "here documents". This in turn prevents the
@@ -8830,7 +8839,7 @@ cat > ~/ncap2_foo.nco << 'EOF'
    This example sorts the variable three_dmn_rec_var(time,lat,lon)
    based on the values of the time coordinate. */
 
-// Included in NCO User's Guide at http://nco.sf.net/nco.html#sort
+// Included in NCO User Guide at http://nco.sf.net/nco.html#sort
 
 // Randomize the time coordinate
 time=10.0*gsl_rng_uniform(time);
@@ -11237,9 +11246,9 @@ ncbo [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
-[-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] [-O] [-o @var{file_3}] [-p @var{path}] 
-[-R] [-r] [--ram_all] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
-[-y @var{op_typ}]
+[-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl]
+[-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -11657,24 +11666,26 @@ SYNTAX
 @example
 ncea [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--dbl] [-F] [-h] [--hdf] [--hdr_pad @var{nbr}] 
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--dbl] [-F]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent
 DESCRIPTION
 
-@command{ncea} performs gridpoint averages of variables across an
+@command{ncea} performs gridpoint arithmetic of variables across an
 arbitrary number (an @dfn{ensemble}) of @var{input-files}, with each
-file receiving an equal weight in the average.
+file receiving an equal weight in the arithmetic.
 @cindex ensemble
-@command{ncea} averages entire files, and weights each file evenly.
-This is distinct from @command{ncra}, which only averages over the
-record dimension (e.g., @var{time}), and weights each record in the
-record dimension evenly,  
+For example, @command{ncea} will average a set of files, weighting
+each file evenly. 
+This is distinct from @command{ncra}, which averages only over the
+record dimension(s) (e.g., @var{time}), and weights each record in 
+each record dimension evenly,  
 
 Variables in the @var{output-file} are the same size as the variable
 in each of the @var{input-files}, and all @var{input-files} must be
@@ -13705,9 +13716,10 @@ SYNTAX
 ncra [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [--dbl] [-F]
-[-h] [--hdf] [--hdr_pad @var{nbr}][-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
+[-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rec_apn]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -13818,9 +13830,10 @@ SYNTAX
 ncrcat [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [-F]
-[-h] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest]
-[-n @var{loop}] [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}]
-[-R] [-r] [--ram_all] [--rec_apn] [-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
+[-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}] [--no_tmp_fl]
+[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rec_apn]
+[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -14006,7 +14019,7 @@ Such a variable will become a coordinate variable.
 @cindex operator speed
 @cindex speed
 @cindex execution time
-According to the @cite{netCDF User's Guide}, renaming properties in
+According to the @cite{netCDF User Guide}, renaming properties in
 netCDF files does not incur the penalty of recopying the entire file
 when the @var{new_name} is shorter than the @var{old_name}.
 
@@ -14164,9 +14177,9 @@ SYNTAX
 ncwa [-3] [-4] [-6] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--dbl] [-F]
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
-[-I] [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] 
-[--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [-T @var{mask_comp}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}] [-I]
+[-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] [--no_tmp_fl]
+[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [-T @var{mask_comp}]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
@@ -14929,7 +14942,7 @@ To begin, we document below a prototypical example of @acronym{CMIP5}
 analysis and evaluation using traditional @acronym{NCO} commands on
 netCDF3-format model and @acronym{HDF-EOS} format observational
 (@acronym{NASA} @acronym{MODIS} satellite instrument) datasets.
-These examples complement the @acronym{NCO} User's Guide by detailing
+These examples complement the @acronym{NCO} User Guide by detailing
 in-depth data analysis in a frequently encountered ``real world''
 context.   
 Graphical representations of the results (@acronym{NCL} scripts
@@ -15421,7 +15434,7 @@ Level III: Many derived products from level II, e.g.,
 @end html
 @node mybibnode, General Index, CCSM Example, Top
 @chapter References
-@itemize @asis
+@itemize
 @mybibitem{ZeM07} Zender, C. S., and H. J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, Int. J. High Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
 @mybibitem{Zen08} Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10), 1338-1342, doi:10.1016/j.envsoft.2008.03.004.
 @mybibitem{WZJ07} Wang, D. L., C. S. Zender, and S. F. Jenks (2007), DAP-enabled Server-side Data Reduction and Analysis, Proceedings of the 23rd AMS Conference on Interactive Information and Processing Systems (IIPS) for Meteorology, Oceanography, and Hydrology, Paper 3B.2, January 14-18, San Antonio, TX. American Meteorological Society, AMS Press, Boston, MA.

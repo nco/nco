@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.26 2013-07-26 23:16:59 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.27 2013-09-11 02:07:28 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncrcat
 .\" Usage:
 .\" nroff -man ~/nco/man/ncrcat.1 | less
@@ -15,7 +15,10 @@ ncrcat [\-3] [\-4] [\-6] [\-A] [\-\-bfr
 .IR max ]][,[
 .IR stride [[,[
 .IR duration ]]]]]
-[\-F]
+[\-F] [\-G
+.IR gpe_dsc ]
+[\-g  
+.IR grp [,...]]
 [\-h] [\-\-hdr_pad
 .IR sz ]
 [\-L 
@@ -28,7 +31,7 @@ ncrcat [\-3] [\-4] [\-6] [\-A] [\-\-bfr
 .IR path ]
 [\-R] [\-r] [\-\-ram_all] [\-\-rec_apn] [\-t
 .IR thr_nbr ]
-[\-v
+[\--unn] [\-v 
 .IR var [,...]]
 [\-X 
 .IR box ] 
@@ -126,7 +129,7 @@ ncrcat \-d time,6.,54. ??.nc 8506_8906.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.26 2013-07-26 23:16:59 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncrcat.1,v 1.27 2013-09-11 02:07:28 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
