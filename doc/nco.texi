@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.851 2013-09-11 21:45:49 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.852 2013-09-11 21:57:51 woodllan Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -15054,7 +15054,7 @@ Key steps include:
 @end enumerate
 @example
 ## Main Script
-@verbatiminclude xmp/regrid.sh
+@verbatiminclude xmp/rgr.sh
 ## bi_interp.nco
 @verbatiminclude xmp/bi_interp.nco
 @end example
@@ -15081,7 +15081,10 @@ However, @acronym{CMIP5} orders latitude from -90@textdegree{}N to
 This script changes the @acronym{MODIS} coordinates to the
 @acronym{CMIP5} convention.
 @example
+## Main Script
 @verbatiminclude xmp/pmt_crd.sh
+## ivs_lat.nco
+@verbatiminclude xmp/ivs_lat.nco
 @end example
 
 @node Hierarchical Data Files,  , Permute MODIS Coordinates, CMIP5 Example
