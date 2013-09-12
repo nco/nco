@@ -77,6 +77,7 @@ ncks -O -d lat,60.0,75.0 -d lon,300.0,340.0 ${drc_in}snow${sfx}.nc ${drc_in}snow
 # Spatial Average
 #------------------------------------------------------------
 ncwa -O -a lat,lon ${drc_in}snow${sfx}_GrIS.nc ${drc_in}snow${sfx}_GrIS-avg.nc
+
 # hyperslab and spatial average in one step
 ncwa -O -d lat,60.0,75.0 -d lon,300.0,340.0 -a lat,lon ${drc_in}snow${sfx}.nc ${drc_in}${sfx}_GrIS-avg.nc
 
