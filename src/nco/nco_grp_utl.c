@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.964 2013-09-12 19:30:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.965 2013-09-12 22:20:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4838,118 +4838,94 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
 
-    /* Loop table */
-    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-      trv_sct var_trv=trv_tbl->lst[idx_var];
+    /* Obtain variable GTT *pointer using full variable name */
+    trv_sct *var_trv=trv_tbl_var_nm_fll(var_prc[idx_var_prc]->nm_fll,trv_tbl);
 
-      /* Match by full variable name  */
-      if(strcmp(var_prc[idx_var_prc]->nm_fll,var_trv.nm_fll) == 0){
+    assert(var_trv->flg_xtr); 
+    assert(var_trv->nbr_dmn == var_prc_out[idx_var_prc]->nbr_dim);
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s transfering variable <%s>\n",prg_nm_get(),fnc_nm,
-            var_trv.nm_fll);        
-        } 
+    /* Initialize for this variable */
+    REDEFINED_RECORD_DIMENSION=False;
 
-        assert(var_trv.nco_typ == nco_obj_typ_var);
-        assert(var_trv.flg_xtr); 
-        assert(var_trv.nbr_dmn==var_prc_out[idx_var_prc]->nbr_dim);
+    /* Mark re-order flag */
+    var_trv->flg_rdr=True;
 
-        /* Initialize for this variable */
-        REDEFINED_RECORD_DIMENSION=False;
+    /* Initialize record names for this object */
+    rec_dmn_nm=NULL;
+    rec_dmn_nm_out_crr=NULL;
+    rec_dmn_nm_in=NULL;
+    rec_dmn_nm_out=NULL;
 
-        /* Mark re-order flag */
-        trv_tbl->lst[idx_var].flg_rdr=True;
+    /* Get array of record names for object */
+    (void)nco_get_rec_dmn_nm(var_trv,trv_tbl,&rec_dmn_nm);                
 
-        /* Initialize record names for this object */
-        rec_dmn_nm=NULL;
-        rec_dmn_nm_out_crr=NULL;
-        rec_dmn_nm_in=NULL;
-        rec_dmn_nm_out=NULL;
+    /* Use for record dimension name the first in array */
+    if(rec_dmn_nm->lst){
+      rec_dmn_nm_in=(char *)strdup(rec_dmn_nm->lst[0].nm);
+      rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
+    }
 
-        /* Get array of record names for object */
-        (void)nco_get_rec_dmn_nm(&var_trv,trv_tbl,&rec_dmn_nm);                
+    /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
+    rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
 
-        /* Use for record dimension name the first in array */
-        if(rec_dmn_nm->lst){
-          rec_dmn_nm_in=(char *)strdup(rec_dmn_nm->lst[0].nm);
-          rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
-        }
+    /* Transfer dimension structures to be re-ordered into GTT */
+    for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+      var_trv->dmn_idx_out_in[idx_dmn]=dmn_idx_out_in[idx_dmn];
+      var_trv->dmn_rvr_in[idx_dmn]=dmn_rvr_in[idx_dmn];
+    } 
 
-        /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
-        rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
+    if(dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s transfering variable <%s>: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+      (void)fprintf(stdout,"dimension map: ");
+      for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+        int idx_map=var_trv->dmn_idx_out_in[idx_dmn];
+        (void)fprintf(stdout,"[%d]<%s>->[%d]<%s> : ",
+          idx_dmn,var_trv->var_dmn[idx_dmn].dmn_nm,idx_map,var_trv->var_dmn[idx_map].dmn_nm);
+      }
+      (void)fprintf(stdout,"\n");
+      (void)fprintf(stdout,"%s: DEBUG reverse dimensions: ",prg_nm_get());
+      for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+        (void)fprintf(stdout,"dmn_rvr_in[%d]=%d: ",idx_dmn,dmn_rvr_in[idx_dmn]);
+      }
+      (void)fprintf(stdout,"\n");
+    }
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s dimension map for <%s>: ",prg_nm_get(),fnc_nm,var_prc_out[idx_var_prc]->nm);
-          for(int idx_dmn=0;idx_dmn<var_prc_out[idx_var_prc]->nbr_dim;idx_dmn++){
-            int idx_map=dmn_idx_out_in[idx_dmn];
-            (void)fprintf(stdout,"[%d]<%s>->[%d]<%s> : ",
-              idx_dmn,var_prc_out[idx_var_prc]->dim[idx_dmn]->nm,idx_map,var_prc_out[idx_var_prc]->dim[idx_map]->nm);
+    /* If record dimension required by current variable re-order...
+    ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
+    if(rec_dmn_nm_in && rec_dmn_nm_out_crr && var_prc_out[idx_var_prc]->nbr_dim > 1){
+      /* ...differs from input and current output record dimension(s)... */
+      if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_in) && strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
+        /* ...and current output record dimension already differs from input record dimension... */
+        if(REDEFINED_RECORD_DIMENSION){
+          /* ...then requested re-order requires multiple record dimensions... */
+          if(dbg_lvl_get() >= nco_dbg_std){
+            (void)fprintf(stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",
+              prg_nm_get(),var_prc[idx_var_prc]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
           }
-          (void)fprintf(stdout,"\n");
-        }
+          break;
+        }else{ /* !REDEFINED_RECORD_DIMENSION */
+          /* ...otherwise, update output record dimension name... */
+          rec_dmn_nm_out=rec_dmn_nm_out_crr;
+          /* ...and set new dimensions... */
+          var_prc_out[idx_var_prc]->dim[0]->is_rec_dmn=True;
 
-        /* Transfer dimension structures to be re-ordered into GTT */
+          /* ...and set flag that record dimension has been re-defined... */
+          REDEFINED_RECORD_DIMENSION=True;
 
-        /* Loop variable dimensions */
-        for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-          /* Transfer */
-          trv_tbl->lst[idx_var].dmn_idx_out_in[idx_dmn]=dmn_idx_out_in[idx_dmn];
-          trv_tbl->lst[idx_var].dmn_rvr_in[idx_dmn]=dmn_rvr_in[idx_dmn];
-        } /* Loop variable dimensions */
+          /* ...store the name of the record dimension on output... */
+          var_trv->rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
 
-        if(dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG dimension map for <%s>: ",prg_nm_get(),var_trv.nm_fll);
-          for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-            int idx_map=trv_tbl->lst[idx_var].dmn_idx_out_in[idx_dmn];
-            (void)fprintf(stdout,"[%d]<%s>->[%d]<%s> : ",
-              idx_dmn,trv_tbl->lst[idx_var].var_dmn[idx_dmn].dmn_nm,idx_map,trv_tbl->lst[idx_var].var_dmn[idx_map].dmn_nm);
-          }
-          (void)fprintf(stdout,"\n");
-          (void)fprintf(stdout,"%s: DEBUG reverse dimensions: ",prg_nm_get());
-          for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-            (void)fprintf(stdout,"dmn_rvr_in[%d]=%d: ",idx_dmn,dmn_rvr_in[idx_dmn]);
-          }
-          (void)fprintf(stdout,"\n");
-        }
-
-        /* If record dimension required by current variable re-order...
-        ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
-        if(rec_dmn_nm_in && rec_dmn_nm_out_crr && var_prc_out[idx_var_prc]->nbr_dim > 1){
-          /* ...differs from input and current output record dimension(s)... */
-          if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_in) && strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
-            /* ...and current output record dimension already differs from input record dimension... */
-            if(REDEFINED_RECORD_DIMENSION){
-              /* ...then requested re-order requires multiple record dimensions... */
-              if(dbg_lvl_get() >= nco_dbg_std){
-                (void)fprintf(stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",
-                  prg_nm_get(),var_prc[idx_var_prc]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
-              }
-              break;
-            }else{ /* !REDEFINED_RECORD_DIMENSION */
-              /* ...otherwise, update output record dimension name... */
-              rec_dmn_nm_out=rec_dmn_nm_out_crr;
-              /* ...and set new dimensions... */
-              var_prc_out[idx_var_prc]->dim[0]->is_rec_dmn=True;
-
-              /* ...and set flag that record dimension has been re-defined... */
-              REDEFINED_RECORD_DIMENSION=True;
-
-              /* ...store the name of the record dimension on output... */
-              trv_tbl->lst[idx_var].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
-
-            } /* !REDEFINED_RECORD_DIMENSION */
-          } /* endif new and old record dimensions differ */
-        } /* endif current variable is record variable */
+        } /* !REDEFINED_RECORD_DIMENSION */
+      } /* endif new and old record dimensions differ */
+    } /* endif current variable is record variable */
 
 
-        /* Memory management for record dimension names */
-        if(rec_dmn_nm){
-          for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
-          rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
-        }
+    /* Memory management for record dimension names */
+    if(rec_dmn_nm){
+      for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
+      rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
+    }
 
-      } /* Match by full variable name  */
-    } /* Loop table */
   } /* Loop processed variables */
 
   /* Loop to deal with REDEFINED_RECORD_DIMENSION */
@@ -5139,13 +5115,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                       }
 
                       /* Transfer dimension structures (re-ordered again) into GTT */
-
-                      /* Loop variable dimensions */
                       for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
-                        /* Transfer */
                         trv_tbl->lst[ idx_var_mrk ].dmn_idx_out_in[idx_dmn]=dmn_idx_out_in[idx_dmn];
-                      } /* Loop variable dimensions */
-
+                      } 
 
                       if(dbg_lvl_get() >= nco_dbg_dev){
                         (void)fprintf(stdout,"%s: DEBUG re-ordering dimension map for <%s>: ",prg_nm_get(),var_trv_mrk.nm_fll);
@@ -5176,17 +5148,12 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                       var_prc_out[idx_var_prc_out]->end[dmn_idx_rec_in]=var_prc_out[idx_var_prc_out]->dim[dmn_idx_rec_in]->end;
                       var_prc_out[idx_var_prc_out]->srd[dmn_idx_rec_in]=var_prc_out[idx_var_prc_out]->dim[dmn_idx_rec_in]->srd;
 
-
                     } /* endif multi-dimensional */
                   } /* endif status changing from non-record to record */
                 } /* endif variable will be record variable */
-
               } /* Loop table, search for other variables that share the same dimension name */
-
           } /* NEEDS_REORDER */
-
         } /* ...look if there is a record name to find  */
-
       } /* Match by full variable name  */
     } /* end loop over var_prc */
   } /* Loop table */
@@ -5246,11 +5213,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
 
             } /* Is record ? */
-
           } /* Loop variable dimensions */
         } /* Avoid same */
       } /* Loop table */
-
     } /* Has re-defined record dimension */
   } /* Loop table */
 
