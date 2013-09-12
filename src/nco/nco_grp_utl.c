@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.965 2013-09-12 22:20:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.966 2013-09-12 23:18:57 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4808,10 +4808,15 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  var_sct **var_prc,                   /* I/O [sct] Processed variables */
  var_sct **var_prc_out,               /* I/O [sct] Processed variables */
  const int nbr_var_fix,               /* I [nbr] Number of processed variables */
- var_sct **var_fix,                   /* I/O [sct] Processed variables */
+ var_sct **var_fix,                   /* I/O [sct] Fixed variables */
  dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
  const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
+#ifdef NCPDQ_FIX
+ char **obj_lst_in,                   /* I [sng] User-specified list of dimension names (-a names *with* the - ) */
+ const int nbr_obj_lst_in)           /* I [nbr] Total number of dimensions in input list (size of above array) */
+#else
  const nco_bool *dmn_rvr_rdr)         /* I [flg] Reverse dimension */
+#endif
 {
   /* Purpose: Determine and set new dimensionality in metadata of each re-ordered variable */
 
@@ -4864,6 +4869,35 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
       rec_dmn_nm_in=(char *)strdup(rec_dmn_nm->lst[0].nm);
       rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
     }
+
+#ifdef NCPDQ_FIX
+    nco_bool dmn_rvr_rdr[NC_MAX_DIMS];         /* [flg] Reverse dimension */
+
+    /* Build the reverse dimension array from original input name list (-a with '-'), originally in main ncpdq */
+
+    /* Loop variable dimensions */
+    for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+
+      dmn_rvr_rdr[idx_dmn]=False;
+
+      /* Loop input name list with '-' */
+      for(int idx_rdr=0;idx_rdr<nbr_obj_lst_in;idx_rdr++){
+
+        /* Does it have a '-' */
+        if(obj_lst_in[idx_rdr][0] == '-'){
+          /* Strip the '-' */
+          char *dmn_nm=(char *)strdup(obj_lst_in[idx_rdr]+1);
+
+          /* Compare with dimension name */
+          if (strcmp(dmn_nm,var_trv->var_dmn[idx_dmn].dmn_nm) == 0) {
+            dmn_rvr_rdr[idx_dmn]=True;
+          } /* Compare with dimension name */
+
+          dmn_nm=(char *)nco_free(dmn_nm);
+        } /* Does it have a '-' */
+      } /* Loop input name list with '-' */  
+    } /* Loop variable dimensions */
+#endif
 
     /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
     rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);

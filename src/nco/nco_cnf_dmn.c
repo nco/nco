@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.86 2013-09-12 19:56:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.87 2013-09-12 23:18:57 pvicente Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -458,7 +458,6 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   int dmn_idx_in_shr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->share Purely diagnostic */
   int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
   int dmn_idx_in_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->re-order NB: Purely diagnostic */
-  /* int dmn_idx_rdr_in[NC_MAX_DIMS]; */ /* [idx] Dimension correspondence, re-order->input NB: Purely diagnostic */
   int dmn_idx_shr_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->re-order */	  
   int dmn_idx_shr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->input */	  
   int dmn_idx_shr_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->output */	  
@@ -527,8 +526,9 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   } /* end loop over dmn_rdr */
 
   /* Map permanent list of reversed dimensions to input variable */
-  for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
+  for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++){
     dmn_rvr_in[dmn_idx_shr_in[dmn_shr_idx]]=dmn_rvr_rdr[dmn_idx_shr_rdr[dmn_shr_idx]];
+  }
 
   /* No dimension re-ordering is necessary if dmn_in and dmn_rdr share fewer than two dimensions
   Dimension reversal must be done with even one shared dimension

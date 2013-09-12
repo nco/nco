@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.375 2013-09-11 05:56:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.376 2013-09-12 23:18:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -479,10 +479,16 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  var_sct **var_prc,                   /* I/O [sct] Processed variables */
  var_sct **var_prc_out,               /* I/O [sct] Processed variables */
  const int nbr_var_fix,               /* I [nbr] Number of processed variables */
- var_sct **var_fix,                   /* I/O [sct] Processed variables */
+ var_sct **var_fix,                   /* I/O [sct] Fixed variables */
  dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
  const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
+#ifdef NCPDQ_FIX
+ char **obj_lst_in,                   /* I [sng] User-specified list of dimension names (-a names *with* the - ) */
+ const int nbr_obj_lst_in);           /* I [nbr] Total number of dimensions in input list (size of above array) */
+#else
  const nco_bool *dmn_rvr_rdr);        /* I [flg] Reverse dimension */
+#endif
+
 
 void
 nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of variable values */
@@ -551,7 +557,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 void
 nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa)/re-order(ncpdq) array from input dimension names */
 (const int nc_id,                      /* I [id] netCDF file ID */
- char **obj_lst_in,                    /* I [sng] User-specified list of dimension names (-a names) */
+ char **obj_lst_in,                    /* I [sng] User-specified list of dimension names (-a names without the - ) */
  const int nbr_dmn_in,                 /* I [nbr] Total number of dimensions in input list (size of above array) */
  const nco_bool flg_rdd,               /* I [flg] Retain degenerate dimensions */
  const trv_tbl_sct * const trv_tbl,    /* I [sct] GTT (Group Traversal Table) */
