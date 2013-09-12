@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.359 2013-09-11 23:28:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.360 2013-09-12 10:34:54 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -94,6 +94,7 @@ main(int argc,char **argv)
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
 
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
+  char **dmn_rdr_lst_in_rvr=NULL_CEWI; /* Option a (same list, keep the '-' )*/
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
   char **var_lst_in=NULL_CEWI;
@@ -118,8 +119,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.359 2013-09-11 23:28:46 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.359 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.360 2013-09-12 10:34:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.360 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -381,6 +382,7 @@ main(int argc,char **argv)
       break;
     case 'a': /* Re-order dimensions */
       dmn_rdr_lst_in=nco_lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
+      dmn_rdr_lst_in_rvr=nco_lst_prs_2D(optarg,",",&dmn_rdr_nbr_in);
       dmn_rdr_nbr=dmn_rdr_nbr_in;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
@@ -505,10 +507,10 @@ main(int argc,char **argv)
   } /* endif */
 
   /* Create reversed dimension list */
-  if(dmn_rdr_nbr > 0){
+  if(dmn_rdr_nbr_in > 0){
     /* Create reversed dimension list */
-    dmn_rvr_rdr=(nco_bool *)nco_malloc(dmn_rdr_nbr*sizeof(nco_bool));
-    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
+    dmn_rvr_rdr=(nco_bool *)nco_malloc(dmn_rdr_nbr_in*sizeof(nco_bool));
+    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
       if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
         dmn_rvr_rdr[idx_rdr]=True;
         /* Copy string to new memory one past negative sign to avoid losing byte */
@@ -557,6 +559,8 @@ main(int argc,char **argv)
   /* Find dimensions associated with variables to be extracted */
   (void)nco_dmn_lst_ass_var_trv(in_id,trv_tbl,&nbr_dmn_xtr,&dim);
 
+  dim=(dmn_sct **)nco_realloc(dim,nbr_dmn_xtr*sizeof(dmn_sct *));
+
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
@@ -567,11 +571,8 @@ main(int argc,char **argv)
   /* If re-ordering */
   if(IS_REORDER){
 
-    /* Allocate array of dimensions to average(ncwa)/re-order(ncpdq) with maximum possible size */
-    dmn_rdr=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));
-
     /* Create list of dimensions to average(ncwa)/re-order(ncpdq) */
-    (void)nco_dmn_avg_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr,False,trv_tbl,&dmn_rdr,&dmn_rdr_nbr);
+    (void)nco_dmn_avg_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr_in,False,trv_tbl,&dmn_rdr,&dmn_rdr_nbr);
 
   } /* If re-ordering */
 
@@ -836,7 +837,10 @@ main(int argc,char **argv)
     /* ncpdq-specific memory cleanup */
     if(dmn_rdr_nbr > 0){
       if(dmn_rvr_rdr) dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
-      if(dmn_rdr_nbr_in > 0) dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
+      if(dmn_rdr_nbr_in > 0) {
+        dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
+        dmn_rdr_lst_in_rvr=nco_sng_lst_free(dmn_rdr_lst_in_rvr,dmn_rdr_nbr_in);
+      }
       /* Free dimension list pointers */
       dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
       /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */

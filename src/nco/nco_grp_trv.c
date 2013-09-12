@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.214 2013-09-11 02:56:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.215 2013-09-12 10:34:53 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -29,6 +29,14 @@ trv_tbl_init                           /* [fnc] GTT initialize */
   /* Dimension list */
   tb->nbr_dmn=0;
   tb->lst_dmn=NULL;
+
+  /* Degenerate dimensions used by ncwa */
+  tb->nbr_dmn_dgn=0;
+  tb->dmn_dgn=NULL;
+
+  /* Record dimensions used by ncra */
+  tb->nbr_rec=0;
+  tb->lmt_rec=NULL;
 
   *tbl=tb;
 } /* trv_tbl_init() */
