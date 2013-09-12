@@ -28,7 +28,7 @@ for fn in $( ls MCD43C3.*.nc ); do		## loop over files
   echo ${sfx}
   
   ## lat
-  ncap2 -O -S inverse-lat.nco ${fn} ${fn}						## inverse latitude
+  ncpdq -O -a -lat ${fn} ${fn}        ## inverse latitude (NB: there is '-' before 'lat')
   
   ## lon
   ncks -O --msa -d lon,0.0,180.0 -d lon,-180.0,-1.25 ${fn} ${fn}
