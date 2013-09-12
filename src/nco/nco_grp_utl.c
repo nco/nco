@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.963 2013-09-12 10:34:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.964 2013-09-12 19:30:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6057,13 +6057,6 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 
           /* Match by ID */
           if(var_trv.var_dmn[idx_dmn_var].dmn_id==(*dmn)[idx_dmn_out]->id){
-
-            if(dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
-              (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> already inserted\n",prg_nm_get(),fnc_nm,
-                var_trv.var_dmn[idx_dmn_var].dmn_id,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
-            } 
-
             dmn_flg=True;
             break;
           }  /* Match by ID */
@@ -6102,12 +6095,6 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
           (*dmn)[nbr_dmn]->cnk_sz=0L;
           (*dmn)[nbr_dmn]->type=(nc_type)-1;
 
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
-            (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> inserted\n",prg_nm_get(),fnc_nm,
-              var_trv.var_dmn[idx_dmn_var].dmn_id,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
-          } 
-
           nbr_dmn++;
         }  /* If this dimension is not in output array */
       } /* Loop variable dimensions  */
@@ -6116,6 +6103,14 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
 
   /* Export */
   *nbr_dmn_xtr=nbr_dmn;
+
+  if(dbg_lvl_get() >= nco_dbg_dev){ 
+    (void)fprintf(stdout,"%s: DEBUG %s dimensions to export: ",prg_nm_get(),fnc_nm);        
+    for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+      (void)fprintf(stdout,"#%d<%s> : ",(*dmn)[idx_dmn]->id,(*dmn)[idx_dmn]->nm);        
+    }
+    (void)fprintf(stdout,"\n");    
+  } 
 
   return;
 } /* end nco_dmn_lst_ass_var_trv() */
@@ -6480,12 +6475,6 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
           if (flg_rdd == True){
             trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_rdd=True;
           }
-
-          if(dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s variable <%s>: ",prg_nm_get(),fnc_nm,trv_obj.nm_fll);        
-            (void)fprintf(stdout,"%s: DEBUG %s dimension #%d<%s> marked for average\n",prg_nm_get(),fnc_nm,
-              trv_obj.var_dmn[idx_var_dmn].dmn_id,trv_obj.var_dmn[idx_var_dmn].dmn_nm_fll);
-          } 
 
         } /* Match ID */
       } /* Loop variable dimensions */
