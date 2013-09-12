@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.85 2013-08-08 17:39:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.86 2013-09-12 19:56:21 pvicente Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -479,19 +479,15 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_out_nbr=var_out->nbr_dim;
 
   /* Initialize dimension maps to missing_value to aid debugging */
-  if(dbg_lvl_get() == nco_dbg_old){
-    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
-      dmn_idx_out_in[dmn_out_idx]=idx_err;
-    /* for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++)
-    dmn_idx_rdr_in[dmn_rdr_idx]=idx_err; */
-    for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
-      dmn_idx_in_shr[dmn_in_idx]=idx_err;
-      dmn_idx_in_rdr[dmn_in_idx]=idx_err;
-      dmn_idx_shr_rdr[dmn_in_idx]=idx_err; /* fxm: initialize up to dmn_shr_nbr which is currently unknown */
-      dmn_idx_shr_in[dmn_in_idx]=idx_err; /* fxm: initialize up to dmn_shr_nbr which is currently unknown */
-      dmn_idx_shr_out[dmn_in_idx]=idx_err; /* fxm: initialize up to dmn_shr_nbr which is currently unknown */
-    } /* end loop over dmn_in */
-  } /* end if dbg */
+  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
+    dmn_idx_out_in[dmn_out_idx]=idx_err;
+  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
+    dmn_idx_in_shr[dmn_in_idx]=idx_err;
+    dmn_idx_in_rdr[dmn_in_idx]=idx_err;
+    dmn_idx_shr_rdr[dmn_in_idx]=idx_err; /* fxm: initialize up to dmn_shr_nbr which is currently unknown */
+    dmn_idx_shr_in[dmn_in_idx]=idx_err; /* fxm: initialize up to dmn_shr_nbr which is currently unknown */
+    dmn_idx_shr_out[dmn_in_idx]=idx_err; /* fxm: initialize up to dmn_shr_nbr which is currently unknown */
+  } /* end loop over dmn_in */
 
   /* Initialize default correspondence and record dimension in case early return desired */
   if(var_out->is_rec_var) rec_dmn_nm_out=var_in->dim[0]->nm; /* 20130613: if netCDF3 _only_! */
@@ -511,10 +507,16 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++){
     /* ...see if re-order dimension exists in dmn_in dimension list... */
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
+
+#ifdef NCPDQ_FIX
       /* ...by comparing names, not dimension IDs... */
       if(!strcmp(var_in->dim[dmn_in_idx]->nm,dmn_rdr[dmn_rdr_idx]->nm)){
+#else
+      /* ...must compare by dimension IDs ...dimensions can have same names  */
+      if(var_in->dim[dmn_in_idx]->id == dmn_rdr[dmn_rdr_idx]->id){
+#endif
+
         dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_idx;
-        /* dmn_idx_rdr_in[dmn_rdr_idx]=dmn_in_idx; */
         dmn_idx_shr_rdr[dmn_shr_nbr]=dmn_rdr_idx;
         dmn_idx_shr_in[dmn_shr_nbr]=dmn_in_idx;
         dmn_idx_in_shr[dmn_in_idx]=dmn_shr_nbr;
