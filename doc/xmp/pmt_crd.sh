@@ -16,7 +16,7 @@
 ##
 ## Online: http://nco.sourceforge.net/nco.html#Permute-MODIS-Coordinates
 ##
-## Execute this script: bash permute_coor.sh
+## Execute this script: bash pmt_crd.sh
 ##===========================================================================
 
 ##---------------------------------------------------------------------------
