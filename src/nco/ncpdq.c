@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.361 2013-09-12 23:18:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.362 2013-09-13 21:50:22 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -73,8 +73,10 @@ main(int argc,char **argv)
   aed_sct *aed_lst_add_fst=NULL_CEWI;
   aed_sct *aed_lst_scl_fct=NULL_CEWI;
 
-#ifndef NCPDQ_FIX
-  nco_bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimension */
+#if 0
+  nco_bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimensions */
+#else
+  nco_bool dmn_rvr_rdr[NC_MAX_DIMS]; /* [flg] Reverse dimensions */
 #endif
   nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
@@ -121,8 +123,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.361 2013-09-12 23:18:58 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.361 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.362 2013-09-13 21:50:22 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.362 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -508,34 +510,24 @@ main(int argc,char **argv)
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
+#ifdef REMOVE
   /* Create reversed dimension list */
   if(dmn_rdr_nbr_in > 0){
-
     /* Create reversed dimension list */
-#ifndef NCPDQ_FIX
     dmn_rvr_rdr=(nco_bool *)nco_malloc(dmn_rdr_nbr_in*sizeof(nco_bool));
-#endif
-
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
       if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
-
-#ifndef NCPDQ_FIX
         dmn_rvr_rdr[idx_rdr]=True;
-#endif
-
         /* Copy string to new memory one past negative sign to avoid losing byte */
         optarg_lcl=dmn_rdr_lst_in[idx_rdr];
         dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
         optarg_lcl=(char *)nco_free(optarg_lcl);
       }else{
-
-#ifndef NCPDQ_FIX
         dmn_rvr_rdr[idx_rdr]=False;
-#endif
-
       } /* end else */
     } /* end loop over idx_rdr */
   } /* Create reversed dimension list */
+#endif /* REMOVE */
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
@@ -563,6 +555,66 @@ main(int argc,char **argv)
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
+
+#ifndef REMOVE
+  int dmn_rdr_nbr_trv=0;     /* [nbr] Number of dimensions in all variables to extract that match -a names  */
+  int idx_dmn_rdr_nbr_trv=0; /* [nbr] Index to number of dimensions in all variables to extract that match -a names  */
+
+  for(int idx_dmn=0;idx_dmn<NC_MAX_DIMS;idx_dmn++) dmn_rvr_rdr[idx_dmn]=-1; 
+
+  /* Create reversed dimension list */
+  if(dmn_rdr_nbr_in > 0){
+    /* Loop table */
+    for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      trv_sct var_trv=trv_tbl->lst[idx_tbl];
+      /* Is variable to extract  */
+      if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+        /* Loop variable dimensions */
+        for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
+
+          nco_bool flg_is_rvr=False;
+
+          /* Loop input -a names */
+          for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
+
+            /* Does it have a '-' ? */    
+            if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
+              optarg_lcl=(char *)strdup(dmn_rdr_lst_in[idx_rdr]+1);         
+              flg_is_rvr=True;
+            } /* Does it have a '-' ? */  
+
+            /* Compare with dimension name */
+            if (strcmp(optarg_lcl,var_trv.var_dmn[idx_dmn].dmn_nm) == 0) {
+              /* Increment number of matches */
+              dmn_rdr_nbr_trv++;
+            } /* Compare with dimension name */
+
+            if (flg_is_rvr){
+              dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=True;
+              optarg_lcl=(char *)nco_free(optarg_lcl); 
+            } else {
+              dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=False;
+            }
+            idx_dmn_rdr_nbr_trv++;
+
+          } /* Loop input -a names */
+        } /* Loop variable dimensions */
+      } /* Is variable to extract  */
+    } /* Loop table */
+  } /* Create reversed dimension list */
+
+  /* Strip all '-'  */
+  for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
+    if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
+      /* Copy string to new memory one past negative sign to avoid losing byte */
+      optarg_lcl=dmn_rdr_lst_in[idx_rdr];
+      dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
+      optarg_lcl=(char *)nco_free(optarg_lcl);
+    }
+  } /* Strip all '-'  */
+
+#endif /* REMOVE */
+
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
