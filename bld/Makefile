@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.653 2013-08-29 20:01:52 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.654 2013-09-13 22:11:25 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -92,6 +92,9 @@
 # export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}\:/glade/apps/opt/udunits/2.1.24/gnu/default/lib
 # export PATH=${PATH}\:/ncar/opt/hpss
 # cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.2/gnu/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/gnu/default/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/gnu/default/lib' OPTS=D allinone;cd -
+# cd ~/nco/bld;make GSL_INC='/glade/apps/opt/gsl/1.15/gnu/4.7.2/include' GSL_LIB='/glade/apps/opt/gsl/1.15/gnu/4.7.2/lib' NETCDF_ROOT='/glade/apps/opt/netcdf/4.2/gnu/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/gnu/default/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/gnu/default/lib' OPTS=D allinone;cd -
+# unset NETCDF_INC;unset NETCDF_LIB
+# cd ~/nco/bld;make UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/gnu/default/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/gnu/default/lib' OPTS=D allinone;cd -
 # Cygwin on Windows Vista systems:
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
 # cd ~/bin/WIN32;tar cvzf ~/nco-4.3.5.win32.cygwin.tar.gz nc* ; scp ~/nco-4.3.5.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
@@ -1978,11 +1981,13 @@ dbg:
 	@printf "HOST = ${HOST}\n"
 	@printf "HOSTNAME = ${HOSTNAME}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
+	@printf "INC_NCAR = ${INC_NCAR}\n"
 	@printf "LAMMPICC = ${LAMMPICC}\n"
 	@printf "LAMMPICXX = ${LAMMPICXX}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "LEX = ${LEX}\n"
 	@printf "LFLAGS = ${LFLAGS}\n"
+	@printf "LIB_NCAR = ${LIB_NCAR}\n"
 	@printf "LINUX_CC = $(LINUX_CC)\n"
 	@printf "LINUX_CXX = $(LINUX_CXX)\n"
 	@printf "MDL_BIN_TRG = ${MDL_BIN_TRG}\n"
