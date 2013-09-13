@@ -1,4 +1,4 @@
-2013-09-11  Charlie Zender  <zender@uci.edu>
+2013-09-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.5 release procedure:
  	Changes since nco-4_3_4: ncea/ncra/ncrcat groups, --dbl, ncwa fix
@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.5 release"
 	cvs tag -c nco-4_3_5;cvs tag -c nco-4_3_5-1
 
-	* More documention on type conversion and precision
+	* Finish documentation on type conversion, precision, and --dbl
 
 2013-09-11 Pedro Vicente  <pvicente@uci.edu>
 

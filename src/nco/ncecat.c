@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.329 2013-09-11 22:07:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.330 2013-09-13 03:27:27 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.329 2013-09-11 22:07:10 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.329 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.330 2013-09-13 03:27:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.330 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -675,14 +675,14 @@ main(int argc,char **argv)
         sfx_lng=3L;
         sfx_fst=fl_in_lng-sfx_lng;
         /* Sample data found in, e.g., ftp://ftp.unidata.ucar.edu/pub/netcdf/sample_data and http://hdfeos.org/zoo
-        Two versions of HDF-EOS exist: HDF-EOS2 for HDF4, and HDF-EOS5 for HDF5 */
+	   Two versions of HDF-EOS exist: HDF-EOS2 for HDF4, and HDF-EOS5 for HDF5 */
         if(strncmp(fl_in+sfx_fst,".nc",sfx_lng) && /* netCDF standard suffix */
           strncmp(fl_in+sfx_fst,".H5",sfx_lng) && /* HDF5 suffix used by ICESat GLAS, e.g., GLAH05_633_2103_001_1107_3_01_0001.H5 */
           strncmp(fl_in+sfx_fst,".h5",sfx_lng)){ /* HDF5 suffix used by BUV, SBUV, e.g., BUV-Nimbus04_L3zm_v01-00-2012m0203t144121.h5 */
             sfx_lng=4L;
             sfx_fst=fl_in_lng-sfx_lng;
             if(strncmp(fl_in+sfx_fst,".cdf",sfx_lng) && /* netCDF old-fashioned suffix */
-              strncmp(fl_in+sfx_fst,".hdf",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by AIRS, AMSR-E, MODIS, e.g., AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf, MSR_E_L2_Rain_V10_200905312326_A.hdf, MOD10CM.A2007001.005.2007108111758.hdf */
+              strncmp(fl_in+sfx_fst,".hdf",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by AIRS, AMSR-E, MODIS, MOPPITT, e.g., AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf, MSR_E_L2_Rain_V10_200905312326_A.hdf, MOD10CM.A2007001.005.2007108111758.hdf, MOP01-20121231-L1V3.34.10.hdf */
               strncmp(fl_in+sfx_fst,".HDF",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by TRMM, e.g., 3B43.070901.6A.HDF */
               strncmp(fl_in+sfx_fst,".he5",sfx_lng) && /* HDF-EOS5 (HDF5) suffix used by HIRDLS, e.g., HIRDLS-Aura_L3ZAD_v06-00-00-c02_2005d022-2008d077.he5 */
               strncmp(fl_in+sfx_fst,".nc3",sfx_lng) && /* netCDF3 variant suffix */

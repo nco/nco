@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.816 2013-09-11 23:26:33 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.817 2013-09-13 03:27:26 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1237,13 +1237,12 @@ For RPM-based systems:
 <tt>
 <dt>sudo yum install antlr antlr-C++ # ANTLR</dt>
 <dt>sudo yum install curl-devel libxml2-devel # DAP-prereqs</dt>
-<dt>sudo yum install expat expat-devel # expat XML parser </dt>
+<dt>sudo yum install expat expat-devel # expat XML parser, a UDUnits-prereq (RHEL only?)</dt>
 <dt>sudo yum install libdap libdap-devel # DAP</dt>
 <dt>sudo yum install bison flex gcc gcc-c++ # GNU toolchain</dt>
 <dt>sudo yum install gsl gsl-devel # GSL</dt>
 <dt>sudo yum install netcdf netcdf-devel # netCDF</dt>
 <dt>sudo yum install librx librx-devel # RX</dt>
-<dt>sudo yum install expat expat-devel # UDUnits-prereqs (RHEL only?)</dt>
 <dt>sudo yum install udunits2 udunits2-devel # UDUnits</dt>
 </tt>
 
@@ -1269,13 +1268,15 @@ For Mac OS X with MacPorts:
 <dt>export PATH=/usr/local/bin\:${PATH}</dt>
 <dt>export LD_LIBRARY_PATH=/usr/local/lib\:${LD_LIBRARY_PATH}</dt>
 </tt>
+<dt><a name="bonobo"></a></dt> <!-- http://nco.sf.net#bonobo -->
+<dt><a name="bnb"></a></dt> <!-- http://nco.sf.net#bnb -->
 Please post questions about building or installing NCO to the 
 <a href="http://sf.net/projects/nco/forums/forum/9830">list</a>
 only after reading and attempting to follow these instructions.
-To indicate you have done this, please include the word
-&ldquo;bonobo&rdquo; in the first sentence of your post.
+To indicate you have done this, include the word &ldquo;bonobo&rdquo;
+in the first sentence of your post. 
 Yes, &ldquo;bonobo&rdquo;.
-If you do not then we will likely redirect you here.
+Otherwise we will likely redirect you here.
 For more sophisticated build/install options, see the next section.
 </ul>
 
@@ -1683,14 +1684,31 @@ in NCO 4.0.9, which assumes that netCDF 4.1.3 or later is installed.
 <ul><b>Recent Operator-specific Run-time Problems:</b>
 
 <a name="bug_ncwa_lmt"></a>
-<li><i>Hyperslabbing while averaging bug:</i>
-<tt>ncwa</tt> versions 4.3.3&mdash;4.3.4 could return incorrect
+<li><i><tt>ncwa</tt> hyperslabbing while averaging bug:</i>
+Versions 4.3.3&mdash;4.3.4 of <tt>ncwa</tt> could return incorrect
 averages when user-specified hyperslabs were simultaneously extracted.
 In such cases, hyperslab limits were not consistently applied.
 This could produce incorrect answers that look correct.
-We urge all users to upgrade to NCO 4.3.5.
+We urge all <tt>ncwa</tt> users to upgrade to NCO 4.3.5.
 </li>
 </ul>
+
+<!-- http://nco.sf.net#bug_ncpdq_upk -->
+<a name="bug_ncpdq_upk"></a>
+<li><i><tt>ncpdq</tt> unpacking bug with auxiliary coordinates:</i>
+Versions 4.3.2&ndash;4.3.3 of <tt>ncpdq</tt> did not correctly 
+store unpacked variables.
+These versions unpacked (when specified with <tt>-U</tt> or <tt>-P
+upk</tt>) the values, but inadvertently stored their original packing
+attributes with the unpacked values. 
+This would lead further operators to assume that the values were still
+packed. 
+Hence consecutive operations could lead to incorrect values.
+Fixed in version 4.3.4.
+All <tt>ncpdq</tt> users are encouraged to upgrade.
+NB: this bug did not affect the other arithmetic operators which
+unpack data prior to arithmetic.
+</li>
 
 <ul><b>Recent Platform-specific Run-time Problems:</b>
 No known platform-specific problems with recent releases.
@@ -1758,23 +1776,6 @@ these versions of NCO.
 </ul>
 
 <ul><b>Older Operator-specific Run-time Problems:</b>
-
-<!-- http://nco.sf.net#bug_ncpdq_upk -->
-<a name="bug_ncpdq_upk"></a>
-<li><i><tt>ncpdq</tt> unpacking bug with auxiliary coordinates:</i>
-Versions 4.3.2&ndash;4.3.3 of <tt>ncpdq</tt> did not correctly 
-store unpacked variables.
-These versions unpacked (when specified with <tt>-U</tt> or <tt>-P
-upk</tt>) the values, but inadvertently stored their original packing
-attributes with the unpacked values. 
-This would lead further operators to assume that the values were still
-packed. 
-Hence consecutive operations could lead to incorrect values.
-Fixed in version 4.3.4.
-All <tt>ncpdq</tt> users are encouraged to upgrade.
-NB: this bug did not affect the other arithmetic operators which
-unpack data prior to arithmetic.
-</li>
 
 <!-- http://nco.sf.net#bug_ncks_aux -->
 <a name="bug_ncks_aux"></a>

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.854 2013-09-12 18:21:54 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.855 2013-09-13 03:27:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -113,7 +113,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.5
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 10 September 2013
+@set update-date 12 September 2013
 @set update-month September 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6580,10 +6580,11 @@ Long options: @samp{--dbl}, @samp{--rth_dbl}@*
 @cindex demotion
 @cindex automatic type conversion
 @cindex manual type conversion
-Type conversion (often called @dfn{promotion} or @dfn{demotion}) refers
-to the casting or coercion of one fundamental or atomic data type to
-another, e.g., converting @code{NC_SHORT} (two bytes) to
-@code{NC_DOUBLE} (eight bytes).  
+Type conversion refers to the casting or coercion of one fundamental or
+atomic data type to another, e.g., converting @code{NC_SHORT} (two
+bytes) to @code{NC_DOUBLE} (eight bytes).  
+Type conversion always @dfn{promotes} or @dfn{demotes} the range and/or 
+precision of the values a variable can hold.
 Type conversion is automatic when the language carries out this
 promotion according to an internal set of rules without explicit user 
 intervention. 
@@ -6843,16 +6844,33 @@ double-precision.
 
 The order of operations matters to floating point math even when the
 analytic expressions are equal. 
-Differences in the final bits of answer can be disquieting to cautious 
-users.
+Cautious users feel disquieted when results from equally valid analyses
+differ in the final bits instead of agreeing bit-for-bit.
 For example, averaging arrays in multiple stages produces different
 answers than averaging them in one step. 
+This is easily seen in the computation of ensemble averages by two
+different methods.
 The @acronym{NCO} test file @file{in.nc} contains single- and
-double-precision representations of the same temperature field as
+double-precision representations of the same temperature timeseries as 
 @code{tpt_flt} and @code{tpt_dbl}.  
+Pretend each datapoint in this timeseries represents a monthly-mean
+temperature. 
+We will mimic the derivation of a fifteen-year ensemble-mean January
+temperature by concatenating the input file five times, and then
+averaging the datapoints representing January two different ways.
+In @w{Method 1} we derive the 15-year ensemble January average in two 
+steps, as the average of three five-year averages.
+This method is naturally used when each input file contains multiple
+years and multiple input files are needed
+@footnote{For example, the @acronym{CMIP5} archive tends to distribute
+monthly average timeseries in 50-year chunks.}.
+In @w{Method 2} we obtain 15-year ensemble January average in a single
+step, by averaging all 15 Januaries at one time:
 @example
-# Show that tpt_flt and tpt_dbl are identical except for precision
+# tpt_flt and tpt_dbl are identical except for precision
 ncks --cdl -C -v tpt_flt,tpt_dbl ~/nco/data/in.nc
+# tpt_dbl = 273.1, 273.2, 273.3, 273.4, 273.5, 273.6, 273.7, 273.8, 273.9, 274
+# tpt_flt = 273.1, 273.2, 273.3, 273.4, 273.5, 273.6, 273.7, 273.8, 273.9, 274
 # Create file with five "ten-month years" (i.e., 50 timesteps) of temperature data
 ncrcat -O -v tpt_flt,tpt_dbl -p ~/nco/data in.nc in.nc in.nc in.nc in.nc ~/foo.nc
 # Average 1st five "Januaries" (elements 1, 11, 21, 31, 41)
@@ -6868,9 +6886,233 @@ ncra -O ~/foo_avg1.nc ~/foo_avg2.nc ~/foo_avg3.nc ~/foo_avg_mth1.nc
 ncra -O -F -d time,1,,10,3 ~/foo.nc ~/foo_avg_mth2.nc
 # Difference the two methods
 ncbo -O ~/foo_avg_mth1.nc ~/foo_avg_mth2.nc ~/foo_avg_dff.nc
+ncks --cdl ~/foo_avg_dff.nc
+# tpt_dbl = 5.6843418860808e-14 ;
+# tpt_flt = -3.051758e-05 ;
+@end example
+Although the two methods are arithmetically equivalent, they produce
+slightly different answers due to the different order of operations.
+Moreover, it appears at first glance that the single-precision
+answers suffer from greater error than the double-precision answers.
+In fact both precisions suffer from non-zero rounding errors.
+The answers differ negligibly to machine precision, which is about 
+seven significant figures for single precision floats (@code{tpt_flt}),
+and sixteen significant figures for double precision (@code{tpt_dbl}).
+The input precision determines the answer precision.
+
+IEEE arithmetic guarantees that two methods will produce bit-for-bit
+identical answers only if they compute the same operations in the same  
+order.  
+Bit-for-bit identical answers may also occur by happenstance when 
+rounding errors exactly compensate one another.
+This is demonstrated by repeating the example above with the
+@samp{--dbl} option to force converion of single-precision numbers to
+double-precision prior to arithmetic.
+Now @command{ncra} will treat the first value of @code{tpt_flt},
+@code{273.1000f}, as @code{273.1000000000000d}. 
+Arithmetic on @code{tpt_flt} then proceeds in double-precision until the
+final answer, which is converted back to single-precision for final
+storage. 
+@example
+# Average 1st five "Januaries" (elements 1, 11, 21, 31, 41)
+ncra --dbl -O -F -d time,1,,10 ~/foo.nc ~/foo_avg1.nc
+# Average 2nd five "Januaries" (elements 2, 12, 22, 32, 42)
+ncra --dbl -O -F -d time,2,,10 ~/foo.nc ~/foo_avg2.nc
+# Average 3rd five "Januaries" (elements 3, 13, 23, 33, 43)
+ncra --dbl -O -F -d time,3,,10 ~/foo.nc ~/foo_avg3.nc
+# Method 1: Obtain ensemble January average by averaging the averages
+ncra --dbl -O ~/foo_avg1.nc ~/foo_avg2.nc ~/foo_avg3.nc ~/foo_avg_mth1.nc
+# Method 2: Obtain ensemble January average by averaging the raw data
+# Employ ncra's "duration" feature (http://nco.sf.net/nco.html#drn)
+ncra --dbl -O -F -d time,1,,10,3 ~/foo.nc ~/foo_avg_mth2.nc
+# Difference the two methods
+ncbo -O ~/foo_avg_mth1.nc ~/foo_avg_mth2.nc ~/foo_avg_dff.nc
 # Show differences
 ncks --cdl ~/foo_avg_dff.nc
+# tpt_dbl = 5.6843418860808e-14 ;
+# tpt_flt = 0 ;
 @end example
+The @samp{--dbl} switch has no effect on the results computed from
+double-precision inputs.
+But now the two methods produce bit-for-bit identical results from the
+single-precision inputs!
+This is due to the happenstance of rounding along with the effects of 
+the @samp{--dbl} switch.
+
+As has been seen, forced promotion of single- to double-precision
+prior to arithmetic has advantages and disadvantages. 
+The primary disadvantages are speed and size. 
+Double-precision arithmetic is @math{10-60}% slower than, and requires
+twice the memory of single-precision arithmetic. 
+The primary advantage is that rounding errors in double-precision are 
+much less likely to accumulate to values near the precision of the 
+underlying geophysical variable. 
+
+For example, if we know temperature to five significant digits, then a
+rounding error of 1-bit could affect the least precise digit of
+temperature after @math{1,000--10,000} consecutive one-sided rounding
+errors under the worst possible scenario.
+Some geophysical grids have tens of thousands to millions of points
+which must be summed prior to normalization to compute an average.
+It is possible for single-precision rouding errors to accumulate and
+degrade the precision in such situtations. 
+Double-precision arithmetic mititgates this problem, so @samp{--dbl}
+would be warranted. 
+
+@cindex @acronym{TREFHT}
+@cindex @acronym{CAM3}
+@cindex @acronym{GCM}
+This can be seen with another example, averaging a global surface
+temperature field with @command{ncwa}.
+The input contains a single-precision global temperature field
+(stored in @code{TREFHT}) produced by the @acronym{CAM3} general
+circulation model (@acronym{GCM}) run and stored at @w{1.9 by 2.5}
+degrees resolution. 
+This requires @w{94 latitudes} and @w{144 longitudes}, or @math{13,824} 
+total surface gridpoints, a typical GCM resolution these days.
+These input characteristics are provide only to show the context
+to the interested reader, equivalent results would be found operating
+on any dataset of comparable size.
+To note is that this is a spherical grid so global averages must 
+be created by weighting each gridcell by its latitude-dependent weight
+(i.e., the Gaussian weight stored in @code{gw}), or by the surface area
+of each contributing gridpoint (stored in @code{area}).
+
+Like many geophysical models and most @acronym{GCM}s, @acronym{CAM3}
+runs completely in double-precision yet stores its archival output in
+single-precision to save space.
+In practice such models usually save multi-dimensional prognostic and
+diagnostic fields (like @code{TREFHT(lat,lon)} and @code{area(lat,lon)})
+as single-precision, while saving all one-dimensional coordinates and
+weights (here @code{lat}, @code{lon}, and @code{gw(lon)}) as
+double-precision.  
+To obtain pure double-precision arithmetic @emph{and} storage of the 
+globla mean temperature, we first create and store double-precision
+versions of the single-precision fields:
+@example
+ncap2 -O -s 'TREFHT_dbl=double(TREFHT);area_dbl=double(area)' in.nc in.nc
+@end example
+The single- and double-precision temperatures may each be averaged
+globally using four permutations for the precision of the weight
+and of the intermediate arithmetic representation:
+@enumerate
+@item Single-precision weight (@code{area}), single-precision arithmetic
+@item Double-precision weight (@code{gw}),   single-precision arithmetic
+@item Single-precision weight (@code{area}), double-precision arithmetic
+@item Double-precision weight (@code{gw}),   double-precision arithmetic
+@end enumerate
+@example
+# NB: Values below are printed with C-format %5.6f using
+# ncks -H -C -s '%5.6f' -v TREFHT,TREFHT_dbl out.nc
+# Single-precision weight (area), single-precision arithmetic
+ncwa -O -a lat,lon -w area in.nc out.nc
+# TREFHT     = 289.246735 
+# TREFHT_dbl = 289.239964
+# Double-precision weight (gw),   single-precision arithmetic
+ncwa -O -a lat,lon -w gw   in.nc out.nc
+# TREFHT     = 289.226135
+# TREFHT_dbl = 289.239964
+# Single-precision weight (area), double-precision arithmetic
+ncwa -O --dbl -a lat,lon -w area in.nc out.nc
+# TREFHT     = 289.239960
+# TREFHT_dbl = 289.239964
+# Double-precision weight (gw),   double-precision arithmetic
+ncwa -O --dbl -a lat,lon -w gw   in.nc out.nc
+# TREFHT     = 289.239960
+# TREFHT_dbl = 289.239964
+@end example
+First note that the @code{TREFHT_dbl} average never changes because 
+@code{TREFHT_dbl(lat,lon)} is double-precision in the input file.
+As described above, @acronym{NCO} automatically converts all operands
+involving to the highest precision involved in the operation.
+So specifying @samp{--dbl} is redundant for double-precision inputs.
+
+Second, the single-precision arithmetic averages of the single-precision
+input @code{TREFHT} differ by @math{289.246735 - 289.226135 = 0.0206}
+from eachother, and, more importantly, by as much as 
+@math{289.239964 - 289.226135 = 0.013829} from the correct
+(double-precision) answer.
+These averages differ in the fifth digit, i.e., they agree only to four
+significant figures!
+Given that climate scientists are concerned about global temperature
+variations of a tenth of a degree or less, this difference is large.
+It means that the global mean temperature changes scientists are looking
+for are comparable in size to the numerical artifacts produced by the
+averaging procedure. 
+
+Why are the single-precision numerical artifacts so large?
+Each global average is the result of multiplying almost 15,000 elements
+each by its weight, summing those, and then dividing by the summed 
+weights.  
+Thus about 50,000 single-precision floating point operations caused
+the loss of two to three significant digits of precision.
+Statistically it would be surprising if the net number of round-offs
+in one direction is the cause.
+It would take about 1,000 more round-offs in one direction than the
+other to explain the loss of precision.
+Perhaps as important is the fact that weighted averages are ratios,
+and the ratio of two numbers each containing a numerical bias can
+magnify the size of the bias.
+@c For example, 50,000 coin flips would lead to 25,500 or more ``heads''
+@c only a small percentage of the time.
+@c P(k,n)= 50000_C_25500 p^k(1-p)^(n-k)
+@c P(25500,50000)= 50000_C_25500 (0.5)^(25500)(0.5)^(24500)
+@c P(>=25500,50000)= ?
+@c fxm: Use Gaussian distribution
+
+The @acronym{NCO} results have been independently validated to the
+extent possible in three other languages: 
+@w{C}, Matlab, and @acronym{NCL}. 
+C and @acronym{NCO} are the only languages that permit single-precision 
+numbers to be treated with single precision arithmetic:
+@example
+# Double-precision weight (gw),   single-precision arithmetic (C)
+ncwa_3528514.exe
+# TREFHT     = 289.240112
+# Double-precision weight (gw),   double-precision arithmetic (C)
+# TREFHT     = 289.239964
+# Single-precision weight (area), double-precision arithmetic (Matlab)
+# TREFHT     = 289.239964
+# Double-precision weight (gw),   double-precision arithmetic (Matlab)
+# TREFHT     = 289.239964
+# Single-precision weight (area), double-precision arithmetic (NCL)
+ncl < ncwa_3528514.ncl
+# TREFHT     = 289.239960
+# TREFHT_dbl = 289.239964
+# Double-precision weight (gw),   double-precision arithmetic (NCL)
+# TREFHT     = 289.239960
+# TREFHT_dbl = 289.239964
+@end example
+All languages (C, Matlab, @acronym{NCL}, and @acronym{NCO}) agree to
+machine precision with double-precision arithmetic.
+In other words, nothing is broken.
+As shown above @acronym{NCO} permits one to shift to double-precision
+arithmetic when desired.
+No other language allows this with a simple switch.
+
+To summarize, the default arithmetic convention of @acronym{NCO} follows
+the behavior of Fortran, and automatically promotes single-precision to
+double-precision in all mixed-precision expressions.
+This is faster and more memory efficient than other conventions.
+However, pure single-precision arithmetic can lose too much precision
+when used to condense (e.g., average) large arrays.
+In such cases, users may elect to use the @samp{--dbl} switch.
+
+The @samp{--dbl} switch is only available with the @acronym{NCO}
+arithmetic operators that could potentially perform more than a few 
+single-precision floating point operations per result.
+These are @command{ncea}, @command{ncra}, and @command{ncwa}.
+Each is capable of thousands to millions or more operations per result. 
+By contrast, the arithmetic operators @command{ncbo} and
+@command{ncflint} perform at most one floating point operation per
+result. 
+Providing the @samp{--dbl} option for such trivial operations makes 
+little sense, so the option is not currently made available.
+
+At the time of this writing (September 2013), we are interested in
+users' opinions on these matters. 
+Please let us know what you think of the selected defaults and options.
+We are open to changing them.
 
 @node Manual type conversion,  , Promoting Single-precision to Double, Type Conversion
 @subsection Manual type conversion
