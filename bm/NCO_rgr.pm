@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.322 2013-09-11 22:59:36 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.323 2013-09-13 23:39:03 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2766,6 +2766,28 @@ print "\n";
    $tst_cmd[1]="ncks -C -g g19g2 -v two_dmn_rec_var  %tmp_fl_00%";
    $dsc_sng="(Groups) Re-order 2D variable with record (no -C , MSA) -v two_dmn_rec_var";
    $tst_cmd[2]="lev[0]=500 time[0]=2 two_dmn_rec_var[0]=2.1 watt meter-2";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array  
+
+#NEW NCO 4.3.5
+#ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc  out.nc
+  
+   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat -g g23,g24 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -v lat -g g23 %tmp_fl_00%";
+   $dsc_sng="(Groups) Reverse -a lat -g g23 several groups";
+   $tst_cmd[2]="lat[1]=-60 degrees_north";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array  
+
+#NEW NCO 4.3.5
+#ncpdq -O -a -lat -g g23,g24 ~/nco/data/in_grp_3.nc  out.nc
+  
+   $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -a -lat -g g23,g24 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -v lat -g g24 %tmp_fl_00%";
+   $dsc_sng="(Groups) Reverse -a lat -g g24 several groups";
+   $tst_cmd[2]="lat[1]=-60 degrees_north";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array      

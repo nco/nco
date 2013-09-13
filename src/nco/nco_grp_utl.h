@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.376 2013-09-12 23:18:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.377 2013-09-13 23:39:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -482,12 +482,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
  var_sct **var_fix,                   /* I/O [sct] Fixed variables */
  dmn_sct **dmn_rdr,                   /* I [sct] Dimension structures to be re-ordered */
  const int dmn_rdr_nbr,               /* I [nbr] Number of dimension to re-order */
-#ifdef NCPDQ_FIX
- char **obj_lst_in,                   /* I [sng] User-specified list of dimension names (-a names *with* the - ) */
- const int nbr_obj_lst_in);           /* I [nbr] Total number of dimensions in input list (size of above array) */
-#else
  const nco_bool *dmn_rvr_rdr);        /* I [flg] Reverse dimension */
-#endif
 
 
 void
