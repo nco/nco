@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.654 2013-09-13 22:11:25 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.655 2013-09-13 22:55:41 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -276,8 +276,12 @@ ifndef YFLAGS # Flags for Bison (Yacc)
 endif
 
 # Default NCO build: DAP_NETCDF, DAP_OPENDAP, NETCDF4, PNETCDF, and ZNETCDF clauses may overwrite this
-NC_LDFLAGS := -L${NETCDF_LIB}
-NC_LIBS := -lnetcdf 
+ifndef LIB_NCAR
+ NC_LDFLAGS := -L${NETCDF_LIB}
+ NC_LIBS := -lnetcdf 
+else
+ NC_LDFLAGS := ${LIB_NCAR}
+endif
 
 ifeq (${DAP_NETCDF},Y)
 # Build NCO as DAP-enabled clients with netCDF-provided DAP
