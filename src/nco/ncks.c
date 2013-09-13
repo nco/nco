@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.656 2013-09-09 06:25:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.657 2013-09-13 18:01:22 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -78,9 +78,10 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
+
+/* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
-
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 int 
@@ -152,8 +153,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.656 2013-09-09 06:25:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.656 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.657 2013-09-13 18:01:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.657 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;

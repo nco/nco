@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.162 2013-09-07 22:09:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.163 2013-09-13 18:01:22 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -124,7 +124,6 @@
 
 /* 3rd party vendors */	 
 #include <netcdf.h> /* netCDF definitions and C library */	 
-#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */	 
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
@@ -157,8 +156,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.162 2013-09-07 22:09:07 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.162 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.163 2013-09-13 18:01:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.163 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

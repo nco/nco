@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.382 2013-09-11 23:26:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.383 2013-09-13 18:01:22 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -96,6 +96,7 @@
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 /* Define inline'd functions in header so source is visible to calling files
@@ -162,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.382 2013-09-11 23:26:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.382 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.383 2013-09-13 18:01:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.383 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
