@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.194 2013-09-11 09:01:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.195 2013-09-14 01:49:01 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -13,7 +13,8 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
 (lmt_sct *lmt) /* I/O [sct] Limit structure to initialize */
 {
   lmt->nm=NULL;              /* [sng] Dimension name */
-  lmt->grp_nm_fll=NULL;      /* [sng] Dimension name */
+  lmt->nm_fll=NULL;          /* [sng] Full dimension name */
+  lmt->grp_nm_fll=NULL;      /* [sng] Full group where dimension is defined */
   lmt->drn_sng=NULL;         /* [sng] User-specified string for dimension duration */
   lmt->max_sng=NULL;         /* [sng] User-specified string for dimension maximum */
   lmt->min_sng=NULL;         /* [sng] User-specified string for dimension minimum */
@@ -108,6 +109,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   (void)nco_lmt_init(lmt2);
 
   lmt2->nm=(char *)strdup(lmt1->nm);
+  if(lmt1->nm_fll) lmt2->grp_nm_fll=(char *)strdup(lmt1->nm_fll);
   if(lmt1->grp_nm_fll) lmt2->grp_nm_fll=(char *)strdup(lmt1->grp_nm_fll);
   if(lmt1->drn_sng) lmt2->drn_sng=(char *)strdup(lmt1->drn_sng);      
   if(lmt1->max_sng) lmt2->max_sng=(char *)strdup(lmt1->max_sng);

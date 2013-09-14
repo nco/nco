@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.383 2013-09-13 18:01:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.384 2013-09-14 01:49:01 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -163,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.383 2013-09-13 18:01:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.383 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.384 2013-09-14 01:49:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.384 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1392,7 +1392,7 @@ main(int argc,char **argv)
           for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
 
             /* NB: Match current record must be done by name, since ID may differ for records across files */
-            if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm,trv_tbl->lmt_rec[idx_rec]->nm) == 0){
+            if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm_fll,trv_tbl->lmt_rec[idx_rec]->nm_fll) == 0){
 
               /* Case of dimension being coordinate variable */
               if(var_trv->var_dmn[idx_dmn].crd){

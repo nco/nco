@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.968 2013-09-13 23:39:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.969 2013-09-14 01:49:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6531,6 +6531,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
               /* Insert full group name, key for group ID match */
               trv_tbl->lmt_rec[trv_tbl->nbr_rec]->grp_nm_fll=(char *)strdup(crd->crd_grp_nm_fll);
+              trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm_fll=(char *)strdup(crd->dmn_nm_fll);
 
 
               /* b) case of dimension only (there is no coordinate variable for this dimension */
@@ -6543,6 +6544,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
               /* Insert full group name, key for group ID match */
               trv_tbl->lmt_rec[trv_tbl->nbr_rec]->grp_nm_fll=(char *)strdup(ncd->grp_nm_fll);
+              trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm_fll=(char *)strdup(ncd->nm_fll);
 
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
 
