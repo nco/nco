@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.385 2013-09-14 02:13:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.386 2013-09-14 22:52:24 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -163,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.385 2013-09-14 02:13:58 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.385 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.386 2013-09-14 22:52:24 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.386 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1295,6 +1295,11 @@ main(int argc,char **argv)
       /* Fill record array */
       (void)nco_lmt_evl(grp_id,trv_tbl->lmt_rec[idx_rec],rec_usd_cml,FORTRAN_IDX_CNV);
 
+      if(dbg_lvl_get() >= nco_dbg_dev){ 
+        (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>\n",prg_nm_get(),
+          idx_rec,trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm_fll);                    
+      } 
+
       /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
       if(FLG_MRO) trv_tbl->lmt_rec[idx_rec]->flg_mro=True;
       if(trv_tbl->lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
@@ -1345,7 +1350,7 @@ main(int argc,char **argv)
           if(rec_rmn_prv_drn == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
 
           /* Process all variables in current record */
-          if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,gettext("Record %ld of %s contributes to output record %ld\n"),idx_rec_crr_in,fl_in,idx_rec_out);
+          if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,gettext("%s: INFO Record %ld of %s contributes to output record %ld\n"),prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out);
 
           /* Update hyperslab start indices */
           /* Beware lmt_all_rec points to record limit of record struct of lmt_all_lst */
@@ -1362,7 +1367,7 @@ main(int argc,char **argv)
           for(idx=0;idx<nbr_var_prc;idx++){
 
             in_id=in_id_arr[omp_get_thread_num()];
-            if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+            if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm_fll);
             if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
             /* Obtain variable GTT object using full variable name */
@@ -1469,14 +1474,6 @@ main(int argc,char **argv)
                 break;
               } /* Match current record by name */
             } /* Loop dimensions */
-
-            if(dbg_lvl_get() >= nco_dbg_dev){ 
-              lmt_sct *lmt= trv_tbl->lmt_rec[idx_rec];
-
-              (void)fprintf(fp_stdout,"%s: DEBUG reading: ",prg_nm_get());        
-              (void)fprintf(fp_stdout,"variable <%s> ",var_prc[idx]->nm_fll);              
-              (void)fprintf(fp_stdout,"record #%d<%s/%s>(%ld->%ld,%ld)\n",lmt->id,lmt->grp_nm_fll,lmt->nm,lmt->srt,lmt->end,lmt->cnt);              
-            } 
 
             /* Retrieve variable from disk into memory */
             (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
