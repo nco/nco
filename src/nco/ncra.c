@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.386 2013-09-14 22:52:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.387 2013-09-15 08:07:40 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -163,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.386 2013-09-14 22:52:24 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.386 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.387 2013-09-15 08:07:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.387 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1262,32 +1262,32 @@ main(int argc,char **argv)
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_rgl;
 
-  /* Loop over input files */
-  for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
+  /* Loop over records to process */
+  for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
 
-    /* Parse filename */
-    if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,gettext("%s: INFO Input file %d is %s"),prg_nm_get(),fl_idx,fl_in);
-    /* Make sure file is on local system and is readable or die trying */
-    if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
-    if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,gettext(", local file is %s"),fl_in);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+    /* Loop over input files */
+    for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
 
-    /* Open file once per thread to improve caching */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,in_id_arr+thr_idx);
-    in_id=in_id_arr[0];
+      /* Parse filename */
+      if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,gettext("%s: INFO Input file %d is %s"),prg_nm_get(),fl_idx,fl_in);
+      /* Make sure file is on local system and is readable or die trying */
+      if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+      if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,gettext(", local file is %s"),fl_in);
+      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
-    /* Variables may have different ID, missing_value, type, in each file */
-    for(idx=0;idx<nbr_var_prc;idx++){
-      /* Obtain variable GTT object using full variable name */
-      trv_sct *trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
-      /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(in_id,trv->grp_nm_fll,&grp_id);
-      (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
-    } /* end loop over variables */
+      /* Open file once per thread to improve caching */
+      for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,in_id_arr+thr_idx);
+      in_id=in_id_arr[0];
 
-    /* Loop over records to process */
-    for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+      /* Variables may have different ID, missing_value, type, in each file */
+      for(idx=0;idx<nbr_var_prc;idx++){
+        /* Obtain variable GTT object using full variable name */
+        trv_sct *trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(in_id,trv->grp_nm_fll,&grp_id);
+        (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
+      } /* end loop over variables */
 
       /* Obtain group ID using full group name */
       (void)nco_inq_grp_full_ncid(in_id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
@@ -1709,6 +1709,12 @@ main(int argc,char **argv)
 
       if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
 
+      /* Close input netCDF file */
+      for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
+
+      /* Dispose local copy of file */
+      if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
+
       /* Our data tanks are already full */
       if(prg == ncra || prg == ncrcat){
         if(trv_tbl->lmt_rec[idx_rec]->flg_input_complete){
@@ -1718,15 +1724,9 @@ main(int argc,char **argv)
         } /* endif superfluous */
       } /* endif ncra || ncrcat */
 
-    } /* Loop over records to process */
+    } /* end loop over fl_idx */
 
-    /* Close input netCDF file */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
-
-    /* Dispose local copy of file */
-    if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
-
-  } /* end loop over fl_idx */
+  } /* Loop over records to process */
 
   if(prg == ncra || prg == ncrcat){ /* fxm: Remove this or make DBG when crd_val DRN/MRO is predictable? */
     for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
