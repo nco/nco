@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.969 2013-09-14 01:49:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.970 2013-09-15 20:39:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7101,3 +7101,27 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 
 } /* nco_bld_lmt() */
+
+
+nco_bool                             /* O [flg] Skip record */
+nco_skp_rec                          /* [fnc] Skip record  */
+(const int idx_rec,                  /* I [nbr] Current record */
+ const var_sct * const var,          /* I [sct] Variable */
+ const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
+{
+  nco_bool flg_skp=False;
+
+  /* Skip other records */
+  for(int idx_rec_skp=0;idx_rec_skp<trv_tbl->nbr_rec;idx_rec_skp++){
+    /* Not the current record */
+    if (idx_rec_skp != idx_rec) {
+      /* Match */
+      if(strcmp(var->nm_fll,trv_tbl->lmt_rec[idx_rec_skp]->nm_fll) == 0){
+        flg_skp=True;
+      } /* Match  */
+    } /* Not the current record */
+  }  /* Skip other records */
+
+  return flg_skp;
+
+} /* nco_skp_rec() */

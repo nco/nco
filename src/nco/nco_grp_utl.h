@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.377 2013-09-13 23:39:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.378 2013-09-15 20:39:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -612,6 +612,14 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+
+nco_bool                             /* O [flg] Skip record */
+nco_skp_rec                          /* [fnc] Skip record  */
+(const int idx_rec,                  /* I [nbr] Current record */
+ const var_sct * const var,          /* I [sct] Variable */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
 
 
 #ifdef __cplusplus
