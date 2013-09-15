@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.363 2013-09-13 23:39:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.364 2013-09-15 22:45:23 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -113,14 +113,14 @@ main(int argc,char **argv)
   char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
   char *nco_pck_map_sng=NULL_CEWI; /* [sng] Packing map Option M */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
-  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
+  char *optarg_lcl; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.363 2013-09-13 23:39:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.363 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.364 2013-09-15 22:45:23 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.364 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -551,6 +551,7 @@ main(int argc,char **argv)
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
 
           nco_bool flg_is_rvr=False;
+          optarg_lcl=NULL;
 
           /* Loop input -a names */
           for(idx_rdr=0;idx_rdr<dmn_rdr_nbr_in;idx_rdr++){
@@ -562,12 +563,13 @@ main(int argc,char **argv)
             } /* Does it have a '-' ? */  
 
             /* Compare with dimension name */
-            if (strcmp(optarg_lcl,var_trv.var_dmn[idx_dmn].dmn_nm) == 0) {
+            if (optarg_lcl && strcmp(optarg_lcl,var_trv.var_dmn[idx_dmn].dmn_nm) == 0) {
               /* Increment number of matches */
               dmn_rdr_nbr_trv++;
             } /* Compare with dimension name */
 
             if (flg_is_rvr){
+              assert(optarg_lcl);
               dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=True;
               optarg_lcl=(char *)nco_free(optarg_lcl); 
             } else {
