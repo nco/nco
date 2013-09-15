@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.387 2013-09-15 08:07:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.388 2013-09-15 21:08:01 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -163,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.387 2013-09-15 08:07:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.387 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.388 2013-09-15 21:08:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.388 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -215,7 +215,6 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
@@ -227,6 +226,7 @@ main(int argc,char **argv)
   lmt_sct **lmt=NULL_CEWI;
 
 #ifndef USE_TRV_API
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   lmt_sct *lmt_rec=NULL_CEWI;
   lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
   lmt_msa_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
@@ -1296,8 +1296,8 @@ main(int argc,char **argv)
       (void)nco_lmt_evl(grp_id,trv_tbl->lmt_rec[idx_rec],rec_usd_cml,FORTRAN_IDX_CNV);
 
       if(dbg_lvl_get() >= nco_dbg_dev){ 
-        (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>\n",prg_nm_get(),
-          idx_rec,trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm_fll);                    
+        (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>(%ld)\n",prg_nm_get(),
+          idx_rec,trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl->lmt_rec[idx_rec]->rec_dmn_sz);                    
       } 
 
       /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
@@ -1311,7 +1311,11 @@ main(int argc,char **argv)
       if(False) (void)nco_fl_cmp_err_chk();
 
       /* This file may be superfluous though valid data will be found in upcoming files */
-      if(dbg_lvl >= nco_dbg_std && (rec_dmn_id != NCO_REC_DMN_UNDEFINED) && (trv_tbl->lmt_rec[idx_rec]->srt > trv_tbl->lmt_rec[idx_rec]->end) && (trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn == 0L)) (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+      if(dbg_lvl >= nco_dbg_std){
+        if ( (trv_tbl->lmt_rec[idx_rec]->srt > trv_tbl->lmt_rec[idx_rec]->end) && (trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn == 0L)){
+          (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+        }
+      }
 
       if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
 
@@ -1651,16 +1655,16 @@ main(int argc,char **argv)
         /* End of ncra, ncrcat section */
       }else{ /* ncea */
 
+#ifdef REPLACE_LMT_ALL
         if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
           /* Update hyperslab start indices*/		
-#ifdef REPLACE_LMT_ALL
           lmt_all_rec->lmt_dmn[0]->srt=lmt_rec->srt;
           lmt_all_rec->lmt_dmn[0]->end=lmt_rec->end;
           lmt_all_rec->lmt_dmn[0]->cnt=lmt_rec->cnt;
           lmt_all_rec->lmt_dmn[0]->srd=lmt_rec->srd; 
           lmt_all_rec->dmn_cnt=lmt_rec->cnt; 
-#endif /* REPLACE_LMT_ALL */
         } /* endif record dimension exists */
+#endif /* REPLACE_LMT_ALL */
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id)
 #endif /* !_OPENMP */
