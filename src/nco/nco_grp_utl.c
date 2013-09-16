@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.971 2013-09-16 00:28:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.972 2013-09-16 04:26:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2270,31 +2270,13 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 
   /* Loop unique dimensions list in groups */
   for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
-    dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
-    /* Loop all objects */
-    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-      trv_sct var_trv=trv_tbl->lst[idx_var];
+    /* Total number of coordinate variables for this dimension */
+    int crd_nbr=trv_tbl->lst_dmn[idx_dmn].crd_nbr;
 
-      /* Interested in variables only */
-      if(var_trv.nco_typ == nco_obj_typ_var){
+    /* Alloc coordinate array if there are any coordinates */
+    if (crd_nbr) trv_tbl->lst_dmn[idx_dmn].crd=(crd_sct **)nco_malloc(crd_nbr*sizeof(crd_sct *));
 
-        /* Is there a variable with this dimension name anywhere? (relative name)  */
-        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
-
-          /* Is variable in scope of dimension ? */
-          if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
-
-            /* Total number of coordinate variables for this dimension */
-            int crd_nbr=trv_tbl->lst_dmn[idx_dmn].crd_nbr;
-
-            /* Alloc coordinate array if there are any coordinates */
-            if (crd_nbr) trv_tbl->lst_dmn[idx_dmn].crd=(crd_sct **)nco_malloc(crd_nbr*sizeof(crd_sct *));
-
-          }/* Is variable in scope of dimension ? */
-        } /* Is there a variable with this dimension name anywhere? (relative name)  */
-      } /* Interested in variables only */
-    } /* Loop all objects */
   } /* Loop unique dimensions list in groups */
 
   /* Step 3) Allocate/Initialize every coordinate variable array for every dimension */
@@ -2362,8 +2344,9 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_crr=0;
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn=NULL;
 
-            crd_sct *crd=trv_tbl->lst_dmn[idx_dmn].crd[crd_idx];
-            if(dbg_lvl_get() == nco_dbg_old){           
+            
+            if(dbg_lvl_get() == nco_dbg_old){     
+              crd_sct *crd=trv_tbl->lst_dmn[idx_dmn].crd[crd_idx];
               (void)fprintf(stdout,"%s: INFO %s variable <%s> has coordinate <%s> from dimension <%s>\n",prg_nm_get(),fnc_nm,
                 var_trv.nm_fll,crd->crd_nm_fll,crd->dmn_nm_fll);
             }
