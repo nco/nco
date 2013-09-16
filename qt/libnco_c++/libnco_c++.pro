@@ -23,6 +23,9 @@ unix:CONFIG( debug, debug|release ) {
 unix {
  INCLUDEPATH += /usr/local/include
  INCLUDEPATH += /usr/local
+ #RHEL
+ INCLUDEPATH += /SNS/users/pvicente/libs/install/netcdf-4.3.1-rc2/include
+ INCLUDEPATH += /SNS/users/pvicente/libs/install/udunits-2.1.24/include
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF) 

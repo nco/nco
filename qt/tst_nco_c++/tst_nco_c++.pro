@@ -27,6 +27,11 @@ unix {
  INCLUDEPATH += /usr/local
  LIBS += -L/usr/lib/ -lnetcdf -lhdf5_hl -lhdf5
  LIBS += -L/usr/lib/x86_64-linux-gnu/ -L/usr/lib/i386-linux-gnu/ -lz -ludunits2 -lexpat 
+ #RHEL
+ INCLUDEPATH += /SNS/users/pvicente/libs/install/netcdf-4.3.1-rc2/include
+ INCLUDEPATH += /SNS/users/pvicente/libs/install/udunits-2.1.24/include
+ LIBS += -L/SNS/users/pvicente/libs/install/netcdf-4.3.1-rc2/lib
+ LIBS += -L/SNS/users/pvicente/libs/install/udunits-2.1.24/lib
 }
 win32 {
  INCLUDEPATH += $(HEADER_NETCDF)

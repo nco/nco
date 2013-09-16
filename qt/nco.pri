@@ -17,6 +17,11 @@ unix {
  INCLUDEPATH += /opt/local/include 
  # Mac Ports udunits locations
  INCLUDEPATH += /opt/local/include/udunits2
+ #RHEL
+ INCLUDEPATH += /SNS/users/pvicente/libs/install/netcdf-4.3.1-rc2/include
+ INCLUDEPATH += /SNS/users/pvicente/libs/install/udunits-2.1.24/include
+ LIBS += -L/SNS/users/pvicente/libs/install/netcdf-4.3.1-rc2/lib
+ LIBS += -L/SNS/users/pvicente/libs/install/udunits-2.1.24/lib
 }
 
 CONFIG -= qt
