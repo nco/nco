@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.55 2013-03-28 18:46:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.56 2013-09-16 22:32:44 pvicente Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -38,7 +38,8 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
 (const int nco_op_typ, /* I [enm] Operation type */
  const int nbr_var_prc, /* I [nbr] Number of processed variables */
  X_CST_PTR_CST_PTR_Y(var_sct,var_prc), /* I [sct] Variables in input file */
- X_CST_PTR_CST_PTR_Y(var_sct,var_prc_out)) /* I/O [sct] Variables in output file */
+ X_CST_PTR_CST_PTR_Y(var_sct,var_prc_out), /* I/O [sct] Variables in output file */
+ const nco_bool flg_nrm) /* I [flg] This record needs normalization */
 {
   /* Purpose: Normalize appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
      Values of var_prc are not altered but are not const because missing values are cast
@@ -54,48 +55,48 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx) shared(nbr_var_prc_cpy,nco_op_typ_cpy,var_prc,var_prc_out)
 #endif /* !_OPENMP */
-    for(idx=0;idx<nbr_var_prc_cpy;idx++){
-      if(var_prc[idx]->is_crd_var){
-	/* Return linear averages of coordinates unless computing extrema
-	   Prevent coordinate variables from encountering nco_var_nrm_sdn() */
-	(void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-      }else{ /* !var_prc[idx]->is_crd_var */
-	switch(nco_op_typ_cpy){
-	case nco_op_avg: /* Normalize sum by tally to create mean */
-	case nco_op_sqrt: /* Normalize sum by tally to create mean */
-	case nco_op_sqravg: /* Normalize sum by tally to create mean */
-	case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
-	case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
-	  (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-          
-	  break;
-	case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
-	  (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-	  break;
-	case nco_op_min: /* Minimum is already in buffer, do nothing */
-	case nco_op_max: /* Maximum is already in buffer, do nothing */
-	  break;
-	case nco_op_ttl: /* Total is already in buffer, stuff missing values into elements with zero tally */
-	  (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-	  break;
-	default:
-	  break;
-	} /* end switch */
-	/* Some operations require additional processing */
-	switch(nco_op_typ_cpy) {
-	case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
-	case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
-	case nco_op_sqrt: /* Take root of mean to create root mean */
-	  (void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
-	  break;
-	case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
-	  (void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
-	  break;
-	default:
-	  break;
-	} /* end switch */
-      } /* !var_prc[idx]->is_crd_var */
-    } /* end (OpenMP parallel for) loop over variables */
+  for(idx=0;idx<nbr_var_prc_cpy;idx++){
+    if(var_prc[idx]->is_crd_var){
+      /* Return linear averages of coordinates unless computing extrema
+      Prevent coordinate variables from encountering nco_var_nrm_sdn() */
+      (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+    }else{ /* !var_prc[idx]->is_crd_var */
+      switch(nco_op_typ_cpy){
+      case nco_op_avg: /* Normalize sum by tally to create mean */
+      case nco_op_sqrt: /* Normalize sum by tally to create mean */
+      case nco_op_sqravg: /* Normalize sum by tally to create mean */
+      case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
+      case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
+        (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+
+        break;
+      case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
+        (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+        break;
+      case nco_op_min: /* Minimum is already in buffer, do nothing */
+      case nco_op_max: /* Maximum is already in buffer, do nothing */
+        break;
+      case nco_op_ttl: /* Total is already in buffer, stuff missing values into elements with zero tally */
+        (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+        break;
+      default:
+        break;
+      } /* end switch */
+      /* Some operations require additional processing */
+      switch(nco_op_typ_cpy) {
+      case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
+      case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
+      case nco_op_sqrt: /* Take root of mean to create root mean */
+        (void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
+        break;
+      case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
+        (void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+        break;
+      default:
+        break;
+      } /* end switch */
+    } /* !var_prc[idx]->is_crd_var */
+  } /* end (OpenMP parallel for) loop over variables */
 
 } /* end nco_opr_nrm() */
 

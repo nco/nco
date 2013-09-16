@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.35 2013-07-16 18:39:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.36 2013-09-16 22:32:44 pvicente Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -52,7 +52,8 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
 (const int nco_op_typ, /* I [enm] Operation type */
  const int nbr_var_prc, /* I [nbr] Number of processed variables */
  X_CST_PTR_CST_PTR_Y(var_sct,var_prc), /* I [sct] Variables in input file */
- X_CST_PTR_CST_PTR_Y(var_sct,var_prc_out)); /* I/O [sct] Variables in output file */
+ X_CST_PTR_CST_PTR_Y(var_sct,var_prc_out), /* I/O [sct] Variables in output file */
+ const nco_bool flg_nrm); /* I [flg] This record needs normalization */
 
 void 
 nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */
