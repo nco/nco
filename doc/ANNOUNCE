@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.603 2013-09-11 23:26:32 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.604 2013-09-16 04:23:36 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.5 are ready. 
 
@@ -14,17 +14,17 @@ Rounding errors can accumulate to worrisome levels during arithmetic
 performed on large arrays of single precision floats. 
 Now NCO has the --dbl switch that forces operators to coerce
 single-precision numbers to double-precision for arithemetic.
-If you want your NCO answers to always agree exactly with other
-tools---like NCL, Matlab, or IDL--then use this switch.
 It is expensive in terms of time and RAM, and often not warranted.
-The manual now contains a detailed discussion of the issues and
-appropriate use cases.
+Yet if you want your NCO answers on single-precision fields to always
+agree exactly with other tools---like NCL, Matlab, or IDL--then use
+this switch. The manual now contains a detailed discussion of the
+issues and appropriate use cases.
 
-Unfortunately this rapid progress has come at a price in bugs.
-We just discovered and fixed a nasty bug in ncwa 4.3.3 and 4.3.4.
-By nasty I mean that it could produce wrong answers that look right.
-This could only occur when simultaneously averaging and hyperslabbing,
-e.g., ncwa -a lat,lon -d lat,0.,90. in.nc out.nc.
+Unfortunately software progress sometimes comes at a price in bugs :)
+4.3.5 fixes a nasty bug in introduced in ncwa 4.3.3 and 4.3.4.
+Nasty means that it could produce wrong answers that look right.
+Fortunately, it could only occur when simultaneously averaging and
+hyperslabbing, e.g., ncwa -a lat,lon -d lat,0.,90. in.nc out.nc.
 Such users should immediately upgrade to 4.3.5 and re-check results.
 Full details below.
 
@@ -52,21 +52,14 @@ A. ncra, ncea, and ncrcat now supports groups, Group Path Editing
    http://nco.sf.net/nco.html#gpe
    http://nco.sf.net/nco.html#union
 
-A. CDL-mode prints more verbose information as comments (after '// ')  
-   as the debugging level increases (i.e., ncks --cdl -D 1).
-   Currently this includes a file summary, the ncgen command required
-   to convert back to netCDF, and full path names for all groups.
-   ncks --cdl -D 1 ~/nco/data/in_grp.nc
-   ncks --cdl -D 3 ~/nco/data/in_grp.nc
-   http://nco.sf.net/nco.html#cdl
-
-A. Forced conversion of float to double.
+B. Forced conversion of float to double:
    NCO has always converted integers and single precision reals (i.e.,
    floats) to double precision reals (i.e., doubles) prior to
    arithmetic when it would preserve precision of the result (the
    results are converted back to the original type after arithmetic).
    Until now, NCO never implicitly converted floats to doubles unless
-   doubles were involved in the computation, because, well, GIGO.
+   doubles were involved in the computation, because, well, GIGO
+   ("garbage in, garbage out") and wisdom from Numerical Recipes.
    However, such promotion is warranted in some circumstances.
    Now NCO allows a new arithmetic convention to implement this.
    The convention is manually invoked with --dbl:
@@ -75,15 +68,37 @@ A. Forced conversion of float to double.
    ncwa --dbl in.nc  out.nc
    NB: Invoking arithmetic promotion of NC_FLOAT to NC_DOUBLE
    increases RAM memory usage by a factor of two, and slows down
-   arithmetic, perhaps negligibly compared to I/O time.
-   The manual now contains a detailed discussion of the issues and 
-   appropriate use cases.
+   arithmetic, perhaps negligibly compared to I/O time. The manual
+   contains a detailed discussion of the issues and use cases:
    http://nco.sf.net/nco.html#dbl
+
+C. CDL-mode prints more verbose information as comments (after '// ')  
+   as the debugging level increases (i.e., ncks --cdl -D 1).
+   Currently this includes a file summary, the ncgen command required
+   to convert back to netCDF, and full path names for all groups.
+   ncks --cdl -D 1 ~/nco/data/in_grp.nc # Adds file summary
+   ncks --cdl -D 3 ~/nco/data/in_grp.nc # Adds full groupnames
+   http://nco.sf.net/nco.html#cdl
 
 BUG FIXES:
 
-A. All group operators now correctly match variable names that are
-   proper subsets of ancestor group names
+A. ncwa hyperslabbing while averaging bug:
+   Versions 4.3.3-4.3.4 of ncwa could return incorrect answers when
+   user-specified hyperslabs were simultaneously extracted.  
+   In such cases, hyperslab limits were not consistently applied.
+   This could produce incorrect answers that look correct.
+   This bug only affected hyperslabbed statistics (those produced
+   by simultaneously invoking -a and -d switches);
+   "global averages" were unaffected.
+   We urge all ncwa users to upgrade to NCO 4.3.5.
+   http://nco.sf.net#bug_ncwa_lmt
+
+B. Group operators now correctly match variable names that are
+   proper subsets of ancestor group names.
+
+C. Fixed applying ncpdq dimension reversal to group hierarchies. 
+
+D. 
 
 KNOWN BUGS NOT YET FIXED:
 
