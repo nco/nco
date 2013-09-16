@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.970 2013-09-15 20:39:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.971 2013-09-16 00:28:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4093,7 +4093,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     /* Set the hyperslabbed size for this dimension */
     dim->cnt=dmn_cnt;
 
-    /* Set the *real* size for this dimension */
+    /* Set the *real* (NB: var->sz is hyperslabbed size) size for this dimension */
     dim->sz=dmn_sz;
  
     /* Use info from GTT unique dimension */
@@ -6413,8 +6413,6 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Mark flag average, optionally flag degenerate for all dimensions that have the input ID */
-
-  const char fnc_nm[]="nco_dmn_id_mk()"; /* [sng] Function name  */
 
   /* Used only by ncpdq , ncwa */
   assert(prg_get() == ncpdq || prg_get() == ncwa);

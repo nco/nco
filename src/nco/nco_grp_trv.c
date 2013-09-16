@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.215 2013-09-12 10:34:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.216 2013-09-16 00:28:48 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -47,23 +47,38 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 {
 
   /* Object (group/variable) list */
-
   for(unsigned idx=0;idx<tbl->nbr;idx++){
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
     tbl->lst[idx].rec_dmn_nm_out=(char *)nco_free(tbl->lst[idx].rec_dmn_nm_out);
+
+    /* Dimensions */
     for(int dmn_idx=0;dmn_idx<tbl->lst[idx].nbr_dmn;dmn_idx++){
       tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll);
       tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
       tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
-    }
 
-  } 
+      /* Coordinate structure */ 
+      if (tbl->lst[idx].var_dmn[dmn_idx].crd) {
+        tbl->lst[idx].var_dmn[dmn_idx].crd->crd_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->crd_nm_fll);
+        tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_nm_fll);
+        tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll);
+        tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_grp_nm_fll);
+
+        tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm);
+
+        for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
+          tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]);
+        }  
+        tbl->lst[idx].var_dmn[dmn_idx].crd=(crd_sct *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd);
+      } /* Coordinate structure */ 
+
+    } /* Dimensions */
+  } /* Object (group/variable) list */ 
 
   tbl->lst=(trv_sct *)nco_free(tbl->lst);
 
   /* Dimension list */
-
   for(unsigned int dmn_idx=0;dmn_idx<tbl->nbr_dmn;dmn_idx++){
     tbl->lst_dmn[dmn_idx].nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].nm_fll);
     tbl->lst_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].grp_nm_fll);
@@ -73,12 +88,15 @@ trv_tbl_free                           /* [fnc] GTT free memory */
       tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]);
     }
 
+    /* Total number of coordinate variables for this dimension */
+    int crd_nbr=tbl->lst_dmn[dmn_idx].crd_nbr;
+
     /* Coordinate structures */ 
-    for(int crd_idx=0;crd_idx<tbl->lst_dmn[dmn_idx].crd_nbr;crd_idx++){
+    for(int crd_idx=0;crd_idx<crd_nbr;crd_idx++){
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_nm_fll);
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll);
-      tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll);
-      tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll);
+      tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->crd_grp_nm_fll);
+      tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->dmn_grp_nm_fll);
 
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm);
 
@@ -87,10 +105,10 @@ trv_tbl_free                           /* [fnc] GTT free memory */
       }  
 
       tbl->lst_dmn[dmn_idx].crd[crd_idx]=(crd_sct *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]);
-
     }  /* Coordinate structures */
+
     tbl->lst_dmn[dmn_idx].crd=(crd_sct **)nco_free(tbl->lst_dmn[dmn_idx].crd);
-  } 
+  } /* Dimension list */
 
   tbl->lst_dmn=(dmn_trv_sct *)nco_free(tbl->lst_dmn);
 
