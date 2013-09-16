@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.162 2013-09-09 00:59:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.163 2013-09-16 01:33:30 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1160,10 +1160,13 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     { /* begin potential OpenMP critical */
       (void)nco_get_var1(grp_id,var.id,0L,var.val.vp,var.type);
     } /* end potential OpenMP critical */
-  } /* end if */
+  } else { /* ! Scalars */
 
-  /* Call super-dooper recursive routine */
-  var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
+    /* Call super-dooper recursive routine */
+    var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
+
+  } /* ! Scalars */
+
   /* Call also initializes var.sz with final size */
   if(prn_flg->md5)
     if(prn_flg->md5->dgs) (void)nco_md5_chk(prn_flg->md5,var_nm,var.sz*nco_typ_lng(var.type),grp_id,(long *)NULL,(long *)NULL,var.val.vp);
