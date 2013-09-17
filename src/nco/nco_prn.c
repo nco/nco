@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.163 2013-09-16 01:33:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.164 2013-09-17 00:48:27 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1123,13 +1123,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
 
-  /* Allocate local MSA */
-  lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
-  lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
-
-  /* Copy from table to local MSA */
-  (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
-
   /* Obtain group ID where variable is located using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
@@ -1161,6 +1154,13 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       (void)nco_get_var1(grp_id,var.id,0L,var.val.vp,var.type);
     } /* end potential OpenMP critical */
   } else { /* ! Scalars */
+
+    /* Allocate local MSA */
+    lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
+    lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
+
+    /* Copy from table to local MSA */
+    (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
 
     /* Call super-dooper recursive routine */
     var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
@@ -1697,9 +1697,11 @@ lbl_chr_prn:
 
   if(prn_flg->nwl_pst_val) (void)fprintf(stdout,"\n");
 
-  /* Free  */
-  (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
-  lmt=(lmt_sct **)nco_free(lmt);
+  /* Free (allocated for non scalars only) */
+  if(var.nbr_dim > 0){
+    (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
+    lmt=(lmt_sct **)nco_free(lmt);
+  }
 
 } /* end nco_prn_var_val_trv() */
 

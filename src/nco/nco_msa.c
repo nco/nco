@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.225 2013-09-11 22:07:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.226 2013-09-17 00:48:27 pvicente Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1313,9 +1313,10 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       if (lmt_dmn_nbr) (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
 
       /* And copy the structure made while building limits  */
+      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].crd->nm);
+
       (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.BASIC_DMN;
       (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.dmn_cnt;
-      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].crd->nm);
       (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn[dmn_idx_var].crd->sz;
       (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.lmt_dmn_nbr;
       (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn[dmn_idx_var].crd->lmt_msa.MSA_USR_RDR;
@@ -1367,9 +1368,10 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       if (lmt_dmn_nbr) (*lmt_msa)[dmn_idx_var]->lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
 
       /* And copy the structure made while building limits  */
+      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].ncd->nm);
+
       (*lmt_msa)[dmn_idx_var]->BASIC_DMN=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.BASIC_DMN;
       (*lmt_msa)[dmn_idx_var]->dmn_cnt=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.dmn_cnt;
-      (*lmt_msa)[dmn_idx_var]->dmn_nm=strdup(var_trv->var_dmn[dmn_idx_var].ncd->nm);
       (*lmt_msa)[dmn_idx_var]->dmn_sz_org=var_trv->var_dmn[dmn_idx_var].ncd->sz;
       (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.lmt_dmn_nbr;
       (*lmt_msa)[dmn_idx_var]->MSA_USR_RDR=var_trv->var_dmn[dmn_idx_var].ncd->lmt_msa.MSA_USR_RDR;
