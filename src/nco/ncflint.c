@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.263 2013-09-11 22:07:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.264 2013-09-17 04:45:30 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.263 2013-09-11 22:07:10 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.263 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.264 2013-09-17 04:45:30 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.264 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -795,9 +795,6 @@ main(int argc,char **argv)
 
     /* Store the output variable ID */
     var_prc_out[idx]->id=var_out_id;
-
-    if(dbg_lvl_get() >= nco_dbg_dev)
-      for(int idx_dmn=0;idx_dmn<var_prc_out[idx]->nbr_dim;idx_dmn++) (void)fprintf(fp_stdout,"%s: DEBUG output count for dim %d=%ld\n",prg_nm_get(),idx_dmn,var_prc_out[idx]->cnt[idx_dmn]);     
 
 #ifdef _OPENMP
 # pragma omp critical

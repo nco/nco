@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.196 2013-09-17 00:25:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.197 2013-09-17 04:45:30 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -1259,7 +1259,7 @@ no_data_ok: /* end goto */
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
 
-  if(dbg_lvl_get() >= nco_dbg_io){
+  if(dbg_lvl_get() == nco_dbg_old){
     (void)nco_prt_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 
@@ -2005,7 +2005,7 @@ no_data_ok: /* end goto */
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
 
-  if(dbg_lvl_get() >= nco_dbg_io){
+  if(dbg_lvl_get() == nco_dbg_old){
     (void)nco_prt_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 
