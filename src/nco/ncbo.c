@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.259 2013-09-09 06:25:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.260 2013-09-17 17:43:18 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.259 2013-09-09 06:25:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.259 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.260 2013-09-17 17:43:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.260 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -551,10 +551,7 @@ main(int argc,char **argv)
 
   if(gpe){
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",prg_nm_get());
-    if(fl_out_fmt != NC_FORMAT_NETCDF4){
-      (void)fprintf(stderr,"%s: ERROR Group Path Edit requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
-      nco_exit(EXIT_FAILURE);
-    } /* endif err */
+    if(fl_out_fmt != NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups.\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
   /* Match 2 tables (find common objects) and export common objects */

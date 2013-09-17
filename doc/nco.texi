@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.857 2013-09-16 20:56:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.858 2013-09-17 17:43:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -113,7 +113,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.5
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 12 September 2013
+@set update-date 17 September 2013
 @set update-month September 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2561,10 +2561,8 @@ Interactive users usually prefer the minimal amount of typing, i.e.,
 We recommend that scripts which are re-usable employ some form of 
 the long options for future maintainability.
 
-This manual generally uses the short option syntax.
-This is for historical reasons and to conserve space.
-The remainder of this manual specifies the full @var{long_name} of
-each option.
+This manual generally uses the short option syntax in examples.
+This is for historical reasons and to conserve space in printed output.
 Users are expected to pick the unambiguous truncation of each option
 name that most suits their taste.
 
@@ -3483,19 +3481,21 @@ build time.
 @cindex @code{--union}
 @cartouche
 Options @code{--unn}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncflint},
-@command{ncks}, @command{ncpdq}, @command{ncwa}@*
+Availability: @command{ncbo}, @command{ncea},
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
+@command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @*
 Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncflint},
-@command{ncks}, @command{ncpdq}, @command{ncwa}@*
+Availability: @command{ncbo}, @command{ncea},
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
+@command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-g}@*
 Long options: @samp{--grp} and @samp{--group}@*
 Options @code{-v @var{var}} and @code{-x}@*
 Availability: (@command{ncap2}), @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
-@command{ncra}, @command{ncrcat}, @command{ncwa}@* 
+@command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-v}, @samp{-x}@*
 Long options: @samp{--variable}, @samp{--exclude} or @samp{--xcl}@*
 @end cartouche
@@ -3891,8 +3891,9 @@ convention described in @ref{CF Conventions}.
 @cindex @code{--gpe @var{gpe_dsc}}
 @cartouche
 Options @code{-G @var{gpe_dsc}}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncflint},
-@command{ncks}, @command{ncpdq}, @command{ncwa}@*
+Availability: @command{ncbo}, @command{ncecat}, @command{ncea},
+@command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-G}@*
 Long options: @samp{--gpe}@*
 @end cartouche
@@ -4045,9 +4046,17 @@ ncks -G g2:-1 -g g1    -v v1 # /g1/v1    -> /g1/g2/v1
 ncks -G g1:-1 -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/g1/v1
 @end example
 
-As of 2013, netCDF contains no library function for renaming groups.
-@acronym{GPE} can be used to move groups, which is a more arduous way 
-of accomplishing the same goal as renaming.
+@cindex move groups
+@cindex groups, moving
+@cindex rename groups
+@cindex groups, renaming
+Until fall 2013 (netCDF version 4.3.1), netCDF contained no library
+function for renaming groups. 
+@acronym{NCO} built on earlier versions of netCDF than 4.3.1 therefore
+provides a workaround mechanism that utilizes @acronym{GPE} to rename
+groups.
+The @acronym{GPE} mechanism used is actually to move groups, a more
+arduous procedure than renaming.
 @acronym{GPE} applies to all selected groups, so, in the general case,
 one must move only the desired group to a new file, and then merge that
 new file with the original to obtain a file where the desired group has
@@ -4061,6 +4070,30 @@ If the original group @file{g4} is not excised from @file{out.nc} (step
 two above), then the final output file would contain both @file{g4} and
 a copy named @file{f4}.
 Thus GPE can be used to both ``rename'' and copy groups.
+The recommended way to rename groups when when netCDF version 4.3.1 is
+availale is to use @command{ncrename} (@pxref{ncrename netCDF Renamer}).
+
+@html
+<a name="xmp_flt"></a> <!-- http://nco.sf.net/nco.html#xmp_flt -->
+@end html
+One may wish to flatten hierarchical group files for many reasons.
+These include @w{1. Obtaining} flat netCDF3 files for use with tools
+that do not work with netCDF4 files, @w{2. Splitting} apart
+hierarchies to re-assemble into different hierarchies, and
+@w{3. Providing} a subset of a hierarchical file with the simplest
+possible storage structure.
+@example
+ncks -O -G : -g cesm -3 ~/nco/data/cmip5.nc ~/cesm.nc # Extract /cesm to /
+@end example
+The @option{-3} switch 
+@footnote{Note that the @option{-3} switch should appear @emph{after} the
+@option{-G} and @option{-g} switches. 
+This is due to an artifact of the @acronym{GPE} implementation which we
+will hopefully remove in the future.}
+specifies the output dataset should be in netCDF3
+format, the @option{-G :} switch flattens all extracted groups, and the
+@option{-g cesm} switch extracts only the @code{cesm} group and leaves
+all other groups (e.g., @code{ecmwf}, @code{giss}).
 
 @html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->

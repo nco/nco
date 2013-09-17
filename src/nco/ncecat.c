@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.330 2013-09-13 03:27:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.331 2013-09-17 17:43:18 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.330 2013-09-13 03:27:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.330 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.331 2013-09-17 17:43:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.331 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -638,7 +638,7 @@ main(int argc,char **argv)
 #endif /* ENABLE_NETCDF4 */
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Aggregation (GAG) feature enabled\n",prg_nm_get());
     if(fl_out_fmt != NC_FORMAT_NETCDF4){
-      (void)fprintf(stderr,"%s: ERROR Group Aggregation requires requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+      (void)fprintf(stderr,"%s: ERROR Group Aggregation requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
       nco_exit(EXIT_FAILURE);
     } /* endif err */
   } /* !GROUP_AGGREGATE */

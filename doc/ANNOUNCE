@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.604 2013-09-16 04:23:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.605 2013-09-17 17:43:18 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.5 are ready. 
 
@@ -60,16 +60,19 @@ B. Forced conversion of float to double:
    Until now, NCO never implicitly converted floats to doubles unless
    doubles were involved in the computation, because, well, GIGO
    ("garbage in, garbage out") and wisdom from Numerical Recipes.
-   However, such promotion is warranted in some circumstances.
+   However, such promotion is often warranted on arithmetic involving
+   large numbers of single-precision inputs.
    Now NCO allows a new arithmetic convention to implement this.
    The convention is manually invoked with --dbl:
    ncea --dbl in*.nc out.nc
    ncra --dbl in*.nc out.nc
    ncwa --dbl in.nc  out.nc
+   Depending on user feedback, --dbl may become the default in 
+   future versions of NCO. Send me your opinion!
    NB: Invoking arithmetic promotion of NC_FLOAT to NC_DOUBLE
    increases RAM memory usage by a factor of two, and slows down
-   arithmetic, perhaps negligibly compared to I/O time. The manual
-   contains a detailed discussion of the issues and use cases:
+   arithmetic, though perhaps negligibly compared to I/O time. 
+   The manual contains a detailed discussion of the issues:
    http://nco.sf.net/nco.html#dbl
 
 C. CDL-mode prints more verbose information as comments (after '// ')  
@@ -79,6 +82,15 @@ C. CDL-mode prints more verbose information as comments (after '// ')
    ncks --cdl -D 1 ~/nco/data/in_grp.nc # Adds file summary
    ncks --cdl -D 3 ~/nco/data/in_grp.nc # Adds full groupnames
    http://nco.sf.net/nco.html#cdl
+
+D. GPE operations allow netCDF3 output from netCDF4 input when groups
+   are not required in the output file. This allows GPE flattening to
+   directly create netCDF3 classic files for backward compatibility.
+   For example, this extracts group "cesm" from a netCDF4 file and
+   stores it at the root level of a netCDF3 output file:
+   ncks -O -G : -g cesm -3 ~/nco/data/cmip5.nc ~/cesm.nc
+   http://nco.sf.net/nco.html#gpe
+   http://nco.sf.net/nco.html#xmp_flt
 
 BUG FIXES:
 
@@ -96,9 +108,7 @@ A. ncwa hyperslabbing while averaging bug:
 B. Group operators now correctly match variable names that are
    proper subsets of ancestor group names.
 
-C. Fixed applying ncpdq dimension reversal to group hierarchies. 
-
-D. 
+C. Fixed ncpdq dimension reversal in group hierarchies. 
 
 KNOWN BUGS NOT YET FIXED:
 

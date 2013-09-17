@@ -4,6 +4,7 @@
 netcdf cmip5 {
   dimensions:
   time=unlimited;
+  :Collection = "CMIP5 RCP 8.5 Scenario";
  
   //
   //cesm
@@ -11,6 +12,7 @@ netcdf cmip5 {
   group: cesm { 
   variables:
   float tas(time);
+  :Model = "CESM";
   data:
   tas=272,272,272,272;
   } // end cesm
@@ -21,6 +23,7 @@ netcdf cmip5 {
   group: ecmwf { 
   variables:
   float tas(time);
+  :Model = "ECMWF";
   data:
   tas=273,273,273,273;
   } // end ecmwf
@@ -31,6 +34,7 @@ netcdf cmip5 {
   group: gfdl { 
   variables:
   float tas(time);
+  :Model = "GFDL";
   data:
   tas=274,274,274,274;
   } // end gfdl

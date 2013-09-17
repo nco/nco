@@ -1,3 +1,10 @@
+2013-09-17  Charlie Zender  <zender@uci.edu>
+
+	* GPE operations allow netCDF3 output from netCDF4 input when
+	groups are not required in the output file. This allows GPE
+	flattening to directly create netCDF3 classic files for backward
+	compatibility.
+
 2013-09-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.5 release procedure:

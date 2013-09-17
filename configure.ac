@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.8 2013-08-29 06:07:28 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.9 2013-09-17 17:43:18 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -809,7 +809,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # -Wwrite-strings: Apply const-qualifier to string constants, die if overwritten
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
-# -O4: Turn on optimization so unitialized variables are flagged
+# -O4: Turn on optimization so uninitialized variables are flagged
 # Compilation flags recommended by GSL that I do not like and do not use:
 # -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
 # --no-alias? -fstrict-aliasing
