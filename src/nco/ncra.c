@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.392 2013-09-17 19:51:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.393 2013-09-17 21:49:42 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -163,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.392 2013-09-17 19:51:01 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.392 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.393 2013-09-17 21:49:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.393 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -233,7 +233,12 @@ main(int argc,char **argv)
 #endif /* USE_TRV_API */
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
+
+#ifndef USE_TRV_API
   long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
+#else
+  long *idx_rec_out=NULL; /* [idx] Index of current record in output file (0 is first, ...) */
+#endif
   long rec_in_cml=0L; /* [nbr] Number of records, read or not, in all processed files */
   long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
   long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
@@ -1167,6 +1172,17 @@ main(int argc,char **argv)
   /* Build record dimensions array */
   (void)nco_bld_rec_dmn(in_id,FORTRAN_IDX_CNV,flg_rec_all,trv_tbl);  
 
+  /* Allocate arrays for multi-records cases */
+  idx_rec_out=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
+
+
+  /* Initialize arrays for multi-records cases */
+  for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+    idx_rec_out[idx_rec]=0L;
+  } /* Initialize arrays */
+
+
+
   /* Is this an ARM-format data file? */
   CNV_ARM=nco_cnv_arm_inq(in_id);
   /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
@@ -1201,11 +1217,13 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
+  /* TO_DO */
   if(REC_APN){
+    idx_rec=0;
     /* Append records directly to output file */
     int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
     nco_inq_dimid(out_id,trv_tbl->lmt_rec[idx_rec]->nm,&rec_dmn_out_id);
-    nco_inq_dimlen(out_id,rec_dmn_out_id,&idx_rec_out);
+    nco_inq_dimlen(out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
   } /* !REC_APN */
 
   /* Copy global attributes */
@@ -1355,7 +1373,7 @@ main(int argc,char **argv)
           if(rec_rmn_prv_drn == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
 
           /* Process all variables in current record */
-          if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,gettext("%s: INFO Record %ld of %s contributes to output record %ld\n"),prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out);
+          if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,gettext("%s: INFO Record %ld of %s contributes to output record %ld\n"),prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
           /* Update hyperslab start indices */
           /* Beware lmt_all_rec points to record limit of record struct of lmt_all_lst */
@@ -1552,7 +1570,7 @@ main(int argc,char **argv)
             } /* end if ncra */
 
             /* All processed variables contain record dimension and both ncrcat and ncra write records singly */
-            var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
+            var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out[idx_rec];
             var_prc_out[idx]->cnt[0]=1L;
 
             /* Append current record to output file */
@@ -1569,7 +1587,7 @@ main(int argc,char **argv)
             } /* end if ncrcat */
 
             /* Warn if record coordinate, if any, is not monotonic */
-            if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out);
+            if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
             /* Convert missing_value, if any, back to unpacked type
             Otherwise missing_value will be double-promoted when next record read 
             Do not convert after last record otherwise normalization fails 
@@ -1608,11 +1626,11 @@ main(int argc,char **argv)
               if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); 
               else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
             } /* end loop over idx */
-            idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
+            idx_rec_out[idx_rec]++; /* [idx] Index of current record in output file (0 is first, ...) */
           } /* end if normalize and write */
 
           /* Prepare indices and flags for next iteration */
-          if(prg == ncrcat) idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
+          if(prg == ncrcat) idx_rec_out[idx_rec]++; /* [idx] Index of current record in output file (0 is first, ...) */
           rec_usd_cml++; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
           if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
 
@@ -1858,6 +1876,8 @@ main(int argc,char **argv)
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
 #ifdef USE_TRV_API
     (void)trv_tbl_free(trv_tbl);
+
+    idx_rec_out=(long *)nco_free(idx_rec_out);
 #endif /* !USE_TRV_API */
   } /* !flg_cln */
 
