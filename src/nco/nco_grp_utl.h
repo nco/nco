@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.378 2013-09-15 20:39:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.379 2013-09-17 22:31:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -612,6 +612,15 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+
+void 
+nco_msa_var_get_elm_trv             /* [fnc] Define a limit of size 1 to be used by ncra */
+(const int nc_id,                   /* I [ID] netCDF file ID */
+ var_sct *var_prc,                  /* I/O [sct] Variable */
+ const char * const rec_nm_fll,     /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
+ const long idx_rec_crr_in,         /* [idx] Index of current record in current input file */
+ const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
 
 
 nco_bool                             /* O [flg] Skip record */

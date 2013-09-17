@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.393 2013-09-17 21:49:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.394 2013-09-17 22:31:40 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -163,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.393 2013-09-17 21:49:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.393 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.394 2013-09-17 22:31:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.394 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1418,117 +1418,11 @@ main(int argc,char **argv)
 #ifdef REPLACE_LMT_ALL
             (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 #else /* !REPLACE_LMT_ALL */
-
-            /* Define an artificial MSA limit that corresponds to 1 element to read, since nco_msa_var_get_trv() reads all elements */ 
-            nco_bool flg_lmt=False; /* [flg] Allocate a custom limit */
-
-            /* Loop dimensions */
-            for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-
-              /* NB: Match current record must be done by name, since ID may differ for records across files */
-              if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm_fll,trv_tbl->lmt_rec[idx_rec]->nm_fll) == 0){
-
-                /* Case of dimension being coordinate variable */
-                if(var_trv->var_dmn[idx_dmn].crd){
-
-                  lmt_dmn_nbr=var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr;
-
-                  /* Case of previously existing limits */
-                  if(lmt_dmn_nbr > 0){
-
-                    /* Loop limits */
-                    for(int idx_lmt=0;idx_lmt<lmt_dmn_nbr;idx_lmt++){
-                      /* And set start,count,stride to match current record ...Jesuzz */
-                      var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->srt=idx_rec_crr_in;
-                      var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->end=idx_rec_crr_in;
-                      var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1;
-                      var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->srd=1;
-                    } /* Loop limits */
-
-                    /* ! Case of previously existing limits */
-                  }else{
-                    flg_lmt=True;
-                    /* Alloc 1 dummy limit */
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=1;
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-                    /* Initialize NULL/invalid */
-                    (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
-                    /* And set start,count,stride to match current record ...Jesuzz */
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->cnt=1;
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srd=1;
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
-                  } /* ! Case of previously existing limits */
-                } /* Case of dimension being coordinate variable */
-
-                else{
-
-                  assert(var_trv->var_dmn[idx_dmn].is_crd_var == False);
-
-                  lmt_dmn_nbr=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr;
-
-                  /* Case of previously existing limits */
-                  if(lmt_dmn_nbr > 0){
-
-                    /* Loop limits */
-                    for(int idx_lmt=0;idx_lmt<lmt_dmn_nbr;idx_lmt++){
-                      /* And set start,count,stride to match current record ...Jesuzz */
-                      var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->srt=idx_rec_crr_in;
-                      var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->end=idx_rec_crr_in;
-                      var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1;
-                      var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->srd=1;
-                    } /* Loop limits */
-
-                    /* ! Case of previously existing limits */
-                  }else{
-                    flg_lmt=True;
-                    /* Alloc 1 dummy limit */
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr=1;
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(1*sizeof(lmt_sct *));
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-                    /* Initialize NULL/invalid */
-                    (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
-                    /* And set start,count,stride to match current record ...Jesuzz */
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->cnt=1;
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->srd=1;
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]->nm=strdup("record_limit");
-                  } /* ! Case of previously existing limits */
-                } /* Case of dimension not being coordinate variable */
-
-                break;
-              } /* Match current record by name */
-            } /* Loop dimensions */
-
             /* Retrieve variable from disk into memory */
-            (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
-
-            /* Free the artificial limit and reset the number of limits */
-            for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-              /* NOTE Match current record must be done by name, since ID may differ for records across files  */
-              if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm,trv_tbl->lmt_rec[idx_rec]->nm) == 0){
-                /* Custom limit */
-                if(flg_lmt){
-                  /* Case of dimension being coordinate variable */
-                  if (var_trv->var_dmn[idx_dmn].is_crd_var){
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=0;
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
-                    var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn);         
-                  } /* Case of dimension being coordinate variable */
-                  else if (!var_trv->var_dmn[idx_dmn].is_crd_var){
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr=0;
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
-                    var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn);    
-                  } /* Case of dimension not being coordinate variable */
-                  break;
-                } /* Custom limit */
-              } /* Match current record  */
-            } /* Loop dimensions */
-
+            /* Define an artificial MSA limit that corresponds to 1 element to read, since nco_msa_var_get_trv() reads all elements */ 
+            (void)nco_msa_var_get_elm_trv(in_id,var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
 #endif /* !REPLACE_LMT_ALL */
+
             if(prg == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
             /* Re-base record coordinate and bounds if necessary (e.g., time, time_bnds) */
