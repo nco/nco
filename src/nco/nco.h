@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.399 2013-09-14 01:49:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.400 2013-09-17 00:25:06 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -489,16 +489,20 @@ extern "C" {
   
   /* Limit structure */
   typedef struct { /* lmt_sct */
+
+    char *nm; /* [sng] Dimension name */
+    char *nm_fll; /* [sng] Full dimension name */
+    char *grp_nm_fll; /* [sng] Full group where dimension is defined. Added for group support from original netCDF3 */
+
     /* Following four flags are used only by multi-file operators ncra and ncrcat: */
     char *drn_sng; /* User-specified string for dimension duration */
     char *max_sng; /* User-specified string for dimension maximum */
     char *min_sng; /* User-specified string for dimension minimum */
     char *mro_sng; /* User-specified string for multi-record output */
-    char *nm; /* [sng] Dimension name */
-    char *nm_fll; /* [sng] Full dimension name */
-    char *grp_nm_fll; /* [sng] Full group where dimension is defined. Added for group support from original netCDF3 */
+    
     char *rbs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
     char *srd_sng; /* User-specified string for dimension stride */
+
     double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
     double min_val; /* Double precision representation of minimum value of coordinate requested or implied */
     double origin;   /* Used by ncra, ncrcat to re-base record coordinate */
