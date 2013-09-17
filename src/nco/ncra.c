@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.391 2013-09-17 01:42:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.392 2013-09-17 19:51:01 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -163,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.391 2013-09-17 01:42:39 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.391 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.392 2013-09-17 19:51:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.392 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1371,6 +1371,11 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 
+            nco_bool flg_skp=nco_skp_rec(idx_rec,var_prc[idx],trv_tbl);
+            if (flg_skp){
+              continue;
+            }
+
             in_id=in_id_arr[omp_get_thread_num()];
             if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm_fll);
             if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
@@ -1582,6 +1587,11 @@ main(int argc,char **argv)
 
             /* Copy averages to output file */
             for(idx=0;idx<nbr_var_prc;idx++){
+
+              nco_bool flg_skp=nco_skp_rec(idx_rec,var_prc[idx],trv_tbl);
+              if (flg_skp){
+                continue;
+              }
 
               /* Obtain variable GTT object using full variable name */
               var_trv=trv_tbl_var_nm_fll(var_prc_out[idx]->nm_fll,trv_tbl);
