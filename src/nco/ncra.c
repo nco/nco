@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.395 2013-09-18 00:52:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.396 2013-09-18 03:23:18 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -163,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.395 2013-09-18 00:52:50 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.395 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.396 2013-09-18 03:23:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.396 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1395,7 +1395,7 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 
-            nco_bool flg_skp=nco_skp_rec(idx_rec,var_prc[idx],trv_tbl);
+            nco_bool flg_skp=nco_skp_var(var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
             if (flg_skp){
               continue;
             }
@@ -1506,7 +1506,7 @@ main(int argc,char **argv)
             /* Copy averages to output file */
             for(idx=0;idx<nbr_var_prc;idx++){
 
-              nco_bool flg_skp=nco_skp_rec(idx_rec,var_prc[idx],trv_tbl);
+              nco_bool flg_skp=nco_skp_var(var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
               if (flg_skp){
                 continue;
               }

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.975 2013-09-18 00:52:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.976 2013-09-18 03:23:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7088,3 +7088,43 @@ nco_skp_rec                          /* [fnc] Skip record  */
   return flg_skp;
 
 } /* nco_skp_rec() */
+
+
+nco_bool                             /* O [flg] Skip variable  */
+nco_skp_var                          /* [fnc] Skip variable while doing record   */
+(const var_sct * const var_prc,      /* I [sct] Processed variable */
+ const char * const rec_nm_fll,      /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
+ const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
+{
+  nco_bool flg_skp;     /* [flg] Skip variable  */
+
+  dmn_trv_sct *dmn_trv; /* [sct] GTT dimension structure */
+
+  /* Variable must contain one record */
+  assert(var_prc->is_rec_var);
+
+  flg_skp=False;
+
+  /* Loop dimensions */
+  for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
+
+    /* Is this the record dimension ? */
+    if (var_prc->dim[idx_dmn]->is_rec_dmn){
+
+      /* Get unique dimension object from unique dimension ID, in input list (NB: this is needed because dmn_sct does not have name full) */
+      dmn_trv=nco_dmn_trv_sct(var_prc->dim[idx_dmn]->id,trv_tbl);
+
+      /* And it is not the same as the input record dimension name currently being done */
+      if(strcmp(dmn_trv->nm_fll,rec_nm_fll) != 0){
+
+        /* Then skip this variable */
+        flg_skp=True;
+      }  /* And it is not the same as the input record dimension name currently being done */
+
+    } /* Is this the record dimension */
+  } /* Loop dimensions */
+
+
+  return flg_skp;
+
+} /* nco_skp_var() */

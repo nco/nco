@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.379 2013-09-17 22:31:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.380 2013-09-18 03:23:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -629,7 +629,11 @@ nco_skp_rec                          /* [fnc] Skip record  */
  const var_sct * const var,          /* I [sct] Variable */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
-
+nco_bool                             /* O [flg] Skip variable  */
+nco_skp_var                          /* [fnc] Skip variable while doing record   */
+(const var_sct * const var_prc,      /* I [sct] Processed variable */
+ const char * const rec_nm_fll,      /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
