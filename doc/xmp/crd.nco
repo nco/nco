@@ -1,5 +1,5 @@
-// add coordinate to MODIS HDF data
-// Included by add_coor.sh
+// Add coordinates to MODIS HDF data
+// Included by add_crd.sh
 // Online: http://nco.sourceforge.net/nco.html#Add-Coordinates-to-MODIS-Data
 
 lon = array(0.f, 0.05, $lon) - 180;

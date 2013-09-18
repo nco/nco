@@ -1,35 +1,41 @@
-//linear regression
-//Caution: make sure the variable name is in agreement with the main script (now is 'snd')
+// Linear Regression
+// Called by ann_avg.sh
+// Caution: make sure the variable name is 
+//  in agreement with the main script (now is 'snd')
 // Online: http://nco.sourceforge.net/nco.html#Annual-Average-over-Regions
 
-//declare variables
-*c0[$zone]=0.;        //intercept
-*c1[$zone]=0.;        //slope
-*sdv[$zone]=0.;       //standard deviation
-*covxy[$zone]=0.;     //covariance
+// Declare variables
+*c0[$rgn]=0.;        // Intercept
+*c1[$rgn]=0.;        // Slope
+*sdv[$rgn]=0.;       // Standard deviation
+*covxy[$rgn]=0.;     // Covariance
 *x = double(time);
 
-for (*zone_id=0;zone_id<$zone.size;zone_id++)   //loop over zones
+for (*rgn_id=0;rgn_id<$rgn.size;rgn_id++)   // Loop over regions
 {
-	gsl_fit_linear(time,1,snd(:,zone_id),1,$time.size, &tc0, &tc1, &cov00, &cov01,&cov11,&sumsq); //linear regression function
-	c0(zone_id) = tc0;    //store the results
-	c1(zone_id) = tc1;
-	covxy(zone_id) = gsl_stats_covariance(time,1,$time.size,double(snd(:,zone_id)),1,$time.size); //covariance function
-	sdv(zone_id) = gsl_stats_sd(snd(:,zone_id), 1, $time.size);   //standard deviation function
+	gsl_fit_linear(time,1,snd(:,rgn_id),1,$time.size, \
+    &tc0, &tc1, &cov00, &cov01,&cov11,&sumsq); // Linear regression function
+	c0(rgn_id) = tc0;    // Output results
+	c1(rgn_id) = tc1;
+	covxy(rgn_id) = gsl_stats_covariance(time,1,\
+    $time.size,double(snd(:,rgn_id)),1,$time.size); // Covariance function
+	sdv(rgn_id) = gsl_stats_sd(snd(:,rgn_id), \
+    1, $time.size);   // Standard deviation function
 }
 
-//pval------------------------------------------------------------
+// P value------------------------------------------------------------
 *time_sdv = gsl_stats_sd(time, 1, $time.size);
 *r_value = covxy/(time_sdv*sdv); 
 *t_value = r_value/sqrt((1-r_value^2)/($time.size-2));
-pval = abs(gsl_cdf_tdist_P(t_value, $time.size-2) - gsl_cdf_tdist_P(-t_value, $time.size-2));
+pval = abs(gsl_cdf_tdist_P(t_value, $time.size-2) - \
+  gsl_cdf_tdist_P(-t_value, $time.size-2));
 //----------------------------------------------------------------
 
-//write RAM variables to disk
+// Write RAM variables to disk
 //------------------------------------------------------------
-//usually NCO writes the outputs directly to disk
-//inside .nco files, using RAM variables, declared by *, will shorten running time
-//write the final outputs using ram_write()
+// Usually NCO writes the outputs directly to disk
+// Using RAM variables, declared by *, will shorten running time
+// Output the final results using ram_write()
 //------------------------------------------------------------
 ram_write(c0);
 ram_write(c1);

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.858 2013-09-17 17:43:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.859 2013-09-18 23:44:03 woodllan Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -395,7 +395,7 @@ Charlie Zender
 * Common features::             
 * Operator Reference Manual::   
 * Contributing::                
-* Quick Start::                
+* Quick Start::                 
 * CMIP5 Example::               
 * Parallel::                    
 * CCSM Example::                
@@ -15302,15 +15302,24 @@ different file structures.
 Here we include monthly, seasonal and annual average with daily or
 monthly data in either one file or multiple files. 
 
-@table @asis
-@item @strong{Daily data in one file}
+@menu
+* Daily data in one file::      
+* Monthly data in one file::    
+* One time point one file::     
+* Multiple files with multiple time points::  
+@end menu
+
+@node Daily data in one file, Monthly data in one file, Quick Start, Quick Start
+@section Daily data in one file
 @cindex daily data
 Suppose we have daily data from Jan 1st, 1990 to Dec. 31, 2005 in the
-file of @file{in.nc} with the record dimension as @code{time} which has
-units @var{YYYY-MM-DD}.
+file of @file{in.nc} with the record dimension as @code{time}.
 
-@cindex monthly average
+@noindent
 @strong{Monthly average:}
+@cindex monthly average
+@cindex average
+@cindex time-averaging
 @example
 for yyyy in @{1990..2005@}; do      # Loop over years
   for moy in @{1..12@}; do          # Loop over months
@@ -15322,80 +15331,99 @@ for yyyy in @{1990..2005@}; do      # Loop over years
   done
 done
 
-# concatenate monthly files together
+# Concatenate monthly files together
 ncrcat -O in_??????.nc out.nc
 @end example
 
-@cindex annual average
+@noindent
 @strong{Annual average:}
+@cindex annual average from daily data
+@cindex average
+@cindex time-averaging
 @example
-for yyyy in @{1990..2005@}; do      # loop over years
+for yyyy in @{1990..2005@}; do      # Loop over years
   ncra -O -d time,"$@{yyyy@}-01-01","$@{yyyy@}-12-31" in.nc in_$@{yyyy@}.nc
 done
 
-# concatenate annual files together
+# Concatenate annual files together
 ncrcat -O in_????.nc out.nc
 @end example
-The @samp{-O} switch means to overwrite the pre-existing files (@pxref{Batch Mode}).
-The @samp{-d} option is to specify the range of hyperslabs (@pxref{Hyperslabs}).
+The @option{-O} switch means to overwrite the pre-existing files (@pxref{Batch Mode}).
+The @option{-d} option is to specify the range of hyperslabs (@pxref{Hyperslabs}).
 There are detailed instructions on @command{ncra} (@pxref{ncra netCDF Record Averager} and @command{ncrcat} (@pxref{ncrcat netCDF Record Concatenator}).
 @acronym{NCO} supports UDUnits so that we can use readable dates as time dimension (@pxref{UDUnits Support}).
 
-@item @strong{Monthly data in one file}
+@node Monthly data in one file, One time point one file, Daily data in one file, Quick Start
+@section Monthly data in one file
 @cindex monthly data
-Inside the input file @var{in.nc}, the record dimension @var{time} is from Jan 1990 to Dec 2005.
+Inside the input file @file{in.nc}, the record dimension @code{time} is from Jan 1990 to Dec 2005.
 
+@noindent
 @strong{Seasonal average (e.g., DJF):}
+@cindex seasonal average
+@cindex average
+@cindex time-averaging
 @example
 ncra -O --mro -d time,"1990-12-01",,12,3 in.nc out.nc
 @end example
 
+@noindent
 @strong{Annual average:}
+@cindex annual average from monthly data
+@cindex average
+@cindex time-averaging
 @example
 ncra -O --mro -d time,,,12,12 in.nc out.nc
 @end example
 Here we used the duration feature (i.e., the number after the fourth comma: @samp{3} in the seasonal example and the second @samp{12} in the annual example) 
 to retrieve groups of records separated by regular intervals (@pxref{Duration}).
-The option @samp{--mro} switches @command{ncra} to produce a Multi-Record Output instead of a single-record output.
-For example, assume @var{snd} is a 3D array with dimensions @var{time} * @var{latitude} * @var{longitude} 
-and @var{time} includes every month from Jan. 1990 to Dec. 2005, 192 months as total, which are 16 years.
+The option @option{--mro} switches @command{ncra} to produce a Multi-Record Output instead of a single-record output.
+For example, assume @var{snd} is a 3D array with dimensions @code{time} * @code{latitude} * @code{longitude} 
+and @code{time} includes every month from Jan. 1990 to Dec. 2005, 192 months as total, which are 16 years.
 Let's look at the following two command lines.
 @example
 ncra --mro -v snd -d time,"1990-12-01",,12,3 in.nc out_mro.nc
 ncra -v snd -d time,"1990-12-01",,12,3 in.nc out_sro.nc
 @end example
-In the first output file, @var{out_mro.nc}, @var{snd} is still a 3D array with dimensions @var{time} * @var{latitude} * @var{longitude},
-but the length of @var{time} now is 16, meaning 16 winters.
-In the second output file, @var{out_sro.nc}, the length of @var{time} is @w{only 1}.
+In the first output file, @file{out_mro.nc}, @var{snd} is still a 3D array with dimensions @code{time} * @code{latitude} * @code{longitude},
+but the length of @code{time} now is 16, meaning 16 winters.
+In the second output file, @file{out_sro.nc}, the length of @code{time} is @w{only 1}.
 It is now the average of all the 16 winters.
 
 when using @samp{-d @var{dim},min[,max]} to specify the hyperslabs,
 you can leave it blank if you want to include the minimum or the maximum of the data, like we did above.
 
-@item @strong{One time point one file}
+@node One time point one file, Multiple files with multiple time points, Monthly data in one file, Quick Start
+@section One time point one file
+@cindex daily data
+@cindex monthly data
+@cindex average
+@cindex time-averaging
 This means if you have daily data of 30 days, there will be 30 data files.
 Or if you have monthly data of 12 months, there will be 12 data files.
 Dealing with this kind of files, you need to specify the file names in shell scripts and pass them to NCO operators.
-For example, your daily data files may look like @var{snd_19900101.nc}, @var{snd_19900102.nc}, @var{snd_19900103.nc} ...
+For example, your daily data files may look like @file{snd_19900101.nc}, @file{snd_19900102.nc}, @file{snd_19900103.nc} ...
 If you want to know the monthly average of Jan 1990, you can write like,
 @example
 ncra -O snd_199001??.nc out.nc
 @end example
 You might want to use loop if you need the average of each month.
 @example
-for moy in @{1..12@}; do          # loop over months
-  mm=$( printf "%02d" $@{moy@} )  # change the format of month into 2-digit
+for moy in @{1..12@}; do          # Loop over months
+  mm=$( printf "%02d" $@{moy@} )  # Change to 2-digit format
 
   ncra -O snd_????$@{mm@}??.nc out_$@{mm@}.nc
 done
 @end example
 
-@item @strong{Multiple files with multiple time points}
+@node Multiple files with multiple time points, CMIP5 Example, One time point one file, Quick Start
+@section Multiple files with multiple time points
+@cindex daily data
+@cindex monthly data
 Similar as the last one, it's more about shell scripts.
 Suppose you have daily data with one month of them in one data file.
 The monthly average is simply to apply @command{ncra} on the specific data file.
 And for seasonal averages, you can specify the three months by shell scripts.
-@end table
 
 @html
 <a name="cmip5"></a> <!-- http://nco.sf.net/nco.html#cmip5 -->
@@ -15447,7 +15475,7 @@ arithmetic features.
 
 @node Combine Files, Global Distribution of Long-term Average, CMIP5 Example, CMIP5 Example
 @section Combine Files
-@cindex Combine files
+@cindex file combination
 Sometimes, the data of one ensemble member will be stored in several
 files to reduce single file size.
 This script illustrates how to concatenate these into one file.
@@ -15463,18 +15491,22 @@ Key steps include:
 
 @node Global Distribution of Long-term Average, Annual Average over Regions, Combine Files, CMIP5 Example
 @section Global Distribution of Long-term Average
-@cindex Global Distribution of Long-term Average
+@cindex spatial distribution
+@cindex long-term average
+@cindex average
+@cindex time-averaging
 @float Figure,fgr:glb
 @image{xmp/fgr1,3.5in} 
 @caption{Global Distribution of Long-term Average.}
 @end float
+@noindent
 This section illustrates how to calculate the global distribution of
 long-term average (@pxref{fgr:glb}).
 Key steps include: 
 @enumerate
 @item Average ensemble members of each model using @command{ncea} (@pxref{ncea netCDF Ensemble Averager})
 @item Average the record dimension using @command{ncra} (@pxref{ncra netCDF Record Averager})
-@item Store results of each model as a distinct group in a single output file using @command{ncecat} (@pxref{ncrcat netCDF Record Concatenator}) with the @samp{--gag} option
+@item Store results of each model as a distinct group in a single output file using @command{ncecat} (@pxref{ncrcat netCDF Record Concatenator}) with the @option{--gag} option
 @end enumerate
 @example
 @verbatiminclude xmp/glb_avg.sh
@@ -15483,6 +15515,19 @@ Key steps include:
 @node Annual Average over Regions, Monthly Cycle, Global Distribution of Long-term Average, CMIP5 Example
 @section Annual Average over Regions
 @cindex annual average
+@cindex average
+@cindex time-averaging
+@cindex area-averaging
+@cindex dimension order
+@cindex anomalies
+@cindex standard deviation
+@cindex renaming variables
+@cindex attributes, editing
+@cindex	attributes, modifying
+@cindex	attributes, overwriting
+@cindex regression
+@cindex nco script file
+@cindex variables, appending
 @float Figure,fgr:anl
 @image{xmp/fgr2,4in}
 @caption{Annual Average over Regions.}
@@ -15499,19 +15544,26 @@ Key steps include:
 @item Rename variables using @command{ncrename} (@pxref{ncrename netCDF Renamer});
 @item Edit attributions using @command{ncatted} (@pxref{ncatted netCDF Attribute Editor});
 @item Linear regression using @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor});
-@item Use @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor}) with commands file (i.e., @file{.nco} file);
+@item Use @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor}) with nco script file (i.e., @file{.nco} file);
 @item Move variables around using @command{ncks} (@pxref{ncks netCDF Kitchen Sink}).
 @end enumerate
+@strong{Main Script}
 @example
-## Main Script
 @verbatiminclude xmp/ann_avg.sh
-## gsl_rgr.nco
+@end example
+@strong{gsl_rgr.nco}
+@example
 @verbatiminclude xmp/gsl_rgr.nco
 @end example
 
 @node Monthly Cycle, Regrid MODIS Data, Annual Average over Regions, CMIP5 Example
 @section Monthly Cycle
-@cindex Monthly Cycle
+@cindex monthly average
+@cindex average
+@cindex time-averaging
+@cindex anomalies
+@cindex geographical weight
+@cindex weighted average
 @float Figure,fgr:mon
 @image{xmp/fgr3,4in}
 @caption{Monthly Cycle.}
@@ -15524,7 +15576,16 @@ annual average (@pxref{fgr:mon}).
 
 @node Regrid MODIS Data, Add Coordinates to MODIS Data, Monthly Cycle, CMIP5 Example
 @section Regrid @acronym{MODIS} Data
-@cindex Regrid @acronym{MODIS} Data
+@cindex regrid
+@cindex MODIS
+@cindex bilinear interpolation
+@cindex interpolation
+@cindex renaming variables
+@cindex renaming attributes
+@cindex renaming dimensions
+@cindex attributes, editing
+@cindex	attributes, modifying
+@cindex	attributes, overwriting
 In order to compare the results between @acronym{MODIS} and
 @acronym{CMIP5} models, one usually regrids one or both datasets so 
 that the spatial resolutions match. 
@@ -15534,20 +15595,25 @@ Key steps include:
 @item Regrid using bilinear interpolation (@pxref{Bilinear interpolation})
 @item Rename variables, dimensions and attributions using @command{ncrename} (@pxref{ncrename netCDF Renamer}).
 @end enumerate
+@strong{Main Script}
 @example
-## Main Script
 @verbatiminclude xmp/rgr.sh
-## bi_interp.nco
+@end example
+@strong{bi_interp.nco}
+@example
 @verbatiminclude xmp/bi_interp.nco
 @end example
 
 @node Add Coordinates to MODIS Data, Permute MODIS Coordinates, Regrid MODIS Data, CMIP5 Example
 @section Add Coordinates to @acronym{MODIS} Data
-@cindex Add Coordinates to @acronym{MODIS} Data
+@cindex MODIS
+@cindex coordinates
+@strong{Main Script}
 @example
-## Main Script
 @verbatiminclude xmp/add_crd.sh
-## crd.nco
+@end example
+@strong{crd.nco}
+@example
 @verbatiminclude xmp/crd.nco
 @end example
 
@@ -15560,7 +15626,7 @@ Key steps include:
 However, @acronym{CMIP5} orders latitude from -90@textdegree{}N to
 90@textdegree{}N, and longitude from 0@textdegree{}E to
 360@textdegree{}E.  
-This script changes the @acronym{MODIS} coordinates to the
+This script changes the @acronym{MODIS} coordinates to follow the
 @acronym{CMIP5} convention.
 @example
 @verbatiminclude xmp/pmt_crd.sh
@@ -15568,9 +15634,10 @@ This script changes the @acronym{MODIS} coordinates to the
 
 @node Hierarchical Data Files,  , Permute MODIS Coordinates, CMIP5 Example
 @section Hierarchical Data Files
-@cindex Hierarchical Data Files
+@cindex hierarchical data
+@cindex groups
 Hierarchical Data Files support arbitrarily nested groups.
-The following@acronym{NCO} operators now can work recursively through all groups:
+The following @acronym{NCO} operators now can work recursively through all groups:
 @itemize @bullet
 @item @command{ncbo} (@pxref{ncbo netCDF Binary Operator})
 @item @command{ncecat} (@pxref{ncecat netCDF Ensemble Concatenator})
