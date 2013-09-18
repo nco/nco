@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.325 2013-09-18 00:52:49 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.326 2013-09-18 22:55:47 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3395,9 +3395,9 @@ print "\n";
 # same as ncra #02, for groups
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%d' -g g4 -v one_dmn_rec_var %tmp_fl_00%";
-    $dsc_sng="(Groups) record mean of int across two files";
-    $tst_cmd[2]="6";
+    $tst_cmd[1]="ncks -C -g g4 -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="(Groups) 1 group -g g4 -v one_dmn_rec_var record mean of int across two files";
+    $tst_cmd[2]="time[0]=5.5 one_dmn_rec_var[0]=6 kelvin";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
@@ -3427,15 +3427,33 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 
 # ncra #26
-# (Groups) 2 records to process in 2 groups (part 1)
+# (Groups) 2 records to process in 2 groups (part 2)
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23,g24 -v time $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H  -g g24 -v time %tmp_fl_00%";
-    $dsc_sng="(Groups) 2 records to process in 2 groups (part 1) (do record in group only)";
+    $dsc_sng="(Groups) 2 records to process in 2 groups (part 2) (do record in group only)";
     $tst_cmd[2]="time[0]=4";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array		
+    $#tst_cmd=0; # Reset array	
+
+
+# ncra #27
+# (Groups) 1D var 2 records to process in 2 groups (part 1)
+#  ncra -h -O  -g g25g1,g25g2 in_grp_3.nc in_grp_3.nc out.nc
+    
+    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="(Groups) 2 records to process in 2 groups (part 1) (1D variable and record in group)";
+    $tst_cmd[2]="time[0]=5.5 one_dmn_rec_var[0]=6";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+		
+
+
+
+	
 	
 #print "paused - hit return to continue"; my $wait=<STDIN>;
 #print "<<<STOP>>>- hit return to continue"; my $wait=<STDIN>;

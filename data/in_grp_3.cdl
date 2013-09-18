@@ -376,8 +376,8 @@ netcdf in_grp_3 {
 	    rec_var_dbl_mss_val_dbl_pck:purpose = "Packed version of rec_var_dbl_mss_val_dbl_upk";
 	    rec_var_dbl_mss_val_dbl_pck:_FillValue = -999s;
 	    rec_var_dbl_mss_val_dbl_pck:missing_value = -999.;
-      rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
-      rec_var_dbl_mss_val_dbl_pck:add_offset = 5.;
+        rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
+        rec_var_dbl_mss_val_dbl_pck:add_offset = 5.;
 
       double upk;
     	upk:long_name = "Unpacked scalar variable";
@@ -535,5 +535,49 @@ netcdf in_grp_3 {
     snd=1,2,3,4,5,6;
   } // end g24
   
-    
+  
+  
+  //
+  // ncra test cases
+  //
+  
+  group: g25 { 
+  
+    group: g25g1 {
+      dimensions:
+	  time=unlimited;	
+	  variables:
+	  double time(time);
+      int one_dmn_rec_var(time);
+      data:
+	  time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+      one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;    
+    } // end g25g1 
+	
+	group: g25g2 { 
+      dimensions:
+	  time=unlimited;	
+	  variables:
+	  double time(time);
+      int one_dmn_rec_var(time);
+      data:
+	  time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+      one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;     
+    } // end g25g2 
+	
+	group: g25g4 {
+     
+    } // end g25g4
+	
+	group: g25g5 {
+     
+    } // end g25g5 
+	
+	group: g25g6 {
+     
+    } // end g25g6
+
+  } // end g25
+  
+ 
 } // end root group
