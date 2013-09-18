@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.394 2013-09-17 22:31:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.395 2013-09-18 00:52:50 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -163,8 +163,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.394 2013-09-17 22:31:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.394 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.395 2013-09-18 00:52:50 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.395 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -235,14 +235,16 @@ main(int argc,char **argv)
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
 
 #ifndef USE_TRV_API
-  long idx_rec_out=0L; /* [idx] Index of current record in output file (0 is first, ...) */
+  long idx_rec_out=0L;    /* [idx] Index of current record in output file (0 is first, ...) */
+  long rec_in_cml=0L;     /* [nbr] Number of records, read or not, in all processed files */
+  long rec_usd_cml=0L;    /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
 #else
   long *idx_rec_out=NULL; /* [idx] Index of current record in output file (0 is first, ...) */
+  long *rec_in_cml=NULL;  /* [nbr] Number of records, read or not, in all processed files */
+  long *rec_usd_cml=NULL; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
 #endif
-  long rec_in_cml=0L; /* [nbr] Number of records, read or not, in all processed files */
   long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
   long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
-  long rec_usd_cml=0L; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
@@ -1174,11 +1176,15 @@ main(int argc,char **argv)
 
   /* Allocate arrays for multi-records cases */
   idx_rec_out=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
+  rec_in_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
+  rec_usd_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
 
 
   /* Initialize arrays for multi-records cases */
   for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
     idx_rec_out[idx_rec]=0L;
+    rec_in_cml[idx_rec]=0L;
+    rec_usd_cml[idx_rec]=0L;
   } /* Initialize arrays */
 
 
@@ -1312,7 +1318,7 @@ main(int argc,char **argv)
       (void)nco_inq_grp_full_ncid(in_id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
 
       /* Fill record array */
-      (void)nco_lmt_evl(grp_id,trv_tbl->lmt_rec[idx_rec],rec_usd_cml,FORTRAN_IDX_CNV);
+      (void)nco_lmt_evl(grp_id,trv_tbl->lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
 
       if(dbg_lvl_get() >= nco_dbg_dev){ 
         (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>(%ld)\n",prg_nm_get(),
@@ -1440,7 +1446,7 @@ main(int argc,char **argv)
 
             if(prg == ncra){
               nco_bool flg_rth_ntl;
-              if(!rec_usd_cml || (FLG_MRO && REC_FRS_GRP)) flg_rth_ntl=True; else flg_rth_ntl=False;
+              if(!rec_usd_cml[idx_rec] || (FLG_MRO && REC_FRS_GRP)) flg_rth_ntl=True; else flg_rth_ntl=False;
               /* Initialize tally and accumulation arrays when appropriate */
               if(flg_rth_ntl){
                 (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
@@ -1525,14 +1531,14 @@ main(int argc,char **argv)
 
           /* Prepare indices and flags for next iteration */
           if(prg == ncrcat) idx_rec_out[idx_rec]++; /* [idx] Index of current record in output file (0 is first, ...) */
-          rec_usd_cml++; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
+          rec_usd_cml[idx_rec]++; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
           if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
 
           /* Finally, set index for next record or get outta' Dodge */
           if(REC_SRD_LST){
             /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
             long end_max_crr;
-            end_max_crr=min_lng(trv_tbl->lmt_rec[idx_rec]->idx_end_max_abs-rec_in_cml,min_lng(trv_tbl->lmt_rec[idx_rec]->end+trv_tbl->lmt_rec[idx_rec]->drn-1L,rec_dmn_sz-1L));
+            end_max_crr=min_lng(trv_tbl->lmt_rec[idx_rec]->idx_end_max_abs-rec_in_cml[idx_rec],min_lng(trv_tbl->lmt_rec[idx_rec]->end+trv_tbl->lmt_rec[idx_rec]->drn-1L,rec_dmn_sz-1L));
             if(--rec_rmn_prv_drn > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
           }else{ /* !REC_SRD_LST */
             if(--rec_rmn_prv_drn > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=trv_tbl->lmt_rec[idx_rec]->srd-trv_tbl->lmt_rec[idx_rec]->drn+1L;
@@ -1540,7 +1546,7 @@ main(int argc,char **argv)
 
         } /* end master while loop over records in current file */
 
-        rec_in_cml+=rec_dmn_sz; /* [nbr] Cumulative number of records in all files opened so far */
+        rec_in_cml[idx_rec]+=rec_dmn_sz; /* [nbr] Cumulative number of records in all files opened so far */
         trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn=rec_rmn_prv_drn;
 
         if(fl_idx == fl_nbr-1){
@@ -1566,10 +1572,10 @@ main(int argc,char **argv)
             rec_nbr_trn=max_int(rec_nbr_spn_max-rec_nbr_spn_act,0L);
             /* Records requested is maximum minus any truncated in last group */
             rec_nbr_rqs=rec_nbr_rqs_max-rec_nbr_trn;
-            if(rec_nbr_rqs != rec_usd_cml) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found and used\n"),prg_nm_get(),rec_nbr_rqs,rec_usd_cml);
+            if(rec_nbr_rqs != rec_usd_cml[idx_rec]) (void)fprintf(fp_stdout,gettext("%s: WARNING User requested %li records but only %li were found and used\n"),prg_nm_get(),rec_nbr_rqs,rec_usd_cml[idx_rec]);
           } /* end if */
           /* ... and die if no records were read ... */
-          if(rec_usd_cml <= 0){
+          if(rec_usd_cml[idx_rec] <= 0){
             (void)fprintf(fp_stdout,gettext("%s: ERROR No records lay within specified hyperslab\n"),prg_nm_get());
             nco_exit(EXIT_FAILURE);
           } /* end if */
@@ -1772,6 +1778,8 @@ main(int argc,char **argv)
     (void)trv_tbl_free(trv_tbl);
 
     idx_rec_out=(long *)nco_free(idx_rec_out);
+    rec_in_cml=(long *)nco_free(rec_in_cml);
+    rec_usd_cml=(long *)nco_free(rec_usd_cml);
 #endif /* !USE_TRV_API */
   } /* !flg_cln */
 

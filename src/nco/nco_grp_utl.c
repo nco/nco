@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.974 2013-09-17 22:31:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.975 2013-09-18 00:52:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1555,6 +1555,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_plc,var_prc);
 
         (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,PCK_ATT_CPY);
+
+        var_prc=(var_sct *)nco_free(var_prc);
       } /* !CPY_VAR_METADATA */
 
       /* Pre-allocate space for MD5 attributes */
@@ -4626,6 +4628,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Obtain netCDF type to define variable from NCO program ID */
     var_typ_out=nco_get_typ(var_prc);
+
+    var_prc=(var_sct *)nco_free(var_prc);
   }
 
 

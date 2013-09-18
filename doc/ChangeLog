@@ -1,3 +1,7 @@
+2013-09-17 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncra regressions #25,26 2 records to process in 2 groups (do record in group only)
+
 2013-09-17  Charlie Zender  <zender@uci.edu>
 
 	* GPE operations allow netCDF3 output from netCDF4 input when

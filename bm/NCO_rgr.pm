@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.324 2013-09-15 22:45:22 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.325 2013-09-18 00:52:49 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3404,12 +3404,35 @@ print "\n";
 	
 	
 # ncra #24
-# test records in groups
+# (Groups) 1 record to process in 1 group
     
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H  -g g23 -v time %tmp_fl_00%";
-    $dsc_sng="(Groups) records in groups";
+    $dsc_sng="(Groups) 1 record to process in 1 group -g g23 (do variable and record in group) ";
     $tst_cmd[2]="time[0]=1.5";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+
+		
+# ncra #25
+# (Groups) 2 records to process in 2 groups (part 1)
+    
+    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23,g24 -v time $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H  -g g23 -v time %tmp_fl_00%";
+    $dsc_sng="(Groups) 2 records to process in 2 groups (part 1) (do record in group only)";
+    $tst_cmd[2]="time[0]=1.5";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+
+# ncra #26
+# (Groups) 2 records to process in 2 groups (part 1)
+    
+    $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -g g23,g24 -v time $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H  -g g24 -v time %tmp_fl_00%";
+    $dsc_sng="(Groups) 2 records to process in 2 groups (part 1) (do record in group only)";
+    $tst_cmd[2]="time[0]=4";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
