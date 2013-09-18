@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.860 2013-09-18 23:53:26 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.861 2013-09-18 23:55:43 woodllan Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -15496,7 +15496,7 @@ Key steps include:
 @cindex average
 @cindex time-averaging
 @float Figure,fgr:glb
-@image{fgr1,3.5in} 
+@image{xmp/fgr1,3.5in} 
 @caption{Global Distribution of Long-term Average.}
 @end float
 @noindent
@@ -15529,7 +15529,7 @@ Key steps include:
 @cindex nco script file
 @cindex variables, appending
 @float Figure,fgr:anl
-@image{fgr2,4in}
+@image{xmp/fgr2,4in}
 @caption{Annual Average over Regions.}
 @end float
 This section illustrates how to calculate the annual average over
@@ -15565,7 +15565,7 @@ Key steps include:
 @cindex geographical weight
 @cindex weighted average
 @float Figure,fgr:mon
-@image{fgr3,4in}
+@image{xmp/fgr3,4in}
 @caption{Monthly Cycle.}
 @end float
 This script illustrates how to calculate the monthly anomaly from the
