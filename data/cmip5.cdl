@@ -1,15 +1,13 @@
-// Generate netCDF file with:
 // ncgen -k netCDF-4 -b -o ~/nco/data/cmip5.nc ~/nco/data/cmip5.cdl
 
 netcdf cmip5 {
+  :Conventions = "CF-2.x";
+  :history = "yada yada yada";
+  :Scenario = "RCP 8.5";
+
+  group: cesm { 
   dimensions:
   time=unlimited;
-  :Collection = "CMIP5 RCP 8.5 Scenario";
- 
-  //
-  //cesm
-  //
-  group: cesm { 
   variables:
   float tas(time);
   :Model = "CESM";
@@ -17,10 +15,9 @@ netcdf cmip5 {
   tas=272,272,272,272;
   } // end cesm
   
-  //
-  //ecmwf
-  //
   group: ecmwf { 
+  dimensions:
+  time=unlimited;
   variables:
   float tas(time);
   :Model = "ECMWF";
@@ -28,13 +25,12 @@ netcdf cmip5 {
   tas=273,273,273,273;
   } // end ecmwf
   
-  //
-  //gfdl
-  //
-  group: gfdl { 
+  group: giss { 
+  dimensions:
+  time=unlimited;
   variables:
   float tas(time);
-  :Model = "GFDL";
+  :Model = "GISS";
   data:
   tas=274,274,274,274;
   } // end gfdl

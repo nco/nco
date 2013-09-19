@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.400 2013-09-17 00:25:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.401 2013-09-19 03:02:20 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -421,7 +421,7 @@ extern "C" {
   }; /* end nco_upk_cnv */
 
   enum nco_rth_cnv{ /* [enm] Arithmetic convention to assume */
-    nco_rth_flt_flt, /* 0 Keep single precision floating point (default and NCO historical norm) */
+    nco_rth_flt_flt, /* 0 Keep single-precision floating point (default and NCO historical norm) */
     nco_rth_flt_dbl  /* 1 Promote single-precision floating point to double before arithmetic */
   }; /* end nco_rth_cnv */
 

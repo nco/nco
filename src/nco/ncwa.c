@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.368 2013-09-11 22:07:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.369 2013-09-19 03:02:20 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.368 2013-09-11 22:07:11 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.368 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.369 2013-09-19 03:02:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.369 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -238,7 +238,9 @@ main(int argc,char **argv)
     {"ddra",no_argument,0,0}, /* [flg] DDRA diagnostics */
     {"mdl_cmp",no_argument,0,0}, /* [flg] DDRA diagnostics */
     {"dbl",no_argument,0,0}, /* [flg] Arithmetic convention: promote float to double */
+    {"flt",no_argument,0,0}, /* [flg] Arithmetic convention: keep single-precision */
     {"rth_dbl",no_argument,0,0}, /* [flg] Arithmetic convention: promote float to double */
+    {"rth_flt",no_argument,0,0}, /* [flg] Arithmetic convention: keep single-precision */
     {"hdf_upk",no_argument,0,0}, /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
     {"hdf_unpack",no_argument,0,0}, /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
     {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
@@ -382,6 +384,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"dbl") || !strcmp(opt_crr,"rth_dbl")) nco_rth_cnv=nco_rth_flt_dbl; /* [flg] Arithmetic convention: promote float to double */
+      if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"rth_flt")) nco_rth_cnv=nco_rth_flt_flt; /* [flg] Arithmetic convention: keep single-precision */
       if(!strcmp(opt_crr,"hdf_upk") || !strcmp(opt_crr,"hdf_unpack")) nco_upk_cnv=nco_upk_HDF; /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);

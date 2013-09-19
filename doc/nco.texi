@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.861 2013-09-18 23:55:43 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.862 2013-09-19 03:02:19 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -388,19 +388,19 @@ Charlie Zender
 @end ifinfo
 
 @menu
-* Foreword::                    
-* Summary::                     
-* Introduction::                
-* Strategies::                  
-* Common features::             
-* Operator Reference Manual::   
-* Contributing::                
-* Quick Start::                 
-* CMIP5 Example::               
-* Parallel::                    
-* CCSM Example::                
-* mybibnode::                   
-* General Index::               
+* Foreword::
+* Summary::
+* Introduction::
+* Strategies::
+* Common features::
+* Operator Reference Manual::
+* Contributing::
+* Quick Start::
+* CMIP5 Example::
+* Parallel::
+* CCSM Example::
+* mybibnode::
+* General Index::
 @end menu
 
 @html
@@ -533,12 +533,12 @@ netCDF itself.
 @cindex introduction
 
 @menu
-* Availability::                
-* Compatability::               
-* Symbolic Links::              
-* Libraries::                   
-* netCDF2/3/4 and HDF4/5 Support::  
-* Help Requests and Bug Reports::  
+* Availability::
+* Compatability::
+* Symbolic Links::
+* Libraries::
+* netCDF2/3/4 and HDF4/5 Support::
+* Help Requests and Bug Reports::
 @end menu
 
 @node Availability, Compatability, Introduction, Introduction
@@ -843,7 +843,7 @@ platform, and the change in the wallclock time for execution.}.
 @end ignore
 
 @menu
-* Windows Operating System::    
+* Windows Operating System::
 @end menu
 
 @html
@@ -1324,16 +1324,16 @@ differences between these files and your own.
 @chapter Operator Strategies
 
 @menu
-* Philosophy::                  
-* Climate Model Paradigm::      
-* Temporary Output Files::      
-* Appending Variables::         
-* Simple Arithmetic and Interpolation::  
-* Averaging vs. Concatenating::  
-* Large Numbers of Files::      
-* Large Datasets::              
-* Memory Requirements::         
-* Performance::                 
+* Philosophy::
+* Climate Model Paradigm::
+* Temporary Output Files::
+* Appending Variables::
+* Simple Arithmetic and Interpolation::
+* Averaging vs. Concatenating::
+* Large Numbers of Files::
+* Large Datasets::
+* Memory Requirements::
+* Performance::
 @end menu
 
 @html
@@ -1655,9 +1655,9 @@ averaging options---including weighting, masking, and broadcasting.}.
 First, let's describe the concatenators, then the averagers. 
 
 @menu
-* Concatenation::               
-* Averaging::                   
-* Interpolating::               
+* Concatenation::
+* Averaging::
+* Interpolating::
 @end menu
 
 @html
@@ -2045,8 +2045,8 @@ Memory consumption patterns of all operators are similar, with
 the exception of @command{ncap2}.
 
 @menu
-* Single and Multi-file Operators::  
-* Memory for ncap2::            
+* Single and Multi-file Operators::
+* Memory for ncap2::
 @end menu
 
 @node Single and Multi-file Operators, Memory for ncap2, Memory Requirements, Memory Requirements
@@ -2256,44 +2256,44 @@ If no ``key switches'' are listed for a feature, then that particular
 feature is automatic and cannot be controlled by the user. 
 
 @menu
-* Internationalization::        
-* Metadata Optimization::       
-* OpenMP Threading::            
-* Command Line Options::        
-* Specifying Input Files::      
-* Specifying Output Files::     
-* Remote storage::              
-* Retaining Retrieved Files::   
-* Selecting Output File Format::  
-* Large File Support::          
-* Subsetting Files::            
-* Subsetting Coordinate Variables::  
-* Group Path Editing::          
-* C and Fortran Index Conventions::  
-* Hyperslabs::                  
-* Stride::                      
-* Record Appending::            
-* Duration::                    
-* Multislabs::                  
-* Wrapped Coordinates::         
-* Auxiliary Coordinates::       
-* UDUnits Support::             
-* Rebasing Time Coordinate::    
-* Missing Values::              
-* Chunking::                    
-* Deflation::                   
-* MD5 digests::                 
-* Buffer sizes::                
-* RAM disks::                   
-* Packed data::                 
-* Operation Types::             
-* Type Conversion::             
-* Batch Mode::                  
-* History Attribute::           
-* File List Attributes::        
-* CF Conventions::              
-* ARM Conventions::             
-* Operator Version::            
+* Internationalization::
+* Metadata Optimization::
+* OpenMP Threading::
+* Command Line Options::
+* Specifying Input Files::
+* Specifying Output Files::
+* Remote storage::
+* Retaining Retrieved Files::
+* Selecting Output File Format::
+* Large File Support::
+* Subsetting Files::
+* Subsetting Coordinate Variables::
+* Group Path Editing::
+* C and Fortran Index Conventions::
+* Hyperslabs::
+* Stride::
+* Record Appending::
+* Duration::
+* Multislabs::
+* Wrapped Coordinates::
+* Auxiliary Coordinates::
+* UDUnits Support::
+* Rebasing Time Coordinate::
+* Missing Values::
+* Chunking::
+* Deflation::
+* MD5 digests::
+* Buffer sizes::
+* RAM disks::
+* Packed data::
+* Operation Types::
+* Type Conversion::
+* Batch Mode::
+* History Attribute::
+* File List Attributes::
+* CF Conventions::
+* ARM Conventions::
+* Operator Version::
 @end menu
 
 @html
@@ -2970,7 +2970,7 @@ Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
 syntactically more clear.
 
 @menu
-* OPeNDAP::                     
+* OPeNDAP::
 @end menu
 
 @html
@@ -6608,7 +6608,7 @@ Availability (automatic type conversion): @command{ncap2}, @command{ncbo}, @comm
 Short options: None (it's @emph{automatic})@*
 Availability (manual type conversion): @command{ncea}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
-Long options: @samp{--dbl}, @samp{--rth_dbl}@* 
+Long options: @samp{--dbl}, @samp{--flt}, @samp{--rth_dbl}, @samp{--rth_flt}@* 
 @end cartouche
 @cindex promotion
 @cindex demotion
@@ -6628,9 +6628,9 @@ Most type conversion happens automatically, yet there are situations in
 which manual type conversion is advantageous.
 
 @menu
-* Automatic type conversion::   
-* Promoting Single-precision to Double::  
-* Manual type conversion::      
+* Automatic type conversion::
+* Promoting Single-precision to Double::
+* Manual type conversion::
 @end menu
 
 @node Automatic type conversion, Promoting Single-precision to Double, Type Conversion, Type Conversion
@@ -6805,6 +6805,8 @@ stores it on disk as
 @cindex implicit conversion
 @cindex @code{--dbl}
 @cindex @code{--rth_dbl}
+@cindex @code{--flt}
+@cindex @code{--rth_flt}
 Promotion of real numbers from single- to double-precision is
 fundamental to scientific computing.
 When it should occur depends on the precision of the inputs and the
@@ -6940,8 +6942,9 @@ order.
 Bit-for-bit identical answers may also occur by happenstance when 
 rounding errors exactly compensate one another.
 This is demonstrated by repeating the example above with the
-@samp{--dbl} option to force converion of single-precision numbers to
-double-precision prior to arithmetic.
+@samp{--dbl} (or @samp{--rth_dbl} for clarity) option which forces
+conversion of single-precision numbers to double-precision prior to
+arithmetic. 
 Now @command{ncra} will treat the first value of @code{tpt_flt},
 @code{273.1000f}, as @code{273.1000000000000d}. 
 Arithmetic on @code{tpt_flt} then proceeds in double-precision until the
@@ -6972,6 +6975,11 @@ But now the two methods produce bit-for-bit identical results from the
 single-precision inputs!
 This is due to the happenstance of rounding along with the effects of 
 the @samp{--dbl} switch.
+The @samp{--flt} and @samp{--rth_flt} switches are provided for
+symmetry.
+They enforce the traditional @acronym{NCO} and Fortran convention of
+keeping single-precision arithmetic in single-precision unless a
+double-precision number is explicitly involved.
 
 As has been seen, forced promotion of single- to double-precision
 prior to arithmetic has advantages and disadvantages. 
@@ -7145,8 +7153,10 @@ little sense, so the option is not currently made available.
 
 At the time of this writing (September 2013), we are interested in
 users' opinions on these matters. 
+Currently the default behavior is @samp{--flt}.
+We are willing to change the default to @samp{--dbl} if users prefer.
+One way of 
 Please let us know what you think of the selected defaults and options.
-We are open to changing them.
 
 @node Manual type conversion,  , Promoting Single-precision to Double, Type Conversion
 @subsection Manual type conversion
@@ -7570,18 +7580,18 @@ Only options specific to, or most useful with, a particular operator are
 described in any detail in the sections below.  
 
 @menu
-* ncap2 netCDF Arithmetic Processor::  
-* ncatted netCDF Attribute Editor::  
-* ncbo netCDF Binary Operator::  
-* ncea netCDF Ensemble Averager::  
-* ncecat netCDF Ensemble Concatenator::  
-* ncflint netCDF File Interpolator::  
-* ncks netCDF Kitchen Sink::    
-* ncpdq netCDF Permute Dimensions Quickly::  
-* ncra netCDF Record Averager::  
-* ncrcat netCDF Record Concatenator::  
-* ncrename netCDF Renamer::     
-* ncwa netCDF Weighted Averager::  
+* ncap2 netCDF Arithmetic Processor::
+* ncatted netCDF Attribute Editor::
+* ncbo netCDF Binary Operator::
+* ncea netCDF Ensemble Averager::
+* ncecat netCDF Ensemble Concatenator::
+* ncflint netCDF File Interpolator::
+* ncks netCDF Kitchen Sink::
+* ncpdq netCDF Permute Dimensions Quickly::
+* ncra netCDF Record Averager::
+* ncrcat netCDF Record Concatenator::
+* ncrename netCDF Renamer::
+* ncwa netCDF Weighted Averager::
 @end menu
 
 @page
@@ -7666,33 +7676,33 @@ already contain the appended dimensions.
 @c @subsection Scripting Mathematical Processing with @command{ncap2}
 
 @menu
-* Syntax of ncap2 statements::  
-* Expressions::                 
-* Dimensions::                  
-* Left hand casting::           
-* Arrays and hyperslabs::       
-* Attributes::                  
-* Number literals::             
-* if statement::                
-* print statement::             
-* Missing values ncap2::        
-* Methods and functions::       
-* RAM variables::               
-* Where statement::             
-* Loops::                       
-* Include files::               
-* Sort methods::                
-* Irregular grids::             
-* Bilinear interpolation::      
-* GSL special functions::       
-* GSL interpolation::           
-* GSL least-squares fitting::   
-* GSL statistics::              
-* GSL random number generation::  
-* Examples ncap2::              
-* Intrinsic mathematical methods::  
-* Operator precedence and associativity ::  
-* ID Quoting::                  
+* Syntax of ncap2 statements::
+* Expressions::
+* Dimensions::
+* Left hand casting::
+* Arrays and hyperslabs::
+* Attributes::
+* Number literals::
+* if statement::
+* print statement::
+* Missing values ncap2::
+* Methods and functions::
+* RAM variables::
+* Where statement::
+* Loops::
+* Include files::
+* Sort methods::
+* Irregular grids::
+* Bilinear interpolation::
+* GSL special functions::
+* GSL interpolation::
+* GSL least-squares fitting::
+* GSL statistics::
+* GSL random number generation::
+* Examples ncap2::
+* Intrinsic mathematical methods::
+* Operator precedence and associativity ::
+* ID Quoting::
 @end menu
 
 @html
@@ -11942,7 +11952,7 @@ or @code{lon} dimension.
 Group broadcasting simplifies evaluation of multiple models against
 observations.
 Consider the input file @file{cmip5.nc} which contains multiple
-top-level groups @code{cesm}, @code{ecmwf}, and @code{gfdl}, each of
+top-level groups @code{cesm}, @code{ecmwf}, and @code{giss}, each of
 which contains the surface air temperature field @code{tas}.
 We wish to compare these models to observations stored in @file{obs.nc} 
 which contains @code{tas} only in its top-level (i.e., root) group.
@@ -11961,7 +11971,7 @@ which has the same group structure as @file{cmip5.nc}.
 time[3] tas[3]=-1 
 /ecmwf/tas
 time[3] tas[3]=0 
-/gfdl/tas
+/giss/tas
 time[3] tas[3]=1 
 @end example
 @noindent
@@ -12039,10 +12049,10 @@ SYNTAX
 @example
 ncea [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--dbl] [-F]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
+[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -13190,7 +13200,7 @@ features would be useful to you.
 <a name="flt"></a> <!-- http://nco.sf.net/nco.html#flt -->
 @end html
 @menu
-* Filters for @command{ncks}::  
+* Filters for @command{ncks}::
 @end menu
 
 @node Filters for @command{ncks},  , ncks netCDF Kitchen Sink, ncks netCDF Kitchen Sink
@@ -14089,10 +14099,10 @@ SYNTAX
 @example
 ncra [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [--dbl] [-F]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-n @var{loop}] [--no_tmp_fl]
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rec_apn]
+[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -14550,12 +14560,12 @@ SYNTAX
 @example
 ncwa [-3] [-4] [-6] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--dbl] [-F]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}] [-I]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] [--no_tmp_fl]
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [-T @var{mask_comp}]
-[-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}] [-X ...] [-x]
-[-y @var{op_typ}]
+[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rth_dbl|flt]
+[-T @var{mask_comp}] [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w @var{weight}]
+[-X ...] [-x] [-y @var{op_typ}]
 @var{input-file} [@var{output-file}]
 @end example
 
@@ -14678,8 +14688,8 @@ The mathematical definition of operations involving rank reduction
 is given above (@pxref{Operation Types}).
 
 @menu
-* Mask condition::              
-* Normalization and Integration::  
+* Mask condition::
+* Normalization and Integration::
 @end menu
 
 @html
@@ -15077,8 +15087,8 @@ So you could be the third!
 <a name="ppl"></a> <!-- http://nco.sf.net/nco.html#ppl -->
 @end html
 @menu
-* Contributors::                
-* Proposals for Institutional Funding::  
+* Contributors::
+* Proposals for Institutional Funding::
 @end menu
 
 @node Contributors, Proposals for Institutional Funding, Contributing, Contributing
@@ -15303,10 +15313,10 @@ Here we include monthly, seasonal and annual average with daily or
 monthly data in either one file or multiple files. 
 
 @menu
-* Daily data in one file::      
-* Monthly data in one file::    
-* One time point one file::     
-* Multiple files with multiple time points::  
+* Daily data in one file::
+* Monthly data in one file::
+* One time point one file::
+* Multiple files with multiple time points::
 @end menu
 
 @node Daily data in one file, Monthly data in one file, Quick Start, Quick Start
@@ -15416,7 +15426,7 @@ for moy in @{1..12@}; do          # Loop over months
 done
 @end example
 
-@node Multiple files with multiple time points, CMIP5 Example, One time point one file, Quick Start
+@node Multiple files with multiple time points,  , One time point one file, Quick Start
 @section Multiple files with multiple time points
 @cindex daily data
 @cindex monthly data
@@ -15463,14 +15473,14 @@ single commands by exploiting @acronym{NCO}'s new group aggregation and
 arithmetic features.  
 
 @menu
-* Combine Files::               
-* Global Distribution of Long-term Average::  
-* Annual Average over Regions::  
-* Monthly Cycle::               
-* Regrid MODIS Data::           
-* Add Coordinates to MODIS Data::  
-* Permute MODIS Coordinates::   
-* Hierarchical Data Files::     
+* Combine Files::
+* Global Distribution of Long-term Average::
+* Annual Average over Regions::
+* Monthly Cycle::
+* Regrid MODIS Data::
+* Add Coordinates to MODIS Data::
+* Permute MODIS Coordinates::
+* Hierarchical Data Files::
 @end menu
 
 @node Combine Files, Global Distribution of Long-term Average, CMIP5 Example, CMIP5 Example

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.605 2013-09-17 17:43:18 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.606 2013-09-19 03:02:19 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.5 are ready. 
 
@@ -15,13 +15,12 @@ performed on large arrays of single precision floats.
 Now NCO has the --dbl switch that forces operators to coerce
 single-precision numbers to double-precision for arithemetic.
 It is expensive in terms of time and RAM, and often not warranted.
-Yet if you want your NCO answers on single-precision fields to always
-agree exactly with other tools---like NCL, Matlab, or IDL--then use
-this switch. The manual now contains a detailed discussion of the
-issues and appropriate use cases.
+Use this switch if you want your NCO answers on single-precision
+fields to always agree exactly with other tools (NCL, Matlab, IDL).
+The manual now contains a detailed discussion of the issues.
 
-Unfortunately software progress sometimes comes at a price in bugs :)
-4.3.5 fixes a nasty bug in introduced in ncwa 4.3.3 and 4.3.4.
+Unfortunately progress sometimes comes at a price in bugs :)
+4.3.5 fixes a nasty ncwa bug in introduced in 4.3.3 and 4.3.4.
 Nasty means that it could produce wrong answers that look right.
 Fortunately, it could only occur when simultaneously averaging and
 hyperslabbing, e.g., ncwa -a lat,lon -d lat,0.,90. in.nc out.nc.
