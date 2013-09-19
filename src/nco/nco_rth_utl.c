@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.56 2013-09-16 22:32:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.57 2013-09-19 03:35:18 pvicente Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -39,7 +39,9 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
  const int nbr_var_prc, /* I [nbr] Number of processed variables */
  X_CST_PTR_CST_PTR_Y(var_sct,var_prc), /* I [sct] Variables in input file */
  X_CST_PTR_CST_PTR_Y(var_sct,var_prc_out), /* I/O [sct] Variables in output file */
- const nco_bool flg_nrm) /* I [flg] This record needs normalization */
+ const nco_bool flg_nrm, /* I [flg] This record needs normalization */
+ const char * const rec_nm_fll,      /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
   /* Purpose: Normalize appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
      Values of var_prc are not altered but are not const because missing values are cast
@@ -56,6 +58,15 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
 #pragma omp parallel for default(none) private(idx) shared(nbr_var_prc_cpy,nco_op_typ_cpy,var_prc,var_prc_out)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc_cpy;idx++){
+
+    /* Skip variable if does not relate to current record */
+    if (rec_nm_fll){
+      nco_bool flg_skp=nco_skp_var(var_prc[idx],rec_nm_fll,trv_tbl);
+      if (flg_skp){
+        continue;
+      }
+    }
+
     if(var_prc[idx]->is_crd_var){
       /* Return linear averages of coordinates unless computing extrema
       Prevent coordinate variables from encountering nco_var_nrm_sdn() */

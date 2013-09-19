@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.397 2013-09-19 01:31:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.398 2013-09-19 03:35:18 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -167,8 +167,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.397 2013-09-19 01:31:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.397 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.398 2013-09-19 03:35:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.398 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1400,6 +1400,7 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 
+            /* Skip variable if does not relate to current record */
             nco_bool flg_skp=nco_skp_var(var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
             if (flg_skp){
               continue;
@@ -1505,12 +1506,13 @@ main(int argc,char **argv)
           if(prg == ncra && ((FLG_MRO && REC_LST_GRP) || REC_LST_DSR[idx_rec])){
             /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
             except ncra normalizes after every drn records, while ncea normalizes once, after files loop. */
-            (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True);
+            (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
             FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
 
             /* Copy averages to output file */
             for(idx=0;idx<nbr_var_prc;idx++){
 
+              /* Skip variable if does not relate to current record */
               nco_bool flg_skp=nco_skp_var(var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
               if (flg_skp){
                 continue;
@@ -1685,7 +1687,7 @@ main(int argc,char **argv)
   Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
   In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
   FLG_BFR_NRM is always true here for ncea */
-  if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True);
+  if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True,NULL,trv_tbl);
 
   /* Manually fix YYMMDD date which was mangled by averaging */
   if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(grp_out_id,var_out,xtr_nbr);
