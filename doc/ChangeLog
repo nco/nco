@@ -1,3 +1,7 @@
+2013-09-18 Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncra regressions #27,28 2 records to process in 2 groups (do record and variables in group)
+	
 2013-09-18  Charlie Zender  <zender@uci.edu>
 
 	* Add --flt and --rth_flt switches for symmetry to --dbl and --rth_dbl
