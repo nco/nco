@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.399 2013-09-19 06:20:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.400 2013-09-19 21:27:55 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -167,8 +167,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.399 2013-09-19 06:20:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.399 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.400 2013-09-19 21:27:55 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.400 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1226,15 +1226,6 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-  /* TO_DO */
-  if(REC_APN){
-    idx_rec=0;
-    /* Append records directly to output file */
-    int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
-    nco_inq_dimid(out_id,trv_tbl->lmt_rec[idx_rec]->nm,&rec_dmn_out_id);
-    nco_inq_dimlen(out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
-  } /* !REC_APN */
-
   /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
 
@@ -1322,6 +1313,17 @@ main(int argc,char **argv)
 
       /* Fill record array */
       (void)nco_lmt_evl(grp_id,trv_tbl->lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
+
+      if(REC_APN){
+        /* Append records directly to output file */
+        int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
+        /* Get group ID using record group full name */
+        (void)nco_inq_grp_full_ncid(out_id,trv_tbl->lmt_rec[idx_rec]->nm_fll,&grp_out_id);
+
+        /* TO_DO: this assumes only 1 record in this group */
+        (void)nco_inq_dimid(grp_out_id,trv_tbl->lmt_rec[idx_rec]->nm,&rec_dmn_out_id);
+        (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
+      } /* !REC_APN */
 
       if(dbg_lvl_get() >= nco_dbg_dev){ 
         (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>(%ld)\n",prg_nm_get(),
