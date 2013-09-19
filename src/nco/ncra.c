@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.396 2013-09-18 03:23:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.397 2013-09-19 01:31:13 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -134,7 +134,11 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool REC_APN=False; /* [flg] Append records directly to output file */
   nco_bool REC_FRS_GRP=False; /* [flg] Record is first in current group */
+#ifndef USE_TRV_API
   nco_bool REC_LST_DSR=False; /* [flg] Record is last desired from all input files */
+#else
+  nco_bool *REC_LST_DSR=NULL; /* [flg] Record is last desired from all input files */
+#endif
   nco_bool REC_LST_GRP=False; /* [flg] Record is last in current group */
   nco_bool REC_SRD_LST=False; /* [flg] Record belongs to last stride of current file */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -163,8 +167,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.396 2013-09-18 03:23:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.396 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.397 2013-09-19 01:31:13 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.397 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1178,16 +1182,15 @@ main(int argc,char **argv)
   idx_rec_out=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
   rec_in_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
   rec_usd_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
-
+  REC_LST_DSR=(nco_bool *)nco_malloc(trv_tbl->nbr_rec*sizeof(nco_bool));
 
   /* Initialize arrays for multi-records cases */
   for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
     idx_rec_out[idx_rec]=0L;
     rec_in_cml[idx_rec]=0L;
     rec_usd_cml[idx_rec]=0L;
+    REC_LST_DSR[idx_rec]=False;
   } /* Initialize arrays */
-
-
 
   /* Is this an ARM-format data file? */
   CNV_ARM=nco_cnv_arm_inq(in_id);
@@ -1374,7 +1377,9 @@ main(int argc,char **argv)
           /* Each group comprises DRN records */
           if(REC_FRS_GRP) rec_rmn_prv_drn=trv_tbl->lmt_rec[idx_rec]->drn;
           /* Final record triggers normalization regardless of its location within group */
-          if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(trv_tbl->lmt_rec[idx_rec]->end+trv_tbl->lmt_rec[idx_rec]->drn-1L,rec_dmn_sz-1L)) REC_LST_DSR=True;
+          if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(trv_tbl->lmt_rec[idx_rec]->end+trv_tbl->lmt_rec[idx_rec]->drn-1L,rec_dmn_sz-1L)){
+            REC_LST_DSR[idx_rec]=True;
+          }
           /* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
           if(rec_rmn_prv_drn == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
 
@@ -1492,12 +1497,12 @@ main(int argc,char **argv)
             Otherwise missing_value will be double-promoted when next record read 
             Do not convert after last record otherwise normalization fails 
             due to wrong missing_value type (needs promoted type, not unpacked type) */
-            if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !REC_LST_DSR) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
+            if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !REC_LST_DSR[idx_rec]) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
             /* Free current input buffer */
             var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
           } /* end (OpenMP parallel for) loop over variables */
 
-          if(prg == ncra && ((FLG_MRO && REC_LST_GRP) || REC_LST_DSR)){
+          if(prg == ncra && ((FLG_MRO && REC_LST_GRP) || REC_LST_DSR[idx_rec])){
             /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
             except ncra normalizes after every drn records, while ncea normalizes once, after files loop. */
             (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True);
@@ -1780,6 +1785,7 @@ main(int argc,char **argv)
     idx_rec_out=(long *)nco_free(idx_rec_out);
     rec_in_cml=(long *)nco_free(rec_in_cml);
     rec_usd_cml=(long *)nco_free(rec_usd_cml);
+    REC_LST_DSR=(nco_bool *)nco_free(REC_LST_DSR);
 #endif /* !USE_TRV_API */
   } /* !flg_cln */
 
