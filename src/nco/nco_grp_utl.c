@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.976 2013-09-18 03:23:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.977 2013-09-19 04:44:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6398,6 +6398,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
             int rcd=nco_inq_varid_flg(grp_id,var_trv.var_dmn[idx_var_dmn].dmn_nm,&var_id);
 
             /* Obtain record coordinate metadata */
+            trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng=NULL;
             if(rcd == NC_NOERR){ 
               char *cln_att_sng=NULL;     
               trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng=nco_lmt_get_udu_att(grp_id,var_id,"units"); 
