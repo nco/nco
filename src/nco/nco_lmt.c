@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.197 2013-09-17 04:45:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.198 2013-09-20 19:12:06 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -406,6 +406,10 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     all default settings specified (e.g.,"-d foo,,,,") yields same answer
     as branch for which no hyperslab along that dimension was set. */
     lmt[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+
+    /* Initialize to NULL/invalid */
+    (void)nco_lmt_init(lmt[idx]);
+
     lmt[idx]->nm=NULL;
     lmt[idx]->is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
     lmt[idx]->min_sng=NULL;
