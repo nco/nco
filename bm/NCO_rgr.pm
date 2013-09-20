@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.329 2013-09-20 05:23:36 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.330 2013-09-20 07:23:39 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2619,7 +2619,7 @@ print "\n";
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -v two_dmn_var in.nc out.nc
 # ncks -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
-# $tst_cmd[2]="lev[1] lat[1] two_dmn_var[3]=17.5 fraction";
+
 
 # same as previous but with group
     
@@ -2631,7 +2631,7 @@ print "\n";
 # two_dmn_var (lat,lev) -C, no MSA (no associated coordinates)
 # ncpdq -O -C -g g19g1 -a lev,lat -v two_dmn_var in_grp_3.nc out.nc
 # ncks -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
-# lev[1] lat[1] two_dmn_var[3]=17.5 fraction
+
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -C -g g19g1 -a lev,lat -v two_dmn_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
@@ -2647,7 +2647,7 @@ print "\n";
 # two_dmn_var (lat,lev) no -C, no MSA
 # ncpdq -O -a lev,lat -v two_dmn_var in.nc out.nc
 # ncks  -C -d lat,1,1 -d lev,1,1 out.nc
-#$tst_cmd[2]="lev[1]=500 lat[1]=90 two_dmn_var[3]=17.5 fraction";
+
 
 # same as previous but with group
     
@@ -2659,7 +2659,6 @@ print "\n";
 # two_dmn_var (lat,lev) no -C, no MSA 
 # ncpdq -O -g g19g1 -a lev,lat -v two_dmn_var in_grp_3.nc out.nc
 # ncks -C -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 out.nc
-# lev[1]=500 lat[1]=90 two_dmn_var[3]=17.5 fraction
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -a lev,lat -v two_dmn_var $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g1 -v two_dmn_var -d lat,1,1 -d lev,1,1 %tmp_fl_00%";
@@ -2674,7 +2673,7 @@ print "\n";
 # two_dmn_var (lat,lev) -C, MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in.nc out.nc
 # ncks out.nc
-#$tst_cmd[2]="lev[0] lat[0] two_dmn_var[0]=17.5 fraction";
+
 
 # same as previous but with group
     
@@ -2686,7 +2685,7 @@ print "\n";
 # two_dmn_var (lat,lev) -C, MSA (no associated coordinates)
 # ncpdq -O -C -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in_grp_3.nc out.nc
 # ncks out.nc
-#$tst_cmd[2]="lev[0] lat[0] two_dmn_var[0]=17.5 fraction";
+
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -C -a lev,lat -v two_dmn_var -d lat,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -g g19g1 -v two_dmn_var %tmp_fl_00%";
@@ -2712,7 +2711,6 @@ print "\n";
 # two_dmn_var (lat,lev) MSA (associated coordinates)
 # ncpdq -O -g g19g1 -a lev,lat -d lat,1,1 -d lev,1,1 -v two_dmn_var in_grp_3.nc out.nc
 # ncks -C -g g19g1 -v two_dmn_var out.nc
-#$tst_cmd[2]="lev[0]=500 lat[0]=90 two_dmn_var[0]=17.5 fraction";
 
    $tst_cmd[0]="ncpdq $omp_flg $fl_fmt $nco_D_flg -O -g g19g1 -a lev,lat -v two_dmn_var -d lat,1,1 -d lev,1,1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
    $tst_cmd[1]="ncks -C -g g19g1 -v two_dmn_var %tmp_fl_00%";
@@ -2727,7 +2725,6 @@ print "\n";
 # two_dmn_rec_var(time,lev) 2D variable with record  (-C , no MSA)
 # ncpdq -O -C -a lev,time -v two_dmn_rec_var in.nc out.nc
 # ncks  -d time,1,1 -d lev,1,1 out.nc
-#$tst_cmd[2]="lev[1] time[1] two_dmn_rec_var[11]=2.1 watt meter-2";
 
 # same as previous but with group
     
@@ -2751,7 +2748,6 @@ print "\n";
 # two_dmn_rec_var(time,lev) 2D variable with record  (no -C, no MSA)
 # ncpdq -O -g g19g2 -a lev,time -v two_dmn_rec_var in_grp_3.nc out.nc
 # ncks -C -g g19g2 -d time,1,1 -d lev,1,1 out.nc
-# $tst_cmd[2]="lev[1]=500 time[1]=2 two_dmn_rec_var[11]=2.1 watt meter-2";
 
 # same #16 as previous but with group
 
@@ -2768,7 +2764,6 @@ print "\n";
 # two_dmn_rec_var(time,lev) 2D variable with record  (MSA)
 # ncpdq -O -C -a lev,time -d time,1,1 -d lev,1,1 -v two_dmn_rec_var in_grp_3.nc out.nc
 # ncks -g g19g2 -v two_dmn_rec_var out.nc
-#  $tst_cmd[2]="lev[0] time[0] two_dmn_rec_var[0]=2.1 watt meter-2";
 
 # same as #17 but with group
 
@@ -3191,7 +3186,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-#ncrcat #23	
+#ncrcat #24
 # 2 groups each one with a record (part 2)
 # ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var in_grp_3.nc in_grp_3.nc -d time,2.,3. out.nc
 
@@ -3202,6 +3197,18 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
+	
+#ncrcat #25
+#same as #03 
+
+    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
+    $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max  %tmp_fl_00% %tmp_fl_01%"; 
+    $tst_cmd[2]="ncks -C -H -s '%f' -v three_dmn_var_dbl %tmp_fl_01%";
+    $dsc_sng="(Groups) Concatenate float variable with multislabs across two files";
+    $tst_cmd[3]="20";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
 	
 	
 	
