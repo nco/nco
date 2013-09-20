@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.979 2013-09-20 18:59:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.980 2013-09-20 19:26:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6630,6 +6630,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
         /* Loop input name list */
         for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+
+          assert(lmt[lmt_idx]->nm);
 
           /* Match input relative name to dimension relative name */ 
           if(strcmp(lmt[lmt_idx]->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
