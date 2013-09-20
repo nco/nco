@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.5 release"
 	cvs tag -c nco-4_3_5;cvs tag -c nco-4_3_5-1
 
+	* Move nc_rename_grp() stub prototype
+
 	* Reminder that some time about a week ago Pedro fixed a bug in
 	how ncpdq performs dimension reversal. Apparently dimension
 	reversal was broken in group files since 4.3.2?

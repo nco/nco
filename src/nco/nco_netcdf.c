@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.207 2013-09-20 03:48:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.208 2013-09-20 22:46:40 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -734,16 +734,6 @@ int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id
   return rcd;
 } /* end nco_def_grp_flg() */
 
-int
-nco_rename_grp(int grp_id,const char * const grp_nm)
-{
-  /* Purpose: Wrapper for nc_rename_grp() */
-  int rcd;
-  rcd=nc_rename_grp(grp_id,grp_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_grp()");
-  return rcd;
-} /* end nco_rename_grp() */
-
 #ifndef NC_HAVE_RENAME_GRP
 int
 nc_rename_grp(int grp_id,const char * const grp_nm)
@@ -764,6 +754,16 @@ nc_rename_grp(int grp_id,const char * const grp_nm)
   return rcd;
 } /* end nc_rename_grp() */
 #endif /* NC_HAVE_RENAME_GRP */
+
+int
+nco_rename_grp(int grp_id,const char * const grp_nm)
+{
+  /* Purpose: Wrapper for nc_rename_grp() */
+  int rcd;
+  rcd=nc_rename_grp(grp_id,grp_nm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_grp()");
+  return rcd;
+} /* end nco_rename_grp() */
 
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn)
 {
