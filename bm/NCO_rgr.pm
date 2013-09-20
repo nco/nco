@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.328 2013-09-19 03:47:22 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.329 2013-09-20 05:23:36 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -767,6 +767,33 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+	
+	
+#ncea #11
+# 2 groups, each one with a record (part1 )
+# ncra -Y ncea -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
+	
+    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%d' -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="(Groups) 2 groups ensemble mean of int across two files";
+    $tst_cmd[2]="5";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+
+	#ncea #11
+# 2 groups, each one with a record (part1 )
+# ncra -Y ncea -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
+	
+    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%d' -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="(Groups) 2 groups ensemble mean of int across two files";
+    $tst_cmd[2]="5";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
+	
+	
     
 # print "paused - hit return to continue"; my $wait=<STDIN>;
     
@@ -3149,6 +3176,32 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+	
+	
+	
+#ncrcat #23	
+# 2 groups each one with a record (part 1)
+# ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var in_grp_3.nc in_grp_3.nc -d time,2.,3. out.nc
+
+    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 -v one_dmn_rec_var $in_pth_arg in_grp_3.nc in_grp_3.nc -d time,2.,3. %tmp_fl_00% 2> %tmp_fl_02%";
+    $tst_cmd[1]="ncks -C -H -s '%d ' -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="(Groups) 2 groups Concatenate record coordinate-bounded variable across two non-monotonic files";
+    $tst_cmd[2]="2 3 2 3";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+#ncrcat #23	
+# 2 groups each one with a record (part 2)
+# ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var in_grp_3.nc in_grp_3.nc -d time,2.,3. out.nc
+
+    $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2 -v one_dmn_rec_var $in_pth_arg in_grp_3.nc in_grp_3.nc -d time,2.,3. %tmp_fl_00% 2> %tmp_fl_02%";
+    $tst_cmd[1]="ncks -C -H -s '%d ' -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
+    $dsc_sng="(Groups) 2 groups Concatenate record coordinate-bounded variable across two non-monotonic files";
+    $tst_cmd[2]="2 3 2 3";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
 	
 	
 	
