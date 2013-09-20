@@ -1,5 +1,15 @@
 2013-09-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.3.5 release procedure:
+ 	Changes since nco-4_3_4: ncea/ncra/ncrcat groups, --dbl, ncwa hyp/avg, ncpdq rvr
+	cd ~/nco;cvs tag -d nco-4_3_5;cvs tag -d nco-4_3_5-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.5 release"
+	cvs tag -c nco-4_3_5;cvs tag -c nco-4_3_5-1
+
+	* Reminder that some time about a week ago Pedro fixed a bug in
+	how ncpdq performs dimension reversal. Apparently dimension
+	reversal was broken in group files since 4.3.2?
+
 	* Write random walk description of precision degradation
 
 2013-09-18 Pedro Vicente  <pvicente@uci.edu>
@@ -22,12 +32,6 @@
 	compatibility.
 
 2013-09-12  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.3.5 release procedure:
- 	Changes since nco-4_3_4: ncea/ncra/ncrcat groups, --dbl, ncwa fix
-	cd ~/nco;cvs tag -d ncoa-4_3_5;cvs tag -d nco-4_3_5-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.5 release"
-	cvs tag -c nco-4_3_5;cvs tag -c nco-4_3_5-1
 
 	* Finish documentation on type conversion, precision, and --dbl
 

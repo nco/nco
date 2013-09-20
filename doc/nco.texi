@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.864 2013-09-20 17:23:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.865 2013-09-20 20:47:45 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -113,7 +113,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.5
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 17 September 2013
+@set update-date 20 September 2013
 @set update-month September 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7210,6 +7210,8 @@ Currently the default behavior is @samp{--flt}.
 We are willing to change the default to @samp{--dbl} if users prefer.
 Or we could set a threshold (e.g., @math{n \ge 10000}) after which
 single- to double-precision promotion is automatically invoked.
+Or we could make the default promotion convention settable via an
+environment variable (@acronym{GSL} does this a lot).
 Please let us know what you think of the selected defaults and options.
 
 @node Manual type conversion,  , Promoting Single-precision to Double, Type Conversion

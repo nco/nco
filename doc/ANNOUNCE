@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.606 2013-09-19 03:02:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.607 2013-09-20 20:47:45 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.5 are ready. 
 
@@ -11,16 +11,17 @@ ncflint, ncks, ncpdq, ncra, ncrcat, ncrename, and ncwa. The operators
 that do no yet fully support group hierarchies are ncatted and ncap2.
 
 Rounding errors can accumulate to worrisome levels during arithmetic
-performed on large arrays of single precision floats. 
+performed on large (>~10,000) arrays of single precision floats. 
 Now NCO has the --dbl switch that forces operators to coerce
 single-precision numbers to double-precision for arithemetic.
 It is expensive in terms of time and RAM, and often not warranted.
-Use this switch if you want your NCO answers on single-precision
-fields to always agree exactly with other tools (NCL, Matlab, IDL).
+Use this switch to guarantee preserving maximum precision.
+Or if you want your NCO answers on single-precision fields to always
+agree exactly with tools that always promote (NCL, Matlab, IDL). 
 The manual now contains a detailed discussion of the issues.
 
 Unfortunately progress sometimes comes at a price in bugs :)
-4.3.5 fixes a nasty ncwa bug in introduced in 4.3.3 and 4.3.4.
+4.3.5 fixes a nasty ncwa bug present in 4.3.3 and 4.3.4.
 Nasty means that it could produce wrong answers that look right.
 Fortunately, it could only occur when simultaneously averaging and
 hyperslabbing, e.g., ncwa -a lat,lon -d lat,0.,90. in.nc out.nc.
@@ -59,13 +60,14 @@ B. Forced conversion of float to double:
    Until now, NCO never implicitly converted floats to doubles unless
    doubles were involved in the computation, because, well, GIGO
    ("garbage in, garbage out") and wisdom from Numerical Recipes.
-   However, such promotion is often warranted on arithmetic involving
-   large numbers of single-precision inputs.
+   However, such promotion is often warranted on arithmetic involving 
+   large (> ~10,000) numbers of single-precision inputs.
    Now NCO allows a new arithmetic convention to implement this.
    The convention is manually invoked with --dbl:
    ncea --dbl in*.nc out.nc
    ncra --dbl in*.nc out.nc
    ncwa --dbl in.nc  out.nc
+   The current default behavior is explicitly selected with --flt.
    Depending on user feedback, --dbl may become the default in 
    future versions of NCO. Send me your opinion!
    NB: Invoking arithmetic promotion of NC_FLOAT to NC_DOUBLE
