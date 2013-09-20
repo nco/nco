@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.863 2013-09-19 22:57:28 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.864 2013-09-20 17:23:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6644,15 +6644,17 @@ Second, a dataset's creator perhaps had a good reason for storing
 data as, say, @code{NC_FLOAT} rather than @code{NC_DOUBLE}.  
 In a scientific framework there is no reason to store data with more
 precision than the observations merit.
-The reasons to engage in type conversion include avoiding rounding 
+Normally this is single-precision, which guarantees 6--9 digits of
+precision. 
+Reasons to engage in type conversion include avoiding rounding 
 errors and out-of-range limitations of less-precise types.
 This is the case with most integers.
 Thus @acronym{NCO} defaults to automatically promote integer types to
 floating point when performing lengthy arithmetic, yet @acronym{NCO}
 defaults to not promoting single to double-precision floats.
 
-Before discussing the more difficult and contentious floating point
-issues, we first examine integer promotion.
+Before discussing the more subtle floating point issues, we first
+examine integer promotion. 
 We will show how following parsimonious conversion rules dogmatically
 can cause problems, and what @acronym{NCO} does about that. 
 That said, there are situations in which implicit conversion of
@@ -6866,7 +6868,15 @@ our judgement, the performance penalty of always doing so would outweigh
 the potential benefits. 
 The now-classic text ``Numerical Recipes @w{in C}'' discusses this point
 under the section ``Implicit Conversion of Float to Double''
-@footnote{See @w{page 21} in Section 1.2 of the First edition.}.
+@footnote{See @w{page 21} in Section 1.2 of the First edition for this
+gem:
+@quotation
+One does not need much experience in scientific computing to recognize
+that the implicit conversion rules are, in fact, sheer madness!
+In effect, they make it impossible to write efficient numerical
+programs. 
+@end quotation
+}.
 That said, such promotion is warranted in some circumstances.
 
 For example, rounding errors can accumulate to worrisome levels during
@@ -6984,7 +6994,7 @@ double-precision number is explicitly involved.
 As has been seen, forced promotion of single- to double-precision
 prior to arithmetic has advantages and disadvantages. 
 The primary disadvantages are speed and size. 
-Double-precision arithmetic is @math{10-60}% slower than, and requires
+Double-precision arithmetic is 10--60% slower than, and requires
 twice the memory of single-precision arithmetic. 
 The primary advantage is that rounding errors in double-precision are 
 much less likely to accumulate to values near the precision of the 
@@ -6992,10 +7002,10 @@ underlying geophysical variable.
 
 For example, if we know temperature to five significant digits, then a
 rounding error of 1-bit could affect the least precise digit of
-temperature after @math{1,000--10,000} consecutive one-sided rounding
+temperature after 1,000--10,000 consecutive one-sided rounding
 errors under the worst possible scenario.
-Some geophysical grids have tens of thousands to millions of points
-which must be summed prior to normalization to compute an average.
+Many geophysical grids have tens-of-thousands to millions of points
+that must be summed prior to normalization to compute an average.
 It is possible for single-precision rouding errors to accumulate and
 degrade the precision in such situtations. 
 Double-precision arithmetic mititgates this problem, so @samp{--dbl}
@@ -7012,13 +7022,13 @@ circulation model (@acronym{GCM}) run and stored at @w{1.9 by 2.5}
 degrees resolution. 
 This requires @w{94 latitudes} and @w{144 longitudes}, or @math{13,824} 
 total surface gridpoints, a typical GCM resolution these days.
-These input characteristics are provide only to show the context
-to the interested reader, equivalent results would be found operating
-on any dataset of comparable size.
-To note is that this is a spherical grid so global averages must 
-be created by weighting each gridcell by its latitude-dependent weight
-(i.e., the Gaussian weight stored in @code{gw}), or by the surface area
-of each contributing gridpoint (stored in @code{area}).
+These input characteristics are provided only to show the context
+to the interested reader, equivalent results would be found in 
+statistics of any dataset of comparable size.
+Models often represent Earth on a spherical grid where global averages 
+must be created by weighting each gridcell by its latitude-dependent
+weight (i.e., the Gaussian weight stored in @code{gw}), or by the
+surface area of each contributing gridpoint (stored in @code{area}).
 
 Like many geophysical models and most @acronym{GCM}s, @acronym{CAM3}
 runs completely in double-precision yet stores its archival output in
@@ -7082,26 +7092,61 @@ It means that the global mean temperature changes scientists are looking
 for are comparable in size to the numerical artifacts produced by the
 averaging procedure. 
 
+@cindex rounding
+@cindex random walk
 Why are the single-precision numerical artifacts so large?
 Each global average is the result of multiplying almost 15,000 elements
 each by its weight, summing those, and then dividing by the summed 
 weights.  
 Thus about 50,000 single-precision floating point operations caused
 the loss of two to three significant digits of precision.
-Statistically it would be surprising if the net number of round-offs
-in one direction is the cause.
-It would take about 1,000 more round-offs in one direction than the
-other to explain the loss of precision.
-Perhaps as important is the fact that weighted averages are ratios,
-and the ratio of two numbers each containing a numerical bias can
-magnify the size of the bias.
+The net error of a series of independent rounding errors is a random
+walk phenomena
+@footnote{
+@cindex Michael Prather
+Thanks to @w{Michael J.} Prather for explaining this to me.}.
+Successive rounding errors displace the answer further from the truth.
+An ensemble of such averages will, on average, have no net bias.
+In other words, the expectation value of a series of @acronym{IEEE}
+rounding errors is zero.
+And the error of any given sequence of rounding errors obeys, for large 
+series, a Gaussian distribution centered on zero.
+
+@cindex mantissa
+@cindex exponent
+Single-precision numbers use three of their four eight-bit bytes to
+represent the mantissa so the smallest representable single-precision
+mantissa is @math{\epsilon \equiv 2^{-23} = 1.19209 \times 10^{-7}}.
+This @math{\epsilon} is the smallest @var{x} such that 
+@math{1.0 + x \ne 1.0}.
+This is the rounding error for non-exact precision-numbers.
+Applying random walk theory to rounding, it can be shown that the
+expected rounding error after @var{n} inexact operations is
+@math{\sqrt{2n/\pi}} for @w{large @var{n}}.
+The expected (i.e., mean absolute) rounding error in our example with
+@math{13,824} additions is about 
+@math{\sqrt{2 \times 13824 / \pi} = 91.96}.
+Hence, addition alone of about fifteen thousand single-precision floats
+is expected to consume about two significant digits of precision.
+This neglects the error due to the inner product (weights times values)
+and normalization (division by tally) aspects of a weighted average.
+the ratio of two numbers each containing a numerical bias can magnify
+the size of the bias. 
+In summary, a global mean number computed from about 15,000 gridpoints
+each with weights can be expected to lose up to three significant digits.
+Since single-precision starts with about seven significant digits, we
+should not expect to retain more than four significant digits after
+computing weighted averages in single-precision.
+The above example with @code{TREFHT} shows the expected four digits of
+agreement. 
 @c For example, 50,000 coin flips would lead to 25,500 or more ``heads''
 @c only a small percentage of the time.
 @c P(k,n)= 50000_C_25500 p^k(1-p)^(n-k)
 @c P(25500,50000)= 50000_C_25500 (0.5)^(25500)(0.5)^(24500)
 @c P(>=25500,50000)= ?
-@c fxm: Use Gaussian distribution
+@c fxm: Use Gaussian distribution/Random Walk
 
+@cindex beer
 The @acronym{NCO} results have been independently validated to the
 extent possible in three other languages: 
 @w{C}, Matlab, and @acronym{NCL}. 
@@ -7125,11 +7170,13 @@ ncl < ncwa_3528514.ncl
 # TREFHT     = 289.239960
 # TREFHT_dbl = 289.239964
 @end example
-All languages (C, Matlab, @acronym{NCL}, and @acronym{NCO}) agree to
-machine precision with double-precision arithmetic.
-In other words, nothing is broken.
-As shown above @acronym{NCO} permits one to shift to double-precision
-arithmetic when desired.
+All languages tested (C, Matlab, @acronym{NCL}, and @acronym{NCO}) agree
+to machine precision with double-precision arithmetic.
+Users are fortunate to have a variety of high quality software that 
+liberates them from the drudgery of coding their own.
+Many packages are free (as in beer)!
+As shown above @acronym{NCO} permits one to shift to their
+float-promotion preferences as desired. 
 No other language allows this with a simple switch.
 
 To summarize, the default arithmetic convention of @acronym{NCO} follows
@@ -7138,7 +7185,13 @@ double-precision in all mixed-precision expressions.
 This is faster and more memory efficient than other conventions.
 However, pure single-precision arithmetic can lose too much precision
 when used to condense (e.g., average) large arrays.
-In such cases, users may elect to use the @samp{--dbl} switch.
+Statistics involving about @math{n = 10,000} single-precision inputs
+will lose about @w{2--3} digits if not promoted to double-precision
+prior to arithmetic. 
+The loss scales with the squareroot @w{of @var{n}}. 
+For larger @var{n}, users should promote floats with the @samp{--dbl} 
+option if they want to preserve more than four significant digits in
+their results. 
 
 The @samp{--dbl} switch is only available with the @acronym{NCO}
 arithmetic operators that could potentially perform more than a few 
@@ -7155,7 +7208,8 @@ At the time of this writing (September 2013), we are interested in
 users' opinions on these matters. 
 Currently the default behavior is @samp{--flt}.
 We are willing to change the default to @samp{--dbl} if users prefer.
-One way of 
+Or we could set a threshold (e.g., @math{n \ge 10000}) after which
+single- to double-precision promotion is automatically invoked.
 Please let us know what you think of the selected defaults and options.
 
 @node Manual type conversion,  , Promoting Single-precision to Double, Type Conversion
