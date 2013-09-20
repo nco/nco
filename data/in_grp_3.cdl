@@ -234,6 +234,8 @@ netcdf in_grp_3 {
   //
   group: g18 { 
   
+    :Conventions = "CF-1.0";
+  
     dimensions:
     time=unlimited; // NB: no coordinate for this dimension  
     lat=2;
