@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.206 2013-08-01 05:02:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.207 2013-09-20 03:48:12 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -759,7 +759,7 @@ nc_rename_grp(int grp_id,const char * const grp_nm)
   int rcd;
   rcd=NC_NOERR;
   rcd+=nco_inq_grpname(grp_id,grp_nm_old);
-  (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\" was foiled because libnetcdf.a does not contain nc_rename_grp(). To obtain this functionality, please rebuild NCO against netCDF library version 4.3.1 (released 201308) or later.\nContinuing as though nothing untoward happened...\n",fnc_nm,grp_nm_old,grp_nm);
+  (void)fprintf(stdout,"INFO: %s reports attempt to rename group \"%s\" to \"%s\" was foiled because libnetcdf.a does not contain nc_rename_grp(). To obtain this functionality, please rebuild NCO against netCDF library version 4.3.1 (to be released ~201309XX) or later.\nContinuing as though nothing untoward happened...\n",fnc_nm,grp_nm_old,grp_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_rename_grp()");
   return rcd;
 } /* end nc_rename_grp() */
