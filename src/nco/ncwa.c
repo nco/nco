@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.369 2013-09-19 03:02:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.370 2013-09-20 20:58:19 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.369 2013-09-19 03:02:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.369 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.370 2013-09-20 20:58:19 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.370 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -686,6 +686,9 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   }
+
+  /* Is this a CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,dmn_avg,dmn_avg_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);

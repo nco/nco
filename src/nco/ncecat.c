@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.331 2013-09-17 17:43:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.332 2013-09-20 20:58:18 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.331 2013-09-17 17:43:18 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.331 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.332 2013-09-20 20:58:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.332 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -541,6 +541,9 @@ main(int argc,char **argv)
 
     var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
     for(var_idx=0;var_idx<xtr_nbr;var_idx++) var_out[var_idx]=nco_var_dpl(var[var_idx]);
+
+    /* Is this a CCM/CCSM/CF-format history tape? */
+    CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
     /* Divide variable lists into lists of fixed variables and variables to be processed */
     (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.402 2013-09-20 20:47:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.403 2013-09-20 20:58:19 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -167,8 +167,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.402 2013-09-20 20:47:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.402 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.403 2013-09-20 20:58:19 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.403 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1212,6 +1212,9 @@ main(int argc,char **argv)
 
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
+
+  /* Is this a CCM/CCSM/CF-format history tape? */
+  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
