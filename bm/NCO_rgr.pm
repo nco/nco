@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.330 2013-09-20 07:23:39 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.331 2013-09-21 07:24:55 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -770,24 +770,24 @@ print "\n";
 	
 	
 #ncea #11
-# 2 groups, each one with a record (part1 )
+# 2 groups, each one with a record (part 1 )
 # ncra -Y ncea -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
-    $dsc_sng="(Groups) 2 groups ensemble mean of int across two files";
+    $dsc_sng="(Groups) 2 groups ensemble mean of int across two files (part 1)";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-	#ncea #11
-# 2 groups, each one with a record (part1 )
+#ncea #12
+# 2 groups, each one with a record (part 2 )
 # ncra -Y ncea -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
-    $dsc_sng="(Groups) 2 groups ensemble mean of int across two files";
+    $dsc_sng="(Groups) 2 groups ensemble mean of int across two files (part 2)";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.404 2013-09-21 05:20:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.405 2013-09-21 07:24:56 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -167,8 +167,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.404 2013-09-21 05:20:32 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.404 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.405 2013-09-21 07:24:56 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.405 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -224,21 +224,6 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
   int xtr_nbr=0; /* xtr_nbr won't otherwise be set for -c with no -v */
   int idx_rec=0;
-#ifndef USE_TRV_API
-  int lmt_dmn_nbr;
-#endif
-
-#ifndef USE_TRV_API
-  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
-  lmt_sct **lmt=NULL_CEWI;
-#endif
-
-#ifndef USE_TRV_API
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  lmt_sct *lmt_rec=NULL_CEWI;
-  lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
-  lmt_msa_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
-#endif /* USE_TRV_API */
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
 
@@ -258,12 +243,6 @@ main(int argc,char **argv)
 
   nco_int base_time_srt=nco_int_CEWI;
   nco_int base_time_crr=nco_int_CEWI;
-
-#ifndef USE_TRV_API
-  int jdx=int_CEWI;
-  nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
-#endif /* USE_TRV_API */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -287,6 +266,19 @@ main(int argc,char **argv)
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
   nco_bool flg_rec_all; /*[flg] Retrieve all records */
+
+#ifndef USE_TRV_API
+  int lmt_dmn_nbr;
+  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
+  lmt_sct **lmt=NULL_CEWI;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  lmt_sct *lmt_rec=NULL_CEWI;
+  lmt_msa_sct **lmt_all_lst; /* List of *lmt_all structures */
+  lmt_msa_sct *lmt_all_rec=NULL_CEWI; /* Pointer to record limit structure in above list */
+  int jdx=int_CEWI;
+  nm_id_sct *dmn_lst;
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
+#endif /* USE_TRV_API */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -1745,15 +1737,6 @@ main(int argc,char **argv)
 
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
-#ifndef USE_TRV_API
-    /* Record file-specific memory cleanup */
-    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED) lmt_rec=nco_lmt_free(lmt_rec);
-    /* Free lmt, lmt_dmn, and lmt_all_lst structures and lists */
-    for(idx=0;idx<nbr_dmn_fl;idx++)
-      for(jdx=0;jdx<lmt_all_lst[idx]->lmt_dmn_nbr;jdx++)
-        lmt_all_lst[idx]->lmt_dmn[jdx]=nco_lmt_free(lmt_all_lst[idx]->lmt_dmn[jdx]);
-    if(nbr_dmn_fl > 0) lmt_all_lst=nco_lmt_all_lst_free(lmt_all_lst,nbr_dmn_fl);
-#endif /* USE_TRV_API */
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
