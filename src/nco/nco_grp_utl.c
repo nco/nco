@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.983 2013-09-21 22:14:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.984 2013-09-21 23:40:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3096,6 +3096,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
  lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
+  const char fnc_nm[]="nco_bld_aux_crd()"; /* [sng] Function name */
 
   lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
 
@@ -3106,8 +3107,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
-    /* Filter groups */ 
-    if(var_trv.nco_typ == nco_obj_typ_grp && var_trv.flg_xtr){
+    /* Filter variables to extract */ 
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
       /* Obtain group ID where variable is located using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
@@ -3115,15 +3116,19 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       aux_idx_nbr=0;
 
       aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr);
-      if(aux_idx_nbr > 0){
-        assert(aux);
-        *lmt=(lmt_sct **)nco_realloc(*lmt,(*lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
-        int lmt_nbr_new=*lmt_nbr+aux_idx_nbr;
-        int aux_idx=0;
-        for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) *lmt[lmt_idx]=aux[aux_idx++];
-        *lmt_nbr=lmt_nbr_new;
+
+      if(dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",prg_nm_get(),fnc_nm,var_trv.nm_fll,aux_idx_nbr);     
       }
 
+      if(aux_idx_nbr > 0){
+        assert(aux);
+        (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+        int lmt_nbr_new=*lmt_nbr+aux_idx_nbr;
+        int aux_idx=0;
+        for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
+        *lmt_nbr=lmt_nbr_new;
+      }
 
     } /* Filter variables */ 
   } /* Loop table */
