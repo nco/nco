@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.365 2013-09-20 21:03:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.366 2013-09-21 05:20:32 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.365 2013-09-20 21:03:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.365 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.366 2013-09-21 05:20:32 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.366 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -156,7 +156,6 @@ main(int argc,char **argv)
   int dfl_lvl=0; /* [enm] Deflate level */
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
   int dmn_rdr_nbr_in=0; /* [nbr] Original number of dimension to re-order */
-  int dmn_rdr_nbr_utl=0; /* [nbr] Number of dimension to re-order, utilized */
   int fl_idx=int_CEWI;
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
@@ -183,12 +182,7 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
 
-  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
-  lmt_sct **lmt=NULL_CEWI;
-  
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
-
-  nm_id_sct *dmn_rdr_lst;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -513,9 +507,6 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
-  /* Make uniform list of user-specified dimension limits */
-  lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
@@ -532,7 +523,7 @@ main(int argc,char **argv)
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
 
   /* Create reversed dimension list */
   if(dmn_rdr_nbr_in > 0){
@@ -883,7 +874,6 @@ main(int argc,char **argv)
   if(flg_cln){
     /* ncpdq-specific memory cleanup */
     if(dmn_rdr_nbr > 0){
-      //if(dmn_rvr_rdr) dmn_rvr_rdr=(nco_bool *)nco_free(dmn_rvr_rdr);
       if(dmn_rdr_nbr_in > 0) {
         dmn_rdr_lst_in=nco_sng_lst_free(dmn_rdr_lst_in,dmn_rdr_nbr_in);
         dmn_rdr_lst_in_rvr=nco_sng_lst_free(dmn_rdr_lst_in_rvr,dmn_rdr_nbr_in);
@@ -897,15 +887,12 @@ main(int argc,char **argv)
       if(nco_pck_map_sng) nco_pck_map_sng=(char *)nco_free(nco_pck_map_sng);
       if(nco_pck_plc != nco_pck_plc_upk){
         /* No need for loop over var_prc variables to free attribute values
-	   Variable structures and attribute edit lists share same attribute values
-	   Free them only once, and do it in nco_var_free() */
+        Variable structures and attribute edit lists share same attribute values
+        Free them only once, and do it in nco_var_free() */
         aed_lst_add_fst=(aed_sct *)nco_free(aed_lst_add_fst);
         aed_lst_scl_fct=(aed_sct *)nco_free(aed_lst_scl_fct);
       } /* nco_pck_plc == nco_pck_plc_upk */
     } /* nco_pck_plc == nco_pck_plc_nil */
-
-    lmt=(lmt_sct**)nco_free(lmt); 
-
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -925,7 +912,6 @@ main(int argc,char **argv)
     /* Free limits */
     for(idx=0;idx<lmt_nbr;idx++) lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
-    if(aux_nbr > 0) aux=(lmt_sct **)nco_free(aux);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
@@ -939,7 +925,6 @@ main(int argc,char **argv)
     var_prc_out=(var_sct **)nco_free(var_prc_out);
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
-
     /* Free traversal table */
     trv_tbl_free(trv_tbl); 
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.380 2013-09-18 03:23:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.381 2013-09-21 05:20:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -588,12 +588,12 @@ void
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  char * const grp_pth,                /* I [sng] Absolute group path where to start build (root typically) */
- nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ int lmt_nbr,                         /* I [nbr] number of dimensions with limits */
+ CST_X_PTR_CST_PTR_CST_Y(char,lmt_arg), /* I [sng] List of user-specified dimension limits */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  char **grp_lst_in,                   /* I [sng] User-specified list of groups */
  const int grp_lst_in_nbr,            /* I [nbr] Number of groups in list */
  char **var_lst_in,                   /* I [sng] User-specified list of variables */

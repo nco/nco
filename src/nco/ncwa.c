@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.370 2013-09-20 20:58:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.371 2013-09-21 05:20:32 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.370 2013-09-20 20:58:19 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.370 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.371 2013-09-21 05:20:32 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.371 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -176,7 +176,6 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int idx=int_CEWI;
-  int idx_avg;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int md_open; /* [enm] Mode flag for nc_open() call */
@@ -196,11 +195,7 @@ main(int argc,char **argv)
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
 
-  lmt_sct **lmt; 
-
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
-
-  nm_id_sct *dmn_avg_lst;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
@@ -600,9 +595,6 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
 
-  /* Make uniform list of user-specified dimension limits */
-  lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
@@ -618,7 +610,7 @@ main(int argc,char **argv)
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id,trv_pth,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,aux_nbr,aux_arg,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -638,8 +630,6 @@ main(int argc,char **argv)
     } /* end loop over idx */
     if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",prg_nm);
   } /* end if dmn_avg_nbr == 0 */
-
-
 
   /* Allocate array of dimensions to average with maximum possible size */
   dmn_avg=(dmn_sct **)nco_malloc(nbr_dmn_fl*sizeof(dmn_sct *));
@@ -661,23 +651,6 @@ main(int argc,char **argv)
 
   /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
-
-  /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
-
-  /* Update variable array with limits */
-  for(int idx_var=0;idx_var<xtr_nbr;idx_var++){
-    for(int idx_dmn_var=0;idx_dmn_var<var[idx_var]->nbr_dim;idx_dmn_var++){
-      for(int idx_dmn_xtr=0;idx_dmn_xtr<nbr_dmn_xtr;idx_dmn_xtr++){
-        if (var[idx_var]->dmn_id[idx_dmn_var] == dim[idx_dmn_xtr]->id){
-          var[idx_var]->srt[idx_dmn_var]=dim[idx_dmn_xtr]->srt;
-          var[idx_var]->srd[idx_dmn_var]=dim[idx_dmn_xtr]->srd;
-          var[idx_var]->end[idx_dmn_var]=dim[idx_dmn_xtr]->end;
-          var[idx_var]->cnt[idx_dmn_var]=dim[idx_dmn_xtr]->cnt;
-        }
-      }
-    }  
-  }
 
   /* Duplicate to output array */
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
@@ -1137,8 +1110,6 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
-
-
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncwa-specific memory */
@@ -1151,10 +1122,6 @@ main(int argc,char **argv)
     if(wgt_avg) wgt_avg=nco_var_free(wgt_avg);
     if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
     if(wgt_out) wgt_out=nco_var_free(wgt_out);
-
-    /* Free lmt */
-    if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
-
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -1171,7 +1138,6 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     if(var_lst_in_nbr > 0) var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
-
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);

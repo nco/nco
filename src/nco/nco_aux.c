@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.45 2013-09-20 19:52:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.46 2013-09-21 05:20:31 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -220,7 +220,6 @@ nco_aux_evl
   lmt_sct lmt_tpl;
   /* 20130428: Utilitze nco_lmt_init() to initialize limit structure? */
   (void)nco_lmt_init(&lmt_tpl);
-  assert(dmn_nm);
   lmt_tpl.nm=(char *)strdup(dmn_nm);
   lmt_tpl.lmt_typ=lmt_dmn_idx;
   lmt_tpl.is_usr_spc_lmt=True; 
