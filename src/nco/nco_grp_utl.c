@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.982 2013-09-21 05:20:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.983 2013-09-21 22:14:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4468,6 +4468,12 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
               if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
               DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             } /* !netCDF4 */
+
+            /* Undefined dimension as record (we are in the case of not "rec_dmn_nm" (name "record") and the current dimension name "time" is record */
+            if (prg_id == ncecat && dmn_trv->is_rec_dmn){
+              DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+            }
+
           } /* !FIX_REC_DMN */
         } /* strcmp() */
 
