@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.331 2013-09-21 07:24:55 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.332 2013-09-21 23:11:22 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -476,7 +476,7 @@ print "\n";
 # /g4/one_dmn_rec_var
 # time[0]=1 one_dmn_rec_var[0]=2 
 
-    $dsc_sng="Group addition -y add -g g4 -v one_dmn_rec_var";
+    $dsc_sng="(Groups) Addition -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -y add -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -494,7 +494,7 @@ print "\n";
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
 
-    $dsc_sng="Group addition with limits -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var";
+    $dsc_sng="(Groups) Addition with limits -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,1,1,1 -y add -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -512,7 +512,7 @@ print "\n";
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
 
-    $dsc_sng="Group subtraction -v one_dmn_rec_var";
+    $dsc_sng="(Groups) Subtraction -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,1,1,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -530,7 +530,7 @@ print "\n";
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
 
-    $dsc_sng="Group multiplication with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
+    $dsc_sng="(Groups) Multiplication with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,2,2,1 -y mlt -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -549,7 +549,7 @@ print "\n";
 # /g4/one_dmn_rec_var
 
 
-    $dsc_sng="Group division with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
+    $dsc_sng="(Groups) Division with limits -d time,2,2,1 -y add -g g4 -v one_dmn_rec_var";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -d time,2,2,1 -y dvd -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -H -s '%d' -d time,0,0,1 -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -579,7 +579,7 @@ print "\n";
 
 # ncbo #20
 
-    $dsc_sng="Process different types -g g1 -v var1 in_grp_1.nc  in_grp_2.nc";
+    $dsc_sng="(Groups) Process different types -g g1 -v var1 in_grp_1.nc  in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg  -g g1 -v var1 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'var1: type NC_FLOAT, 1 dimension, 0 attributes, chunked? no, compressed? no, packed? no'";
@@ -594,7 +594,7 @@ print "\n";
     
 # ncbo #21
 
-    $dsc_sng="Process relative match -v var2 in_grp_1.nc in_grp_2.nc";
+    $dsc_sng="(Groups) Process relative match -v var2 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -d lon1,2,2,1 %tmp_fl_00%";
@@ -609,7 +609,7 @@ print "\n";
     
 # ncbo #22
 
-    $dsc_sng="Process relative match from model to observations cmip5.nc -> obs.nc";
+    $dsc_sng="(Groups) Process relative match from model to observations cmip5.nc -> obs.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
@@ -624,7 +624,7 @@ print "\n";
 
 # ncbo #23
 
-    $dsc_sng="Process relative match from observations to model obs.nc -> cmip5.nc";
+    $dsc_sng="(Groups) Process relative match from observations to model obs.nc -> cmip5.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -g giss -v tas -d time,3,3,1 %tmp_fl_00%";
@@ -856,7 +856,7 @@ print "\n";
 #ncecat -h -O -g g1g1 -v v1 in_grp.nc in_grp.nc out.nc
 #ncks -d record,1,1,1 out.nc
 
-    $dsc_sng="Concatenate variables/groups 1: scalars -g g1g1 -v v1";
+    $dsc_sng="(Groups) Concatenate variables/groups 1: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -d record,1,1,1 %tmp_fl_00%";
@@ -873,7 +873,7 @@ print "\n";
 #ncecat -h -O -g g1g1 -v v1 in_grp.nc in_grp.nc out.nc
 #ncks -d record,1,1,1 out.nc    
     
-    $dsc_sng="Concatenate variables/groups 2: scalars -g g1g1 -v v1";
+    $dsc_sng="(Groups) Concatenate variables/groups 2: scalars -g g1g1 -v v1";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g1g1 -v v1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'v1 dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)'";
@@ -891,7 +891,7 @@ print "\n";
 #ncecat  -h -O -g g6g1 -v area in_grp.nc in_grp.nc out.nc
 #ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area  out.nc
 
-    $dsc_sng="Concatenate variables/groups 1: 1D -g g6g1 -v area";
+    $dsc_sng="(Groups) Concatenate variables/groups 1: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -C -d record,1,1,1 -d lat,1,1,1 -g g6g1 -v area  %tmp_fl_00%";
@@ -909,7 +909,7 @@ print "\n";
 #ncks -C -g g6g1 -v area  out.nc
 #area dimension 0: record, size = 2 (Record non-coordinate dimension)
     
-    $dsc_sng="Concatenate variables/groups 2: 1D -g g6g1 -v area";
+    $dsc_sng="(Groups) Concatenate variables/groups 2: 1D -g g6g1 -v area";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -g g6g1 -v area $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -g g6g1 -v area %tmp_fl_00% | grep 'area dimension 0: /record, size = 2, chunksize = 1 (Record non-coordinate dimension)'";
@@ -926,7 +926,7 @@ print "\n";
 #ncecat  -h -O -v two_dmn_rec_var in_grp.nc in_grp.nc out.nc
 #ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1  -v two_dmn_rec_var  out.nc
 
-    $dsc_sng="Concatenate variables/groups 1: 2D -v two_dmn_rec_var";
+    $dsc_sng="(Groups) Concatenate variables/groups 1: 2D -v two_dmn_rec_var";
     $tst_cmd[0]="ncecat $nco_D_flg -h -O -v two_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -d record,1,1,1 -d time,9,9,1 -d lev,2,2,1 -v two_dmn_rec_var %tmp_fl_00%";
@@ -937,7 +937,27 @@ print "\n";
     $tst_cmd[2]="SS_OK";        
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			         
+    $#tst_cmd=0; # Reset array 		
+
+
+	   
+#ncecat #9 
+#Check that "time" is eliminated as record
+#ncecat -O  in_grp_3.nc in_grp_3.nc out.nc
+#ncks -m -C -g g25g1  -v one_dmn_rec_var out.nc
+
+    $dsc_sng="(Groups) Concatenate variables/groups";
+    $tst_cmd[0]="ncecat $nco_D_flg -h -O $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="ncks -m -C -g g25g1  -v one_dmn_rec_var %tmp_fl_00%";
+    $tst_cmd[2]="one_dmn_rec_var dimension 1: time, size = 10 NC_DOUBLE, chunksize = 10 (Coordinate is time)";
+    $tst_cmd[3]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			       
     
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
@@ -1008,7 +1028,7 @@ print "\n";
 # ncflint -h -O -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc out.nc
 # ncks  -H -C -O -g g4  -d time,9 -v one_dmn_rec_var  out.nc
 
-    $dsc_sng="Group weight 1D -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc";
+    $dsc_sng="(Groups) Weight 1D -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc";
     $tst_cmd[0]="ncflint $nco_D_flg -h -O -v one_dmn_rec_var -w 1,1 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks  -H -C -O -g g4 -d time,9 -v one_dmn_rec_var %tmp_fl_00%";
@@ -1273,7 +1293,7 @@ print "\n";
 
 #ncks #19 groups: add associated variable "lat" of "area" to extraction list
 
-    $dsc_sng="(Groups required) Extract associated coordinate variable";
+    $dsc_sng="(Groups) Extract associated coordinate variable";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 0){    
     $tst_cmd[1]=$ncks_msg_no_have_netcdf4; 
@@ -1294,7 +1314,7 @@ print "\n";
     
 #ncks #20 groups: Add to extraction list all coordinates associated with CF convention
 
-    $dsc_sng="(Groups required) Add CF convention variables";
+    $dsc_sng="(Groups) Add CF convention variables";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g7 -v gds_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat_gds %tmp_fl_00%";  
@@ -1312,7 +1332,7 @@ print "\n";
     
 #ncks #21 groups: Extract variables in groups (test -g with -v )
 
-    $dsc_sng="(Groups required) Extract variables in groups";
+    $dsc_sng="(Groups) Extract variables in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v scl -g g1g1,g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%";
@@ -1330,7 +1350,7 @@ print "\n";
 
 #ncks #22 groups: Create variables in groups (test -G with -v and -g )
 
-    $dsc_sng="(Groups required) Create variables in groups";
+    $dsc_sng="(Groups) Create variables in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g8 -g g3 -v scl $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -C -H -s '%g' %tmp_fl_00%"; 
@@ -1348,7 +1368,7 @@ print "\n";
     
 #ncks #23 groups: Hyperslabs (test -d with -v and -g: Extracts the second value (2) from g4/one_dmn_rec_var  )
 
-    $dsc_sng="(Groups required) Hyperslabs in groups";
+    $dsc_sng="(Groups) Hyperslabs in groups";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g4 -v one_dmn_rec_var -d time,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -H -s '%d' %tmp_fl_00%"; 
@@ -1370,7 +1390,7 @@ print "\n";
 
 #ncks #24 groups: Extract group attributes
 
-    $dsc_sng="(Groups required) Extract group attributes";
+    $dsc_sng="(Groups) Extract group attributes";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g3 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
@@ -1406,7 +1426,7 @@ print "\n";
     
 #ncks #26 groups: Extract "bounds" variables (extract /g8/ilev)
 
-    $dsc_sng="(Groups required) Extract 'bounds' variables";
+    $dsc_sng="(Groups) Extract 'bounds' variables";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v lev $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -a -O -H  -s '%g' %tmp_fl_00% ";    
@@ -1424,7 +1444,7 @@ print "\n";
     
 #ncks #27 groups: Extract group attributes with GPE
 
-    $dsc_sng="(Groups required) GPE group attribute extraction";
+    $dsc_sng="(Groups) GPE group attribute extraction";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -G g9 -g g3 -v scl $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks %tmp_fl_00% | grep g3_group_attribute";
@@ -1442,7 +1462,7 @@ print "\n";
 	
 #ncks #28 groups: Group dimension hyperslabs
 
-    $dsc_sng="(Groups required) Group dimension hyperslabs";
+    $dsc_sng="(Groups) Group dimension hyperslabs";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v gds_var -d gds_crd,1,1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -C -H -v lat_gds -s '%g' %tmp_fl_00%";
@@ -1464,7 +1484,7 @@ print "\n";
     
 #ncks #29 groups: Sort output alphabetically
 
-    $dsc_sng="(Groups required) Sort output alphabetically";
+    $dsc_sng="(Groups) Sort output alphabetically";
     $tst_cmd[0]="ncks -z $in_pth_arg in_grp.nc | tail -1";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="var: /unique";
@@ -1490,7 +1510,7 @@ print "\n";
 #ncks #31 Variable/Group extraction test 1 (netCDF4 file)
 #extract all variables in g6 = area,area1, refine to area1 only
 
-    $dsc_sng="Variable/Group extraction test 1 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -v area1  %tmp_fl_00%";
@@ -1510,7 +1530,7 @@ print "\n";
 #extract all variables in g6 = area,area1, refine to area1 only
 #use -d 
 
-    $dsc_sng="Variable/Group extraction test 2 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
     $tst_cmd[1]="ncks -v area1 -d lat,0,0 %tmp_fl_00%";
@@ -1530,7 +1550,7 @@ print "\n";
 #extract all variables in g6g1 (second level group) = area
 
 
-    $dsc_sng="Variable/Group extraction test 3 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -g g6g1 $in_pth_arg in_grp.nc";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lat[1]=90 area[1]=50";
@@ -1548,7 +1568,7 @@ print "\n";
 #grep -w = all word
 #NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
 
-    $dsc_sng="Variable/Group extraction test 4-1 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 4-1 (netCDF4 file)";
    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/g6g1/area";
@@ -1565,7 +1585,7 @@ print "\n";
 #grep -w = all word
 #NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
 
-    $dsc_sng="Variable/Group extraction test 4-2 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 4-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -w /g6/area";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/area";
@@ -1582,7 +1602,7 @@ print "\n";
 #grep -w = all word
 #NOTE: test repeated for 3 strings, for non-netcDF4 cases, output is empty string, wildcard . used  
 
-    $dsc_sng="Variable/Group extraction test 4-3 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 4-3 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v are. $in_pth_arg in_grp.nc | grep -o -w area";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="area";
@@ -1597,7 +1617,7 @@ print "\n";
 #ncks #37 Variable/Group extraction test 5 (netCDF4 file)
 # Extract all variables "area" in g6g1
 
-    $dsc_sng="Variable/Group extraction test 5 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 5 (netCDF4 file)";
     $tst_cmd[0]="ncks -H $fl_fmt $nco_D_flg -C -s '%g' -v area -g g6g1 -d lat,0 $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="40";
@@ -1613,7 +1633,7 @@ print "\n";
 #extract all variables "area" in g6g1 = g6/g6g1/area 
 
 
-    $dsc_sng="Variable/Group extraction test 6 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 6 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6g1 $in_pth_arg in_grp.nc";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lat[1]=90 area[1]=50";
@@ -1630,7 +1650,7 @@ print "\n";
 #extract all variables "area" in g6 and g6g1 = g6/g6g1/area, g6/area
 #NOTE: test repeated for 2 strings, for non-netcDF4 case, output is empty string 
 
-    $dsc_sng="Variable/Group extraction test 7-1 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 7-1 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1 $in_pth_arg in_grp.nc | grep -w /g6/g6g1/area";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/g6g1/area";
@@ -1646,7 +1666,7 @@ print "\n";
 #extract all variables "area" in g6 and g6g1 = g6/g6g1/area, g6/area
 #NOTE: test repeated for 2 strings, for non-netcDF4 case, output is empty string 
 
-    $dsc_sng="Variable/Group extraction test 7-2 (netCDF4 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 7-2 (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area -g g6,g6g1 $in_pth_arg in_grp.nc | grep -w /g6/area";
 	if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g6/area";
@@ -1661,7 +1681,7 @@ print "\n";
 #ncks #41 Variable/Group extraction test 8 (netCDF3 file)
 #extract all variables "area" = /area 
 
-    $dsc_sng="Variable/Group extraction test 8 (netCDF3 file)";
+    $dsc_sng="(Groups) Variable/Group extraction test 8 (netCDF3 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v area $in_pth_arg in.nc";
     $tst_cmd[1]="lat[1]=90 area[1]=10 meter2";
     $tst_cmd[2]="SS_OK";
@@ -1696,7 +1716,7 @@ print "\n";
 # /g5/rlev
 # output must not contain /g3
 
-    $dsc_sng="Extract associated coordinates test 3 (netCDF4 file) ";
+    $dsc_sng="(Groups) Extract associated coordinates test 3 (netCDF4 file) ";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -g g5g1 -v rz $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1 && $ENABLE_NETCDF4 == 1){
 	$tst_cmd[1]="ncks -H %tmp_fl_00%";
@@ -1715,7 +1735,7 @@ print "\n";
 #ncks #45 Extract CF 'coordinates' variables(netCDF4 file)
 #gds_crd:coordinates = "lat_gds lon_gds";
 
-    $dsc_sng="Extract CF 'coordinates' variables(netCDF4 file)";
+    $dsc_sng="(Groups) Extract CF 'coordinates' variables(netCDF4 file)";
     $tst_cmd[0]="ncks $nco_D_flg -v gds_crd $in_pth_arg in_grp.nc | grep -w /g7/lat_gds";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g7/lat_gds";
@@ -1740,7 +1760,7 @@ print "\n";
 #ncks #47 Extract CF 'bounds' variables (netCDF4 file)
 #lev:bounds = "ilev";
 
-    $dsc_sng="Extract CF 'bounds' variables (netCDF4 file)";
+    $dsc_sng="(Groups) Extract CF 'bounds' variables (netCDF4 file)";
     $tst_cmd[0]="ncks $nco_D_flg -g g8 -v lev $in_pth_arg in_grp_3.nc | grep -w /g8/ilev";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="/g8/ilev";
@@ -1774,7 +1794,7 @@ print "\n";
 
 #ncks #50    
     
-    $dsc_sng="Check --mk_rec_dmn (netCDF4 file)";
+    $dsc_sng="(Groups) Check --mk_rec_dmn (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --mk_rec_dmn lat -v lat_lon $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -m -v lat %tmp_fl_00% | egrep -o -w 'Record coordinate is lat'";
@@ -1799,7 +1819,7 @@ print "\n";
     
 #ncks #52    
 
-    $dsc_sng="Check --fix_rec_dmn (netCDF4 file)";
+    $dsc_sng="(Groups) Check --fix_rec_dmn (netCDF4 file)";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg  --fix_rec_dmn time -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate is time'";
@@ -1824,7 +1844,7 @@ print "\n";
 
     if(0){
 	# NB: does not actually test3 code for reasons explained in header of nco_use_mm3_workaround()
-	$dsc_sng="--fix_rec_dmn with MM3 workaround (netCDF4->netCDF3 file)";
+	$dsc_sng="(Groups) --fix_rec_dmn with MM3 workaround (netCDF4->netCDF3 file)";
 	$tst_cmd[0]="ncks -O -3 $fl_fmt $nco_D_flg --fix_rec_dmn time -v /g10/two_dmn_rec_var,/g10/three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1){
 	    $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate dimension'";
@@ -1865,7 +1885,7 @@ print "\n";
 # Policy: Chunk All Variables [default]
 # Map:Chunksize Equals Dimension Size [default]
 
-    $dsc_sng="Chunking --cnk_plc=all --v lat_lon";
+    $dsc_sng="(Groups) Chunking --cnk_plc=all --v lat_lon";
     $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -m -v lat_lon %tmp_fl_00% | egrep -o -w 'lat_lon dimension 0: lat, size = 2 NC_FLOAT, chunksize = 2'";
@@ -1884,7 +1904,7 @@ print "\n";
 # Definition: Chunksize defaults to dimension size. Explicitly specify chunksizes for particular dimensions with ‘--cnk_dmn’ option.
 # Map:Chunksize Equals Dimension Size [default] Explicitly specify chunksizes for particular dimensions with ‘--cnk_dmn’ option.
 
-    $dsc_sng="Chunking --cnk_plc=cnk_g3d --cnk_dmn time,2";
+    $dsc_sng="(Groups) Chunking --cnk_plc=cnk_g3d --cnk_dmn time,2";
     $tst_cmd[0]="ncks $nco_D_flg  -O -4  --cnk_plc=cnk_g3d --cnk_dmn time,2  -v three_dmn_rec_var  $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -m -v three_dmn_rec_var %tmp_fl_00% | grep  'three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate is /time)'";
@@ -1908,7 +1928,7 @@ print "\n";
 # time[1]=2 lev[1]=500 two_dmn_rec_var[4]=2.1 
 # time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3 
 #
-    $dsc_sng="MSA --dmn time,1,3,2 --dmn lev,1,1,1";
+    $dsc_sng="(Groups) MSA --dmn time,1,3,2 --dmn lev,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg  -H -C --dmn time,1,3,2 --dmn lev,1,1,1  -v two_dmn_rec_var  $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3";
@@ -1928,7 +1948,7 @@ print "\n";
 #time[3]=4 lev[0]=100 two_dmn_rec_var[9]=1 
 #time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3 
 
-    $dsc_sng="MSA --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1";
+    $dsc_sng="(Groups) MSA --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1";
     $tst_cmd[0]="ncks $nco_D_flg  -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1 -v two_dmn_rec_var  $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3";
@@ -1946,7 +1966,7 @@ print "\n";
 #lon2[1] lon2_var[1]=1 
 #lon2[3] lon2_var[3]=3 
 
-    $dsc_sng="MSA -d lon2,1,3,2 -v lon2_var";
+    $dsc_sng="(Groups) MSA -d lon2,1,3,2 -v lon2_var";
     $tst_cmd[0]="ncks $nco_D_flg  -H -d lon2,1,3,2 -v lon2_var  $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
@@ -1964,7 +1984,7 @@ print "\n";
 #lon2[1] lon2_var[1]=1 
 #lon2[3] lon2_var[3]=3 
 
-    $dsc_sng="MSA -d lon2,1,3,2 -v lon2_var";
+    $dsc_sng="(Groups) MSA -d lon2,1,3,2 -v lon2_var";
     $tst_cmd[0]="ncks $nco_D_flg  -d lon2,1,1,1 -d lon2,3,3,1  -v lon2_var  $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
@@ -1989,7 +2009,7 @@ print "\n";
 #/g7/lon_gds
 #gds_crd[1]=1 lon_gds[1]=0 
 
-    $dsc_sng="CF MSA -v gds_var -d gds_crd,1,1,1";
+    $dsc_sng="(Groups) CF MSA -v gds_var -d gds_crd,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -v gds_var -d gds_crd,1,1,1 $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="gds_crd[1]=1 lon_gds[1]=0";
@@ -2010,7 +2030,7 @@ print "\n";
 # gds_crd[1]=1 gds_var[1]=273.2 
 # gds_crd[3]=3 gds_var[3]=273.4 
 
-    $dsc_sng="MSA -H -C -g g7g1 -v gds_var -d gds_crd,1,1,1 -d gds_crd,3,3,1";
+    $dsc_sng="(Groups) MSA -H -C -g g7g1 -v gds_var -d gds_crd,1,1,1 -d gds_crd,3,3,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -C -g g7g1 -v gds_var -d gds_crd,1,1,1 -d gds_crd,3,3,1 $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="gds_crd[3]=3 gds_var[3]=273.4";
@@ -2030,7 +2050,7 @@ print "\n";
 #/g16/g16g1/lon1
 #lon1[3]=3 
 
-    $dsc_sng="Parallel scope MSA -g g16g1 -v lon1 -d lon1,3,3,1";
+    $dsc_sng="(Groups) Parallel scope MSA -g g16g1 -v lon1 -d lon1,3,3,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1 -d lon1,3,3,1  $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon1[3]=3";
@@ -2047,7 +2067,7 @@ print "\n";
 #ncks: INFO nco_bld_var_dmn() reports variable </g16/g16g1/lon1_var> with dimension coordinate [0]/g16/g16g1/lon1
 
 
-    $dsc_sng="Parallel scope MSA -g g16g1 -v lon1_var -d lon1,1,1,1";
+    $dsc_sng="(Groups) Parallel scope MSA -g g16g1 -v lon1_var -d lon1,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon1[1]=1 lon1_var[1]=1";
@@ -2065,7 +2085,7 @@ print "\n";
 #ncks: INFO nco_bld_var_dmn() reports variable </g16/g16g2/lon1_var> with dimension coordinate [0]/g16/g16g2/lon1
 
 
-    $dsc_sng="Parallel scope MSA -g g16g2 -v lon1_var -d lon1,1,1,1";
+    $dsc_sng="(Groups) Parallel scope MSA -g g16g2 -v lon1_var -d lon1,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g2 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon1[1]=4 lon1_var[1]=1";
@@ -2083,7 +2103,7 @@ print "\n";
 #/g6/g6g1/area
 #lat[1]=90 area[1]=50
 
-    $dsc_sng="Dimensions in ancestor groups -g g6g1 -v area";
+    $dsc_sng="(Groups) Dimensions in ancestor groups -g g6g1 -v area";
     $tst_cmd[0]="ncks $nco_D_flg -O -g g6g1 -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -C -v area -d lat,1,1 %tmp_fl_00%";
@@ -2103,7 +2123,7 @@ print "\n";
 #lat[0]=-90 area[0]=40 
 #lat[1]=90 area[1]=50 
 
-    $dsc_sng="GPE and Dimensions in ancestor groups -G o1 -g g6g1 -v area";
+    $dsc_sng="(Groups) GPE and Dimensions in ancestor groups -G o1 -g g6g1 -v area";
     $tst_cmd[0]="ncks $nco_D_flg -O -G o1 -g g6g1 -v area $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -H -C -v area -d lat,0,1 %tmp_fl_00%";
@@ -2120,7 +2140,7 @@ print "\n";
 # Test "out of scope " coordinate
 # ncks  -H  -v lon3_var  in_grp.nc
 
-    $dsc_sng="Out of scope coordinate -v lon3_var";
+    $dsc_sng="(Groups) Out of scope coordinate -v lon3_var";
     $tst_cmd[0]="ncks $nco_D_flg -H -v lon3_var $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon3[3] lon3_var[3]=3";
@@ -2136,7 +2156,7 @@ print "\n";
 # Test 2 "intermediate scope " coordinates
 # ncks  -H  -v lon4_var  in_grp.nc
 
-    $dsc_sng="Order coordinates by group depth -v lon4_var";
+    $dsc_sng="(Groups) Order coordinates by group depth -v lon4_var";
     $tst_cmd[0]="ncks $nco_D_flg -C -H -v lon4_var $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon4[1]=4 lon4_var[1]=1";
@@ -2154,7 +2174,7 @@ print "\n";
 # Test -X
 # ncks -O -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc 
 
-    $dsc_sng="Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc ";
+    $dsc_sng="(Groups) Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc ";
     $tst_cmd[0]="ncks $nco_D_flg -C -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[9] gds_crd[1]=1 gds_3dvar[73]=282.2 meter";
