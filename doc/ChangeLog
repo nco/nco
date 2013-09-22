@@ -1,10 +1,22 @@
-2013-09-20  Charlie Zender  <zender@uci.edu>
+2013-09-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.5 release procedure:
  	Changes since nco-4_3_4: ncea/ncra/ncrcat groups, --dbl, ncwa hyp/avg, ncpdq rvr
 	cd ~/nco;cvs tag -d nco-4_3_5;cvs tag -d nco-4_3_5-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.5 release"
 	cvs tag -c nco-4_3_5;cvs tag -c nco-4_3_5-1
+
+	* This is the second release tagged as 4.3.5 and fixes the ncecat
+	problem and a memory problem with -X.
+
+	* Releasing late on Friday actually worked well because we found
+	and fixed the problem Saturday. Able to re-release on Sunday
+	before people got back to work Monday. 	Sourceforge reported no
+	downloads from Friday-Sunday.
+
+2013-09-20  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.5 release procedure: Followed but WW found ncecat problem next day
 
 	* Move nc_rename_grp() stub prototype
 
