@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.984 2013-09-21 23:40:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.985 2013-09-22 00:41:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3118,7 +3118,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr);
 
       if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",prg_nm_get(),fnc_nm,var_trv.nm_fll,aux_idx_nbr);     
+        (void)fprintf(stdout,"%s: DEBUG %s variable [%d]<%s> (%d) limits\n",prg_nm_get(),fnc_nm,idx_var,trv_tbl->lst[idx_var].nm_fll,aux_idx_nbr);     
       }
 
       if(aux_idx_nbr > 0){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.198 2013-09-20 19:12:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.199 2013-09-22 00:41:42 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -109,11 +109,13 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   (void)nco_lmt_init(lmt2);
 
   lmt2->nm=(char *)strdup(lmt1->nm);
-  if(lmt1->nm_fll) lmt2->grp_nm_fll=(char *)strdup(lmt1->nm_fll);
+  if(lmt1->nm_fll) lmt2->nm_fll=(char *)strdup(lmt1->nm_fll);
   if(lmt1->grp_nm_fll) lmt2->grp_nm_fll=(char *)strdup(lmt1->grp_nm_fll);
-  if(lmt1->drn_sng) lmt2->drn_sng=(char *)strdup(lmt1->drn_sng);      
+
   if(lmt1->max_sng) lmt2->max_sng=(char *)strdup(lmt1->max_sng);
   if(lmt1->min_sng) lmt2->min_sng=(char *)strdup(lmt1->min_sng);
+
+  if(lmt1->drn_sng) lmt2->drn_sng=(char *)strdup(lmt1->drn_sng);      
   if(lmt1->mro_sng) lmt2->mro_sng=(char *)strdup(lmt1->mro_sng);
   if(lmt1->rbs_sng) lmt2->rbs_sng=(char *)strdup(lmt1->rbs_sng);
   if(lmt1->srd_sng) lmt2->srd_sng=(char *)strdup(lmt1->srd_sng);
