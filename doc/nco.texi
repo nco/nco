@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.866 2013-09-22 15:47:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.867 2013-09-22 21:55:46 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -649,7 +649,7 @@ This tests incorporates an image using the @code{@@image} command.
 @cindex installation
 @acronym{NCO} has been successfully ported and tested and is known to
 work on the following 32- and 64-bit platforms:  
-@c alphabetize by OS name
+@c alphabetize by @acronym{OS} name
 @acronym{IBM AIX} 4.x, 5.x,
 FreeBSD 4.x, 
 @acronym{GNU}/Linux 2.x, LinuxPPC, LinuxAlpha, LinuxARM, LinuxSparc64,
@@ -673,7 +673,7 @@ Unidata has shown a commitment to maintaining netCDF and UDUnits on all
 popular @acronym{UNIX} platforms, and is moving towards full support for 
 the Microsoft Windows operating system (@acronym{OS}).
 Given this, the only difficulty in implementing @acronym{NCO} on a
-particular platform is standardization of various @w{C}-language API
+particular platform is standardization of various @w{C}-language @acronym{API}
 system calls. 
 @acronym{NCO} code is tested for @acronym{ANSI} compliance by
 compiling with @w{C99 compilers} including those from 
@@ -787,7 +787,7 @@ by invoking the compiler with @samp{-Drestrict=''}.}.
 @cindex @acronym{GSL}
 @findex ncap2
 In January 2009, @acronym{NCO} version 3.9.6 was the first to link
-to the GNU Scientific Library (@acronym{GSL}).
+to the @acronym{GNU} Scientific Library (@acronym{GSL}).
 @acronym{GSL} must be @w{version 1.4} or later. 
 @acronym{NCO}, in particular @command{ncap2}, uses the @acronym{GSL}
 special function library to evaluate geoscience-relevant mathematics
@@ -865,7 +865,7 @@ platform, and the change in the wallclock time for execution.}.
 Windows operating systems including: XP SP2/Vista/7.
 Support is provided for compiling either native Windows executables,
 using the Microsoft Visual Studio 2010 Compiler, or with Cygwin, the
-UNIX-emulating compatibility layer with the GNU toolchain.
+UNIX-emulating compatibility layer with the @acronym{GNU} toolchain.
 The switches necessary to accomplish both are included in the standard
 distribution of @acronym{NCO}.
 
@@ -1085,7 +1085,7 @@ installation).
 support netCDF (or, for that matter, Fortran) as of December 1999.
 By early 2001, @acronym{HDF5} did support Fortran90.
 In 2004, Unidata and @acronym{NCSA} began a project to implement
-the @acronym{HDF5} features necessary to support the netCDF API.
+the @acronym{HDF5} features necessary to support the netCDF @acronym{API}.
 @acronym{NCO} version 3.0.3 added support for reading/writing
 netCDF4-formatted @acronym{HDF5} files in October, 2005.
 See @ref{Selecting Output File Format} for more details.
@@ -1435,7 +1435,7 @@ existing @var{output-file}).
 @cindex execution time
 Also, note this feature increases the execution time of the operator
 by approximately the time it takes to copy the @var{output-file}
-@footnote{The OS-specific system move command is used.
+@footnote{The @acronym{OS}-specific system move command is used.
 This is @command{mv} for UNIX, and @command{move} for Windows.}.
 Finally, note this fault-tolerant feature allows the @var{output-file}
 to be the same as the @var{input-file} without any danger of
@@ -9621,7 +9621,7 @@ print(T_out);
 @subsection GSL special functions
 @cindex @acronym{GSL}
 @noindent As of version 3.9.6 (released January, 2009), @acronym{NCO} 
-can link to the GNU Scientific Library (@acronym{GSL}). 
+can link to the @acronym{GNU} Scientific Library (@acronym{GSL}). 
 @command{ncap2} can access most @acronym{GSL} special functions including
 Airy, Bessel, error, gamma, beta, hypergeometric, and Legendre functions
 and elliptical integrals. 
@@ -11078,7 +11078,7 @@ Use the @samp{-f} (or @samp{fnc_tbl} or @samp{prn_fnc_tbl}) switch
 to print a complete list of functions supported on your platform.
 @cindex Linux
 @footnote{Linux supports more of these intrinsic functions than
-other OSs.}
+other @acronym{OS}s.}
 
 @noindent
 @html
@@ -15170,8 +15170,8 @@ Ed Hartnett,
 and Dennis Heimbigner.
 In addition to their roles in maintaining the software stack on which
 @acronym{NCO} perches, Yertl-like, some of these gentlemen have advised
-or contributed to @acronym{NCO} specifically. That support is
-acknowledged separately below. 
+or contributed to @acronym{NCO} specifically. 
+That support is acknowledged separately below. 
 
 @cindex contributors
 The primary contributors to @acronym{NCO} development have been:
@@ -15179,17 +15179,18 @@ The primary contributors to @acronym{NCO} development have been:
 @cindex Charlie Zender
 @item Charlie Zender
 Concept, design and implementation of operators from 1995-2000.
-Since then autotools, bug-squashing, chunking, documentation, packing,
-@acronym{NCO} library redesign, @command{ncap2} features, @command{ncbo}, 
-@command{ncpdq}, SMP threading and MPI parallelization, 
+Since then autotools, bug-squashing, chunking, @acronym{CDL} support,
+documentation, packing, @acronym{NCO} library redesign, @command{ncap2}
+features, @command{ncbo},  @command{ncpdq}, regular expressions with
+groups, @acronym{SMP} threading and @acronym{MPI} parallelization,
 netCDF4 integration, external funding, project management, science
-research, releases.
+research, releases. 
 @cindex Henry Butowsky
 @item Henry Butowsky
 Non-linear operations and @code{min()}, @code{max()}, @code{total()}
 support in @command{ncra} and @command{ncwa}. 
 Type conversion for arithmetic.
-Migration to netCDF3 API.
+Migration to netCDF3 @acronym{API}.
 @command{ncap2} parser, lexer, @w{and I/O}.
 Multislabbing algorithm.
 Variable wildcarding.
@@ -15204,8 +15205,8 @@ Debianization.
 Numerous bug-fixes.
 @cindex Daniel Wang
 @item Daniel Wang
-Script Workflow Analysis for MultiProcessing (SWAMP).
-RPM support.
+Script Workflow Analysis for MultiProcessing (@acronym{SWAMP}).
+@acronym{RPM} support.
 @cindex Harry Mangalam
 @item Harry Mangalam
 Benchmarking.
@@ -15213,25 +15214,26 @@ OPeNDAP configuration.
 @cindex Pedro Vicente
 @item Pedro Vicente
 Windows Visual Studio support.
-netCDF4 groups.
+netCDF4 hierarchical group support.
+CMake support.
 @cindex Russ Rew
 @item Russ Rew
-Advice on NCO structural algorithms
+Advice on @acronym{NCO} structural algorithms
 @cindex Brian Mays
 @item Brian Mays
-Original packaging for Debian GNU/Linux, @command{nroff} man pages.
+Original packaging for Debian @acronym{GNU}/Linux, @command{nroff} man pages.
 @cindex George Shapovalov
 @item George Shapovalov
-Packaging for Gentoo GNU/Linux.
+Packaging for Gentoo @acronym{GNU}/Linux.
 @cindex Bill Kocik
 @item Bill Kocik
 Memory management.
 @cindex Len Makin
 @item Len Makin
-NEC SX architecture support.
+@acronym{NEC} @acronym{SX} architecture support.
 @cindex Jim Edwards
 @item Jim Edwards
-AIX architecture support.
+@acronym{AIX} architecture support.
 @cindex Juliana Rew
 @item Juliana Rew
 Compatibility with large PIDs.
@@ -15282,17 +15284,17 @@ OpenSuse packaging
 @cindex Alexander Hansen
 @cindex Takeshi Enomoto
 @item Takeshi Enomoto, Alexander Hansen
-Mac OS packaging
+Mac @acronym{OS} packaging
 @cindex Eric Blake
 @item Eric Blake
 Autoconf/M4 help
 @cindex Gavin Burris
 @cindex Kyle Wilcox
 @item Gavin Burris, Kyle Wilcox
-RHEL and CentOS build scripts and bug reports.
+@acronym{RHEL} and CentOS build scripts and bug reports.
 @cindex Andrea Cimatoribus
 @item Andrea Cimatoribus
-NCO Spiral Logo
+@acronym{NCO} Spiral Logo
 @cindex Martin Otte
 @cindex Etienne Tourigny
 @item Martin Otte, Etienne Tourigny
@@ -16048,6 +16050,7 @@ Level III: Many derived products from level II, e.g.,
 @end html
 @node mybibnode, General Index, CCSM Example, Top
 @chapter References
+@section Publications and Presentations on @acronym{NCO}
 @itemize
 @mybibitem{ZeM07} Zender, C. S., and H. J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, Int. J. High Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
 @mybibitem{Zen08} Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10), 1338-1342, doi:10.1016/j.envsoft.2008.03.004.
@@ -16059,7 +16062,25 @@ Level III: Many derived products from level II, e.g.,
 @mybibitem{WZJ074} Wang, D. L., C. S. Zender and S. F. Jenks (2007), A System for Scripted Data Analysis at Remote Data Centers, Eos Trans. AGU, 88(52), Fall Meet. Suppl., Abstract IN11B-0469.
 @mybibitem{WZJ081} Wang, D. L., C. S. Zender and S. F. Jenks (2008), Cluster Workflow Execution of Retargeted Data Analysis Scripts, Proceedings of the 8th IEEE Int'l Symposium on Cluster Computing and the Grid (IEEE CCGRID '08), pp. 449-458, Lyon, France, May 2008.
 @mybibitem{WZJ091} Wang, D. L., C. S. Zender, and S. F. Jenks (2009), Efficient Clustered Server-side Data Analysis Workflows using SWAMP, Earth Sci. Inform., 2(3), 141-155, doi:10.1007/s12145-009-0021-z.
+@end itemize
+
+@c Publications cited by this manual
+@section Publications cited by @acronym{NCO} manual
+@html
+<a name="ctt"></a> <!-- http://nco.sf.net/nco.html#ctt -->
+@end html
+@itemize
 @mybibitem{PFT88} Press, Flannery, Teukolsky, and Vetterling (1988), Numerical Recipes in C, Cambridge Univ. Press, New York, NY.
+@end itemize
+
+@c Publications acknowledging NCO
+@section Publications acknowledging @acronym{NCO}
+@html
+<a name="ack"></a> <!-- http://nco.sf.net/nco.html#ack -->
+@end html
+@itemize
+@mybibitem{ChF12} Chiang, John C.H., and Andrew R. Friedman (2012): Extratropical Cooling, Interhemispheric Thermal Gradients, and Tropical Climate Change Annual Review of Earth and Planetary Sciences Vol. 40: 383-412, doi:10.1146/annurev-earth-042711-105545.
+@mybibitem{FrH13} Friedman, Andrew R., Yen-Ting Hwang, John C. H. Chiang, Dargan M. W. Frierson, (2013): Interhemispheric Temperature Asymmetry over the Twentieth Century and in Future Projections. J. Climate, 26, 5419–5433, doi:10.1146/annurev-earth-042711-105545.
 @end itemize
 
 @c @node Name Index, General Index, Operators, Top
