@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.985 2013-09-22 00:41:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.986 2013-09-22 03:47:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3098,8 +3098,6 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 {
   const char fnc_nm[]="nco_bld_aux_crd()"; /* [sng] Function name */
 
-  lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
-
   int aux_idx_nbr;
   int grp_id;
 
@@ -3109,6 +3107,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
     /* Filter variables to extract */ 
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+
+      lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
 
       /* Obtain group ID where variable is located using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
@@ -3128,6 +3128,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         int aux_idx=0;
         for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
         *lmt_nbr=lmt_nbr_new;
+
+        aux=(lmt_sct **)nco_free(aux); 
       }
 
     } /* Filter variables */ 

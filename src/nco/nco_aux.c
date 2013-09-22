@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.46 2013-09-21 05:20:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.47 2013-09-22 03:47:30 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -149,7 +149,7 @@ nco_aux_evl
      Requires CF-1.0 conventions
      Uses latitude/longitude centers rather than cell_bounds to detect matches
      Code assumes units are degrees if they are not radians */
-  
+
   const char fnc_nm[]="nco_aux_evl()"; /* [sng] Function name */
 
   char *units=NULL; /* fxm TODO nco925: "units" value needs dynamically allocated size in case value exceeds NC_MAX_NAME */
@@ -157,10 +157,10 @@ nco_aux_evl
   char dmn_nm[NC_MAX_NAME];
   char var_nm_lat[NC_MAX_NAME];
   char var_nm_lon[NC_MAX_NAME];
-  
+
   dmn_sct lat;
   dmn_sct lon;
-  
+
   double lat_crr; /* [dgr] Current cell latitude */
   double lon_crr; /* [dgr] Current cell longitude */
 
@@ -168,7 +168,7 @@ nco_aux_evl
   float lat_max; /* [dgr] Upper right longitude of bounding rectangle */
   float lon_min; /* [dgr] Lower left longitude of bounding rectangle */
   float lon_max; /* [dgr] Upper right latitude of bounding rectangle */
-  
+
   int aux_idx; /* [idx] Index over user -X options */
   int cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
   int cll_idx; /* [idx] Cell index */
@@ -179,28 +179,30 @@ nco_aux_evl
   int lat_id;
   int lon_id;
   int rcd=NC_NOERR;
-  
+
   lmt_sct **lmt=NULL; /* [sct] List of returned lmt structures */
-  
+
   long dmn_sz=0;
-  
+
   nc_type crd_typ;
-  
+
   void *vp_lat; /* [dgr] Latitude coordinate array, float or double */
   void *vp_lon; /* [dgr] Longitude coordinate array, float or double */
 
   nco_bool has_lat_lon;
-  
+
+  *lmt_nbr=0;
+
   /* Obtain lat/lon variable names */
   has_lat_lon=nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ);
 
   if (has_lat_lon == False){
     return NULL;
   }
-  
+
   /* Obtain dimension information of lat/lon coordinates */
   rcd+=nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
-  
+
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_aux_evl() unable get past nco_get_dmn_info()\n");
 
   /* Load latitude/longitude variables needed to search for region matches */
@@ -214,11 +216,8 @@ nco_aux_evl
   vp_lon=(void *)nco_malloc(dmn_sz*nco_typ_lng(lon.type));
   rcd+=nco_get_vara(in_id,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
   rcd+=nco_get_vara(in_id,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
-  
-  *lmt_nbr=0;
-  
+
   lmt_sct lmt_tpl;
-  /* 20130428: Utilitze nco_lmt_init() to initialize limit structure? */
   (void)nco_lmt_init(&lmt_tpl);
   lmt_tpl.nm=(char *)strdup(dmn_nm);
   lmt_tpl.lmt_typ=lmt_dmn_idx;
@@ -227,9 +226,9 @@ nco_aux_evl
   lmt_tpl.is_usr_spc_max=True;
   lmt_tpl.flg_mro=False;
   lmt_tpl.srd_sng=(char *)strdup("1");
-  /*  lmt_tpl.drn_sng=(char *)strdup("1");*/
   lmt_tpl.drn_sng=NULL;
-  /*  lmt_tpl.mro_sng=(char *)strdup("m");*/
+  lmt_tpl.drn_sng=NULL;
+  lmt_tpl.mro_sng=NULL;
   lmt_tpl.mro_sng=NULL;
   lmt_tpl.is_rec_dmn=0;
   lmt_tpl.id=dmn_id;
@@ -240,11 +239,11 @@ nco_aux_evl
   lmt_tpl.cnt=0L;
   lmt_tpl.srd=1L;
   lmt_tpl.drn=1L;
-  
+
   /* malloc() lmt structure to return
-     No way to know exact size in advance though maximum is about dim_sz/2 */
+  No way to know exact size in advance though maximum is about dim_sz/2 */
   int MAX_LMT_NBR=dmn_sz/2;
-  
+
   if(aux_nbr > 0) lmt=(lmt_sct **)nco_malloc(MAX_LMT_NBR*sizeof(lmt_sct *));
 
   /* Loop over user-specified bounding boxes */
@@ -270,32 +269,32 @@ nco_aux_evl
       if(lat.type == NC_FLOAT) lat_crr=((float *)vp_lat)[cll_idx]; else lat_crr=((double *)vp_lat)[cll_idx];
       if(lon.type == NC_FLOAT) lon_crr=((float *)vp_lon)[cll_idx]; else lon_crr=((double *)vp_lon)[cll_idx];
       if(lon_crr >= lon_min && lon_crr <= lon_max &&
-	 lat_crr >= lat_min && lat_crr <= lat_max){
-	if(cll_idx_min == -1){
-	  /* First cell within current bounding box */
-	  cll_idx_min=cll_idx;
-	  cll_nbr_cns=1;
-	}else if(cll_idx == cll_idx_min+cll_nbr_cns){
-	  /* Later, contiguous cell within current bounding box */
-	  cll_nbr_cns++;
-	} /* end found matching cell */
+        lat_crr >= lat_min && lat_crr <= lat_max){
+          if(cll_idx_min == -1){
+            /* First cell within current bounding box */
+            cll_idx_min=cll_idx;
+            cll_nbr_cns=1;
+          }else if(cll_idx == cll_idx_min+cll_nbr_cns){
+            /* Later, contiguous cell within current bounding box */
+            cll_nbr_cns++;
+          } /* end found matching cell */
       }else if(cll_idx_min != -1){
-	/* Current cell is not within bounding box though immediately previous cell is */
-	sprintf(cll_idx_sng,"%d",cll_idx_min);
-	lmt_tpl.min_sng=(char *)strdup(cll_idx_sng);
-	lmt_tpl.min_idx=lmt_tpl.srt=cll_idx_min;
-	sprintf(cll_idx_sng,"%d",cll_idx_min+cll_nbr_cns-1);
-	lmt_tpl.max_sng=(char *)strdup(cll_idx_sng);
-	lmt_tpl.max_idx=lmt_tpl.end=cll_idx_min+cll_nbr_cns-1;
-	lmt_tpl.cnt=cll_nbr_cns;
-	(*lmt_nbr)++;
-	if(*lmt_nbr > MAX_LMT_NBR) nco_err_exit(0,"%s: Number of slabs exceeds allocated mamory");
-	lmt[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-	*lmt[(*lmt_nbr)-1]=lmt_tpl;
-	cll_grp_nbr++;
-	cll_nbr_ttl+=cll_nbr_cns;
-	/* Indicate that next cell, if any, in this bounding box requires new limit structure */
-	cll_idx_min=-1;
+        /* Current cell is not within bounding box though immediately previous cell is */
+        sprintf(cll_idx_sng,"%d",cll_idx_min);
+        lmt_tpl.min_sng=(char *)strdup(cll_idx_sng);
+        lmt_tpl.min_idx=lmt_tpl.srt=cll_idx_min;
+        sprintf(cll_idx_sng,"%d",cll_idx_min+cll_nbr_cns-1);
+        lmt_tpl.max_sng=(char *)strdup(cll_idx_sng);
+        lmt_tpl.max_idx=lmt_tpl.end=cll_idx_min+cll_nbr_cns-1;
+        lmt_tpl.cnt=cll_nbr_cns;
+        (*lmt_nbr)++;
+        if(*lmt_nbr > MAX_LMT_NBR) nco_err_exit(0,"%s: Number of slabs exceeds allocated mamory");
+        lmt[(*lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+        *lmt[(*lmt_nbr)-1]=lmt_tpl;
+        cll_grp_nbr++;
+        cll_nbr_ttl+=cll_nbr_cns;
+        /* Indicate that next cell, if any, in this bounding box requires new limit structure */
+        cll_idx_min=-1;
       } /* end if one or more consecutive matching cells */
     } /* end loop over cells */
     if(dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",prg_nm_get(),fnc_nm,lon_min,var_nm_lon,lon_max,lat_min,var_nm_lat,lat_max,cll_grp_nbr,cll_nbr_ttl); 
@@ -305,15 +304,16 @@ nco_aux_evl
   if(units) units=(char *)nco_free(units);
   if(vp_lat) vp_lat=nco_free(vp_lat);
   if(vp_lon) vp_lon=nco_free(vp_lon);
-  
+
   /* With some loss of generality, we assume cell-based coordinates are not 
-     record coordinates spanning multiple files. Thus finding no cells within
-     any bounding box constitutes a domain error. */
+  record coordinates spanning multiple files. Thus finding no cells within
+  any bounding box constitutes a domain error. */
   if(*lmt_nbr == 0){
     (void)fprintf(stdout,"%s: ERROR %s reports that none of the %d specified auxiliary-coordinate bounding-box(es) contain any latitude/longitude coordinate pairs. This condition was not flagged as an error until 20110221. Prior to that, when no coordinates were in any of the user-specified auxiliary-coordinate hyperslab(s), NCO mistakenly returned the entire coordinate range as being within the hyperslab(s).\n",prg_nm_get(),fnc_nm,aux_nbr);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  
+
+  lmt=(lmt_sct **)nco_realloc(lmt,(*lmt_nbr)*sizeof(lmt_sct *));
   return lmt;
 } /* end nco_aux_evl() */
 

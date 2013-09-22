@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.9 2013-09-17 17:43:18 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.10 2013-09-22 03:47:29 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -830,10 +830,10 @@ if test "${enable_debug_custom}" = 'yes'; then
     AC_DEFINE(ENABLE_DEBUG_CUSTOM,1,[Custom debugging: Pedantic, bounds checking (slowest execution)])
     if (test "x${GCC}" = 'xyes'); then
 	CC="${CC} ${GCC_CMD_ARGS}"
-# fxm: What to do with default -g -O2 flags? Be redundant for now...
-	CFLAGS="${CFLAGS} ${GCC_CFLAGS}"
+        GCC_CUSTOM_FLAGS='-g -Wall -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-prototypes -fno-common'
+	CFLAGS="${GCC_CUSTOM_FLAGS}"
 	if (test "x${CXX}" = 'xg++' && test "x${GXX}" = 'xyes'); then
-	    CXXFLAGS="${GCC_CXXFLAGS}"
+	    CXXFLAGS="${GCC_CUSTOM_FLAGS}"
 	fi
     fi
 # Other switches are compiler-specific
