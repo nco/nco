@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.987 2013-09-23 20:45:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.988 2013-09-23 21:52:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4531,6 +4531,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           if (trv_tbl->dmn_dgn[idx_dmn_dgn].id == var_dim_id){
             found_dim=True;
             dmn_cnt=trv_tbl->dmn_dgn[idx_dmn_dgn].cnt;
+            /* If the dimension is record keep it that way */
+            if (dmn_trv->is_rec_dmn) dmn_cnt=NC_UNLIMITED;
             break;
           } /* Compare ID */
         } /* Degenerated dimensions */
