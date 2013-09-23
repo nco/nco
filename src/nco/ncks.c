@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.659 2013-09-21 05:20:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.660 2013-09-23 21:43:39 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -46,8 +46,8 @@
    ncks -H -m -v char_var_nul,char_var_space,char_var_multinul ~/nco/data/in.nc
    ncks -H -C -v three_dmn_rec_var -d time,,,2 ~/nco/data/in.nc
    ncks -H -C -v lon -d lon,3,1 ~/nco/data/in.nc 
-   ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
-   ncks -O -v one -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc ~/foo.nc
+   ncks -M -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc
+   ncks -O -v one -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc ~/foo.nc
    ncks -O -G foo ~/nco/data/in.nc ~/foo.nc
    ncks -O -G :-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
@@ -152,8 +152,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.659 2013-09-21 05:20:31 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.659 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.660 2013-09-23 21:43:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.660 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.869 2013-09-23 19:15:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.870 2013-09-23 21:43:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2938,7 +2938,7 @@ ncks -l . sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
 ncks -l . dust.ess.uci.edu:/home/zender/nco/data/in.nc
 ncks -l . /ZENDER/nco/in.nc
 ncks -l . /home/zender/nco/in.nc
-ncks -l . http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc 
+ncks -l . http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc 
 @end example
 @noindent
 The first example works verbatim if your system is connected to the
@@ -2974,7 +2974,7 @@ ncks -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l . in.nc
 ncks -p dust.ess.uci.edu:/home/zender/nco -l . in.nc
 ncks -p /ZENDER/nco -l . in.nc
 ncks -p /home/zender/nco -l . in.nc # HPSS
-ncks -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods \ 
+ncks -p http://thredds-test.ucar.edu/thredds/dodsC/testdods \ 
      -l . in.nc
 @end example
 @noindent
@@ -3126,7 +3126,7 @@ This command tests the basic functionality of @acronym{OPeNDAP}-enabled
 @acronym{NCO} clients: 
 @example
 % ncks -O -o ~/foo.nc -C -H -v one -l /tmp \
-  -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
+  -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc
 % ncks -H -v one ~/foo.nc
 one = 1
 @end example
@@ -3137,7 +3137,7 @@ With minor changes to the above command, netCDF4 can be used as both the
 input and output file format:
 @example
 % ncks -4 -O -o ~/foo.nc -C -H -v one -l /tmp \
-  -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in_4.nc
+  -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in_4.nc
 % ncks -H -v one ~/foo.nc
 one = 1
 @end example
@@ -3146,7 +3146,7 @@ to support other, orthogonal features such as UDUnits
 (@pxref{UDUnits Support}):
 @example
 % ncks -u -C -H -v wvl -d wvl,'0.4 micron','0.7 micron' \
-  -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in_4.nc
+  -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in_4.nc
 % wvl[0]=5e-07 meter
 @end example
 
@@ -16039,9 +16039,9 @@ ncrcat -O -C -D 3 \
   -l /tmp in.nc in.nc ~/foo.nc
 
 Unidata DAP servers:
-ncks -M -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
+ncks -M -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc
 ncrcat -O -C -D 3 \
-  -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods \
+  -p http://thredds-test.ucar.edu/thredds/dodsC/testdods \
   -l /tmp in.nc in.nc ~/foo.nc
 
 NOAA DAP servers:

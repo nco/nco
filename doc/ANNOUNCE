@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.609 2013-09-22 15:47:08 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.610 2013-09-23 21:43:37 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.6 are ready. 
 
@@ -122,19 +122,6 @@ KNOWN ISSUES NOT YET FIXED:
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
 
 A. NOT YET FIXED
-   Correctly read netCDF4 input over DAP, write netCDF4 output, then read resulting file.
-   Replacing netCDF4 with netCDF3 in either location of preceding sentence leads to success.
-   DAP non-transparency: Works locally, fails through DAP server.
-   Unclear whether resulting file is "legal" because of dimension ID ordering assumptions.
-
-   Demonstration:
-   ncks -4 -O -v three_dmn_rec_var http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc ~/foo.nc
-   ncks ~/foo.nc # breaks with "NetCDF: Invalid dimension ID or name"
-
-   20130724: Unable to verify since in_4.nc no longer accessible on Unidata DAP server
-   Bug report filed: netCDF #QUN-641037: dimension ID ordering assumptions
-
-B. NOT YET FIXED
    netCDF4 library fails when renaming dimension and variable using
    that dimension, in either order. Works fine with netCDF3.
    Problem with netCDF4 library implementation.
@@ -147,14 +134,14 @@ B. NOT YET FIXED
    20130724: Verified problem still exists
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
 
-C. NOT YET FIXED (requires change to DAP protocol)
+B. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
    Metadata are returned successfully, data are not.
    DAP non-transparency: Works locally, fails through DAP server.
 
    Demonstration:
-   ncks -O -C -D 3 -v var_nm.dot -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc # Fails to find variable
+   ncks -O -C -D 3 -v var_nm.dot -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc # Fails to find variable
 
    20130724: Verified problem still exists. 
    Stopped testing because inclusion of var_nm.dot broke all test scripts.
@@ -162,13 +149,13 @@ C. NOT YET FIXED (requires change to DAP protocol)
 
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-D. NOT YET FIXED (requires change to DAP protocol)
+C. NOT YET FIXED (would require DAP protocol change)
    Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol
 
    Demonstration:
-   ncks -O -D 1 -H -C -m --md5_dgs -v md5_a -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
+   ncks -O -D 1 -H -C -m --md5_dgs -v md5_a -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc
 
    20120801: Verified problem still exists
    Bug report not filed
@@ -176,7 +163,7 @@ D. NOT YET FIXED (requires change to DAP protocol)
    dimension is user-configurable, but still...), NUL-terminated
    strings so MD5 agreement fails 
 
-E. NOT YET FIXED (NCO problem)
+D. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
 
    Demonstration:

@@ -11,6 +11,10 @@
 // scp ~/nco/data/in_grp.nc dust.ess.uci.edu:/var/www/html/nco
 // scp dust.ess.uci.edu:/var/www/html/nco/in_grp.nc ~/nco/data
 
+// URL: 
+// http://dust.ess.uci.edu/nco/in_grp.nc
+// http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_grp.nc
+
 // CDL Data constants:
 // byte: 'a'
 // char: "a"
@@ -75,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.92 2013-09-11 05:56:15 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.93 2013-09-23 21:43:37 zender Exp $";
   
  data:
   area=10.,10.;

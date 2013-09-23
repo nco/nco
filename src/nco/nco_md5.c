@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.17 2013-07-25 19:50:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.18 2013-09-23 21:43:39 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -10,7 +10,7 @@
    ncecat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
    ncrcat -O -D 1 --md5 -p ~/nco/data in.nc in.nc ~/foo.nc
    ncks -O -D 1 -H -C -m --md5 -v md5_a,md5_abc ~/nco/data/in.nc
-   ncks -O -D 1 -H -C -m --md5 -v md5_a,md5_abc -p http://motherlode.ucar.edu:8080/thredds/dodsC/testdods in.nc
+   ncks -O -D 1 -H -C -m --md5 -v md5_a,md5_abc -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc
    ncks -O -D 1 -C -m --md5 -v md5_a,md5_abc,one_dmn_rec_var ~/nco/data/in.nc
    ncks -O -D 1 -C -d lev,0 -m --md5 -v md5_a,md5_abc,one_dmn_rec_var ~/nco/data/in.nc */
 
@@ -195,7 +195,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.17 2013-07-25 19:50:58 zender Exp $ */
+/* $Id: nco_md5.c,v 1.18 2013-09-23 21:43:39 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

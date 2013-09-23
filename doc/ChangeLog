@@ -6,6 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.6 release"
 	cvs tag -c nco-4_3_6;cvs tag -c nco-4_3_6-1
 
+	* Change test DAP server from http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/
+	to http://thredds-test.ucar.edu/thredds/dodsC/testdods/
+
 	* Add reference list of publications acknowledging NCO
 
 2013-09-22  Charlie Zender  <zender@uci.edu>
