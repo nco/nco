@@ -1,5 +1,5 @@
 #!/bin/bash
-# includes gsl_rgr.nco
+# Includes gsl_rgr.nco
 
 #===========================================================================
 # After cmb_fl.sh
@@ -59,11 +59,11 @@ for var_id in {0..1}; do		# Loop over two variables
       ncecat -O -u rgn ${drc_out}${fld_out[var_id]}${pfx}_gw_?.nc \
         ${drc_out}${fld_out[var_id]}${pfx}_gw_rgn4.nc
 
-      # Change the order of the dimensions
+      # Change dimensions order
       ncpdq -O -a time,rgn ${drc_out}${fld_out[var_id]}${pfx}_gw_rgn4.nc \
         ${drc_out}${fld_out[var_id]}${pfx}_gw_rgn4.nc
 
-      # Remove the temporary files (optional)
+      # Remove temporary files (optional)
       rm ${drc_out}${fld_out[var_id]}${pfx}_gw_?.nc \
         ${drc_out}${fld_out[var_id]}${pfx}_gw.nc
     
