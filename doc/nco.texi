@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.867 2013-09-22 21:55:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.868 2013-09-23 17:41:23 woodllan Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -534,6 +534,7 @@ netCDF itself.
 
 @menu
 * Availability::                
+* How to use this guide::       
 * Compatability::               
 * Symbolic Links::              
 * Libraries::                   
@@ -541,7 +542,7 @@ netCDF itself.
 * Help Requests and Bug Reports::  
 @end menu
 
-@node Availability, Compatability, Introduction, Introduction
+@node Availability, How to use this guide, Introduction, Introduction
 @section Availability
 @cindex @acronym{NCO} availability
 @cindex source code
@@ -624,7 +625,39 @@ This tests incorporates an image using the @code{@@image} command.
 @image{/data/zender/ps/odxc,6in,}
 @end ignore
 
-@node Compatability, Symbolic Links, Availability, Introduction
+@node How to use this guide, Compatability, Availability, Introduction
+@section How to use this guide
+@cindex contents
+@cindex introduction
+Detailed instructions about
+@uref{http://nco.sourceforge.net/#Source, how to download the newest version}, 
+and @uref{http://nco.sourceforge.net/#bld, how to complie source code},
+as well as @uref{http://nco.sourceforge.net/#FAQ, @acronym{FAQ}} and 
+@uref{http://nco.sourceforge.net/#bug, Known Problems} etc.
+are on our homepage 
+(@uref{http://nco.sourceforge.net/}).
+
+There are twelve @acronym{NCO} operators in the current version (v @value{nco-edition}).
+The function of each is explained in Operator Reference Manual (@pxref{Operator Reference Manual}).
+There are examples for each operator tagged by !!!!!!!!!!!!!!!!!!!!!!!!
+With a variety of options, the tasks that @acronym{NCO} can accomplish are listed 
+but not all included in @acronym{NCO} Features (@pxref{Common features}).
+
+@acronym{NCO} is a command-line language.
+You can either use an operator after the prompt (e.g., @samp{$} here), like,
+@example
+$ @command{operator} @option{[options]} @file{input} @file{[output]}
+@end example
+or write all the command lines into a shell script, like what we did in @acronym{CMIP5} Example 
+(@pxref{CMIP5 Example}).
+
+If you are new to @acronym{NCO}, there is a Quick Start (@pxref{Quick Start}) showing
+simple examples about how to use @acronym{NCO} on different kinds of data files.
+More detailed and in-real-world examples can be found in @acronym{CMIP5} Example (@pxref{CMIP5 Example}).
+Index can be very helpful, too (@pxref{General Index}).
+If all of the above still couldn't solve your problem, please @pxref{Help Requests and Bug Reports}.
+
+@node Compatability, Symbolic Links, How to use this guide, Introduction
 @section Operating systems compatible with @acronym{NCO}
 @cindex @acronym{OS}
 @cindex @acronym{IBM}
@@ -649,7 +682,7 @@ This tests incorporates an image using the @code{@@image} command.
 @cindex installation
 @acronym{NCO} has been successfully ported and tested and is known to
 work on the following 32- and 64-bit platforms:  
-@c alphabetize by @acronym{OS} name
+@c alphabetize by OS name
 @acronym{IBM AIX} 4.x, 5.x,
 FreeBSD 4.x, 
 @acronym{GNU}/Linux 2.x, LinuxPPC, LinuxAlpha, LinuxARM, LinuxSparc64,
@@ -673,7 +706,7 @@ Unidata has shown a commitment to maintaining netCDF and UDUnits on all
 popular @acronym{UNIX} platforms, and is moving towards full support for 
 the Microsoft Windows operating system (@acronym{OS}).
 Given this, the only difficulty in implementing @acronym{NCO} on a
-particular platform is standardization of various @w{C}-language @acronym{API}
+particular platform is standardization of various @w{C}-language API
 system calls. 
 @acronym{NCO} code is tested for @acronym{ANSI} compliance by
 compiling with @w{C99 compilers} including those from 
@@ -787,7 +820,7 @@ by invoking the compiler with @samp{-Drestrict=''}.}.
 @cindex @acronym{GSL}
 @findex ncap2
 In January 2009, @acronym{NCO} version 3.9.6 was the first to link
-to the @acronym{GNU} Scientific Library (@acronym{GSL}).
+to the GNU Scientific Library (@acronym{GSL}).
 @acronym{GSL} must be @w{version 1.4} or later. 
 @acronym{NCO}, in particular @command{ncap2}, uses the @acronym{GSL}
 special function library to evaluate geoscience-relevant mathematics
@@ -865,7 +898,7 @@ platform, and the change in the wallclock time for execution.}.
 Windows operating systems including: XP SP2/Vista/7.
 Support is provided for compiling either native Windows executables,
 using the Microsoft Visual Studio 2010 Compiler, or with Cygwin, the
-UNIX-emulating compatibility layer with the @acronym{GNU} toolchain.
+UNIX-emulating compatibility layer with the GNU toolchain.
 The switches necessary to accomplish both are included in the standard
 distribution of @acronym{NCO}.
 
@@ -1085,7 +1118,7 @@ installation).
 support netCDF (or, for that matter, Fortran) as of December 1999.
 By early 2001, @acronym{HDF5} did support Fortran90.
 In 2004, Unidata and @acronym{NCSA} began a project to implement
-the @acronym{HDF5} features necessary to support the netCDF @acronym{API}.
+the @acronym{HDF5} features necessary to support the netCDF API.
 @acronym{NCO} version 3.0.3 added support for reading/writing
 netCDF4-formatted @acronym{HDF5} files in October, 2005.
 See @ref{Selecting Output File Format} for more details.
@@ -1435,7 +1468,7 @@ existing @var{output-file}).
 @cindex execution time
 Also, note this feature increases the execution time of the operator
 by approximately the time it takes to copy the @var{output-file}
-@footnote{The @acronym{OS}-specific system move command is used.
+@footnote{The OS-specific system move command is used.
 This is @command{mv} for UNIX, and @command{move} for Windows.}.
 Finally, note this fault-tolerant feature allows the @var{output-file}
 to be the same as the @var{input-file} without any danger of
@@ -9621,7 +9654,7 @@ print(T_out);
 @subsection GSL special functions
 @cindex @acronym{GSL}
 @noindent As of version 3.9.6 (released January, 2009), @acronym{NCO} 
-can link to the @acronym{GNU} Scientific Library (@acronym{GSL}). 
+can link to the GNU Scientific Library (@acronym{GSL}). 
 @command{ncap2} can access most @acronym{GSL} special functions including
 Airy, Bessel, error, gamma, beta, hypergeometric, and Legendre functions
 and elliptical integrals. 
@@ -11078,7 +11111,7 @@ Use the @samp{-f} (or @samp{fnc_tbl} or @samp{prn_fnc_tbl}) switch
 to print a complete list of functions supported on your platform.
 @cindex Linux
 @footnote{Linux supports more of these intrinsic functions than
-other @acronym{OS}s.}
+other OSs.}
 
 @noindent
 @html
@@ -12324,6 +12357,7 @@ The entire contents of the extracted portion of each input file
 is placed in its own top-level group in @var{output-file}, which
 is automatically made as a netCDF4-format file.
 
+@cindex @option{--gag}
 @acronym{GAG} has two methods to specify group names for the
 @var{output-file}.    
 The @samp{-G} option, or its long-option equivalent @samp{--gpe},
@@ -15170,8 +15204,8 @@ Ed Hartnett,
 and Dennis Heimbigner.
 In addition to their roles in maintaining the software stack on which
 @acronym{NCO} perches, Yertl-like, some of these gentlemen have advised
-or contributed to @acronym{NCO} specifically. 
-That support is acknowledged separately below. 
+or contributed to @acronym{NCO} specifically. That support is
+acknowledged separately below. 
 
 @cindex contributors
 The primary contributors to @acronym{NCO} development have been:
@@ -15179,18 +15213,17 @@ The primary contributors to @acronym{NCO} development have been:
 @cindex Charlie Zender
 @item Charlie Zender
 Concept, design and implementation of operators from 1995-2000.
-Since then autotools, bug-squashing, chunking, @acronym{CDL} support,
-documentation, packing, @acronym{NCO} library redesign, @command{ncap2}
-features, @command{ncbo},  @command{ncpdq}, regular expressions with
-groups, @acronym{SMP} threading and @acronym{MPI} parallelization,
+Since then autotools, bug-squashing, chunking, documentation, packing,
+@acronym{NCO} library redesign, @command{ncap2} features, @command{ncbo}, 
+@command{ncpdq}, SMP threading and MPI parallelization, 
 netCDF4 integration, external funding, project management, science
-research, releases. 
+research, releases.
 @cindex Henry Butowsky
 @item Henry Butowsky
 Non-linear operations and @code{min()}, @code{max()}, @code{total()}
 support in @command{ncra} and @command{ncwa}. 
 Type conversion for arithmetic.
-Migration to netCDF3 @acronym{API}.
+Migration to netCDF3 API.
 @command{ncap2} parser, lexer, @w{and I/O}.
 Multislabbing algorithm.
 Variable wildcarding.
@@ -15205,8 +15238,8 @@ Debianization.
 Numerous bug-fixes.
 @cindex Daniel Wang
 @item Daniel Wang
-Script Workflow Analysis for MultiProcessing (@acronym{SWAMP}).
-@acronym{RPM} support.
+Script Workflow Analysis for MultiProcessing (SWAMP).
+RPM support.
 @cindex Harry Mangalam
 @item Harry Mangalam
 Benchmarking.
@@ -15214,26 +15247,25 @@ OPeNDAP configuration.
 @cindex Pedro Vicente
 @item Pedro Vicente
 Windows Visual Studio support.
-netCDF4 hierarchical group support.
-CMake support.
+netCDF4 groups.
 @cindex Russ Rew
 @item Russ Rew
-Advice on @acronym{NCO} structural algorithms
+Advice on NCO structural algorithms
 @cindex Brian Mays
 @item Brian Mays
-Original packaging for Debian @acronym{GNU}/Linux, @command{nroff} man pages.
+Original packaging for Debian GNU/Linux, @command{nroff} man pages.
 @cindex George Shapovalov
 @item George Shapovalov
-Packaging for Gentoo @acronym{GNU}/Linux.
+Packaging for Gentoo GNU/Linux.
 @cindex Bill Kocik
 @item Bill Kocik
 Memory management.
 @cindex Len Makin
 @item Len Makin
-@acronym{NEC} @acronym{SX} architecture support.
+NEC SX architecture support.
 @cindex Jim Edwards
 @item Jim Edwards
-@acronym{AIX} architecture support.
+AIX architecture support.
 @cindex Juliana Rew
 @item Juliana Rew
 Compatibility with large PIDs.
@@ -15284,17 +15316,17 @@ OpenSuse packaging
 @cindex Alexander Hansen
 @cindex Takeshi Enomoto
 @item Takeshi Enomoto, Alexander Hansen
-Mac @acronym{OS} packaging
+Mac OS packaging
 @cindex Eric Blake
 @item Eric Blake
 Autoconf/M4 help
 @cindex Gavin Burris
 @cindex Kyle Wilcox
 @item Gavin Burris, Kyle Wilcox
-@acronym{RHEL} and CentOS build scripts and bug reports.
+RHEL and CentOS build scripts and bug reports.
 @cindex Andrea Cimatoribus
 @item Andrea Cimatoribus
-@acronym{NCO} Spiral Logo
+NCO Spiral Logo
 @cindex Martin Otte
 @cindex Etienne Tourigny
 @item Martin Otte, Etienne Tourigny
@@ -15505,7 +15537,7 @@ shows complete processing of the @acronym{CMIP5} dataset.
 @end ignore
 
 The fifth phase of the Coupled Model Intercomparison Project 
-(@uref{http://cmip-pcmdi.llnl.gov/cmip5/index.html?submenuheader=0, @acronym{CMIP5}} 
+(@uref{http://cmip-pcmdi.llnl.gov/cmip5/index.html?submenuheader=0, @acronym{CMIP5}}) 
 provides a multi-model framework for comparing the mechanisms and
 responses of climate models from around the world.   
 However, it is a tremendous workload to retrieve a single climate
@@ -15525,10 +15557,14 @@ context.
 Graphical representations of the results (@acronym{NCL} scripts
 available upon request) are provided to illustrate physical meaning of
 the analysis.
+@ignore
 Over the summer of 2013, we will add scripts which make use of new
 @acronym{NCO} features that combine all the loops in the analysis into
 single commands by exploiting @acronym{NCO}'s new group aggregation and
 arithmetic features.  
+@end ignore
+Since @acronym{NCO} @value{nco-edition} is capable to process netCDF4 data with groups,
+we present sample scripts for hierarchical data alongside.
 
 @menu
 * Combine Files::               
@@ -15538,7 +15574,6 @@ arithmetic features.
 * Regrid MODIS Data::           
 * Add Coordinates to MODIS Data::  
 * Permute MODIS Coordinates::   
-* Hierarchical Data Files::     
 @end menu
 
 @node Combine Files, Global Distribution of Long-term Average, CMIP5 Example, CMIP5 Example
@@ -15546,7 +15581,8 @@ arithmetic features.
 @cindex file combination
 Sometimes, the data of one ensemble member will be stored in several
 files to reduce single file size.
-This script illustrates how to concatenate these into one file.
+But it is not convenient to process in a batch mode.
+The following script illustrates how to concatenate these files into one.
 Key steps include: 
 @enumerate
 @item Obtain number and names (or partial names) of files in a directory
@@ -15555,6 +15591,24 @@ Key steps include:
 @end enumerate
 @example
 @verbatiminclude xmp/cmb_fl.sh
+@end example
+
+Right now, @acronym{CIMP5} model data downloaded from Earth System Grid Federation (@uref{http://pcmdi9.llnl.gov/esgf-web-fe/, @acronym{ESGF}})
+has not implement @key{group} feature yet. 
+The following script shows how to concatenate models to one file.
+One model becomes a group in the output file.
+There can be several levels of groups.
+In this example, we employed two experiments as the top-level.
+The second-level comprises different models.
+Some of models have more than one ensemble member.
+These ensemble members are on the third-level.
+In each sub-group of ensemble member, we appended two variables, @var{snc} and @var{snd}.
+@cindex @option{--gag}
+@cindex concatenation
+@cindex group aggregation
+@cindex groups, creating
+@example
+@verbatiminclude xmp/cmb_fl_grp.sh
 @end example
 
 @node Global Distribution of Long-term Average, Annual Average over Regions, Combine Files, CMIP5 Example
@@ -15580,6 +15634,17 @@ Key steps include:
 @verbatiminclude xmp/glb_avg.sh
 @end example
 
+With the use of @key{group}, the above script will be shortened to just @w{ONE LINE}.
+@cindex groups, averaging
+@ignore
+Isn't it amazing or what?!
+@end ignore
+@example
+# Data from cmb_fl_grp.sh
+ncra -O sn_LImon_all-mdl_all-xpt_all-nsm_199001-200512.nc \
+  sn_LImon_all-mdl_all-xpt_all-nsm_tm-avg.nc
+@end example
+
 @node Annual Average over Regions, Monthly Cycle, Global Distribution of Long-term Average, CMIP5 Example
 @section Annual Average over Regions
 @cindex annual average
@@ -15597,9 +15662,10 @@ Key steps include:
 @cindex nco script file
 @cindex variables, appending
 @float Figure,fgr:anl
-@image{xmp/fgr2,4in}
+@image{xmp/fgr2,3in}
 @caption{Annual Average over Regions.}
 @end float
+@noindent
 This section illustrates how to calculate the annual average over
 specific regions (@pxref{fgr:anl}).
 Key steps include: 
@@ -15624,6 +15690,19 @@ Key steps include:
 @verbatiminclude xmp/gsl_rgr.nco
 @end example
 
+With the @key{group} feature, 
+all the loops over experiments, models and ensemble members can be omitted.
+As we are working on implementing @key{group} feature in all @acronym{NCO} operators,
+some functions (e.g., regression and standard deviation) 
+may have to wait until the new versions.
+@cindex group, averaging
+@cindex group, standard deviation
+@cindex concatenation
+@cindex ensemble average
+@example
+@verbatiminclude xmp/ann_avg_grp.sh
+@end example
+
 @node Monthly Cycle, Regrid MODIS Data, Annual Average over Regions, CMIP5 Example
 @section Monthly Cycle
 @cindex monthly average
@@ -15636,10 +15715,20 @@ Key steps include:
 @image{xmp/fgr3,4in}
 @caption{Monthly Cycle.}
 @end float
+@noindent
 This script illustrates how to calculate the monthly anomaly from the
 annual average (@pxref{fgr:mon}). 
+In order to keep only the monthly cycle,
+we will subtract the annual average of each year from the monthly data,
+instead of subtracting the long-term average.
+This is a little more complicated in coding since we need to loop over years. 
 @example
 @verbatiminclude xmp/mcc.sh
+@end example
+Using @key{group} and @option{-d} option of @command{ncbo},
+the script will be shortened.
+@example
+@verbatiminclude xmp/mcc_grp.sh
 @end example
 
 @node Regrid MODIS Data, Add Coordinates to MODIS Data, Monthly Cycle, CMIP5 Example
@@ -15685,7 +15774,7 @@ Key steps include:
 @verbatiminclude xmp/crd.nco
 @end example
 
-@node Permute MODIS Coordinates, Hierarchical Data Files, Add Coordinates to MODIS Data, CMIP5 Example
+@node Permute MODIS Coordinates,  , Add Coordinates to MODIS Data, CMIP5 Example
 @section Permute @acronym{MODIS} Coordinates
 @cindex coordinates, modifying
 @acronym{MODIS} orders latitude data from 90@textdegree{}N to
@@ -15700,8 +15789,9 @@ This script changes the @acronym{MODIS} coordinates to follow the
 @verbatiminclude xmp/pmt_crd.sh
 @end example
 
-@node Hierarchical Data Files,  , Permute MODIS Coordinates, CMIP5 Example
-@section Hierarchical Data Files
+@ignore
+@node Hierarchical Data Files, Parallel, CMIP5 Example, Top
+section Hierarchical Data Files
 @cindex hierarchical data
 @cindex groups
 Hierarchical Data Files support arbitrarily nested groups.
@@ -15723,6 +15813,7 @@ Here is an example showing:
 @example
 @verbatiminclude xmp/grp.sh
 @end example
+@end ignore
 
 @html
 <a name="parallel"></a> <!-- http://nco.sf.net/nco.html#parallel -->
@@ -16050,7 +16141,6 @@ Level III: Many derived products from level II, e.g.,
 @end html
 @node mybibnode, General Index, CCSM Example, Top
 @chapter References
-@section Publications and Presentations on @acronym{NCO}
 @itemize
 @mybibitem{ZeM07} Zender, C. S., and H. J. Mangalam (2007), Scaling Properties of Common Statistical Operators for Gridded Datasets, Int. J. High Perform. Comput. Appl., 21(4), 485-498, doi:10.1177/1094342007083802.
 @mybibitem{Zen08} Zender, C. S. (2008), Analysis of Self-describing Gridded Geoscience Data with netCDF Operators (NCO), Environ. Modell. Softw., 23(10), 1338-1342, doi:10.1016/j.envsoft.2008.03.004.
@@ -16062,25 +16152,7 @@ Level III: Many derived products from level II, e.g.,
 @mybibitem{WZJ074} Wang, D. L., C. S. Zender and S. F. Jenks (2007), A System for Scripted Data Analysis at Remote Data Centers, Eos Trans. AGU, 88(52), Fall Meet. Suppl., Abstract IN11B-0469.
 @mybibitem{WZJ081} Wang, D. L., C. S. Zender and S. F. Jenks (2008), Cluster Workflow Execution of Retargeted Data Analysis Scripts, Proceedings of the 8th IEEE Int'l Symposium on Cluster Computing and the Grid (IEEE CCGRID '08), pp. 449-458, Lyon, France, May 2008.
 @mybibitem{WZJ091} Wang, D. L., C. S. Zender, and S. F. Jenks (2009), Efficient Clustered Server-side Data Analysis Workflows using SWAMP, Earth Sci. Inform., 2(3), 141-155, doi:10.1007/s12145-009-0021-z.
-@end itemize
-
-@c Publications cited by this manual
-@section Publications cited by @acronym{NCO} manual
-@html
-<a name="ctt"></a> <!-- http://nco.sf.net/nco.html#ctt -->
-@end html
-@itemize
 @mybibitem{PFT88} Press, Flannery, Teukolsky, and Vetterling (1988), Numerical Recipes in C, Cambridge Univ. Press, New York, NY.
-@end itemize
-
-@c Publications acknowledging NCO
-@section Publications acknowledging @acronym{NCO}
-@html
-<a name="ack"></a> <!-- http://nco.sf.net/nco.html#ack -->
-@end html
-@itemize
-@mybibitem{ChF12} Chiang, John C.H., and Andrew R. Friedman (2012): Extratropical Cooling, Interhemispheric Thermal Gradients, and Tropical Climate Change Annual Review of Earth and Planetary Sciences Vol. 40: 383-412, doi:10.1146/annurev-earth-042711-105545.
-@mybibitem{FrH13} Friedman, Andrew R., Yen-Ting Hwang, John C. H. Chiang, Dargan M. W. Frierson, (2013): Interhemispheric Temperature Asymmetry over the Twentieth Century and in Future Projections. J. Climate, 26, 5419–5433, doi:10.1146/annurev-earth-042711-105545.
 @end itemize
 
 @c @node Name Index, General Index, Operators, Top
