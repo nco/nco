@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.868 2013-09-23 17:41:23 woodllan Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.869 2013-09-23 19:15:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -388,19 +388,19 @@ Charlie Zender
 @end ifinfo
 
 @menu
-* Foreword::                    
-* Summary::                     
-* Introduction::                
-* Strategies::                  
-* Common features::             
-* Operator Reference Manual::   
-* Contributing::                
-* Quick Start::                 
-* CMIP5 Example::               
-* Parallel::                    
-* CCSM Example::                
-* mybibnode::                   
-* General Index::               
+* Foreword::
+* Summary::
+* Introduction::
+* Strategies::
+* Common features::
+* Operator Reference Manual::
+* Contributing::
+* Quick Start::
+* CMIP5 Example::
+* Parallel::
+* CCSM Example::
+* mybibnode::
+* General Index::
 @end menu
 
 @html
@@ -533,16 +533,16 @@ netCDF itself.
 @cindex introduction
 
 @menu
-* Availability::                
-* How to use this guide::       
-* Compatability::               
-* Symbolic Links::              
-* Libraries::                   
-* netCDF2/3/4 and HDF4/5 Support::  
-* Help Requests and Bug Reports::  
+* Availability::
+* How to Use this guide::
+* Compatability::
+* Symbolic Links::
+* Libraries::
+* netCDF2/3/4 and HDF4/5 Support::
+* Help Requests and Bug Reports::
 @end menu
 
-@node Availability, How to use this guide, Introduction, Introduction
+@node Availability, How to Use this guide, Introduction, Introduction
 @section Availability
 @cindex @acronym{NCO} availability
 @cindex source code
@@ -625,23 +625,26 @@ This tests incorporates an image using the @code{@@image} command.
 @image{/data/zender/ps/odxc,6in,}
 @end ignore
 
-@node How to use this guide, Compatability, Availability, Introduction
-@section How to use this guide
+@node How to Use this guide, Compatability, Availability, Introduction
+@section How to Use this Guide
 @cindex contents
 @cindex introduction
 Detailed instructions about
-@uref{http://nco.sourceforge.net/#Source, how to download the newest version}, 
-and @uref{http://nco.sourceforge.net/#bld, how to complie source code},
-as well as @uref{http://nco.sourceforge.net/#FAQ, @acronym{FAQ}} and 
-@uref{http://nco.sourceforge.net/#bug, Known Problems} etc.
+@uref{http://nco.sf.net/#Source, how to download the newest version}, 
+and @uref{http://nco.sf.net/#bld, how to complie source code},
+as well as a @uref{http://nco.sf.net/#FAQ, @acronym{FAQ}} and 
+descriptions of @uref{http://nco.sf.net/#bug, Known Problems} etc.
 are on our homepage 
-(@uref{http://nco.sourceforge.net/}).
+(@uref{http://nco.sf.net/}).
 
-There are twelve @acronym{NCO} operators in the current version (v @value{nco-edition}).
-The function of each is explained in Operator Reference Manual (@pxref{Operator Reference Manual}).
-There are examples for each operator tagged by !!!!!!!!!!!!!!!!!!!!!!!!
-With a variety of options, the tasks that @acronym{NCO} can accomplish are listed 
-but not all included in @acronym{NCO} Features (@pxref{Common features}).
+There are twelve operators in the current version (@value{nco-edition}).
+The function of each is explained in the Operator Reference Manual (@pxref{Operator Reference Manual}).
+Many of the tasks that @acronym{NCO} can accomplish are described during
+the explanation of common @acronym{NCO} Features (@pxref{Common features}).
+More specific use examples for each operator can be seen by visiting the
+operator-specific examples in the @ref{Operator Reference Manual}.
+These can be found directly by prepending the operator name with the
+@code{xmp_} tag, e.g., @uref{http://nco.sf.net/nco.html#xmp_ncks}.
 
 @acronym{NCO} is a command-line language.
 You can either use an operator after the prompt (e.g., @samp{$} here), like,
@@ -657,7 +660,7 @@ More detailed and in-real-world examples can be found in @acronym{CMIP5} Example
 Index can be very helpful, too (@pxref{General Index}).
 If all of the above still couldn't solve your problem, please @pxref{Help Requests and Bug Reports}.
 
-@node Compatability, Symbolic Links, How to use this guide, Introduction
+@node Compatability, Symbolic Links, How to Use this guide, Introduction
 @section Operating systems compatible with @acronym{NCO}
 @cindex @acronym{OS}
 @cindex @acronym{IBM}
@@ -876,7 +879,7 @@ platform, and the change in the wallclock time for execution.}.
 @end ignore
 
 @menu
-* Windows Operating System::    
+* Windows Operating System::
 @end menu
 
 @html
@@ -1357,16 +1360,16 @@ differences between these files and your own.
 @chapter Operator Strategies
 
 @menu
-* Philosophy::                  
-* Climate Model Paradigm::      
-* Temporary Output Files::      
-* Appending Variables::         
-* Simple Arithmetic and Interpolation::  
-* Averaging vs. Concatenating::  
-* Large Numbers of Files::      
-* Large Datasets::              
-* Memory Requirements::         
-* Performance::                 
+* Philosophy::
+* Climate Model Paradigm::
+* Temporary Output Files::
+* Appending Variables::
+* Simple Arithmetic and Interpolation::
+* Averaging vs. Concatenating::
+* Large Numbers of Files::
+* Large Datasets::
+* Memory Requirements::
+* Performance::
 @end menu
 
 @html
@@ -1688,9 +1691,9 @@ averaging options---including weighting, masking, and broadcasting.}.
 First, let's describe the concatenators, then the averagers. 
 
 @menu
-* Concatenation::               
-* Averaging::                   
-* Interpolating::               
+* Concatenation::
+* Averaging::
+* Interpolating::
 @end menu
 
 @html
@@ -2078,8 +2081,8 @@ Memory consumption patterns of all operators are similar, with
 the exception of @command{ncap2}.
 
 @menu
-* Single and Multi-file Operators::  
-* Memory for ncap2::            
+* Single and Multi-file Operators::
+* Memory for ncap2::
 @end menu
 
 @node Single and Multi-file Operators, Memory for ncap2, Memory Requirements, Memory Requirements
@@ -2289,44 +2292,44 @@ If no ``key switches'' are listed for a feature, then that particular
 feature is automatic and cannot be controlled by the user. 
 
 @menu
-* Internationalization::        
-* Metadata Optimization::       
-* OpenMP Threading::            
-* Command Line Options::        
-* Specifying Input Files::      
-* Specifying Output Files::     
-* Remote storage::              
-* Retaining Retrieved Files::   
-* Selecting Output File Format::  
-* Large File Support::          
-* Subsetting Files::            
-* Subsetting Coordinate Variables::  
-* Group Path Editing::          
-* C and Fortran Index Conventions::  
-* Hyperslabs::                  
-* Stride::                      
-* Record Appending::            
-* Duration::                    
-* Multislabs::                  
-* Wrapped Coordinates::         
-* Auxiliary Coordinates::       
-* UDUnits Support::             
-* Rebasing Time Coordinate::    
-* Missing Values::              
-* Chunking::                    
-* Deflation::                   
-* MD5 digests::                 
-* Buffer sizes::                
-* RAM disks::                   
-* Packed data::                 
-* Operation Types::             
-* Type Conversion::             
-* Batch Mode::                  
-* History Attribute::           
-* File List Attributes::        
-* CF Conventions::              
-* ARM Conventions::             
-* Operator Version::            
+* Internationalization::
+* Metadata Optimization::
+* OpenMP Threading::
+* Command Line Options::
+* Specifying Input Files::
+* Specifying Output Files::
+* Remote storage::
+* Retaining Retrieved Files::
+* Selecting Output File Format::
+* Large File Support::
+* Subsetting Files::
+* Subsetting Coordinate Variables::
+* Group Path Editing::
+* C and Fortran Index Conventions::
+* Hyperslabs::
+* Stride::
+* Record Appending::
+* Duration::
+* Multislabs::
+* Wrapped Coordinates::
+* Auxiliary Coordinates::
+* UDUnits Support::
+* Rebasing Time Coordinate::
+* Missing Values::
+* Chunking::
+* Deflation::
+* MD5 digests::
+* Buffer sizes::
+* RAM disks::
+* Packed data::
+* Operation Types::
+* Type Conversion::
+* Batch Mode::
+* History Attribute::
+* File List Attributes::
+* CF Conventions::
+* ARM Conventions::
+* Operator Version::
 @end menu
 
 @html
@@ -3003,7 +3006,7 @@ Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
 syntactically more clear.
 
 @menu
-* OPeNDAP::                     
+* OPeNDAP::
 @end menu
 
 @html
@@ -4056,7 +4059,8 @@ ncks -G :2    -g g1/g1 -v v1 # /g1/g1/v1 -> /v1
 ncks -G :2    -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G g2:1  -g g1    -v v1 # /g1/v1    -> /g2/v1
 ncks -G g2:2  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
-ncks -G g2:1  -g       -v v1 # /v1       -> /g2/v1
+ncks -G g2:1  -g /     -v v1 # /v1       -> /g2/v1
+ncks -G g2:1           -v v1 # /v1       -> /g2/v1
 ncks -G g2:1  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/g1/v1
 # Flattening-mode: Remove all input path components
 # Syntax: -G [apn]: colon without numerical argument
@@ -4074,8 +4078,7 @@ ncks -G :-1   -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/v1
 ncks -G :-2   -g g1/g2 -v v1 # /g1/g2/v1 -> /v1
 ncks -G :-2   -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
-ncks -G g2:-1          -v v1 # /g?/v1    -> /g2/v1
-ncks -G g2:-1 -g g1    -v v1 # /g1/v1    -> /g1/g2/v1
+ncks -G g2:-1 -g g1    -v v1 # /g1/v1    -> /g2/v1
 ncks -G g1:-1 -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/g1/v1
 @end example
 
@@ -6661,9 +6664,9 @@ Most type conversion happens automatically, yet there are situations in
 which manual type conversion is advantageous.
 
 @menu
-* Automatic type conversion::   
-* Promoting Single-precision to Double::  
-* Manual type conversion::      
+* Automatic type conversion::
+* Promoting Single-precision to Double::
+* Manual type conversion::
 @end menu
 
 @node Automatic type conversion, Promoting Single-precision to Double, Type Conversion, Type Conversion
@@ -7669,18 +7672,18 @@ Only options specific to, or most useful with, a particular operator are
 described in any detail in the sections below.  
 
 @menu
-* ncap2 netCDF Arithmetic Processor::  
-* ncatted netCDF Attribute Editor::  
-* ncbo netCDF Binary Operator::  
-* ncea netCDF Ensemble Averager::  
-* ncecat netCDF Ensemble Concatenator::  
-* ncflint netCDF File Interpolator::  
-* ncks netCDF Kitchen Sink::    
-* ncpdq netCDF Permute Dimensions Quickly::  
-* ncra netCDF Record Averager::  
-* ncrcat netCDF Record Concatenator::  
-* ncrename netCDF Renamer::     
-* ncwa netCDF Weighted Averager::  
+* ncap2 netCDF Arithmetic Processor::
+* ncatted netCDF Attribute Editor::
+* ncbo netCDF Binary Operator::
+* ncea netCDF Ensemble Averager::
+* ncecat netCDF Ensemble Concatenator::
+* ncflint netCDF File Interpolator::
+* ncks netCDF Kitchen Sink::
+* ncpdq netCDF Permute Dimensions Quickly::
+* ncra netCDF Record Averager::
+* ncrcat netCDF Record Concatenator::
+* ncrename netCDF Renamer::
+* ncwa netCDF Weighted Averager::
 @end menu
 
 @page
@@ -7765,33 +7768,33 @@ already contain the appended dimensions.
 @c @subsection Scripting Mathematical Processing with @command{ncap2}
 
 @menu
-* Syntax of ncap2 statements::  
-* Expressions::                 
-* Dimensions::                  
-* Left hand casting::           
-* Arrays and hyperslabs::       
-* Attributes::                  
-* Number literals::             
-* if statement::                
-* print statement::             
-* Missing values ncap2::        
-* Methods and functions::       
-* RAM variables::               
-* Where statement::             
-* Loops::                       
-* Include files::               
-* Sort methods::                
-* Irregular grids::             
-* Bilinear interpolation::      
-* GSL special functions::       
-* GSL interpolation::           
-* GSL least-squares fitting::   
-* GSL statistics::              
-* GSL random number generation::  
-* Examples ncap2::              
-* Intrinsic mathematical methods::  
-* Operator precedence and associativity ::  
-* ID Quoting::                  
+* Syntax of ncap2 statements::
+* Expressions::
+* Dimensions::
+* Left hand casting::
+* Arrays and hyperslabs::
+* Attributes::
+* Number literals::
+* if statement::
+* print statement::
+* Missing values ncap2::
+* Methods and functions::
+* RAM variables::
+* Where statement::
+* Loops::
+* Include files::
+* Sort methods::
+* Irregular grids::
+* Bilinear interpolation::
+* GSL special functions::
+* GSL interpolation::
+* GSL least-squares fitting::
+* GSL statistics::
+* GSL random number generation::
+* Examples ncap2::
+* Intrinsic mathematical methods::
+* Operator precedence and associativity ::
+* ID Quoting::
 @end menu
 
 @html
@@ -13290,7 +13293,7 @@ features would be useful to you.
 <a name="flt"></a> <!-- http://nco.sf.net/nco.html#flt -->
 @end html
 @menu
-* Filters for @command{ncks}::  
+* Filters for @command{ncks}::
 @end menu
 
 @node Filters for @command{ncks},  , ncks netCDF Kitchen Sink, ncks netCDF Kitchen Sink
@@ -14778,8 +14781,8 @@ The mathematical definition of operations involving rank reduction
 is given above (@pxref{Operation Types}).
 
 @menu
-* Mask condition::              
-* Normalization and Integration::  
+* Mask condition::
+* Normalization and Integration::
 @end menu
 
 @html
@@ -15177,8 +15180,8 @@ So you could be the third!
 <a name="ppl"></a> <!-- http://nco.sf.net/nco.html#ppl -->
 @end html
 @menu
-* Contributors::                
-* Proposals for Institutional Funding::  
+* Contributors::
+* Proposals for Institutional Funding::
 @end menu
 
 @node Contributors, Proposals for Institutional Funding, Contributing, Contributing
@@ -15403,10 +15406,10 @@ Here we include monthly, seasonal and annual average with daily or
 monthly data in either one file or multiple files. 
 
 @menu
-* Daily data in one file::      
-* Monthly data in one file::    
-* One time point one file::     
-* Multiple files with multiple time points::  
+* Daily data in one file::
+* Monthly data in one file::
+* One time point one file::
+* Multiple files with multiple time points::
 @end menu
 
 @node Daily data in one file, Monthly data in one file, Quick Start, Quick Start
@@ -15563,17 +15566,18 @@ Over the summer of 2013, we will add scripts which make use of new
 single commands by exploiting @acronym{NCO}'s new group aggregation and
 arithmetic features.  
 @end ignore
-Since @acronym{NCO} @value{nco-edition} is capable to process netCDF4 data with groups,
-we present sample scripts for hierarchical data alongside.
+Since @acronym{NCO} @value{nco-edition} can process hierarchical 
+datasets, i.e., datasets stored with netCDF4 groups, we present sample
+scripts illustrating group-based processing as well.
 
 @menu
-* Combine Files::               
-* Global Distribution of Long-term Average::  
-* Annual Average over Regions::  
-* Monthly Cycle::               
-* Regrid MODIS Data::           
-* Add Coordinates to MODIS Data::  
-* Permute MODIS Coordinates::   
+* Combine Files::
+* Global Distribution of Long-term Average::
+* Annual Average over Regions::
+* Monthly Cycle::
+* Regrid MODIS Data::
+* Add Coordinates to MODIS Data::
+* Permute MODIS Coordinates::
 @end menu
 
 @node Combine Files, Global Distribution of Long-term Average, CMIP5 Example, CMIP5 Example
@@ -15595,14 +15599,17 @@ Key steps include:
 
 Right now, @acronym{CIMP5} model data downloaded from Earth System Grid Federation (@uref{http://pcmdi9.llnl.gov/esgf-web-fe/, @acronym{ESGF}})
 has not implement @key{group} feature yet. 
-The following script shows how to concatenate models to one file.
-One model becomes a group in the output file.
+Therefore users can aggregate the flat files into groups themselves.
+The following script shows how to aggregate models to one file.
+Each dataset becomes a group in the output file.
 There can be several levels of groups.
-In this example, we employed two experiments as the top-level.
+In this example, we employ two experiments as the top-level.
 The second-level comprises different models.
-Some of models have more than one ensemble member.
-These ensemble members are on the third-level.
-In each sub-group of ensemble member, we appended two variables, @var{snc} and @var{snd}.
+Some models have more than one ensemble member.
+These ensemble members are on the third level.
+In each sub-group of ensemble members, we appended two variables,
+@var{snc} and @var{snd} (these stand for snow cover and snow depth, by
+the way).
 @cindex @option{--gag}
 @cindex concatenation
 @cindex group aggregation
