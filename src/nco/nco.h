@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.401 2013-09-19 03:02:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.402 2013-09-23 22:15:53 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -176,7 +176,7 @@ extern "C" {
   unsigned short dbg_lvl=0; /* [enm] Debugging level */
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
 
-  unsigned short nco_rth_cnv=0; /* [enm] Arithmetic convention */
+  unsigned short nco_rth_cnv=1; /* [enm] Arithmetic convention */
   unsigned short nco_rth_cnv_get(void){return nco_rth_cnv;} /* [enm] Arithmetic convention */
 
   unsigned short nco_upk_cnv=0; /* [enm] Unpacking convention */

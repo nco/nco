@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.610 2013-09-23 21:43:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.611 2013-09-23 22:15:53 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.6 are ready. 
 
@@ -38,78 +38,34 @@ Charlie
 
 NEW FEATURES:
 
-A. ncra, ncea, and ncrcat now supports groups, Group Path Editing
-   (GPE) and list unions, the same options already supported by ncbo,
-   ncecat, ncflint, ncks, ncpdq, and ncwa.  
-   Features are controlled by -g, -G and --union, respectively.
-   ncra -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
-   ncea -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
-   ncrcat -g g1 -v v1 -G dude -O -p ~/nco/data in_grp.nc ~/foo.nc
-   http://nco.sf.net/nco.html#ncea
-   http://nco.sf.net/nco.html#ncra
-   http://nco.sf.net/nco.html#ncrcat
-   http://nco.sf.net/nco.html#grp
-   http://nco.sf.net/nco.html#gpe
-   http://nco.sf.net/nco.html#union
-
-B. Forced conversion of float to double:
-   NCO has always converted integers and single precision reals (i.e.,
-   floats) to double precision reals (i.e., doubles) prior to
-   arithmetic when it would preserve precision of the result (the
-   results are converted back to the original type after arithmetic).
-   Until now, NCO never implicitly converted floats to doubles unless
-   doubles were involved in the computation, because, well, GIGO
-   ("garbage in, garbage out") and wisdom from Numerical Recipes.
-   However, such promotion is often warranted on arithmetic involving 
-   large (> ~10,000) numbers of single-precision inputs.
-   Now NCO allows a new arithmetic convention to implement this.
-   The convention is manually invoked with --dbl:
-   ncea --dbl in*.nc out.nc
-   ncra --dbl in*.nc out.nc
-   ncwa --dbl in.nc  out.nc
-   The current default behavior is explicitly selected with --flt.
-   Depending on user feedback, --dbl may become the default in 
-   future versions of NCO. Send me your opinion!
-   NB: Invoking arithmetic promotion of NC_FLOAT to NC_DOUBLE
-   increases RAM memory usage by a factor of two, and slows down
-   arithmetic, though perhaps negligibly compared to I/O time. 
+A. New default: Forced conversion of float->double.
+   Until 4.3.4 NCO never converted single-precision reals (i.e.,
+   floats) to double-precision reals (i.e., doubles) prior to
+   arithmetic unless other doubles were involved. In 4.3.5 NCO
+   implemented an option, --dbl, to manually force such float->double
+   promotion. As of 4.3.6 the promotion employed by --dbl is the
+   default and it need not be explicitly requested. The old behavior
+   of not promoting floats must now be manually selected with --flt.
+   These commands are now identical:
+   ncea = ncea --dbl 
+   ncra = ncra --dbl
+   ncwa = ncwa --dbl
+   And the old behvior of these operators is obtained by
+   ncea --flt
+   ncra --flt
+   ncwa --flt
+   Other operators are unaffected.
+   The new behavior preserves more precision.
+   The old behavior is faster and uses less RAM.
    The manual contains a detailed discussion of the issues:
    http://nco.sf.net/nco.html#dbl
 
-C. CDL-mode prints more verbose information as comments (after '// ')  
-   as the debugging level increases (i.e., ncks --cdl -D 1).
-   Currently this includes a file summary, the ncgen command required
-   to convert back to netCDF, and full path names for all groups.
-   ncks --cdl -D 1 ~/nco/data/in_grp.nc # Adds file summary
-   ncks --cdl -D 3 ~/nco/data/in_grp.nc # Adds full groupnames
-   http://nco.sf.net/nco.html#cdl
-
-D. GPE operations allow netCDF3 output from netCDF4 input when groups
-   are not required in the output file. This allows GPE flattening to
-   directly create netCDF3 classic files for backward compatibility.
-   For example, this extracts group "cesm" from a netCDF4 file and
-   stores it at the root level of a netCDF3 output file:
-   ncks -O -G : -g cesm -3 ~/nco/data/cmip5.nc ~/cesm.nc
-   http://nco.sf.net/nco.html#gpe
-   http://nco.sf.net/nco.html#xmp_flt
-
 BUG FIXES:
 
-A. ncwa hyperslabbing while averaging bug:
-   Versions 4.3.3-4.3.4 of ncwa could return incorrect answers when
-   user-specified hyperslabs were simultaneously extracted.  
-   In such cases, hyperslab limits were not consistently applied.
-   This could produce incorrect answers that look correct.
-   This bug only affected hyperslabbed statistics (those produced
-   by simultaneously invoking -a and -d switches);
-   "global averages" were unaffected.
-   We urge all ncwa users to upgrade to NCO 4.3.5.
-   http://nco.sf.net#bug_ncwa_lmt
+A. Fixed ncea 4.3.5 bug that caused a core dump on some files
 
-B. Group operators now correctly match variable names that are
-   proper subsets of ancestor group names.
-
-C. Fixed ncpdq dimension reversal in group hierarchies. 
+A. Fixed ncwa 4.3.5 bug that sometime changed record dimensions
+   to fixed dimensions on dimensions that were not averaged.
 
 KNOWN ISSUES NOT YET FIXED:
 
