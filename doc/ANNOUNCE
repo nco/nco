@@ -1,35 +1,27 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.611 2013-09-23 22:15:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.612 2013-09-23 22:33:39 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-The current release brings group support to ncra, ncea, and ncrcat. 
-Now ten operators fully support group hierarchies: ncbo, ncea, ncecat, 
-ncflint, ncks, ncpdq, ncra, ncrcat, ncrename, and ncwa. The operators
-that do no yet fully support group hierarchies are ncatted and ncap2.
+The current release fixes a few problems (yes bugs, but not nasty
+ones) and makes NCO more internally consistent. Multiple record
+dimensions in one variable have some interesting properties.
+For now, we prefer to avoid them :) Thus we've made it harder to  
+inadvertently produce them until we revisit the issue later.
+Now ncecat and ncpdq will not add to the number of record dimensions
+in a variable. Usually that's what you want. Trust me. I'm from the
+government :) 
 
 Rounding errors can accumulate to worrisome levels during arithmetic
 performed on large (>~10,000) arrays of single precision floats. 
-Now NCO has the --dbl switch that forces operators to coerce
-single-precision numbers to double-precision for arithemetic.
-It is expensive in terms of time and RAM, and often not warranted.
-Use this switch to guarantee preserving maximum precision.
-Or if you want your NCO answers on single-precision fields to always
-agree exactly with tools that always promote (NCL, Matlab, IDL). 
-The manual now contains a detailed discussion of the issues.
+The --dbl switch introduced in 4.3.5 is NCO's new default.
+The manual contains a detailed discussion of the issues.
 
-Unfortunately progress sometimes comes at a price in bugs :)
-4.3.5 fixes a nasty ncwa bug present in 4.3.3 and 4.3.4.
-Nasty means that it could produce wrong answers that look right.
-Fortunately, it could only occur when simultaneously averaging and
-hyperslabbing, e.g., ncwa -a lat,lon -d lat,0.,90. in.nc out.nc.
-Such users should immediately upgrade to 4.3.5 and re-check results.
-Full details below.
-
-Work on NCO 4.3.6 is underway and includes improved netCDF4 support
-for more NCO operators (ncatted) and improved support for HDF4 files. 
+Work on NCO 4.3.7 is underway and includes improved netCDF4 support
+for more NCO operators (ncatted, ncrename), and improved support for
+HDF4 files.  
 
 Enjoy,
 Charlie
@@ -62,7 +54,7 @@ A. New default: Forced conversion of float->double.
 
 BUG FIXES:
 
-A. Fixed ncea 4.3.5 bug that caused a core dump on some files
+A. Fixed ncea 4.3.5 bug that caused a core dump on some files. 
 
 A. Fixed ncwa 4.3.5 bug that sometime changed record dimensions
    to fixed dimensions on dimensions that were not averaged.
