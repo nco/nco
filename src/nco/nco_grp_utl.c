@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.986 2013-09-22 03:47:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.987 2013-09-23 20:45:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6964,14 +6964,14 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 
 void 
-nco_msa_var_get_elm_trv             /* [fnc] Define a limit of size 1 to be used by ncra */
+nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
 (const int nc_id,                   /* I [ID] netCDF file ID */
  var_sct *var_prc,                  /* I/O [sct] Variable */
  const char * const rec_nm_fll,     /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
  const long idx_rec_crr_in,         /* [idx] Index of current record in current input file */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Define an artificial MSA limit that corresponds to 1 element to read, since nco_msa_var_get_trv() reads all elements */ 
+  /* Define an artificial MSA limit that corresponds to 1 record to read, since nco_msa_var_get_trv() reads all elements */ 
 
   int lmt_dmn_nbr;
 

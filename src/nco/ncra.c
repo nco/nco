@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.405 2013-09-21 07:24:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.406 2013-09-23 20:45:49 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -167,8 +167,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.405 2013-09-21 07:24:56 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.405 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.406 2013-09-23 20:45:49 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.406 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -261,6 +261,7 @@ main(int argc,char **argv)
   int grp_id;        /* [ID] Group ID */
   int grp_out_id;    /* [ID] Group ID (output) */
   int var_out_id;    /* [ID] Variable ID (output) */
+  int nrec;          /* [nbr] Number of records to process */
   trv_sct *var_trv;  /* [sct] Variable GTT object */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
@@ -1306,6 +1307,9 @@ main(int argc,char **argv)
       (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
     } /* end loop over variables */
 
+    nrec=trv_tbl->nbr_rec;
+    if(prg == ncea) nrec=1;
+
     /* Loop over number of records to process */
     for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
 
@@ -1434,7 +1438,6 @@ main(int argc,char **argv)
             (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 #else /* !REPLACE_LMT_ALL */
             /* Retrieve variable from disk into memory */
-            /* Define an artificial MSA limit that corresponds to 1 element to read, since nco_msa_var_get_trv() reads all elements */ 
             (void)nco_msa_var_get_elm_trv(in_id,var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
 #endif /* !REPLACE_LMT_ALL */
 
@@ -1711,11 +1714,16 @@ main(int argc,char **argv)
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
       /* Memory management after current extracted group */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+      /* Store the output variable ID */
+      var_prc_out[idx]->id=var_out_id;
 
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       /* Packing/Unpacking */
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
-      if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); 
+      if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); 
       else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
     } /* end loop over idx */
   } /* end if ncea */
