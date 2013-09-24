@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.988 2013-09-23 21:52:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.989 2013-09-24 06:07:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7124,6 +7124,7 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   nco_bool flg_skp;     /* [flg] Skip variable  */
+  nco_bool flg_mth;     /* [flg] A name match was found for a record dimension (cases of more than 1 record for variable)  */
 
   dmn_trv_sct *dmn_trv; /* [sct] GTT dimension structure */
 
@@ -7131,6 +7132,7 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
   assert(var_prc->is_rec_var);
 
   flg_skp=False;
+  flg_mth=False;
 
   /* Loop dimensions */
   for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
@@ -7141,11 +7143,20 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
       /* Get unique dimension object from unique dimension ID, in input list (NB: this is needed because dmn_sct does not have name full) */
       dmn_trv=nco_dmn_trv_sct(var_prc->dim[idx_dmn]->id,trv_tbl);
 
+      /* It is the same as the input record dimension name currently being done */
+      if(strcmp(dmn_trv->nm_fll,rec_nm_fll) == 0){
+
+        /* One name match was found for a record dimension */
+        flg_mth=True;
+      }
+
       /* And it is not the same as the input record dimension name currently being done */
       if(strcmp(dmn_trv->nm_fll,rec_nm_fll) != 0){
 
-        /* Then skip this variable */
-        flg_skp=True;
+        /* Then skip this variable, but only if there is not another name match */
+        if (flg_mth == False ) {
+          flg_skp=True;
+        }
       }  /* And it is not the same as the input record dimension name currently being done */
 
     } /* Is this the record dimension */

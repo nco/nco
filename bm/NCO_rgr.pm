@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.332 2013-09-21 23:11:22 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.333 2013-09-24 06:07:33 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -769,7 +769,7 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 	
 	
-#ncea #11
+#ncea #12
 # 2 groups, each one with a record (part 1 )
 # ncra -Y ncea -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
@@ -781,7 +781,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-#ncea #12
+#ncea #13
 # 2 groups, each one with a record (part 2 )
 # ncra -Y ncea -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
@@ -2203,7 +2203,7 @@ print "\n";
 # ncks -h -O  -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc
 
     $dsc_sng="(Groups) Limits -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc";
-    $tst_cmd[0]="ncks $nco_D_flg -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 $in_pth_arg in_grp_3.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -C -g g19g3 -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[2]=3 lat[0]=-90 lon[3]=270 three_dmn_var_dbl[19]=20 watt meter-2";
     $tst_cmd[2]="SS_OK";   
@@ -3223,7 +3223,7 @@ print "\n";
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max  %tmp_fl_00% %tmp_fl_01%"; 
-    $tst_cmd[2]="ncks -C -H -s '%f' -v three_dmn_var_dbl %tmp_fl_01%";
+    $tst_cmd[2]="ncks -C -H -s '%f' -g g19g3 -v three_dmn_var_dbl %tmp_fl_01%";
     $dsc_sng="(Groups) Concatenate float variable with multislabs across two files";
     $tst_cmd[3]="20";
     $tst_cmd[4]="SS_OK";
@@ -3543,6 +3543,20 @@ print "\n";
     $#tst_cmd=0; # Reset array		
 		
 
+# ncra #29 Generate a file with 2 records
+# ncecat -O  -g g25g1 in_grp_3.nc in1.nc -> generate "record"
+# ncpdq -O -a time,record  in1.nc in2.nc -> switch "record" and "time"
+# ncra -O  in2.nc out.nc
+    
+    $tst_cmd[0]="ncecat $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncpdq $omp_flg -h -O $fl_fmt $nco_D_flg -a time,record %tmp_fl_00%  %tmp_fl_01%";
+	$tst_cmd[2]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -g g25g1 -v one_dmn_rec_var %tmp_fl_02%";
+    $dsc_sng="(Groups) 2 records in 1 group ('time' same as record, 1st record)";
+    $tst_cmd[4]="time[0]=5.5 record[0] one_dmn_rec_var[0]=6";
+    $tst_cmd[5]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
 
 
 	

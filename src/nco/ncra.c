@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.406 2013-09-23 20:45:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.407 2013-09-24 06:07:33 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -167,8 +167,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.406 2013-09-23 20:45:49 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.406 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.407 2013-09-24 06:07:33 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.407 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -261,7 +261,7 @@ main(int argc,char **argv)
   int grp_id;        /* [ID] Group ID */
   int grp_out_id;    /* [ID] Group ID (output) */
   int var_out_id;    /* [ID] Variable ID (output) */
-  int nrec;          /* [nbr] Number of records to process */
+  int nbr_rec;       /* [nbr] Number of records to process */
   trv_sct *var_trv;  /* [sct] Variable GTT object */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
@@ -1307,11 +1307,11 @@ main(int argc,char **argv)
       (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
     } /* end loop over variables */
 
-    nrec=trv_tbl->nbr_rec;
-    if(prg == ncea) nrec=1;
+    nbr_rec=trv_tbl->nbr_rec;
+    if(prg == ncea) nbr_rec=1;
 
     /* Loop over number of records to process */
-    for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+    for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
 
       /* Obtain group ID using full group name */
       (void)nco_inq_grp_full_ncid(in_id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
@@ -1393,15 +1393,6 @@ main(int argc,char **argv)
           /* Process all variables in current record */
           if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,gettext("%s: INFO Record %ld of %s contributes to output record %ld\n"),prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
-          /* Update hyperslab start indices */
-          /* Beware lmt_all_rec points to record limit of record struct of lmt_all_lst */
-#ifdef REPLACE_LMT_ALL
-          lmt_all_rec->lmt_dmn[0]->srt=idx_rec_crr_in;
-          lmt_all_rec->lmt_dmn[0]->end=idx_rec_crr_in;
-          lmt_all_rec->lmt_dmn[0]->cnt=1L;
-          lmt_all_rec->lmt_dmn[0]->srd=1L;
-#endif /* !REPLACE_LMT_ALL */
-
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,REC_FRS_GRP,REC_LST_DSR,md5,nbr_var_prc,nco_op_typ,FLG_BFR_NRM,FLG_MRO,out_id,prg,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,var_out_id,idx_rec)
 #endif /* !_OPENMP */
@@ -1433,13 +1424,8 @@ main(int argc,char **argv)
             /* Store the output variable ID */
             var_prc_out[idx]->id=var_out_id;
 
-            /* Retrieve variable from disk into memory */
-#ifdef REPLACE_LMT_ALL
-            (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
-#else /* !REPLACE_LMT_ALL */
-            /* Retrieve variable from disk into memory */
+            /* Retrieve variable from disk into memory. NB: Using version that updates hyperslab start indices with idx_rec_crr_in  */ 
             (void)nco_msa_var_get_elm_trv(in_id,var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
-#endif /* !REPLACE_LMT_ALL */
 
             if(prg == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
@@ -1597,16 +1583,6 @@ main(int argc,char **argv)
         /* End of ncra, ncrcat section */
       }else{ /* ncea */
 
-#ifdef REPLACE_LMT_ALL
-        if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
-          /* Update hyperslab start indices*/		
-          lmt_all_rec->lmt_dmn[0]->srt=lmt_rec->srt;
-          lmt_all_rec->lmt_dmn[0]->end=lmt_rec->end;
-          lmt_all_rec->lmt_dmn[0]->cnt=lmt_rec->cnt;
-          lmt_all_rec->lmt_dmn[0]->srd=lmt_rec->srd; 
-          lmt_all_rec->dmn_cnt=lmt_rec->cnt; 
-        } /* endif record dimension exists */
-#endif /* REPLACE_LMT_ALL */
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id)
 #endif /* !_OPENMP */
@@ -1633,12 +1609,7 @@ main(int argc,char **argv)
           var_prc_out[idx]->id=var_out_id;
 
           /* Retrieve variable from disk into memory */
-#ifdef REPLACE_LMT_ALL
-          (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
-#else /* !REPLACE_LMT_ALL */
-          /* Retrieve variable from disk into memory */
           (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
-#endif /* !REPLACE_LMT_ALL */
 
           /* Convert char, short, long, int types to doubles before arithmetic
           Output variable type is "sticky" so only convert on first record */
