@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.989 2013-09-24 06:07:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.990 2013-09-24 09:29:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4476,8 +4476,15 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
               DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             } /* !netCDF4 */
 
-            /* Undefined dimension as record (we are in the case of not "rec_dmn_nm" (name "record") and the current dimension name "time" is record */
-            if (prg_id == ncecat && dmn_trv->is_rec_dmn){
+            /* Handle special operator cases to  default to 1 record dimension maximum: we are in the case of not "rec_dmn_nm" (e.g name "record") */
+
+            /* Undefine dimension as record if the current dimension (e.g name "time") is record */
+            if(prg_id == ncecat){
+              if(dmn_trv->is_rec_dmn) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+            }
+
+            /* Undefine dimension as record if the current dimension (e.g name "time") is record */
+            if (prg_id == ncpdq){
               DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             }
 
@@ -7092,31 +7099,6 @@ nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
 
 } /* nco_msa_var_get_elm_trv() */
 
-
-nco_bool                             /* O [flg] Skip record */
-nco_skp_rec                          /* [fnc] Skip record  */
-(const int idx_rec,                  /* I [nbr] Current record */
- const var_sct * const var,          /* I [sct] Variable */
- const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
-{
-  nco_bool flg_skp=False;
-
-  /* Skip other records */
-  for(int idx_rec_skp=0;idx_rec_skp<trv_tbl->nbr_rec;idx_rec_skp++){
-    /* Not the current record */
-    if (idx_rec_skp != idx_rec) {
-      /* Match */
-      if(strcmp(var->nm_fll,trv_tbl->lmt_rec[idx_rec_skp]->nm_fll) == 0){
-        flg_skp=True;
-      } /* Match  */
-    } /* Not the current record */
-  }  /* Skip other records */
-
-  return flg_skp;
-
-} /* nco_skp_rec() */
-
-
 nco_bool                             /* O [flg] Skip variable  */
 nco_skp_var                          /* [fnc] Skip variable while doing record   */
 (const var_sct * const var_prc,      /* I [sct] Processed variable */
@@ -7124,7 +7106,6 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   nco_bool flg_skp;     /* [flg] Skip variable  */
-  nco_bool flg_mth;     /* [flg] A name match was found for a record dimension (cases of more than 1 record for variable)  */
 
   dmn_trv_sct *dmn_trv; /* [sct] GTT dimension structure */
 
@@ -7132,7 +7113,6 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
   assert(var_prc->is_rec_var);
 
   flg_skp=False;
-  flg_mth=False;
 
   /* Loop dimensions */
   for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
@@ -7143,20 +7123,12 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
       /* Get unique dimension object from unique dimension ID, in input list (NB: this is needed because dmn_sct does not have name full) */
       dmn_trv=nco_dmn_trv_sct(var_prc->dim[idx_dmn]->id,trv_tbl);
 
-      /* It is the same as the input record dimension name currently being done */
-      if(strcmp(dmn_trv->nm_fll,rec_nm_fll) == 0){
-
-        /* One name match was found for a record dimension */
-        flg_mth=True;
-      }
-
       /* And it is not the same as the input record dimension name currently being done */
       if(strcmp(dmn_trv->nm_fll,rec_nm_fll) != 0){
 
-        /* Then skip this variable, but only if there is not another name match */
-        if (flg_mth == False ) {
-          flg_skp=True;
-        }
+        /* Then skip this variable */
+        flg_skp=True;
+
       }  /* And it is not the same as the input record dimension name currently being done */
 
     } /* Is this the record dimension */

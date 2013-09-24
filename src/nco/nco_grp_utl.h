@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.382 2013-09-23 20:45:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.383 2013-09-24 09:29:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -621,13 +621,6 @@ nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
  const char * const rec_nm_fll,     /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
  const long idx_rec_crr_in,         /* [idx] Index of current record in current input file */
  const trv_tbl_sct * const trv_tbl);/* I [sct] GTT (Group Traversal Table) */
-
-
-nco_bool                             /* O [flg] Skip record */
-nco_skp_rec                          /* [fnc] Skip record  */
-(const int idx_rec,                  /* I [nbr] Current record */
- const var_sct * const var,          /* I [sct] Variable */
- const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 nco_bool                             /* O [flg] Skip variable  */
 nco_skp_var                          /* [fnc] Skip variable while doing record   */

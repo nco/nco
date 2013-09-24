@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.407 2013-09-24 06:07:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.408 2013-09-24 09:29:18 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -144,6 +144,7 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_rec_all; /*[flg] Retrieve all records */
 
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -166,9 +167,10 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
+  char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.407 2013-09-24 06:07:33 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.407 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.408 2013-09-24 09:29:18 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.408 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -224,6 +226,10 @@ main(int argc,char **argv)
   int var_lst_in_nbr=0;
   int xtr_nbr=0; /* xtr_nbr won't otherwise be set for -c with no -v */
   int idx_rec=0;
+  int grp_id;        /* [ID] Group ID */
+  int grp_out_id;    /* [ID] Group ID (output) */
+  int var_out_id;    /* [ID] Variable ID (output) */
+  int nbr_rec;       /* [nbr] Number of records to process */
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
 
@@ -254,19 +260,9 @@ main(int argc,char **argv)
   var_sct **var_out=NULL_CEWI;
   var_sct **var_prc;
   var_sct **var_prc_out;
-
-  trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
-
-  char *grp_out_fll=NULL; /* [sng] Group name */
-  int grp_id;        /* [ID] Group ID */
-  int grp_out_id;    /* [ID] Group ID (output) */
-  int var_out_id;    /* [ID] Variable ID (output) */
-  int nbr_rec;       /* [nbr] Number of records to process */
   trv_sct *var_trv;  /* [sct] Variable GTT object */
-
+  trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
-
-  nco_bool flg_rec_all; /*[flg] Retrieve all records */
 
 #ifndef USE_TRV_API
   int lmt_dmn_nbr;
