@@ -1,3 +1,7 @@
+2013-09-24  Charlie Zender  <zender@uci.edu>
+
+	* Add --flt option to ncra.c (had forgotten it before)
+
 2013-09-23 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncra test #29 Group with 2 record dimensions made with ncecat, reversed to 1 record with ncpdq
