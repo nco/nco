@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.990 2013-09-24 09:29:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.991 2013-09-24 09:41:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4483,9 +4483,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
               if(dmn_trv->is_rec_dmn) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             }
 
-            /* Undefine dimension as record if the current dimension (e.g name "time") is record */
+            /* Undefine dimension as record if the current dimension (e.g name "record") is also record */
             if (prg_id == ncpdq){
-              DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+              if(dmn_trv->is_rec_dmn) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             }
 
           } /* !FIX_REC_DMN */
