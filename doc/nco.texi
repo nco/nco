@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.871 2013-09-25 03:45:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.872 2013-09-25 17:42:35 woodllan Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -534,7 +534,7 @@ netCDF itself.
 
 @menu
 * Availability::
-* How to Use this guide::
+* How to Use This guide::
 * Compatability::
 * Symbolic Links::
 * Libraries::
@@ -542,7 +542,7 @@ netCDF itself.
 * Help Requests and Bug Reports::
 @end menu
 
-@node Availability, How to Use this guide, Introduction, Introduction
+@node Availability, How to Use This guide, Introduction, Introduction
 @section Availability
 @cindex @acronym{NCO} availability
 @cindex source code
@@ -625,8 +625,8 @@ This tests incorporates an image using the @code{@@image} command.
 @image{/data/zender/ps/odxc,6in,}
 @end ignore
 
-@node How to Use this guide, Compatability, Availability, Introduction
-@section How to Use this Guide
+@node How to Use This guide, Compatability, Availability, Introduction
+@section How to Use This Guide
 @cindex contents
 @cindex introduction
 Detailed instructions about
@@ -638,13 +638,14 @@ are on our homepage
 (@uref{http://nco.sf.net/}).
 
 There are twelve operators in the current version (@value{nco-edition}).
-The function of each is explained in the Operator Reference Manual (@pxref{Operator Reference Manual}).
+The function of each is explained in @ref{Operator Reference Manual, Operator Reference Manual}.
 Many of the tasks that @acronym{NCO} can accomplish are described during
 the explanation of common @acronym{NCO} Features (@pxref{Common features}).
 More specific use examples for each operator can be seen by visiting the
 operator-specific examples in the @ref{Operator Reference Manual}.
 These can be found directly by prepending the operator name with the
 @code{xmp_} tag, e.g., @uref{http://nco.sf.net/nco.html#xmp_ncks}.
+Also, users can type the operators in the command line to see all the available options.
 
 @acronym{NCO} is a command-line language.
 You can either use an operator after the prompt (e.g., @samp{$} here), like,
@@ -656,11 +657,11 @@ or write all the command lines into a shell script, like what we did in @acronym
 
 If you are new to @acronym{NCO}, there is a Quick Start (@pxref{Quick Start}) showing
 simple examples about how to use @acronym{NCO} on different kinds of data files.
-More detailed and in-real-world examples can be found in @acronym{CMIP5} Example (@pxref{CMIP5 Example}).
-Index can be very helpful, too (@pxref{General Index}).
+More detailed and in-real-world examples can be found in @ref{CMIP5 Example, @acronym{CMIP5} Examples}.
+@ref{General Index, Index} can be very helpful, too.
 If all of the above still couldn't solve your problem, please @pxref{Help Requests and Bug Reports}.
 
-@node Compatability, Symbolic Links, How to Use this guide, Introduction
+@node Compatability, Symbolic Links, How to Use This guide, Introduction
 @section Operating systems compatible with @acronym{NCO}
 @cindex @acronym{OS}
 @cindex @acronym{IBM}
@@ -15520,7 +15521,7 @@ ncra -O --mro -d time,"1990-12-01",,12,3 in.nc out.nc
 @example
 ncra -O --mro -d time,,,12,12 in.nc out.nc
 @end example
-Here we used the duration feature (i.e., the number after the fourth comma: @samp{3} in the seasonal example and the second @samp{12} in the annual example) 
+Here we use the duration feature (i.e., the number after the fourth comma: @samp{3} in the seasonal example and the second @samp{12} in the annual example) 
 to retrieve groups of records separated by regular intervals (@pxref{Duration}).
 The option @option{--mro} switches @command{ncra} to produce a Multi-Record Output instead of a single-record output.
 For example, assume @var{snd} is a 3D array with dimensions @code{time} * @code{latitude} * @code{longitude} 
@@ -15653,7 +15654,7 @@ In each sub-group of ensemble members, we appended two variables,
 @var{snc} and @var{snd} (these stand for snow cover and snow depth, by
 the way).
 @cindex @option{--gag}
-@cindex concatenation
+@cindex aggregation
 @cindex group aggregation
 @cindex groups, creating
 @example
@@ -15683,7 +15684,8 @@ Key steps include:
 @verbatiminclude xmp/glb_avg.sh
 @end example
 
-With the use of @key{group}, the above script will be shortened to just @w{ONE LINE}.
+With the use of @key{group}, the above script except ensemble average  
+will be shortened to just @w{ONE LINE}.
 @cindex groups, averaging
 @ignore
 Isn't it amazing or what?!
@@ -15711,7 +15713,7 @@ ncra -O sn_LImon_all-mdl_all-xpt_all-nsm_199001-200512.nc \
 @cindex nco script file
 @cindex variables, appending
 @float Figure,fgr:anl
-@image{xmp/fgr2,3in}
+@image{xmp/fgr2,4in}
 @caption{Annual Average over Regions.}
 @end float
 @noindent
@@ -15746,7 +15748,7 @@ some functions (e.g., regression and standard deviation)
 may have to wait until the new versions.
 @cindex group, averaging
 @cindex group, standard deviation
-@cindex concatenation
+@cindex aggregation
 @cindex ensemble average
 @example
 @verbatiminclude xmp/ann_avg_grp.sh
