@@ -1,18 +1,20 @@
 2013-09-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.3.6 release procedure:
+ 	Changes since nco-4_3_5: --flt default, bugfixes
+	cd ~/nco;cvs tag -d nco-4_3_6;cvs tag -d nco-4_3_6-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.6 release"
+	cvs tag -c nco-4_3_6;cvs tag -c nco-4_3_6-1
+
+	* Add dismember example to manual
+
 	* Add --flt option to ncra.c (had forgotten it before)
 
 2013-09-23 Pedro Vicente  <pvicente@uci.edu>
 
-	* Add ncra test #29 Group with 2 record dimensions made with ncecat, reversed to 1 record with ncpdq
+	* Add ncra test #29 Group with 2 record dimensions made with ncecat, reverted to 1 record with ncpdq
 
 2013-09-23  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.3.6 release procedure:
- 	Changes since nco-4_3_5: ncea/ncra/ncrcat groups, --dbl, ncwa hyp/avg, ncpdq rvr
-	cd ~/nco;cvs tag -d nco-4_3_6;cvs tag -d nco-4_3_6-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.6 release"
-	cvs tag -c nco-4_3_6;cvs tag -c nco-4_3_6-1
 
 	* Change test DAP server from http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/
 	to http://thredds-test.ucar.edu/thredds/dodsC/testdods/

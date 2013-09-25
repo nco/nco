@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.870 2013-09-23 21:43:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.871 2013-09-25 03:45:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4132,6 +4132,46 @@ format, the @option{-G :} switch flattens all extracted groups, and the
 all other groups (e.g., @code{ecmwf}, @code{giss}).
 
 @html
+<a name="dismember"></a> <!-- http://nco.sf.net/nco.html#dismember -->
+<a name="disaggregate"></a> <!-- http://nco.sf.net/nco.html#disaggregate -->
+@end html
+@cindex disaggregate
+@cindex dismember
+To completely disaggregate, or its more memorable synonym,
+@emph{dismember} a hierarchical dataset means to store each lowest-level
+group, aka leaf-group, as a standalone flat dataset in netCDF3 format.
+This can be accomplished by looping the previous example over all
+leaf-groups. 
+This script dismembers @var{fl_in} and places the results in @var{drc_out}:
+@example
+@verbatim
+drc_out="${DATA}/nco/tmp"
+fl_in="${HOME}/nco/data/in_grp.nc"
+mkdir -p ${drc_out}
+cd ${drc_out}
+grp_lf=`ncks --get_grp_info ${fl_in} | grep "0 subgroups" | cut -f 1 -d ' ' | sed 's/://' | sort`
+echo "Dismembering file ${fl_in} into following files:"
+for grp_in in ${grp_lf} ; do
+    grp_out=`echo ${grp_in} | sed 's/\///' | sed 's/\//./g'`
+    echo "${grp_out}.nc"
+    ncks -O -G : -g ${grp_in} -3 ${fl_in} ${drc_out}/${grp_out}.nc
+done
+@end verbatim
+@end example
+Of course this script could be stored as an executable shell script
+with command-line arguments to simplify calling.
+Or an operator could be written to dismember all groups with a single
+invocation, but the point is dismembering without loss of information
+is possible now.
+Note that all dimensions inherited by groups in the input file are
+correctly placed in the flat files.
+As written, the script fails on any groups which contain netCDF4
+features because the user requests (with the @samp{-3} option) that
+output be netCDF3 classic format. 
+In this example @code{g11} contains many netCDF4-only atomic-types
+(such as @code{NC_STRING} and @code{NC_UINT64}).
+
+@html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
 <a name="-F"></a> <!-- http://nco.sf.net/nco.html#-F -->
 @end html
@@ -6956,16 +6996,16 @@ ncks --cdl -C -v tpt_flt,tpt_dbl ~/nco/data/in.nc
 # Create file with five "ten-month years" (i.e., 50 timesteps) of temperature data
 ncrcat -O -v tpt_flt,tpt_dbl -p ~/nco/data in.nc in.nc in.nc in.nc in.nc ~/foo.nc
 # Average 1st five "Januaries" (elements 1, 11, 21, 31, 41)
-ncra -O -F -d time,1,,10 ~/foo.nc ~/foo_avg1.nc
+ncra --flt -O -F -d time,1,,10 ~/foo.nc ~/foo_avg1.nc
 # Average 2nd five "Januaries" (elements 2, 12, 22, 32, 42)
-ncra -O -F -d time,2,,10 ~/foo.nc ~/foo_avg2.nc
+ncra --flt -O -F -d time,2,,10 ~/foo.nc ~/foo_avg2.nc
 # Average 3rd five "Januaries" (elements 3, 13, 23, 33, 43)
-ncra -O -F -d time,3,,10 ~/foo.nc ~/foo_avg3.nc
+ncra --flt -O -F -d time,3,,10 ~/foo.nc ~/foo_avg3.nc
 # Method 1: Obtain ensemble January average by averaging the averages
-ncra -O ~/foo_avg1.nc ~/foo_avg2.nc ~/foo_avg3.nc ~/foo_avg_mth1.nc
+ncra --flt -O ~/foo_avg1.nc ~/foo_avg2.nc ~/foo_avg3.nc ~/foo_avg_mth1.nc
 # Method 2: Obtain ensemble January average by averaging the raw data
 # Employ ncra's "duration" feature (http://nco.sf.net/nco.html#drn)
-ncra -O -F -d time,1,,10,3 ~/foo.nc ~/foo_avg_mth2.nc
+ncra --flt -O -F -d time,1,,10,3 ~/foo.nc ~/foo_avg_mth2.nc
 # Difference the two methods
 ncbo -O ~/foo_avg_mth1.nc ~/foo_avg_mth2.nc ~/foo_avg_dff.nc
 ncks --cdl ~/foo_avg_dff.nc
@@ -7093,19 +7133,19 @@ and of the intermediate arithmetic representation:
 # NB: Values below are printed with C-format %5.6f using
 # ncks -H -C -s '%5.6f' -v TREFHT,TREFHT_dbl out.nc
 # Single-precision weight (area), single-precision arithmetic
-ncwa -O -a lat,lon -w area in.nc out.nc
+ncwa --flt -O -a lat,lon -w area in.nc out.nc
 # TREFHT     = 289.246735 
 # TREFHT_dbl = 289.239964
 # Double-precision weight (gw),   single-precision arithmetic
-ncwa -O -a lat,lon -w gw   in.nc out.nc
+ncwa --flt -O -a lat,lon -w gw   in.nc out.nc
 # TREFHT     = 289.226135
 # TREFHT_dbl = 289.239964
 # Single-precision weight (area), double-precision arithmetic
-ncwa -O --dbl -a lat,lon -w area in.nc out.nc
+ncwa --dbl -O -a lat,lon -w area in.nc out.nc
 # TREFHT     = 289.239960
 # TREFHT_dbl = 289.239964
 # Double-precision weight (gw),   double-precision arithmetic
-ncwa -O --dbl -a lat,lon -w gw   in.nc out.nc
+ncwa --dbl -O -a lat,lon -w gw   in.nc out.nc
 # TREFHT     = 289.239960
 # TREFHT_dbl = 289.239964
 @end example
@@ -7215,9 +7255,11 @@ As shown above @acronym{NCO} permits one to shift to their
 float-promotion preferences as desired. 
 No other language allows this with a simple switch.
 
-To summarize, the default arithmetic convention of @acronym{NCO} follows
-the behavior of Fortran, and automatically promotes single-precision to
-double-precision in all mixed-precision expressions.
+To summarize, until version 4.3.6 (September, 2013), the default
+arithmetic convention of @acronym{NCO} followed the behavior of Fortran,
+and automatically promoted single-precision to double-precision in all
+mixed-precision expressions, and left-alone pure single-precision
+expressions.  
 This is faster and more memory efficient than other conventions.
 However, pure single-precision arithmetic can lose too much precision
 when used to condense (e.g., average) large arrays.
@@ -7229,9 +7271,9 @@ For larger @var{n}, users should promote floats with the @samp{--dbl}
 option if they want to preserve more than four significant digits in
 their results. 
 
-The @samp{--dbl} switch is only available with the @acronym{NCO}
-arithmetic operators that could potentially perform more than a few 
-single-precision floating point operations per result.
+The @samp{--dbl} and @samp{-flt} switches are only available with the
+@acronym{NCO} arithmetic operators that could potentially perform more
+than a few  single-precision floating point operations per result.
 These are @command{ncea}, @command{ncra}, and @command{ncwa}.
 Each is capable of thousands to millions or more operations per result. 
 By contrast, the arithmetic operators @command{ncbo} and

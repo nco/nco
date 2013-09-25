@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.660 2013-09-23 21:43:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.661 2013-09-25 03:45:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.660 2013-09-23 21:43:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.660 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.661 2013-09-25 03:45:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.661 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -709,7 +709,7 @@ main(int argc,char **argv)
     
   if(gpe){
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",prg_nm_get());
-    if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups.\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+    if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups.\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
   if(fl_out){
