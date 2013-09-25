@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.333 2013-09-24 06:07:33 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.334 2013-09-25 06:00:59 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4113,7 +4113,18 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+#ncwa #47
+#NEW NCO 4.3.6
+#ncwa -O -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 in_grp_3.nc out.nc
 
+    
+    $tst_cmd[0]="ncwa $omp_flg -O $fl_fmt $nco_D_flg -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -v a %tmp_fl_00%";;
+    $dsc_sng="(Groups) Weights and hyperslabs";
+    $tst_cmd[2]="a = 35.5803";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
 
     
     

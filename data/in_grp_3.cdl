@@ -579,9 +579,31 @@ netcdf in_grp_3 {
       data:
       one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;      
     } // end g25g3
-
+	
 
   } // end g25
   
+  //ncwa: test weight and hyperslab
+  
+  group: g26 {
+	dimensions:
+	lat = 3 ;
+	lon = 3 ;
+	variables:
+	float a(lat, lon) ;
+	a:_FillValue = -999.f ;
+	float gw_lat(lat) ;
+	float gw_lon(lon) ;
+	data:
+	 a =
+	  45.123, 2.21029, 67.219,
+	  87.19, 12.8974, 3.98,
+	  20, 22.234, _ ;
+	 gw_lat = 0.1, 0.9, 0.9 ;
+	 gw_lon = 1, 1, 1 ;
+	} // end g26
+
+  
+ 
  
 } // end root group
