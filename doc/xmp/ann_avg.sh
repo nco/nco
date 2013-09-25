@@ -55,7 +55,7 @@ for var_id in {0..1}; do		# Loop over two variables
         ${drc_out}${fld_out[var_id]}${pfx}_gw.nc \
         ${drc_out}${fld_out[var_id]}${pfx}_gw_2.nc
     
-      # Concatenate 2 regions together
+      # Aggregate 2 regions together
       ncecat -O -u rgn ${drc_out}${fld_out[var_id]}${pfx}_gw_?.nc \
         ${drc_out}${fld_out[var_id]}${pfx}_gw_rgn4.nc
 

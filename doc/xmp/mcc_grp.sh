@@ -33,7 +33,7 @@ ncks -O --mk_rec_dmn time \
 # Anomaly from annual average of each year 
 for yyyy in {1990..2005}; do
   # Annual average
-  ncra -O -d time,"${yyyy}-01-01","${yyyy}-12-31" \
+  ncwa -O -d time,"${yyyy}-01-01","${yyyy}-12-31" \
     ${drc}${var}_${rlm}_${lbl}_${tms}_gld.${flt} \
     ${drc}${var}_${rlm}_${lbl}_${tms}_gld_${yyyy}.${flt}
 

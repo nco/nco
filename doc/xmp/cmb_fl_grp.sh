@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 #============================================================
-# Concatenate models to one group file
+# Aggregate models to one group file
 #
 # Method:
 # - Create files with groups by ncecat --gag
