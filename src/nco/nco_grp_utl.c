@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.991 2013-09-24 09:41:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.992 2013-09-26 05:52:50 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4027,6 +4027,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Uninitialized values */ 
   var->cid=-1;
+  var->fmt[0]='\0';
 
   /* Loop dimensions */
   for(int idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
@@ -5581,9 +5582,8 @@ nco_var_get_trv                       /* [fnc] Fill-in variable structure for a 
       /* Store full name as key for GTT search */
       var[idx_var]->nm_fll=strdup(var_trv.nm_fll);
 
-
-      /* Retrieve variable */
-      (void)nco_var_get(grp_id,var[idx_var]);
+      /* Retrieve variable NB: using GTT version, that "knows" all the limits  */
+      (void)nco_msa_var_get_trv(nc_id,var[idx_var],trv_tbl);
 
       return var[idx_var];
 

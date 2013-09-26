@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.372 2013-09-25 04:24:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.373 2013-09-26 05:52:50 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.372 2013-09-25 04:24:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.372 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.373 2013-09-26 05:52:50 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.373 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -149,8 +149,6 @@ main(int argc,char **argv)
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out=NULL_CEWI;
   dmn_sct **dmn_avg=NULL_CEWI;
-
-  lmt_sct **lmt; 
 
   double msk_val=1.0; /* Option M */
 
@@ -654,33 +652,6 @@ main(int argc,char **argv)
   /* Fill-in variable structure list for all extracted variables. NOTE: Using GTT version */
   var=nco_fll_var_trv(in_id,&xtr_nbr,trv_tbl);
 
-  /* If limits */
-  if(lmt_nbr){
-
-    /* Make uniform list of user-specified dimension limits */
-    lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-
-    /* Merge hyperslab limit information into dimension structures */
-    (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
-
-    /* Update variable array with limits */
-    for(int idx_var=0;idx_var<xtr_nbr;idx_var++){
-      for(int idx_dmn_var=0;idx_dmn_var<var[idx_var]->nbr_dim;idx_dmn_var++){
-        for(int idx_dmn_xtr=0;idx_dmn_xtr<nbr_dmn_xtr;idx_dmn_xtr++){
-          if (var[idx_var]->dmn_id[idx_dmn_var] == dim[idx_dmn_xtr]->id){
-            var[idx_var]->srt[idx_dmn_var]=dim[idx_dmn_xtr]->srt;
-            var[idx_var]->srd[idx_dmn_var]=dim[idx_dmn_xtr]->srd;
-            var[idx_var]->end[idx_dmn_var]=dim[idx_dmn_xtr]->end;
-            var[idx_var]->cnt[idx_dmn_var]=dim[idx_dmn_xtr]->cnt;
-          }
-        }
-      }  
-    }
-
-    for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
-    lmt=(lmt_sct **)nco_free(lmt);
-  } /* If limits */
-
   /* Duplicate to output array */
   var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
   for(idx=0;idx<xtr_nbr;idx++){
@@ -872,8 +843,6 @@ main(int argc,char **argv)
 
       /* Retrieve variable from disk into memory */
       (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
-
-      if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
 
       /* Convert char, short, long, int types to doubles before arithmetic */
       var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
