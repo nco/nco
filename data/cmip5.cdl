@@ -1,7 +1,7 @@
 // ncgen -k netCDF-4 -b -o ~/nco/data/cmip5.nc ~/nco/data/cmip5.cdl
 
 netcdf cmip5 {
-  :Conventions = "CF-2.x";
+  :Conventions = "CF-1.5";
   :history = "yada yada yada";
   :Scenario = "RCP 8.5";
 

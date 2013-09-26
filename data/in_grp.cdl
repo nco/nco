@@ -13,7 +13,7 @@
 
 // URL: 
 // http://dust.ess.uci.edu/nco/in_grp.nc
-// http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_grp.nc
+// http://thredds-test.ucar.edu/thredds/dodsC/testdods/in_grp.nc
 
 // CDL Data constants:
 // byte: 'a'
@@ -79,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.93 2013-09-23 21:43:37 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.94 2013-09-26 22:42:59 zender Exp $";
   
  data:
   area=10.,10.;

@@ -12,8 +12,8 @@
 // URL: 
 // http://dust.ess.uci.edu/nco/in.nc
 // http://dust.ess.uci.edu/nco/in_4.nc
-// http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc
-// http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc
+// http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc
+// http://thredds-test.ucar.edu/thredds/dodsC/testdods/in_4.nc
 
 // netCDF3:
 // ncgen -b -o in.nc in.cdl
@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.175 2013-09-04 20:02:50 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.176 2013-09-26 22:42:59 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -1004,8 +1004,8 @@ variables:
 	var_nm-dash:long_name = "Variable and attribute names include dash characters";
 	var_nm-dash:att_nm-dash = 1.0e36f;
 
-	float var_nm.dot;
-	var_nm.dot:long_name = "Variable and attribute names include dot characters";
+//	float var_nm.dot;
+//	var_nm.dot:long_name = "Variable and attribute names include dot characters";
 //	20070102: Periods in attribute names choke OPeNDAP from FC7 RPM TODO nco911
 //	20091105: Periods in attribute names choke ncgen   from RHEL5   TODO nco911
 //	var_nm.dot:att_nm.dot = 1.0e36f;
@@ -1326,7 +1326,7 @@ data:
 	val_one_mss_int=1,-99;
 	val_one_one_int=1,1;
 	var_nm-dash=1.0;
-	var_nm.dot=1.0;
+//	var_nm.dot=1.0;
 	var_1D_rct=0.,1.,0.,0.,1.,1.,0.,2.;
 	var_1D_rrg=0.,1.,0.,0.,1.,1.,0.,2.;
 	var_2D_rct=0.,1.,0.,0.,1.,1.,0.,2.;

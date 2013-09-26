@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.823 2013-09-25 03:45:50 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.824 2013-09-26 22:42:59 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -67,7 +67,11 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-<p><h2>Current NCO version is 4.3.5 last updated on <!--#flastmod file="VERSION"--> </h2>
+<p><h2>
+<!-- Current NCO version is 4.3.5 last updated on <!--#flastmod --file="VERSION" -->
+NCO version 4.3.6 will be released on 20130927. Wait until then to upgrade.
+</h2>
+
 
 <table border=0 width=100%>
 
@@ -115,8 +119,9 @@ Keep the size &lt;250&times;250 pixels.<br>
 </td>
 
 NCO manipulates data stored in
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-format.
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>-accessible
+formats, including 
+<a href="http://hdfgroup.org/HDF5">HDF5</a>.
 It also exploits the geophysical expressivity of many 
 <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a> 
 (Climate &amp; Forecast) metadata conventions, 
@@ -144,7 +149,7 @@ and
 <ul>
 <li>2013 Oct&nbsp;??: NCO 4.3.7 (<tt>ncatted</tt>, <tt>ncrename</tt> groups) (<i>In progress</i>)
 <li>2013 Sep&nbsp;28??: NCO 4.3.6 (<tt>--dbl</tt> default) (<i>In progress</i>)
-<li>2013 Sep&nbsp;20: NCO 4.3.5 (<tt>ncea</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups)
+<li>2013 Sep&nbsp;20: NCO 4.3.5 (<tt>ncea</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups. <i>Buggy!</i>)
 <li>2013 Aug&nbsp;01: NCO 4.3.4 (<tt>ncpdq</tt> bugfix, HDF unpacking)
 <li>2013 Jul&nbsp;24: NCO 4.3.3 (<tt>ncrename</tt>, <tt>ncwa</tt> groups, CDL, XML)
 <li>2013 Jul&nbsp;05: NCO 4.3.2 (<tt>ncflint</tt>, <tt>ncpdq</tt> groups)</li>
