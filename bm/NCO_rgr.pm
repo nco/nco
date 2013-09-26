@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.334 2013-09-25 06:00:59 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.335 2013-09-26 19:17:17 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4125,6 +4125,17 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+#ncwa #48
+#same as #10
+    
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -m lev -M 100.0 -T eq -a lev -w lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
+    $dsc_sng="(Groups) average masked, weighted coordinate";
+    $tst_cmd[2]="lev = 100";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
 
     
     
