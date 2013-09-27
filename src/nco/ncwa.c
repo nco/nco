@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.374 2013-09-27 05:59:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.375 2013-09-27 06:20:14 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.374 2013-09-27 05:59:57 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.374 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.375 2013-09-27 06:20:14 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.375 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -207,10 +207,7 @@ main(int argc,char **argv)
   var_sct **var_out;
   var_sct **var_prc;
   var_sct **var_prc_out;
-  var_sct *msk=NULL;
-  var_sct *msk_out=NULL;
   var_sct *wgt_avg=NULL;
-  var_sct *wgt_out=NULL;
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
@@ -766,15 +763,6 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
 
-    /* Find mask variable in input file */
-    if(msk_nm){
-
-      /* Retrieve mask variable */
-      /* fxm: TODO #111 core dump if msk has dimension not in extraction list */
-      msk=nco_var_get_trv(in_id,msk_nm,trv_tbl);
-
-    } /* Find mask variable in input file */
-
     /* Timestamp end of metadata setup and disk layout */
     rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
     ddra_info.tmr_flg=nco_tmr_rgl;
@@ -784,7 +772,7 @@ main(int argc,char **argv)
     firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
     shared(): msk and wgt are not altered within loop
     private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,trv_tbl,var_prc,var_prc_out,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,trv_tbl,var_prc,var_prc_out,wgt_nm)
 #endif /* !_OPENMP */
 
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
@@ -798,14 +786,26 @@ main(int argc,char **argv)
       trv_sct *var_trv;  /* [sct] Variable GTT object */
 
       var_sct *wgt=NULL;
+      var_sct *wgt_out=NULL;
+      var_sct *msk=NULL;
+      var_sct *msk_out=NULL;
 
-      /* Find weighting variable in input file */
+      /* Find weighting variable that matches current variable */
       if(wgt_nm){
 
         /* Retrieve weighting variable */
         wgt=nco_var_get_wgt_trv(in_id,wgt_nm,var_prc[idx],trv_tbl);
 
-      } /* Find weighting variable in input file */
+      } /* Find weighting variable that matches current variable */
+
+
+      /* Find mask variable that matches current variable */
+      if(msk_nm){
+
+        /* Retrieve mask variable */
+        msk=nco_var_get_wgt_trv(in_id,msk_nm,var_prc[idx],trv_tbl);
+
+      } /* Find mask variable that matches current variable */
 
       in_id=in_id_arr[omp_get_thread_num()];
 
@@ -842,7 +842,8 @@ main(int argc,char **argv)
       var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
       var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 
-      if(msk_nm && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+      /* Check mask found for this variable, using msk */
+      if(msk && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
         msk_out=nco_var_cnf_dmn(var_prc[idx],msk,msk_out,MUST_CONFORM,&DO_CONFORM_MSK);
         /* If msk and var did not conform then do not mask var! */
         if(DO_CONFORM_MSK){
@@ -929,7 +930,7 @@ main(int argc,char **argv)
         /* Free current input buffer */
         var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 
-        if(msk_nm && DO_CONFORM_MSK){
+        if(msk && DO_CONFORM_MSK){
           /* Must mask weight in same fashion as variable was masked
           If msk and var did not conform then do not mask wgt
           Ensure wgt_avg has a missing value */
@@ -1089,8 +1090,11 @@ main(int argc,char **argv)
       /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
 
-      /* Free possible weight found */
+      /* Free possible weight/mask found */
       if(wgt) wgt=nco_var_free(wgt);
+      if(wgt_out) wgt_out=nco_var_free(wgt_out);
+      if(msk) msk=nco_var_free(msk);
+      if(msk_out) msk_out=nco_var_free(msk_out);
 
     } /* end (OpenMP parallel for) loop over idx */
 
@@ -1111,13 +1115,10 @@ main(int argc,char **argv)
   if(flg_cln){
     /* ncwa-specific memory */
     if(dmn_avg_nbr > 0) dmn_avg=(dmn_sct **)nco_free(dmn_avg);
-    if(msk) msk=nco_var_free(msk);
     if(msk_nm) msk_nm=(char *)nco_free(msk_nm);
-    if(msk_out) msk_out=nco_var_free(msk_out);
     if(msk_cnd_sng) msk_cnd_sng=(char *)nco_free(msk_cnd_sng);
     if(wgt_avg) wgt_avg=nco_var_free(wgt_avg);
     if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
-    if(wgt_out) wgt_out=nco_var_free(wgt_out);
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
