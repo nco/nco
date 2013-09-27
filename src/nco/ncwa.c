@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.375 2013-09-27 06:20:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.376 2013-09-27 22:21:37 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.375 2013-09-27 06:20:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.375 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.376 2013-09-27 22:21:37 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.376 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -790,6 +790,8 @@ main(int argc,char **argv)
       var_sct *msk=NULL;
       var_sct *msk_out=NULL;
 
+      in_id=in_id_arr[omp_get_thread_num()];
+
       /* Find weighting variable that matches current variable */
       if(wgt_nm){
 
@@ -805,9 +807,7 @@ main(int argc,char **argv)
         /* Retrieve mask variable */
         msk=nco_var_get_wgt_trv(in_id,msk_nm,var_prc[idx],trv_tbl);
 
-      } /* Find mask variable that matches current variable */
-
-      in_id=in_id_arr[omp_get_thread_num()];
+      } /* Find mask variable that matches current variable */   
 
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
