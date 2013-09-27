@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.613 2013-09-27 19:34:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.614 2013-09-27 19:41:39 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.6 are ready. 
 
@@ -6,8 +6,8 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 The current release fixes a few problems (yes bugs, but not nasty
-ones) and makes NCO more internally consistent and interoperable. 
-The big change is in default promotion of single-precision math.
+ones) and makes NCO more precise and interoperable with CF checkers.  
+The big change is to default promotion of single-precision math.
 Rounding errors can accumulate to worrisome levels during arithmetic
 performed on large (>~10,000) arrays of single precision floats. 
 The --dbl switch introduced in 4.3.5 is NCO's new default.

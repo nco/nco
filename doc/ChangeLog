@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.6 release"
 	cvs tag -c nco-4_3_6;cvs tag -c nco-4_3_6-1
 
+	* Add mdl.cdl
+
 2013-09-26 Pedro Vicente  <pvicente@uci.edu>
 
 	* ncwa: Add support for weights and masks per group. Regressions #49, #50
