@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.409 2013-09-24 19:41:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.410 2013-09-27 07:53:16 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -51,7 +51,7 @@
    ncea -O -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
    ncea -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
 
-#if 1 
+#if 1
 #define USE_TRV_API
 #endif
 
@@ -129,6 +129,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool HAS_REC=False; /* File has at least one record (handy ncea/non ncea switch) */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
@@ -169,8 +170,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.409 2013-09-24 19:41:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.409 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.410 2013-09-27 07:53:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.410 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1176,6 +1177,8 @@ main(int argc,char **argv)
   /* Build record dimensions array */
   (void)nco_bld_rec_dmn(in_id,FORTRAN_IDX_CNV,flg_rec_all,trv_tbl);  
 
+  if (trv_tbl->nbr_rec) HAS_REC=True;
+
   /* Allocate arrays for multi-records cases */
   idx_rec_out=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
   rec_in_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
@@ -1312,40 +1315,44 @@ main(int argc,char **argv)
     /* Loop over number of records to process */
     for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
 
-      /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(in_id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
+      if (HAS_REC){
 
-      /* Fill record array */
-      (void)nco_lmt_evl(grp_id,trv_tbl->lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(in_id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
 
-      if(REC_APN){
-        /* Append records directly to output file */
-        int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
-        /* Get group ID using record group full name */
-        (void)nco_inq_grp_full_ncid(out_id,trv_tbl->lmt_rec[idx_rec]->nm_fll,&grp_out_id);
+        /* Fill record array */
+        (void)nco_lmt_evl(grp_id,trv_tbl->lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
 
-        /* TO_DO: this assumes only 1 record in this group */
-        (void)nco_inq_dimid(grp_out_id,trv_tbl->lmt_rec[idx_rec]->nm,&rec_dmn_out_id);
-        (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
-      } /* !REC_APN */
+        if(REC_APN){
+          /* Append records directly to output file */
+          int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
+          /* Get group ID using record group full name */
+          (void)nco_inq_grp_full_ncid(out_id,trv_tbl->lmt_rec[idx_rec]->nm_fll,&grp_out_id);
 
-      if(dbg_lvl_get() >= nco_dbg_dev){ 
-        (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>(%ld)\n",prg_nm_get(),
-          idx_rec,trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl->lmt_rec[idx_rec]->rec_dmn_sz);                    
-      } 
+          /* TO_DO: this assumes only 1 record in this group */
+          (void)nco_inq_dimid(grp_out_id,trv_tbl->lmt_rec[idx_rec]->nm,&rec_dmn_out_id);
+          (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
+        } /* !REC_APN */
 
-      /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
-      if(FLG_MRO) trv_tbl->lmt_rec[idx_rec]->flg_mro=True;
-      if(trv_tbl->lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
+        if(dbg_lvl_get() >= nco_dbg_dev){ 
+          (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>(%ld)\n",prg_nm_get(),
+            idx_rec,trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl->lmt_rec[idx_rec]->rec_dmn_sz);                    
+        } 
+
+        /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
+        if(FLG_MRO) trv_tbl->lmt_rec[idx_rec]->flg_mro=True;
+        if(trv_tbl->lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
+
+      } /* HAS_REC */
 
       /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
-      if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(grp_id);
+      if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
 
       /* Perform various error-checks on input file */
       if(False) (void)nco_fl_cmp_err_chk();
 
       /* This file may be superfluous though valid data will be found in upcoming files */
-      if(dbg_lvl >= nco_dbg_std){
+      if(dbg_lvl >= nco_dbg_std && HAS_REC){
         if ( (trv_tbl->lmt_rec[idx_rec]->srt > trv_tbl->lmt_rec[idx_rec]->end) && (trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn == 0L)){
           (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
         }
