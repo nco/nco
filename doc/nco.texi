@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.874 2013-09-27 04:01:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.875 2013-09-27 19:34:27 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -113,7 +113,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.6
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 26 September 2013
+@set update-date 27 September 2013
 @set update-month September 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -4135,9 +4135,11 @@ all other groups (e.g., @code{ecmwf}, @code{giss}).
 @html
 <a name="dismember"></a> <!-- http://nco.sf.net/nco.html#dismember -->
 <a name="disaggregate"></a> <!-- http://nco.sf.net/nco.html#disaggregate -->
+<a name="ncdismember"></a> <!-- http://nco.sf.net/nco.html#ncdismember -->
 @end html
 @cindex disaggregate
 @cindex dismember
+@findex ncdismember
 Let us show how to completely disaggregate (or, more memorably)
 @emph{dismember} a hierarchical dataset.
 For now we take this to mean: store each lowest-level group, aka 
@@ -4227,11 +4229,17 @@ about netCDF4 filetypes, atomic types, or both).
 @findex cfchecker
 @findex ncdismember
 @cindex compliance checker
+@cindex Martin Schultz
+@cindex Michael Decker
 One application of dismembering is to check the CF-compliance of each 
 group in a file. 
 When invoked with the optional third argumnt @samp{cf},
 @command{ncdismember} pass each file it generates to the freely
-available @command{cfchecker} command:
+available
+@footnote{CFchecker is developed by Michael Decker and Martin Schultz at
+Forschungszentrum J@"ulich and distributed at
+@uref{https://bitbucket.org/mde_/cfchecker}.} 
+@command{cfchecker} command:
 @example
 @verbatim
 zender@roulee:~$ ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf

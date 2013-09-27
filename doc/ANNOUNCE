@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.612 2013-09-23 22:33:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.613 2013-09-27 19:34:27 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.6 are ready. 
 
@@ -6,18 +6,22 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 The current release fixes a few problems (yes bugs, but not nasty
-ones) and makes NCO more internally consistent. Multiple record
-dimensions in one variable have some interesting properties.
-For now, we prefer to avoid them :) Thus we've made it harder to  
-inadvertently produce them until we revisit the issue later.
-Now ncecat and ncpdq will not add to the number of record dimensions
-in a variable. Usually that's what you want. Trust me. I'm from the
-government :) 
-
+ones) and makes NCO more internally consistent and interoperable. 
+The big change is in default promotion of single-precision math.
 Rounding errors can accumulate to worrisome levels during arithmetic
 performed on large (>~10,000) arrays of single precision floats. 
 The --dbl switch introduced in 4.3.5 is NCO's new default.
-The manual contains a detailed discussion of the issues.
+The manual contains a detailed discussion of the trade-offs.
+NCO will now be slower and take more memory on such calculations.
+But now it will always agree with most other fat and slow tools.
+Power users can still opt for speed and single-precision with --flt. 
+
+Multiple record dimensions in one variable have some interesting
+properties. For now, we prefer to avoid them :) Thus we've made it
+harder to inadvertently produce them until we revisit the issue later.
+ncecat and ncpdq will no longer add to the number of record dimensions 
+of an existing record variable. Usually that's what you want. 
+Trust me. I'm from the government :) 
 
 Work on NCO 4.3.7 is underway and includes improved netCDF4 support
 for more NCO operators (ncatted, ncrename), and improved support for
@@ -42,7 +46,7 @@ A. New default: Forced conversion of float->double.
    ncea = ncea --dbl 
    ncra = ncra --dbl
    ncwa = ncwa --dbl
-   And the old behvior of these operators is obtained by
+   The old behvior of these operators is obtained by
    ncea --flt
    ncra --flt
    ncwa --flt
@@ -52,7 +56,19 @@ A. New default: Forced conversion of float->double.
    The manual contains a detailed discussion of the issues:
    http://nco.sf.net/nco.html#dbl
 
+A. ncdismember flattens and can CF-check hierarchical files.
+   Some users must flatten hierarchical files to use with tools, such
+   as CF-compliance checkers, that are not "group-aware". The "brute
+   force" method is slow: ncdump (or h5dump), strip out group info,
+   rebuild each group as flat netCDF3, pass to a checker. ncdismember
+   automates this procedure. It calls ncks to extract each leaf-group
+   into a netCDF3 file, and calls cfchecker when invoked with an
+   optional third argument of 'cf'.   
+   http://nco.sf.net/nco.html#dismember
+
 BUG FIXES:
+
+A. Improved ncwa scope for weights, masks
 
 A. Fixed ncea 4.3.5 bug that caused a core dump on some files. 
 
