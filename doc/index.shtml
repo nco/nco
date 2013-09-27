@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.825 2013-09-27 19:34:27 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.826 2013-09-27 22:58:13 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -158,6 +158,7 @@ and
 <li>2013 Jan&nbsp;28: NCO 4.2.5</li>
 <li>2013 Jan&nbsp;21: NCO 4.2.4</li>
 <li>2012 Dec&nbsp;05: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201212.pdf">Talk</a> at Fall AGU, San Francisco, California</li>
+<li>2012 Nov&nbsp;28: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201211.pdf">Poster</a> at NASA ESDSWG, Annapolis, Maryland</li>
 <li>2012 Nov&nbsp;13: NCO 4.2.3 (GPE)</li>
 <li>2012 Oct&nbsp;29: NCO 4.2.2 (<tt>ncks, ncecat</tt> Groups)</li>
 <li>2012 Aug&nbsp;02: NCO 4.2.1 (RAM disks)</li>
