@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.373 2013-09-26 05:52:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.374 2013-09-27 05:59:57 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.373 2013-09-26 05:52:50 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.373 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.374 2013-09-27 05:59:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.374 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -209,7 +209,6 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
   var_sct *msk=NULL;
   var_sct *msk_out=NULL;
-  var_sct *wgt=NULL;
   var_sct *wgt_avg=NULL;
   var_sct *wgt_out=NULL;
 
@@ -750,7 +749,6 @@ main(int argc,char **argv)
   /* Close first input netCDF file */
   nco_close(in_id);
 
-
   /* Loop over input files (not currently used, fl_nbr == 1) */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
@@ -767,20 +765,6 @@ main(int argc,char **argv)
 
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
-
-    /* Find weighting variable in input file */
-    if(wgt_nm){
-
-      /* Retrieve weighting variable */
-      /* fxm: TODO #111 core dump if msk has dimension not in extraction list */
-      wgt=nco_var_get_trv(in_id,wgt_nm,trv_tbl);
-
-      /* fxm: Perhaps should allocate default tally array for wgt here
-      That way, when wgt conforms to the first var_prc_out and it therefore
-      does not get a tally array copied by nco_var_dpl() in nco_var_cnf_dmn(), 
-      it will at least have space for a tally array. TODO #114. */
-
-    } /* Find weighting variable in input file */
 
     /* Find mask variable in input file */
     if(msk_nm){
@@ -800,7 +784,7 @@ main(int argc,char **argv)
     firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
     shared(): msk and wgt are not altered within loop
     private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,trv_tbl,var_prc,var_prc_out,wgt,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,trv_tbl,var_prc,var_prc_out,wgt_nm)
 #endif /* !_OPENMP */
 
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
@@ -810,8 +794,18 @@ main(int argc,char **argv)
       int grp_id;        /* [ID] Group ID */
       int grp_out_id;    /* [ID] Group ID (output) */
       int var_out_id;    /* [ID] Variable ID (output) */
+
       trv_sct *var_trv;  /* [sct] Variable GTT object */
 
+      var_sct *wgt=NULL;
+
+      /* Find weighting variable in input file */
+      if(wgt_nm){
+
+        /* Retrieve weighting variable */
+        wgt=nco_var_get_wgt_trv(in_id,wgt_nm,var_prc[idx],trv_tbl);
+
+      } /* Find weighting variable in input file */
 
       in_id=in_id_arr[omp_get_thread_num()];
 
@@ -876,7 +870,9 @@ main(int argc,char **argv)
           break;
         } /* end case */
       } /* var_prc[idx]->is_crd_var */
-      if(wgt_nm && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+
+      /* Check weight found for this variable, using wgt */
+      if(wgt && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
         /* fxm: nco_var_cnf_dmn() has bug where it does not allocate tally array
         for weights that do already conform to var_prc. TODO #114. */
         wgt_out=nco_var_cnf_dmn(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
@@ -1093,6 +1089,9 @@ main(int argc,char **argv)
       /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
 
+      /* Free possible weight found */
+      if(wgt) wgt=nco_var_free(wgt);
+
     } /* end (OpenMP parallel for) loop over idx */
 
     if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
@@ -1116,7 +1115,6 @@ main(int argc,char **argv)
     if(msk_nm) msk_nm=(char *)nco_free(msk_nm);
     if(msk_out) msk_out=nco_var_free(msk_out);
     if(msk_cnd_sng) msk_cnd_sng=(char *)nco_free(msk_cnd_sng);
-    if(wgt) wgt=nco_var_free(wgt);
     if(wgt_avg) wgt_avg=nco_var_free(wgt_avg);
     if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
     if(wgt_out) wgt_out=nco_var_free(wgt_out);

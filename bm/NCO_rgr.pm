@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.336 2013-09-27 05:16:34 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.337 2013-09-27 05:59:57 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4098,7 +4098,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # Reset array
 
-#ncwa #46
+#ncwa #47
 #NEW NCO 4.3.3
 #same as #ncwa #33
 # ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy  in_grp_3.nc out.nc
@@ -4113,7 +4113,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-#ncwa #47
+#ncwa #48
 #NEW NCO 4.3.6
 #ncwa -O -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 in_grp_3.nc out.nc
 
@@ -4126,7 +4126,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncwa #48
+#ncwa #49
 # ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc out.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
@@ -4134,11 +4134,27 @@ print "\n";
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
-    $dsc_sng="(Groups) average masked, weighted coordinate";
+    $dsc_sng="(Groups) Weights and groups (test 1)";
     $tst_cmd[2]="lev = 241.667";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+	
+	
+#ncwa #50
+# ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc out.nc
+# lev = 230.769 lev_wgt=10,2,1; /g19/lev
+# lev = 241.667 lev_wgt=9,2,1;  /g8/lev
+
+    
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -g g19 -v lev %tmp_fl_00%";
+    $dsc_sng="(Groups) Weights and groups (test 2)";
+    $tst_cmd[2]="lev = 230.769";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+	
 
     
     
