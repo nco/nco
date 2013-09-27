@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.873 2013-09-26 22:43:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.874 2013-09-27 04:01:15 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4150,7 +4150,7 @@ files in the directory @var{drc_out} specified by the second argument
 @example
 @verbatim
 cat > ~/ncdismember << 'EOF'
-# Purpose: Dismember netCDF4 hierarchical files
+# Purpose: Dismember netCDF4/HDF5 hierarchical files. CF-check them.
 # Place each leaf group of input file in separate netCDF3 output file
 # Described in NCO User Guide at http://nco.sf.net/nco.html#dismember
 # Requirements: NCO 4.3.x, UNIX shell utilities grep, cut, sed, sort
@@ -4220,7 +4220,8 @@ features because the user requests (with the @samp{-3} option) that
 output be netCDF3 classic format. 
 Naturally groups containing netCDF4-only atomic-types (such as
 @code{NC_STRING} and @code{NC_UINT64}) should be dismembered into flat
-netCDF4 files, not flat netCDF3 files.
+netCDF4 files, not flat netCDF3 files (compliance-checkers may complain
+about netCDF4 filetypes, atomic types, or both).
 
 @cindex CF compliance checker
 @findex cfchecker
@@ -4228,9 +4229,9 @@ netCDF4 files, not flat netCDF3 files.
 @cindex compliance checker
 One application of dismembering is to check the CF-compliance of each 
 group in a file. 
-When invoked with the optional third argumnt @samp{cf} the
-@command{ncdismember} calls the freely available @command{cfchecker}
-command on each file:
+When invoked with the optional third argumnt @samp{cf},
+@command{ncdismember} pass each file it generates to the freely
+available @command{cfchecker} command:
 @example
 @verbatim
 zender@roulee:~$ ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf
