@@ -30,8 +30,8 @@
 
 netcdf in_grp_3 {
 
- variables:
   :Conventions = "CF-1.0";
+  
 
   //
   //g3
@@ -99,7 +99,7 @@ netcdf in_grp_3 {
   
   
   //
-  //g8
+  //g8 test ncwa in groups 
   //
  group: g8 { 
   dimensions:
@@ -111,31 +111,19 @@ netcdf in_grp_3 {
     
     //coordinate variable (/g8/lev)
     float lev(lev); 
-    lev:units = "hybrid_sigma_pressure";
     lev:bounds = "ilev";
     
     //coordinate variable (/g8/vrt_nbr)
     float vrt_nbr(vrt_nbr);
     
     float ilev(lev,vrt_nbr);
+	float lev_wgt(lev);
   data:
     lon=-180,0; 
     lev=100,500,1000;
     ilev=0,300,300,750,750,1013.25;
     vrt_nbr=1,2;
-
-    //
-    //g8g1: test ncwa in groups 
-    //
-    group: g8g1 { 
-    variables:
-    float lev_wgt(lev);
-	  lev_wgt:long_name = "lev_wgt";
-
-    data:
-    lev_wgt=10,2,1;
-
-    } // end g8g1
+	lev_wgt=9,2,1;
   } // end g8
   
  
@@ -299,19 +287,20 @@ netcdf in_grp_3 {
    lat=2;
    lev=3;
    lon=4;
-   time=unlimited;
+   time=unlimited; 
 
    variables:
    float lat(lat);
    float lon(lon); 
    float lev(lev);
-	 lev:purpose = "Monotonically increasing coordinate pressure";
+   float lev_wgt(lev);
    double time(time);
 
    data:
    lat=-90,90;
    lon=0,90,180,270;
    lev=100,500,1000;
+   lev_wgt=10,2,1;
    time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   
     group: g19g1 { 
@@ -372,7 +361,6 @@ netcdf in_grp_3 {
       
       group: g19g4 { 
       variables:
-
       short rec_var_dbl_mss_val_dbl_pck(time);
 	    rec_var_dbl_mss_val_dbl_pck:long_name = "record variable, double, packed as short, with double missing values";
 	    rec_var_dbl_mss_val_dbl_pck:purpose = "Packed version of rec_var_dbl_mss_val_dbl_upk";
@@ -380,18 +368,13 @@ netcdf in_grp_3 {
 	    rec_var_dbl_mss_val_dbl_pck:missing_value = -999.;
         rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_dbl_pck:add_offset = 5.;
-
       double upk;
     	upk:long_name = "Unpacked scalar variable";
 	    upk:note = "Unpacked value is 3.0d0, upk=unpack(pck)= 2.0d0*1s + 1.0d0 = 3.0d0. Packing this variable should create an NC_SHORT scalar = 0s with packing attribute add_offset=3.0d and either no scale_factor (ncap) or scale_factor = 0.0d (ncpdq).";
-
       data:
       upk=3.;
-
       rec_var_dbl_mss_val_dbl_pck=-999,32767,21845,10922,0,-10922,-21845,-32767,-999,-999;
-
-
-      } // end g19g4  
+      } // end g19g4 
           
   } // end g19
 

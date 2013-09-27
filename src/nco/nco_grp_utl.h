@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.383 2013-09-24 09:29:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.384 2013-09-27 05:16:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -517,12 +517,6 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
  const int nbr_aed,                   /* I [nbr] Number of attribute structures */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
-var_sct *                             /* O [sct] Variable */  
-nco_var_get_trv                       /* [fnc] Fill-in variable structure for a variable named "var_nm" */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const char * const var_nm,           /* I [sng] Variable name (relative) */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
-
 void
 nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabbed size */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
@@ -627,6 +621,22 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
 (const var_sct * const var_prc,      /* I [sct] Processed variable */
  const char * const rec_nm_fll,      /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
+
+var_sct *                             /* O [sct] Variable */  
+nco_var_get_trv                       /* [fnc] Fill-in variable structure for a variable named "var_nm" */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const var_nm,           /* I [sng] Variable name (relative) */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+
+var_sct *                             /* O [sct] Variable (weight) */  
+nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variable */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const wgt_nm,           /* I [sng] Weight variable name (relative) */
+ const var_sct * const var,           /* I [sct] Variable that needs the weight/mask variable */
+ const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

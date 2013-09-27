@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.992 2013-09-26 05:52:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.993 2013-09-27 05:16:34 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5534,66 +5534,6 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
 
 } /* nco_aed_prc_trv() */
 
-var_sct *                             /* O [sct] Variable */  
-nco_var_get_trv                       /* [fnc] Fill-in variable structure for a variable named "var_nm" */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const char * const var_nm,           /* I [sng] Variable name (relative) */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
-{
-  int idx_var;
-  int nbr_xtr;
-
-  var_sct **var=NULL;
-
-  nbr_xtr=0;
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Filter variables to extract  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
-      nbr_xtr++;
-    } /* Filter variables  */
-  } /* Loop table */
-
-  /* Fill-in variable structure list for all extracted variables */
-  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
-
-  idx_var=0;
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-
-    /* Filter variables  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
-      trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
-
-      int grp_id; /* [ID] Group ID */
-      int var_id; /* [ID] Variable ID */
-
-      /* Obtain group ID from API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-
-      /* Get variable ID */
-      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
-
-      /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
-      var[idx_var]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
-
-      /* Store full name as key for GTT search */
-      var[idx_var]->nm_fll=strdup(var_trv.nm_fll);
-
-      /* Retrieve variable NB: using GTT version, that "knows" all the limits  */
-      (void)nco_msa_var_get_trv(nc_id,var[idx_var],trv_tbl);
-
-      return var[idx_var];
-
-    } /* Filter variables  */
-  } /* Loop table */
-
-  return NULL;
-
-} /* nco_var_trv() */
-
 void
 nco_dmn_trv_msa_tbl                   /* [fnc] Update all GTT dimensions with hyperslabbed size */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
@@ -7138,3 +7078,156 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
   return flg_skp;
 
 } /* nco_skp_var() */
+
+var_sct *                             /* O [sct] Variable */  
+nco_var_get_trv                       /* [fnc] Fill-in variable structure for a variable named "var_nm" */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const var_nm,           /* I [sng] Variable name (relative) */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  int idx_var;
+  int nbr_xtr;
+
+  var_sct **var=NULL;
+
+  nbr_xtr=0;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Filter variables to extract  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
+      nbr_xtr++;
+    } /* Filter variables  */
+  } /* Loop table */
+
+  /* Fill-in variable structure list for all extracted variables */
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+
+  idx_var=0;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+
+    /* Filter variables  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
+      trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
+
+      int grp_id; /* [ID] Group ID */
+      int var_id; /* [ID] Variable ID */
+
+      /* Obtain group ID from API using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+
+      /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
+      var[idx_var]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
+
+      /* Store full name as key for GTT search */
+      var[idx_var]->nm_fll=strdup(var_trv.nm_fll);
+
+      /* Retrieve variable NB: using GTT version, that "knows" all the limits  */
+      (void)nco_msa_var_get_trv(nc_id,var[idx_var],trv_tbl);
+
+      return var[idx_var];
+
+    } /* Filter variables  */
+  } /* Loop table */
+
+  return NULL;
+
+} /* nco_var_trv() */
+
+
+var_sct *                             /* O [sct] Variable (weight) */  
+nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variable */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const char * const wgt_nm,           /* I [sng] Weight variable name (relative) */
+ const var_sct * const var,           /* I [sct] Variable that needs the weight/mask variable */
+ const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */
+{
+  /* Purpose: Return the variable (weight or mask) that is in scope of variable that needs the weight/mask variable */ 
+
+  /* NB: currently detect same group only */
+
+  int nbr_wgt=0;     /* [nbr] Number of weight/mask variables in file */
+  int grp_id;        /* [ID] Group ID */
+  int var_id;        /* [ID] Variable ID */
+  int idx_wgt;
+
+  trv_sct **wgt_trv=NULL; /* [sct] Weight/mask list */
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Filter */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm) == 0) ){
+      nbr_wgt++;
+    } /* Filter  */
+  } /* Loop table */
+
+  /* Fill-in variable structure list for all weights */
+  wgt_trv=(trv_sct **)nco_malloc(nbr_wgt*sizeof(trv_sct *));
+
+  idx_wgt=0;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+
+    /* Filter by name  */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm) == 0) ){
+      wgt_trv[idx_wgt]=&trv_tbl->lst[tbl_idx]; 
+
+      idx_wgt++;
+    } /* Filter variables  */
+  } /* Loop table */
+
+
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+
+    /* Find the variable that needs the weight  */
+    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var 
+      && trv_tbl->lst[idx_var].flg_xtr
+      && (strcmp(trv_tbl->lst[idx_var].nm_fll,var->nm_fll) == 0)){
+        trv_sct var_trv=trv_tbl->lst[idx_var];  
+
+        /* Loop over weights */
+        for(int idx_wgt=0;idx_wgt<nbr_wgt;idx_wgt++){
+          /* Same group  */ 
+          if(strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll) == 0){ 
+
+            int grp_id;   /* [ID] Group ID */
+            int var_id;   /* [ID] Variable ID */
+            var_sct *wgt;
+
+            /* Obtain group ID from API using full group name */
+            (void)nco_inq_grp_full_ncid(nc_id,wgt_trv[idx_wgt]->grp_nm_fll,&grp_id);
+
+            /* Get variable ID */
+            (void)nco_inq_varid(grp_id,wgt_trv[idx_wgt]->nm,&var_id);
+
+            /* Transfer from table to local variable  */
+            wgt=nco_var_fll_trv(grp_id,var_id,wgt_trv[idx_wgt],trv_tbl);
+
+            /* Store full name as key for GTT search */
+            wgt->nm_fll=strdup(wgt_trv[idx_wgt]->nm_fll);
+
+            /* Retrieve variable NB: using GTT version, that "knows" all the limits  */
+            (void)nco_msa_var_get_trv(nc_id,wgt,trv_tbl);
+
+            wgt_trv=(trv_sct **)nco_free(wgt_trv);
+
+            return wgt;
+
+          }  /* Same group  */ 
+        } /* Loop over weights */
+    } /* Filter variables  */
+  } /* Loop table */
+
+  return NULL;
+
+} /* nco_var_get_wgt_trv() */
+
+
+
