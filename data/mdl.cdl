@@ -1,0 +1,79 @@
+// -*-C++-*-
+// Generate netCDF file with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/mdl.nc ~/nco/data/mdl.cdl
+
+netcdf mdl {
+
+ group: cesm {
+
+  group: cesm_01 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "CESM";
+      :Realization = "1";
+
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=272.1,272.1,272.1,272.1;
+ 
+    } // cesm_01
+
+  group: cesm_02 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "CESM";
+      :Realization = "2";
+      
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=272.2,272.2,272.2,272.2;
+      
+    } // cesm_02
+    
+  } // cesm
+  
+ group: ecmwf {
+    
+  group: ecmwf_01 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "ECMWF";
+      :Realization = "1";
+      
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=273.1,273.1,273.1,273.1;
+      
+    } // ecmwf_01
+    
+  group: ecmwf_02 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "ECMWF";
+      :Realization = "2";
+      
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=273.2,273.2,273.2,273.2;
+      
+    } // ecmwf_02
+
+  } // ecmwf
+
+} // root group
