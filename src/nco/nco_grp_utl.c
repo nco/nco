@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.993 2013-09-27 05:16:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.994 2013-09-27 21:28:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4251,7 +4251,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
-  /* Debugging convention: <%s> string , #%d, ID, ##%d new ID */
+  for(int idx_dmn=0;idx_dmn<NC_MAX_DIMS;idx_dmn++) dmn_out_id[idx_dmn]=NCO_REC_DMN_UNDEFINED;
 
   /* File format needed for decision tree and to enable netCDF4 features */
   (void)nco_inq_format(grp_out_id,&fl_fmt);
@@ -7193,12 +7193,9 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
         trv_sct var_trv=trv_tbl->lst[idx_var];  
 
         /* Loop over weights */
-        for(int idx_wgt=0;idx_wgt<nbr_wgt;idx_wgt++){
+        for(idx_wgt=0;idx_wgt<nbr_wgt;idx_wgt++){
           /* Same group  */ 
           if(strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll) == 0){ 
-
-            int grp_id;   /* [ID] Group ID */
-            int var_id;   /* [ID] Variable ID */
             var_sct *wgt;
 
             /* Obtain group ID from API using full group name */
