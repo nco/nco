@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.994 2013-09-27 21:28:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.995 2013-09-28 04:59:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1556,7 +1556,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
         (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,PCK_ATT_CPY);
 
-        var_prc=(var_sct *)nco_free(var_prc);
+        var_prc=(var_sct *)nco_var_free(var_prc);
       } /* !CPY_VAR_METADATA */
 
       /* Pre-allocate space for MD5 attributes */
@@ -3180,9 +3180,6 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
       /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
       var[idx_var]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
 
-      /* Store full name as key for GTT search */
-      var[idx_var]->nm_fll=strdup(var_trv.nm_fll);
-
       idx_var++;
 
     } /* Filter variables  */
@@ -3240,9 +3237,6 @@ nco_var_trv                           /* [fnc] Fill-in variable structure list f
 
       /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
       var[idx_var]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
-
-      /* Store full name as key for GTT search */
-      var[idx_var]->nm_fll=strdup(var_trv.nm_fll);
 
       idx_var++;
 
@@ -4652,7 +4646,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Obtain netCDF type to define variable from NCO program ID */
     var_typ_out=nco_get_typ(var_prc);
 
-    var_prc=(var_sct *)nco_free(var_prc);
+    var_prc=(var_sct *)nco_var_free(var_prc);
   }
 
 
@@ -7079,67 +7073,6 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
 
 } /* nco_skp_var() */
 
-var_sct *                             /* O [sct] Variable */  
-nco_var_get_trv                       /* [fnc] Fill-in variable structure for a variable named "var_nm" */
-(const int nc_id,                     /* I [id] netCDF file ID */
- const char * const var_nm,           /* I [sng] Variable name (relative) */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
-{
-  int idx_var;
-  int nbr_xtr;
-
-  var_sct **var=NULL;
-
-  nbr_xtr=0;
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Filter variables to extract  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
-      nbr_xtr++;
-    } /* Filter variables  */
-  } /* Loop table */
-
-  /* Fill-in variable structure list for all extracted variables */
-  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
-
-  idx_var=0;
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-
-    /* Filter variables  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
-      trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
-
-      int grp_id; /* [ID] Group ID */
-      int var_id; /* [ID] Variable ID */
-
-      /* Obtain group ID from API using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-
-      /* Get variable ID */
-      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
-
-      /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
-      var[idx_var]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
-
-      /* Store full name as key for GTT search */
-      var[idx_var]->nm_fll=strdup(var_trv.nm_fll);
-
-      /* Retrieve variable NB: using GTT version, that "knows" all the limits  */
-      (void)nco_msa_var_get_trv(nc_id,var[idx_var],trv_tbl);
-
-      return var[idx_var];
-
-    } /* Filter variables  */
-  } /* Loop table */
-
-  return NULL;
-
-} /* nco_var_trv() */
-
-
 var_sct *                             /* O [sct] Variable (weight) */  
 nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variable */
 (const int nc_id,                     /* I [id] netCDF file ID */
@@ -7206,9 +7139,6 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
 
             /* Transfer from table to local variable  */
             wgt=nco_var_fll_trv(grp_id,var_id,wgt_trv[idx_wgt],trv_tbl);
-
-            /* Store full name as key for GTT search */
-            wgt->nm_fll=strdup(wgt_trv[idx_wgt]->nm_fll);
 
             /* Retrieve variable NB: using GTT version, that "knows" all the limits  */
             (void)nco_msa_var_get_trv(nc_id,wgt,trv_tbl);
