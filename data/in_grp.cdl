@@ -79,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.94 2013-09-26 22:42:59 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.95 2013-09-30 04:56:18 zender Exp $";
   
  data:
   area=10.,10.;
@@ -269,6 +269,9 @@ netcdf in_grp {
     string string_arr(lat);
   string_arr:long_name = "string-type array variable";
 
+    string string_rec_arr(time);
+  string_rec_arr:long_name = "string-type record array variable";
+
     ubyte ubyte_var;
   ubyte_var:long_name = "ubyte-type variable";
     
@@ -287,6 +290,7 @@ netcdf in_grp {
     int64_var=9223372036854775807; // LLONG_MAX = 9223372036854775807, NC_FILL_INT64 is -9223372036854775806LL
     string_var="If you prick us, do we not bleed? If you tickle us, do we not laugh? If you poison us, do we not die? And if you wrong us, shall we not revenge?";
     string_arr="Stanza 1","Stanza 2";
+    string_rec_arr="One little ","two little ","three little indians, ","four little ","five little ","six little indians, ","seven little ","eight little ","nine little indians, ","ten little indian boys.";
     ubyte_var='z'; // UCHAR_MAX = 255, NC_FILL_UBYTE = 255
     // 20130208: netCDF 4.2.1.1- fail as nc_get_var1_uint() returns -60 = NetCDF: Numeric conversion not representable on (valid) input values exceeding INT_MAX=2147483647. This was bug netCDF #PUX-602809 fixed in daily snapshot 20130210.
     // uint_var=4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.875 2013-09-27 19:34:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.876 2013-09-30 04:56:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -55,7 +55,8 @@ texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2h
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:/var/www/html/nco;cd -
 # 20130806 Copy CMIP5 images (takes additional time)
-cd ~/nco/doc/xmp;/usr/bin/scp fgr*.png fgr*.eps zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
+cd ~/nco/doc/xmp;/usr/bin/scp fgr*.png fgr*.eps zender,nco@web.sf.net:/home/project-web/nco/htdocs/xmp;cd -
+cd ~/nco/doc/xmp;/usr/bin/scp fgr*.png fgr*.eps                 dust.ess.uci.edu:/var/www/html/nco/xmp;cd -
 # 20120203 Copy all nco.html PNG images (takes additional time)
 cd ~/nco/doc;/usr/bin/scp nco_*.png zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
 cd ~/nco/doc;scp -p nco_*.png dust.ess.uci.edu:/var/www/html/nco;cd -
