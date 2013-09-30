@@ -8463,7 +8463,7 @@
 	* Added nco_fl_lst_att_cat() to add input file list global attribute
 
 	* nco_fl_ls_mk() reads input file list from stdin when appropriate
-	for multi-file operators. 
+	for multi-file operators.
 	For some reason it no longer pauses for manual stdin, however.
 
 2004-06-16  Charlie Zender  <zender@uci.edu>
@@ -9336,7 +9336,7 @@
 
 	 * First version of multi-hyperslabbing along a single dimension
 	 for ncks
-	
+
 2002-12-14  Charlie Zender  <zender@uci.edu>
 
 	* Took advantage of NEED_FNC to remove MACOSX kludge in nco_rth_flt.h
@@ -9383,7 +9383,7 @@
 	2. Makefile fixes for Cray
 	3. nco_tst.sh tweaks
 	Applied the Makefile flags to configure.in as well
-	
+
 2002-09-17  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_6_4
@@ -9404,7 +9404,7 @@
 	Comeau should now work but have not tested it
 
 	* cvs tag -c nco-2_6_3
-	Changes since nco-2_6_2: 
+	Changes since nco-2_6_2:
 	Numerous build improvments and removal of PVM_ARCH ifdefs
 	MACOSX builds with bld/Makefile, documentation fixes
 
