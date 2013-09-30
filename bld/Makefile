@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.659 2013-09-26 22:42:59 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.660 2013-09-30 18:27:14 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -20,7 +20,7 @@
 # glace.ess.uci.edu  : Source: NCO         , Method: Configure, Packages: All else
 # grele.ess.uci.edu  : Source: NCO         , Method: Makefile,  Packages: All else
 # tephra.ess.uci.edu : Source: NCO         , Method: Makefile,  Packages: All else
-# yellowstone.ess.uci.edu: Source: NCO     , Method: Makefile,  Packages: All else
+# yellowstone.ucar.edu: Source: NCO        , Method: Makefile,  Packages: All else
 
 # Usage (testing):
 # make tst                           # Vanilla regression test

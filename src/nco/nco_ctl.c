@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.419 2013-09-25 03:45:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.420 2013-09-30 18:27:15 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -795,7 +795,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always Include terminal \n so mnemonic does not dangle */
-  return "Thrice. Part trois. Sunrise CC West-cut-across-East-cut-across run.\n";
+  return "Love is not love which alters when it alteration finds.\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
