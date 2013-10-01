@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.876 2013-09-30 04:56:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.877 2013-10-01 22:24:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -264,7 +264,6 @@ Permission is granted to process this file through TeX and print the
 results, provided the printed document carries copying permission
 notice identical to this one except for the removal of this paragraph
 (this paragraph not being relevant to the printed manual).
-
 @end ignore
 @end ifinfo
 
@@ -9623,24 +9622,38 @@ Crafting such commands on the command line is possible though unwieldy.
 In such cases, a script is often cleaner and allows you to document the
 procedure:
 @example
+@verbatim
 cat > ncap2.in << 'EOF'
 mask_var = (lat >= lat_min && lat <= lat_max) && (lon >= lon_min && > lon <= lon_max);
-if(mask_var.total() > 0)@{ // Check that mask contains some valid values
+if(mask_var.total() > 0){ // Check that mask contains some valid values
   temperature_avg=(temperature*mask_var).avg(); // Average temperature
   temperature_max=(temperature*mask_var).max(); // Maximum temperature
-@}
+}
 EOF
 ncap2 -S ncap2.in in.nc out.nc
+@end verbatim
 @end example
 
+@html
+<a name="wrf"></a> <!-- http://nco.sf.net/nco.html#wrf -->
+<a name="WRF"></a> <!-- http://nco.sf.net/nco.html#WRF -->
+@end html
+@ignore
+http://foehn.colorado.edu/wrfout_to_cf/wrfout_to_cf.ncl
+ncl 'file_in="wrfout.nc"' 'file_out="wrfpost.nc"' wrfout_to_cf.ncl
+ncl 'file_in="wrfout_d02_2013-10-04_20:00:00"' 'file_out="wrfout_d02_2013-10-04_20:00:00_cf.nc"' wrfout_to_cf.ncl
+ncl 'file_in="wrfout_v2_Lambert"' 'file_out="wrfout_v2_Lambert.nc"' wrfout_to_cf.ncl
+@end ignore
+@cindex @acronym{WRF}
+Grids like those produced by the @acronym{WRF} model are complex because
+one must use global metadata to determine the grid staggering and
+offsets to translate @code{XLAT} and @code{XLONG} into real latitudes, 
+longitudes, and missing points. 
+The @acronym{WRF} grid documentation should describe this.
 For @acronym{WRF} files creating regional masks looks like 
 @example
-mask_var = (XLAT >= lat_min && XLAT <= lat_max) && (XLONG >= lon_min && > XLONG <= lon_max);
+mask_var = (XLAT >= lat_min && XLAT <= lat_max) && (XLONG >= lon_min && XLONG <= lon_max);
 @end example
-In practice with WRF it's a bit more complicated because you must
-use the global metadata to determine the grid staggering and offsets
-to translate XLAT and XLONG into real latitudes and longitudes and
-missing points. The WRF grid documentation should describe this.
 
 A few notes:
 Irregular regions are the union of arrays lat/lon_min/max's. 
