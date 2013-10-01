@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.996 2013-09-30 18:27:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.997 2013-10-01 19:44:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3418,7 +3418,19 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     trv_1->var_typ=trv_2->var_typ=typ_hgh;
 
     /* Broadcast lesser to greater variable. NB: Pointers may change so _gtr, _lsr not valid */
-    if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2); else /* fxm: put-in dimension-by-dimension size check */;
+    if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
+    /* Dimension-by-dimension size check */
+    else {
+      /* Loop dimensions */
+      for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
+        /* Differ */
+        if (var_prc_1->dim[idx_dmn]->sz != var_prc_2->dim[idx_dmn]->sz){
+          (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s with different size\n",prg_nm_get(),
+            var_prc_1->nm_fll,var_prc_1->dim[idx_dmn]->nm);
+          nco_exit(EXIT_FAILURE);
+        } /* Differ */
+      } /* Loop dimensions */
+    } /* Dimension-by-dimension size check */
 
     /* var1 and var2 now conform in size and type to eachother and are in memory */
     assert(var_prc_1->type == var_prc_2->type);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.157 2013-09-13 18:01:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.158 2013-10-01 19:44:58 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -34,6 +34,10 @@
    ncrename -O -a Conventions,Geneva ~/nco/data/in.nc ~/foo.nc
    ncrename -O -d old_dim1,new_dim1 -v old_var1,new_var1 -v old_var2,new_var2 -a old_att1,new_att1 ~/nco/data/in.nc ~/foo.nc
    ncrename -O -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name ~/nco/data/in.nc ~/foo.nc */
+
+#if 0
+#define USE_TRV_API
+#endif
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -81,7 +85,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
-  
+
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char *att_rnm_arg[NC_MAX_ATTRS];
@@ -98,8 +102,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.157 2013-09-13 18:01:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.157 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.158 2013-10-01 19:44:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.158 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -112,7 +116,7 @@ main(int argc,char **argv)
 
   extern char *optarg;
   extern int optind;
-  
+
   int abb_arg_nbr=0;
   int fl_nbr=0;
   int idx;
@@ -124,58 +128,60 @@ main(int argc,char **argv)
   int nc_id;  
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  
+
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
   rnm_sct *grp_rnm_lst=NULL_CEWI;
   rnm_sct *att_rnm_lst=NULL_CEWI;
 
+  trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
+
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   static struct option opt_lng[] =
-    { /* Structure ordered by short option key if possible */
-      /* Long options with no argument, no short option counterpart */
-      {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
-      {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
-      {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
-      {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
-      {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
-      {"version",no_argument,0,0},
-      {"vrs",no_argument,0,0},
-      /* Long options with argument, no short option counterpart */
-      {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
-      {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
-      {"hdr_pad",required_argument,0,0},
-      {"header_pad",required_argument,0,0},
-      /* Long options with short counterparts */
-      {"attribute",required_argument,0,'a'},
-      {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
-      {"dimension",required_argument,0,'d'},
-      {"dmn",required_argument,0,'d'},
-      {"group",required_argument,0,'g'},
-      {"grp",required_argument,0,'g'},
-      {"history",no_argument,0,'h'},
-      {"hst",no_argument,0,'h'},
-      {"local",required_argument,0,'l'},
-      {"lcl",required_argument,0,'l'},
-      {"overwrite",no_argument,0,'O'},
-      {"ovr",no_argument,0,'O'},
-      {"output",required_argument,0,'o'},
-      {"fl_out",required_argument,0,'o'},
-      {"path",required_argument,0,'p'},
-      {"revision",no_argument,0,'r'},
-      {"variable",required_argument,0,'v'},
-      {"help",no_argument,0,'?'},
-      {"hlp",no_argument,0,'?'},
-      {0,0,0,0}
-    };
+  { /* Structure ordered by short option key if possible */
+    /* Long options with no argument, no short option counterpart */
+    {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
+    {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
+    {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"version",no_argument,0,0},
+    {"vrs",no_argument,0,0},
+    /* Long options with argument, no short option counterpart */
+    {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
+    {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"hdr_pad",required_argument,0,0},
+    {"header_pad",required_argument,0,0},
+    /* Long options with short counterparts */
+    {"attribute",required_argument,0,'a'},
+    {"debug",required_argument,0,'D'},
+    {"dbg_lvl",required_argument,0,'D'},
+    {"dimension",required_argument,0,'d'},
+    {"dmn",required_argument,0,'d'},
+    {"group",required_argument,0,'g'},
+    {"grp",required_argument,0,'g'},
+    {"history",no_argument,0,'h'},
+    {"hst",no_argument,0,'h'},
+    {"local",required_argument,0,'l'},
+    {"lcl",required_argument,0,'l'},
+    {"overwrite",no_argument,0,'O'},
+    {"ovr",no_argument,0,'O'},
+    {"output",required_argument,0,'o'},
+    {"fl_out",required_argument,0,'o'},
+    {"path",required_argument,0,'p'},
+    {"revision",no_argument,0,'r'},
+    {"variable",required_argument,0,'v'},
+    {"help",no_argument,0,'?'},
+    {"hlp",no_argument,0,'?'},
+    {0,0,0,0}
+  };
   int opt_idx=0;  /* Index of current long option into opt_lng array */
 
   /* Start timer and save command line */ 
@@ -183,7 +189,7 @@ main(int argc,char **argv)
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  
+
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
@@ -198,19 +204,19 @@ main(int argc,char **argv)
     /* Process long options without short option counterparts */
     if(opt == 0){
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
-	bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+        bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
-	hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+        hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
-	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
-	nco_exit(EXIT_SUCCESS);
+        (void)nco_vrs_prn(CVS_Id,CVS_Revision);
+        nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
     } /* opt != 0 */
     /* Process short options */
@@ -280,7 +286,7 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
-  
+
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   if(fl_out) FL_OUT_NEW=True; else fl_out=(char *)strdup(fl_lst_in[0]);
@@ -298,7 +304,7 @@ main(int argc,char **argv)
   if(nbr_var_rnm > 0) var_rnm_lst=nco_prs_rnm_lst(nbr_var_rnm,var_rnm_arg);
 
   /* We have final list of variables, dimensions, and attributes to rename */
-  
+
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -307,16 +313,16 @@ main(int argc,char **argv)
   if(FL_OUT_NEW){
     /* Obtain user consent, if needed, to overwrite output file (or die trying) */
     if(!FORCE_OVERWRITE) nco_fl_overwrite_prm(fl_out);
-    
+
     /* Copy input file to output file and then search through output, 
-       changing names on the fly. This avoids possible XDR translation
-       performance penalty of copying each variable with netCDF. */
+    changing names on the fly. This avoids possible XDR translation
+    performance penalty of copying each variable with netCDF. */
     (void)nco_fl_cp(fl_in,fl_out);
 
     /* Ensure output file is user/owner-writable */
     (void)nco_fl_chmod(fl_out);
   } /* end if FL_OUT_NEW */
-  
+
   /* Open file enabled for writing. Place file in define mode for renaming. */
   if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
   rcd+=nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&nc_id);
@@ -326,17 +332,18 @@ main(int argc,char **argv)
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_rgl;
 
+#ifndef USE_TRV_API
   /* Without further ado, change names */
   for(idx=0;idx<nbr_var_rnm;idx++){
     if(var_rnm_lst[idx].old_nm[0] == opt_chr){
       rcd=nco_inq_varid_flg(nc_id,var_rnm_lst[idx].old_nm+1L,&var_rnm_lst[idx].id);
       if(rcd == NC_NOERR){
-	(void)nco_rename_var(nc_id,var_rnm_lst[idx].id,var_rnm_lst[idx].new_nm);
-	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed variable \'%s\' to \'%s\'\n",prg_nm,var_rnm_lst[idx].old_nm+1L,var_rnm_lst[idx].new_nm);
+        (void)nco_rename_var(nc_id,var_rnm_lst[idx].id,var_rnm_lst[idx].new_nm);
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed variable \'%s\' to \'%s\'\n",prg_nm,var_rnm_lst[idx].old_nm+1L,var_rnm_lst[idx].new_nm);
       }else{
-	(void)fprintf(stderr,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx].old_nm+1L,fl_in);
-	/* Reset error code */
-	rcd=NC_NOERR; 
+        (void)fprintf(stderr,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx].old_nm+1L,fl_in);
+        /* Reset error code */
+        rcd=NC_NOERR; 
       } /* end if */
     }else{ /* Variable name does not contain opt_chr so variable presence is required */
       rcd=nco_inq_varid(nc_id,var_rnm_lst[idx].old_nm,&var_rnm_lst[idx].id);
@@ -349,12 +356,12 @@ main(int argc,char **argv)
     if(grp_rnm_lst[idx].old_nm[0] == opt_chr){
       rcd=nco_inq_grp_ncid_flg(nc_id,grp_rnm_lst[idx].old_nm+1L,&grp_rnm_lst[idx].id);
       if(rcd == NC_NOERR){
-	(void)nco_rename_grp(grp_rnm_lst[idx].id,grp_rnm_lst[idx].new_nm);
-	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed group \'%s\' to \'%s\'\n",prg_nm,grp_rnm_lst[idx].old_nm+1L,grp_rnm_lst[idx].new_nm);
+        (void)nco_rename_grp(grp_rnm_lst[idx].id,grp_rnm_lst[idx].new_nm);
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed group \'%s\' to \'%s\'\n",prg_nm,grp_rnm_lst[idx].old_nm+1L,grp_rnm_lst[idx].new_nm);
       }else{
-	(void)fprintf(stderr,"%s: WARNING Group \"%s\" not present in %s, skipping it.\n",prg_nm,grp_rnm_lst[idx].old_nm+1L,fl_in);
-	/* Reset error code */
-	rcd=NC_NOERR; 
+        (void)fprintf(stderr,"%s: WARNING Group \"%s\" not present in %s, skipping it.\n",prg_nm,grp_rnm_lst[idx].old_nm+1L,fl_in);
+        /* Reset error code */
+        rcd=NC_NOERR; 
       } /* end if */
     }else{ /* Group name does not contain opt_chr so group presence is required */
       rcd=nco_inq_grp_ncid(nc_id,grp_rnm_lst[idx].old_nm,&grp_rnm_lst[idx].id);
@@ -365,17 +372,17 @@ main(int argc,char **argv)
 
   for(idx=0;idx<nbr_dmn_rnm;idx++){
     if(dmn_rnm_lst[idx].old_nm[0] == opt_chr){
-      
+
       rcd=nco_inq_dimid_flg(nc_id,dmn_rnm_lst[idx].old_nm+1L,&dmn_rnm_lst[idx].id);
       if(rcd == NC_NOERR){
-	(void)nco_rename_dim(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
-	if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed dimension \'%s\' to \'%s\'\n",prg_nm,dmn_rnm_lst[idx].old_nm+1L,dmn_rnm_lst[idx].new_nm);
+        (void)nco_rename_dim(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed dimension \'%s\' to \'%s\'\n",prg_nm,dmn_rnm_lst[idx].old_nm+1L,dmn_rnm_lst[idx].new_nm);
       }else{
-	(void)fprintf(stderr,"%s: WARNING Dimension \'%s\' not present in %s, skipping it.\n",prg_nm,dmn_rnm_lst[idx].old_nm+1L,fl_in);
-	/* Reset error code */
-	rcd=NC_NOERR; 
+        (void)fprintf(stderr,"%s: WARNING Dimension \'%s\' not present in %s, skipping it.\n",prg_nm,dmn_rnm_lst[idx].old_nm+1L,fl_in);
+        /* Reset error code */
+        rcd=NC_NOERR; 
       } /* end if */
-      
+
     }else{
       rcd=nco_inq_dimid(nc_id,dmn_rnm_lst[idx].old_nm,&dmn_rnm_lst[idx].id);
       (void)nco_rename_dim(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
@@ -385,7 +392,7 @@ main(int argc,char **argv)
 
   if(nbr_att_rnm > 0){
     int nbr_var_fl;
-    
+
     /* Get number of variables in file */
     (void)nco_inq(nc_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
 
@@ -393,119 +400,128 @@ main(int argc,char **argv)
       int var_id;
       int nbr_rnm=0;
       int rcd_att=0;
-      
+
       /* Rename attribute of single variable... */
       if(strchr(att_rnm_lst[idx].old_nm,dlm_chr)){
-	/* Extract variable name from old name */
-	rcd_att=nco_prs_att((att_rnm_lst+idx),var_nm,&IS_GLB_GRP_ATT);
-	if(!rcd_att){
-	  (void)fprintf(stderr,"%s: ERROR Could not parse var_nm@att_nm string \"%s\"\n",prg_nm,att_rnm_lst[idx].old_nm);
-	  nco_exit(EXIT_FAILURE);
-	} /* end if */ 
-	/* Get var_id of variable */
-	if(IS_GLB_GRP_ATT){
-	  (void)fprintf(stderr,"%s: INFO Assuming \"%s\" refers to a Global or Group attribute\n",prg_nm,att_rnm_lst[idx].old_nm);
-	  var_id=NC_GLOBAL;
-	}else{ /* !IS_GLB_GRP_ATT */
-	  if(var_nm[0] == opt_chr){
-	    rcd=nco_inq_varid_flg(nc_id,var_nm+1L,&var_id);
-	    if(rcd != NC_NOERR){
-	      (void)fprintf(stderr,"%s: WARNING Variable \'%s\' not present in %s, skipping it.\n",prg_nm,var_nm+1L,fl_in);
-	      /* Reset error code */
-	      rcd=NC_NOERR; 
-	      /* Optional variable not found, continue to next attribute in list */
-	      continue;
-	    } /* end if */
-	  }else{ /* Variable name does not contain opt_chr so variable presence is required */
-	    rcd=nco_inq_varid(nc_id,var_nm,&var_id);
-	  } /* end if */
-	} /* !IS_GLB_GRP_ATT */
-	if(rcd == NC_NOERR){
-	  if(att_rnm_lst[idx].old_nm[0] == opt_chr){
-	    /* Preceding opt_chr means attribute need not be present */
-	    rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm+1L,&att_rnm_lst[idx].id);	  
-	    if(rcd == NC_NOERR){
-	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm);
-	      nbr_rnm++;
-	      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
-	    }else{
-	      (void)fprintf(stderr,"%s: WARNING Attribute \'%s\' not present in variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
-	    } /* endelse */
-	  }else{ 
-	    /* Attribute must be present */
-	    rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
-	    if(rcd == NC_NOERR){
-	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
-	      nbr_rnm++;
-	      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
-	    } /* endif attribute is present */
-	  } /* endelse attribute must be present */  
-	}else{ /* variable not present */
-	  (void)fprintf(stderr,"%s: WARNING variable \'%s\' not present in %s\n",prg_nm,var_nm,fl_in);
-	}  /* variable not present */
-	/* end if renaming single variable */
+        /* Extract variable name from old name */
+        rcd_att=nco_prs_att((att_rnm_lst+idx),var_nm,&IS_GLB_GRP_ATT);
+        if(!rcd_att){
+          (void)fprintf(stderr,"%s: ERROR Could not parse var_nm@att_nm string \"%s\"\n",prg_nm,att_rnm_lst[idx].old_nm);
+          nco_exit(EXIT_FAILURE);
+        } /* end if */ 
+        /* Get var_id of variable */
+        if(IS_GLB_GRP_ATT){
+          (void)fprintf(stderr,"%s: INFO Assuming \"%s\" refers to a Global or Group attribute\n",prg_nm,att_rnm_lst[idx].old_nm);
+          var_id=NC_GLOBAL;
+        }else{ /* !IS_GLB_GRP_ATT */
+          if(var_nm[0] == opt_chr){
+            rcd=nco_inq_varid_flg(nc_id,var_nm+1L,&var_id);
+            if(rcd != NC_NOERR){
+              (void)fprintf(stderr,"%s: WARNING Variable \'%s\' not present in %s, skipping it.\n",prg_nm,var_nm+1L,fl_in);
+              /* Reset error code */
+              rcd=NC_NOERR; 
+              /* Optional variable not found, continue to next attribute in list */
+              continue;
+            } /* end if */
+          }else{ /* Variable name does not contain opt_chr so variable presence is required */
+            rcd=nco_inq_varid(nc_id,var_nm,&var_id);
+          } /* end if */
+        } /* !IS_GLB_GRP_ATT */
+        if(rcd == NC_NOERR){
+          if(att_rnm_lst[idx].old_nm[0] == opt_chr){
+            /* Preceding opt_chr means attribute need not be present */
+            rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm+1L,&att_rnm_lst[idx].id);	  
+            if(rcd == NC_NOERR){
+              (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm);
+              nbr_rnm++;
+              if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
+            }else{
+              (void)fprintf(stderr,"%s: WARNING Attribute \'%s\' not present in variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
+            } /* endelse */
+          }else{ 
+            /* Attribute must be present */
+            rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
+            if(rcd == NC_NOERR){
+              (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
+              nbr_rnm++;
+              if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
+            } /* endif attribute is present */
+          } /* endelse attribute must be present */  
+        }else{ /* variable not present */
+          (void)fprintf(stderr,"%s: WARNING variable \'%s\' not present in %s\n",prg_nm,var_nm,fl_in);
+        }  /* variable not present */
+        /* end if renaming single variable */
       }else{ /* ...or rename attribute for all variables... */
-	for(var_id=NC_GLOBAL;var_id<nbr_var_fl;var_id++){ /* Start loop at NC_GLOBAL (-1) for global attributes */
-	  if(var_id > NC_GLOBAL) (void)nco_inq_varname(nc_id,var_id,var_nm);
-	  if(att_rnm_lst[idx].old_nm[0] == opt_chr){
-	    /* Rename attribute if variable contains attribute else do nothing */
-	    rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm+1L,&att_rnm_lst[idx].id);
-	    if(rcd == NC_NOERR){
-	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm);
-	      nbr_rnm++;
-	      /* Inform user which variable had attribute renamed */
-	      if(var_id > NC_GLOBAL){
-		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm,var_nm);
-	      }else{
-		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm);
-	      } /* end else */
-	    }else{ /* end if attribute was found */
-	      /* Reset error code */
-	      rcd=NC_NOERR; 
-	    } /* end else */
-	  }else{ /* !opt_chr */
-	    /* Rename attribute or die trying */
-	    rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
-	    if(rcd == NC_NOERR){
-	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
-	      nbr_rnm++;
-	      /* Inform user which variable had attribute renamed */
-	      if(var_id > NC_GLOBAL){
-		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,var_nm);
-	      }else{
-		IS_GLB_GRP_ATT=True; /* [flg] Attribute is Global or Group attribute */
-		if(IS_GLB_GRP_ATT) (void)fprintf(stderr,"%s: INFO found and renamed global or group attribute \'%s\' so not requiring its presence in every variable.\n",prg_nm_get(),att_rnm_lst[idx].old_nm); 
-		if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
-	      } /* end else */
-	    }else{ /* !NC_NOERR */
-	      /* Reset error code or print informative message and die */
-	      if(IS_GLB_GRP_ATT){
-		/* Forgive omission of period for global/group attributes. Users aren't perfect :) */
-		rcd=NC_NOERR;
-	      }else{ /* !IS_GLB_GRP_ATT */
-		(void)fprintf(stderr,"%s: ERROR User specified that presence of attribute \'%s\' is required. However, the %s%s does not contain it. HINT: If attribute presence is intended to be optional, then prefix attribute name with the period character \'%c\', e.g., %catt_nm. With this syntax %s would succeed even if no variables or groups contained the attribute. If attribute is intended to be renamed only in a specific variable, then prepend the variable name plus an at-sign \'%c\' to the attribute name, e.g., var_nm%catt_nm. If attribute presence is required only for global or group attributes, then prefix attribute name with \"global\" and an at-sign, e.g., global%catt_nm.\n",prg_nm_get(),att_rnm_lst[idx].old_nm,(var_id > NC_GLOBAL) ? "variable " : "root group",(var_id > NC_GLOBAL) ? var_nm : "",opt_chr,opt_chr,prg_nm_get(),dlm_chr,dlm_chr,dlm_chr);
-		/* Exit now rather than completing variable loop and printing lengthy error message above each iteration */
-		nco_err_exit(rcd,"main");
-	      } /* !IS_GLB_GRP_ATT */
-	    } /* !NC_NOERR */
-	  } /* !opt_chr */
-	} /* end loop over var_id */
+        for(var_id=NC_GLOBAL;var_id<nbr_var_fl;var_id++){ /* Start loop at NC_GLOBAL (-1) for global attributes */
+          if(var_id > NC_GLOBAL) (void)nco_inq_varname(nc_id,var_id,var_nm);
+          if(att_rnm_lst[idx].old_nm[0] == opt_chr){
+            /* Rename attribute if variable contains attribute else do nothing */
+            rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm+1L,&att_rnm_lst[idx].id);
+            if(rcd == NC_NOERR){
+              (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm);
+              nbr_rnm++;
+              /* Inform user which variable had attribute renamed */
+              if(var_id > NC_GLOBAL){
+                if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm,var_nm);
+              }else{
+                if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm+1L,att_rnm_lst[idx].new_nm);
+              } /* end else */
+            }else{ /* end if attribute was found */
+              /* Reset error code */
+              rcd=NC_NOERR; 
+            } /* end else */
+          }else{ /* !opt_chr */
+            /* Rename attribute or die trying */
+            rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
+            if(rcd == NC_NOERR){
+              (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
+              nbr_rnm++;
+              /* Inform user which variable had attribute renamed */
+              if(var_id > NC_GLOBAL){
+                if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,var_nm);
+              }else{
+                IS_GLB_GRP_ATT=True; /* [flg] Attribute is Global or Group attribute */
+                if(IS_GLB_GRP_ATT) (void)fprintf(stderr,"%s: INFO found and renamed global or group attribute \'%s\' so not requiring its presence in every variable.\n",prg_nm_get(),att_rnm_lst[idx].old_nm); 
+                if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
+              } /* end else */
+            }else{ /* !NC_NOERR */
+              /* Reset error code or print informative message and die */
+              if(IS_GLB_GRP_ATT){
+                /* Forgive omission of period for global/group attributes. Users aren't perfect :) */
+                rcd=NC_NOERR;
+              }else{ /* !IS_GLB_GRP_ATT */
+                (void)fprintf(stderr,"%s: ERROR User specified that presence of attribute \'%s\' is required. However, the %s%s does not contain it. HINT: If attribute presence is intended to be optional, then prefix attribute name with the period character \'%c\', e.g., %catt_nm. With this syntax %s would succeed even if no variables or groups contained the attribute. If attribute is intended to be renamed only in a specific variable, then prepend the variable name plus an at-sign \'%c\' to the attribute name, e.g., var_nm%catt_nm. If attribute presence is required only for global or group attributes, then prefix attribute name with \"global\" and an at-sign, e.g., global%catt_nm.\n",prg_nm_get(),att_rnm_lst[idx].old_nm,(var_id > NC_GLOBAL) ? "variable " : "root group",(var_id > NC_GLOBAL) ? var_nm : "",opt_chr,opt_chr,prg_nm_get(),dlm_chr,dlm_chr,dlm_chr);
+                /* Exit now rather than completing variable loop and printing lengthy error message above each iteration */
+                nco_err_exit(rcd,"main");
+              } /* !IS_GLB_GRP_ATT */
+            } /* !NC_NOERR */
+          } /* !opt_chr */
+        } /* end loop over var_id */
       } /* end if renaming attribute for all variables */
       /* See to it that any mandatory renaming was performed, else abort */
       if(nbr_rnm == 0){
-	if(att_rnm_lst[idx].old_nm[0] == opt_chr){
-	  (void)fprintf(stderr,"%s: WARNING Attribute \'%s\' not renamed because not found in searched variable(s)\n",prg_nm,att_rnm_lst[idx].old_nm+1L);
-	}else{
-	  (void)fprintf(stdout,"%s: ERROR Attribute \'%s\' not present in %s, aborting.\n",prg_nm,att_rnm_lst[idx].old_nm,fl_in);
-	  nco_exit(EXIT_FAILURE);
-	} /* end else */
+        if(att_rnm_lst[idx].old_nm[0] == opt_chr){
+          (void)fprintf(stderr,"%s: WARNING Attribute \'%s\' not renamed because not found in searched variable(s)\n",prg_nm,att_rnm_lst[idx].old_nm+1L);
+        }else{
+          (void)fprintf(stdout,"%s: ERROR Attribute \'%s\' not present in %s, aborting.\n",prg_nm,att_rnm_lst[idx].old_nm,fl_in);
+          nco_exit(EXIT_FAILURE);
+        } /* end else */
       } /* nbr_rnm */
     } /* end loop over attributes to rename */
   } /* end if renaming attributes */
-  
+
+#else /* USE_TRV_API */
+
+  /* Initialize traversal table */ 
+  trv_tbl_init(&trv_tbl); 
+
+
+
+#endif /* USE_TRV_API */
+
   /* Catenate timestamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
-  
+
 #ifdef _OPENMP
   /* fxm: hack to get libxlsmp library linked in */
   (void)omp_in_parallel();
@@ -521,7 +537,7 @@ main(int argc,char **argv)
 
   /* Close the open netCDF file */
   nco_close(nc_id);
-  
+
   /* Remove local copy of file */
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
@@ -536,7 +552,7 @@ main(int argc,char **argv)
     if(nbr_dmn_rnm > 0) dmn_rnm_lst=(rnm_sct *)nco_free(dmn_rnm_lst);
     if(nbr_grp_rnm > 0) grp_rnm_lst=(rnm_sct *)nco_free(grp_rnm_lst);
     if(nbr_var_rnm > 0) var_rnm_lst=(rnm_sct *)nco_free(var_rnm_lst);
-    
+
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -548,8 +564,12 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
+
+#ifdef USE_TRV_API
+    (void)trv_tbl_free(trv_tbl);
+#endif /* !USE_TRV_API */
   } /* !flg_cln */
-  
+
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
