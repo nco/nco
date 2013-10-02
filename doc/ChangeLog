@@ -1,3 +1,16 @@
+2013-10-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.7 release procedure:
+ 	Changes since nco-4_3_6: fxm
+	cd ~/nco;cvs tag -d nco-4_3_7;cvs tag -d nco-4_3_7-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.7 release"
+	cvs tag -c nco-4_3_7;cvs tag -c nco-4_3_7-1
+
+	* Move to SF NCO repository to Allura
+
+	* cd ~/nco;cvs commit -m "Snapshot before move to Allura"
+	cvs tag -c nco-4_3_7_preallura
+
 2013-09-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.6 release procedure:
