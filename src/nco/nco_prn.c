@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.164 2013-09-17 00:48:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.165 2013-10-03 13:12:19 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1172,11 +1172,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(prn_flg->md5->dgs) (void)nco_md5_chk(prn_flg->md5,var_nm,var.sz*nco_typ_lng(var.type),grp_id,(long *)NULL,(long *)NULL,var.val.vp);
 
   /* Warn if variable is packed */
-  if(dbg_lvl_get() > 0) {
-    if(nco_pck_dsk_inq(grp_id,&var)){
+  if(dbg_lvl_get() > 0)
+    if(nco_pck_dsk_inq(grp_id,&var))
       (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",prg_nm_get(),var_nm);
-    }
-  }
 
   /* Refresh number of attributes and missing value attribute, if any */
   var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
@@ -1950,19 +1948,19 @@ nco_prn_cpd_chk                     /* [fnc] Check whether variable is compound 
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */ 
 {
   /* Purpose: Check whether variable dimensionality is compound, i.e.,
-  whether variable needs extra printed braces in CDL output.
-  For purposes of this routine, a variable is compound iff it contains
-  a record dimension as any but the leading dimension. */
-
+     whether variable needs extra printed braces in CDL output.
+     For purposes of this routine, a variable is compound iff it contains
+     a record dimension as any but the leading dimension. */
+  
   int dmn_idx;
   dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
-
+  
   if(var_trv->nbr_dmn <= 1) return False;
-
+  
   for(dmn_idx=1;dmn_idx<var_trv->nbr_dmn;dmn_idx++){ /* NB: dimension index starts at 1 */
     dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl); 
     if(dmn_trv->is_rec_dmn) break; /* fxm: change to var_dmn->is_rec_var */
   } /* end loop over dimensions */
-
+  
   if(dmn_idx != var_trv->nbr_dmn) return True; else return False;
 } /* end nco_prn_cpd_chk() */

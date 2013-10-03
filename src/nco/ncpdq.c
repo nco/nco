@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.366 2013-09-21 05:20:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.367 2013-10-03 13:12:19 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -37,6 +37,7 @@
    ncpdq -O -D 3 -P all_xst ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P xst_new ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc
+   ncpdq -O -D 3 -a lon,lat -g g21,g22 ~/nco/data/in_grp_3.nc ~/foo.nc
    ncpdq -O -D 3 -g g1 -v v1 --union -G dude -p ~/nco/data in_grp.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
@@ -119,8 +120,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.366 2013-09-21 05:20:32 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.366 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.367 2013-10-03 13:12:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.367 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;

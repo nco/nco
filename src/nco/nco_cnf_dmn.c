@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.90 2013-09-17 04:45:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.91 2013-10-03 13:12:19 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -80,6 +80,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     if(var->nbr_dim == wgt_crr->nbr_dim){
       /* Test whether all wgt and var dimensions match in sequence */
       for(idx=0;idx<var->nbr_dim;idx++){
+	/* 20131002: nco_var_cnf_dmn() borken for groups as shown by dimension short-name strcmp() comparison here */
         if(strcmp(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
       } /* end loop over dimensions */
       if(idx == var->nbr_dim) *DO_CONFORM=True;
@@ -106,6 +107,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
       for(idx=0;idx<wgt->nbr_dim;idx++){
         for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
           /* Compare names, not dimension IDs */
+	  /* 20131002: nco_var_cnf_dmn() borken for groups as shown by dimension short-name strcmp() comparison here */
           if(!strcmp(wgt->dim[idx]->nm,var->dim[idx_dmn]->nm)){
             wgt_var_dmn_shr_nbr++; /* wgt and var share this dimension */
             break;
@@ -159,6 +161,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
           /* var and wgt conform and are same rank */
           /* Test whether all wgt and var dimensions match in sequence */
           for(idx=0;idx<var->nbr_dim;idx++){
+	    /* 20131002: nco_var_cnf_dmn() borken for groups as shown by dimension short-name strcmp() comparison here */
             if(strcmp(wgt->dim[idx]->nm,var->dim[idx]->nm)) break;
             /*	    if(wgt->dmn_id[idx] != var->dmn_id[idx]) break;*/
           } /* end loop over dimensions */
@@ -257,6 +260,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
       for(idx=0;idx<wgt->nbr_dim;idx++){
         for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
           /* Compare names, not dimension IDs */
+	  /* 20131002: nco_var_cnf_dmn() borken for groups as shown by dimension short-name strcmp() comparison here */
           if(!strcmp(var->dim[idx_dmn]->nm,wgt->dim[idx]->nm)){
             idx_wgt_var[idx]=idx_dmn;
             break;
