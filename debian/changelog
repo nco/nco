@@ -1,3 +1,9 @@
+nco (4.3.7-1) unstable; urgency=low
+
+  * new upstream version (--mrd)
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 27 Oct 2013 12:24:53 -0700
+
 nco (4.3.6-1) unstable; urgency=low
 
   * new upstream version (--flt, ncpdq/ncecat 1 rec dmn, ncwa/ncea fixes)

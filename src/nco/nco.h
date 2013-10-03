@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.402 2013-09-23 22:15:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.403 2013-10-03 23:58:14 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -175,6 +175,9 @@ extern "C" {
   
   unsigned short dbg_lvl=0; /* [enm] Debugging level */
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
+
+  unsigned short nco_mrd_cnv=0; /* [enm] Multiple Record Dimension convention */
+  unsigned short nco_mrd_cnv_get(void){return nco_mrd_cnv;} /* [enm] Multiple Record Dimension convention */
 
   unsigned short nco_rth_cnv=1; /* [enm] Arithmetic convention */
   unsigned short nco_rth_cnv_get(void){return nco_rth_cnv;} /* [enm] Arithmetic convention */
@@ -419,6 +422,13 @@ extern "C" {
     nco_upk_netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
     nco_upk_HDF     /* 1 HDF unpack convention:    unpacked=scale_factor*(packed-add_offset) */
   }; /* end nco_upk_cnv */
+
+  enum nco_mrd_cnv{ /* [enm] Multiple Record Dimension convention: for ncecat and ncpdq 
+		       This currently could be implemented as a flag rather than an enum
+		       However in general case may need more than binary option so use enum */
+    nco_mrd_restrict, /* 0 Fix some dimensions so as to avoid producing additional record dimensions */
+    nco_mrd_allow  /* 1 Allow multiple record dimensions when operator produces them naturally */
+  }; /* end nco_mrd_cnv */
 
   enum nco_rth_cnv{ /* [enm] Arithmetic convention to assume */
     nco_rth_flt_flt, /* 0 Keep single-precision floating point (default and NCO historical norm) */

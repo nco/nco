@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.877 2013-10-01 22:24:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.878 2013-10-03 23:58:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -110,12 +110,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.3.6
-@set doc-edition 4.3.6
+@set nco-edition 4.3.7
+@set doc-edition 4.3.7
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 27 September 2013
-@set update-month September 2013
+@set update-date 3 October 2013
+@set update-month October 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -2316,6 +2316,7 @@ feature is automatic and cannot be controlled by the user.
 * Auxiliary Coordinates::
 * UDUnits Support::
 * Rebasing Time Coordinate::
+* Multiple Record Dimensions::
 * Missing Values::
 * Chunking::
 * Deflation::
@@ -5371,7 +5372,7 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 <a name="time_rebase"></a> <!-- http://nco.sf.net/nco.html#time_rebase -->
 <a name="rbs"></a> <!-- http://nco.sf.net/nco.html#rbs -->
 @end html
-@node Rebasing Time Coordinate, Missing Values, UDUnits Support, Common features
+@node Rebasing Time Coordinate, Multiple Record Dimensions, UDUnits Support, Common features
 @section Rebasing Time Coordinate
 @cartouche
 Availability: 
@@ -5432,13 +5433,67 @@ but also any bounds associated with the record coordinate (e.g.,
 @code{time_bnds}) (@pxref{CF Conventions}).
 
 @html
+<a name="mrd"></a> <!-- http://nco.sf.net/nco.html#mrd -->
+@end html
+@node Multiple Record Dimensions, Missing Values, Rebasing Time Coordinate, Common features
+@section Multiple Record Dimensions
+@cindex netCDF4
+@cindex @code{--mrd}
+@cindex @code{--multiple_record_dimensions}
+@cartouche
+Availability: 
+@command{ncecat}, @command{ncpdq} 
+Short options: None@*
+Long options: @samp{--mrd}@*
+@end cartouche
+The netCDF3 file format allows only one record dimension, and that
+dimension must be the first dimension (i.e., the least rapidly varying 
+dimension) of any variable in which it appears.
+This imposes certain rules on how operators must perform operations
+that alter the ordering of dimensions or the number of record variables.
+The netCDF4 file format has no such restrictions.
+Files and variables may have any number of record dimensions in any
+order.
+This additional flexibility of netCDF4 can only be realized by
+selectively abandoning the constraints that would make operations
+behave completely consistently between netCDF3 and netCDF4 files.
+
+@acronym{NCO} chooses, by default, to impose netCDF3-based constraints
+on netCDF4 files. 
+This reduces the number of unanticipated consequences and keeps the
+operators functioning in a familiar way.
+Put another way, @acronym{NCO} limits production of additional record
+dimensions so processing netCDF4 files leads to the same results as
+processing netCDF4 files.
+Users can override this default with the @samp{--mrd} (or 
+@samp{--multiple_record_dimension}) switch, which enables netCDF4
+variables to accumulate additional record dimensions.
+
+How can additional record dimensions be produced?
+Most commonly @command{ncecat} (in record-aggregate mode) defines a new
+leading record dimension.
+In netCDF4 files this becomes an additional record dimension unless the
+original record dimension is changed to a fixed dimension (as must be
+done in netCDF3 files). 
+Also when @command{ncpdq} reorders dimensions it can preserve the
+``record'' property of record variables.
+@command{ncpdq} tries to define as a record dimension whichever
+dimension ends up first in a record variable, and, in netCDF4 files,
+this becomes an additional record dimension unless the original record
+dimension is changed to a fixed dimension (as must be done in netCDF3
+files). 
+It it easier if @command{ncpdq} and @command{ncecat} do not increase
+the number of record dimensions in a variable so that is the default.
+Use @samp{--mrd} to override this.
+
+@html
 <a name="missing_value"></a> <!-- http://nco.sf.net/nco.html#missing_value -->
 <a name="_FillValue"></a> <!-- http://nco.sf.net/nco.html#_FillValue -->
 <a name="fll_val"></a> <!-- http://nco.sf.net/nco.html#fll_val -->
 <a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
 <a name="mss"></a> <!-- http://nco.sf.net/nco.html#mss -->
 @end html
-@node Missing Values, Chunking, Rebasing Time Coordinate, Common features
+@node Missing Values, Chunking, Multiple Record Dimensions, Common features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
@@ -12424,7 +12479,7 @@ ncecat [-3] [-4] [-6] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdf] [--hdr_pad @var{nbr}]
-[-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [-n @var{loop}] [--no_tmp_fl] 
+[-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] 
 [-t @var{thr_nbr}] [-u @var{ulm_nm}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] 
 [@var{input-files}] [@var{output-file}]
@@ -13773,7 +13828,7 @@ ncpdq [-3] [-4] [-6] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}]
-[-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--no_tmp_fl] 
+[-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
 [-R] [-r] [--ram_all] [-t @var{thr_nbr}] [-U] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x]
 @var{input-file} [@var{output-file}]
