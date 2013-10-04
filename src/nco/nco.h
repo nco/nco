@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.403 2013-10-03 23:58:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.404 2013-10-04 03:18:29 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -160,6 +160,7 @@ extern "C" {
   char *prg_nm_get(void);
   int prg_get(void);
   unsigned short dbg_lvl_get(void);
+  unsigned short nco_mrd_cnv_get(void);
   unsigned short nco_rth_cnv_get(void);
   unsigned short nco_upk_cnv_get(void);
 

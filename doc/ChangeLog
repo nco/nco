@@ -1,5 +1,7 @@
 2013-10-03  Charlie Zender  <zender@uci.edu>
 
+	* Tidy ncra.c
+
 	* NCO 4.3.7 release procedure:
  	Changes since nco-4_3_6: --mrd
 	cd ~/nco;cvs tag -d nco-4_3_7;cvs tag -d nco-4_3_7-1
@@ -9591,7 +9593,7 @@
 
 	* cvs tag -c nco-2_5_5
 	Changes since nco-2_5_4: Global "history" attribute fix
-	
+
 	* Fix bug in nco_hst_att_cat() introduced in 2.4.2 which left
 	att_nm undefined when global history attribute did not exist
 
@@ -9599,8 +9601,8 @@
 
 	* cvs tag -c nco-2_5_4
 	Changes since nco-2_5_3: NECSX support
-	
-	* Extensive support for NECSX architecture contributed by 
+
+	* Extensive support for NECSX architecture contributed by
 	Len Makin <len at hpc.csiro.au>
 
 2002-08-10  Charlie Zender  <zender@uci.edu>
