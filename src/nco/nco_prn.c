@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.165 2013-10-03 13:12:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.166 2013-10-04 23:01:36 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1712,12 +1712,13 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 {
   /* Purpose: Recursively print group contents
      Assumptions: 
-     1. Input group name is valid, extracted group (as defined in nco_xtr_dfn()). 
+     1. Input group name is a valid group to be extracted (set in nco_xtr_dfn()). 
         Hence no need to check for group type, or if group is extracted.
      2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
-     ncks -5 ~/nco/data/in_grp.nc */
+     ncks -5 ~/nco/data/in_grp.nc
+     ncks --cdl ~/nco/data/in_grp.nc */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
   const char spc_sng[]="";        /* [sng] Space string */
@@ -1847,7 +1848,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Is variable to be extracted? */
     if(trv_tbl->lst[obj_idx].flg_xtr){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
-	 However, it is same type (int) as an ID so we can use nm_id infrastructure. */
+	 However, it is same type (int) as an ID so we re-use nm_id infrastructure */
       var_lst[var_nbr_xtr].id=obj_idx;
       var_lst[var_nbr_xtr].nm=strdup(var_nm);
       var_nbr_xtr++;

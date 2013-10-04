@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.412 2013-10-04 04:25:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.413 2013-10-04 23:01:36 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -170,8 +170,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.412 2013-10-04 04:25:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.412 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.413 2013-10-04 23:01:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.413 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1333,11 +1333,9 @@ main(int argc,char **argv)
         } /* !REC_APN */
 
         if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>(%ld)\n",prg_nm_get(),idx_rec,trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl->lmt_rec[idx_rec]->rec_dmn_sz);                    
-
         /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
         if(FLG_MRO) trv_tbl->lmt_rec[idx_rec]->flg_mro=True;
         if(trv_tbl->lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
-
       } /* !HAS_REC */
 
       /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
@@ -1348,7 +1346,7 @@ main(int argc,char **argv)
 
       /* This file may be superfluous though valid data will be found in upcoming files */
       if(dbg_lvl >= nco_dbg_std && HAS_REC)
-        if((trv_tbl->lmt_rec[idx_rec]->srt > trv_tbl->lmt_rec[idx_rec]->end) && (trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn == 0L))      
+        if((trv_tbl->lmt_rec[idx_rec]->srt > trv_tbl->lmt_rec[idx_rec]->end) && (trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn == 0L))
 	  (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
 
       if(prg == ncra || prg == ncrcat){ /* ncea and ncga jump to else branch */
@@ -1571,7 +1569,7 @@ main(int argc,char **argv)
         } /* end if */
 
         /* End of ncra, ncrcat section */
-      }else{ /* ncea and ncga */
+      }else if(prg == ncea){ /* ncea */
 
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id)
@@ -1612,18 +1610,72 @@ main(int argc,char **argv)
           /* Free current input buffer */
           var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
         } /* end (OpenMP parallel for) loop over idx */
-      } /* end else ncea and ncga */
+	/* End ncea section */
+      }else if(prg == ncga){ /* ncga */
 
+	int mbr_idx; /* [idx] Counting index for member */
+	int nsm_idx; /* [idx] Counting index for ensemble */
+	int mbr_nbr=0; /* [nbr] Number of members of ensemble */
+	int nsm_nbr=0; /* [nbr] Number of ensembles */
+
+	for(nsm_idx=0;nsm_idx<nsm_nbr;nsm_idx++){ /* Loop over ensembles in current file */
+	  for(mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
+	    
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id)
+#endif /* !_OPENMP */
+	    for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+	      
+	      in_id=in_id_arr[omp_get_thread_num()];
+	      if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	      
+	      /* Obtain variable GTT object using full variable name */
+	      var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+	      /* Obtain group ID using full group name */
+	      (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+	      /* Edit group name for output */
+	      if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+	      /* Obtain output group ID using full group name */
+	      (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+	      /* Memory management after current extracted group */
+	      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+	      /* Get variable ID */
+	      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+	      
+	      /* Store the output variable ID */
+	      var_prc_out[idx]->id=var_out_id;
+	      
+	      /* Retrieve variable from disk into memory */
+	      (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
+	      
+	      /* Convert char, short, long, int types to doubles before arithmetic
+		 Output variable type is "sticky" so only convert on first record */
+	      if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+	      var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
+	      /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
+	      nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+	      FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
+	      
+	      /* Free current input buffer */
+	      var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+	    } /* end (OpenMP parallel for) loop over idx */
+	    
+	  } /* end loop over members of current ensemble */
+	} /* end loop over ensembles in current file */
+	
+      } /* End ncga section */
+      
       if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
-
+      
     } /* Loop over number of records to process */
-
+    
     /* Close input netCDF file */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
-
+    
     /* Dispose local copy of file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
-
+    
     /* Our data tanks are already full */
     if(prg == ncra || prg == ncrcat){
       /* Loop records */

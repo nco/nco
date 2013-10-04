@@ -1,3 +1,9 @@
+2013-10-04  Charlie Zender  <zender@uci.edu>
+
+	* Skeleton ncga loops
+
+	* Support CF versioning in ncdismember
+
 2013-10-03  Charlie Zender  <zender@uci.edu>
 
 	* Add ncga stubs to ncra.c

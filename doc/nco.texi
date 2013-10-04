@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.878 2013-10-03 23:58:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.879 2013-10-04 23:01:36 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4160,20 +4160,23 @@ cat > ~/ncdismember << 'EOF'
 # Optional: CFchecker command https://bitbucket.org/mde_/cfchecker
 
 # Usage:
-# ncdismember <fl_in> <drc_out> [flg_cf]
+# ncdismember <fl_in> <drc_out> [flg_cf] [cf_vrs]
 # where fl_in is input file/URL to dismember, drc_out is output directory,
-# and CF-compliance check is performed when optional third argument is 'cf'
+# CF-compliance check is performed when optional third argument is 'cf',
+# and optional fourth argument cf_vrs is CF version to check
 # chmod a+x ~/sh/ncdismember
 # ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp
 # ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp
 # ncdismember http://dust.ess.uci.edu/nco/mdl.nc /data/zender/nco/tmp
 # ncdismember http://thredds-test.ucar.edu/thredds/dodsC/testdods/foo.nc /data/zender/nco/tmp
 # ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf
+# ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf 1.3
 
 # Command line argument defaults
 fl_in="${HOME}/nco/data/mdl.nc" # [sng] Input file to dismember/check
 drc_out="${DATA}/nco/tmp" # [sng] Output directory
 flg_cf='0' # [flg] Perform CF-compliance check
+cf_vrs='auto' # [sng] Perform compliance-check on this CF version (e.g., '1.1')
 
 # Command line argument option parsing
 if [ -n "${1}" ]; then
@@ -4185,6 +4188,9 @@ fi # !$2
 if [ -n "${3}" ]; then
     flg_cf=${3}
 fi # !$3
+if [ -n "${4}" ]; then
+    cf_vrs=${4}
+fi # !$4
 
 mkdir -p ${drc_out}
 cd ${drc_out}
@@ -4196,7 +4202,7 @@ for grp_in in ${grp_lf} ; do
     echo "${drc_out}/${grp_out}.nc"
     ncks -O -G : -g ${grp_in} -3 ${fl_in} ${drc_out}/${grp_out}.nc
     if [ ${flg_cf} = 'cf' ]; then
-       cfchecker ${drc_out}/${grp_out}.nc
+       cfchecker -c ${cf_vrs} ${drc_out}/${grp_out}.nc
     fi # !flg_cf
 done
 EOF
@@ -4226,21 +4232,21 @@ Naturally groups containing netCDF4-only atomic-types (such as
 netCDF4 files, not flat netCDF3 files (compliance-checkers may complain
 about netCDF4 filetypes, atomic types, or both).
 
-@cindex CF compliance checker
+@cindex @acronym{CF} compliance checker
 @findex cfchecker
 @findex ncdismember
 @cindex compliance checker
 @cindex Martin Schultz
 @cindex Michael Decker
-One application of dismembering is to check the CF-compliance of each 
+One application of dismembering is to check the @acronym{CF}-compliance of each 
 group in a file. 
 When invoked with the optional third argumnt @samp{cf},
-@command{ncdismember} pass each file it generates to the freely
+@command{ncdismember} passes each file it generates to the freely
 available
 @footnote{CFchecker is developed by Michael Decker and Martin Schultz at
 Forschungszentrum J@"ulich and distributed at
 @uref{https://bitbucket.org/mde_/cfchecker}.} 
-@command{cfchecker} command:
+@command{cfchecker} command.
 @example
 @verbatim
 zender@roulee:~$ ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf
@@ -4262,6 +4268,13 @@ WARNING: Using the default (non-CF) Udunits database
 ...
 @end verbatim
 @end example
+By default the @acronym{CF} version checked is determined automatically by
+@command{cfchecker}. 
+The user can override this default by supplying a supported @acronym{CF} version,
+e.g., @samp{1.3}, as an optional fourth argument to
+@command{ncdismember}. 
+Current valid @acronym{CF} versions are @samp{1.0}, @samp{1.1},
+@samp{1.2}, @samp{1.3}, @samp{1.4}, and @samp{1.5}. 
 
 @html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
@@ -5293,7 +5306,7 @@ This run-time flexibility can enable the full functionality of
 pre-built binaries on machines with libraries in different locations.
 
 @cindex Climate and Forecast Metadata Convention
-@cindex CF conventions
+@cindex @acronym{CF} conventions
 The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits}
 package documentation describes the supported formats of time
 dimensions. 
@@ -15417,22 +15430,23 @@ The primary contributors to @acronym{NCO} development have been:
 @table @asis
 @cindex Charlie Zender
 @item Charlie Zender
-Concept, design and implementation of operators from 1995-2000.
-Since then autotools, bug-squashing, chunking, documentation, packing,
-@acronym{NCO} library redesign, @command{ncap2} features, @command{ncbo}, 
-@command{ncpdq}, SMP threading and MPI parallelization, 
+All concept, design and implementation from 1995-2000.
+Since then autotools, bug-squashing, @acronym{CDL}, chunking,
+documentation, anchoring, recursion, @acronym{GPE}, packing,
+@acronym{NCO} library redesign, @command{ncap2} features,
+@command{ncbo}, @command{ncpdq}, SMP threading and MPI parallelization,
 netCDF4 integration, external funding, project management, science
-research, releases.
+research, releases. 
 @cindex Henry Butowsky
 @item Henry Butowsky
 Non-linear operations and @code{min()}, @code{max()}, @code{total()}
 support in @command{ncra} and @command{ncwa}. 
 Type conversion for arithmetic.
 Migration to netCDF3 API.
-@command{ncap2} parser, lexer, @w{and I/O}.
+@command{ncap2} parser, lexer, @acronym{GSL}-support, @w{and I/O}.
 Multislabbing algorithm.
 Variable wildcarding.
-Various hacks.
+Numerous hacks.
 @command{ncap2} language.
 @cindex Rorik Peterson
 @item Rorik Peterson
@@ -15458,10 +15472,10 @@ netCDF4 groups.
 Advice on NCO structural algorithms
 @cindex Brian Mays
 @item Brian Mays
-Original packaging for Debian GNU/Linux, @command{nroff} man pages.
+Original packaging for Debian @acronym{GNU}/Linux, @command{nroff} man pages.
 @cindex George Shapovalov
 @item George Shapovalov
-Packaging for Gentoo GNU/Linux.
+Packaging for Gentoo @acronym{GNU}/Linux.
 @cindex Bill Kocik
 @item Bill Kocik
 Memory management.
@@ -15473,7 +15487,7 @@ NEC SX architecture support.
 AIX architecture support.
 @cindex Juliana Rew
 @item Juliana Rew
-Compatibility with large PIDs.
+Compatibility with large @acronym{PID}s.
 @cindex Karen Schuchardt
 @item Karen Schuchardt
 Auxiliary coordinate support.
@@ -15531,7 +15545,7 @@ Autoconf/M4 help
 RHEL and CentOS build scripts and bug reports.
 @cindex Andrea Cimatoribus
 @item Andrea Cimatoribus
-NCO Spiral Logo
+@acronym{NCO} Spiral Logo
 @cindex Martin Otte
 @cindex Etienne Tourigny
 @item Martin Otte, Etienne Tourigny

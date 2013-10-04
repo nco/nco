@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.405 2013-10-04 04:25:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.406 2013-10-04 23:01:36 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -419,15 +419,15 @@ extern "C" {
   } nco_obj_typ;
   
   enum nco_upk_cnv{ /* [enm] Unpacking convention to assume */
-    /* netCDF convention: http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
-       NASA convention :  http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html */
+    /* netCDF convention  : http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
+       HDF/NASA convention: http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html */
     nco_upk_netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
     nco_upk_HDF     /* 1 HDF unpack convention:    unpacked=scale_factor*(packed-add_offset) */
   }; /* end nco_upk_cnv */
 
-  enum nco_mrd_cnv{ /* [enm] Multiple Record Dimension convention: for ncecat and ncpdq 
-		       This currently could be implemented as a flag rather than an enum
-		       However in general case may need more than binary option so use enum */
+  enum nco_mrd_cnv{ /* [enm] Multiple Record Dimension convention: for ncecat and ncpdq */
+    /* This currently could be implemented as a flag rather than an enum
+       General case may need more than binary option so use enum */
     nco_mrd_restrict, /* 0 Fix some dimensions so as to avoid producing additional record dimensions */
     nco_mrd_allow  /* 1 Allow multiple record dimensions when operator produces them naturally */
   }; /* end nco_mrd_cnv */
