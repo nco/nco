@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.404 2013-10-04 03:18:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.405 2013-10-04 04:25:55 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -354,6 +354,7 @@ extern "C" {
     ncatted,
     ncbo,
     ncea,
+    ncga,
     ncecat,
     ncflint,
     ncks,

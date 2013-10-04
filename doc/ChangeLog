@@ -1,5 +1,7 @@
 2013-10-03  Charlie Zender  <zender@uci.edu>
 
+	* Add ncga stubs to ncra.c
+
 	* Tidy ncra.c
 
 	* NCO 4.3.7 release procedure:
