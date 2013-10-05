@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.55 2013-08-06 23:55:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.56 2013-10-05 05:04:32 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -562,29 +562,29 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
   struct rusage usg;
 
 #ifdef AIX
-  (void)fprintf(stdout,"%s: INFO %s() reports system type is AIX so getrusage() uses kilobytes [kB] for size and seconds [s] for time. Page size is %d kB.\n",prg_nm_get(),fnc_nm,sz_pg);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is AIX so getrusage() uses kilobytes [kB] for size and seconds [s] for time. Page size is %d kB.\n",prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !AIX */
 #ifdef CRAY
-  (void)fprintf(stdout,"%s: INFO %s() reports system type is CRAY so getrusage() units for page size and time are unknown.\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO %s reports system type is CRAY so getrusage() units for page size and time are unknown.\n",prg_nm_get());
 #endif /* !CRAY */
 #if (defined LINUX) || (defined LINUXAMD64)
-  (void)fprintf(stdout,"%s: INFO %s() reports system type is LINUX so getrusage() does implement ru_maxrss [kB] and DOES NOT implement ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is LINUX so getrusage() does implement ru_maxrss [kB] and DOES NOT implement ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !LINUX */
 #ifdef NECSX
-  (void)fprintf(stdout,"%s: INFO %s() reports system type is NECSX so getrusage() units for page size and time are unknown.\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO %s reports system type is NECSX so getrusage() units for page size and time are unknown.\n",prg_nm_get());
 #endif /* !NECSX */
 #ifdef SGIMP64
-  (void)fprintf(stdout,"%s: INFO %s() reports system type is SGIMP64 so getrusage() uses bytes [B] for size, while time units are unknown. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is SGIMP64 so getrusage() uses bytes [B] for size, while time units are unknown. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !SGIMP64 */
 #ifdef SUNMP
-  (void)fprintf(stdout,"%s: INFO %s() reports system type is SUNMP so getrusage() uses pages [pg] for size and ticks [tck] for time. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is SUNMP so getrusage() uses pages [pg] for size and ticks [tck] for time. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !SUNMP */
 
   /* fxm: CEWI, not necessary */
   rcd_sys=rusage_who;
   /* fxm: use input argument rusage_who instead of RUSAGE_SELF */
   rcd_sys=0*rcd_sys+getrusage(RUSAGE_SELF,&usg);
-  if(dbg_lvl_get() > nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s() reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",prg_nm_get(),fnc_nm,usg.ru_utime.tv_sec,usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
+  if(dbg_lvl_get() > nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",prg_nm_get(),fnc_nm,usg.ru_utime.tv_sec,usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
 
   return (long)usg.ru_maxrss; /* [B] Maximum resident set size */
 #else /* !HAVE_GETRUSAGE */

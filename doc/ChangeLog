@@ -1,5 +1,11 @@
 2013-10-04  Charlie Zender  <zender@uci.edu>
 
+	* ncks --hdf4 dumps (some) HDF4 files correctly!
+
+	* Add --hdf4 flag to prevent ncks from interrogating compression/chunking on HDF4 files
+
+	* First builds with --enable-hdf4
+
 	* Skeleton ncga loops
 
 	* Support CF versioning in ncdismember

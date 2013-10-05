@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.406 2013-10-04 23:01:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.407 2013-10-05 05:04:31 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -657,6 +657,7 @@ extern "C" {
     nco_bool trd; /* [flg] Print traditional NCO format */
     nco_bool nfo_cdl; /* [flg] Print extra information in CDL mode */
     nco_bool new_fmt; /* [flg] Print in new format */
+    nco_bool hdf4; /* [flg] Treat file as HDF4 */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
     int nbr_zro; /* [nbr] Trailing zeros allowed after decimal point */
     int ndn; /* [nbr] Indentation */

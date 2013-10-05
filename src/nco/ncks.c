@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.661 2013-09-25 03:45:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.662 2013-10-05 05:04:31 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -52,7 +52,8 @@
    ncks -O -G :-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -v time ~/in_grp.nc ~/foo.nc
-   ncks -O --sysconf ~/in_grp.nc ~/foo.nc */
+   ncks -O --sysconf ~/in_grp.nc ~/foo.nc
+   ncks -O -m -M -v Snow_Cover_Monthly_CMG ${DATA}/hdf/MOD10CM.A2007001.005.2007108111758.hdf */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -107,6 +108,7 @@ main(int argc,char **argv)
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool PRN_CDL=False; /* [flg] Print CDL */
   nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
+  nco_bool PRN_HDF4=False; /* [flg] Treat file as HDF4 */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   nco_bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
   nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
@@ -152,8 +154,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.661 2013-09-25 03:45:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.661 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.662 2013-10-05 05:04:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.662 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -219,6 +221,7 @@ main(int argc,char **argv)
       {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
       {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+      {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
       {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
       {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
       {"md5_wrt_att",no_argument,0,0}, /* [flg] Write MD5 digests as attributes */
@@ -402,6 +405,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
       if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
       if(!strcmp(opt_crr,"get_prg_info")) GET_PRG_INFO=True;
+      if(!strcmp(opt_crr,"hdf4")) PRN_HDF4=True; /* [flg] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -800,6 +804,7 @@ main(int argc,char **argv)
     } /* !XML */
     prn_flg.gpe=gpe;
     prn_flg.md5=md5;
+    prn_flg.hdf4=PRN_HDF4;
     prn_flg.nbr_zro=0;
     prn_flg.ndn=0; /* Initialize for prn_flg->trd */
     prn_flg.spc_per_lvl=2;
