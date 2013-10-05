@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.879 2013-10-04 23:01:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.880 2013-10-05 08:09:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -114,7 +114,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.7
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 3 October 2013
+@set update-date 5 October 2013
 @set update-month October 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -4443,13 +4443,11 @@ As shown, we recommend using a full floating point suffix of @code{.0}
 instead of simply @code{.} in order to make obvious the selection of
 hyperslab elements based on coordinate value rather than index.
 
-@cindex @code{NC_BYTE}
 @cindex @code{NC_CHAR}
 User-specified coordinate limits are promoted to double-precision values 
 while searching for the indices which bracket the range. 
-Thus, hyperslabs on coordinates of type @code{NC_BYTE} and
-@code{NC_CHAR} are computed numerically rather than lexically, so the
-results are unpredictable. 
+Thus, hyperslabs on coordinates of type @code{NC_CHAR} are computed
+numerically rather than lexically, so the results are unpredictable. 
 
 @cindex wrapped coordinates
 The relative magnitude of @var{min} and @var{max} indicate to the
@@ -12150,10 +12148,9 @@ To prevent this from occuring, use @command{ncwa} to remove the
 See the example below.
 
 @cindex coordinate variable 
-@cindex @code{NC_BYTE}
 @cindex @code{NC_CHAR}
 @command{ncbo} never operates on coordinate variables or variables
-of type @code{NC_CHAR} or @code{NC_BYTE}. 
+of type @code{NC_CHAR} or @code{NC_STRING}. 
 This ensures that coordinates like (e.g., latitude and longitude) are 
 physically meaningful in the output file, @var{file_3}. 
 This behavior is hardcoded.
@@ -12852,7 +12849,7 @@ Attempting to specify both @samp{-i} and @samp{-w} methods in the same
 command is an error. 
 
 @command{ncflint} does not interpolate variables of type @code{NC_CHAR}
-and @code{NC_BYTE}. 
+and @code{NC_STRING}. 
 This behavior is hardcoded.
 
 By default @command{ncflint} interpolates or multiplies record

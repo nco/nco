@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.158 2013-10-01 19:44:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.159 2013-10-05 08:09:29 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -32,6 +32,7 @@
 /* Usage:
    ncrename -O -g g1,obama ~/nco/data/in_grp.nc ~/foo.nc
    ncrename -O -a Conventions,Geneva ~/nco/data/in.nc ~/foo.nc
+   ncrename -O -a HDFEOSVersion,Geneva ${DATA}/hdf/MOD10CM.A2007001.005.2007108111758.hdf ~/foo.nc
    ncrename -O -d old_dim1,new_dim1 -v old_var1,new_var1 -v old_var2,new_var2 -a old_att1,new_att1 ~/nco/data/in.nc ~/foo.nc
    ncrename -O -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name ~/nco/data/in.nc ~/foo.nc */
 
@@ -102,8 +103,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.158 2013-10-01 19:44:58 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.158 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.159 2013-10-05 08:09:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.159 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -148,6 +149,7 @@ main(int argc,char **argv)
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
     {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
     {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
@@ -209,6 +211,7 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.163 2013-09-13 18:01:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.164 2013-10-05 08:09:29 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -33,6 +33,7 @@
 
    Use C language escape sequences:
    ncatted -D 3 -h -a history,global,o,c,"String\tformatting\tfor\nDennis" ~/nco/data/in.nc ~/foo.nc
+   ncatted -D 3 -h -a history,global,o,c,"String\tformatting\tfor\nDennis" ${DATA}/hdf/MOD10CM.A2007001.005.2007108111758.hdf ~/foo.nc
    ncatted -D 3 -h -a history,global,o,c,'\a\b\f\n\r\t\v\\\?\0' ~/nco/data/in.nc ~/foo.nc
    ncatted -D 3 -h -a history,global,o,c,'Characters which require protection by backslash:\nDouble quote: \"\nTwo consecutive double quotes: \"\"\nSingle quote: Beyond my shell abilities!\nBackslash: \\\nTwo consecutive backslashes: \\\\\nQuestion mark: \?\n' ~/nco/data/in.nc ~/foo.nc
    ncatted -D 3 -h -a history,global,o,c,'Characters which do not require protection by backslash:\nSingle backquote: `\nDollarsign: $\nLeft brace: {\nRight brace: }\nPipe: |\nAmpersand: &\nAt sign: @\nPercent: %\n\n' ~/nco/data/in.nc ~/foo.nc
@@ -156,8 +157,8 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.163 2013-09-13 18:01:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.163 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.164 2013-10-05 08:09:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.164 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -195,6 +196,7 @@ main(int argc,char **argv)
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
+    {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
     {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
     {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
@@ -253,6 +255,7 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
