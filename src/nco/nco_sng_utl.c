@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.59 2013-08-28 01:51:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.60 2013-10-05 23:22:25 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -155,6 +155,44 @@ sng_idx_dlm_c2f /* [fnc] Replace brackets with parentheses in a string */
   } /* end while */
 } /* end sng_idx_dlm_c2f() */
 
+char * /* O [sng] CDL-compatible name */
+nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
+(const char * const nm_sng) /* I [sng] Name to CDL-ize */
+{
+  /* Purpose: Turn variable/dimension/attribute name into legal CDL 
+     Currently this means protecting colon character with backslash so ncgen can read it
+     NB: Calling function must free() memory containing CDL-ized string */
+
+  char *cln_ptr; /* [ptr] Pointer to colon character */
+  char *nm_cdl; /* [sng] CDL-compatible name */
+
+  int nm_lng; /* [nbr] Length of original name */
+  int trn_nbr=0; /* [nbr] Number of characters translated */
+  
+  if(nm_sng == NULL) return NULL;
+
+  /* Quick exit for most common case */
+  cln_ptr=strchr(nm_sng,':');
+  if(!cln_ptr) return strdup(nm_sng);
+  
+  /* Otherwise name contains special character(s)... */
+  nm_lng=strlen(nm_sng);
+  /* Maximum conceivable length of CDL-ized name */
+  nm_cdl=(char *)nco_malloc(2*nm_lng+1L);
+  nm_cdl[0]='0';
+
+  /* Search and replace special characters */
+  for(int chr_idx=0;chr_idx<nm_lng;chr_idx++){
+    if(nm_sng[chr_idx] == ':'){
+      nm_cdl[chr_idx+trn_nbr]='\\';
+      trn_nbr++;
+    } /* endif */
+    nm_cdl[chr_idx+trn_nbr]=nm_sng[chr_idx];
+  } /* end while loop */
+  
+  return nm_cdl;
+} /* end nm2sng_cdl */
+
 char * /* O [sng] String containing printable result */
 chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII bytes */
 (const char chr_val, /* I [chr] Character to process */
@@ -301,9 +339,9 @@ sng_trm_trl_zro /* [fnc] Trim zeros trailing the decimal point from floating poi
   /* Purpose: Trim zeros trailing decimal point from floating point string
      Allow trl_zro_max trailing zeros to remain */
 
-  char *trl_zro_ptr; /* [sng] */
-  char *dcm_ptr; /* [sng] */
-  char *vld_ptr=NULL; /* [sng] */
+  char *trl_zro_ptr; /* [sng] Trailing zero pointer */
+  char *dcm_ptr; /* [sng] Decimal point pointer */
+  char *vld_ptr=NULL; /* [sng] Valid pointer */
   char chr_val; /* [chr] Character value */
 
   int cnt_zro_rmn; /* [nbr] Number of trailing zeros remaining until maximum reached */

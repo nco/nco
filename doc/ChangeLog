@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.7 release"
 	cvs tag -c nco-4_3_7;cvs tag -c nco-4_3_7-1
 
+	* Wrote nm2sng_cdl() to CDL-ize variable/dimension/attribute names
+
 	* ncrename and ncatted do not work on HDF4 files because they
 	attempt to modify the file on disk. netCDF4 cannot directly modify
 	an HDF4 file. Rather, netCDF4 can read HDF4 files through the API.
