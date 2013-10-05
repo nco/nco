@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.335 2013-10-05 05:04:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.336 2013-10-05 06:15:49 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.335 2013-10-05 05:04:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.335 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.336 2013-10-05 06:15:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.336 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -208,6 +208,7 @@ main(int argc,char **argv)
     {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"gag",no_argument,0,0}, /* [flg] Group aggregation */
     {"aggregate_group",no_argument,0,0}, /* [flg] Group aggregation */
+    {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
     {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"mrd",no_argument,0,0}, /* [enm] Multiple Record Dimension convention */
@@ -339,6 +340,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"gag") || !strcmp(opt_crr,"aggregate_group")) GROUP_AGGREGATE=True; /* [flg] Aggregate files into groups not records */
+      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

@@ -1,5 +1,9 @@
 2013-10-04  Charlie Zender  <zender@uci.edu>
 
+	* Add --hdf4 switch to all operators except ncrename and ncatted
+
+	* ncbo --hdf4 does arithmetic on (some) HDF4 files correctly!
+
 	* ncks --hdf4 writes (some) HDF4 files correctly!
 
 	* ncks --hdf4 prints (some) HDF4 files correctly!

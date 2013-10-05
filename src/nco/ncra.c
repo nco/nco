@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.413 2013-10-04 23:01:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.414 2013-10-05 06:15:50 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -170,8 +170,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.413 2013-10-04 23:01:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.413 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.414 2013-10-05 06:15:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.414 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -291,6 +291,7 @@ main(int argc,char **argv)
     {"flt",no_argument,0,0}, /* [flg] Arithmetic convention: keep single-precision */
     {"rth_dbl",no_argument,0,0}, /* [flg] Arithmetic convention: promote float to double */
     {"rth_flt",no_argument,0,0}, /* [flg] Arithmetic convention: keep single-precision */
+    {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
     {"hdf_upk",no_argument,0,0}, /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
     {"hdf_unpack",no_argument,0,0}, /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
     {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
@@ -429,6 +430,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"dbl") || !strcmp(opt_crr,"rth_dbl")) nco_rth_cnv=nco_rth_flt_dbl; /* [flg] Arithmetic convention: promote float to double */
       if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"rth_flt")) nco_rth_cnv=nco_rth_flt_flt; /* [flg] Arithmetic convention: keep single-precision */
+      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdf_upk") || !strcmp(opt_crr,"hdf_unpack")) nco_upk_cnv=nco_upk_HDF; /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
