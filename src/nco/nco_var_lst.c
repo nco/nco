@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.155 2013-10-04 23:01:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.156 2013-10-05 07:36:30 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -898,7 +898,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     var_op_typ[idx]=prc_typ;
     var_nm=var[idx]->nm;
     var_typ=var[idx]->type;
-    if((var_typ == NC_BYTE) || (var_typ == NC_UBYTE) || (var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
+    /* Until 20131005, NCO default was to consider NC_BYTE and NC_UBYTE as funky, too */
+    if((var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
 
     /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...)
        20130112: As of today set is_crd_var true in nco_var_fll() when either of these conditions is true 
@@ -1067,16 +1068,16 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       /* Do nothing */
       break;
     case ncbo:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_BYTE, NC_UBYTE, NC_CHAR, or NC_STRING in order to perform a binary operation (e.g., subtraction)\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING in order to perform a binary operation (e.g., subtraction)\n",prg_nm_get());
       break;
     case ncea:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_BYTE, NC_UBYTE, NC_CHAR, or NC_STRING\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING\n",prg_nm_get());
       break;
     case ncecat:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable\n",prg_nm_get());
       break;
     case ncflint:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that is not NC_BYTE, NC_UBYTE, NC_CHAR, or NC_STRING\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that is not NC_CHAR, or NC_STRING\n",prg_nm_get());
       break;
     case ncks:
       /* Do nothing */
@@ -1085,7 +1086,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that shares at least one dimension with the re-order list\n",prg_nm_get());
       break;
     case ncra:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_BYTE, NC_UBYTE, NC_CHAR, or NC_STRING\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_CHAR, or NC_STRING\n",prg_nm_get());
       break;
     case ncrcat:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable which to concatenate\n",prg_nm_get());
@@ -1140,14 +1141,15 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   var_op_typ=prc_typ;
   var_nm=var->nm;
   var_typ=var->type;
-  if((var_typ == NC_BYTE) || (var_typ == NC_UBYTE) || (var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
+  /* Until 20131005, NCO default was to consider NC_BYTE and NC_UBYTE as funky, too */
+  if((var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
 
   /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...)
-  20130112: As of today set is_crd_var true in nco_var_fll() when either of these conditions is true 
-  so no longer need to specify these conditions separately. 
-  Keep this old code here as a reminder that is_crd_var also incorporates these conditions
-  is_spc_in_crd_att=nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id);
-  is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id); */
+     20130112: As of today set is_crd_var true in nco_var_fll() when either of these conditions is true 
+     so no longer need to specify these conditions separately. 
+     Keep this old code here as a reminder that is_crd_var also incorporates these conditions
+     is_spc_in_crd_att=nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id);
+     is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id); */
 
   /* Override operation type based depending on variable properties and program */
   switch(prg_id){

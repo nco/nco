@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.57 2013-09-19 03:35:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.58 2013-10-05 07:36:30 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -299,8 +299,12 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
   case NC_UINT64:
     for(idx=0;idx<sz;idx++) op1.ui64p[idx]=(nco_uint64)llrint(op2); /* Coerce to avoid C++ compiler assignment warning */
     break;
-  case NC_BYTE: break; /* Do nothing */
-  case NC_UBYTE: break; /* Do nothing */
+  case NC_BYTE:
+    for(idx=0;idx<sz;idx++) op1.bp[idx]=(nco_byte)llrint(op2); /* Coerce to avoid C++ compiler assignment warning */
+    break;
+  case NC_UBYTE:
+    for(idx=0;idx<sz;idx++) op1.ubp[idx]=(nco_ubyte)llrint(op2); /* Coerce to avoid C++ compiler assignment warning */
+    break;
   case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */
     default: nco_dfl_case_nc_type_err(); break;

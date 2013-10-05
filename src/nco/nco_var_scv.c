@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.37 2013-01-13 06:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.38 2013-10-05 07:36:30 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -126,8 +126,30 @@ var_scv_add /* [fnc] Add scalar to variable */
     } /* end else */
     break;
   } /* endif NC_UINT64 */
-  case NC_BYTE: break; /* Do nothing */
-  case NC_UBYTE: break; /* Do nothing */
+  case NC_BYTE:{
+    const nco_byte scv_byte=scv->val.b; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.bp[idx]+=scv_byte;
+    }else{
+      const nco_byte mss_val_byte=*mss_val.bp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.bp[idx] != mss_val_byte) op1.bp[idx]+=scv_byte;
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_BYTE */
+  case NC_UBYTE:{
+    const nco_ubyte scv_ubyte=scv->val.ub; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.ubp[idx]+=scv_ubyte;
+    }else{
+      const nco_ubyte mss_val_ubyte=*mss_val.ubp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.ubp[idx] != mss_val_ubyte) op1.ubp[idx]+=scv_ubyte;
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_UBYTE */
   case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
@@ -256,8 +278,30 @@ var_scv_sub /* [fnc] Subtract scalar from variable */
     } /* end else */
     break;
   }
-  case NC_BYTE: break; /* Do nothing */
-  case NC_UBYTE: break; /* Do nothing */
+  case NC_BYTE:{
+    const nco_byte scv_byte=scv->val.b; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.bp[idx]-=scv_byte;
+    }else{
+      const nco_byte mss_val_byte=*mss_val.bp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.bp[idx] != mss_val_byte) op1.bp[idx]-=scv_byte;
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_UBYTE:{
+    const nco_ubyte scv_ubyte=scv->val.ub; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.ubp[idx]-=scv_ubyte;
+    }else{
+      const nco_ubyte mss_val_ubyte=*mss_val.ubp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.ubp[idx] != mss_val_ubyte) op1.ubp[idx]-=scv_ubyte;
+      } /* end for */
+    } /* end else */
+    break;
+  }
   case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
@@ -386,8 +430,30 @@ var_scv_mlt /* [fnc] Multiply variable by scalar */
     } /* end else */
     break;
   }
-  case NC_BYTE: break; /* Do nothing */
-  case NC_UBYTE: break; /* Do nothing */
+  case NC_BYTE:{
+    const nco_byte scv_byte=scv->val.b; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.bp[idx]*=scv_byte;
+    }else{
+      const nco_byte mss_val_byte=*mss_val.bp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.bp[idx] != mss_val_byte) op1.bp[idx]*=scv_byte;
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_UBYTE:{
+    const nco_ubyte scv_ubyte=scv->val.ub; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.ubp[idx]*=scv_ubyte;
+    }else{
+      const nco_ubyte mss_val_ubyte=*mss_val.ubp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.ubp[idx] != mss_val_ubyte) op1.ubp[idx]*=scv_ubyte;
+      } /* end for */
+    } /* end else */
+    break;
+  }
   case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
@@ -516,8 +582,30 @@ var_scv_dvd /* [fnc] Divide variable by scalar */
     } /* end else */
     break;
   } /* endif NC_UINT64 */
-  case NC_BYTE: break; /* Do nothing */
-  case NC_UBYTE: break; /* Do nothing */
+  case NC_BYTE:{
+    const nco_byte scv_byte=scv->val.b; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.bp[idx]/=scv_byte;
+    }else{
+      const nco_byte mss_val_byte=*mss_val.bp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.bp[idx] != mss_val_byte) op1.bp[idx]/=scv_byte;
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_BYTE */
+  case NC_UBYTE:{
+    const nco_ubyte scv_ubyte=scv->val.ub; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.ubp[idx]/=scv_ubyte;
+    }else{
+      const nco_ubyte mss_val_ubyte=*mss_val.ubp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.ubp[idx] != mss_val_ubyte) op1.ubp[idx]/=scv_ubyte;
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_UBYTE */
   case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
@@ -646,8 +734,30 @@ scv_var_dvd /* [fnc] Divide scalar by variable */
     } /* end else */
     break;
   } /* endif NC_UINT64 */
-  case NC_BYTE: break; /* Do nothing */
-  case NC_UBYTE: break; /* Do nothing */
+  case NC_BYTE:{
+    const nco_byte scv_byte=scv->val.b; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.bp[idx]=scv_byte/op2.bp[idx];
+    }else{
+      const nco_byte mss_val_byte=*mss_val.bp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.bp[idx] != mss_val_byte) op2.bp[idx]=scv_byte/op2.bp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_BYTE */
+  case NC_UBYTE:{
+    const nco_ubyte scv_ubyte=scv->val.ub; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.ubp[idx]=scv_ubyte/op2.ubp[idx];
+    }else{
+      const nco_ubyte mss_val_ubyte=*mss_val.ubp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.ubp[idx] != mss_val_ubyte) op2.ubp[idx]=scv_ubyte/op2.ubp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_UBYTE */
   case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
@@ -790,8 +900,30 @@ var_scv_mod /* [fnc] Modulo variable by scalar */
     } /* end else */
     break;
   } /* endif NC_UINT64 */
-  case NC_BYTE: break; /* Do nothing */
-  case NC_UBYTE: break; /* Do nothing */
+  case NC_BYTE:{
+    const nco_byte scv_byte=scv->val.b; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.bp[idx]%=scv_byte;
+    }else{
+      const nco_byte mss_val_byte=*mss_val.bp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.bp[idx] != mss_val_byte) op1.bp[idx]%=scv_byte;
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_BYTE */
+  case NC_UBYTE:{
+    const nco_ubyte scv_ubyte=scv->val.ub; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.ubp[idx]%=scv_ubyte;
+    }else{
+      const nco_ubyte mss_val_ubyte=*mss_val.ubp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.ubp[idx] != mss_val_ubyte) op1.ubp[idx]%=scv_ubyte;
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_UBYTE */
   case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
@@ -931,8 +1063,30 @@ scv_var_mod /* [fnc] Modulo scalar by variable */
     } /* end else */
     break;
   } /* endif NC_UINT64 */
-  case NC_BYTE: break; /* Do nothing */
-  case NC_UBYTE: break; /* Do nothing */
+  case NC_BYTE:{
+    const nco_byte scv_byte=scv->val.b; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.bp[idx]=scv_byte%op2.bp[idx];
+    }else{
+      const nco_byte mss_val_byte=*mss_val.bp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.bp[idx] != mss_val_byte) op2.bp[idx]=scv_byte%op2.bp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_BYTE */
+  case NC_UBYTE:{
+    const nco_ubyte scv_ubyte=scv->val.ub; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.ubp[idx]=scv_ubyte%op2.ubp[idx];
+    }else{
+      const nco_ubyte mss_val_ubyte=*mss_val.ubp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.ubp[idx] != mss_val_ubyte) op2.ubp[idx]=scv_ubyte%op2.ubp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_UBYTE */
   case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */
   default: nco_dfl_case_nc_type_err(); break;
