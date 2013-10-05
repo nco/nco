@@ -1,6 +1,8 @@
 2013-10-04  Charlie Zender  <zender@uci.edu>
 
-	* ncks --hdf4 dumps (some) HDF4 files correctly!
+	* ncks --hdf4 writes (some) HDF4 files correctly!
+
+	* ncks --hdf4 prints (some) HDF4 files correctly!
 
 	* Add --hdf4 flag to prevent ncks from interrogating compression/chunking on HDF4 files
 

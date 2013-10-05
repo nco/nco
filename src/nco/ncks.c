@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.662 2013-10-05 05:04:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.663 2013-10-05 05:31:12 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -108,7 +108,6 @@ main(int argc,char **argv)
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool PRN_CDL=False; /* [flg] Print CDL */
   nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
-  nco_bool PRN_HDF4=False; /* [flg] Treat file as HDF4 */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   nco_bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
   nco_bool PRN_DMN_VAR_NM=True; /* [flg] Print dimension/variable names */
@@ -154,8 +153,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.662 2013-10-05 05:04:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.662 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.663 2013-10-05 05:31:12 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.663 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -405,7 +404,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
       if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
       if(!strcmp(opt_crr,"get_prg_info")) GET_PRG_INFO=True;
-      if(!strcmp(opt_crr,"hdf4")) PRN_HDF4=True; /* [flg] Treat file as HDF4 */
+      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -804,7 +803,6 @@ main(int argc,char **argv)
     } /* !XML */
     prn_flg.gpe=gpe;
     prn_flg.md5=md5;
-    prn_flg.hdf4=PRN_HDF4;
     prn_flg.nbr_zro=0;
     prn_flg.ndn=0; /* Initialize for prn_flg->trd */
     prn_flg.spc_per_lvl=2;

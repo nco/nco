@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.407 2013-10-05 05:04:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.408 2013-10-05 05:31:12 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -160,6 +160,7 @@ extern "C" {
   char *prg_nm_get(void);
   int prg_get(void);
   unsigned short dbg_lvl_get(void);
+  unsigned short nco_hdf_cnv_get(void);
   unsigned short nco_mrd_cnv_get(void);
   unsigned short nco_rth_cnv_get(void);
   unsigned short nco_upk_cnv_get(void);
@@ -176,6 +177,9 @@ extern "C" {
   
   unsigned short dbg_lvl=0; /* [enm] Debugging level */
   unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
+
+  unsigned short nco_hdf_cnv=0; /* [enm] HDF convention */
+  unsigned short nco_hdf_cnv_get(void){return nco_hdf_cnv;} /* [enm] HDF convention */
 
   unsigned short nco_mrd_cnv=0; /* [enm] Multiple Record Dimension convention */
   unsigned short nco_mrd_cnv_get(void){return nco_mrd_cnv;} /* [enm] Multiple Record Dimension convention */
@@ -418,12 +422,12 @@ extern "C" {
     nco_obj_typ_nonatomic_var /*  2, Variable of non-atomic type (vlen, opaque, enum, compound, user-defined) */
   } nco_obj_typ;
   
-  enum nco_upk_cnv{ /* [enm] Unpacking convention to assume */
-    /* netCDF convention  : http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
-       HDF/NASA convention: http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html */
-    nco_upk_netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
-    nco_upk_HDF     /* 1 HDF unpack convention:    unpacked=scale_factor*(packed-add_offset) */
-  }; /* end nco_upk_cnv */
+  enum nco_hdf_cnv{ /* [enm] HDF convention */
+    /* This currently could be implemented as a flag rather than an enum
+       General case may need more than binary option so use enum */
+    nco_hdf_nil, /* 0 No special treatment */
+    nco_hdf4 /* 1 Treat file as HDF4 */
+  }; /* end nco_hdf_cnv */
 
   enum nco_mrd_cnv{ /* [enm] Multiple Record Dimension convention: for ncecat and ncpdq */
     /* This currently could be implemented as a flag rather than an enum
@@ -436,6 +440,13 @@ extern "C" {
     nco_rth_flt_flt, /* 0 Keep single-precision floating point (default and NCO historical norm) */
     nco_rth_flt_dbl  /* 1 Promote single-precision floating point to double before arithmetic */
   }; /* end nco_rth_cnv */
+
+  enum nco_upk_cnv{ /* [enm] Unpacking convention to assume */
+    /* netCDF convention  : http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html
+       HDF/NASA convention: http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html */
+    nco_upk_netCDF, /* 0 netCDF unpack convention: unpacked=(scale_factor*packed)+add_offset */
+    nco_upk_HDF     /* 1 HDF unpack convention:    unpacked=scale_factor*(packed-add_offset) */
+  }; /* end nco_upk_cnv */
 
   typedef enum aed{ /* [enm] Attribute editor mode */
     aed_append,
@@ -657,7 +668,6 @@ extern "C" {
     nco_bool trd; /* [flg] Print traditional NCO format */
     nco_bool nfo_cdl; /* [flg] Print extra information in CDL mode */
     nco_bool new_fmt; /* [flg] Print in new format */
-    nco_bool hdf4; /* [flg] Treat file as HDF4 */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
     int nbr_zro; /* [nbr] Trailing zeros allowed after decimal point */
     int ndn; /* [nbr] Indentation */
