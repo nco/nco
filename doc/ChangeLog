@@ -1,4 +1,14 @@
+2013-10-05  Charlie Zender  <zender@uci.edu>
+
+	* Add arithmetic functions for NC_BYTE and NC_UBYTE
+
 2013-10-04  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.7 release procedure:
+ 	Changes since nco-4_3_6: --mrd, --hdf4
+	cd ~/nco;cvs tag -d nco-4_3_7;cvs tag -d nco-4_3_7-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.7 release"
+	cvs tag -c nco-4_3_7;cvs tag -c nco-4_3_7-1
 
 	* Add --hdf4 switch to all operators except ncrename and ncatted
 
@@ -21,12 +31,6 @@
 	* Add ncga stubs to ncra.c
 
 	* Tidy ncra.c
-
-	* NCO 4.3.7 release procedure:
- 	Changes since nco-4_3_6: --mrd
-	cd ~/nco;cvs tag -d nco-4_3_7;cvs tag -d nco-4_3_7-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.7 release"
-	cvs tag -c nco-4_3_7;cvs tag -c nco-4_3_7-1
 
 	* Document --mrd
 
@@ -10229,7 +10233,7 @@
 	This requires building NCO > 2.0.1 with netCDF >= 3.5
 	This change also permits successful builds with g++ again, which
 	complained about initializing nc_type with non nc_type enums
-	
+
 	* cvs tag -c nco-2_0_1
 	Changes since nco-2_0_0:
 	Cleaner separation of netCDF wrappers into nco_netcdf.c,.h
@@ -10239,7 +10243,7 @@
 	* ncap uses nco netCDF3 interface
 
         * Structure nco_netcdf.h as standard library header
-        
+
 	* Forbid multiple includes of nco_netcdf.h
 
         * Changed nc.h to nco.h for namespace consistency
@@ -10254,7 +10258,7 @@
 2001-08-10  Charlie Zender  <zender@uci.edu>
 
 	* Changed storage location of remotely accessible in.nc to
-	.../nco/in.nc 
+	.../nco/in.nc
 
 	* Various Makefile changes for exotic NCAR platforms
 
@@ -10287,7 +10291,7 @@
 
 	* cvs tag -c nco-1_3_3
 
-	* nco_tst.sh runs as expected when compiled with OPTS=D and OPTS=O 
+	* nco_tst.sh runs as expected when compiled with OPTS=D and OPTS=O
 	on both Linux 32 bit and Irix 64 bit
 
 	* Removed make options for NETCDF2_ONLY flag which is no longer
@@ -10296,7 +10300,7 @@
 	* Default build now compiles with -DNO_NETCDF_2 flag and tests
 	successfully.
 
-	* Replaced nclong with nco_long = long. 
+	* Replaced nclong with nco_long = long.
 	There's no need to remove nco_long just yet until a long term
 	strategy for dealing with long, size_t, int issues is decided
 	upon. netCDF 3.x deprecates the whole nclong issue, but it might
@@ -10309,7 +10313,7 @@
 	* Added i18n headers to ncra.c and to Makefile with default being
 	no internationalization. Hooks appear to work fine.
 
-	* Changed NC_LONG to NC_INT to adhere closer to standard. 
+	* Changed NC_LONG to NC_INT to adhere closer to standard.
 	Type NC_LONG is currently synonymous with NC_INT and will continue
 	to be represented by native type long.
 
@@ -10320,21 +10324,21 @@
 
 2001-03-06  Henry Butowsky  <thin@thin.screaming.net>
 
-        * fixed ncdiff problem. There was a conversion error in dmn_dfn 
+        * fixed ncdiff problem. There was a conversion error in dmn_dfn
 
 	* fixed ncrename problem. There was a typo error
 	  in nco_rename_var ( it was calling itself) This
-	  is the third such error in nco_netcdf.c. 
-	  
+	  is the third such error in nco_netcdf.c.
+
 2001-03-02  Charlie Zender  <zender@uci.edu>
 
 	* Code fails to compile with -DNO_NETCDF_2
 
 	* Code compiles but is buggy. This command fails:
-	ncdiff -O -C -v three_dmn_rec_var in.nc in.nc foo.nc;ncks -H foo.nc	
-	As does 
+	ncdiff -O -C -v three_dmn_rec_var in.nc in.nc foo.nc;ncks -H foo.nc
+	As does
 	ncdiff -O -C -v PS nco_tst.nc nco_tst.nc foo.nc
-	
+
 	* Removed NETCDF2_ONLY code
 
 2001-02-16  Charlie Zender  <zender@uci.edu>
@@ -10346,7 +10350,7 @@
 	1_3_2
 
 	* Tagged changes until today as nco-1_3_1 and will merge with
-	nco-1_2_2 
+	nco-1_2_2
 
 2001-02-11  Charlie Zender  <zender@uci.edu>
 
@@ -10368,18 +10372,18 @@
 
 	* Added make NETCDF2=Y to compare netCDF2 behavior with/without
 	HDF libraries. HDF libraries cause ncwa to fail certain tests
-	that work fine with Unidata netcdf2 libraries. All other operators 
+	that work fine with Unidata netcdf2 libraries. All other operators
 	appear fine with HDF libraries.
 
 	* Added default statements to switch(type) constructs which
 	emitted warnings when compiled with -DNETCDF2_ONLY since,
 	apparently, there are a whole bunch of things besides numeric
 	types in the old nctype enum and gcc warns about enums that are
-	not exhaustively considered in switch() statements. 
+	not exhaustively considered in switch() statements.
 	All these default statements can be removed with netCDF3 interface
 	so perhaps these should be surrounded with #ifdef NETCDF2_ONLY
 	constructs, but they actually do make sense for netCDF3 as well
-	so I have implemented a uniform error function, dfl_case_nctype_err(), 
+	so I have implemented a uniform error function, dfl_case_nctype_err(),
         to be called by all routines which emit errors only when compiled with
         NETCDF2_ONLY.
         This makes the behavior easy to modify or remove in the future.
