@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.60 2013-10-05 23:22:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.61 2013-10-06 01:23:15 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -172,7 +172,7 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   if(nm_sng == NULL) return NULL;
 
   /* Quick exit for most common case */
-  cln_ptr=strchr(nm_sng,':');
+  cln_ptr=(char *)strchr(nm_sng,':');
   if(!cln_ptr) return strdup(nm_sng);
   
   /* Otherwise name contains special character(s)... */

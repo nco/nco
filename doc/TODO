@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1250 2013-10-05 08:33:54 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1251 2013-10-06 01:23:15 pvicente Exp $
 
 # Purpose: TODO items for NCO
 
@@ -654,7 +654,6 @@ A. ncflint now always works when input files are interchanged, i.e.,
    ncflint -v v1 -w 0.5 fl_2.nc fl_1.nc out.nc # Always worked
 nco1102. ncatted handle arrays of NC_STRINGs with embedded delimiters
 	 ncatted -D 5 -O -a new_string_att,att_var,c,sng,"list","of","str,ings" ~/nco/data/in_4.nc ~/foo.nc
-nco1103. MSVC ncap2 issues error message when moving temporary output file to permanent file.
 nco1104. ncrename and ncatted copy through API with --hdf4
 nco1105. 
 qrk

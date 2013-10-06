@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.159 2013-10-05 08:09:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.160 2013-10-06 01:23:15 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -36,7 +36,7 @@
    ncrename -O -d old_dim1,new_dim1 -v old_var1,new_var1 -v old_var2,new_var2 -a old_att1,new_att1 ~/nco/data/in.nc ~/foo.nc
    ncrename -O -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name ~/nco/data/in.nc ~/foo.nc */
 
-#if 0
+#if 1
 #define USE_TRV_API
 #endif
 
@@ -100,11 +100,12 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *var_rnm_arg[NC_MAX_VARS];
+  char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.159 2013-10-05 08:09:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.159 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.160 2013-10-06 01:23:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.160 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -120,7 +121,9 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int fl_nbr=0;
+#ifndef USE_TRV_API
   int idx;
+#endif
   int md_open; /* [enm] Mode flag for nc_open() call */
   int nbr_att_rnm=0; /* Option a. NB: nbr_att_rnm gets incremented */
   int nbr_dmn_rnm=0; /* Option d. NB: nbr_dmn_rnm gets incremented */
@@ -518,7 +521,102 @@ main(int argc,char **argv)
   /* Initialize traversal table */ 
   trv_tbl_init(&trv_tbl); 
 
+  /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
+  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,trv_tbl);
 
+  /* Without further ado, change names */
+  for(int idx_var=0;idx_var<nbr_var_rnm;idx_var++){
+    /* Loop table */
+    for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      /* Match variable by name */
+      if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && strcmp(trv_tbl->lst[idx_tbl].nm,var_rnm_lst[idx_var].old_nm) == 0){
+        int grp_id;
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
+        /* Obtain variable ID  */
+        (void)nco_inq_varid(grp_id,var_rnm_lst[idx_var].old_nm,&var_rnm_lst[idx_var].id);
+        /* Rename */
+        (void)nco_rename_var(grp_id,var_rnm_lst[idx_var].id,var_rnm_lst[idx_var].new_nm);
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed variable \'%s\' to \'%s\'\n",prg_nm,var_rnm_lst[idx_var].old_nm,var_rnm_lst[idx_var].new_nm);
+      } /* Is variable */
+    } /* Loop table */
+  } /* Loop input variable names */
+
+  /* Loop input group names */
+  for(int idx_grp=0;idx_grp<nbr_grp_rnm;idx_grp++){
+    /* Loop table */
+    for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      /* Match group by name */
+      if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp && strcmp(trv_tbl->lst[idx_tbl].nm,grp_rnm_lst[idx_grp].old_nm) == 0){
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_rnm_lst[idx_grp].id);
+        /* Rename */
+        (void)nco_rename_grp(grp_rnm_lst[idx_grp].id,grp_rnm_lst[idx_grp].new_nm);
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed group \'%s\' to \'%s\'\n",prg_nm,grp_rnm_lst[idx_grp].old_nm,grp_rnm_lst[idx_grp].new_nm);
+      } /* Match group by name */
+    } /* Loop table */
+  } /* Loop input group names */
+
+  /* Loop input dimension names */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn_rnm;idx_dmn++){
+    /* Loop dimension list */
+    for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr_dmn;idx_tbl++){
+      /* Match by name */
+      if (strcmp(trv_tbl->lst_dmn[idx_tbl].nm,dmn_rnm_lst[idx_dmn].old_nm) == 0){
+        int grp_id;
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst_dmn[idx_tbl].grp_nm_fll,&grp_id);
+        /* Rename */
+        (void)nco_rename_dim(grp_id,trv_tbl->lst_dmn[idx_tbl].dmn_id,dmn_rnm_lst[idx_dmn].new_nm);
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed dimension \'%s\' to \'%s\'\n",prg_nm,dmn_rnm_lst[idx_dmn].old_nm,dmn_rnm_lst[idx_dmn].new_nm);
+      } /* Match by name */
+    } /* Loop dimension list */
+  }  /* Loop input dimension names */
+
+  /* Loop input attribute names */
+  for(int idx_att=0;idx_att<nbr_att_rnm;idx_att++){
+    /* Loop table */
+    for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      int nbr_att;
+      int grp_id;
+      int var_id;
+      char att_nm[NC_MAX_NAME];
+      /* Obtain group ID using full group name */
+      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
+      /* Group case */
+      if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp){      
+        /* Get number of attributes for this group */
+        (void)nco_inq_natts(grp_id,&nbr_att);
+        /* Loop group attributes */
+        for(int idx_grp=0;idx_grp<nbr_att;idx_grp++){
+          /* Get name */
+          (void)nco_inq_attname(grp_id,NC_GLOBAL,idx_grp,att_nm);
+          /* Match by name */
+          if (strcmp(att_nm,att_rnm_lst[idx_att].old_nm) == 0){
+            /* Rename */
+            (void)nco_rename_att(grp_id,NC_GLOBAL,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
+          } /* Match by name */
+        } /* Loop group attributes */
+      } /* Group case */
+      /* Variable case */
+      else if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
+        /* Obtain variable ID */
+        (void)nco_inq_varid(grp_id,trv_tbl->lst[idx_tbl].nm,&var_id);
+        /* Find number of attributes */
+        (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
+        /* Loop variable attributes */
+        for(int idx_var=0;idx_var<nbr_att;idx_var++){
+          /* Get name */
+          (void)nco_inq_attname(grp_id,var_id,idx_var,att_nm);
+          /* Match by name */
+          if (strcmp(att_nm,att_rnm_lst[idx_att].old_nm) == 0){
+            /* Rename */
+            (void)nco_rename_att(grp_id,var_id,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
+          } /* Match by name */
+        } /* Loop variable attributes */
+      } /* Variable case */
+    } /* Loop table */
+  } /* Loop input attribute names */
 
 #endif /* USE_TRV_API */
 
@@ -547,10 +645,10 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncrename-specific memory */
-    for(idx=0;idx<nbr_att_rnm;idx++) att_rnm_arg[idx]=(char *)nco_free(att_rnm_arg[idx]);
-    for(idx=0;idx<nbr_dmn_rnm;idx++) dmn_rnm_arg[idx]=(char *)nco_free(dmn_rnm_arg[idx]);
-    for(idx=0;idx<nbr_grp_rnm;idx++) grp_rnm_arg[idx]=(char *)nco_free(grp_rnm_arg[idx]);
-    for(idx=0;idx<nbr_var_rnm;idx++) var_rnm_arg[idx]=(char *)nco_free(var_rnm_arg[idx]);
+    for(int idx=0;idx<nbr_att_rnm;idx++) att_rnm_arg[idx]=(char *)nco_free(att_rnm_arg[idx]);
+    for(int idx=0;idx<nbr_dmn_rnm;idx++) dmn_rnm_arg[idx]=(char *)nco_free(dmn_rnm_arg[idx]);
+    for(int idx=0;idx<nbr_grp_rnm;idx++) grp_rnm_arg[idx]=(char *)nco_free(grp_rnm_arg[idx]);
+    for(int idx=0;idx<nbr_var_rnm;idx++) var_rnm_arg[idx]=(char *)nco_free(var_rnm_arg[idx]);
     if(nbr_att_rnm > 0) att_rnm_lst=(rnm_sct *)nco_free(att_rnm_lst);
     if(nbr_dmn_rnm > 0) dmn_rnm_lst=(rnm_sct *)nco_free(dmn_rnm_lst);
     if(nbr_grp_rnm > 0) grp_rnm_lst=(rnm_sct *)nco_free(grp_rnm_lst);
