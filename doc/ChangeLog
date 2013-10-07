@@ -6,8 +6,11 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.7 release"
 	cvs tag -c nco-4_3_7;cvs tag -c nco-4_3_7-1
 
+	* Fix ncpdq regression failures caused by --hdf being interpreted
+	as --hdf4 (a new option) not --hdf_upk (the intended option).
+
 	* CDL-mode prints CDL-compatible group/variable/dimension/attribute names
-	Colons in these names are now backslash-protected
+	Special characters in these names are now backslash-protected
 
 2013-10-05  Charlie Zender  <zender@uci.edu>
 

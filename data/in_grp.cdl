@@ -79,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.96 2013-10-07 02:59:46 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.97 2013-10-07 03:47:44 zender Exp $";
   
  data:
   area=10.,10.;
@@ -304,4 +304,29 @@ netcdf in_grp {
     ushort_var=65535; // USHRT_MAX = 65535, NC_FILL_USHORT = 65535
  } // end g11
    
+ group: g12 { // Level 1
+    // Purpose: Test special characters in names
+    // Most special characters need backslash protection
+    : comma_in_name\, = "foo";
+  : lt_in_name\< = "foo";
+  : gt_in_name\> = "foo";
+  : hash_in_name\# = "foo";
+  : xclaim_in_name\! = "foo";
+  : dollar_in_name\$ = "foo";
+  : ampersand_in_name\& = "foo";
+  : equals_in_name\= = "foo";
+  : semicolon_in_name\; = "foo";
+  : colon_in_name\: = "foo";
+  : lbrace_in_name\{ = "foo";
+  : rbrace_in_name\} = "foo";
+  : lparen_in_name\( = "foo";
+  : rparen_in_name\) = "foo";
+  : lbracket_in_name\[ = "foo";
+  : rbracket_in_name\] = "foo";
+  : plus_in_name+ = "foo";
+  : period_in_name. = "foo";
+  : hyphen_in_name- = "foo";
+  : at_in_name@ = "foo";
+ } // end g12
+
 } // end root group

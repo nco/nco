@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.61 2013-10-06 01:23:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.62 2013-10-07 03:47:44 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -160,10 +160,13 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
 (const char * const nm_sng) /* I [sng] Name to CDL-ize */
 {
   /* Purpose: Turn variable/dimension/attribute name into legal CDL 
-     Currently this means protecting colon character with backslash so ncgen can read it
-     NB: Calling function must free() memory containing CDL-ized string */
+     Currently this means protecting special characters with backslash so ncgen can read them
+     NB: Calling function must free() memory containing CDL-ized string
+     NB: NASA-generated HDF4 MODIS files actually have colons in the names! */
 
-  char *cln_ptr; /* [ptr] Pointer to colon character */
+  /* https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/CDL-Syntax.html:
+     "In CDL, most special characters are escaped with a backslash '\' character, but that character is not actually part of the netCDF name. The special characters that do not need to be escaped in CDL names are underscore '_', period '.', plus '+', hyphen '-', or at sign '@'. */ 
+
   char *nm_cdl; /* [sng] CDL-compatible name */
 
   int nm_lng; /* [nbr] Length of original name */
@@ -171,10 +174,6 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   
   if(nm_sng == NULL) return NULL;
 
-  /* Quick exit for most common case */
-  cln_ptr=(char *)strchr(nm_sng,':');
-  if(!cln_ptr) return strdup(nm_sng);
-  
   /* Otherwise name contains special character(s)... */
   nm_lng=strlen(nm_sng);
   /* Maximum conceivable length of CDL-ized name */
@@ -183,7 +182,7 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
 
   /* Search and replace special characters */
   for(int chr_idx=0;chr_idx<nm_lng;chr_idx++){
-    if(nm_sng[chr_idx] == ':'){
+    if(nm_sng[chr_idx] == '<' || nm_sng[chr_idx] == '>' || nm_sng[chr_idx] == '#' || nm_sng[chr_idx] == '!' || nm_sng[chr_idx] == '$' || nm_sng[chr_idx] == '&' || nm_sng[chr_idx] == ':' || nm_sng[chr_idx] == '=' || nm_sng[chr_idx] == ';' || nm_sng[chr_idx] == '{' || nm_sng[chr_idx] == '}' || nm_sng[chr_idx] == '(' || nm_sng[chr_idx] == ')' || nm_sng[chr_idx] == '[' || nm_sng[chr_idx] == ']' ){
       nm_cdl[chr_idx+trn_nbr]='\\';
       trn_nbr++;
     } /* endif */

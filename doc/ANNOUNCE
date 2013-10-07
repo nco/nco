@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.618 2013-10-05 08:09:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.619 2013-10-07 03:47:44 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.7 are ready. 
 
@@ -74,7 +74,8 @@ A. Operators perform arithmetic on atomic types NC_BYTE, NC_UBYTE.
 
 BUG FIXES:
 
-A. Hi
+A. CDL-mode now protects special characters in names with backslashes
+   http://nco.sf.net/nco.html#cdl
 
 KNOWN ISSUES NOT YET FIXED:
 
