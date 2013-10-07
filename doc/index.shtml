@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.829 2013-10-03 05:12:21 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.830 2013-10-07 06:48:31 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -119,6 +119,7 @@ Keep the size &lt;250&times;250 pixels.<br>
 NCO manipulates data stored in
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>-accessible
 formats, including 
+<a href="http://hdfgroup.org/products/hdf4">HDF4</a> and 
 <a href="http://hdfgroup.org/HDF5">HDF5</a>.
 It also exploits the geophysical expressivity of many 
 <a href="http://cf-pcmdi.llnl.gov/documents/cf-conventions/latest-cf-conventions-document-1">CF</a> 
@@ -145,7 +146,7 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2013 Oct&nbsp;??: NCO 4.3.7 (<tt>ncatted</tt>, <tt>ncrename</tt> groups) (<i>In progress</i>)
+<li>2013 Oct&nbsp;??: NCO 4.3.7 (HDF4 support, <tt>ncatted</tt>, <tt>ncrename</tt> groups) (<i>In progress</i>)
 <li>2013 Sep&nbsp;27: NCO 4.3.6 (<tt>--dbl</tt> default, <tt>ncdismember</tt>)
 <li>2013 Sep&nbsp;20: NCO 4.3.5 (<tt>ncea</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups)
 <li>2013 Aug&nbsp;01: NCO 4.3.4 (<tt>ncpdq</tt> bugfix, HDF unpacking)
@@ -229,7 +230,8 @@ and
 <h2>What is NCO?</h2>
 <p>The netCDF Operators (NCO) comprise a dozen standalone,
 command-line programs that take 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> or
+<a href="http://hdfgroup.org">HDF</a> 
 files as input, then operate (e.g., derive new data, average, print,
 hyperslab, manipulate metadata) and output the results to screen or 
 files in text, binary, or netCDF formats.
@@ -262,9 +264,7 @@ Moreover, <tt>ncap2</tt> implements a powerful domain language which
 handles arbitrarily complex operations.
 The operators are as general as 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-itself: there are no restrictions on the contents of the 
-<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
-file(s) used as input.
+itself: there are no restrictions on the contents of input file(s).
 NCO's internal routines are completely dynamic and impose no limit on
 the number or sizes of dimensions, variables, and files.
 NCO is designed to be used both interactively and with large batch jobs.
@@ -611,6 +611,7 @@ You can also retrieve the source of tagged versions directly
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.3.7</b>: (<i>In Progress, features completed or being worked on include</i>)
+HDF4 support;
 <tt>ncatted</tt>, <tt>ncrename</tt> group features;
 <tt>ncwa</tt> full scoping for weight, mask;</li>
 <li><b>NCO 4.3.6</b>: (<i>Current Stable Release</i>)

@@ -79,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.97 2013-10-07 03:47:44 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.98 2013-10-07 06:48:31 zender Exp $";
   
  data:
   area=10.,10.;
@@ -307,7 +307,7 @@ netcdf in_grp {
  group: g12 { // Level 1
     // Purpose: Test special characters in names
     // Most special characters need backslash protection
-    : comma_in_name\, = "foo";
+  : comma_in_name\, = "foo";
   : lt_in_name\< = "foo";
   : gt_in_name\> = "foo";
   : hash_in_name\# = "foo";
@@ -324,7 +324,7 @@ netcdf in_grp {
   : lbracket_in_name\[ = "foo";
   : rbracket_in_name\] = "foo";
   : plus_in_name+ = "foo";
-  : period_in_name. = "foo";
+    //  : period_in_name. = "foo"; // Likely to cause DAP server error
   : hyphen_in_name- = "foo";
   : at_in_name@ = "foo";
  } // end g12

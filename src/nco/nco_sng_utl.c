@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.62 2013-10-07 03:47:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.63 2013-10-07 06:48:31 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -162,33 +162,99 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   /* Purpose: Turn variable/dimension/attribute name into legal CDL 
      Currently this means protecting special characters with backslash so ncgen can read them
      NB: Calling function must free() memory containing CDL-ized string
-     NB: NASA-generated HDF4 MODIS files actually have colons in the names! */
+     Weird file menagerie shows that:
+     NASA HDF4 TRMM files (3B43*.HDF) have filenames starting with numerals (and no metadata)
+     NASA HDF4 AIRS files (AIRS*.hdf) have colons in dimension names
+     NASA HDF4 AMSR_E files (AMSR_E*.hdf) have spaces in variable names, colons and spaces in dimension names
+     NASA HDF4 MODIS files (MOD*.hdf) have colons in names
+     NASA HDF4 MOPPITT files (MOP*.hdf) have spaces in variable names, colons and spaces in dimension names */
 
   /* https://www.unidata.ucar.edu/software/netcdf/docs/netcdf/CDL-Syntax.html:
-     "In CDL, most special characters are escaped with a backslash '\' character, but that character is not actually part of the netCDF name. The special characters that do not need to be escaped in CDL names are underscore '_', period '.', plus '+', hyphen '-', or at sign '@'. */ 
+     "In CDL, most special characters are escaped with a backslash '\' character, but that character is not actually part of the netCDF name. The special characters that do not need to be escaped in CDL names are underscore '_', period '.', plus '+', hyphen '-', or at sign '@'. */
 
+  char *chr_in_ptr; /* [sng] Pointer to current character in input name */
+  char *chr_out_ptr; /* [sng] Pointer to current character in output name */
   char *nm_cdl; /* [sng] CDL-compatible name */
+  char *nm_cpy; /* [sng] Copy of input */
 
   int nm_lng; /* [nbr] Length of original name */
-  int trn_nbr=0; /* [nbr] Number of characters translated */
   
   if(nm_sng == NULL) return NULL;
 
   /* Otherwise name contains special character(s)... */
   nm_lng=strlen(nm_sng);
   /* Maximum conceivable length of CDL-ized name */
-  nm_cdl=(char *)nco_malloc(2*nm_lng+1L);
-  nm_cdl[0]='0';
+  chr_out_ptr=nm_cdl=(char *)nco_malloc(4*nm_lng+1L);
+  /* Copy to preserve const-ness */
+  chr_in_ptr=nm_cpy=(char *)strdup(nm_sng);
+  /* NUL-terminate in case input string is empty so will be output string */
+  chr_out_ptr[0]='0';
 
   /* Search and replace special characters */
-  for(int chr_idx=0;chr_idx<nm_lng;chr_idx++){
-    if(nm_sng[chr_idx] == '<' || nm_sng[chr_idx] == '>' || nm_sng[chr_idx] == '#' || nm_sng[chr_idx] == '!' || nm_sng[chr_idx] == '$' || nm_sng[chr_idx] == '&' || nm_sng[chr_idx] == ':' || nm_sng[chr_idx] == '=' || nm_sng[chr_idx] == ';' || nm_sng[chr_idx] == '{' || nm_sng[chr_idx] == '}' || nm_sng[chr_idx] == '(' || nm_sng[chr_idx] == ')' || nm_sng[chr_idx] == '[' || nm_sng[chr_idx] == ']' ){
-      nm_cdl[chr_idx+trn_nbr]='\\';
-      trn_nbr++;
-    } /* endif */
-    nm_cdl[chr_idx+trn_nbr]=nm_sng[chr_idx];
+
+  /* This block stolen from: ncdump/utils.c/escaped_name() */ 
+
+  if((*chr_in_ptr >= 0x01 && *chr_in_ptr <= 0x20) || (*chr_in_ptr == 0x7f)){
+    (void)fprintf(stderr,"%s: ERROR name begins with space or control-character: %c\n",prg_nm_get(),*chr_in_ptr);
+    nco_exit(EXIT_FAILURE);
+  } /* endif error */
+
+  /* Special case: leading number allowed, but we must escape it for CDL */
+  if((*chr_in_ptr >= '0' && *chr_in_ptr <= '9')) *chr_out_ptr++ = '\\';
+
+  while(*chr_in_ptr){
+    if(isascii(*chr_in_ptr)){
+      if(iscntrl(*chr_in_ptr)){	/* Render control chars as two hex digits, \%xx */
+	snprintf(chr_out_ptr,4,"\\%%%.2x",*chr_in_ptr);
+	chr_out_ptr+=4;
+      }else{
+	switch(*chr_in_ptr){
+	case ' ':
+	case '!':
+	case '"':
+	case '#':
+	case '$':
+	case '&':
+	case '\'':
+	case '(':
+	case ')':
+	case '*':
+	case ',':
+	case ':':
+	case ';':
+	case '<':
+	case '=':
+	case '>':
+	case '?':
+	case '[':
+	case ']':
+	case '\\':
+	case '^':
+	case '`':
+	case '{':
+	case '|':
+	case '}':
+	case '~':
+	  *chr_out_ptr++='\\';
+	  *chr_out_ptr++=*chr_in_ptr;
+	  break;
+	default: /* NB: includes '/' */
+	  *chr_out_ptr++=*chr_in_ptr;
+	  break;
+	} /* end switch */
+      } /* not a control character */
+    }else{ /* not ascii, assume just UTF-8 byte */
+      *chr_out_ptr++=*chr_in_ptr;
+    } /* end else not ascii */
+    /* Advance character */
+    chr_in_ptr++;
   } /* end while loop */
-  
+  /* NUL-terminate */
+  *chr_out_ptr=0;
+
+  /* Free memory */
+  nm_cpy=(char *)nco_free(nm_cpy);
+
   return nm_cdl;
 } /* end nm2sng_cdl */
 

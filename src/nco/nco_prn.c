@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.169 2013-10-07 02:59:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.170 2013-10-07 06:48:31 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -999,7 +999,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
 
     if(prn_flg->trd){
       if((nco_hdf_cnv_get() != nco_hdf4) && deflate) (void)fprintf(stdout,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
-      if(nco_hdf_cnv_get() == nco_hdf4) (void)fprintf(stdout,"%*s%s compression and shuffling characteristics are HDF4_UNKOWN\n",prn_ndn,spc_sng,var_trv->nm);
+      if(nco_hdf_cnv_get() == nco_hdf4) (void)fprintf(stdout,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
       (void)fprintf(stdout,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
     } /* !prn_flg->trd */
 
