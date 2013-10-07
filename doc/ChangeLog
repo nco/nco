@@ -1,10 +1,15 @@
-2013-10-05  Charlie Zender  <zender@uci.edu>
+2013-10-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.7 release procedure:
  	Changes since nco-4_3_6: --mrd, --hdf4
 	cd ~/nco;cvs tag -d nco-4_3_7;cvs tag -d nco-4_3_7-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.7 release"
 	cvs tag -c nco-4_3_7;cvs tag -c nco-4_3_7-1
+
+	* CDL-mode prints CDL-compatible group/variable/dimension/attribute names
+	Colons in these names are now backslash-protected
+
+2013-10-05  Charlie Zender  <zender@uci.edu>
 
 	* Wrote nm2sng_cdl() to CDL-ize variable/dimension/attribute names
 

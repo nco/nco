@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.168 2013-10-05 05:31:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.169 2013-10-07 02:59:47 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -24,7 +24,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   const char spc_sng[]=""; /* [sng] Space string */
   const char cma_sng[]=", "; /* [sng] Comma string */
 
+  char *nm_cdl;
   char *sng_val_sng; /* [sng] String of NC_CHAR */
+
   char att_sng_dlm[NCO_MAX_LEN_FMT_SNG];
   char att_sng_pln[NCO_MAX_LEN_FMT_SNG];
   char chr_val; /* [sng] Current character */
@@ -84,7 +86,11 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
     (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
     
-    if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s%s:%s = ",prn_ndn,spc_sng,(att[idx].type == NC_STRING) ? "string " : "",src_sng,att[idx].nm); 
+    if(prn_flg->cdl){
+      nm_cdl=nm2sng_cdl(att[idx].nm);
+      (void)fprintf(stdout,"%*s%s%s:%s = ",prn_ndn,spc_sng,(att[idx].type == NC_STRING) ? "string " : "",src_sng,nm_cdl); 
+      nm_cdl=(char *)nco_free(nm_cdl);
+    } /* !cdl */
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
     if(prn_flg->xml) (void)fprintf(stdout,"%*s<attribute name=\"%s\" value=\"",prn_ndn,spc_sng,att[idx].nm); 
     
@@ -890,6 +896,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   char dmn_sng[200];
   char sng_foo[200];
 
+  char *nm_cdl;
+
   int deflate; /* [flg] Deflation is on */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
   int dmn_idx;
@@ -968,7 +976,13 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   }else{
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
-      if(prn_flg->xml) (void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? " shape=\"" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < nbr_dim-1) ? " " : "\""); else (void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? "(" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < nbr_dim-1) ? "," : ")");
+      if(prn_flg->xml){
+	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? " shape=\"" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < nbr_dim-1) ? " " : "\""); 
+      }else{
+	nm_cdl=nm2sng_cdl(var_trv->var_dmn[dmn_idx].dmn_nm);
+	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? "(" : "",nm_cdl,(dmn_idx < nbr_dim-1) ? "," : ")");
+	nm_cdl=(char *)nco_free(nm_cdl);
+      } /* !xml */
       (void)strcat(dmn_sng,sng_foo);
     } /* end loop over dim */
 
@@ -990,7 +1004,11 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     } /* !prn_flg->trd */
 
   } /* end if variable is scalar */
-  if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s %s%s ;\n",prn_ndn,spc_sng,cdl_typ_nm(var_typ),var_trv->nm,dmn_sng);
+  if(prn_flg->cdl){
+    nm_cdl=nm2sng_cdl(var_trv->nm);
+    (void)fprintf(stdout,"%*s%s %s%s ;\n",prn_ndn,spc_sng,cdl_typ_nm(var_typ),nm_cdl,dmn_sng);
+    nm_cdl=(char *)nco_free(nm_cdl);
+  } /* !cdl */
   if(prn_flg->xml) (void)fprintf(stdout,"%s>\n",dmn_sng);
 
   /* Print dimension sizes and names */
@@ -1083,6 +1101,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *dlm_sng=NULL;                        /* [sng] User-specified delimiter string, if any */
+  char *nm_cdl;
   char *unit_sng;                            /* [sng] Units string */ 
   char *sng_val_sng;                         /* [sng] String of NC_CHAR */
   char val_sng[NCO_ATM_SNG_LNG];
@@ -1245,7 +1264,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     nco_bool is_compound; /* [flg] Variable is compound (has non-leading record dimension) */
     nco_bool cpd_rec_dmn[NC_MAX_DIMS]; /* [flg] Dimension is compound */
     (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
-    (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,var_nm);
+    nm_cdl=nm2sng_cdl(var_nm);
+    (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
+    nm_cdl=(char *)nco_free(nm_cdl);
     var_szm1=var.sz-1L;
     is_compound=nco_prn_cpd_chk(var_trv,trv_tbl);
 
@@ -1703,7 +1724,7 @@ lbl_chr_prn:
   if(var.nbr_dim > 0){
     (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
     lmt=(lmt_sct **)nco_free(lmt);
-  }
+  } /* endif */
 
 } /* end nco_prn_var_val_trv() */
 
@@ -1730,6 +1751,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   char grp_nm[NC_MAX_NAME+1L];      /* [sng] Group name */
   char var_nm[NC_MAX_NAME+1L];      /* [sng] Variable name */ 
 
+  char *nm_cdl;
   char *var_nm_fll;                /* [sng] Full path for variable */
 
   int *grp_ids;                    /* [ID] Sub-group IDs array */  
@@ -1801,7 +1823,9 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(prn_flg->xml){
     if(grp_dpt == 0) (void)fprintf(stdout,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"%s\">\n",prn_flg->fl_in);
   }else{ /* !xml */
-    if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
+    nm_cdl=nm2sng_cdl(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
+    if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_cdl);
+    nm_cdl=(char *)nco_free(nm_cdl);
     if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(stdout,"\n");
     if(grp_dpt == 0 && prn_flg->nfo_cdl) (void)fprintf(stdout,"%*s// %s",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
     if(grp_dpt == 0 && prn_flg->nfo_cdl) (void)fprintf(stdout,"%*s// ncgen -k netCDF-4 -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->fl_stb,prn_flg->fl_stb);
@@ -1815,7 +1839,9 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(prn_flg->xml){
       (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%lu\" />\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);
     }else{ /* !XML */
-      if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(prn_flg->cdl) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %lu%s\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
+      nm_cdl=nm2sng_cdl(dmn_lst[dmn_idx].nm);
+      if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,nm_cdl,(prn_flg->cdl) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %lu%s\n",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
+      nm_cdl=(char *)nco_free(nm_cdl);
     } /* !XML */
   } /* end loop over dimension */
 

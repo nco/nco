@@ -79,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.95 2013-09-30 04:56:18 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.96 2013-10-07 02:59:46 zender Exp $";
   
  data:
   area=10.,10.;
@@ -117,6 +117,10 @@ netcdf in_grp {
       scl=1.11;
       v1=11;
     } // end g1g1
+  group: g1\:g2 {
+      :purpose = "group name with semi-special character, a colon (makes CDL-parsing hard)";
+      :csznote = "As of 20131006, ncks skips groups with character names. ncdump handles them fine. e.g.,\nncgen -k netCDF-4 -b -o ~/nco/data/in_grp.nc ~/nco/data/in_grp.cdl\nncks --cdl -m -g g1 ~/nco/data/in_grp.nc | m\nncdump -h -g g1 ~/nco/data/in_grp.nc | m\n";
+    } // end g1:g2
   } // end g1
   
   //
