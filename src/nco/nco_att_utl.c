@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.157 2013-07-24 23:09:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.158 2013-10-08 23:11:58 pvicente Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -1360,6 +1360,8 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
     /* NUL-terminate arguments */
     rnm_lst[idx].old_nm[lng_arg_1]='\0';
     rnm_lst[idx].new_nm[lng_arg_2]='\0';
+
+    rnm_lst[idx].flg_found=False;
     
   } /* end loop over rnm_lst */
 

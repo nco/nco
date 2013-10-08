@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.160 2013-10-06 01:23:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.161 2013-10-08 23:11:58 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.160 2013-10-06 01:23:15 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.160 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.161 2013-10-08 23:11:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.161 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -531,6 +531,8 @@ main(int argc,char **argv)
       /* Match variable by name */
       if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && strcmp(trv_tbl->lst[idx_tbl].nm,var_rnm_lst[idx_var].old_nm) == 0){
         int grp_id;
+        /* Mark as found */
+        var_rnm_lst[idx_var].flg_found=True;
         /* Obtain group ID using full group name */
         (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
         /* Obtain variable ID  */
@@ -541,6 +543,22 @@ main(int argc,char **argv)
       } /* Is variable */
     } /* Loop table */
   } /* Loop input variable names */
+
+
+  for(int idx_var=0;idx_var<nbr_var_rnm;idx_var++){
+    /* If optional argument (".") on variable and not found anywhere, print a warning */
+    if(var_rnm_lst[idx_var].old_nm[0] == opt_chr && var_rnm_lst[idx_var].flg_found == False){
+      (void)fprintf(stdout,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx_var].old_nm+1L,fl_in);
+    } /* Optional argument case */
+  } /* Loop input variable names */
+
+  for(int idx_var=0;idx_var<nbr_var_rnm;idx_var++){
+    /* If variable was not found anywhere, print a warning */
+    if(var_rnm_lst[idx_var].flg_found == False){
+      (void)fprintf(stdout,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx_var].old_nm,fl_in);
+    } /* Variable was not found anywhere */
+  } /* Loop input variable names */
+
 
   /* Loop input group names */
   for(int idx_grp=0;idx_grp<nbr_grp_rnm;idx_grp++){

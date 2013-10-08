@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.408 2013-10-05 05:31:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.409 2013-10-08 23:11:58 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -566,6 +566,7 @@ extern "C" {
     char *old_nm;
     char *new_nm;
     int id;
+    nco_bool flg_found; /* [flg] Variable was found (Introduced for group cases, where a variable may exist in a group but not others) */
   } rnm_sct;
 
   /* DDRA information structure */
