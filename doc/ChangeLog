@@ -1,3 +1,14 @@
+2013-10-08  Charlie Zender  <zender@uci.edu>
+
+	* Clear garbage from stdin with safe method, not fflush(stdin)
+
+	* Close fp_in file resource for MFOs reading fl_in lists from files
+
+	* Received cppcheck static analysis check from dcb314
+	Fixed numerous three fprintf() formatting problems, one resource
+ 	leak, one undefined behavior, one misuse of C++ vector .empty(),
+	one potential NULL-deference.
+
 2013-10-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.7 release procedure:

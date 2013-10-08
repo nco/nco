@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.337 2013-10-05 08:33:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.338 2013-10-08 20:07:32 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.337 2013-10-05 08:33:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.337 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.338 2013-10-08 20:07:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.338 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -633,7 +633,7 @@ main(int argc,char **argv)
 
   if(GROUP_AGGREGATE){
 #ifndef ENABLE_NETCDF4
-    (void)fprintf(stderr,"%s: ERROR GAG requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n");
+    (void)fprintf(stderr,"%s: ERROR GAG requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
 #endif /* ENABLE_NETCDF4 */
     if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Aggregation (GAG) feature enabled\n",prg_nm_get());

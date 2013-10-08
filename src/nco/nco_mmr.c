@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.56 2013-10-05 05:04:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.57 2013-10-08 20:07:32 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -565,13 +565,13 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
   (void)fprintf(stdout,"%s: INFO %s reports system type is AIX so getrusage() uses kilobytes [kB] for size and seconds [s] for time. Page size is %d kB.\n",prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !AIX */
 #ifdef CRAY
-  (void)fprintf(stdout,"%s: INFO %s reports system type is CRAY so getrusage() units for page size and time are unknown.\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO %s reports system type is CRAY so getrusage() units for page size and time are unknown.\n",prg_nm_get(),fnc_nm);
 #endif /* !CRAY */
 #if (defined LINUX) || (defined LINUXAMD64)
   (void)fprintf(stdout,"%s: INFO %s reports system type is LINUX so getrusage() does implement ru_maxrss [kB] and DOES NOT implement ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !LINUX */
 #ifdef NECSX
-  (void)fprintf(stdout,"%s: INFO %s reports system type is NECSX so getrusage() units for page size and time are unknown.\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO %s reports system type is NECSX so getrusage() units for page size and time are unknown.\n",prg_nm_get(),fnc_nm);
 #endif /* !NECSX */
 #ifdef SGIMP64
   (void)fprintf(stdout,"%s: INFO %s reports system type is SGIMP64 so getrusage() uses bytes [B] for size, while time units are unknown. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);

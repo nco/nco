@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.151 2013-07-24 05:02:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.152 2013-10-08 20:07:32 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -195,7 +195,6 @@ ncap_att_gnrl
   const char *tmp_att_nm;
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
-
   
   var_sct *var_att;
   
@@ -209,7 +208,6 @@ ncap_att_gnrl
   
   if(location == 1 ) fl_id=prs_arg->in_id;  
   if(location == 2 ) fl_id=prs_arg->out_id;  
-
 
   // get var_id
   rcd=nco_inq_varid_flg(fl_id,s_src.c_str(),&var_id);
@@ -248,10 +246,8 @@ ncap_att_gnrl
         var_att=nco_var_dpl(var_vtr[idx]->var);
         Nvar=new NcapVar(var_att,s_fll ); 
         att_vtr.push_back(Nvar);  
-        
     } 
   }
-
 
   sz=att_vtr.size();
   // add new att to list;
@@ -267,8 +263,6 @@ ncap_att_gnrl
 #endif
 
   }
-  att_vtr.empty();
-
   return sz;
   
 } /* end ncap_att_gnrl() */

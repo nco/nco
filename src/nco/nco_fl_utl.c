@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.222 2013-09-23 21:43:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.223 2013-10-08 20:07:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -123,6 +123,7 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
   
   /* When output file already exists, query user whether to overwrite */
   if(rcd_sys != -1){
+    char garbage;
     char usr_rpl='z';
     short nbr_itr=0;
     
@@ -138,7 +139,14 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
       usr_rpl=(char)fgetc(stdin);
       /* Allow one carriage return per response free of charge */
       if(usr_rpl == '\n') usr_rpl=(char)fgetc(stdin);
-      (void)fflush(stdin);
+      /* Treat other charcacters after the last question/prompt, and before the next, as garbage */
+      do{garbage=fgetc(stdin);} while(garbage != '\n' && garbage != EOF);
+
+      /* (void)fflush(stdin);
+	 comp.lang.c 20000212 and http://www.eskimo.com/~scs/C-faq/q12.18.html
+	 C FAQ Author Steve Summit explains why not to use fflush(stdin)
+	 and how best to manually clean stdin of unwanted residue */
+
     } /* end while */
     
     if(usr_rpl == 'n') nco_exit(EXIT_SUCCESS);
@@ -412,7 +420,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	   Format string "%256s\n" tells scanf() to:
 	   1. Skip any initial whitespace
 	   2. Read first block of non-whitespace characters (up to 256 of them) into buffer
-	   3. The \n allows the entries to be separated by carriage returns */
+	   3. \n allows entries to be separated by carriage returns */
 	while(((cnv_nbr=fscanf(fp_in,fmt_sng,bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
 	  if(cnv_nbr == 0){
 	    (void)fprintf(stdout,"%s: ERROR stdin input not convertable to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",prg_nm_get(),FL_NM_IN_MAX_LNG);
@@ -426,9 +434,10 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
 	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
 	} /* end while */
-	/* comp.lang.c 20000212 and http://www.eskimo.com/~scs/C-faq/q12.18.html
-	   C FAQ Author Steve Summit explains why not to use fflush()
-	   and how best to manually clean stdin of unwanted residue */
+
+	/* Finished reading list. Close file resource if one was opened. */
+	if(fl_in != NULL && fp_in != NULL) (void)fclose(fp_in);
+
 #if 0
 	/* 20040621: Following flusher does no harm on Linux
 	   However, AIX gets caught in an infinite loop here */
@@ -1193,16 +1202,18 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       int fl_nm_sfx_lng=0;
 
       /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
-      if(fl_nbr) *fl_nbr=(int)strtol(fl_lst_abb[0],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(fl_lst_abb[0],"strtol",sng_cnv_rcd);
-      fl_nm_nbr_ttl=*fl_nbr;
+      if(fl_nbr){
+	*fl_nbr=(int)strtol(fl_lst_abb[0],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(fl_lst_abb[0],"strtol",sng_cnv_rcd);
+	fl_nm_nbr_ttl=*fl_nbr;
+      } /* endif */
 
       if(abb_arg_nbr > 1){
 	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(fl_lst_abb[1],"strtol",sng_cnv_rcd);
       }else{
 	fl_nm_nbr_dgt=3;
-      }/* end if */
+      } /* end if */
 
       if(abb_arg_nbr > 2){
 	fl_nm_nbr_ncr=(int)strtol(fl_lst_abb[2],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
