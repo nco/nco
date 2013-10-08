@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.619 2013-10-07 03:47:44 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.620 2013-10-08 04:22:35 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.7 are ready. 
 
@@ -82,7 +82,7 @@ KNOWN ISSUES NOT YET FIXED:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.3.7 built/tested with netCDF
-   4.3.1-rc3 snapshot 20130827 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.3.1-rc4 snapshot 20131007 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
@@ -139,6 +139,19 @@ D. NOT YET FIXED (NCO problem)
    TODO nco1102
    Cause: NCO parsing of ncatted arguments is not yet sophisticated
    enough to handle arrays of NC_STRINGS with embedded delimiters.
+
+E. NOT YET FIXED
+   Report correct chunking and compression information for HDF4 files
+
+   Demonstration:
+   ncdump -h -s MOP01-20121231-L1V3.34.10.hdf
+   ncks -m MOP01-20121231-L1V3.34.10.hdf
+
+   20131007: Verified problem still exists
+
+   Cause: some libnetCDF library functions fail on HDF4 file inquiries.
+   Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file
+   Tracking tickets NCF-272, NCF-273
 
 "Sticky" reminders:
 

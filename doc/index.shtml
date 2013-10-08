@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.830 2013-10-07 06:48:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.831 2013-10-08 04:22:35 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -147,6 +147,7 @@ and
 
 <ul>
 <li>2013 Oct&nbsp;??: NCO 4.3.7 (HDF4 support, <tt>ncatted</tt>, <tt>ncrename</tt> groups) (<i>In progress</i>)
+<li>2012 Oct&nbsp;02: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201310.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2013 Sep&nbsp;27: NCO 4.3.6 (<tt>--dbl</tt> default, <tt>ncdismember</tt>)
 <li>2013 Sep&nbsp;20: NCO 4.3.5 (<tt>ncea</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups)
 <li>2013 Aug&nbsp;01: NCO 4.3.4 (<tt>ncpdq</tt> bugfix, HDF unpacking)
