@@ -5,9 +5,9 @@
 	* Close fp_in file resource for MFOs reading fl_in lists from files
 
 	* Received cppcheck static analysis check from dcb314
-	Fixed numerous three fprintf() formatting problems, one resource
- 	leak, one undefined behavior, one misuse of C++ vector .empty(),
-	one potential NULL-deference.
+	Fixed three fprintf() formatting problems, one resource leak, one
+	undefined behavior, one misuse of C++ vector .empty(), one
+	potential NULL-deference.
 
 2013-10-06  Charlie Zender  <zender@uci.edu>
 

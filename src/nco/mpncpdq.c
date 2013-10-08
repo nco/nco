@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.107 2013-03-11 23:09:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.108 2013-10-08 22:26:32 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.107 2013-03-11 23:09:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.107 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.108 2013-10-08 22:26:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.108 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -1198,8 +1198,8 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
-    if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
-    if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
+    if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
+    if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
     if(fl_in) fl_in=(char *)nco_free(fl_in);
     if(fl_out) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);

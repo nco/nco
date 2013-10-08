@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.113 2013-03-11 23:09:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.114 2013-10-08 22:26:32 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.113 2013-03-11 23:09:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.113 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.114 2013-10-08 22:26:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.114 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -953,8 +953,8 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
-    if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
-    if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
+    if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
+    if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
     if(fl_out) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
     if(fl_pth) fl_pth=(char *)nco_free(fl_pth);

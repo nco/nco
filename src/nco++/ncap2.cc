@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.174 2013-10-05 06:15:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.175 2013-10-08 22:26:33 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.174 2013-10-05 06:15:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.174 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.175 2013-10-08 22:26:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.175 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -997,8 +997,8 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
-    if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
-    if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
+    if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
+    if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
     if(fl_in) fl_in=(char*)nco_free(fl_in);
     if(fl_out) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);

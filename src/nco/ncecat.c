@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.338 2013-10-08 20:07:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.339 2013-10-08 22:26:32 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.338 2013-10-08 20:07:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.338 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.339 2013-10-08 22:26:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.339 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -857,8 +857,9 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
-    if(cnk_map_sng) cnk_map_sng=(char *)strdup(cnk_map_sng);
-    if(cnk_plc_sng) cnk_plc_sng=(char *)strdup(cnk_plc_sng);
+    if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
+    if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
+    if(grp_out) grp_out=(char *)nco_free(grp_out);
     if(fl_in) fl_in=(char *)nco_free(fl_in);
     if(fl_out) fl_out=(char *)nco_free(fl_out);
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.999 2013-10-05 05:31:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1000 2013-10-08 22:26:32 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4722,13 +4722,12 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   char *rec_dmn_nm_in;                       /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out;                      /* [sng] Record dimension name, re-ordered */
 
-  nco_bool REDEFINED_RECORD_DIMENSION;       /* [flg] Re-defined record dimension */
-
-  nm_tbl_sct *rec_dmn_nm;                    /* [sct] Record dimension names array */
-
   int dmn_idx_out_in[NC_MAX_DIMS];           /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
 
+  nco_bool REDEFINED_RECORD_DIMENSION;       /* [flg] Re-defined record dimension */
   nco_bool dmn_rvr_in[NC_MAX_DIMS];          /* [flg] Reverse dimension  (Stored in GTT ) */
+
+  nm_tbl_sct *rec_dmn_nm;                    /* [sct] Record dimension names array */
 
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
@@ -4758,7 +4757,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
     if(rec_dmn_nm->lst){
       rec_dmn_nm_in=(char *)strdup(rec_dmn_nm->lst[0].nm);
       rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
-    }
+    } /* !rec_dmn_nm->lst */
 
     /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
     rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
@@ -4767,8 +4766,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
     for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
       var_trv->dmn_idx_out_in[idx_dmn]=dmn_idx_out_in[idx_dmn];
       var_trv->dmn_rvr_in[idx_dmn]=dmn_rvr_in[idx_dmn];
-    } 
-
+    } /* end loop over dimensions */
 
     /* If record dimension required by current variable re-order...
     ...and variable is multi-dimensional (one dimensional arrays cannot request record dimension changes)... */
@@ -4778,10 +4776,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         /* ...and current output record dimension already differs from input record dimension... */
         if(REDEFINED_RECORD_DIMENSION){
           /* ...then requested re-order requires multiple record dimensions... */
-          if(dbg_lvl_get() >= nco_dbg_std){
-            (void)fprintf(stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",
-              prg_nm_get(),var_prc[idx_var_prc]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
-          }
+          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm_get(),var_prc[idx_var_prc]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
           break;
         }else{ /* !REDEFINED_RECORD_DIMENSION */
           /* ...otherwise, update output record dimension name... */
@@ -4799,12 +4794,11 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
       } /* endif new and old record dimensions differ */
     } /* endif current variable is record variable */
 
-
     /* Memory management for record dimension names */
     if(rec_dmn_nm){
       for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
       rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
-    }
+    } /* !rec_dmn_nm */
 
   } /* Loop processed variables */
 

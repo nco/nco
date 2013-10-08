@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.152 2013-10-08 20:07:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.153 2013-10-08 22:26:33 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -261,7 +261,6 @@ ncap_att_gnrl
 #else
       var_vtr.push_ow(att_vtr[idx]);         
 #endif
-
   }
   return sz;
   

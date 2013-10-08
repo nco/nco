@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.43 2013-08-30 04:36:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.44 2013-10-08 22:26:32 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -420,25 +420,26 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
   int idx;
   int len; 
   char *lcl_sng;  
-  tm_typ ret_typ;
+  tm_typ rcd_typ;
   
   lcl_sng=strdup(ud_sng);
   
   /* Initially set ret type to void */
-  ret_typ=tm_void;   
+  rcd_typ=tm_void;   
   
   /* Convert to lower case */
   len=strlen(lcl_sng);
   for(idx=0;idx<len;idx++) lcl_sng[idx]=tolower(lcl_sng[idx]);
   
-  if(!strcmp(lcl_sng,"year") || !strcmp(lcl_sng,"years")) ret_typ=tm_year;
-  else if(!strcmp(lcl_sng,"month") || !strcmp(lcl_sng,"months")) ret_typ=tm_month;
-  else if(!strcmp(lcl_sng,"day") || !strcmp(lcl_sng,"days")) ret_typ=tm_day;
-  else if(!strcmp(lcl_sng,"hour") || !strcmp(lcl_sng,"hours")) ret_typ=tm_hour;
-  else if(!strcmp(lcl_sng,"min") || !strcmp(lcl_sng,"mins") || !strcmp(lcl_sng,"minute") || !strcmp(lcl_sng,"minutes")) ret_typ=tm_min;
-  else if(!strcmp(lcl_sng,"sec") || !strcmp(lcl_sng,"secs") || !strcmp(lcl_sng,"second") || !strcmp(lcl_sng,"seconds")) ret_typ=tm_sec;
+  if(!strcmp(lcl_sng,"year") || !strcmp(lcl_sng,"years")) rcd_typ=tm_year;
+  else if(!strcmp(lcl_sng,"month") || !strcmp(lcl_sng,"months")) rcd_typ=tm_month;
+  else if(!strcmp(lcl_sng,"day") || !strcmp(lcl_sng,"days")) rcd_typ=tm_day;
+  else if(!strcmp(lcl_sng,"hour") || !strcmp(lcl_sng,"hours")) rcd_typ=tm_hour;
+  else if(!strcmp(lcl_sng,"min") || !strcmp(lcl_sng,"mins") || !strcmp(lcl_sng,"minute") || !strcmp(lcl_sng,"minutes")) rcd_typ=tm_min;
+  else if(!strcmp(lcl_sng,"sec") || !strcmp(lcl_sng,"secs") || !strcmp(lcl_sng,"second") || !strcmp(lcl_sng,"seconds")) rcd_typ=tm_sec;
   
-  return ret_typ;
+  if(lcl_sng) lcl_sng=(char *)nco_free(lcl_sng);
+  return rcd_typ;
 } /* end nco_cln_get_tm_typ() */
 
 nco_cln_typ /* [enum] Calendar type */    
@@ -448,29 +449,29 @@ nco_cln_get_cln_typ /*  [fnc]  Calendar type or cln_nil if not found */
   int idx;
   int len; 
   char *lcl_sng;  
-  nco_cln_typ ret_typ;
+  nco_cln_typ rcd_typ;
   
   if(!ud_sng) return cln_nil;
   
   lcl_sng=strdup(ud_sng);
   
   /* Initially set return type to void */
-  ret_typ=cln_nil;
+  rcd_typ=cln_nil;
   
   /* Convert to lower case */
   len=strlen(lcl_sng);
   for(idx=0;idx<len;idx++) lcl_sng[idx]=tolower(lcl_sng[idx]);
   
-  if(strstr(lcl_sng,"standard")) ret_typ=cln_std;
-  else if(strstr(lcl_sng,"gregorian") || strstr(lcl_sng,"proleptic_gregorian")) ret_typ=cln_grg;
-  else if(strstr(lcl_sng,"julian")) ret_typ=cln_jul;
-  else if(strstr(lcl_sng,"360_day")) ret_typ=cln_360;
-  else if(strstr(lcl_sng,"noleap") || strstr(lcl_sng,"365_day")) ret_typ=cln_365;
-  else if(strstr(lcl_sng,"all_leap") || strstr(lcl_sng,"366_day")) ret_typ=cln_366;
+  if(strstr(lcl_sng,"standard")) rcd_typ=cln_std;
+  else if(strstr(lcl_sng,"gregorian") || strstr(lcl_sng,"proleptic_gregorian")) rcd_typ=cln_grg;
+  else if(strstr(lcl_sng,"julian")) rcd_typ=cln_jul;
+  else if(strstr(lcl_sng,"360_day")) rcd_typ=cln_360;
+  else if(strstr(lcl_sng,"noleap") || strstr(lcl_sng,"365_day")) rcd_typ=cln_365;
+  else if(strstr(lcl_sng,"all_leap") || strstr(lcl_sng,"366_day")) rcd_typ=cln_366;
 
   lcl_sng=(char *)nco_free(lcl_sng);
   
-  return ret_typ;
+  return rcd_typ;
 } /* end nco_cln_get_cln_typ() */
 
 int /* O [nbr] Number of days */
@@ -616,7 +617,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   
   /* Does fl_unt_sng look like a regular timestamp? */ 
   if(sscanf(fl_unt_sng,"%d-%d",&year,&month) == 2){
-    lcl_unt_sng=(char *)nco_malloc((strlen(fl_unt_sng)+3L) *sizeof(char) );
+    lcl_unt_sng=(char *)nco_malloc((strlen(fl_unt_sng)+3L)*sizeof(char));
     strcpy(lcl_unt_sng,"s@");
     strcat(lcl_unt_sng,fl_unt_sng);
   }else{
@@ -629,6 +630,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
     lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
     return rcd;
   } /* endif */
+  lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
   
   /* Obtain units type from fl_bs_sng */
   if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
