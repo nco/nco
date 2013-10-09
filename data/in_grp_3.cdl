@@ -31,7 +31,6 @@
 netcdf in_grp_3 {
 
   :Conventions = "CF-1.0";
-  
 
   //
   //g3
@@ -382,7 +381,6 @@ netcdf in_grp_3 {
   //
   //g20 test cases for ncwa; same variables as ncwa netCDF3 tests
   //
-  
   group: g20 {
   dimensions:
    lat=2;
@@ -405,7 +403,6 @@ netcdf in_grp_3 {
   //
   // prototype problem from ACCESS 
   //
-  
   group: g21 { 
   dimensions:
     lat=2;
@@ -426,7 +423,6 @@ netcdf in_grp_3 {
   //
   // prototype problem from ACCESS 
   //
-  
   group: g22 { 
   dimensions:
     lat=3;
@@ -444,7 +440,6 @@ netcdf in_grp_3 {
   snc=1,2,3,4,5,6,7,8,9;
   } // end g22
   
-  
   group: g90 {
   dimensions:
   dim90=2;
@@ -457,7 +452,6 @@ netcdf in_grp_3 {
   //
   // ncra test case
   //
-  
   group: g23 { 
    dimensions:
     lat=2;
@@ -482,7 +476,6 @@ netcdf in_grp_3 {
   //
   // ncra test case
   //
-  
   group: g24 { 
    dimensions:
     lat=2;
@@ -503,12 +496,9 @@ netcdf in_grp_3 {
     snd=1,2,3,4,5,6;
   } // end g24
   
-  
-  
   //
   // ncra test cases
   //
-  
   group: g25 { 
   
     //g25g1, g25g2: same data
@@ -546,7 +536,6 @@ netcdf in_grp_3 {
       one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;      
     } // end g25g3
 	
-
   } // end g25
   
   //ncwa: test weight and hyperslab
@@ -569,7 +558,4 @@ netcdf in_grp_3 {
 	 gw_lon = 1, 1, 1 ;
 	} // end g26
 
-  
- 
- 
 } // end root group

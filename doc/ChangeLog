@@ -1,5 +1,9 @@
 2013-10-09  Charlie Zender  <zender@uci.edu>
 
+	* Add ncecat regression test of concatenating variables with different IDs
+
+	* Re-add nco_var_mtd_refresh() to ncecat main loop
+
 	* Fix cppcheck error using sng_val_sng as sprintf() parameter and destination
 
 2013-10-08  Charlie Zender  <zender@uci.edu>

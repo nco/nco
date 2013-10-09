@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.339 2013-10-07 03:47:43 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.340 2013-10-09 18:37:18 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -938,8 +938,6 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
-
-
 	   
 #ncecat #9 
 #Check that "time" is eliminated as record
@@ -958,7 +956,23 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			       
-    
+
+#ncecat #10 
+#Concatenate files containing same variable in different orders
+# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
+# ncecat -O -p ~ foo1.nc foo2.nc ~/foo3.nc
+# ncks -C -H -v one -d record,1 -s '%g' ~/foo3.nc
+
+    $dsc_sng="Concatenate variables with different ID ordering";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncecat -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -H -d record,1 -v one -s '%g' %tmp_fl_02%";
+    $tst_cmd[4]="1";
+    $tst_cmd[5]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			       
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
@@ -997,13 +1011,13 @@ print "\n";
     
 #ncflint #3
     
+    $dsc_sng="switch order of occurrence to test for commutivity";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,1 -v mss_val $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -d lon,0 -v mss_val $in_pth_arg in.nc %tmp_fl_02%";
     $tst_cmd[2]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5 %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
     $tst_cmd[3]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -w 0.5,0.5  %tmp_fl_02% %tmp_fl_01%  %tmp_fl_04%  $foo_y_fl $foo_x_fl $foo_yx_fl";
     $tst_cmd[4]="ncdiff $omp_flg -h -O $fl_fmt $nco_D_flg %tmp_fl_03% %tmp_fl_04% %tmp_fl_05%";
     $tst_cmd[5]="ncks -C -H --no_blank -s '%g' -v mss_val %tmp_fl_05% ";
-    $dsc_sng="switch order of occurrence to test for commutivity";
     $tst_cmd[6]="1e+36";
     $tst_cmd[7]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
@@ -1011,12 +1025,12 @@ print "\n";
     
 #ncflint #4    
 
+    $dsc_sng="output type float when interpolating between two packed floats";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v pck_3 $in_pth_arg in.nc %tmp_fl_01%";
     $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -v pck_5 $in_pth_arg in.nc %tmp_fl_02%";
     $tst_cmd[2]="ncrename -h -O $fl_fmt $nco_D_flg -v pck_5,pck_3 %tmp_fl_02%";
     $tst_cmd[3]="ncflint $omp_flg -h -O $fl_fmt $nco_D_flg -v pck_3 %tmp_fl_01% %tmp_fl_02% %tmp_fl_03%";
     $tst_cmd[4]="ncks -C -H -s '%g' -v pck_3 %tmp_fl_03% ";
-    $dsc_sng="output type float when interpolating between two packed floats";
     $tst_cmd[5]="4";
     $tst_cmd[6]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);

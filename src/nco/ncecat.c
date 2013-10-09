@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.339 2013-10-08 22:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.340 2013-10-09 18:37:19 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.339 2013-10-08 22:26:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.339 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.340 2013-10-09 18:37:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.340 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -787,9 +787,10 @@ main(int argc,char **argv)
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(int idx=0;idx<nbr_var_prc;idx++){
-        int grp_out_id;    /* [ID] Group ID (output) */
-        int var_out_id;    /* [ID] Variable ID (output) */
-        trv_sct *var_trv;  /* [sct] Variable GTT object */
+	int grp_id; /* [ID] Group ID (input) */
+        int grp_out_id; /* [ID] Group ID (output) */
+        int var_out_id; /* [ID] Variable ID (output) */
+        trv_sct *var_trv; /* [sct] Variable GTT object */
 
         in_id=in_id_arr[omp_get_thread_num()];
         if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
@@ -797,6 +798,9 @@ main(int argc,char **argv)
 
         /* Obtain variable GTT object using full variable name */
         var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+	/* Variables may have different ID, missing_value, type, in each file */
+	(void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+	(void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
 
         assert(var_trv);
 
