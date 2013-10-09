@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.162 2013-10-09 22:32:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.163 2013-10-09 23:01:58 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.162 2013-10-09 22:32:13 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.162 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.163 2013-10-09 23:01:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.163 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -548,13 +548,14 @@ main(int argc,char **argv)
         if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed variable \'%s\' to \'%s\'\n",prg_nm,var_rnm_lst[idx_var].old_nm,var_rnm_lst[idx_var].new_nm);
       } /* Is variable */
     } /* Loop table */
-    var_rnm=(char *)nco_free(var_rnm);
+    var_rnm=(char *)strdup(var_rnm_lst[idx_var].old_nm);
   } /* Loop input variable names */
 
   for(int idx_var=0;idx_var<nbr_var_rnm;idx_var++){
     /* If variable was not found anywhere, print a warning */
     if(var_rnm_lst[idx_var].flg_found == False){
-      (void)fprintf(stdout,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx_var].old_nm,fl_in);
+      (void)fprintf(stdout,"%s: WARNING Variable \"%s\" not present in %s, exiting it.\n",prg_nm,var_rnm_lst[idx_var].old_nm,fl_in);
+      nco_exit(EXIT_FAILURE);
     } /* Variable was not found anywhere */
   } /* Loop input variable names */
 
