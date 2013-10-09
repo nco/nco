@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1000 2013-10-08 22:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1001 2013-10-09 20:27:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4699,7 +4699,7 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
 } /* end nco_dmn_rdr_trv() */
 
 void
-nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable */
+nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensionality in metadata of each re-ordered variable (ncpdq) */
 (trv_tbl_sct * const trv_tbl,         /* I/O [sct] GTT (Group Traversal Table) */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
  var_sct **var_prc,                   /* I/O [sct] Processed variables */
@@ -4723,11 +4723,17 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   char *rec_dmn_nm_out;                      /* [sng] Record dimension name, re-ordered */
 
   int dmn_idx_out_in[NC_MAX_DIMS];           /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
+  int prg_id;                                /* [enm] Program ID */
 
   nco_bool REDEFINED_RECORD_DIMENSION;       /* [flg] Re-defined record dimension */
   nco_bool dmn_rvr_in[NC_MAX_DIMS];          /* [flg] Reverse dimension  (Stored in GTT ) */
 
   nm_tbl_sct *rec_dmn_nm;                    /* [sct] Record dimension names array */
+
+  /* Get Program ID */
+  prg_id=prg_get(); 
+
+  assert(prg_id == ncpdq);
 
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
@@ -4754,7 +4760,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
     (void)nco_get_rec_dmn_nm(var_trv,trv_tbl,&rec_dmn_nm);                
 
     /* Use for record dimension name the first in array */
-    if(rec_dmn_nm->lst){
+    if(rec_dmn_nm && rec_dmn_nm->lst){
       rec_dmn_nm_in=(char *)strdup(rec_dmn_nm->lst[0].nm);
       rec_dmn_nm_out=(char *)strdup(rec_dmn_nm->lst[0].nm);
     } /* !rec_dmn_nm->lst */
@@ -4799,6 +4805,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
       for(int idx=0;idx<rec_dmn_nm->nbr;idx++) rec_dmn_nm->lst[idx].nm=(char *)nco_free(rec_dmn_nm->lst[idx].nm);
       rec_dmn_nm=(nm_tbl_sct *)nco_free(rec_dmn_nm);
     } /* !rec_dmn_nm */
+
+    if(rec_dmn_nm_in)rec_dmn_nm_in=(char *)nco_free(rec_dmn_nm_in);
+    if(rec_dmn_nm_out)rec_dmn_nm_out=(char *)nco_free(rec_dmn_nm_out);
 
   } /* Loop processed variables */
 
