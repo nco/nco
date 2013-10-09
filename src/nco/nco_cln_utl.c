@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.44 2013-10-08 22:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.45 2013-10-09 15:12:34 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -630,8 +630,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
     lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
     return rcd;
   } /* endif */
-  lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
-  
+
   /* Obtain units type from fl_bs_sng */
   if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
   
@@ -654,6 +653,8 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   crr_val=nco_cln_rel_val(unt_cln_sct.value-bs_cln_sct.value,lmt_cln,bs_tm_typ);                 
   
   *og_val=crr_val;
+  
+  lcl_unt_sng=(char *)nco_free(lcl_unt_sng);
   
   return NCO_NOERR;
 } /* end nco_cln_clc_tm() */
