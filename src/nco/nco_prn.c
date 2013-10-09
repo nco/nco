@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.170 2013-10-07 06:48:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.171 2013-10-09 15:33:05 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -26,6 +26,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   char *nm_cdl;
   char *sng_val_sng; /* [sng] String of NC_CHAR */
+  char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
 
   char att_sng_dlm[NCO_MAX_LEN_FMT_SNG];
   char att_sng_pln[NCO_MAX_LEN_FMT_SNG];
@@ -139,7 +140,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    sng_lng=att_sz;
 	    sng_lngm1=sng_lng-1UL;
 	    /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
-	    sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
+	    sng_val_sng_cpy=sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
 	  } /* endif first element of string array */
 	  /* New string begins each element where penultimate dimension changes */
 	  if(lmn%sng_lng == 0L){
@@ -147,7 +148,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    sng_val_sng[0]='\0';
 	  } /* endif new string */
 	  (void)strcat(sng_val_sng,(prn_flg->cdl) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng));
-	  if(chr_val == '\n' && lmn != att_szm1 && prn_flg->cdl) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng,prn_ndn+prn_flg->var_fst,spc_sng);
+	  if(chr_val == '\n' && lmn != att_szm1 && prn_flg->cdl) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
 	  if(lmn%sng_lng == sng_lngm1){
 	    (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
 	    /* Print commas after non-final strings */
@@ -1104,6 +1105,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   char *nm_cdl;
   char *unit_sng;                            /* [sng] Units string */ 
   char *sng_val_sng;                         /* [sng] String of NC_CHAR */
+  char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
   char val_sng[NCO_ATM_SNG_LNG];
   char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
   char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
@@ -1327,7 +1329,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
               sng_lng=lmt_msa[var.nbr_dim-1]->dmn_cnt;
               sng_lngm1=sng_lng-1UL;
               /* Worst case is printable strings are four times longer than unformatted, i.e. '\\' == "\\\\" */
-              sng_val_sng=(char *)nco_malloc(4*sng_lng+1UL);
+              sng_val_sng_cpy=sng_val_sng=(char *)nco_malloc(4*sng_lng+1UL);
             } /* endif first element of string array */
             /* New string begins each element where penultimate dimension changes */
             if(lmn%sng_lng == 0L){
@@ -1335,7 +1337,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
               sng_val_sng[0]='\0';
             } /* endif new string */
             (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
-            if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng,prn_ndn+prn_flg->var_fst,spc_sng);
+            if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
             if(lmn%sng_lng == sng_lngm1){
               (void)fprintf(stdout,"%s\"",sng_val_sng);
               /* Print commas after non-final strings */

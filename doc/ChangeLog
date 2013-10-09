@@ -1,3 +1,7 @@
+2013-10-09  Charlie Zender  <zender@uci.edu>
+
+	* Fix cppcheck error using sng_val_sng as sprintf() parameter and destination
+
 2013-10-08  Charlie Zender  <zender@uci.edu>
 
 	* Clear garbage from stdin with safe method, not fflush(stdin)
