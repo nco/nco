@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.340 2013-10-09 18:37:18 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.341 2013-10-09 21:47:43 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -322,7 +322,6 @@ print "\n";
 ####################
     $opr_nm="ncbo";
 ####################
-#if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_rgr_mpi =~ /$opr_nm/)) {
 
 # ncbo #1
 
@@ -637,9 +636,25 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			          
     
-#} # endif $mpi_prc == 0...
-    
-#printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait=<STDIN>;
+
+#ncbo #24
+#Operate files containing same variable in different orders
+# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
+# ncbo -O -p ~ foo1.nc foo2.nc ~/foo3.nc
+# ncks -C -H -v one ~/foo3.nc
+
+    $dsc_sng="Concatenate variables with different ID ordering";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncbo -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -H -v one %tmp_fl_02%";
+    $tst_cmd[4]="one = 0";
+    $tst_cmd[5]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			       	
+	
+	
     
 ####################
 #### ncea tests #### - OK !
@@ -1088,7 +1103,24 @@ print "\n";
     $tst_cmd[2]="SS_OK";        
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			    
+    $#tst_cmd=0; # Reset array 	
+
+#ncflint #8
+#Operate files containing same variable in different orders
+# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
+# ncra -O -p ~ foo1.nc foo2.nc ~/foo3.nc
+# ncks -C -H -v one ~/foo3.nc
+
+    $dsc_sng="Concatenate variables with different ID ordering";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncflint -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -H -v one %tmp_fl_02%";
+    $tst_cmd[4]="one = 1";
+    $tst_cmd[5]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 		
  
 
     
@@ -3570,7 +3602,26 @@ print "\n";
     $tst_cmd[4]="time[0]=5.5 record[0] one_dmn_rec_var[0]=6";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array		
+    $#tst_cmd=0; # Reset array	
+
+	   
+
+#ncra #30
+#Operate files containing same variable in different orders
+# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
+# ncra -O -p ~ foo1.nc foo2.nc ~/foo3.nc
+# ncks -C -H -v one ~/foo3.nc
+
+    $dsc_sng="Concatenate variables with different ID ordering";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncra -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -H -v one %tmp_fl_02%";
+    $tst_cmd[4]="one = 1";
+    $tst_cmd[5]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			       	
 
 
 	
