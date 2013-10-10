@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.665 2013-10-10 22:19:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.666 2013-10-10 22:50:45 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -153,8 +153,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.665 2013-10-10 22:19:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.665 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.666 2013-10-10 22:50:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.666 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -754,7 +754,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
     /* Write extracted data to output file */
-    (void)nco_xtr_wrt(in_id,out_id,fp_bnr,md5,HAVE_LIMITS,trv_tbl);
+    if(PRN_VAR_DATA) (void)nco_xtr_wrt(in_id,out_id,fp_bnr,md5,HAVE_LIMITS,trv_tbl);
 
     /* [fnc] Close unformatted binary data file */
     if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
