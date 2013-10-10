@@ -1,3 +1,7 @@
+2013-10-10  Charlie Zender  <zender@uci.edu>
+
+	* Treat PRN_[GLB,VAR]_METADATA as CPY_[GLB,VAR]_METADATA in ncks in.nc out.nc
+
 2013-10-09  Charlie Zender  <zender@uci.edu>
 
 	* Document HDF4, --hdf4 switch
