@@ -1,5 +1,7 @@
 2013-10-10  Charlie Zender  <zender@uci.edu>
 
+	* Document -m -M -H
+
 	* Treat PRN_VAR_DATA as CPY_VAR_DATA in ncks in.nc out.nc
 
 	* Treat PRN_[GLB,VAR]_METADATA as CPY_[GLB,VAR]_METADATA in ncks in.nc out.nc

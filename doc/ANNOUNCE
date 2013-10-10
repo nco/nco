@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.622 2013-10-10 03:50:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.623 2013-10-10 23:57:06 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.7 are ready. 
 
@@ -72,6 +72,19 @@ A. Operators perform arithmetic on atomic types NC_BYTE, NC_UBYTE.
    We are encountering more and more byte-data.
    NASA, for example, tends to store data with two significant digits
    as bytes rather than shorts. This makes perfect sense.
+
+A. ncks allow finer-grained control of copying data/metadata.
+   When copying/subsetting/appending files (as opposed to printing
+   them), the copying of data, variable metadata, and global/group
+   metadata are now turned OFF by -H, -m, -M, respectively. 
+   This is the opposite sense in which these switches work and
+   have always worked when printing a file. Thus:
+   -H turns off copying and turns on printing of data, 
+   -m turns off copying and turns on printing of variable metadata, 
+   -M turns off copying and turns on printing of group metadata.
+   This allows people to easily replace data or metadata in one file
+   with data or metadata from another.
+   http://nco.sf.net/nco.html#xmp_att_var_cpy
 
 A. HDF4: fxm
 

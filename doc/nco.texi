@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.882 2013-10-10 22:19:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.883 2013-10-10 23:57:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13307,13 +13307,15 @@ changing variable dimensionality, including the record dimension.
 @cindex @code{--data}
 @cindex @code{--hieronymus}
 @item -H 
-Print data to screen.
+Turn-on printing to screen or turn-off copying data (not metadata).
 Also activated using @samp{--print} or @samp{--prn}.
 By default @command{ncks} prints all metadata and data to screen if
 no netCDF output file is specified.
 Use @samp{-H} to print data to screen if a netCDF output is specified,
 or to restrict printing to data (no metadata) when no netCDF output is 
 specified.
+Also use @samp{-H} to turn-off copying data (not metadata) to an output
+file. 
 Unless otherwise specified (with @code{-s}), each element of the data
 hyperslab prints on a separate line containing the names, indices,
 and, values, if any, of all of the variables dimensions.
@@ -13364,14 +13366,19 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 @cindex @code{--Metadata}
 @cindex metadata, global 
 @item -M
-Print to screen the global metadata describing the file.
-This includes file summary information and global attributes.
+Turn-on printing to screen or turn-off copying global and group metadata.
+This includes file summary information and global and group attributes.
 Also @samp{--Mtd} and @samp{--Metadata}.
 By default @command{ncks} prints global metadata to screen if no netCDF
 output file and no variable extraction list is specified (with @samp{-v}).  
 Use @samp{-M} to print global metadata to screen if a netCDF output is 
 specified, or if a variable extraction list is specified (with @samp{-v}). 
+Use @samp{-M} to turn-off copying of global and group metadata when
+copying, subsetting, or appending to an output file.
 
+@html
+<a name="prn_tbl"></a> <!-- http://nco.sf.net/nco.html#prn_tbl -->
+@end html
 The various combinations of printing switches can be confusing.
 In an attempt to anticipate what most users want to do, @command{ncks}
 uses context-sensitive defaults for printing.
@@ -13389,6 +13396,11 @@ The most confusing aspect of this is that @samp{-M} inhibits copying
 global metadata in overwrite mode and causes copying of global
 metadata in append mode.
 @example
+ncks                 in.nc        # Print  VAs and GAs
+ncks          -v one in.nc        # Print  VAs not GAs
+ncks    -M    -v one in.nc        # Print  GAs only
+ncks       -m -v one in.nc        # Print  VAs only
+ncks    -M -m -v one in.nc        # Print  VAs and GAs
 ncks -O              in.nc out.nc # Copy   VAs and GAs
 ncks -O       -v one in.nc out.nc # Copy   VAs and GAs
 ncks -O -M    -v one in.nc out.nc # Copy   VAs not GAs
@@ -13400,8 +13412,8 @@ ncks -A -M    -v one in.nc out.nc # Append VAs and GAs
 ncks -A    -m -v one in.nc out.nc # Append only data (no atts)
 ncks -A -M -m -v one in.nc out.nc # Append GAs not VAs
 @end example
-where @code{VAs} and @code{GAs} denote variable and global attributes,
-respectively. 
+where @code{VAs} and @code{GAs} denote variable and group/global
+attributes, respectively. 
 
 @cindex @command{ncdump}
 @cindex @code{-m}
@@ -13409,7 +13421,9 @@ respectively.
 @cindex @code{--metadata}
 @cindex metadata
 @item -m
-Print variable metadata to screen (similar to @kbd{ncdump -h}). 
+Turn-on printing to screen or turn-off copying variable metadata.
+Using @samp{-m} will print variable metadata to screen (similar to
+@kbd{ncdump -h}).  
 This displays all metadata pertaining to each variable, one variable
 at a time.
 @cindex chunking
@@ -13420,8 +13434,10 @@ such as whether it employs chunking, compression, or packing.
 Also activated using @samp{--mtd} and @samp{--metadata}.
 The @command{ncks} default behavior is to print variable metadata to
 screen if no netCDF output file is specified.
-Use @samp{-m} to print variable metadata to screen if a netCDF output is 
+Use @samp{-m} to print variable metadata to screen if a netCDF output is  
 specified. 
+Also use @samp{-m} to turn-off copying of variable metadata to an output
+file.
 
 @cindex @code{--no_blank}
 @cindex @code{--noblank}
@@ -13723,6 +13739,29 @@ The complement of all variables is no variables.
 Without any variables to extract, the append (@samp{-A}) command
 (@pxref{Appending Variables}) has only to extract and copy
 (i.e., append) global attributes to the output file.
+
+@html
+<a name="xmp_att_glb_cpy"></a> <!-- http://nco.sf.net/nco.html#xmp_att_var_cpy -->
+@end html
+Copy/append metadata (but not data) from variables in one file to
+variables in a second file.
+When copying/subsetting/appending files (as opposed to printing them),
+the copying of data, variable metadata, and global/group metadata are
+now turned OFF by @samp{-H}, @samp{-m}, and @samp{-M}, respectively. 
+This is the opposite sense in which these switches work when
+@emph{printing} a file. 
+One can use these switches to easily replace data or metadata in one
+file with data or metadata from another:
+@example
+# Extract naked (data-only) copies of two variables
+ncks -h -M -m -O -C -v one,three_dmn_rec_var ~/nco/data/in.nc ~/out.nc
+# Change values to be sure original values are not copied in following step
+ncap2 -O -v -s 'one*=2;three_dmn_rec_var*=0' ~/nco/data/in.nc ~/in2.nc
+# Append in2.nc metadata (not data!) to out.nc
+ncks -A -C -H -v one,three_dmn_rec_var ~/in2.nc ~/out.nc
+@end example
+Variables in @file{out.nc} now contain data (not metadata) from
+@file{in.nc} and metadata (not data) from @file{in2.nc}.
 
 @cindex @code{printf()}
 @cindex @code{\n} (linefeed)
