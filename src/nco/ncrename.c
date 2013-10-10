@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.163 2013-10-09 23:01:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.164 2013-10-10 19:13:01 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.163 2013-10-09 23:01:58 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.163 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.164 2013-10-10 19:13:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.164 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -551,6 +551,7 @@ main(int argc,char **argv)
     var_rnm=(char *)strdup(var_rnm_lst[idx_var].old_nm);
   } /* Loop input variable names */
 
+  /* Loop input variable names */
   for(int idx_var=0;idx_var<nbr_var_rnm;idx_var++){
     /* If variable was not found anywhere, print a warning */
     if(var_rnm_lst[idx_var].flg_found == False){
@@ -559,13 +560,20 @@ main(int argc,char **argv)
     } /* Variable was not found anywhere */
   } /* Loop input variable names */
 
-
   /* Loop input group names */
   for(int idx_grp=0;idx_grp<nbr_grp_rnm;idx_grp++){
+    char *grp_rnm;
+    if(grp_rnm_lst[idx_grp].old_nm[0] == opt_chr){
+      grp_rnm=(char *)strdup(grp_rnm_lst[idx_grp].old_nm+1);
+    }else{
+      grp_rnm=(char *)strdup(grp_rnm_lst[idx_grp].old_nm);
+    }
     /* Loop table */
     for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       /* Match group by name */
-      if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp && strcmp(trv_tbl->lst[idx_tbl].nm,grp_rnm_lst[idx_grp].old_nm) == 0){
+      if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_grp && strcmp(trv_tbl->lst[idx_tbl].nm,grp_rnm) == 0){
+        /* Mark as found */
+        grp_rnm_lst[idx_grp].flg_found=True;
         /* Obtain group ID using full group name */
         (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_rnm_lst[idx_grp].id);
         /* Rename */
@@ -575,13 +583,30 @@ main(int argc,char **argv)
     } /* Loop table */
   } /* Loop input group names */
 
+  /* Loop input group names */
+  for(int idx_grp=0;idx_grp<nbr_grp_rnm;idx_grp++){
+    /* If variable was not found anywhere, print a warning */
+    if(grp_rnm_lst[idx_grp].flg_found == False){
+      (void)fprintf(stdout,"%s: WARNING Group \"%s\" not present in %s, exiting it.\n",prg_nm,grp_rnm_lst[idx_grp].old_nm,fl_in);
+      nco_exit(EXIT_FAILURE);
+    } /* Group was not found anywhere */
+  } /* Loop input group names */
+
   /* Loop input dimension names */
   for(int idx_dmn=0;idx_dmn<nbr_dmn_rnm;idx_dmn++){
+    char *dmn_rnm;
+    if(dmn_rnm_lst[idx_dmn].old_nm[0] == opt_chr){
+      dmn_rnm=(char *)strdup(dmn_rnm_lst[idx_dmn].old_nm+1);
+    }else{
+      dmn_rnm=(char *)strdup(dmn_rnm_lst[idx_dmn].old_nm);
+    }
     /* Loop dimension list */
     for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr_dmn;idx_tbl++){
       /* Match by name */
-      if (strcmp(trv_tbl->lst_dmn[idx_tbl].nm,dmn_rnm_lst[idx_dmn].old_nm) == 0){
+      if (strcmp(trv_tbl->lst_dmn[idx_tbl].nm,dmn_rnm) == 0){
         int grp_id;
+        /* Mark as found */
+        dmn_rnm_lst[idx_dmn].flg_found=True;
         /* Obtain group ID using full group name */
         (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst_dmn[idx_tbl].grp_nm_fll,&grp_id);
         /* Rename */
@@ -591,8 +616,23 @@ main(int argc,char **argv)
     } /* Loop dimension list */
   }  /* Loop input dimension names */
 
+  /* Loop input dimension names */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn_rnm;idx_dmn++){
+    /* If variable was not found anywhere, print a warning */
+    if(dmn_rnm_lst[idx_dmn].flg_found == False){
+      (void)fprintf(stdout,"%s: WARNING Group \"%s\" not present in %s, exiting it.\n",prg_nm,dmn_rnm_lst[idx_dmn].old_nm,fl_in);
+      nco_exit(EXIT_FAILURE);
+    } /* Group was not found anywhere */
+  } /* Loop input group names */
+
   /* Loop input attribute names */
   for(int idx_att=0;idx_att<nbr_att_rnm;idx_att++){
+    char *att_rnm;
+    if(att_rnm_lst[idx_att].old_nm[0] == opt_chr){
+      att_rnm=(char *)strdup(att_rnm_lst[idx_att].old_nm+1);
+    }else{
+      att_rnm=(char *)strdup(att_rnm_lst[idx_att].old_nm);
+    }
     /* Loop table */
     for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       int nbr_att;
@@ -610,7 +650,7 @@ main(int argc,char **argv)
           /* Get name */
           (void)nco_inq_attname(grp_id,NC_GLOBAL,idx_grp,att_nm);
           /* Match by name */
-          if (strcmp(att_nm,att_rnm_lst[idx_att].old_nm) == 0){
+          if (strcmp(att_nm,att_rnm) == 0){
             /* Rename */
             (void)nco_rename_att(grp_id,NC_GLOBAL,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
           } /* Match by name */
@@ -627,7 +667,7 @@ main(int argc,char **argv)
           /* Get name */
           (void)nco_inq_attname(grp_id,var_id,idx_var,att_nm);
           /* Match by name */
-          if (strcmp(att_nm,att_rnm_lst[idx_att].old_nm) == 0){
+          if (strcmp(att_nm,att_rnm) == 0){
             /* Rename */
             (void)nco_rename_att(grp_id,var_id,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
           } /* Match by name */
