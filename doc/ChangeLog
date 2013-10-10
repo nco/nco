@@ -1,5 +1,7 @@
 2013-10-09  Charlie Zender  <zender@uci.edu>
 
+	* Document HDF4, --hdf4 switch
+
 	* Add ncecat regression test of concatenating variables with different IDs
 
 	* Re-add nco_var_mtd_refresh() to ncecat main loop

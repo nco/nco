@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.880 2013-10-05 08:09:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.881 2013-10-10 03:50:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1055,11 +1055,11 @@ operators statically linked.
 @cindex netCDF3
 netCDF @w{version 2} was released in 1993.
 @acronym{NCO} (specifically @command{ncks}) began soon after this in 1994.  
-@w{netCDF 3.0} was released in 1996, and we were eager to reap the
-performance advantages of the newer netCDF implementation.
+@w{netCDF 3.0} was released in 1996, and we were not exactly eager to 
+convert all code to the newer, less tested netCDF implementation.
 One @w{netCDF3} interface call (@code{nc_inq_libvers}) was added to 
 @acronym{NCO} in January, 1998, to aid in maintainance and debugging. 
-In March, 2001, the final conversion of @acronym{NCO} to @w{netCDF3} 
+In March, 2001, the final @acronym{NCO} conversion to @w{netCDF3} 
 was completed (coincidentally on the same day @w{netCDF 3.5} was
 released). 
 @acronym{NCO} @w{versions 2.0} and higher are built with the
@@ -1071,48 +1071,38 @@ are used.
 @cindex Hierarchical Data Format
 @cindex Mike Folk
 However, the ability to compile @acronym{NCO} with only @w{netCDF2}
-calls is worth maintaining because @acronym{HDF} @w{version 4}
+calls is worth maintaining because @acronym{HDF} @w{version 4}, 
+aka @acronym{HDF4} or simply @acronym{HDF}, 
 @footnote{The Hierarchical Data Format, or @acronym{HDF}, is another
 self-describing data format similar to, but more elaborate than,
-netCDF.} 
-(available from @uref{http://hdf.ncsa.uiuc.edu, HDF})
+netCDF. 
+@acronym{HDF} comes in two flavors, @acronym{HDF4} and @acronym{HDF5}. 
+Often people use the shorthand @acronym{HDF} to refer to the older
+format @acronym{HDF4}.
+People almost always use @acronym{HDF5} to refer to @acronym{HDF5}.} 
+(available from @uref{http://hdfgroup.org, HDF})
 supports only the @w{netCDF2} library calls
-(see @uref{http://hdf.ncsa.uiuc.edu/UG41r3_html/SDS_SD.fm12.html#47784}).
-Note that there are multiple versions of @acronym{HDF}.
-Currently @acronym{HDF} @w{version 4.x} supports @w{netCDF2} and thus 
-@acronym{NCO} @w{version 1.2.x}. 
+(see @uref{http://hdfgroup.org/UG41r3_html/SDS_SD.fm12.html#47784}).
+There are two versions of @acronym{HDF}.
+Currently @acronym{HDF} @w{version 4.x} supports the full @w{netCDF2}
+@acronym{API} and thus @acronym{NCO} @w{version 1.2.x}. 
 If @acronym{NCO} @w{version 1.2.x} (or earlier) is built with only
 @w{netCDF2} calls then all @acronym{NCO} operators should work with 
 @acronym{HDF4} files as well as netCDF files
 @footnote{One must link the @acronym{NCO} code to the @acronym{HDF4}
 @acronym{MFHDF} library instead of the usual netCDF library. 
-Does @samp{MF} stands for Mike Folk?
-Perhaps. 
-In any case, the @acronym{MFHDF} library only supports @w{netCDF2}
-calls. 
-Thus I will try to keep this capability in @acronym{NCO} as long as it
-is not too much trouble.}.
+Apparently @samp{MF} stands for Multi-file not for Mike Folk.
+In any case, until about 2007 the @acronym{MFHDF} library only supported 
+@w{netCDF2} calls. 
+Most people will never again install @acronym{NCO} 1.2.x and so will
+never use @acronym{NCO} to write @acronym{HDF4} files.
+It is simply too much trouble.}.
 @cindex @code{NETCDF2_ONLY}
 The preprocessor token @code{NETCDF2_ONLY} exists
 in @acronym{NCO} @w{version 1.2.x} to eliminate all @w{netCDF3}
 calls.  
 Only versions of @acronym{NCO} numbered 1.2.x and earlier have this
 capability. 
-The @w{@acronym{NCO} 1.2.x} branch will be maintained with bugfixes only  
-(no new features) until @acronym{HDF} begins to fully support the
-@w{netCDF3} interface (which is employed by @w{@acronym{NCO} 2.x}).
-If, at compilation time, @code{NETCDF2_ONLY} is defined, then
-@acronym{NCO} @w{version 1.2.x} will not use any @w{netCDF3} calls
-and, if linked properly, the resulting @acronym{NCO} operators will work
-with @acronym{HDF4} files.  
-@cindex @file{Makefile}
-The @file{Makefile} supplied with @w{@acronym{NCO} 1.2.x} is written
-to simplify building in this @acronym{HDF} capability.
-When @acronym{NCO} is built with @code{make HDF4=Y}, the @file{Makefile} 
-sets all required preprocessor flags and library links to build 
-with the @acronym{HDF4} libraries (which are assumed to reside under  
-@code{/usr/local/hdf4}, edit the @file{Makefile} to suit your
-installation).  
 
 @cindex Unidata
 @cindex @acronym{NCSA}
@@ -1121,7 +1111,10 @@ installation).
 @acronym{HDF} @w{version 5} became available in 1999, but did not
 support netCDF (or, for that matter, Fortran) as of December 1999.
 By early 2001, @acronym{HDF5} did support Fortran90.
-In 2004, Unidata and @acronym{NCSA} began a project to implement
+Thanks to an @acronym{NSF}-funded ``harmonization'' partnership,
+@acronym{HDF} began to fully support the @w{netCDF3} read interface
+(which is employed by @w{@acronym{NCO} 2.x} and later). 
+In 2004, Unidata and @acronym{THG} began a project to implement
 the @acronym{HDF5} features necessary to support the netCDF API.
 @acronym{NCO} version 3.0.3 added support for reading/writing
 netCDF4-formatted @acronym{HDF5} files in October, 2005.
@@ -1182,6 +1175,8 @@ Group support for these operators was complete (e.g., regular
 expressions to select groups and Group Path Editing) as of 
 @acronym{NCO} version 4.2.6 (March, 2013).
 See @ref{Group Path Editing} for more details.
+Group support for all other operators was finished in the
+@acronym{NCO} version 4.3.x series completed in December, 2013.
 
 @cindex broadcasting groups
 Support for netCDF4 in the first arithmetic operator, @command{ncbo},
@@ -1200,6 +1195,28 @@ If you feed @acronym{NCO} netCDF4 files, it produces netCDF4 output.
 Use the handy-dandy @samp{-4} switch to request netCDF4 output from 
 netCDF3 input, i.e., to convert netCDF3 to netCDF4.
 See @ref{Selecting Output File Format} for more details.
+
+@html
+<a name="hdf4"></a> <!-- http://nco.sf.net/nco.html#hdf4 -->
+<a name="HDF4"></a> <!-- http://nco.sf.net/nco.html#HDF4 -->
+@end html
+@cindex @acronym{HDF4}
+@cindex @samp{--hdf4}
+When linked to a netCDF library that was built with @acronym{HDF4}
+support
+@footnote{The procedure for doing this is documented at
+@uref{http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html}.},
+@acronym{NCO} automatically supports reading @acronym{HDF4} 
+files and writing them as netCDF4/@acronym{HDF5} files.
+@acronym{NCO} can only write throught the netCDF @acronym{API}, which
+can only write netCDF3/netCDF4/@acronym{HDF5} files. 
+But it can read @acronym{HDF4} files, perform manipulations and
+calculations, and then write the results in netCDF format.
+As of this writing (October, 2013) the user must tell @acronym{NCO} 
+that an input file is @acronym{HDF4} format by using the @samp{--hdf4} 
+switch introduced in @acronym{NCO} 4.3.7.
+Eventually we hope to make @acronym{HDF4}-detection automatic and to
+therefore deprecate this switch.
 
 @cindex @acronym{RPM}
 @cindex Debian
@@ -13205,13 +13222,19 @@ This keeps the code simple, and is symmetric with the syntax for
 
 @html
 <a name="cdl"></a> <!-- http://nco.sf.net/nco.html#cdl -->
+<a name="hdp"></a> <!-- http://nco.sf.net/nco.html#hdp -->
+<a name="hncgen"></a> <!-- http://nco.sf.net/nco.html#hncgen -->
+<a name="ncgen-hdf"></a> <!-- http://nco.sf.net/nco.html#ncgen-hdf -->
 @end html
 @cindex @command{hdp}
 @cindex @command{ncgen}
+@cindex @command{ncgen-hdf}
+@cindex @command{hncgen}
 @cindex @command{ncdump}
 @cindex @code{--cdl}
 @cindex @acronym{CDL}
 @cindex @acronym{HDF}
+@cindex @acronym{HDF4}
 @item --cdl 
 As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} can
 print extracted data and metadata to screen (i.e., @code{stdout}) as
@@ -13245,12 +13268,21 @@ ncks --cdl -v one ~/nco/data/in.nc > ~/in.cdl
 ncgen -k netCDF-4 -b -o ~/in.nc ~/in.cdl
 ncks -v one ~/in.nc
 @end example
-The @acronym{HDF} version of @command{ncgen} converts @acronym{CDL} into an
-@acronym{HDF} file:
+The @acronym{HDF} version of @command{ncgen}, often named
+@command{hncgen} or @command{ncgen-hdf}, converts netCDF3 @acronym{CDL}
+into an @acronym{HDF} file:  
 @example
-/usr/local/hdf4/bin/ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen
-hdp dumpsds ~/in.hdf
+/usr/local/hdf4/bin/ncgen -b -o ~/in.hdf ~/in.cdl    # HDF ncgen
+/usr/bin/hncgen -b -o ~/in.hdf ~/in.cdl      # Same as HDF ncgen
+/usr/bin/ncgen-hdf -b -o ~/in.hdf ~/in.cdl   # Same as HDF ncgen
+hdp dumpsds ~/in.hdf          # ncdump-equivalent for HDF4 files
 @end example
+Note that @acronym{HDF4} does not support netCDF-style groups, so the
+above commands fail when the input file contains groups.
+Only netCDF4 and @acronym{HDF5} support groups.
+In our experience the @acronym{HDF} @command{ncgen} command, by whatever 
+name installed, is not robust and can fail on valid netCDF3
+@acronym{CDL}.  
 
 @html
 <a name="dmn_rec_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_rec_mk -->

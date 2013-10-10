@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.621 2013-10-08 22:26:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.622 2013-10-10 03:50:21 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.7 are ready. 
 
@@ -9,7 +9,6 @@ The current release is a milestone in NCO interoperability.
 NCO now supports HDF4 files natively. This was last true in 2001!
 The harmonization of netCDF with HDF made this possible.
 With few exceptions, all NCO features work natively on HDF4 files.
-
 
 Of special note: Since NCO reads HDF4 files natively, it is easy
 to convert HDF4 files to netCDF4 files directly, e.g.,
@@ -36,6 +35,8 @@ You get the idea.
 Summary recommendation: 
 Use ncl_convert2nc to convert HDF4->netCDF3
 Use ncks           to convert HDF4->netCDF4
+http://nco.sf.net/nco.html#hdf4
+http://nco.sf.net/nco.html#ncl_convert2nc
 
 Multiple record dimensions in one variable have some interesting
 properties. In 4.3.6 we implemented a default convention so that
@@ -72,14 +73,16 @@ A. Operators perform arithmetic on atomic types NC_BYTE, NC_UBYTE.
    NASA, for example, tends to store data with two significant digits
    as bytes rather than shorts. This makes perfect sense.
 
+A. HDF4: fxm
+
 BUG FIXES:
 
 A. CDL-mode now protects special characters with backslashes
    http://nco.sf.net/nco.html#cdl
 
-A. Issues identified by cppcheck static analysis fixed.
-   These include fprintf() formatting problems, a resource leak,
-   undefined behavior, potential NULL-deferences, and memory leaks. 
+A. Fix ncecat bug reading variables whose IDs change across files
+
+A. Fix ncap2.exe Windows-native bug that prevented file move
 
 KNOWN ISSUES NOT YET FIXED:
 
