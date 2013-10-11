@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.165 2013-10-10 21:33:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.166 2013-10-11 20:19:09 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -97,9 +97,10 @@ main(int argc,char **argv)
   char *var_rnm_arg[NC_MAX_VARS];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.165 2013-10-10 21:33:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.165 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.166 2013-10-11 20:19:09 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.166 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
+  const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
