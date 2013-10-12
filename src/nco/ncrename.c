@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.166 2013-10-11 20:19:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.167 2013-10-12 16:50:28 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -97,8 +97,8 @@ main(int argc,char **argv)
   char *var_rnm_arg[NC_MAX_VARS];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.166 2013-10-11 20:19:09 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.166 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.167 2013-10-12 16:50:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.167 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -311,8 +311,8 @@ main(int argc,char **argv)
     if(!FORCE_OVERWRITE) nco_fl_overwrite_prm(fl_out);
 
     /* Copy input file to output file and then search through output, 
-    changing names on the fly. This avoids possible XDR translation
-    performance penalty of copying each variable with netCDF. */
+       changing names on the fly. This avoids possible XDR translation
+       performance penalty of copying each variable with netCDF. */
     (void)nco_fl_cp(fl_in,fl_out);
 
     /* Ensure output file is user/owner-writable */
@@ -328,16 +328,15 @@ main(int argc,char **argv)
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_rgl;
 
-
   /* Initialize traversal table */ 
   trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
   (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,trv_tbl);
 
-  /* Without further ado, change names */
+  /* Order renaming by least-to-most impactful change: attributes, variables, dimensions, groups */
 
-  /* Order to rename: attributes, variables, dimensions, groups */
+  /* Without further ado, change names */
 
   /* Loop input attribute names */
   for(int idx_att=0;idx_att<nbr_att_rnm;idx_att++){

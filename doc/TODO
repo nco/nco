@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1252 2013-10-10 03:50:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1253 2013-10-12 16:50:27 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -655,7 +655,6 @@ A. ncflint now always works when input files are interchanged, i.e.,
 nco1102. ncatted handle arrays of NC_STRINGs with embedded delimiters
 	 ncatted -D 5 -O -a new_string_att,att_var,c,sng,"list","of","str,ings" ~/nco/data/in_4.nc ~/foo.nc
 nco1104. ncrename and ncatted copy through API with --hdf4
-nco1105. ncks copy metadata only switch
 nco1106. 
 
 qrk

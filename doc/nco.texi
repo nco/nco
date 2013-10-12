@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.883 2013-10-10 23:57:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.884 2013-10-12 16:50:27 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -14723,7 +14723,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @cindex attribute names
 @cindex group names
 @findex ncrename
-v
+
 @noindent
 SYNTAX
 @example
@@ -14822,7 +14822,7 @@ This option may be specified more than once.
  
 @item -g @var{old_name},@var{new_name}
 Group renaming. 
-The old and new names of the dimension are specified with @samp{-g}
+The old and new names of the group are specified with @samp{-g}
 (or @samp{--grp}, @samp{--group}) by the associated @var{old_name}
 and @var{new_name} values.  
 This option may be specified more than once.
@@ -14869,6 +14869,8 @@ the variable:
 @example
 ncrename -d lon,longitude -v lon,longitude in.nc
 @end example
+Unfortunately, the netCDF library has a longstanding bug () that causes
+@acronym{NCO} to crash when performing this operation.
 
 @cindex global attributes
 @cindex attributes, global

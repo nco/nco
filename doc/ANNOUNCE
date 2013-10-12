@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.623 2013-10-10 23:57:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.624 2013-10-12 16:50:26 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.7 are ready. 
 
@@ -110,6 +110,7 @@ KNOWN ISSUES NOT YET FIXED:
 A. NOT YET FIXED
    netCDF4 library fails when renaming dimension and variable using
    that dimension, in either order. Works fine with netCDF3.
+   Hence coordinate renaming does not work with netCDF4 files.
    Problem with netCDF4 library implementation.
 
    Demonstration:
@@ -119,6 +120,8 @@ A. NOT YET FIXED
 
    20130724: Verified problem still exists
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
+   Workaround: Use ncrename twice; first rename the variable, then
+   rename the dimension.
 
 B. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
