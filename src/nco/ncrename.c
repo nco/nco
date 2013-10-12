@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.169 2013-10-12 19:17:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.170 2013-10-12 21:22:31 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.169 2013-10-12 19:17:45 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.169 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.170 2013-10-12 21:22:31 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.170 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -642,48 +642,59 @@ main(int argc,char **argv)
           (void)fprintf(stderr,"%s: ERROR Could not parse var_nm@att_nm string \"%s\"\n",prg_nm,att_rnm_lst[idx_att].old_nm);
           nco_exit(EXIT_FAILURE);
         } /* end if */ 
-        /* Get var_id of variable */
-        if(IS_GLB_GRP_ATT){
-          (void)fprintf(stderr,"%s: INFO Assuming \"%s\" refers to a Global or Group attribute\n",prg_nm,att_rnm_lst[idx_att].old_nm);
-          var_id=NC_GLOBAL;
-        }else{ /* !IS_GLB_GRP_ATT */
-          if(var_nm[0] == opt_chr){
-            rcd=nco_inq_varid_flg(nc_id,var_nm+1L,&var_id);
-            if(rcd != NC_NOERR){
-              (void)fprintf(stderr,"%s: WARNING Variable \'%s\' not present in %s, skipping it.\n",prg_nm,var_nm+1L,fl_in);
-              /* Reset error code */
-              rcd=NC_NOERR; 
-              /* Optional variable not found, continue to next attribute in list */
-              continue;
-            } /* end if */
-          }else{ /* Variable name does not contain opt_chr so variable presence is required */
-            rcd=nco_inq_varid(nc_id,var_nm,&var_id);
-          } /* end if */
-        } /* !IS_GLB_GRP_ATT */
-        if(rcd == NC_NOERR){
-          if(att_rnm_lst[idx_att].old_nm[0] == opt_chr){
-            /* Preceding opt_chr means attribute need not be present */
-            rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx_att].old_nm+1L,&att_rnm_lst[idx_att].id);	  
+
+        /* Loop table */
+        for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+          /* Match variable by name */
+          if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && strcmp(trv_tbl->lst[idx_tbl].nm,var_nm) == 0){
+            (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
+
+            /* Get var_id of variable */
+            if(IS_GLB_GRP_ATT){
+              (void)fprintf(stderr,"%s: INFO Assuming \"%s\" refers to a Global or Group attribute\n",prg_nm,att_rnm_lst[idx_att].old_nm);
+              var_id=NC_GLOBAL;
+            }else{ /* !IS_GLB_GRP_ATT */
+              if(var_nm[0] == opt_chr){
+                rcd=nco_inq_varid_flg(grp_id,var_nm+1L,&var_id);
+                if(rcd != NC_NOERR){
+                  (void)fprintf(stderr,"%s: WARNING Variable \'%s\' not present in %s, skipping it.\n",prg_nm,var_nm+1L,fl_in);
+                  /* Reset error code */
+                  rcd=NC_NOERR; 
+                  /* Optional variable not found, continue to next attribute in list */
+                  continue;
+                } /* end if */
+              }else{ /* Variable name does not contain opt_chr so variable presence is required */
+                rcd=nco_inq_varid(grp_id,var_nm,&var_id);
+              } /* end if */
+            } /* !IS_GLB_GRP_ATT */
             if(rcd == NC_NOERR){
-              (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm);
-              nbr_rnm++;
-              if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
-            }else{
-              (void)fprintf(stderr,"%s: WARNING Attribute \'%s\' not present in variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm+1L,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
-            } /* endelse */
-          }else{ 
-            /* Attribute must be present */
-            rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx_att].old_nm,&att_rnm_lst[idx_att].id);
-            if(rcd == NC_NOERR){
-              (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
-              nbr_rnm++;
-              if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
-            } /* endif attribute is present */
-          } /* endelse attribute must be present */  
-        }else{ /* variable not present */
-          (void)fprintf(stderr,"%s: WARNING variable \'%s\' not present in %s\n",prg_nm,var_nm,fl_in);
-        }  /* variable not present */
-        /* end if renaming single variable */
+              if(att_rnm_lst[idx_att].old_nm[0] == opt_chr){
+                /* Preceding opt_chr means attribute need not be present */
+                rcd=nco_inq_attid_flg(grp_id,var_id,att_rnm_lst[idx_att].old_nm+1L,&att_rnm_lst[idx_att].id);	  
+                if(rcd == NC_NOERR){
+                  (void)nco_rename_att(grp_id,var_id,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm);
+                  nbr_rnm++;
+                  if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
+                }else{
+                  (void)fprintf(stderr,"%s: WARNING Attribute \'%s\' not present in variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm+1L,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
+                } /* endelse */
+              }else{ 
+                /* Attribute must be present */
+                rcd=nco_inq_attid(grp_id,var_id,att_rnm_lst[idx_att].old_nm,&att_rnm_lst[idx_att].id);
+                if(rcd == NC_NOERR){
+                  (void)nco_rename_att(grp_id,var_id,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
+                  nbr_rnm++;
+                  if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm,(var_nm[0] == opt_chr ? var_nm+1L : var_nm));
+                } /* endif attribute is present */
+              } /* endelse attribute must be present */  
+            }else{ /* variable not present */
+              (void)fprintf(stderr,"%s: WARNING variable \'%s\' not present in %s\n",prg_nm,var_nm,fl_in);
+            }  /* variable not present */
+            /* end if renaming single variable */
+
+          } /* Match variable by name */
+        } /* Loop table */
+
       }else{ /* ...or rename attribute for all variables... */
 
         /* Loop table */
