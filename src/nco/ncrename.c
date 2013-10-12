@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.168 2013-10-12 18:27:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.169 2013-10-12 19:17:45 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.168 2013-10-12 18:27:32 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.168 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.169 2013-10-12 19:17:45 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.169 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -685,51 +685,64 @@ main(int argc,char **argv)
         }  /* variable not present */
         /* end if renaming single variable */
       }else{ /* ...or rename attribute for all variables... */
-        for(var_id=NC_GLOBAL;var_id<nbr_var_fl;var_id++){ /* Start loop at NC_GLOBAL (-1) for global attributes */
-          if(var_id > NC_GLOBAL) (void)nco_inq_varname(nc_id,var_id,var_nm);
-          if(att_rnm_lst[idx_att].old_nm[0] == opt_chr){
-            /* Rename attribute if variable contains attribute else do nothing */
-            rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx_att].old_nm+1L,&att_rnm_lst[idx_att].id);
-            if(rcd == NC_NOERR){
-              (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm);
-              nbr_rnm++;
-              /* Inform user which variable had attribute renamed */
-              if(var_id > NC_GLOBAL){
-                if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm,var_nm);
-              }else{
-                if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm);
+
+        /* Loop table */
+        for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+          /* Is variable */
+          if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
+            (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
+
+            /* We are in NC_GLOBAL zone if at root group  */
+            if (strcmp(trv_tbl->lst[idx_tbl].grp_nm_fll,"/") == 0){
+              var_id=NC_GLOBAL;
+            }else {
+              (void)nco_inq_varid(grp_id,trv_tbl->lst[idx_tbl].nm,&var_id);
+            }
+
+            if(att_rnm_lst[idx_att].old_nm[0] == opt_chr){
+              /* Rename attribute if variable contains attribute else do nothing */
+              rcd=nco_inq_attid_flg(grp_id,var_id,att_rnm_lst[idx_att].old_nm+1L,&att_rnm_lst[idx_att].id);
+              if(rcd == NC_NOERR){
+                (void)nco_rename_att(grp_id,var_id,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm);
+                nbr_rnm++;
+                /* Inform user which variable had attribute renamed */
+                if(var_id > NC_GLOBAL){
+                  if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm,var_nm);
+                }else{
+                  if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm+1L,att_rnm_lst[idx_att].new_nm);
+                } /* end else */
+              }else{ /* end if attribute was found */
+                /* Reset error code */
+                rcd=NC_NOERR; 
               } /* end else */
-            }else{ /* end if attribute was found */
-              /* Reset error code */
-              rcd=NC_NOERR; 
-            } /* end else */
-          }else{ /* !opt_chr */
-            /* Rename attribute or die trying */
-            rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx_att].old_nm,&att_rnm_lst[idx_att].id);
-            if(rcd == NC_NOERR){
-              (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
-              nbr_rnm++;
-              /* Inform user which variable had attribute renamed */
-              if(var_id > NC_GLOBAL){
-                if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm,var_nm);
-              }else{
-                IS_GLB_GRP_ATT=True; /* [flg] Attribute is Global or Group attribute */
-                if(IS_GLB_GRP_ATT) (void)fprintf(stderr,"%s: INFO found and renamed global or group attribute \'%s\' so not requiring its presence in every variable.\n",prg_nm_get(),att_rnm_lst[idx_att].old_nm); 
-                if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
-              } /* end else */
-            }else{ /* !NC_NOERR */
-              /* Reset error code or print informative message and die */
-              if(IS_GLB_GRP_ATT){
-                /* Forgive omission of period for global/group attributes. Users aren't perfect :) */
-                rcd=NC_NOERR;
-              }else{ /* !IS_GLB_GRP_ATT */
-                (void)fprintf(stderr,"%s: ERROR User specified that presence of attribute \'%s\' is required. However, the %s%s does not contain it. HINT: If attribute presence is intended to be optional, then prefix attribute name with the period character \'%c\', e.g., %catt_nm. With this syntax %s would succeed even if no variables or groups contained the attribute. If attribute is intended to be renamed only in a specific variable, then prepend the variable name plus an at-sign \'%c\' to the attribute name, e.g., var_nm%catt_nm. If attribute presence is required only for global or group attributes, then prefix attribute name with \"global\" and an at-sign, e.g., global%catt_nm.\n",prg_nm_get(),att_rnm_lst[idx_att].old_nm,(var_id > NC_GLOBAL) ? "variable " : "root group",(var_id > NC_GLOBAL) ? var_nm : "",opt_chr,opt_chr,prg_nm_get(),dlm_chr,dlm_chr,dlm_chr);
-                /* Exit now rather than completing variable loop and printing lengthy error message above each iteration */
-                nco_err_exit(rcd,"main");
-              } /* !IS_GLB_GRP_ATT */
-            } /* !NC_NOERR */
-          } /* !opt_chr */
-        } /* end loop over var_id */
+            }else{ /* !opt_chr */
+              /* Rename attribute or die trying */
+              rcd=nco_inq_attid_flg(grp_id,var_id,att_rnm_lst[idx_att].old_nm,&att_rnm_lst[idx_att].id);
+              if(rcd == NC_NOERR){
+                (void)nco_rename_att(grp_id,var_id,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
+                nbr_rnm++;
+                /* Inform user which variable had attribute renamed */
+                if(var_id > NC_GLOBAL){
+                  if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed attribute \'%s\' to \'%s\' for variable \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm,var_nm);
+                }else{
+                  IS_GLB_GRP_ATT=True; /* [flg] Attribute is Global or Group attribute */
+                  if(IS_GLB_GRP_ATT) (void)fprintf(stderr,"%s: INFO found and renamed global or group attribute \'%s\' so not requiring its presence in every variable.\n",prg_nm_get(),att_rnm_lst[idx_att].old_nm); 
+                  if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: Renamed global or group attribute \'%s\' to \'%s\'\n",prg_nm,att_rnm_lst[idx_att].old_nm,att_rnm_lst[idx_att].new_nm);
+                } /* end else */
+              }else{ /* !NC_NOERR */
+                /* Reset error code or print informative message and die */
+                if(IS_GLB_GRP_ATT){
+                  /* Forgive omission of period for global/group attributes. Users aren't perfect :) */
+                  rcd=NC_NOERR;
+                }else{ /* !IS_GLB_GRP_ATT */
+                  (void)fprintf(stderr,"%s: ERROR User specified that presence of attribute \'%s\' is required. However, the %s%s does not contain it. HINT: If attribute presence is intended to be optional, then prefix attribute name with the period character \'%c\', e.g., %catt_nm. With this syntax %s would succeed even if no variables or groups contained the attribute. If attribute is intended to be renamed only in a specific variable, then prepend the variable name plus an at-sign \'%c\' to the attribute name, e.g., var_nm%catt_nm. If attribute presence is required only for global or group attributes, then prefix attribute name with \"global\" and an at-sign, e.g., global%catt_nm.\n",prg_nm_get(),att_rnm_lst[idx_att].old_nm,(var_id > NC_GLOBAL) ? "variable " : "root group",(var_id > NC_GLOBAL) ? var_nm : "",opt_chr,opt_chr,prg_nm_get(),dlm_chr,dlm_chr,dlm_chr);
+                  /* Exit now rather than completing variable loop and printing lengthy error message above each iteration */
+                  nco_err_exit(rcd,"main");
+                } /* !IS_GLB_GRP_ATT */
+              } /* !NC_NOERR */
+            } /* !opt_chr */
+          } /* Is variable */
+        } /* Loop table */
       } /* end if renaming attribute for all variables */
       /* See to it that any mandatory renaming was performed, else abort */
       if(nbr_rnm == 0){
