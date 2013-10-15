@@ -79,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.98 2013-10-07 06:48:31 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.99 2013-10-15 22:58:14 pvicente Exp $";
   
  data:
   area=10.,10.;
@@ -96,6 +96,7 @@ netcdf in_grp {
   //g1
   //
  group: g1 { 
+  :history = "History group attribute.\n";
   variables:
   
     //coordinate variable (/lon)
