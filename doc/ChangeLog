@@ -4,6 +4,8 @@
 
 2013-10-15  Charlie Zender  <zender@uci.edu>
 
+	* Handle control characters better in CDL and XML modes
+
 	* Add CDL tags <group>, isUnlimited, <values>. XML dumping is mostly complete.
 
 2013-10-14 Pedro Vicente  <pvicente@uci.edu>

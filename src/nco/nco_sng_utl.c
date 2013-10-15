@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.63 2013-10-07 06:48:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.64 2013-10-15 23:36:51 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -28,14 +28,14 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 #ifndef _MSC_VER
       sng_1_c=(char *)free(sng_1_c);
       sng_2_c=(char *)free(sng_2_c);
-#endif
+#endif /* _MSC_VER */
       return -1;
     }
     if(chr_1 > chr_2){
 #ifndef _MSC_VER
       sng_1_c=(char *)free(sng_1_c);
       sng_2_c=(char *)free(sng_2_c);
-#endif
+#endif /* _MSC_VER */
       return 1;
     }
     if(chr_1 == 0){
@@ -263,7 +263,8 @@ chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII 
 (const char chr_val, /* I [chr] Character to process */
  char * const val_sng) /* I/O [sng] String to stuff printable result into */
 {
-  /* Purpose: Translate character to C-printable, visible ASCII bytes for CDL */
+  /* Purpose: Translate character to C-printable, visible ASCII bytes for CDL
+     Reference: netcdf-c/ncdump/ncdump.c:pr_att_string() */
   
   switch(chr_val){              /* man ascii:Oct   Dec   Hex   Char \X  */
   case '\a': strcpy(val_sng,"\\a"); break; /* 007   7     07    BEL '\a' Bell */
@@ -291,7 +292,8 @@ chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII 
 (const char chr_val, /* I [chr] Character to process */
  char * const val_sng) /* I/O [sng] String to stuff printable result into */
 {
-  /* Purpose: Translate character to C-printable, visible ASCII bytes for XML */
+  /* Purpose: Translate character to C-printable, visible ASCII bytes for XML
+     Reference: netcdf-c/ncdump/ncdump.c:pr_attx_string() */
   
   switch(chr_val){              /* man ascii:Oct   Dec   Hex   Char \X  */
   case '\n': strcpy(val_sng,"&#xA;"); break; /* 012   10    0A    LF  '\n' Linefeed */
@@ -301,10 +303,10 @@ chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII 
   case '>': strcpy(val_sng,"&gt;"); break;
   case '&': strcpy(val_sng,"&amp;"); break;
   case '\"': strcpy(val_sng,"&quot;"); break;
-  case '\0':	
+  case '\0': /* NB: Unidata handles NUL differently */
     break;
   default: 
-    sprintf(val_sng,"%c",chr_val); break;
+    if(iscntrl(chr_val)) sprintf(val_sng,"&#%d;",chr_val); else sprintf(val_sng,"%c",chr_val);
     break;
   } /* end switch */
 
