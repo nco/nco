@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.666 2013-10-10 22:50:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.667 2013-10-15 21:31:24 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -153,8 +153,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.666 2013-10-10 22:50:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.666 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.667 2013-10-15 21:31:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.667 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -796,11 +796,8 @@ main(int argc,char **argv)
       if(sfx_ptr) *sfx_ptr='\0';
       prn_flg.fl_stb=fl_nm_stub;
     } /* endif CDL */
-    /* XML must print filename, and must not print data */
-    if(prn_flg.xml){
-      prn_flg.fl_in=fl_in;
-      PRN_VAR_DATA=False;
-    } /* !XML */
+    /* XML must print filename */
+    if(prn_flg.xml) prn_flg.fl_in=fl_in;
     prn_flg.gpe=gpe;
     prn_flg.md5=md5;
     prn_flg.nbr_zro=0;
@@ -810,7 +807,7 @@ main(int argc,char **argv)
     prn_flg.var_fst=2;
     prn_flg.tab=4;
     if(dbg_lvl >= nco_dbg_scl) prn_flg.fll_pth=True; else prn_flg.fll_pth=False;
-    prn_flg.nwl_pst_val=True;
+    if(prn_flg.xml) prn_flg.nwl_pst_val=False; else prn_flg.nwl_pst_val=True;
     prn_flg.dlm_sng=dlm_sng;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
     //	prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;

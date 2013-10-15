@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.171 2013-10-09 15:33:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.172 2013-10-15 21:31:24 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -347,7 +347,8 @@ nco_typ_fmt_sng_att_xml /* [fnc] Provide sprintf() format string for specified a
      Unidata formats shown in ncdump.c near line 459
      Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
      and are user-configurable with -p float_digits,double_digits.
-     These default to 7 and 15, respectively. */
+     These default to 7 and 15, respectively
+     Use these formats for XML attributes AND variables because distinct formats for XML variables, if any, are not known (because ncdump does not dump XML variable values */
 
   static const char fmt_NC_FLOAT[]="%#.7g"; /* %g defaults to 6 digits of precision */
   static const char fmt_NC_DOUBLE[]="%#.15g"; /* %g defaults to 6 digits of precision */
@@ -1257,7 +1258,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   } /* end if dlm_sng */
 
-  if(prn_flg->cdl){
+  if(prn_flg->cdl || prn_flg->xml){
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
     int cpd_rec_dmn_idx[NC_MAX_DIMS]; /* [idx] Indices of non-leading record dimensions */
@@ -1265,9 +1266,14 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     long chr_idx;
     nco_bool is_compound; /* [flg] Variable is compound (has non-leading record dimension) */
     nco_bool cpd_rec_dmn[NC_MAX_DIMS]; /* [flg] Dimension is compound */
-    (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
+    char * (*chr2sng_sf)(const char chr_val, /* I [chr] Character to process */
+			  char * const val_sng); /* I/O [sng] String to stuff printable result into */
+    if(prn_flg->cdl) chr2sng_sf=chr2sng_cdl; else chr2sng_sf=chr2sng_xml;
+    if(prn_flg->cdl) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
+    if(prn_flg->xml) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));
     nm_cdl=nm2sng_cdl(var_nm);
-    (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
+    if(prn_flg->xml) (void)fprintf(stdout,"%*s<values>",prn_ndn+prn_flg->var_fst,spc_sng);
+    if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
     nm_cdl=(char *)nco_free(nm_cdl);
     var_szm1=var.sz-1L;
     is_compound=nco_prn_cpd_chk(var_trv,trv_tbl);
@@ -1319,7 +1325,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           chr_val=var.val.cp[lmn];
           if(var.nbr_dim == 0){
             (void)fprintf(stdout,"\"");
-            if(chr_val != '\0') (void)fprintf(stdout,"%s",chr2sng_cdl(chr_val,val_sng));
+            if(chr_val != '\0') (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
             (void)fprintf(stdout,"\"");
             val_sng[0]='\0';
           }else{ /* var.nbr_dim > 0 */
@@ -1336,7 +1342,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
               (void)fprintf(stdout,"\"");
               sng_val_sng[0]='\0';
             } /* endif new string */
-            (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+            if(chr_val != '\0') (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
             if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
             if(lmn%sng_lng == sng_lngm1){
               (void)fprintf(stdout,"%s\"",sng_val_sng);
@@ -1363,7 +1369,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
             val_sng[0]='\0';
             chr_val=sng_val[chr_idx];
-            (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+	    (void)strcat(sng_val_sng,(*chr2sng_sf)(chr_val,val_sng));
           } /* end loop over character */
           (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
           /* Print commas after non-final strings */
@@ -1376,9 +1382,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       if(var.type != NC_CHAR && var.type != NC_STRING) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? cma_sng : "");
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
-    (void)fprintf(stdout," ;\n");
+    if(prn_flg->cdl) (void)fprintf(stdout," ;\n");
+    if(prn_flg->xml) (void)fprintf(stdout,"</values>\n");
 
-  } /* end if prn_flg->cdl */
+  } /* end if prn_flg->cdl || prn_flg->xml */
 
   if(prn_flg->PRN_DMN_UNITS){
     const char units_nm[]="units"; /* [sng] Name of units attribute */
@@ -1400,7 +1407,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     } /* end if */
   } /* end if PRN_DMN_UNITS */
 
-  if(var.nbr_dim == 0 && !dlm_sng && !prn_flg->cdl){
+  if(var.nbr_dim == 0 && !dlm_sng && !prn_flg->cdl && !prn_flg->xml){
     /* Variable is scalar, byte, or character */
     lmn=0L;
     if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var.has_mss_val ? !memcmp(var.val.vp,var.mss_val.vp,(size_t)val_sz_byt) : False; 
@@ -1458,7 +1465,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     } /* !is_mss_val */
   } /* end if variable is scalar, byte, or character */
 
-  if(var.nbr_dim > 0 && !dlm_sng && !prn_flg->cdl){
+  if(var.nbr_dim > 0 && !dlm_sng && !prn_flg->cdl && !prn_flg->xml){
 
     /* Create mod_map_in */
     for(int idx=0;idx<var.nbr_dim;idx++) mod_map_in[idx]=1L;
@@ -1823,7 +1830,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
 
   if(prn_flg->xml){
-    if(grp_dpt == 0) (void)fprintf(stdout,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"%s\">\n",prn_flg->fl_in);
+    if(grp_dpt == 0) (void)fprintf(stdout,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"%s\">\n",prn_flg->fl_in); else (void)fprintf(stdout,"%*s<group name=\"%s\">\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm_fll);
   }else{ /* !xml */
     nm_cdl=nm2sng_cdl(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
     if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_cdl);
@@ -1839,7 +1846,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     if(prn_flg->xml){
-      (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%lu\" />\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);
+      (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");
     }else{ /* !XML */
       nm_cdl=nm2sng_cdl(dmn_lst[dmn_idx].nm);
       if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,nm_cdl,(prn_flg->cdl) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %lu%s\n",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
@@ -1906,7 +1913,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(var_trv.grp_dpt > 0 && prn_flg->fll_pth && prn_flg->trd) (void)fprintf(stdout,"%*s%s\n",prn_flg->ndn,spc_sng,var_trv.nm_fll);
 
     /* Print variable metadata */ 
-    if(prn_flg->PRN_VAR_METADATA || prn_flg->cdl) (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
+    if(prn_flg->PRN_VAR_METADATA || prn_flg->cdl || prn_flg->xml) (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
 
     /* Obtain variable ID using group ID */
     (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
@@ -1914,7 +1921,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Print variable attributes */
     if(var_trv.nbr_att > 0 && prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
 
-    if(prn_flg->xml) (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
+    if(prn_flg->xml && prn_flg->PRN_VAR_DATA){
+      (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
+      (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
+    } /* !prn_flg->xml */
 
     if(var_idx != var_nbr_xtr-1 && !prn_flg->xml) (void)fprintf(stdout,"\n");
   } /* end loop over var_idx */
@@ -1924,10 +1934,9 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
 
   /* Print data for group */
-  if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
+  if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA && !prn_flg->xml){
     (void)fprintf(stdout,"\n%*sdata:\n",prn_flg->ndn,spc_sng);
-    for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) 
-      (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
+    for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
   } /* end if */
 
   /* Variable list no longer needed */
@@ -1970,7 +1979,9 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
   } /* end loop over grp_idx */
 
-  if(prn_flg->xml && grp_dpt == 0) (void)fprintf(stdout,"</netcdf>\n"); else (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nco_gpe_evl(prn_flg->gpe,grp_nm_fll));
+  if(prn_flg->xml && grp_dpt == 0) (void)fprintf(stdout,"</netcdf>\n"); 
+  if(prn_flg->xml && grp_dpt != 0) (void)fprintf(stdout,"%*s</group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
+  if(prn_flg->cdl) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nco_gpe_evl(prn_flg->gpe,grp_nm_fll));
 
   return rcd;
 } /* end nco_grp_prn() */
