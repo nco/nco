@@ -1,3 +1,7 @@
+2013-10-15 Pedro Vicente  <pvicente@uci.edu>
+
+	* ncrename: Add regressions #3 (Groups) Absolute rename /g1/history group/global att to /g1/new_history
+
 2013-10-15  Charlie Zender  <zender@uci.edu>
 
 	* Add CDL tags <group>, isUnlimited, <values>. XML dumping is mostly complete.
