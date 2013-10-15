@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.342 2013-10-14 23:22:17 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.343 2013-10-15 05:38:50 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4229,7 +4229,7 @@ print "\n";
 
 #ncrename #1
 #ncrename -O -a .nothing,new_nothing in_grp.nc out.nc 
-# optional relative rename nothing to new_nothing (print warning)
+#optional relative rename nothing to new_nothing (print warning)
     
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a .nothing,new_nothing $in_pth_arg in_grp.nc %tmp_fl_00%";
     $dsc_sng="(Groups) Optional relative rename";
@@ -4237,6 +4237,18 @@ print "\n";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
+	
+#ncrename #2
+#ncrename -O -a history,new_history in_grp.nc out.nc  
+#relative rename history to new_history
+    
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a history,new_history $in_pth_arg in_grp.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
+    $dsc_sng="(Groups) Relative rename history to new_history";
+    $tst_cmd[2]="Global attribute 3: new_history, size = 26 NC_CHAR, value = History global attribute.";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
 	
 
     

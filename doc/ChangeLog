@@ -1,3 +1,7 @@
+2013-10-14 Pedro Vicente  <pvicente@uci.edu>
+
+	* ncrename: Add regressions #1, #2
+
 2013-10-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.7 release procedure:
