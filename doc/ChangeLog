@@ -1,6 +1,8 @@
 2013-10-15 Pedro Vicente  <pvicente@uci.edu>
 
-	* ncrename: Add regressions #3 (Groups) Absolute rename /g1/history group/global att to /g1/new_history
+	* Add ncrename regression #3 (Groups) Absolute attribute rename for group
+	
+	* Add ncrename regression #4 (Groups) Absolute attribute rename for variable
 
 2013-10-15  Charlie Zender  <zender@uci.edu>
 
@@ -10,8 +12,10 @@
 
 2013-10-14 Pedro Vicente  <pvicente@uci.edu>
 
-	* ncrename: Add regressions #1, #2
-
+	* Add ncrename regression #1 (Groups) Optional attribute relative rename
+	
+	* Add ncrename regression #2 (Groups) (Groups) Relative attribute rename
+	
 2013-10-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.7 release procedure:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.172 2013-10-15 22:58:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.173 2013-10-15 23:49:57 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.172 2013-10-15 22:58:15 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.172 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.173 2013-10-15 23:49:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.173 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -634,6 +634,7 @@ main(int argc,char **argv)
       int nbr_rnm=0;
       int rcd_att=0;
       trv_sct *trv_obj=NULL; /* [sct] Traversal object */
+      char *obj_nm=NULL; /* [sng] Object relative name */    
 
       /* Rename attribute of single variable... */
       if(strchr(att_rnm_lst[idx_att].old_nm,dlm_chr)){
@@ -645,7 +646,7 @@ main(int argc,char **argv)
         } /* end if */ 
 
         /* Inquire if any object matches "var_nm" */
-        trv_obj=nco_trv_usr_sng(var_nm,trv_tbl);  
+        trv_obj=nco_trv_usr_sng(var_nm,trv_tbl,&obj_nm);  
 
         /* If object is group, set NC_GLOBAL */
         if(trv_obj && trv_obj->nco_typ == nco_obj_typ_grp){ 
@@ -672,9 +673,9 @@ main(int argc,char **argv)
               } /* end if */
             }else{ /* Variable name does not contain opt_chr so variable presence is required */
 
-              /* Get ID only if object is variable (not group) */
+              /* Get ID only if object is variable (not group). NB: use relative name found */
               if(trv_obj->nco_typ == nco_obj_typ_var){ 
-                rcd=nco_inq_varid(grp_id,var_nm,&var_id);
+                rcd=nco_inq_varid(grp_id,obj_nm,&var_id);
               } /* Get ID only if object is variable (not group) */
 
             } /* end if */
