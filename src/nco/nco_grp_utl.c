@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1003 2013-10-15 23:49:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1004 2013-10-16 00:26:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7124,17 +7124,26 @@ nco_trv_usr_sng                       /* [fnc] Parse input string and return tab
 {
   /* Purpose: Parse input string and return table information */
 
-
   const char sls_chr='/';    /* [chr] Slash character */
   char *ptr_chr;             /* [sng] Pointer to character '/' in full name */
   char *usr_sng;             /* [sng] Copy of user-string */
 
-  usr_sng=strdup(usr_sng_in); 
+  usr_sng=strdup(usr_sng_in);
 
   /* Find last occurence of '/' */
   ptr_chr=strrchr(usr_sng,sls_chr);
   /* Skip '/' */
   ptr_chr++;
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Match absolute name */
+    if(strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm_fll) == 0){
+      *obj_nm=strdup(ptr_chr);
+      usr_sng=(char *)nco_free(usr_sng); 
+      return &trv_tbl->lst[tbl_idx];
+    } /* Match name */
+  } /* Loop table */ 
 
   /* Loop table */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
