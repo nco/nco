@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.64 2013-10-15 23:36:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.65 2013-10-16 03:27:26 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -293,8 +293,11 @@ chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII 
  char * const val_sng) /* I/O [sng] String to stuff printable result into */
 {
   /* Purpose: Translate character to C-printable, visible ASCII bytes for XML
-     Reference: netcdf-c/ncdump/ncdump.c:pr_attx_string() */
+     Reference: netcdf-c/ncdump/ncdump.c:pr_attx_string() 
+     NB: Unclear whether and'ing with octal 0377 helps anything */
+  //  unsigned char uchar;
   
+  //  switch(uchar=chr_val & 0377){              /* man ascii:Oct   Dec   Hex   Char \X  */
   switch(chr_val){              /* man ascii:Oct   Dec   Hex   Char \X  */
   case '\n': strcpy(val_sng,"&#xA;"); break; /* 012   10    0A    LF  '\n' Linefeed */
   case '\r': strcpy(val_sng,"&#xD;"); break; /* 015   13    0D    CR  '\r' Carriage return */
@@ -306,6 +309,7 @@ chr2sng_xml /* [fnc] Translate C language character to printable, visible ASCII 
   case '\0': /* NB: Unidata handles NUL differently */
     break;
   default: 
+    //    if(iscntrl(uchar)) sprintf(val_sng,"&#%d;",uchar); else sprintf(val_sng,"%c",uchar);
     if(iscntrl(chr_val)) sprintf(val_sng,"&#%d;",chr_val); else sprintf(val_sng,"%c",chr_val);
     break;
   } /* end switch */

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.884 2013-10-12 16:50:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.885 2013-10-16 03:27:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -92,6 +92,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @uref{}: URL with optional alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
 @url{}: URL, synonym for @uref
 @var{}: Metasyntactic variable, e.g., @var{}
+@verbatim: Anything goes inside environment
 @w{}: Unbreakable text, e.g., @w{of 1}
 
 Use '@*' to force hard carriage return
@@ -114,7 +115,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.7
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 10 October 2013
+@set update-date 15 October 2013
 @set update-month October 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13514,6 +13515,7 @@ print extracted metadata to screen (i.e., @code{stdout}) as valid
 XML is also exported by @samp{ncdump -x}.
 Compare @command{ncks} ``traditional'' with @acronym{XML} printing:
 @example
+@verbatim
 zender@@roulee:~$ ncks -v one ~/nco/data/in.nc
 one: type NC_FLOAT, 0 dimensions, 1 attribute, chunked? no, compressed? no, packed? no
 one size (RAM) = 1*sizeof(NC_FLOAT) = 1*4 = 4 bytes
@@ -13521,20 +13523,28 @@ one attribute 0: long_name, size = 3 NC_CHAR, value = one
 
 one = 1 
 
-zender@@roulee:~$ ncks --xml -v one ~/nco/data/in.nc
+zender@roulee:~$ ncks --xml -v one ~/nco/data/in.nc
 <?xml version="1.0" encoding="UTF-8"?>
-<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" \
-     location="/home/zender/nco/data/in.nc">
+<netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="/home/zender/nco/data/in.nc">
     <variable name="one" type="float">
       <attribute name="long_name" value="one" />
+      <values>1.</values>
     </variable>
 </netcdf>
+@end verbatim
 @end example
-@acronym{XML}-mode only prints variable metadata, not variable data.
-This is because @samp{ncdump -x} does the same, and we are unsure how to 
-format @acronym{NcML} data.
+@acronym{XML}-mode prints variable metadata, and, as of 
+@acronym{NCO} version 4.3.7 (October, 2013), variable data.
+@footnote{@samp{ncdump -x} only prints variable metadata, which makes it
+difficult for us to be sure what the proper @acronym{NcML} format is for
+all datatypes.
+For this purpose we use the @command{toolsUI} Java program.
+We have found that @command{toolsUI} chokes on some @acronym{NcML}
+produced by @command{ncdump -x} and @command{ncks --xml}.
+However, most common features work well in both.
 Please let us know if more @acronym{XML}/@acronym{NcML} printing
 features would be useful to you.
+}
 @end table
 
 @html

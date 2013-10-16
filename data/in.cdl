@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.176 2013-09-26 22:42:59 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.177 2013-10-16 03:27:25 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -477,8 +477,9 @@ variables:
 	char char_var_nul;
 	char_var_nul:long_name = "Character variable containing one NUL";
 
-	char char_var_multinul(lev);
-	char_var_multinul:long_name = "Character variable containing multiple NULs";
+	// 20131015: This confuses the XML parser. Omit it for now.
+	// char char_var_multinul(lev);
+	// char_var_multinul:long_name = "Character variable containing multiple NULs";
 
 	char fl_nm(char_dmn_lng80);
 	fl_nm:long_name = "Variable contains a file name";
@@ -1040,7 +1041,9 @@ data:
 	byte_var='z';
 	byte_var_neg=-122;
 	char_var="z";
-	char_var_multinul="\b\n\0";
+	// 20131015: This confuses the XML parser
+	//	char_var_multinul="\b\n\0";
+	// char_var_multinul='0','\n','\0';
 	char_var_nul='\0';
 	char_var_space=" ";
 	cnv_CF_crd=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
