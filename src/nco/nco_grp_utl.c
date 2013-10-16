@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1007 2013-10-16 04:58:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1008 2013-10-16 06:06:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7191,6 +7191,11 @@ nco_dmn_usr_sng                       /* [fnc] Parse input string and return tab
       } /* Match name */
     } /* Loop table */ 
   } /* Optional relative match */
+
+  /* Cases of not found and optional */
+  if(usr_sng[0] == opt_chr){
+    *is_opt=True;
+  }
 
   return NULL;
 

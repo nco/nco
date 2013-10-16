@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.176 2013-10-16 04:58:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.177 2013-10-16 06:06:16 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.176 2013-10-16 04:58:48 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.176 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.177 2013-10-16 06:06:16 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.177 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -599,19 +599,18 @@ main(int argc,char **argv)
     /* Inquire if any dimension matches  */
     dmn_trv=nco_dmn_usr_sng(dmn_rnm_lst[idx_dmn].old_nm,trv_tbl,&is_opt);
 
-    /* Optional case */
+    /* Optional case with dimension found */
     if (dmn_trv && is_opt == True) {
       (void)nco_inq_grp_full_ncid(nc_id,dmn_trv->grp_nm_fll,&grp_id);
       /* Use the pair group ID/relative dimension name found (instead of dmn_rnm_lst[idx_dmn].old_nm)  */
-      rcd=nco_inq_dimid_flg(grp_id,dmn_trv->nm,&dmn_rnm_lst[idx_dmn].id);
-      if(rcd == NC_NOERR){
-        (void)nco_rename_dim(grp_id,dmn_rnm_lst[idx_dmn].id,dmn_rnm_lst[idx_dmn].new_nm);
-        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed dimension \'%s\' to \'%s\'\n",prg_nm,dmn_rnm_lst[idx_dmn].old_nm+1L,dmn_rnm_lst[idx_dmn].new_nm);
-      }else{
-        (void)fprintf(stdout,"%s: WARNING Dimension \'%s\' not present in %s, skipping it.\n",prg_nm,dmn_rnm_lst[idx_dmn].old_nm+1L,fl_in);
-        /* Reset error code */
-        rcd=NC_NOERR; 
-      } /* end if */
+      rcd=nco_inq_dimid(grp_id,dmn_trv->nm,&dmn_rnm_lst[idx_dmn].id);
+      (void)nco_rename_dim(grp_id,dmn_rnm_lst[idx_dmn].id,dmn_rnm_lst[idx_dmn].new_nm);
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed dimension \'%s\' to \'%s\'\n",prg_nm,dmn_rnm_lst[idx_dmn].old_nm+1L,dmn_rnm_lst[idx_dmn].new_nm);
+      /* Optional case with no dimension found */
+    }else if (dmn_trv == NULL && is_opt == True) {
+      (void)fprintf(stdout,"%s: WARNING Dimension \'%s\' not present in %s, skipping it.\n",prg_nm,dmn_rnm_lst[idx_dmn].old_nm+1L,fl_in);
+      /* Reset error code */
+      rcd=NC_NOERR; 
       /* ! Optional case */
     }else if (dmn_trv && is_opt == False){
 

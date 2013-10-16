@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.350 2013-10-16 04:58:47 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.351 2013-10-16 06:06:16 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4323,7 +4323,7 @@ print "\n";
 
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d .lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -v new_lat  %tmp_fl_00% | grep 'new_lat dimension'";
-    $dsc_sng="Dimensions: Optional relative rename '.lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Optional existing relative rename '.lat' to 'new_lat'";
     $tst_cmd[2]="new_lat dimension 0: new_lat, size = 2 NC_FLOAT (Coordinate is new_lat)";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4333,11 +4333,22 @@ print "\n";
 #ncrename -O -d /lat,new_lat in_grp.nc out.nc
 # Absolute rename /lat to new_lat
 
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d /lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -v new_lat  %tmp_fl_00% | grep 'new_lat dimension'";
-    $dsc_sng="Dimensions: Optional absolute rename './lat' to 'new_lat'";
+    $dsc_sng="Dimensions: Optional existing absolute rename './lat' to 'new_lat'";
     $tst_cmd[2]="new_lat dimension 0: new_lat, size = 2 NC_FLOAT (Coordinate is new_lat)";
     $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.	
+
+#ncrename #10	
+#ncrename -O -d ./lat_non_existing,new_lat in_grp.nc out.nc
+# Absolute non existing absolute rename
+
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat_non_existing,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $dsc_sng="Dimensions: Optional non existing absolute rename './lat_non_existing,new_lat' to 'new_lat'";
+    $tst_cmd[1]="ncrename: WARNING Dimension '/lat_non_existing' not present in ../data/in_grp.nc, skipping it.";
+    $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
 	
