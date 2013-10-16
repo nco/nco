@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.354 2013-10-16 19:36:45 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.355 2013-10-16 21:15:00 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4234,7 +4234,7 @@ print "\n";
 #optional relative rename nothing to new_nothing (print warning)
     
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a .nothing,new_nothing $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $dsc_sng="Attributes: Optional relative rename -a .nothing,new_nothing";
+    $dsc_sng="Attributes: Optional relative rename '.nothing' to 'new_nothing'";
     $tst_cmd[1]="ncrename: WARNING Attribute 'nothing' not renamed because not found in searched variable(s)";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4246,27 +4246,40 @@ print "\n";
     
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a history,new_history $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
-    $dsc_sng="Attributes: Relative rename -a history,new_history";
+    $dsc_sng="Attributes: Relative rename 'history' to 'new_history'";
     $tst_cmd[2]="Global attribute 3: new_history, size = 26 NC_CHAR, value = History global attribute.";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
 #ncrename #3
-#ncrename -O -a /g1@history,new_history in_grp.nc out.nc
-#ncks -g g1 out.nc | grep 'Group attribute 0: new_history'  
+#ncrename -D 1 -O -a /g1@history,new_history in_grp.nc out.nc
+#ncks -g g1 out.nc | grep 'History group attribute'  
 # absolute rename /g1/history group/global att to /g1/new_history
 # NB: use escape in '/g1\@history,new_history'
     
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1\@history,new_history' $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks %tmp_fl_00% | grep 'Group attribute 0: new_history'";
-    $dsc_sng="Attributes: Absolute rename /g1\@history,new_history";
+	$tst_cmd[1]="ncks -g g1 %tmp_fl_00% | grep 'History group attribute'";
+    $dsc_sng="Attributes: Absolute rename '/g1\@history' to 'new_history'";
     $tst_cmd[2]="Group attribute 0: new_history, size = 25 NC_CHAR, value = History group attribute.";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
-
+	
+	
 #ncrename #4	
+#ncrename -O -a global@history,new_history in_grp.nc out.nc 
+# relative rename history group/global att to new_history
+
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a 'global\@history,new_history' $in_pth_arg in_grp.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks %tmp_fl_00% | grep 'History global attribute'";
+    $dsc_sng="Attributes: Relative rename 'global\@history' to 'new_history'";
+    $tst_cmd[2]="Global attribute 3: new_history, size = 26 NC_CHAR, value = History global attribute.";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
+
+#ncrename #5
 #ncrename -O -a /g1/lon@units,new_units in_grp.nc out.nc 
 # absolute rename /g1/lon@units att to /g1/lon@new_units
 
@@ -4278,8 +4291,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 	
-	
-#ncrename #5	
+#ncrename #6	
 #ncrename -D 1 -O -a /g1/lon@units,/g1/lon@new_units in_grp.nc out.nc 
 #absolute rename /g1/lon@units att to /g1/lon@new_units
 
@@ -4291,23 +4303,24 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.		
 	
-	
-#ncrename #6	
+#ncrename #7	
 #ncrename -O -a /g1/lon@.units,new_units in_grp.nc out.nc 
 # optional absolute rename /g1/lon@.units att to new_units
 
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@.units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -g g1  %tmp_fl_00% | grep 'new_units'";
-    $dsc_sng="Attributes: Optional absolute rename /g1/lon\@.units to /g1/lon\@new_units";
+    $dsc_sng="Attributes: Optional absolute rename '/g1/lon\@.units' to '/g1/lon\@new_units'";
     $tst_cmd[2]="lon attribute 0: new_units, size = 12 NC_CHAR, value = degrees_east";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
+
+
 	
 #################### Dimensions	
 
 
-#ncrename #7	
+#ncrename #8	
 #ncrename -O -d lat,new_lat in_grp.nc out.nc
 # relative rename lat to new_lat
 
@@ -4319,7 +4332,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 	
-#ncrename #8	
+#ncrename #9	
 #ncrename -O -d /lat,new_lat in_grp.nc out.nc
 # Absolute rename /lat to new_lat
 
@@ -4331,7 +4344,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
-#ncrename #9	
+#ncrename #10	
 #ncrename -O -d .lat,new_lat in_grp.nc out.nc
 # optional relative rename lat to new_lat
 
@@ -4343,7 +4356,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 	
-#ncrename #10	
+#ncrename #11	
 #ncrename -O -d /lat,new_lat in_grp.nc out.nc
 # Absolute rename /lat to new_lat
 
@@ -4355,7 +4368,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
-#ncrename #11
+#ncrename #12
 #ncrename -O -d ./lat_non_existing,new_lat in_grp.nc out.nc
 # Absolute non existing absolute rename
 
@@ -4368,7 +4381,7 @@ print "\n";
 	
 #################### Variables	
 
-#ncrename #12	
+#ncrename #13
 #ncrename  -D 1 -O -v /g1/v1,new_v1 in_grp.nc out.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
@@ -4381,7 +4394,7 @@ print "\n";
     @tst_cmd=(); # really reset array.		
 	
 
-#ncrename #13	
+#ncrename #14	
 #ncrename  -D 1 -O -v v1,new_v1 in_grp.nc out.nc
 #Relative rename v1 to new_v1 
 
@@ -4393,7 +4406,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 	
-#ncrename #14	
+#ncrename #15	
 #ncrename  -D 1 -O -v ./g1/v1,new_v1 in_grp.nc out.nc
 #Absolute rename /g1/v1 to /g1/new_v1 
 
@@ -4405,7 +4418,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.			
 
-#ncrename #15
+#ncrename #16
 #ncrename  -D 1 -O -v .v1,new_v1 in_grp.nc out.nc
 #Optional Relative rename v1 to new_v1 
 
@@ -4417,7 +4430,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 	
-#ncrename #16
+#ncrename #17
 #ncrename  -D 1 -O -v ./g1/v1_not,new_v1 in_grp.nc out.nc
 #Optional non-existing absolute rename '/g1/v1_not'
 
@@ -4431,7 +4444,7 @@ print "\n";
 
 #################### Groups
 
-#ncrename #16
+#ncrename #18
 #ncrename -O -g g1,new_g1 in_grp.nc out.nc 
 # relative rename g1 to new_g1
 
@@ -4443,7 +4456,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
-#ncrename #17
+#ncrename #19
 #ncrename -O -g g1g1,new_g1g1 in_grp.nc out.nc  
 #relative rename g1g1 to new_g1g1
 
@@ -4455,7 +4468,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
-#ncrename #18	
+#ncrename #20
 #ncrename  -D 1 -O -g /g1/g1g1,new_g1g1 in_grp.nc out.nc
 #Absolute rename -g /g1/g1g1,new_g1g1 
 
@@ -4467,7 +4480,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
 
-#ncrename #19	
+#ncrename #21	
 #ncrename -O -g .gfoo,new_g1 in_grp.nc out.nc 
 # optional relative rename gfoo to new_g1 (print warning)
 

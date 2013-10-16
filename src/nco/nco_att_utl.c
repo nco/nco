@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.159 2013-10-12 18:27:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.160 2013-10-16 21:15:03 pvicente Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -978,6 +978,12 @@ nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
     att_nm_lng=strlen(rnm_att->new_nm);
     if((dlm_ptr-rnm_att->new_nm) < (long int)att_nm_lng) rnm_att->new_nm=dlm_ptr+1; else return NCO_ERR;
   } /* endif */
+
+  /* 20131016 */
+  if(strcmp(var_nm,"global") == 0){
+    *IS_GLB_GRP_ATT=True;
+  } /* endif global */
+
 
   return NCO_NOERR;
 } /* end nco_prs_att() */

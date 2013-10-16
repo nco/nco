@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.179 2013-10-16 07:46:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.180 2013-10-16 21:15:03 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.179 2013-10-16 07:46:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.179 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.180 2013-10-16 21:15:03 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.180 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -647,8 +647,10 @@ main(int argc,char **argv)
         }
 
         /* Object found that matches "var_nm" */
-        if (trv_obj){
-          (void)nco_inq_grp_full_ncid(nc_id,trv_obj->grp_nm_fll,&grp_id);
+        if (trv_obj || IS_GLB_GRP_ATT){
+
+          /* If object found get group ID, else groud ID is root (cases of "global") */
+          if (trv_obj) (void)nco_inq_grp_full_ncid(nc_id,trv_obj->grp_nm_fll,&grp_id); else grp_id=nc_id;
 
           /* Get var_id of variable */
           if(IS_GLB_GRP_ATT){

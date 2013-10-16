@@ -1,6 +1,6 @@
 2013-10-16 Pedro Vicente  <pvicente@uci.edu>
 
-	* Add ncrename regressions #1 to #19: attributes, dimensions, variables, groups.
+	* Add ncrename regressions #1 to #21: attributes, dimensions, variables, groups.
 	
 2013-10-16  Charlie Zender  <zender@uci.edu>
 
