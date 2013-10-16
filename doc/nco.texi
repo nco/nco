@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.885 2013-10-16 03:27:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.886 2013-10-16 17:11:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13504,15 +13504,17 @@ Also @samp{--units}.
 
 @html
 <a name="xml"></a> <!-- http://nco.sf.net/nco.html#xml -->
+<a name="ncml"></a> <!-- http://nco.sf.net/nco.html#ncml -->
 @end html
 @cindex @code{--xml}
+@cindex @code{--ncml}
 @cindex @acronym{XML}
 @cindex @acronym{NcML}
-@item --xml 
+@item --xml, --ncml
 As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} can
 print extracted metadata to screen (i.e., @code{stdout}) as valid 
 @acronym{XML} in @acronym{NcML}, the netCDF Markup Language. 
-XML is also exported by @samp{ncdump -x}.
+@acronym{XML} is also exported by @samp{ncdump -x}.
 Compare @command{ncks} ``traditional'' with @acronym{XML} printing:
 @example
 @verbatim

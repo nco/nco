@@ -1,11 +1,15 @@
+2013-10-16  Charlie Zender  <zender@uci.edu>
+
+	* Add --xml_no_location
+
 2013-10-15 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncrename regression #3 Attributes: Absolute rename for attribute in group
-	
+
 	* Add ncrename regression #4 Attributes: Absolute rename for attribute in variable
-	
+
 	* Add ncrename regression #5 Attributes: Absolute optional rename for attribute in variable
-	
+
 	* Add ncrename regression #6 Dimensions: Relative rename for dimension
 
 2013-10-15  Charlie Zender  <zender@uci.edu>
@@ -17,9 +21,9 @@
 2013-10-14 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncrename regression #1 Attributes: Optional attribute relative rename
-	
+
 	* Add ncrename regression #2 Attributes: Relative attribute rename
-	
+
 2013-10-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.7 release procedure:
