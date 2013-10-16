@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.346 2013-10-16 00:26:28 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.347 2013-10-16 00:47:54 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4269,12 +4269,24 @@ print "\n";
 # absolute rename /g1/lon@units att to /g1/lon@new_units
 
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
-	$tst_cmd[1]="ncks  -g g1 -v lon %tmp_fl_00% | grep 'new_units'";
+	$tst_cmd[1]="ncks -g g1 -v lon %tmp_fl_00% | grep 'new_units'";
     $dsc_sng="(Groups) Absolute rename /g1/lon\@units to /g1/lon\@new_units";
     $tst_cmd[2]="lon attribute 0: new_units, size = 12 NC_CHAR, value = degrees_east";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     @tst_cmd=(); # really reset array.	
+	
+#ncrename #5	
+#ncrename -O -a /g1/lon@.units,new_units in_grp.nc out.nc 
+# optional absolute rename /g1/lon@.units att to new_units
+
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a '/g1/lon\@.units,new_units' $in_pth_arg in_grp.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -g g1 -v lon %tmp_fl_00% | grep 'new_units'";
+    $dsc_sng="(Groups) Optional absolute rename /g1/lon\@.units to /g1/lon\@new_units";
+    $tst_cmd[2]="lon attribute 0: new_units, size = 12 NC_CHAR, value = degrees_east";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.		
 	
 
     

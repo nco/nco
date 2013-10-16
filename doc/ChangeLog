@@ -3,6 +3,8 @@
 	* Add ncrename regression #3 (Groups) Absolute attribute rename for group
 	
 	* Add ncrename regression #4 (Groups) Absolute attribute rename for variable
+	
+	* Add ncrename regression #5 (Groups) Absolute optional attribute rename for variable
 
 2013-10-15  Charlie Zender  <zender@uci.edu>
 
