@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1006 2013-10-16 04:21:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1007 2013-10-16 04:58:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7137,9 +7137,14 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
 dmn_trv_sct *                         /* O [sct] Table dimension object */
 nco_dmn_usr_sng                       /* [fnc] Parse input string and return table dimension object */
 (const char * const usr_sng,          /* I [sng] Object name */
- const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */         
+ const trv_tbl_sct * const trv_tbl,   /* I [lst] Traversal table */ 
+ nco_bool *is_opt)                    /* O [flg] Dimension presence is optional (name has '.') */
 {
   /* Purpose: Parse input string and return table dimension object */
+
+  const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
+
+  *is_opt=False;
 
   /* Try absolute match */
 
@@ -7160,6 +7165,32 @@ nco_dmn_usr_sng                       /* [fnc] Parse input string and return tab
       return &trv_tbl->lst_dmn[tbl_idx];
     } /* Match name */
   } /* Loop table */ 
+
+  /* Try optional absolute match */
+
+  /* Optional absolute match */
+  if(usr_sng[0] == opt_chr){
+    /* Loop table */
+    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++){
+      /* Match absolute name */
+      if(strcmp(usr_sng+1,trv_tbl->lst_dmn[tbl_idx].nm_fll) == 0){
+        *is_opt=True;
+        return &trv_tbl->lst_dmn[tbl_idx];
+      } /* Match name */
+    } /* Loop table */ 
+  } /* Optional absolute match */
+
+  /* Optional relative match */
+  if(usr_sng[0] == opt_chr){
+    /* Loop table */
+    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++){
+      /* Match absolute name */
+      if(strcmp(usr_sng+1,trv_tbl->lst_dmn[tbl_idx].nm) == 0){
+        *is_opt=True;
+        return &trv_tbl->lst_dmn[tbl_idx];
+      } /* Match name */
+    } /* Loop table */ 
+  } /* Optional relative match */
 
   return NULL;
 
