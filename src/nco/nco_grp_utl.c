@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1005 2013-10-16 02:09:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1006 2013-10-16 04:21:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7115,13 +7115,12 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
 } /* nco_var_get_wgt_trv() */
 
 
-
 trv_sct *                             /* O [sct] Table object */
-nco_trv_usr_sng                       /* [fnc] Parse input string and return table information */
+nco_obj_usr_sng                       /* [fnc] Parse input string and return table object */
 (const char * const usr_sng,          /* I [sng] Object name */
  const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */         
 {
-  /* Purpose: Parse input string and return table information */
+  /* Purpose: Parse input string and return table object */
 
   /* Loop table */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
@@ -7133,5 +7132,36 @@ nco_trv_usr_sng                       /* [fnc] Parse input string and return tab
 
   return NULL;
 
-} /* nco_trv_usr_sng() */
+} /* nco_obj_usr_sng() */
+
+dmn_trv_sct *                         /* O [sct] Table dimension object */
+nco_dmn_usr_sng                       /* [fnc] Parse input string and return table dimension object */
+(const char * const usr_sng,          /* I [sng] Object name */
+ const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */         
+{
+  /* Purpose: Parse input string and return table dimension object */
+
+  /* Try absolute match */
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++){
+    /* Match absolute name */
+    if(strcmp(usr_sng,trv_tbl->lst_dmn[tbl_idx].nm_fll) == 0){
+      return &trv_tbl->lst_dmn[tbl_idx];
+    } /* Match name */
+  } /* Loop table */ 
+
+  /* Try relative match */
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr_dmn;tbl_idx++){
+    /* Match absolute name */
+    if(strcmp(usr_sng,trv_tbl->lst_dmn[tbl_idx].nm) == 0){
+      return &trv_tbl->lst_dmn[tbl_idx];
+    } /* Match name */
+  } /* Loop table */ 
+
+  return NULL;
+
+} /* nco_dmn_usr_sng() */
 

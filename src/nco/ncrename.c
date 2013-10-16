@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.174 2013-10-16 02:09:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.175 2013-10-16 04:21:12 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.174 2013-10-16 02:09:19 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.174 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.175 2013-10-16 04:21:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.175 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -593,6 +593,7 @@ main(int argc,char **argv)
 
   /* Loop input dimension names */
   for(int idx_dmn=0;idx_dmn<nbr_dmn_rnm;idx_dmn++){
+    dmn_trv_sct *dmn_trv=NULL; /* [sct] Table dimension object */
     if(dmn_rnm_lst[idx_dmn].old_nm[0] == opt_chr){
       /* Loop dimension list */
       for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr_dmn;idx_tbl++){
@@ -608,16 +609,16 @@ main(int argc,char **argv)
         } /* end if */
       } /* Loop dimension list */
     }else{
-      /* Loop dimension list */
-      for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr_dmn;idx_tbl++){
-        /* Match by name */
-        if (strcmp(trv_tbl->lst_dmn[idx_tbl].nm,dmn_rnm_lst[idx_dmn].old_nm) == 0){
-          (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst_dmn[idx_tbl].grp_nm_fll,&grp_id);
-          rcd=nco_inq_dimid(grp_id,dmn_rnm_lst[idx_dmn].old_nm,&dmn_rnm_lst[idx_dmn].id);
-          (void)nco_rename_dim(nc_id,dmn_rnm_lst[idx_dmn].id,dmn_rnm_lst[idx_dmn].new_nm);
-          if(dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed dimension \'%s\' to \'%s\'\n",prg_nm,dmn_rnm_lst[idx_dmn].old_nm,dmn_rnm_lst[idx_dmn].new_nm);
-        }  /* Match by name */
-      } /* Loop dimension list */
+
+      /* Inquire if any dimension matches  */
+      dmn_trv=nco_dmn_usr_sng(dmn_rnm_lst[idx_dmn].old_nm,trv_tbl);
+      if (dmn_trv){
+        (void)nco_inq_grp_full_ncid(nc_id,dmn_trv->grp_nm_fll,&grp_id);
+        /* Use the pair group ID/relative dimension name found (instead of dmn_rnm_lst[idx_dmn].old_nm)  */
+        rcd=nco_inq_dimid(grp_id,dmn_trv->nm,&dmn_rnm_lst[idx_dmn].id);
+        (void)nco_rename_dim(grp_id,dmn_rnm_lst[idx_dmn].id,dmn_rnm_lst[idx_dmn].new_nm);
+        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed dimension \'%s\' to \'%s\'\n",prg_nm,dmn_rnm_lst[idx_dmn].old_nm,dmn_rnm_lst[idx_dmn].new_nm);
+      } /* Inquire if any dimension matches  */
     } /* end else */
   } /* Loop input dimension names */
 
@@ -645,7 +646,7 @@ main(int argc,char **argv)
         } /* end if */ 
 
         /* Inquire if any object matches "var_nm" */
-        trv_obj=nco_trv_usr_sng(var_nm,trv_tbl);  
+        trv_obj=nco_obj_usr_sng(var_nm,trv_tbl);  
 
         /* If object is group, set NC_GLOBAL */
         if(trv_obj && trv_obj->nco_typ == nco_obj_typ_grp){ 
