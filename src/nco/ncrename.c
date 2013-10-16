@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.177 2013-10-16 06:06:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.178 2013-10-16 06:54:17 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.177 2013-10-16 06:06:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.177 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.178 2013-10-16 06:54:17 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.178 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -527,35 +527,32 @@ main(int argc,char **argv)
 
   /* Loop input variable names */
   for(int idx_var=0;idx_var<nbr_var_rnm;idx_var++){
-    if(var_rnm_lst[idx_var].old_nm[0] == opt_chr){
-      /* Loop table */
-      for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-        /* Is variable */
-        if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var){
-          (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
-          rcd=nco_inq_varid_flg(grp_id,var_rnm_lst[idx_var].old_nm+1L,&var_rnm_lst[idx_var].id);
-          if(rcd == NC_NOERR){
-            (void)nco_rename_var(grp_id,var_rnm_lst[idx_var].id,var_rnm_lst[idx_var].new_nm);
-            if(dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed variable \'%s\' to \'%s\'\n",prg_nm,var_rnm_lst[idx_var].old_nm+1L,var_rnm_lst[idx_var].new_nm);
-          }else{
-            (void)fprintf(stdout,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx_var].old_nm+1L,fl_in);
-            /* Reset error code */
-            rcd=NC_NOERR; 
-          } /* end if */
-        } /* Is variable */
-      } /* Loop table */
-    }else{ /* Variable name does not contain opt_chr so variable presence is required */
-      /* Loop table */
-      for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-        /* Match variable by name */
-        if (trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && strcmp(trv_tbl->lst[idx_tbl].nm,var_rnm_lst[idx_var].old_nm) == 0){
-          (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[idx_tbl].grp_nm_fll,&grp_id);
-          rcd=nco_inq_varid(grp_id,var_rnm_lst[idx_var].old_nm,&var_rnm_lst[idx_var].id);
-          (void)nco_rename_var(grp_id,var_rnm_lst[idx_var].id,var_rnm_lst[idx_var].new_nm);
-          if(dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed variable \'%s\' to \'%s\'\n",prg_nm,var_rnm_lst[idx_var].old_nm,var_rnm_lst[idx_var].new_nm);
-        } /* Match variable by name */
-      } /* Loop table */
-    } /* end else */
+    trv_sct *obj_trv=NULL; /* [sct] Table object */
+    nco_bool is_opt;       /* [flg] Presence is optional (name has '.') */
+
+    /* Inquire if any object matches  */
+    obj_trv=nco_obj_usr_sng(var_rnm_lst[idx_var].old_nm,trv_tbl,&is_opt);
+
+    /* Optional case with variable found */
+    if (obj_trv && obj_trv->nco_typ == nco_obj_typ_var && is_opt == True){
+      (void)nco_inq_grp_full_ncid(nc_id,obj_trv->grp_nm_fll,&grp_id);
+      /* Use the pair group ID/relative object name found (instead of var_rnm_lst[idx_var].old_nm)  */
+      rcd=nco_inq_varid(grp_id,obj_trv->nm,&var_rnm_lst[idx_var].id);
+      (void)nco_rename_var(grp_id,var_rnm_lst[idx_var].id,var_rnm_lst[idx_var].new_nm);
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed variable \'%s\' to \'%s\'\n",prg_nm,var_rnm_lst[idx_var].old_nm+1L,var_rnm_lst[idx_var].new_nm);
+      /* Optional case with no object found */
+    } else if (obj_trv == NULL && is_opt == True) {
+      (void)fprintf(stdout,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx_var].old_nm+1L,fl_in);
+      /* Reset error code */
+      rcd=NC_NOERR;
+      /* Variable name does not contain opt_chr so variable presence is required */
+    }else if (obj_trv && obj_trv->nco_typ == nco_obj_typ_var && is_opt == False) { 
+      (void)nco_inq_grp_full_ncid(nc_id,obj_trv->grp_nm_fll,&grp_id);
+      /* Use the pair group ID/relative object name found (instead of var_rnm_lst[idx_var].old_nm)  */
+      rcd=nco_inq_varid(grp_id,obj_trv->nm,&var_rnm_lst[idx_var].id);
+      (void)nco_rename_var(grp_id,var_rnm_lst[idx_var].id,var_rnm_lst[idx_var].new_nm);
+      if(dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed variable \'%s\' to \'%s\'\n",prg_nm,var_rnm_lst[idx_var].old_nm,var_rnm_lst[idx_var].new_nm);
+    } /* Variable name does not contain opt_chr so variable presence is required */
   } /* Loop input variable names */
 
   /* Loop input group names */
@@ -620,12 +617,13 @@ main(int argc,char **argv)
       (void)nco_rename_dim(grp_id,dmn_rnm_lst[idx_dmn].id,dmn_rnm_lst[idx_dmn].new_nm);
       if(dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,"%s: Renamed dimension \'%s\' to \'%s\'\n",prg_nm,dmn_rnm_lst[idx_dmn].old_nm,dmn_rnm_lst[idx_dmn].new_nm);
 
-    } /* end else */
+    }  /* ! Optional case */
   } /* Loop input dimension names */
 
 
   if(nbr_att_rnm > 0){
     int nbr_var_fl;
+    nco_bool is_opt;       /* [flg] Presence is optional (name has '.') */
 
     /* Get number of variables in file */
     (void)trv_tbl_inq(NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,&nbr_var_fl,trv_tbl);
@@ -647,7 +645,7 @@ main(int argc,char **argv)
         } /* end if */ 
 
         /* Inquire if any object matches "var_nm" */
-        trv_obj=nco_obj_usr_sng(var_nm,trv_tbl);  
+        trv_obj=nco_obj_usr_sng(var_nm,trv_tbl,&is_opt);  
 
         /* If object is group, set NC_GLOBAL */
         if(trv_obj && trv_obj->nco_typ == nco_obj_typ_grp){ 
