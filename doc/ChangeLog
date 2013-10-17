@@ -1,7 +1,7 @@
 2013-10-16 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncrename regressions #1 to #21: attributes, dimensions, variables, groups.
-	
+
 2013-10-16  Charlie Zender  <zender@uci.edu>
 
 	* Add --xml_no_location
