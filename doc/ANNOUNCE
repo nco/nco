@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.628 2013-10-17 20:11:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.629 2013-10-17 20:14:13 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.7 are ready. 
 
@@ -218,9 +218,10 @@ F. NCO support for netCDF4 features is tracked at
 
    NCO supports netCDF4 atomic data types, compression, chunking, and groups.
 
-G. Reminder that ncks, ncecat, ncbo, ncflint, and ncpdq work on many common
-   HDF5 datasets, e.g., 
+G. Reminder that NCO works on most HDF4 and HDF5 datasets, e.g., 
    NASA AURA HIRDLS HDF-EOS5
    NASA ICESat GLAS HDF5
+   NASA MERRA HDF4
+   NASA MODIS HDF4
    NASA SBUV HDF5...
 
