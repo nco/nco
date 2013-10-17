@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.833 2013-10-17 20:07:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.834 2013-10-17 21:16:17 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -999,20 +999,20 @@ This is a new feature as of 20120615, please send us feedback.
 To build NCO from source yourself using MSVC or Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
-wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.3.6.windows.mvs.exe -O /tmp/nco-4.3.6.windows.mvs.exe
+wget http://glace.ess.uci.edu/pvicente/windows_setup/nco-4.3.7.windows.mvs.exe -O /tmp/nco-4.3.7.windows.mvs.exe
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.3.6.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.3.6.win32.cygwin.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.3.6.macosx.10.8.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.3.7.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.3.7.win32.cygwin.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.3.7.macosx.10.8.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp /tmp/nco-4.3.6.windows.mvs.exe dust.ess.uci.edu:/var/www/html/nco/src
 -->
-<li><a href="src/nco-4.3.6.windows.mvs.exe">nco-4.3.6.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.3.6.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.3.6.windows.mvs.exe"-->). Maintained by NCO Project.</li>
+<li><a href="src/nco-4.3.7.windows.mvs.exe">nco-4.3.7.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.3.7.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.3.7.windows.mvs.exe"-->). Maintained by NCO Project.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
 <h3><a href="http://www.microsoft.com">Microsoft</a> Windows</a> (running <a href="http://www.cygwin.org">Cygwin</a> environment, compiled with GNU-toolchain)</h3>
 <ul>
-<li><a href="src/nco-4.3.6.win32.cygwin.tar.gz">nco-4.3.6.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.3.6.win32.cygwin.tar.gz"-->): Executables Cygwin-compatible (last updated <!--#flastmod file="src/nco-4.3.6.win32.cygwin.tar.gz"-->). Maintained by NCO Project.</li>
+<li><a href="src/nco-4.3.7.win32.cygwin.tar.gz">nco-4.3.7.win32.cygwin.tar.gz</a> (<!--#fsize file="src/nco-4.3.7.win32.cygwin.tar.gz"-->): Executables Cygwin-compatible (last updated <!--#flastmod file="src/nco-4.3.7.win32.cygwin.tar.gz"-->). Maintained by NCO Project.</li>
 First install <tt>curl</tt> (in the "Web" category of Cygwin setup),
 and point the environment variable <tt>UDUNITS2_XML_PATH</tt> to the 
 <tt>udunits2.xml</tt> file, e.g., with
