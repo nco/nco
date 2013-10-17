@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.624 2013-10-12 16:50:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.625 2013-10-17 03:15:56 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.7 are ready. 
 
@@ -9,34 +9,10 @@ The current release is a milestone in NCO interoperability.
 NCO now supports HDF4 files natively. This was last true in 2001!
 The harmonization of netCDF with HDF made this possible.
 With few exceptions, all NCO features work natively on HDF4 files.
-
-Of special note: Since NCO reads HDF4 files natively, it is easy
-to convert HDF4 files to netCDF4 files directly, e.g.,
-
-ncks fl.hdf fl.nc
-
-NB: This produces a netCDF4 file not a netCDF3 file.
-To obtain a netCDF3 file from an HDF4 file is more arduous.
-There can be no netCDF4 atomic types in a netCDF3 file.
-And HDF4 producers like NASA love to use netCDF4 types, e.g.,
-unsigned bytes. So to get a netCDF3 file one must first convert 
-to netCDF4 then use a tool like ncap2 to convert all netCDF4
-types to netCDF3 types. No one wants to that. So instead I 
-recommend the ncl_convert2nc tool. It does this automatically.
-However, ncl_convert2nc will not produce netCDF4 files.
-It internally converts netCDF4 types to netCDF3 types.
-In contrast, ncks is happy to convert HDF to netCDF4 files.
-Hence ncks can and does preserve the variable types.
-Unsigned bytes stay unsigned bytes.
-64-bit integers stay 64-bit integers.
-Strings stay strings.
-You get the idea.
-
-Summary recommendation: 
-Use ncl_convert2nc to convert HDF4->netCDF3
-Use ncks           to convert HDF4->netCDF4
-http://nco.sf.net/nco.html#hdf4
-http://nco.sf.net/nco.html#ncl_convert2nc
+One can now often avoid the tedious step of creating intermediate
+netCDF files to perform, e.g., running averages on.
+And one can now use ncks instead of ncl_convert2nc to convert files
+from HDF to netCDF. More details below.
 
 Multiple record dimensions in one variable have some interesting
 properties. In 4.3.6 we implemented a default convention so that
@@ -86,7 +62,30 @@ A. ncks allow finer-grained control of copying data/metadata.
    with data or metadata from another.
    http://nco.sf.net/nco.html#xmp_att_var_cpy
 
-A. HDF4: fxm
+A. HDF4: 
+   Special note: Since NCO reads HDF4 files natively, it is easy
+   to convert HDF4 files to netCDF4 files directly, e.g.,
+   ncks fl.hdf fl.nc
+   This produces a netCDF4 file not a netCDF3 file.
+   To obtain a netCDF3 file from an HDF4 file is more arduous.
+   There can be no netCDF4 atomic types in a netCDF3 file.
+   And HDF4 producers like NASA love to use netCDF4 types, e.g.,
+   unsigned bytes. So to get a netCDF3 file one must first convert 
+   to netCDF4 then use a tool like ncap2 to convert all netCDF4
+   types to netCDF3 types. No one wants to that. So instead I 
+   still recommend the ncl_convert2nc tool to convert HDF to netCDF3. 
+   However, ncl_convert2nc will not produce full netCDF4 files.
+   It internally converts netCDF4 types to netCDF3 types.
+   In contrast, ncks happily converts HDF straight to netCDF4 files.
+   Hence ncks can and does preserve the variable types.
+   Unsigned bytes stay unsigned bytes. 64-bit integers stay 64-bit
+   integers. Strings stay strings. You get the idea.
+   Hence, ncks conversions often result in smaller files.
+   http://nco.sf.net/nco.html#hdf4
+   http://nco.sf.net/nco.html#ncl_convert2nc
+
+A. XML: fxm
+   http://nco.sf.net/nco.html#xml
 
 BUG FIXES:
 
