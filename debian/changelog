@@ -1,8 +1,8 @@
 nco (4.3.7-1) unstable; urgency=low
 
-  * new upstream version (--mrd)
+  * new upstream version (--mrd, --hdf4, --xml, ncrename groups)
 
- -- Charlie Zender <zender@uci.edu>  Fri, 27 Oct 2013 12:24:53 -0700
+ -- Charlie Zender <zender@uci.edu>  Thu, 17 Oct 2013 12:24:53 -0700
 
 nco (4.3.6-1) unstable; urgency=low
 

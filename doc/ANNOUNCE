@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.626 2013-10-17 03:36:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.627 2013-10-17 20:07:53 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.7 are ready. 
 
@@ -10,23 +10,18 @@ NCO now supports HDF4 files natively. This was last true in 2001!
 NSF-funded harmonization of netCDF with HDF made this possible.
 With few exceptions, all NCO features work natively on HDF4 files.
 One can now often avoid the tedious step of creating intermediate
-netCDF files to perform, e.g., running averages on.
-And one can now use ncks instead of ncl_convert2nc to convert files
-from HDF to netCDF. More details below.
+netCDF files to perform, e.g., running averages on. ncks produces
+more faithful conversions of HDF4->netCDF than ncl_convert2nc.
 
-Multiple record dimensions in one variable have some interesting
-properties. In 4.3.6 we implemented a default convention so that
-ncpdq and ncecat avoid increasing the number of record dimensions
-in variables in netCDF4 files. The new --mrd switch allows the user to 
-control this behavior.
+Interoperability feature #2 is that ncks will produce complete 
+XML (NcML) translations of netCDF (3 and 4) and HDF (4 and 5) files. 
 
 Finally, this release brings fuller netCDF4 support to ncrename. 
-Reminder that NCO must be built with netCDF 4.3.1 (whose release is
-imminent) or later to take advantage of ncrenames group renaming
-feature. 
+NCO must be built with netCDF 4.3.1 or later to take advantage of
+ncrename's group renaming feature.  
 
 Work on NCO 4.3.8 is underway and includes improved netCDF4 support
-for more NCO operators (ncatted), and improved support for HDF4 files.   
+for more NCO operators (ncatted), and improved support for HDF4 files.    
 
 Enjoy,
 Charlie
@@ -39,33 +34,25 @@ A. HDF4:
    First build/install netCDF with the --enable-hdf4 flag:
    http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html
    Then build NCO. Try NCO on HDF files. It should work!
-   Special note: Since NCO reads HDF4 files natively, it is now easy 
-   to convert HDF4 files to netCDF4 files directly, e.g.,
-   ncks fl.hdf fl.nc
-   This produces a netCDF4 file not a netCDF3 file.
-   To obtain a netCDF3 file from an HDF4 file is more arduous.
-   There can be no netCDF4 atomic types in a netCDF3 file.
-   And HDF4 producers like NASA love to use netCDF4 types, e.g.,
-   unsigned bytes. So to get a netCDF3 file one must first convert 
-   to netCDF4 then use a tool like ncap2 to convert all netCDF4
-   types to netCDF3 types. No one wants to that. So instead I 
-   still recommend the ncl_convert2nc tool to convert HDF to netCDF3 
-   when both these are true: 1. You must have netCDF3 and 2. the HDF 
-   file contains netCDF4 atomic types. Otherwise use ncks.
-   ncl_convert2nc automatically converts netCDF4 types to netCDF3
-   types, and it will not produce full netCDF4 files.
-   In contrast, ncks happily converts HDF straight to netCDF4 files.
-   Hence ncks can and does preserve the variable types.
-   Unsigned bytes stay unsigned bytes. 64-bit integers stay 64-bit
-   integers. Strings stay strings. You get the idea.
-   Hence, ncks conversions often result in smaller files.
+
+   ncks --hdf4 modis.hdf modis.nc
+
+   Until certain issues in the netCDF library are fixed (possibly
+   as soon as netCDF 4.3.2), one must use the new --hdf4 switch
+   to tell NCO that a file is in fact an HDF4 file.
+   The need for this switch will go away eventually. Hopefully soon. 
+
+   NCO can now convert HDF4 to netCDF4 files:
+   ncks --hdf4 fl.hdf fl.nc
+   This produces a more faithful conversion than ncl_convert2nc since 
+   it preserves all native HDF data types (e.g., unsigned bytes):
    http://nco.sf.net/nco.html#hdf4
    http://nco.sf.net/nco.html#ncl_convert2nc
 
 A. ncrename accepts full group paths to variables and groups.
    Previously ncrename worked only on the root group of netCDF4 files.
    Now you can go to town and rename everything!
-   ncrename -a /g1/lon@units,/g1/lon@new -g /g1/g1g2,/g1/new in.nc
+   ncrename -a /g1/lon@units,lon@new -g /g1/g1g2,new in.nc
    http://nco.sf.net/nco.html#ncrename
 
 A. ncdismember accepts the CF Convention version number as an optional
@@ -73,7 +60,7 @@ A. ncdismember accepts the CF Convention version number as an optional
    ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf 1.3
    http://nco.sf.net/nco.html#ncdismember
 
-A. XML: ncks --xml now prints variable metadata and data in NcML.
+A. XML: ncks --xml now prints variable metadata _and_ data in NcML.
    Please give us feedback on this capability. One related new feature 
    is the --xml_no_location switch which turns off the location tag,
    ncks --xml --xml_no_location -v time ~/nco/data/in.nc
@@ -88,7 +75,7 @@ A. Add --mrd = --multiple_record_dimension switch to ncecat, ncpdq.
 A. Operators perform arithmetic on atomic types NC_BYTE, NC_UBYTE. 
    NCO never performed arithmetic on 8-bit integers (bytes) before.
    This is because we never had datasets that used this type.
-   We are encountering more and more byte-data.
+   We encounter more and more byte-data.
    NASA, for example, tends to store data with two significant digits
    as bytes rather than shorts. This makes perfect sense.
 
