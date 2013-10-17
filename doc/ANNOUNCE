@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.627 2013-10-17 20:07:53 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.628 2013-10-17 20:11:14 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.7 are ready. 
 
@@ -49,37 +49,37 @@ A. HDF4:
    http://nco.sf.net/nco.html#hdf4
    http://nco.sf.net/nco.html#ncl_convert2nc
 
-A. ncrename accepts full group paths to variables and groups.
+B. ncrename accepts full group paths to variables and groups.
    Previously ncrename worked only on the root group of netCDF4 files.
    Now you can go to town and rename everything!
    ncrename -a /g1/lon@units,lon@new -g /g1/g1g2,new in.nc
    http://nco.sf.net/nco.html#ncrename
 
-A. ncdismember accepts the CF Convention version number as an optional
+C. ncdismember accepts the CF Convention version number as an optional
    fourth argument, e.g., 
    ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf 1.3
    http://nco.sf.net/nco.html#ncdismember
 
-A. XML: ncks --xml now prints variable metadata _and_ data in NcML.
+D. XML: ncks --xml now prints variable metadata _and_ data in NcML.
    Please give us feedback on this capability. One related new feature 
    is the --xml_no_location switch which turns off the location tag,
    ncks --xml --xml_no_location -v time ~/nco/data/in.nc
    http://nco.sf.net/nco.html#xml
 
-A. Add --mrd = --multiple_record_dimension switch to ncecat, ncpdq.
+E. Add --mrd = --multiple_record_dimension switch to ncecat, ncpdq.
    Invoking this switch allows these operators to increase the number
    of record dimensions in a variable as a natural or incidental
    consequence of processing netCDF4 files.
    http://nco.sf.net/nco.html#mrd
 
-A. Operators perform arithmetic on atomic types NC_BYTE, NC_UBYTE. 
+F. Operators perform arithmetic on atomic types NC_BYTE, NC_UBYTE. 
    NCO never performed arithmetic on 8-bit integers (bytes) before.
    This is because we never had datasets that used this type.
    We encounter more and more byte-data.
    NASA, for example, tends to store data with two significant digits
    as bytes rather than shorts. This makes perfect sense.
 
-A. ncks allow finer-grained control of copying data/metadata.
+G. ncks allow finer-grained control of copying data/metadata.
    When copying/subsetting/appending files (as opposed to printing
    them), the copying of data, variable metadata, and global/group
    metadata are now turned OFF by -H, -m, -M, respectively. 
@@ -97,11 +97,11 @@ BUG FIXES:
 A. CDL-mode now protects special characters with backslashes
    http://nco.sf.net/nco.html#cdl
 
-A. Fix ncecat bug reading variables whose IDs change across files
+B. Fix ncecat bug reading variables whose IDs change across files
 
-A. Fix ncap2.exe Windows-native bug that prevented file move
+C. Fix ncap2.exe Windows-native bug that prevented file move
 
-A. Fix ncwa -b behavior. 
+D. Fix ncwa -b behavior. 
    Versions 4.3.3-4.3.6 of ncwa -b preserve the averaged dimensions
    as degenerate dimensions (i.e., of size 1) when the -b switch is
    given. However, record dimensions were inadvertently converted to

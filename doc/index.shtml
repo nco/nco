@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.832 2013-10-10 03:50:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.833 2013-10-17 20:07:53 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -68,7 +68,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
 <p><h2>
-Current NCO version is 4.3.6 last updated on <!--#flastmod file="VERSION"-->
+Current NCO version is 4.3.7 last updated on <!--#flastmod file="VERSION"-->
 </h2>
 
 <table border=0 width=100%>
@@ -146,7 +146,8 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2013 Oct&nbsp;??: NCO 4.3.7 (HDF4 support, <tt>ncatted</tt>, <tt>ncrename</tt> groups) (<i>In progress</i>)
+<li>2013 Nov&nbsp;??: NCO 4.3.8 (<tt>ncatted</tt> groups) (<i>In progress</i>)
+<li>2013 Oct&nbsp;17: NCO 4.3.7 (HDF4, XML, <tt>ncrename</tt> groups)
 <li>2012 Oct&nbsp;02: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201310.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2013 Sep&nbsp;27: NCO 4.3.6 (<tt>--dbl</tt> default, <tt>ncdismember</tt>)
 <li>2013 Sep&nbsp;20: NCO 4.3.5 (<tt>ncea</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups)
@@ -608,17 +609,21 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.3.8</b>: (<i>Future</i>) 
+<li><b>NCO 4.3.9</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 Optimize diskless files?;</li>
-<li><b>NCO 4.3.7</b>: (<i>In Progress, features completed or being worked on include</i>)
-HDF4 support;
-Multiple record dimensions with <tt>ncpdq, ncecat --mrd</tt>;
-<tt>ncecat</tt> ID bugfix;
-<tt>ncap2</tt> file bugfix;
-<tt>ncatted</tt>, <tt>ncrename</tt> group features;
+<li><b>NCO 4.3.8</b>: (<i>In Progress, features completed or being worked on include</i>)
+<tt>ncatted</tt> group features;
 <tt>ncwa</tt> full scoping for weight, mask;</li>
-<li><b>NCO 4.3.6</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.3.7</b>: (<i>Current Stable Release</i>)
+HDF4 <a href="http://nco.sf.net/nco.html#hdf4">support</a>;
+XML/NcML data <a href="http://nco.sf.net/nco.html#xml">support</a>;
+Multiple record dimension <a href="http://nco.sf.net/nco.html#mrd">support</a> with <tt>ncpdq, ncecat --mrd</a></tt>;
+<tt>ncrename</tt> group features;
+<tt>ncap2</tt> file bugfix;
+<tt>ncecat</tt> ID bugfix;
+<tt>ncwa -b</tt> bugfix;</li>
+<li><b>NCO 4.3.6</b>:
 <tt>--flt</tt> default;
 <tt>ncpdq/ncecat</tt> leave only one record dimension;
 <tt>ncwa/ncea</tt> bugfixes;
@@ -912,7 +917,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.3.6</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.3.7</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="http://packages.ubuntu.com/natty/nco">Ubuntu NCO</a> homepages.
@@ -920,12 +925,12 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 NCO packages in the Debian/Ubuntu repositories (i.e., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="http://nco.cvs.sf.net/nco/nco/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.3.6-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="src/nco_4.3.6-1_amd64.deb">nco_4.3.6-1_amd64.deb</a> (<!--#fsize file="src/nco_4.3.6-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.3.6-1_amd64.deb"-->)</li>
-<li><a href="src/nco_4.3.6-1.dsc">nco_4.3.6-1.dsc</a> (<!--#fsize file="src/nco_4.3.6-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.3.6-1.dsc"-->)</li>
-<li><a href="src/nco_4.3.6-1_amd64.changes">nco_4.3.6-1_amd64.changes</a> (<!--#fsize file="src/nco_4.3.6-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.3.6-1_amd64.changes"-->)</li>
-<li><a href="src/nco_4.3.6.orig.tar.gz">nco_4.3.6.orig.tar.gz</a> (<!--#fsize file="src/nco_4.3.6.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.3.6.orig.tar.gz"-->)</li>
-<li><a href="src/nco_4.3.6-1.diff.gz">nco_4.3.6-1.diff.gz</a> (<!--#fsize file="src/nco_4.3.6-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.3.6-1_amd64.changes"-->)</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.3.7-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="src/nco_4.3.7-1_amd64.deb">nco_4.3.7-1_amd64.deb</a> (<!--#fsize file="src/nco_4.3.7-1_amd64.deb"-->): Executables AMD64-compatible (last updated <!--#flastmod file="src/nco_4.3.7-1_amd64.deb"-->)</li>
+<li><a href="src/nco_4.3.7-1.dsc">nco_4.3.7-1.dsc</a> (<!--#fsize file="src/nco_4.3.7-1.dsc"-->): Description (last updated <!--#flastmod file="src/nco_4.3.7-1.dsc"-->)</li>
+<li><a href="src/nco_4.3.7-1_amd64.changes">nco_4.3.7-1_amd64.changes</a> (<!--#fsize file="src/nco_4.3.7-1_amd64.changes"-->): Changes since last deb package (last updated <!--#flastmod file="src/nco_4.3.7-1_amd64.changes"-->)</li>
+<li><a href="src/nco_4.3.7.orig.tar.gz">nco_4.3.7.orig.tar.gz</a> (<!--#fsize file="src/nco_4.3.7.orig.tar.gz"-->): Upstream Source (last updated <!--#flastmod file="src/nco_4.3.7.orig.tar.gz"-->)</li>
+<li><a href="src/nco_4.3.7-1.diff.gz">nco_4.3.7-1.diff.gz</a> (<!--#fsize file="src/nco_4.3.7-1_amd64.changes"-->): Debian patch to upstream source (last updated <!--#flastmod file="src/nco_4.3.7-1_amd64.changes"-->)</li>
 Thanks to Daniel Baumann, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -972,7 +977,7 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 wget http://ps.uci.edu/~pscsg/nco/nco-4.0.7_x86_10.6.dmg -O /tmp/nco-4.0.7_x86_10.6.dmg
 /usr/bin/scp /tmp/nco-4.0.7_x86_10.6.dmg zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 scp /tmp/nco-4.0.7_x86_10.6.dmg dust.ess.uci.edu:/var/www/html/nco/src
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.3.6.macosx.10.8.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.3.7.macosx.10.8.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
 <li><a href="src/nco-4.3.6.macosx.10.8.tar.gz">nco-4.3.6.macosx.10.8.tar.gz</a> (<!--#fsize file="src/nco-4.3.6.macosx.10.8.tar.gz"-->): Executables MacOSX 10.6-compatible (last updated <!--#flastmod file="src/nco-4.3.6.macosx.10.8.tar.gz"-->). 
@@ -1134,10 +1139,10 @@ The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS
 The second best way is to download the source as a compressed tarfile:
 <ul>
 <li>
-<a href="src/nco-4.3.6.tar.gz">nco-4.3.6.tar.gz</a> 
-(<!--#fsize file="src/nco-4.3.6.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.3.6.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.3.6.tar.gz"--> 
+<a href="src/nco-4.3.7.tar.gz">nco-4.3.7.tar.gz</a> 
+(<!--#fsize file="src/nco-4.3.7.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.3.7.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.3.7.tar.gz"--> 
 </li>
 </ul>
 
@@ -1160,19 +1165,19 @@ Hit <tt>return</tt> when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>4.3.6</tt> (which is
-tagged as <tt>nco-4_3_6</tt> due to CVS rules) into local directory
-<tt>nco-4.3.6</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_3_6 -d nco-4.3.6 nco</tt></p>
+This command retrieves and places NCO version <tt>4.3.7</tt> (which is
+tagged as <tt>nco-4_3_7</tt> due to CVS rules) into local directory
+<tt>nco-4.3.7</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4_3_7 -d nco-4.3.7 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-4_3_6</tt>) and the development version is that the
+(e.g., <tt>nco-4_3_7</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.3.6</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.3.7</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1282,7 +1287,7 @@ For Mac OS X with MacPorts:
 <tt>
 <dt>wget http://dust.ess.uci.edu/nco/nco.tar.gz</dt>
 <dt>tar xvzf nco.tar.gz</dt>
-<dt>cd nco-4.3.6</dt>
+<dt>cd nco-4.3.7</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>

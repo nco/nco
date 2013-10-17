@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.886 2013-10-16 17:11:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.887 2013-10-17 20:07:53 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -115,7 +115,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.7
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 15 October 2013
+@set update-date 17 October 2013
 @set update-month October 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1218,6 +1218,38 @@ that an input file is @acronym{HDF4} format by using the @samp{--hdf4}
 switch introduced in @acronym{NCO} 4.3.7.
 Eventually we hope to make @acronym{HDF4}-detection automatic and to
 therefore deprecate this switch.
+
+Converting @acronym{HDF4} files to netCDF:
+Since @acronym{NCO} reads @acronym{HDF4} files natively, it is now easy  
+to convert @acronym{HDF4} files to netCDF4 files directly, e.g.,
+@example
+ncks --hdf4 fl.hdf fl.nc      # Convert HDF4->netCDF
+ncks --hdf4 -L 1 fl.hdf fl.nc # Convert HDF4->netCDF with compression
+@end example
+This produces a netCDF4 file not a netCDF3 file.
+To obtain a netCDF3 file from an @acronym{HDF4} file is more arduous. 
+There can be no netCDF4 atomic types in a netCDF3 file.
+And @acronym{HDF4} producers like @acronym{NASA} love to use netCDF4
+types, e.g., unsigned bytes. 
+So to get a netCDF3 file one must first convert to netCDF4 then use a
+tool like @command{ncap2} to convert all netCDF4 types to netCDF3
+types. 
+No one wants to do that. 
+Instead we recommend the @command{ncl_convert2nc} tool to convert
+@acronym{HDF} to netCDF3 when both these are true: @w{1. You} must have
+netCDF3 and @w{2. the} @acronym{HDF} file contains netCDF4 atomic
+types. 
+Otherwise use @command{ncks}. 
+@command{ncl_convert2nc} automatically converts netCDF4 types to netCDF3 
+types, yet it will not produce full netCDF4 files.
+In contrast, @command{ncks} happily converts @acronym{HDF} straight to
+netCDF4 files with netCDF4 types. 
+Hence @command{ncks} can and does preserve the variable types.
+Unsigned bytes stay unsigned bytes. 
+64-bit integers stay 64-bit integers. 
+Strings stay strings. 
+Hence, @command{ncks} conversions often result in smaller files than
+@command{ncl_convert2nc} conversions.
 
 @cindex @acronym{RPM}
 @cindex Debian
@@ -14306,13 +14338,28 @@ datasets use the same packing convention prior to intercomparison.
 @cindex @command{ncl_convert2nc}
 @cindex @acronym{NCL}
 @example
-# Convert HDF file to netCDF file
+# One-step procedure: Works with NCO 4.3.7 and later
+# 1. Convert, unpack, and repack HDF file into netCDF file
+ncpdq --hdf4 --hdf_upk -P xst_new modis.hdf modis.nc # HDF4 files
+ncpdq --hdf_upk -P xst_new modis.h5 modis.nc # HDF5 files
+
+# Two-step procedure: Necessary with NCO 4.3.6 and earlier
+# 1. Convert HDF file to netCDF file
 ncl_convert2nc modis.hdf
-# Unpack using HDF convention and repack using netCDF convention
+# 2. Unpack using HDF convention and repack using netCDF convention
 ncpdq --hdf_upk -P xst_new modis.nc modis.nc
 @end example
-The @command{ncl_convert2nc} command distributed with @acronym{NCL}
-is a commonly used tool for converting @acronym{HDF} files to netCDF.
+The @samp{--hdf4} switch is a precaution necessary because of flaws
+in the netCDF library versions 4.3.1 and earlier.
+Hopefully the need for this switch will disappear with netCDF 4.3.2,
+which will allow @acronym{NCO} to automatically detect and treat 
+@acronym{HDF4} files.
+Prior to version 4.3.7 (October, 2013), @acronym{NCO} lacked the
+software necessary to workaround netCDF library flaws handling
+@acronym{HDF4} files, and thus @acronym{NCO} failed to convert
+@acronym{HDF4} files to netCDF files.
+In those cases, use the @command{ncl_convert2nc} command distributed
+with @acronym{NCL} to convert @acronym{HDF4} files to netCDF.
 In this case it produces an output file @file{modis.nc} which preserves
 the @acronym{HDF} packing used in the input file.
 The @command{ncpdq} command first unpacks all packed variables using the
