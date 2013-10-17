@@ -79,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.99 2013-10-15 22:58:14 pvicente Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.100 2013-10-17 04:36:52 pvicente Exp $";
   
  data:
   area=10.,10.;
@@ -129,7 +129,7 @@ netcdf in_grp {
   //
  group: g2 { 
   variables:
-    //coordinate variable (/time)
+    //coordinate variable (dimension at root)
     double time(time);
     float scl;
   data:
