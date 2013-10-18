@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.425 2013-10-17 20:31:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.426 2013-10-18 18:15:41 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -683,7 +683,7 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* NB: Keep configuration option tokens consistent among configure.ac, bld/Makefile, and nco_ctl.c
      Alphabetize list by first word in English text description of token */
-  (void)fprintf(stdout,"Configuration Option:\tActive?\tMeaning or Reference:\nCheck _FillValue\t%s\thttp://nco.sf.net/nco.html#mss_val\nCheck missing_value\t%s\thttp://nco.sf.net/nco.html#mss_val\nCompressed netCDF3\t%s\thttp://nco.sf.net/nco.html#znetcdf (pre-alpha)\nDAP clients (libdap)\t%s\thttp://nco.sf.net/nco.html#dap\nDAP clients (libnetcdf)\t%s\thttp://nco.sf.net/nco.html#dap\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nGNU Scientific Library\t%s\thttp://nco.sf.net/nco.html#gsl\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nMPI parallelization\t%s\thttp://nco.sf.net/nco.html#mpi (beta)\nnetCDF3 64-bit files\t%s\thttp://nco.sf.net/nco.html#lfs\nnetCDF4/HDF5 available\t%s\thttp://nco.sf.net/nco.html#nco4\nnetCDF4/HDF5 enabled\t%s\thttp://nco.sf.net/nco.html#nco4\nOpenMP SMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nParallel netCDF3\t%s\thttp://nco.sf.net/nco.html#pnetcdf (pre-alpha)\nRegular Expressions\t%s\thttp://nco.sf.net/nco.html#rx\nShared libraries built\t%s\tSmall, dynamically linked executables\nShell globbing\t\t%s\thttp://nco.sf.net/nco.html#glb\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#udunits\nUDUnits2 conversions\t%s\thttp://nco.sf.net/nco.html#udunits\n%s",
+  (void)fprintf(stdout,"Configuration Option:\tActive?\tMeaning or Reference:\nCheck _FillValue\t%s\thttp://nco.sf.net/nco.html#mss_val\nCheck missing_value\t%s\thttp://nco.sf.net/nco.html#mss_val\nCompressed netCDF3\t%s\thttp://nco.sf.net/nco.html#znetcdf (pre-alpha)\nDAP clients (libdap)\t%s\thttp://nco.sf.net/nco.html#dap\nDAP clients (libnetcdf)\t%s\thttp://nco.sf.net/nco.html#dap\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nGNU Scientific Library\t%s\thttp://nco.sf.net/nco.html#gsl\nHDF4 support\t\t%s\thttp://nco.sf.net/nco.html#hdf4 (beta)\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nMPI parallelization\t%s\thttp://nco.sf.net/nco.html#mpi (beta)\nnetCDF3 64-bit files\t%s\thttp://nco.sf.net/nco.html#lfs\nnetCDF4/HDF5 available\t%s\thttp://nco.sf.net/nco.html#nco4\nnetCDF4/HDF5 enabled\t%s\thttp://nco.sf.net/nco.html#nco4\nOpenMP SMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nParallel netCDF3\t%s\thttp://nco.sf.net/nco.html#pnetcdf (pre-alpha)\nRegular Expressions\t%s\thttp://nco.sf.net/nco.html#rx\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#udunits\nUDUnits2 conversions\t%s\thttp://nco.sf.net/nco.html#udunits\n%s",
 		(!strcmp("_FillValue",nco_mss_val_sng_get())) ? "Yes" : "No",
 		(!strcmp("missing_value",nco_mss_val_sng_get())) ? "Yes" : "No",
 #if defined(ENABLE_ZNETCDF) && (ENABLE_ZNETCDF)
@@ -716,6 +716,12 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 #else /* !ENABLE_GSL */
 		"No",
 #endif /* !ENABLE_GSL */
+/* 20131018: This switch is not active yet. Requires netCDF library support */
+#if defined(ENABLE_HDF4) && (ENABLE_HDF4)
+		"Yes",
+#else /* !ENABLE_HDF4 */
+		"Unknown",
+#endif /* !ENABLE_HDF4 */
 #if defined(I18N) && (I18N)
 		"Yes",
 #else /* !I18N */
@@ -766,11 +772,6 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 #else /* !ENABLE_SHARED */
 		"No",
 #endif /* !ENABLE_SHARED */
-#if defined(NCO_HAVE_SHELL_WILDCARDS) && (NCO_HAVE_SHELL_WILDCARDS)
-		"Yes",
-#else /* !NCO_HAVE_SHELL_WILDCARDS */
-		"No",
-#endif /* !NCO_HAVE_SHELL_WILDCARDS */
 #if defined(ENABLE_STATIC) && (ENABLE_STATIC)
 		"Yes",
 #else /* !ENABLE_STATIC */
@@ -799,7 +800,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
-prg_prs /* [fnc] Strip program name to stub and return program ID */
+prg_prs /* [fnc] Strip program name to stub and set program ID */
 (const char * const nm_in, /* I [sng] Name of program, i.e., argv[0] (may include path prefix) */
  int * const prg_lcl) /* O [enm] Enumerated number corresponding to nm_in */
 {
@@ -815,9 +816,9 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   if(strrchr(nm_out_tmp,'\\')) nm_out_tmp=strrchr(nm_out_tmp,'\\')+1;
   char *s=strstr(nm_out_tmp,".exe");
   if(s!=NULL && !strcmp(s,".exe")){
-    len=strlen(nm_out_tmp); /* cut '.exe' from name if name contains '.exe' */ 
+    len=strlen(nm_out_tmp); /* cut any '.exe' from name */ 
     nm_out_tmp[len-4]='\0';   
-  }
+  } /* endif */
 #else /* !_MSC_VER */
   if(strrchr(nm_out_tmp,'/')) nm_out_tmp=strrchr(nm_out_tmp,'/')+1;
 #endif /* !_MSC_VER */

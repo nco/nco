@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.44 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.45 2013-10-18 18:15:41 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -87,7 +87,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void); /* [fnc] Return mnemonic that describes current NCO version */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
-prg_prs /* [fnc] Strip program name to stub and return program ID */
+prg_prs /* [fnc] Strip program name to stub and set program ID */
 (const char * const nm_in, /* I [sng] Name of program, i.e., argv[0] (may include path prefix) */
  int * const prg_lcl); /* O [enm] Enumerated number corresponding to nm_in */
 

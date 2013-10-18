@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.416 2013-10-10 21:33:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.417 2013-10-18 18:15:41 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.416 2013-10-10 21:33:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.416 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.417 2013-10-18 18:15:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.417 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -698,13 +698,13 @@ main(int argc,char **argv)
       /* Allocate space for only one record */
       var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
     } /* endif */
-    if(prg == ncra || prg == ncea || prg == ncga){
+    if(prg == ncra || prg == ncea || prg == nces){
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
       var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
-      if(prg == ncea || prg == ncga){
+      if(prg == ncea || prg == nces){
         (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
         (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
-      } /* end if ncea || ncga */
+      } /* end if ncea || nces */
     } /* end if */
   } /* end loop over idx */
 
@@ -737,7 +737,7 @@ main(int argc,char **argv)
     } /* end loop over variables */
 
     nbr_rec=trv_tbl->nbr_rec;
-    if(prg == ncea || prg == ncga) nbr_rec=1;
+    if(prg == ncea || prg == nces) nbr_rec=1;
 
     /* Loop over number of records to process */
     for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
@@ -777,7 +777,7 @@ main(int argc,char **argv)
         if((trv_tbl->lmt_rec[idx_rec]->srt > trv_tbl->lmt_rec[idx_rec]->end) && (trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn == 0L))
 	  (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
 
-      if(prg == ncra || prg == ncrcat){ /* ncea and ncga jump to else branch */
+      if(prg == ncra || prg == ncrcat){ /* ncea and nces jump to else branch */
 
         rec_dmn_sz=trv_tbl->lmt_rec[idx_rec]->rec_dmn_sz;
         rec_rmn_prv_drn=trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn; /* Local copy may be decremented later */
@@ -1039,7 +1039,7 @@ main(int argc,char **argv)
           var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
         } /* end (OpenMP parallel for) loop over idx */
 	/* End ncea section */
-      }else if(prg == ncga){ /* ncga */
+      }else if(prg == nces){ /* nces */
 
 	int mbr_idx; /* [idx] Counting index for member */
 	int nsm_idx; /* [idx] Counting index for ensemble */
@@ -1092,7 +1092,7 @@ main(int argc,char **argv)
 	  } /* end loop over members of current ensemble */
 	} /* end loop over ensembles in current file */
 	
-      } /* End ncga section */
+      } /* End nces section */
       
       if(dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
       
@@ -1133,7 +1133,7 @@ main(int argc,char **argv)
      except ncra normalizes after every DRN records, while ncea normalizes once, after all files.
      Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
      In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
-     FLG_BFR_NRM is always true here for ncea and ncga */
+     FLG_BFR_NRM is always true here for ncea and nces */
   if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True,(char *)NULL,(trv_tbl_sct *)NULL);
 
   /* Manually fix YYMMDD date which was mangled by averaging */
@@ -1143,7 +1143,7 @@ main(int argc,char **argv)
      NB: nco_cnv_arm_time_install() contains OpenMP critical region */
   if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(grp_out_id,base_time_srt,dfl_lvl);
 
-  /* Copy averages to output file for ncea and ncga always and for ncra when trailing file(s) was/were superfluous */
+  /* Copy averages to output file for ncea and nces always and for ncra when trailing file(s) was/were superfluous */
   if(FLG_BFR_NRM){
     for(idx=0;idx<nbr_var_prc;idx++){
 
@@ -1166,10 +1166,10 @@ main(int argc,char **argv)
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
       if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
     } /* end loop over idx */
-  } /* end if ncea and ncga */
+  } /* end if ncea and nces */
 
   /* Free averaging and tally buffers */
-  if(prg == ncra || prg == ncea || prg == ncga){
+  if(prg == ncra || prg == ncea || prg == nces){
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx) shared(nbr_var_prc,nco_op_typ,var_prc,var_prc_out)
 #endif /* !_OPENMP */

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.888 2013-10-17 20:31:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.889 2013-10-18 18:15:40 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13305,10 +13305,10 @@ The @acronym{HDF} version of @command{ncgen}, often named
 @command{hncgen} or @command{ncgen-hdf}, converts netCDF3 @acronym{CDL}
 into an @acronym{HDF} file:  
 @example
-/usr/local/hdf4/bin/ncgen -b -o ~/in.hdf ~/in.cdl    # HDF ncgen
-/usr/bin/hncgen -b -o ~/in.hdf ~/in.cdl      # Same as HDF ncgen
-/usr/bin/ncgen-hdf -b -o ~/in.hdf ~/in.cdl   # Same as HDF ncgen
-hdp dumpsds ~/in.hdf          # ncdump-equivalent for HDF4 files
+/usr/hdf4/bin/ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen (local builds)
+/usr/bin/hncgen     -b -o ~/in.hdf ~/in.cdl # Same as HDF ncgen (RPM packages?)
+/usr/bin/ncgen-hdf  -b -o ~/in.hdf ~/in.cdl # Same as HDF ncgen (Debian packages?)
+hdp dumpsds ~/in.hdf                        # ncdump-equivalent for HDF4 files
 @end example
 Note that @acronym{HDF4} does not support netCDF-style groups, so the
 above commands fail when the input file contains groups.

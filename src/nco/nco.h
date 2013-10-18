@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.411 2013-10-16 17:11:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.412 2013-10-18 18:15:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -357,8 +357,7 @@ extern "C" {
     ncap,
     ncatted,
     ncbo,
-    ncea,
-    ncga,
+    ncea, 
     ncecat,
     ncflint,
     ncks,
@@ -366,7 +365,9 @@ extern "C" {
     ncra,
     ncrcat,
     ncrename,
-    ncwa
+    ncwa,
+    nces, /* 20131018: Potential new operator */
+    ncmv /* 20131018: Potential new operator */
   }; /* end prg enum */
   
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
