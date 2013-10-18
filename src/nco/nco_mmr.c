@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.58 2013-10-09 18:37:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.59 2013-10-18 23:25:12 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -86,6 +86,8 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 
   size_t sz_thr=1024UL*1024UL; /* I [B] Bytes to allocate threshold size for reporting */
 
+  size_t sz_max=1024UL*1024UL*1024UL*1024UL; /* I [B] Maximum bytes to allocate without warning */
+
   void *ptr; /* [ptr] Pointer to new buffer */
   
   /* malloc(0) is ANSI-legal, albeit unnecessary
@@ -99,9 +101,9 @@ nco_malloc /* [fnc] Wrapper for malloc() */
     if((nvr_NCO_MMR_DBG=getenv("NCO_MMR_DBG"))) ntg_NCO_MMR_DBG=(int)strtol(nvr_NCO_MMR_DBG,&sng_cnv_rcd,NCO_SNG_CNV_BASE10); /* [sng] Environment variable NCO_MMR_DBG */
   } /* endif dbg */
 
-  if(ntg_NCO_MMR_DBG && sz > sz_thr){
-    (void)fprintf(stdout,"%s: INFO %s received request to allocate %zu B = %zu kB = %zu MB = %zu GB\n",prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB);
-  } /* endif dbg */
+  if(ntg_NCO_MMR_DBG && sz > sz_thr) (void)fprintf(stdout,"%s: INFO %s received request to allocate %zu B = %zu kB = %zu MB = %zu GB\n",prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB);
+
+  if(sz > sz_max) (void)fprintf(stdout,"%s: WARNING %s received request to allocate %zu B = %zu kB = %zu MB = %zu GB = %zu TB\n",prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB,sz/NCO_BYT_PER_TB);
 
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){

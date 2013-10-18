@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.412 2013-10-18 18:15:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.413 2013-10-18 23:25:12 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -20,6 +20,7 @@
 
 /* Personal headers */
 #include "nco_typ.h" /* Type definitions, opaque types */
+#include "nco_uthash.h" /* Hash table functionality */
 
   /* C pre-processor macros for instantiating variable values with string tokens
      Macros for token pasting described at http://www.parashift.com/c++-faq-lite
@@ -107,6 +108,7 @@ extern "C" {
 #define NCO_BYT_PER_KB 1024UL
 #define NCO_BYT_PER_MB 1048576UL
 #define NCO_BYT_PER_GB 1073741824UL
+#define NCO_BYT_PER_TB 1099511627776UL
 
   /* netcdf.h NC_GLOBAL is, strictly, the variable ID for global attributes
      NCO_REC_DMN_UNDEFINED is dimension ID of record dimension iff record dimension is undefined
@@ -823,7 +825,6 @@ extern "C" {
     nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */
     nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr;                 /* [flg] Extract object */ 
-
     /* Following are members only used by transformation operators (non-ncks) (For variables only) */
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  
@@ -831,6 +832,8 @@ extern "C" {
     nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimensions (ncpdq) */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
+    /* Hash Table */
+    UT_hash_handle hh;                /* [sct] Handle for hash table */
   } trv_sct;
 
   /* Fill actual value of dmn_sct structure in nco_dmn_fll()

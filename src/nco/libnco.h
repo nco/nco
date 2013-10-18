@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.56 2013-07-16 18:39:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.57 2013-10-18 23:25:12 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) library */
 
@@ -6,7 +6,7 @@
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
-/* libnco.h headers depend on netcdf.h and nco_netcdf.h headers */
+/* Most libnco.h headers depend on netcdf.h and nco_netcdf.h headers */
 
 /* Usage:
    #include "libnco.h" *//* netCDF Operator (NCO) library */
@@ -50,6 +50,7 @@
 #include "nco_scm.h" /* Software configuration management */
 #include "nco_sng_utl.h" /* String utilities */
 #include "nco_var_avg.h" /* Average variables */
+#include "nco_uthash.h" /* Hash table functionality */
 #include "nco_var_lst.h" /* Variable list utilities */
 #include "nco_var_rth.h" /* Variable arithmetic */
 #include "nco_var_scv.h" /* Arithmetic between variables and scalar values */

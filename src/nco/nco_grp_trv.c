@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.217 2013-09-22 03:47:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.218 2013-10-18 23:25:12 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -11,7 +11,6 @@
 
 /* This file contains the API for low level group data structures:
    Group Traversal Table (GTT): functions prefixed with "trv_tbl_"
-   Group Dimension Map (GDM): functions prefixed with "trv_map_"
    It does not include any netCDF API calls */
 
 #include "nco_grp_trv.h" /* Group traversal */
@@ -59,7 +58,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
       tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
 
       /* Coordinate structure */ 
-      if (tbl->lst[idx].var_dmn[dmn_idx].crd) {
+      if(tbl->lst[idx].var_dmn[dmn_idx].crd){
         tbl->lst[idx].var_dmn[dmn_idx].crd->crd_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->crd_nm_fll);
         tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_nm_fll);
         tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll);
@@ -116,9 +115,8 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   /* Members used only by transformation operators (non-ncks) */
 
   /* (ncra) Record dimensions */
-  for(int idx=0;idx<tbl->nbr_rec;idx++){
+  for(int idx=0;idx<tbl->nbr_rec;idx++)
     tbl->lmt_rec[idx]=nco_lmt_free(tbl->lmt_rec[idx]);
-  }
 
   /* (ncwa) Degenerate dimensions */
   tbl->dmn_dgn=(dmn_sct *)nco_free(tbl->dmn_dgn); 
@@ -199,7 +197,7 @@ trv_tbl_prn_flg_mch                  /* [fnc] Print table items that have .flg_m
     trv_obj=trv_tbl->lst[tbl_idx];
     if((trv_obj.nco_typ == obj_typ) && trv_obj.flg_mch) (void)fprintf(stdout,"nm_fll=%s\n",trv_obj.nm_fll);
   } /* end loop over trv_tbl */
-}/* end trv_tbl_prn_flg_mch() */
+} /* end trv_tbl_prn_flg_mch() */
 
 void                          
 trv_tbl_prn                          /* [fnc] Print table with -z */
