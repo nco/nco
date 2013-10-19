@@ -1,5 +1,11 @@
 2013-10-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.3.8 release procedure:
+ 	Changes since nco-4_3_7: hash?
+	cd ~/nco;cvs tag -d nco-4_3_8;cvs tag -d nco-4_3_8-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.8 release"
+	cvs tag -c nco-4_3_8;cvs tag -c nco-4_3_8-1
+
 	* Supplant strcmp() with hash table in trv_tbl_fnd_var_nm_fll()
 	Works on all operators except ncbo
 
@@ -11,16 +17,12 @@
 	* Add uthash hash table functionality stubs and nco_uthash.h
 	BSD-licensed code by Troy D. Hanson http://troydhanson.github.com/uthash
 
-	* NCO 4.3.8 release procedure:
- 	Changes since nco-4_3_7: fxm
-	cd ~/nco;cvs tag -d nco-4_3_8;cvs tag -d nco-4_3_8-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.8 release"
-	cvs tag -c nco-4_3_8;cvs tag -c nco-4_3_8-1
-
 	* Warn about excessive malloc()-size requests.
 	Namespace pollution caused request for 18446744073709551608 B = 16 EB
 
 	* Move ncga enum to nces enum and place at end to workaround namespace pollution
+	Pollution tainted shared libraries on Yellowstone at NWSC. To prevent recurrence
+	must prefix all external symbols with nco_, and remove all global variables.
 
 2013-10-17  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1011 2013-10-19 00:14:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1012 2013-10-19 04:15:55 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1158,11 +1158,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
             psn_chr=ptr_chr-dmn_nm_fll;
             while(ptr_chr){
               /* If variable is on list, mark it for extraction */
-              if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
-
-                (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
-
-              } /* endif */
+              if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)) (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
               dmn_nm_fll[psn_chr]='\0';
               ptr_chr=strrchr(dmn_nm_fll,sls_chr);
               if(ptr_chr){
@@ -6874,7 +6870,7 @@ nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
  const long idx_rec_crr_in,         /* [idx] Index of current record in current input file */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Define an artificial MSA limit that corresponds to 1 record to read, since nco_msa_var_get_trv() reads all elements */ 
+  /* Define artificial MSA limit that corresponds to one record to read, since nco_msa_var_get_trv() reads all elements */ 
 
   int lmt_dmn_nbr;
 
@@ -7017,17 +7013,11 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
       /* Get unique dimension object from unique dimension ID, in input list (NB: this is needed because dmn_sct does not have name full) */
       dmn_trv=nco_dmn_trv_sct(var_prc->dim[idx_dmn]->id,trv_tbl);
 
-      /* And it is not the same as the input record dimension name currently being done */
-      if(strcmp(dmn_trv->nm_fll,rec_nm_fll) != 0){
-
-        /* Then skip this variable */
-        flg_skp=True;
-
-      }  /* And it is not the same as the input record dimension name currently being done */
+      /* And it is not the same as the input record dimension name currently being done then skip it */
+      if(strcmp(dmn_trv->nm_fll,rec_nm_fll)) flg_skp=True;
 
     } /* Is this the record dimension */
   } /* Loop dimensions */
-
 
   return flg_skp;
 
@@ -7040,7 +7030,7 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
  const var_sct * const var,           /* I [sct] Variable that needs the weight/mask variable */
  const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */
 {
-  /* Purpose: Return the variable (weight or mask) that is in scope of variable that needs the weight/mask variable */ 
+  /* Purpose: Return the variable (weight or mask) that is in scope of variable that needs the weight/mask variable */
 
   /* NB: currently detect same group only */
 
@@ -7052,12 +7042,8 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   trv_sct **wgt_trv=NULL; /* [sct] Weight/mask list */
 
   /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Filter */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm) == 0) ){
-      nbr_wgt++;
-    } /* Filter  */
-  } /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (!strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm))) nbr_wgt++;
 
   /* Fill-in variable structure list for all weights */
   wgt_trv=(trv_sct **)nco_malloc(nbr_wgt*sizeof(trv_sct *));
@@ -7068,13 +7054,11 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
     /* Filter by name  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm) == 0) ){
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (!strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm))){
       wgt_trv[idx_wgt]=&trv_tbl->lst[tbl_idx]; 
-
       idx_wgt++;
     } /* Filter variables  */
   } /* Loop table */
-
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -7088,7 +7072,7 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
         /* Loop over weights */
         for(idx_wgt=0;idx_wgt<nbr_wgt;idx_wgt++){
           /* Same group  */ 
-          if(strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll) == 0){ 
+          if(!strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){ 
             var_sct *wgt;
 
             /* Obtain group ID from API using full group name */

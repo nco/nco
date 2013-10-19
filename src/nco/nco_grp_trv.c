@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.220 2013-10-19 01:47:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.221 2013-10-19 04:15:55 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -100,9 +100,8 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
       tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.dmn_nm);
 
-      for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;lmt_idx++){
+      for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn_nbr;lmt_idx++)
         tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]->lmt_msa.lmt_dmn[lmt_idx]);
-      }  
 
       tbl->lst_dmn[dmn_idx].crd[crd_idx]=(crd_sct *)nco_free(tbl->lst_dmn[dmn_idx].crd[crd_idx]);
     }  /* Coordinate structures */
@@ -242,9 +241,11 @@ trv_tbl_var_nm_fll                    /* [fnc] Return object from full name key 
         This method does not depend on traversal table remaining in same order as when keys were generated
         But it does require that no names change after keys are generated
 	More specifically, it requires old hash entries be deleted and new ones added when keys change
-	It is therefore more fragile than Method 1 */
+	It is therefore more fragile than Method 1
+     Once this code is debugged, place it in all trv_tbl lookups */
 
-  // #define NCO_HASH
+  /* Activate following line to turn on hash tables: */
+// #define NCO_HASH
 #ifndef NCO_HASH
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll))
@@ -253,10 +254,11 @@ trv_tbl_var_nm_fll                    /* [fnc] Return object from full name key 
   return NULL;
 #else /* NCO_HASH */
   trv_sct *trv_obj; /* [sct] GTT object structure */
-  /* HASH_FIND_STR does not want key argument to be const */
+  /* HASH_FIND_STR does not want key argument to be const
+     Permanent solution is to change function prototype to non-const key */
   char *hsh_key=(char *)strdup(var_nm_fll);
   HASH_FIND_STR(trv_tbl->hsh,hsh_key,trv_obj);
-  hsh_key=(char *)nco_free(hsh_key);
+  if(hsh_key) hsh_key=(char *)nco_free(hsh_key);
   return trv_obj;
 #endif /* NCO_HASH */
 
@@ -305,18 +307,14 @@ trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of travers
   int nbr_flg=0;
 
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.flg_xtr) nbr_flg++;
-  } /* Loop table */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(trv_tbl->lst[uidx].flg_xtr) nbr_flg++;
 
   (void)fprintf(stdout,"%s: INFO %s reports <%d> objects with extraction flag (flg_xtr) set:\n",prg_nm_get(),fnc_nm,nbr_flg); 
   
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.flg_xtr) (void)fprintf(stdout,"[%d] %s\n",idx++,trv.nm_fll); 
-  }/* Loop table */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(trv_tbl->lst[uidx].flg_xtr) (void)fprintf(stdout,"[%d] %s\n",idx++,trv_tbl->lst[uidx].nm_fll); 
 
 } /* end trv_tbl_prn_xtr() */
 
@@ -347,23 +345,21 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
  int * nbr_cmn_nm)                     /* I/O [nbr] Number of common names entries */
 {
-  /* Purpose: Find common objects; the algorithm used for this search is the
-  *  cosequential match algorithm and is described in
-  *  Folk, Michael; Zoellick, Bill. (1992). File Structures. Addison-Wesley.
-  *
-  * Compare 2 ordered lists of names:
-  *  if Name(1) is less than Name(2), read the next name from List 1; this is done by incrementing a current index
-  *  if Name(1) is greater than Name(2), read the next name from List 2
-  *  if the names are the same, read the next names from the two lists 
-  * 
-  * Used in ncbo; ncbo performs binary operations on variables in file 1 and the corresponding variables
-  * (those with the same name) in file 2 and stores the results in file 3.
-  * This function detects common absolute names in tables 1 and 2 and does the ncbo binary operation on it
-  *
-  */
-
+  /* Purpose: Find common objects. 
+     Use cosequential match algorithm described in
+     Folk, Michael; Zoellick, Bill. (1992). File Structures. Addison-Wesley.
+     
+     Compare 2 ordered lists of names:
+     if Name(1) is less than Name(2), read next name from List 1; this is done by incrementing current index
+     if Name(1) is greater than Name(2), read next name from List 2
+     if names are identical, read next names from both lists 
+     
+     Used in ncbo; ncbo performs binary operations on variables in file 1 and matching variables
+     (those with the same name) in file 2 and stores results in file 3.
+     This function detects common absolute names in tables 1 and 2 and does ncbo binary operation */
+  
   const char fnc_nm[]="trv_tbl_mch()"; /* [sng] Function name */
-
+  
   int idx_lst;                   /* [idx] Current position in common List */ 
   int idx_tbl_1;                 /* [idx] Current position in List 1 */ 
   int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
@@ -374,7 +370,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
   nco_bool flg_in_fl[2];         /* [flg] Is this name if each file?; files are [0] and [1] */
 
-  /* Tables *must* be sorted */
+  /* Tables must be sorted */
   (void)trv_tbl_srt(trv_tbl_1);
   (void)trv_tbl_srt(trv_tbl_2);
 
