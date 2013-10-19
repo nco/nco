@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.8 release"
 	cvs tag -c nco-4_3_8;cvs tag -c nco-4_3_8-1
 
-	* Supplant strcmp() with hash table in trv_tbl_fnd_var_nm_fll()
+	* Supplant strcmp() with hash table in trv_tbl_var_nm_fll()
 	Works on all operators except ncbo
 
 	* #define NCO_HASH token to use hashes instead of circular strcmp()
