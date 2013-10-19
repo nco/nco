@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.414 2013-10-19 00:14:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.415 2013-10-19 01:47:38 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -834,7 +834,8 @@ extern "C" {
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
     /* Good hash, dude */
     UT_hash_handle hh;                /* [sct] Handle for hash table */
-    int hsh_key;                      /* [id] Hash key (must be unique!) */
+    // int hsh_key;                      /* [id] Hash key (must be unique!) */
+    char *hsh_key;                     /* [sng] Hash key (must be unique!) */
   } trv_sct;
 
   /* Fill actual value of dmn_sct structure in nco_dmn_fll()

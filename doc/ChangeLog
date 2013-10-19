@@ -1,6 +1,12 @@
 2013-10-18  Charlie Zender  <zender@uci.edu>
 
+	* Supplant strcmp() with hash table in trv_tbl_fnd_var_nm_fll()
+	Works on all operators except ncbo
+
+	* #define NCO_HASH token to use hashes instead of circular strcmp()
+
 	* Hash all objects in traversal table and store resultant hash table
+	Use string-keyed hash based on full object name
 
 	* Add uthash hash table functionality stubs and nco_uthash.h
 	BSD-licensed code by Troy D. Hanson http://troydhanson.github.com/uthash
