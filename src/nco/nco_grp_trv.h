@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.90 2013-09-06 22:30:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.91 2013-10-19 00:14:06 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -123,5 +123,8 @@ nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabbe
 (const int dmn_id,                    /* I [id] Unique dimension ID */
  const trv_tbl_sct *trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
+void 
+nco_trv_hsh /* Hash traversal table for fastest access */
+(trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
 
 #endif /* NCO_GRP_TRV_H */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1010 2013-10-17 04:36:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1011 2013-10-19 00:14:06 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1728,8 +1728,6 @@ nco_prt_dmn /* [fnc] Print dimensions for a group  */
 
   } /* end dnm_idx dimensions */
 } /* end nco_prt_dmn() */
-
-
 
 void                          
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */
@@ -3936,7 +3934,6 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
   for(int idx_var=0;idx_var<prc_nbr;idx_var++){
 
     nc_type typ_out;         /* [enm] Type in output file */
-
     assert(var[idx_var]);
 
     /* Obtain netCDF type to define variable from NCO program ID */
@@ -3954,7 +3951,6 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
   } /* Loop table. */
 
   return;
-
 } /* end nco_var_typ_trv() */
 
 var_sct *                             /* O [sct] Variable structure */
@@ -6483,10 +6479,10 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Build GTT "crd_sct" coordinate variable structure */
   (void)nco_bld_crd_var_trv(trv_tbl);
 
-  /* Variables in dimension's scope?   */
+  /* Variables in dimension's scope? */
   (void)nco_has_crd_dmn_scp(trv_tbl);
 
-  /* Assign variables dimensions to either coordinates or dimension structs */
+  /* Assign variables' dimensions to either coordinates or dimension structs */
   (void)nco_bld_var_dmn(trv_tbl);
 
   /* Make uniform list of user-specified dimension limits */
@@ -6498,13 +6494,15 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Add dimension limits */
   if(lmt_nbr) (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
 
-  if(lmt_nbr) {
+  if(lmt_nbr){
     for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
     lmt=(lmt_sct **)nco_free(lmt);
-  }
+  } /* !lmt_nbr */
+
+  /* Hash traversal table for fastest access */
+  (void)nco_trv_hsh(trv_tbl);
 
 } /* nco_bld_trv_tbl() */
-
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
@@ -6627,7 +6625,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     } /* Is variable to extract  */
   } /* Loop table step 2 */
 
-
   /* Store matches in table, match at the current index, increment current index */
 
   /* Loop table step 2 */
@@ -6636,7 +6633,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* Is variable to extract  */
-    if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -6647,10 +6644,10 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
           /* Match input relative name to dimension relative name */ 
           if(strcmp(lmt[lmt_idx]->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
 
-            /*  The limits have to be separated to */
+            /* Divide limits into two different cases */
 
-            /* a) case where the dimension has coordinate variables */
-            if (var_trv.var_dmn[idx_var_dmn].crd){
+            /* a) Dimension has coordinate variables */
+            if(var_trv.var_dmn[idx_var_dmn].crd){
 
               crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd;
 
@@ -6679,7 +6676,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn[lmt_crr]);
 
             }else{
-              /* b) case of dimension only (there is no coordinate variable for this dimension */
+	      /* b) Dimension only (no coordinate variable for this dimension) */
 
               dmn_trv_sct *ncd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd;
 
@@ -6715,7 +6712,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     } /* Is variable to extract  */
   } /* Loop table step 2 */
 
-  /* Step 3) Apply MSA for each Dimension in a new cycle (that now has all its limits in place) */
+  /* Step 3) Apply MSA for each Dimension in new cycle (that now has all its limits in place) */
 
   /* Loop table step 3 */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -6734,12 +6731,12 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
           /* Match input relative name to dimension relative name */ 
           if(strcmp(lmt[lmt_idx]->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
 
-            /*  The limits have to be separated to */
+            /* Limits divide into two cases */
 
-            /* a) case where the dimension has coordinate variables */
-            if (var_trv.var_dmn[idx_var_dmn].crd){
+            /* a) Dimension has coordinate variables */
+            if(var_trv.var_dmn[idx_var_dmn].crd){
 
-              /* Adapted from the original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
+              /* Adapted from original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
 
               nco_bool flg_ovl; /* [flg] Limits overlap */
 
@@ -6798,7 +6795,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
             }else{
 
-              /* b) case of dimension only (there is no coordinate variable for this dimension */
+              /* b) Dimension only (no coordinate variable for this dimension) */
 
               dmn_trv_sct *ncd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd;
 
@@ -6868,7 +6865,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   } /* Loop table step 3 */
 
 } /* nco_bld_lmt() */
-
 
 void 
 nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */

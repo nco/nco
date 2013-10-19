@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.413 2013-10-18 23:25:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.414 2013-10-19 00:14:06 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -832,8 +832,9 @@ extern "C" {
     nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimensions (ncpdq) */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
-    /* Hash Table */
+    /* Good hash, dude */
     UT_hash_handle hh;                /* [sct] Handle for hash table */
+    int hsh_key;                      /* [id] Hash key (must be unique!) */
   } trv_sct;
 
   /* Fill actual value of dmn_sct structure in nco_dmn_fll()
@@ -875,6 +876,8 @@ extern "C" {
 
     lmt_sct **lmt_rec;      /* [sct] (ncra) Record dimensions */
     int nbr_rec;            /* [sct] (ncra) Number of record dimensions (size of above array) */
+
+    trv_sct *hsh; /* [] Hash table of all trv_sct objects */
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */

@@ -1,5 +1,7 @@
 2013-10-18  Charlie Zender  <zender@uci.edu>
 
+	* Hash all objects in traversal table and store resultant hash table
+
 	* Add uthash hash table functionality stubs and nco_uthash.h
 	BSD-licensed code by Troy D. Hanson http://troydhanson.github.com/uthash
 

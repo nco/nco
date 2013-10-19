@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.218 2013-10-18 23:25:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.219 2013-10-19 00:14:06 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -349,7 +349,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     (void)trv_tbl_prn(trv_tbl_1);
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_2);
-  }
+  } /* endif dbg */
 
   /* Get number of objects in each table */
   nbr_tbl_1=trv_tbl_1->nbr;
@@ -366,18 +366,16 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   /* Store list of common objects */
   (*cmn_lst)=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
 
-  /* Iterate the 2 lists */
-  while (flg_more_names_exist)
-  {
+  /* Iterate the lists */
+  while(flg_more_names_exist){
     trv_sct trv_1=trv_tbl_1->lst[idx_tbl_1];
     trv_sct trv_2=trv_tbl_2->lst[idx_tbl_2];
 
     /* Criteria is string compare */
-    nco_cmp = strcmp(trv_1.nm_fll,trv_2.nm_fll);
+    nco_cmp=strcmp(trv_1.nm_fll,trv_2.nm_fll);
 
     /* Names match: store flag, define or write in output file, then read next names from lists */
-    if(nco_cmp == 0)
-    {
+    if(nco_cmp == 0){
       flg_in_fl[0]=True; 
       flg_in_fl[1]=True;
       (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
@@ -503,16 +501,13 @@ nco_dmn_trv_sct                       /* [fnc] Return unique dimension object fr
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Search table dimension list and compare IDs */
-  for(unsigned int idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
-    if(dmn_id == trv_tbl->lst_dmn[idx_dmn].dmn_id){
+  for(unsigned int idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++)
+    if(dmn_id == trv_tbl->lst_dmn[idx_dmn].dmn_id)
       return &trv_tbl->lst_dmn[idx_dmn];
-    }
-  }
 
   assert(0);
   return NULL;
 } /* nco_dmn_trv_sct() */
-
 
 void                                  
 nco_dmn_set_msa                       /* [fnc] Update dimension with hyperslabbed size */
@@ -521,28 +516,39 @@ nco_dmn_set_msa                       /* [fnc] Update dimension with hyperslabbe
  const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Search table dimension list and compared IDs */
-  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    if(dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id){
+  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
+    if(dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id)
       trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt=dmn_cnt;
-    }
-  }
 
   return;
 } /* nco_dmn_set_msa() */
 
-long                                  /* O hyperslabbed size */
+long                                  /* O [nbr] Hyperslabbed size */
 nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabbed size */
 (const int dmn_id,                    /* I [id] Unique dimension ID */
  const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
 {
-
   /* Search table dimension list and compare IDs */
-  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    if(dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id){
+  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
+    if(dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id)
       return trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt;
-    }
-  }
      
   assert(0);
   return -1;
 } /* nco_dmn_get_msa() */
+
+void
+nco_trv_hsh /* Hash traversal table for fastest access */
+(trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+{
+  /* Purpose: Hash all objects in traversal table and store resultant hash table */
+
+  /* NB: Hash table must be NULL-initialized */
+  trv_tbl->hsh=NULL;
+
+  for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_tbl->lst[tbl_idx].hsh_key=tbl_idx;
+    HASH_ADD_INT(trv_tbl->hsh,hsh_key,trv_tbl->lst+tbl_idx);
+  } /* end loop over trv_tbl */
+
+} /* end trv_tbl_prn_flg_mch() */
