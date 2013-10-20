@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1012 2013-10-19 04:15:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1013 2013-10-20 16:35:12 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -892,7 +892,7 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
       trv_sct var_trv=trv_tbl->lst[idx_var]; 
 
       /* If variable is coordinate variable then mark it for extraction ...simple */
-      if (var_trv.is_crd_var){
+      if(var_trv.is_crd_var){
         trv_tbl->lst[idx_var].flg_xtr=True;
       }
 
@@ -1013,7 +1013,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
         } /* end loop over uidx */
 
         /* CF not found ? */
-        if(flg_cf_fnd == False){     
+        if(!flg_cf_fnd){     
           (void)fprintf(stderr,"%s: WARNING Variable %s, specified in \"%s\" attribute of variable %s, is not present in input file\n",
             prg_nm_get(),cf_lst[idx_cf],cf_nm,var_trv->nm_fll);
         } /* CF not found ? */
@@ -1042,11 +1042,8 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
   nm_id_sct *xtr_lst; /* [sct] Extraction list */
 
   int nbr_tbl=0; 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr){
-      nbr_tbl++;
-    } /* end flg == True */
-  } /* end loop over uidx */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr) nbr_tbl++;
 
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_tbl*sizeof(nm_id_sct));
 
@@ -2192,7 +2189,7 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
           if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl)){
 
             /* Mark this variable as a coordinate variable. NB: coordinate variables are 1D */
-            if (var_trv.nbr_dmn == 1) trv_tbl->lst[idx_var].is_crd_var=True;
+            if(var_trv.nbr_dmn == 1) trv_tbl->lst[idx_var].is_crd_var=True;
             else trv_tbl->lst[idx_var].is_crd_var=False;
 
             /* If the group dimension is a record dimension then the variable is a record variable */
@@ -2200,7 +2197,7 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
 
             if(dbg_lvl_get() == nco_dbg_old){
               (void)fprintf(stdout,"%s: INFO %s <%s> is ",prg_nm_get(),fnc_nm,var_trv.nm_fll);
-              if (dmn_trv.is_rec_dmn) (void)fprintf(stdout,"(record) ");
+              if(dmn_trv.is_rec_dmn) (void)fprintf(stdout,"(record) ");
               (void)fprintf(stdout,"coordinate\n");
             }
 
@@ -2240,7 +2237,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
         if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
 
           /* Is variable in scope of dimension ? */
-          if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
+          if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl)){
 
             /* Increment the number of coordinate variables for this dimension */
             trv_tbl->lst_dmn[idx_dmn].crd_nbr++;
@@ -2260,7 +2257,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
     int crd_nbr=trv_tbl->lst_dmn[idx_dmn].crd_nbr;
 
     /* Alloc coordinate array if there are any coordinates */
-    if (crd_nbr) trv_tbl->lst_dmn[idx_dmn].crd=(crd_sct **)nco_malloc(crd_nbr*sizeof(crd_sct *));
+    if(crd_nbr) trv_tbl->lst_dmn[idx_dmn].crd=(crd_sct **)nco_malloc(crd_nbr*sizeof(crd_sct *));
 
   } /* Loop unique dimensions list in groups */
 
@@ -2283,7 +2280,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
         if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
 
           /* Is variable in scope of dimension ? */
-          if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl) == True ){
+          if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl)){
 
             /* Alloc this coordinate */
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]=(crd_sct *)nco_malloc(sizeof(crd_sct));
@@ -2407,16 +2404,16 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
       (void)fprintf(stdout,"%s:",var_trv.nm_fll); 
 
       /* Filter output */
-      if (var_trv.is_crd_var == True){
+      if(var_trv.is_crd_var){
         (void)fprintf(stdout," (coordinate)");
         nbr_crd++;
       }
 
       /* Filter output */
-      if (var_trv.is_rec_var == True) (void)fprintf(stdout," (record)");
+      if(var_trv.is_rec_var) (void)fprintf(stdout," (record)");
 
       /* If record variable must be coordinate variable */
-      if (var_trv.is_rec_var == True) assert(var_trv.is_crd_var == True);
+      if(var_trv.is_rec_var) assert(var_trv.is_crd_var);
 
       (void)fprintf(stdout," %d dimensions: ",var_trv.nbr_dmn); 
 
@@ -2427,12 +2424,12 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
         (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,var_dmn.dmn_nm_fll,var_dmn.dmn_id); 
         /* Filter output */
-        if (var_dmn.is_crd_var == True) (void)fprintf(stdout," (coordinate) : ");
+        if(var_dmn.is_crd_var) (void)fprintf(stdout," (coordinate) : ");
 
         /*  The limits have to be separated to */
 
         /* a) case where the dimension has coordinate variables */
-        if (var_dmn.crd){
+        if(var_dmn.crd){
 
           crd_sct *crd=var_dmn.crd;
 
@@ -2472,8 +2469,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
     (void)fprintf(stdout,"(#%d%s)",dmn_trv.dmn_id,dmn_trv.nm_fll);
 
     /* Filter output */
-    if (dmn_trv.is_rec_dmn == True) (void)fprintf(stdout," record dimension(%lu):: ",(unsigned long)dmn_trv.sz);
-    else if (dmn_trv.is_rec_dmn == False) (void)fprintf(stdout," dimension(%lu):: ",(unsigned long)dmn_trv.sz);
+    if(dmn_trv.is_rec_dmn) (void)fprintf(stdout," record dimension(%lu):: ",(unsigned long)dmn_trv.sz); else (void)fprintf(stdout," dimension(%lu):: ",(unsigned long)dmn_trv.sz);
 
     nbr_crd_var+=dmn_trv.crd_nbr;
 
@@ -2493,7 +2489,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
       }/* Limits */
 
       /* Terminate this coordinate with "::" */
-      if (dmn_trv.crd_nbr>1) (void)fprintf(stdout,":: ");
+      if(dmn_trv.crd_nbr>1) (void)fprintf(stdout,":: ");
 
     }/* Loop coordinates */
 
@@ -2556,11 +2552,8 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
     } /* Loop object table */
 
 
-    if(dbg_lvl_get() == nco_dbg_old){
-      if (in_scp == False)
-        (void)fprintf(stdout,"%s: INFO %s dimension <%s> with no in scope variables\n",prg_nm_get(),fnc_nm,
-        dmn_trv.nm_fll);        
-    } /* endif dbg */
+    if(dbg_lvl_get() == nco_dbg_old)
+      if(!in_scp) (void)fprintf(stdout,"%s: INFO %s dimension <%s> with no in scope variables\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);        
 
     trv_tbl->lst_dmn[idx_dmn].has_crd_scp=in_scp;
 
@@ -2608,12 +2601,12 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
   size_t dmn_nm_fll_lng;                     /* [nbr] Length of of full dimension name */
 
   /* Coordinate variables are 1D */
-  if (var_trv->nbr_dmn !=1 ){
+  if(var_trv->nbr_dmn !=1 ){
     return False;
   }
 
   /* Most common case is for the unique dimension full name to match the full variable name   */
-  if (strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
+  if(strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
     if(dbg_lvl_get() == nco_dbg_old){
       (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
         var_trv->nm_fll,dmn_trv->nm_fll);
@@ -2657,10 +2650,10 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
     }
 
     /* If match is on both ends of '/' then it's a "real" name, not for example "lat_lon" as a variable looking for "lon" */
-    if (flg_pth_srt_bnd && flg_pth_end_bnd){
+    if(flg_pth_srt_bnd && flg_pth_end_bnd){
 
       /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
-      if (var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
+      if(var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
         if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
@@ -2668,7 +2661,7 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
         return True;
 
         /* Variable in scope of dimension */
-      }else if (var_nm_fll_lng>dmn_nm_fll_lng){
+      }else if(var_nm_fll_lng>dmn_nm_fll_lng){
 
         /* NOTE: deal with cases like
         dimension: /lon
@@ -2704,7 +2697,7 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
         return True;
 
         /* Variable out of scope of dimension */
-      }else if (var_nm_fll_lng < dmn_nm_fll_lng){
+      }else if(var_nm_fll_lng < dmn_nm_fll_lng){
         if(dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
@@ -2767,7 +2760,7 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
     /* Absolute match: in scope */ 
     if(!strcmp(var_trv->nm_fll,crd->crd_nm_fll)){ 
       /* Variable must be coordinate for this to happen */
-      assert(var_trv->is_crd_var == True);
+      assert(var_trv->is_crd_var);
       return crd;
     }else if(!strcmp(var_trv->grp_nm_fll,crd->crd_grp_nm_fll)){ 
       /* Same group: in scope  */ 
@@ -2935,7 +2928,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
 
     nco_bool flg_xtr;
     
-    if (use_flg_xtr)flg_xtr=var_trv.flg_xtr; else flg_xtr=True;
+    if(use_flg_xtr)flg_xtr=var_trv.flg_xtr; else flg_xtr=True;
 
     /* If object is an extracted variable... */ 
     if(var_trv.nco_typ == nco_obj_typ_var && flg_xtr){
@@ -3045,7 +3038,7 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
-  if (*rec_dmn_nm){
+  if(*rec_dmn_nm){
     nbr_rec=(*rec_dmn_nm)->nbr;
   } else {
     nbr_rec=0;
@@ -3061,7 +3054,7 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
     dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[idx_dmn].dmn_id,trv_tbl);
 
     /* Dimension is a record dimension */
-    if (dmn_trv->is_rec_dmn){
+    if(dmn_trv->is_rec_dmn){
 
       /* Add one more element to table (nco_realloc nicely handles first time/not first time insertions) */
       (*rec_dmn_nm)->lst=(nm_sct *)nco_realloc((*rec_dmn_nm)->lst,(nbr_rec+1)*sizeof(nm_sct));
@@ -3074,7 +3067,7 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
     } /* Dimension is a record dimension */
   } /* Loop dimensions for object (variable)  */
 
-  if (*rec_dmn_nm) (*rec_dmn_nm)->nbr=nbr_rec;
+  if(*rec_dmn_nm) (*rec_dmn_nm)->nbr=nbr_rec;
 
 } /* nco_get_rec_dmn_nm() */
 
@@ -3338,10 +3331,10 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   trv_sct *rnk_gtr;              /* [sct] Object of greater or equal rank */
 
   assert(trv_1->nco_typ == nco_obj_typ_var);
-  assert(trv_1->flg_xtr == True);
+  assert(trv_1->flg_xtr);
 
   assert(trv_2->nco_typ == nco_obj_typ_var);
-  assert(trv_2->flg_xtr == True);
+  assert(trv_2->flg_xtr);
 
   /* Get Program ID */
   prg_id=prg_get(); 
@@ -3415,7 +3408,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       /* Loop dimensions */
       for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
         /* Differ */
-        if (var_prc_1->dim[idx_dmn]->sz != var_prc_2->dim[idx_dmn]->sz){
+        if(var_prc_1->dim[idx_dmn]->sz != var_prc_2->dim[idx_dmn]->sz){
           (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s with different size\n",prg_nm_get(),
             var_prc_1->nm_fll,var_prc_1->dim[idx_dmn]->nm);
           nco_exit(EXIT_FAILURE);
@@ -3590,7 +3583,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
   prc_typ_enm prc_typ_1; /* [enm] Processing type */
 
   assert(trv_1->nco_typ == nco_obj_typ_var);
-  assert(trv_1->flg_xtr == True);
+  assert(trv_1->flg_xtr);
 
   /* Get Program ID */
   prg_id=prg_get(); 
@@ -3996,7 +3989,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Get type and number of dimensions and attributes for variable */
   (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
 
-  if (prg_id == ncks) assert(var->typ_dsk == var_trv->var_typ);
+  if(prg_id == ncks) assert(var->typ_dsk == var_trv->var_typ);
 
   assert(var->nbr_dim == var_trv->nbr_dmn);
   assert(var->nbr_att == var_trv->nbr_att);
@@ -4046,7 +4039,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     if(var_trv->var_dmn[idx_dmn].crd){
       dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
     }
-    else if (var_trv->var_dmn[idx_dmn].ncd){
+    else if(var_trv->var_dmn[idx_dmn].ncd){
       dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
     }
 
@@ -4057,7 +4050,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->sz*=dmn_cnt;
     
     /* This definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */
-    if (dmn_trv->is_rec_dmn){
+    if(dmn_trv->is_rec_dmn){
       var->is_rec_var=True;
     } else {
       var->sz_rec*=var->cnt[idx_dmn];
@@ -4271,7 +4264,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* Get Program ID */
   prg_id=prg_get(); 
 
-  if (prg_id == ncks) assert(var_typ == var_trv->var_typ);
+  if(prg_id == ncks) assert(var_typ == var_trv->var_typ);
   assert(nbr_dmn_var == var_trv->nbr_dmn);
 
   nbr_dmn_var_out=nbr_dmn_var;
@@ -4505,7 +4498,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         if(var_trv->var_dmn[idx_dmn].flg_rdd){
           found_dim=True;
           /* If dimension was to be record keep it that way */
-          if (DFN_CRR_DMN_AS_REC_IN_OUTPUT){
+          if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
             dmn_cnt=NC_UNLIMITED;
           } else {
             /* Otherwise define the degenerate size of 1 */
@@ -4587,7 +4580,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* If initialization value was changed, then set output type to new type */
     if(var_trv->var_typ_out != err_typ) var_typ_out=var_trv->var_typ_out; else var_typ_out=var_typ;
 
-  }else if (prg_id != ncbo){
+  }else if(prg_id != ncbo){
     int var_id;        /* [id] Variable ID */
 
     var_sct *var_prc;  /* [sct] Variable to process */
@@ -4844,7 +4837,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         if(dmn_out_idx == var_fix[idx_var_fix]->nbr_dim){
           /* ...No. Variable will be non-record---does this change its status?... */
           if(dbg_lvl_get() >= nco_dbg_var){
-            if(var_fix[idx_var_fix]->is_rec_var == True) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",
+            if(var_fix[idx_var_fix]->is_rec_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",
               prg_nm_get(),var_fix[idx_var_fix]->nm);
           }
           /* Assign record flag dictated by re-order */
@@ -4852,7 +4845,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         }else{ /* ...otherwise variable will be record variable... */
           /* ...Yes. Variable will be record... */
           /* ...Will becoming record variable change its status?... */
-          if(var_fix[idx_var_fix]->is_rec_var == False){
+          if(!var_fix[idx_var_fix]->is_rec_var){
             if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",
               prg_nm_get(),var_fix[idx_var_fix]->nm);
             /* Change record flag to status dictated by re-order */
@@ -4888,7 +4881,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
           ...and look for variables only
           ...and look for extracted variables only
           ...and look for variables with dimensions > 1 */
-          if (rec_dmn_nm_out 
+          if(rec_dmn_nm_out 
             && strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 
             && var_trv_mrk.nco_typ == nco_obj_typ_var 
             && var_trv_mrk.flg_xtr
@@ -4903,7 +4896,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
               for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
 
                 /*  Match name */
-                if (strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,var_trv.rec_dmn_nm_out) == 0){ 
+                if(strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,var_trv.rec_dmn_nm_out) == 0){ 
 
                   NEEDS_REORDER=True;
                   break;
@@ -4937,7 +4930,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                 if(dmn_out_idx == var_prc_out[idx_var_prc_out]->nbr_dim){
                   /* ...No. Variable will be non-record---does this change its status?... */
                   if(dbg_lvl_get() >= nco_dbg_var){
-                    if(var_prc_out[idx_var_prc_out]->is_rec_var == True) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",
+                    if(var_prc_out[idx_var_prc_out]->is_rec_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",
                       prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
                   }
                   /* Assign record flag dictated by re-order */
@@ -4956,7 +4949,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                     } /* end loop over dmn_out */
                   } /* endif has_dpl_dmn */
                   /* ...Will becoming record variable change its status?... */
-                  if(var_prc_out[idx_var_prc_out]->is_rec_var == False){
+                  if(!var_prc_out[idx_var_prc_out]->is_rec_var){
                     if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",
                       prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
                     /* Change record flag to status dictated by re-order */
@@ -5020,7 +5013,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
     /* Has re-defined record dimension */
-    if (var_trv.rec_dmn_nm_out){
+    if(var_trv.rec_dmn_nm_out){
 
       rec_dmn_nm_out=trv_tbl->lst[idx_var].rec_dmn_nm_out;
 
@@ -5033,7 +5026,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         /* Avoid same variable ...
         ...and look for variables only
         ...and look for extracted variables only */
-        if (strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 && var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
+        if(strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 && var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
 
           /* Loop dimensions of to search variable  */
           for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
@@ -5041,7 +5034,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
             dmn_trv_sct *dmn_trv;
 
             /*  Match name */
-            if (strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,rec_dmn_nm_out) == 0){ 
+            if(strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,rec_dmn_nm_out) == 0){ 
 
               /* ...store the name of the record dimension on output... */
               trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
@@ -5052,7 +5045,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
             dmn_trv=nco_dmn_trv_sct(var_trv_mrk.var_dmn[idx_dmn].dmn_id,trv_tbl);
 
             /* Is record ?  */
-            if (dmn_trv->is_rec_dmn){
+            if(dmn_trv->is_rec_dmn){
 
               /* ...store the name of the record dimension on output... */
               trv_tbl->lst[idx_var_mrk].rec_dmn_nm_out=(char *)strdup(rec_dmn_nm_out);
@@ -5113,7 +5106,7 @@ nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
     ...and look for variables only
     ...and look for extracted variables only
     ...and look for variables with dimensions > 1 */
-    if (strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 
+    if(strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 
       && var_trv_mrk.nco_typ == nco_obj_typ_var 
       && var_trv_mrk.flg_xtr
       && var_trv_mrk.nbr_dmn > 1){
@@ -5122,7 +5115,7 @@ nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
         for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
 
           /*  Match name */
-          if (strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,var_trv.rec_dmn_nm_out) == 0){ 
+          if(strcmp(var_trv_mrk.var_dmn[idx_dmn].dmn_nm,var_trv.rec_dmn_nm_out) == 0){ 
 
             *idx_var_mrk_out=idx_var_mrk;
             return True;
@@ -5408,7 +5401,7 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
       for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
         trv_sct var_trv=trv_tbl->lst[uidx];
         /* Filter variables */
-        if (var_trv.nco_typ == nco_obj_typ_var){
+        if(var_trv.nco_typ == nco_obj_typ_var){
           /* Obtain group ID using full group name */
           (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
           /* Obtain variable ID using group ID */
@@ -5428,7 +5421,7 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
       for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
         trv_sct var_trv=trv_tbl->lst[uidx];
         /* Filter variables */
-        if (var_trv.nco_typ == nco_obj_typ_var ){
+        if(var_trv.nco_typ == nco_obj_typ_var ){
           /* Obtain group ID using full group name */
           (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
           /* Obtain variable ID using group ID */
@@ -5448,7 +5441,7 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
       for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
         trv_sct var_trv=trv_tbl->lst[uidx];
         /* Filter variables */
-        if (var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
+        if(var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
           /* Obtain group ID using full group name */
           (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
           /* Obtain variable ID using group ID */
@@ -5467,7 +5460,7 @@ nco_aed_prc_trv                       /* [fnc] Process single attribute edit for
       for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
         trv_sct var_trv=trv_tbl->lst[uidx];
         /* Filter variables */
-        if (var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
+        if(var_trv.nco_typ == nco_obj_typ_var && strcmp(aed_lst[idx_aed].var_nm,var_trv.nm) == 0){
           /* Obtain group ID using full group name */
           (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
           /* Obtain variable ID using group ID */
@@ -5563,7 +5556,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   /* Get Program ID */
   prg_id=prg_get(); 
 
-  if (prg_id == ncks) assert(var_typ == var_trv->var_typ);
+  if(prg_id == ncks) assert(var_typ == var_trv->var_typ);
   assert(nbr_dmn_var == var_trv->nbr_dmn);
 
   var_typ=var_trv->var_typ;
@@ -5588,7 +5581,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   } /* !rec_dmn_nm_cst */
 
   /* If variable has a re-defined record dimension. NOTE: this implies passing NULL as User-specified record dimension parameter  */
-  if (var_trv->rec_dmn_nm_out){
+  if(var_trv->rec_dmn_nm_out){
 
     /* Must be ncpdq */
     assert(prg_id == ncpdq);
@@ -5601,7 +5594,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   if(rec_dmn_nm){
 
     /* ncks */
-    if (prg_id == ncks){
+    if(prg_id == ncks){
       /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
       rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
       int rec_dmn_id_dmy;
@@ -5620,7 +5613,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
       } /* end loop over idx_dmn */
 
       /* ncecat */
-    }else if (prg_id == ncecat){
+    }else if(prg_id == ncecat){
 
     } /* ncecat */
   } /* Is requested record dimension in input file? */
@@ -5641,7 +5634,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
     dmn_trv=nco_dmn_trv_sct(var_dim_id,trv_tbl);
 
     /* Define dimension in output file if necessary */
-    if (NEED_TO_DEFINE_DIM == True){
+    if(NEED_TO_DEFINE_DIM){
 
       /* Here begins a complex tree to decide a simple, binary output:
       Will current input dimension be defined as an output record dimension or as a fixed dimension?
@@ -5801,7 +5794,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
         } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
         /* If this dimension is not in output array */
-        if (dmn_flg == False){
+        if(!dmn_flg){
 
           /* Add one more element to array  */
           (*dmn)[nbr_dmn]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
@@ -5942,7 +5935,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
       flg_var_cnd=False;
 
       /* Variable to extract */
-      if (trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
+      if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
 
         /* Loop variable dimensions */
         for(int idx_var_dmn=0;idx_var_dmn<trv_obj.nbr_dmn;idx_var_dmn++){
@@ -6014,7 +6007,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
               } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
               /* If this dimension is not in output array */
-              if (flg_dmn_ins == False){
+              if(!flg_dmn_ins){
 
                 /* Change flag to mark that dimension is to be averaged instead of to keep on output */
                 trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg=True;
@@ -6109,13 +6102,13 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
     trv_sct trv_obj=trv_tbl->lst[idx_tbl];
 
     /* Variable to extract */
-    if (trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
+    if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<trv_obj.nbr_dmn;idx_var_dmn++){
 
         /* This dimension is not to be averaged, it is to be kept on output */
-        if (trv_obj.var_dmn[idx_var_dmn].flg_dmn_avg == False) {
+        if(!trv_obj.var_dmn[idx_var_dmn].flg_dmn_avg){
 
           /* Search dimensions to be extracted  */
           for(int idx_xtr_dmn=0;idx_xtr_dmn<nbr_dmn_xtr;idx_xtr_dmn++){
@@ -6141,7 +6134,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
               } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
               /* If this dimension is not in output array */
-              if (flg_dmn_ins == False){
+              if(!flg_dmn_ins){
 
                 /* Output list comprises non-averaged and, if specified, degenerate dimensions */
                 (*dmn_out)[nbr_out_dmn]=nco_dmn_dpl(dmn_xtr[idx_xtr_dmn]);
@@ -6189,21 +6182,19 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
     trv_sct trv_obj=trv_tbl->lst[idx_tbl];
 
     /* Variable to extract */
-    if (trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
+    if(trv_obj.nco_typ == nco_obj_typ_var && trv_obj.flg_xtr){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<trv_obj.nbr_dmn;idx_var_dmn++){
 
         /* Match ID */
-        if (dmn_id == trv_obj.var_dmn[idx_var_dmn].dmn_id){
+        if(dmn_id == trv_obj.var_dmn[idx_var_dmn].dmn_id){
 
           /* Change flag to mark that dimension is to be averaged instead of to keep on output */
           trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_dmn_avg=True;
 
           /* Change flag to retain degenerate dimension */
-          if (flg_rdd == True){
-            trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_rdd=True;
-          }
+          if(flg_rdd) trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].flg_rdd=True;
 
         } /* Match ID */
       } /* Loop variable dimensions */
@@ -6240,7 +6231,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* Is variable (extract records regardless of variable is to be extracted or only if to be extracted ) */
-    if ( flg_rec_all ? (var_trv.nco_typ == nco_obj_typ_var) :  (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr) ){
+    if( flg_rec_all ? (var_trv.nco_typ == nco_obj_typ_var) :  (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr) ){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -6255,7 +6246,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
         dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
 
         /* Is record */
-        if (dmn_trv->is_rec_dmn){
+        if(dmn_trv->is_rec_dmn){
 
           /* Loop constructed array of output dimensions to see if already inserted  */
           for(int idx_dmn_out=0;idx_dmn_out<trv_tbl->nbr_rec;idx_dmn_out++){
@@ -6269,7 +6260,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
           } /* Loop constructed array of output dimensions to see if already inserted  */ 
 
           /* If this dimension is not in output array */
-          if (flg_dmn_ins == False){
+          if(!flg_dmn_ins){
 
             /* Add to GTT */
             trv_tbl->lmt_rec=(lmt_sct **)nco_realloc(trv_tbl->lmt_rec,(trv_tbl->nbr_rec+1)*sizeof(lmt_sct *));
@@ -6279,7 +6270,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
 
             /* a) case where the dimension has coordinate variables */
-            if (var_trv.var_dmn[idx_var_dmn].crd){
+            if(var_trv.var_dmn[idx_var_dmn].crd){
 
               crd_sct *crd=var_trv.var_dmn[idx_var_dmn].crd;
 
@@ -6365,19 +6356,19 @@ nco_prt_tbl_lmt                       /* [fnc] Print table limits */
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* Is variable */
-    if (var_trv.nco_typ == nco_obj_typ_var){
+    if(var_trv.nco_typ == nco_obj_typ_var){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
         /* a) case where the dimension has coordinate variables */
-        if (var_trv.var_dmn[idx_var_dmn].crd){
+        if(var_trv.var_dmn[idx_var_dmn].crd){
 
           crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd;
 
           int lmt_dmn_nbr=crd->lmt_msa.lmt_dmn_nbr;
 
-          if (lmt_dmn_nbr){
+          if(lmt_dmn_nbr){
             (void)fprintf(stdout,"%s: INFO %s : <%s> : %s : limits:%d ->",prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);
             for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){ 
               lmt_sct *lmt_dmn=crd->lmt_msa.lmt_dmn[lmt_idx];
@@ -6393,7 +6384,7 @@ nco_prt_tbl_lmt                       /* [fnc] Print table limits */
 
           int lmt_dmn_nbr=ncd->lmt_msa.lmt_dmn_nbr;
 
-          if (lmt_dmn_nbr){
+          if(lmt_dmn_nbr){
             (void)fprintf(stdout,"%s: INFO %s : <%s> : %s :limits: %d->",prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);
             for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){ 
               lmt_sct *lmt_dmn=ncd->lmt_msa.lmt_dmn[lmt_idx];
@@ -6543,7 +6534,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* Is variable to extract  */
-    if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -6559,7 +6550,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
             /*  The limits have to be separated to */
 
             /* a) case where the dimension has coordinate variables */
-            if (var_trv.var_dmn[idx_var_dmn].crd){
+            if(var_trv.var_dmn[idx_var_dmn].crd){
 
               /* Increment number of dimension limits for this dimension */
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr++;
@@ -6586,7 +6577,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* Is variable to extract  */
-    if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -6600,7 +6591,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
             /*  The limits have to be separated to */
 
             /* a) case where the dimension has coordinate variables */
-            if (var_trv.var_dmn[idx_var_dmn].crd){
+            if(var_trv.var_dmn[idx_var_dmn].crd){
 
               int lmt_dmn_nbr=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr;
 
@@ -6716,7 +6707,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
     /* Is variable to extract  */
-    if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -6739,7 +6730,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd;
 
               /* GTT: If this coordinate has no limits, continue */
-              if (crd->lmt_msa.lmt_dmn_nbr == 0) continue;
+              if(crd->lmt_msa.lmt_dmn_nbr == 0) continue;
 
               /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
               if(crd->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
@@ -6750,7 +6741,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               /* Wrapped hyperslabs are dimensions broken into the "wrong" order, e.g., from
               -d time,8,2 broken into -d time,8,9 -d time,0,2 
               WRP flag set only when list contains dimensions split as above */
-              if(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.WRP == True){
+              if(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.WRP){
 
                 /* Find and store size of output dim */  
                 (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa); 
@@ -6787,7 +6778,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
               if(dbg_lvl_get() >= nco_dbg_fl){
                 if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",prg_nm_get(),crd->nm); else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",prg_nm_get(),crd->nm); 
-              } /* endif dbg */
+	      } /* endif */
 
             }else{
 
@@ -6810,7 +6801,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               /* Wrapped hyperslabs are dimensions broken into the "wrong" order,e.g. from
               -d time,8,2 broken into -d time,8,9 -d time,0,2 
               WRP flag set only when list contains dimensions split as above */
-              if(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.WRP == True){
+              if(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.WRP){
 
                 /* Find and store size of output dim */  
                 (void)nco_msa_clc_cnt_trv(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd); 
@@ -6842,15 +6833,14 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               /* Check for overlap */
               flg_ovl=nco_msa_ovl_trv(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd);  
 
-              if(flg_ovl==False) trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.MSA_USR_RDR=True;
+              if(!flg_ovl) trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.MSA_USR_RDR=True;
 
               /* Find and store size of output dimension */  
               (void)nco_msa_clc_cnt_trv(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd);
 
               if(dbg_lvl_get() >= nco_dbg_fl){
-                if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),ncd->nm); 
-                else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),ncd->nm); 
-              } /* endif dbg */
+                if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),ncd->nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),ncd->nm); 
+	      } /* endif */
 
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
 
@@ -6924,7 +6914,7 @@ nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
 
       else{
 
-        assert(var_trv->var_dmn[idx_dmn].is_crd_var == False);
+        assert(!var_trv->var_dmn[idx_dmn].is_crd_var);
 
         lmt_dmn_nbr=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr;
 
@@ -6972,12 +6962,12 @@ nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
       /* Custom limit */
       if(flg_lmt){
         /* Case of dimension being coordinate variable */
-        if (var_trv->var_dmn[idx_dmn].is_crd_var){
+        if(var_trv->var_dmn[idx_dmn].is_crd_var){
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=0;
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn);         
         } /* Case of dimension being coordinate variable */
-        else if (!var_trv->var_dmn[idx_dmn].is_crd_var){
+        else if(!var_trv->var_dmn[idx_dmn].is_crd_var){
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn_nbr=0;
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_lmt_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[0]);
           var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn);    
@@ -7008,7 +6998,7 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
   for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
 
     /* Is this the record dimension ? */
-    if (var_prc->dim[idx_dmn]->is_rec_dmn){
+    if(var_prc->dim[idx_dmn]->is_rec_dmn){
 
       /* Get unique dimension object from unique dimension ID, in input list (NB: this is needed because dmn_sct does not have name full) */
       dmn_trv=nco_dmn_trv_sct(var_prc->dim[idx_dmn]->id,trv_tbl);

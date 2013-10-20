@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.221 2013-10-19 04:15:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.222 2013-10-20 16:35:12 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -50,6 +50,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
     tbl->lst[idx].rec_dmn_nm_out=(char *)nco_free(tbl->lst[idx].rec_dmn_nm_out);
+    tbl->lst[idx].hsh_key=(char *)nco_free(tbl->lst[idx].hsh_key);
 
     /* Dimensions */
     for(int dmn_idx=0;dmn_idx<tbl->lst[idx].nbr_dmn;dmn_idx++){
@@ -227,22 +228,6 @@ trv_tbl_var_nm_fll                    /* [fnc] Return object from full name key 
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   /* Purpose: Return object with given full name */
-
-  /* Hash method:
-     1. Find key associated with given object
-     Usually we wish to find and return object with same full name
-     Full names are guaranteed to unique in netCDF4/HDF5 files
-     Hence we generate hash table as string-keyed hash
-     Given key, we have two choices:
-     1. Loop through traversal table ourselves, searching for the matching name
-        This method works if the traversal table is re-ordered or names change after keys are generated
-	It is therefore more robust than Method 2
-     2. Pass key to hash table to retrieve the given object
-        This method does not depend on traversal table remaining in same order as when keys were generated
-        But it does require that no names change after keys are generated
-	More specifically, it requires old hash entries be deleted and new ones added when keys change
-	It is therefore more fragile than Method 1
-     Once this code is debugged, place it in all trv_tbl lookups */
 
   /* Activate following line to turn on hash tables: */
 // #define NCO_HASH
@@ -573,22 +558,39 @@ nco_trv_hsh /* Hash traversal table for fastest access */
 {
   /* Purpose: Hash all objects in traversal table and store resultant hash table */
 
+  /* Hash method:
+     1. Find key associated with given object
+     Usually we wish to find and return object with same full name
+     Full names are guaranteed to unique in netCDF4/HDF5 files
+     Hence we generate hash table as string-keyed hash
+     Given key, we have two choices:
+     1. Loop through traversal table ourselves, searching for the matching name
+        This method works if the traversal table is re-ordered or names change after keys are generated
+	It is therefore more robust than Method 2
+     2. Pass key to hash table to retrieve the given object
+        This method does not depend on traversal table remaining in same order as when keys were generated
+        But it does require that no names change after keys are generated
+	More specifically, it requires old hash entries be deleted and new ones added when keys change
+	It is therefore more fragile than Method 1
+     Once this code is debugged, place it in all trv_tbl lookups */
+
   /* NB: Hash table must be NULL-initialized */
   trv_tbl->hsh=NULL;
 
   for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Key is full object name but do not use nm_fll itself as key
+       That would be unsafe because of dangling pointer to nm_fll
+       Instead duplicate nm_fll into its own hsh_key field
+       Release this hsh_key memory in trv_tbl_free() */
+    trv_tbl->lst[tbl_idx].hsh_key=strdup(trv_tbl->lst[tbl_idx].nm_fll);
+    HASH_ADD_KEYPTR(hh,trv_tbl->hsh,trv_tbl->lst[tbl_idx].hsh_key,trv_tbl->lst[tbl_idx].nm_fll_lng,trv_tbl->lst+tbl_idx);
+
 #if 0
-    /* Key is integer index into traversal table */
+    /* If key were integer index into traversal table, things look simpler */
     trv_tbl->lst[tbl_idx].hsh_key=tbl_idx;
     HASH_ADD_INT(trv_tbl->hsh,hsh_key,trv_tbl->lst+tbl_idx);
 #endif /* !0 */
-    /* Key is full object name */
-    trv_tbl->lst[tbl_idx].hsh_key=strdup(trv_tbl->lst[tbl_idx].nm_fll);
-    /* Could copy nm_fll into its own hsh_key field
-       That would be unsafe because of the dangling pointer to nm_fll
-       fxm: use strdup() to copy nm_fll and implement separate memory cleanup when table freed */
-    
-    HASH_ADD_KEYPTR(hh,trv_tbl->hsh,trv_tbl->lst[tbl_idx].nm_fll,trv_tbl->lst[tbl_idx].nm_fll_lng,trv_tbl->lst+tbl_idx);
+
   } /* end loop over trv_tbl */
 
 } /* end trv_tbl_prn_flg_mch() */
