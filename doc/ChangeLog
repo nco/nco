@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.8 release"
 	cvs tag -c nco-4_3_8;cvs tag -c nco-4_3_8-1
 
+	* Document hash table behavior. Play with -Wcast-qual
+
 	* Tidy group routines. Verify no regressions before implementing hashes.
 
 2013-10-18  Charlie Zender  <zender@uci.edu>

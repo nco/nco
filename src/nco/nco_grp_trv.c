@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.222 2013-10-20 16:35:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.223 2013-10-20 22:47:56 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -229,21 +229,16 @@ trv_tbl_var_nm_fll                    /* [fnc] Return object from full name key 
 {
   /* Purpose: Return object with given full name */
 
-  /* Activate following line to turn on hash tables: */
-// #define NCO_HASH
+  /* Following line turns-on hash tables: */
+#define NCO_HASH
 #ifndef NCO_HASH
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll))
-      return &trv_tbl->lst[uidx];
+    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) return &trv_tbl->lst[uidx];
 
   return NULL;
 #else /* NCO_HASH */
   trv_sct *trv_obj; /* [sct] GTT object structure */
-  /* HASH_FIND_STR does not want key argument to be const
-     Permanent solution is to change function prototype to non-const key */
-  char *hsh_key=(char *)strdup(var_nm_fll);
-  HASH_FIND_STR(trv_tbl->hsh,hsh_key,trv_obj);
-  if(hsh_key) hsh_key=(char *)nco_free(hsh_key);
+  HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
   return trv_obj;
 #endif /* NCO_HASH */
 
@@ -328,7 +323,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 (trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
- int * nbr_cmn_nm)                     /* I/O [nbr] Number of common names entries */
+ int * nbr_cmn_nm)                     /* I/O [nbr] Number of common names */
 {
   /* Purpose: Find common objects. 
      Use cosequential match algorithm described in
@@ -353,11 +348,16 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   int nco_cmp;                   /* [nbr] Return value of strcmp() */ 
 
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
-  nco_bool flg_in_fl[2];         /* [flg] Is this name if each file?; files are [0] and [1] */
 
   /* Tables must be sorted */
   (void)trv_tbl_srt(trv_tbl_1);
   (void)trv_tbl_srt(trv_tbl_2);
+
+  /* Rebuild hash tables after sorting?
+  (void)nco_trv_hsh_del(trv_tbl_1);
+  (void)nco_trv_hsh_del(trv_tbl_2);
+  (void)nco_trv_hsh_bld(trv_tbl_1);
+  (void)nco_trv_hsh_bld(trv_tbl_2); */
 
   if(dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",prg_nm_get(),fnc_nm);
@@ -371,9 +371,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   nbr_tbl_2=trv_tbl_2->nbr;
 
   /* If both lists have names, then there are names to process */
-  flg_more_names_exist = (nbr_tbl_1>0 && nbr_tbl_2>0) ? 1 : 0;
+  flg_more_names_exist = (nbr_tbl_1 > 0 && nbr_tbl_2 > 0) ? True : False;
 
-  /* Put counters at start */
+  /* Initialize counters */
   idx_tbl_1=0;
   idx_tbl_2=0;
   idx_lst=0;
@@ -381,7 +381,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   /* Store list of common objects */
   (*cmn_lst)=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
 
-  /* Iterate the lists */
+  /* Iterate lists */
   while(flg_more_names_exist){
     trv_sct trv_1=trv_tbl_1->lst[idx_tbl_1];
     trv_sct trv_2=trv_tbl_2->lst[idx_tbl_2];
@@ -389,12 +389,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
     /* Criteria is string compare */
     nco_cmp=strcmp(trv_1.nm_fll,trv_2.nm_fll);
 
-    /* Names match: store flag, define or write in output file, then read next names from lists */
-    if(nco_cmp == 0){
-      flg_in_fl[0]=True; 
-      flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+    /* Names match: store flag, define or write in output file, then read next name from lists */
+    if(!nco_cmp){
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
       (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
@@ -402,12 +400,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       idx_tbl_2++;
 
     }else if(nco_cmp < 0){
-      /* Name(1) is less than Name(2), read the next name from List 1  */
+      /* Name(1) is less than Name(2), read next name from List 1  */
 
-      flg_in_fl[0]=True; 
-      flg_in_fl[1]=False;
-      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=False;
       (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
@@ -415,11 +411,9 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
       idx_tbl_1++;
     }else{
-      /* Name(1) is greater than Name(2), read the next name from List 2 */
-      flg_in_fl[0]=False; 
-      flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      /* Name(1) is greater than Name(2), read next name from List 2 */
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
       (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
@@ -428,39 +422,34 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       idx_tbl_2++;
     } /* end nco_cmp */
 
-    flg_more_names_exist = (idx_tbl_1<nbr_tbl_1 && idx_tbl_2<nbr_tbl_2) ? 1 : 0;
+    flg_more_names_exist = (idx_tbl_1 < nbr_tbl_1 && idx_tbl_2 < nbr_tbl_2) ? True : False;
 
   } /* end while */
 
   /* List1 did not end */
+  if(idx_tbl_1 < nbr_tbl_1){
 
-  if(idx_tbl_1<nbr_tbl_1){
-
-    while(idx_tbl_1<nbr_tbl_1){
+    while(idx_tbl_1 < nbr_tbl_1){
       trv_sct trv_1=trv_tbl_1->lst[idx_tbl_1];
 
-      flg_in_fl[0]=True; 
-      flg_in_fl[1]=False;
-      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=False;
       (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
+      if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
 
       idx_tbl_1++;
     } /* end while */
   } /* end if */
 
   /* List2 did not end */
-  if(idx_tbl_2<nbr_tbl_2){
-    while(idx_tbl_2<nbr_tbl_2){
+  if(idx_tbl_2 < nbr_tbl_2){
+    while(idx_tbl_2 < nbr_tbl_2){
       trv_sct trv_2=trv_tbl_2->lst[idx_tbl_2];
 
-      flg_in_fl[0]=False; 
-      flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].flg_in_fl[0]=flg_in_fl[0]; 
-      (*cmn_lst)[idx_lst].flg_in_fl[1]=flg_in_fl[1];
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
       (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
@@ -553,26 +542,70 @@ nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabbe
 } /* nco_dmn_get_msa() */
 
 void
-nco_trv_hsh /* Hash traversal table for fastest access */
+nco_trv_hsh_del /* Delete hash table */
+(trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+{
+  /* Purpose: Delete hash table
+     http://troydhanson.github.io/uthash/userguide.html#_delete_item */
+  trv_sct *trv_obj; /* [sct] GTT object structure */
+  trv_sct *hsh_tmp; /* [sct] GTT object structure */
+
+  /* Iterate over hash table */
+  HASH_ITER(hh,trv_tbl->hsh,trv_obj,hsh_tmp){
+    /* Delete current object */
+    HASH_DEL(trv_tbl->hsh,trv_obj);
+  } /* end iteration over hash table */  
+
+} /* nco_trv_hsh_del() */
+
+void
+nco_trv_hsh_bld /* Hash traversal table for fastest access */
 (trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
   /* Purpose: Hash all objects in traversal table and store resultant hash table */
 
-  /* Hash method:
-     1. Find key associated with given object
+  /* Notes on Hash vs. Other methods:
      Usually we wish to find and return object with same full name
      Full names are guaranteed to unique in netCDF4/HDF5 files
-     Hence we generate hash table as string-keyed hash
-     Given key, we have two choices:
-     1. Loop through traversal table ourselves, searching for the matching name
-        This method works if the traversal table is re-ordered or names change after keys are generated
-	It is therefore more robust than Method 2
-     2. Pass key to hash table to retrieve the given object
-        This method does not depend on traversal table remaining in same order as when keys were generated
-        But it does require that no names change after keys are generated
-	More specifically, it requires old hash entries be deleted and new ones added when keys change
-	It is therefore more fragile than Method 1
-     Once this code is debugged, place it in all trv_tbl lookups */
+     The two practical methods are:
+     
+     1. Bruit-force search with loop/strcmp(): (old method)
+     No initial setup necessary
+     Loop through traversal table, use strcmp() to find matching name
+     This method works if traversal table is re-ordered or names change after keys are generated
+     Time-expense of bruit-force searches is O(n)
+     This method is therefore more robust yet much slower than hashes
+     2. Hash table: (new method)
+     Add each object to hash table on creation by calling nco_trv_hsh_bld() from nco_blr_trv_tbl()
+     This generates hash table as string-keyed hash with object's full-name as key
+     Then, as needed, pass key to hash table to retrieve desired object
+     This method does not depend on traversal table remaining in same order as when keys were generated
+     But it does require that no names change after keys are generated
+     More specifically, it requires old hash entries be deleted and new ones added when keys change
+     Time-expense of hashes is O(1+n/k)
+     Hashes are therefore more fragile yet much quicker than bruit-force searches
+     Care must be used to destroy/replace/re-create hash table entries if when keys change (or table is re-ordered?)
+
+     Hash table lookups:
+     trv_sct *trv_obj;
+     HASH_FIND_STR(trv_tbl->hsh,nm_fll,trv_obj);
+     return trv_obj;
+     Input key argument (nm_fll field) is unchanged
+     However, HASH_FIND_STR() macro treats key as (i.e., casts it to) unsigned bytes internally
+     Hence  -Wcast_qual causes compiler complaint if key argument is const char * const nm_fll
+     Potential workarounds:
+     1. Eliminate -Wcast_qual from compiler settings
+        Verified this works
+     2. Change function prototype to non-const key
+        This eliminates compiler warnings at cost of introducing non-typesafe code paths
+	Move all hash-lookup functions into single file that does not get -Wcast_qual?
+     3. Pass key as void pointer?
+        Not sure this is doable/would work
+     4. Duplicate then free() key for each hash-lookup
+        Verified this works yet it seems too expensive, e.g., 
+        char *hsh_key=(char *)strdup(nm_fll);
+        HASH_FIND_STR(trv_tbl->hsh,hsh_key,trv_obj);
+        if(hsh_key) hsh_key=(char *)nco_free(hsh_key); */
 
   /* NB: Hash table must be NULL-initialized */
   trv_tbl->hsh=NULL;
@@ -583,14 +616,10 @@ nco_trv_hsh /* Hash traversal table for fastest access */
        Instead duplicate nm_fll into its own hsh_key field
        Release this hsh_key memory in trv_tbl_free() */
     trv_tbl->lst[tbl_idx].hsh_key=strdup(trv_tbl->lst[tbl_idx].nm_fll);
+    /* General macro faster than convenience macro since can use GTT-supplied string length */
     HASH_ADD_KEYPTR(hh,trv_tbl->hsh,trv_tbl->lst[tbl_idx].hsh_key,trv_tbl->lst[tbl_idx].nm_fll_lng,trv_tbl->lst+tbl_idx);
-
-#if 0
-    /* If key were integer index into traversal table, things look simpler */
-    trv_tbl->lst[tbl_idx].hsh_key=tbl_idx;
-    HASH_ADD_INT(trv_tbl->hsh,hsh_key,trv_tbl->lst+tbl_idx);
-#endif /* !0 */
-
+    /* Convenience macro (more expensive because UTHASH must compute key-length itself?) */
+    //    HASH_ADD_PTR(trv_tbl->hsh,trv_tbl->lst[tbl_idx].hsh_key,trv_tbl->lst+tbl_idx);
   } /* end loop over trv_tbl */
 
-} /* end trv_tbl_prn_flg_mch() */
+} /* end trv_tbl_hsh() */
