@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1013 2013-10-20 16:35:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1014 2013-10-20 22:47:56 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3371,7 +3371,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
   (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
 
-  /* Conform type and rank for process variables */
+  /* Conform type and rank for processed variables */
   if(prc_typ_1 == prc_typ && prc_typ_2 == prc_typ){
 
     int dmn_idx_gtr;
@@ -3402,19 +3402,20 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     trv_1->var_typ=trv_2->var_typ=typ_hgh;
 
     /* Broadcast lesser to greater variable. NB: Pointers may change so _gtr, _lsr not valid */
-    if(var_prc_1->nbr_dim != var_prc_2->nbr_dim) (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
-    /* Dimension-by-dimension size check */
-    else {
-      /* Loop dimensions */
+    if(var_prc_1->nbr_dim != var_prc_2->nbr_dim){
+      (void)ncap_var_cnf_dmn(&var_prc_1,&var_prc_2);
+    }else{
+      /* Still possible that variables are mismatched even if ranks are equal
+	 One or more dimensions could be degenerate
+	 Before subtraction must make sure dimension sizes match
+	 Or re-code ncap_var_cnf_dmn() so that it understands how to broadcast degenerate dimensions */
       for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
-        /* Differ */
         if(var_prc_1->dim[idx_dmn]->sz != var_prc_2->dim[idx_dmn]->sz){
-          (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s with different size\n",prg_nm_get(),
-            var_prc_1->nm_fll,var_prc_1->dim[idx_dmn]->nm);
+          (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s with sizes %ld and %ld in input files one and two, respectively\n",prg_nm_get(),var_prc_1->nm_fll,var_prc_1->dim[idx_dmn]->nm,var_prc_1->dim[idx_dmn]->sz,var_prc_2->dim[idx_dmn]->sz);
           nco_exit(EXIT_FAILURE);
-        } /* Differ */
-      } /* Loop dimensions */
-    } /* Dimension-by-dimension size check */
+        } /* endif error */
+      } /* end loop over idx_dmn */
+    } /* end else */
 
     /* var1 and var2 now conform in size and type to eachother and are in memory */
     assert(var_prc_1->type == var_prc_2->type);
@@ -3468,7 +3469,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       rec_dmn_nm_2=(nm_tbl_sct *)nco_free(rec_dmn_nm_2);
     } /* !rec_dmn_nm_2 */
 
-  }else{ /* Write mode */
+  }else{ /* !flg_dfn */
+    /* Write mode */
 
     md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
@@ -3523,15 +3525,11 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
         break;
       } /* end case */
 
-      /* Copy result to output file and free workspace buffer. NB. use grp_out_id */
-      if(var_prc_1->nbr_dim == 0){
-        (void)nco_put_var1(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_1->val.vp,var_prc_1->type);
-      }else{ /* end if variable is scalar */
-        (void)nco_put_vara(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_out->cnt,var_prc_1->val.vp,var_prc_1->type);
-      } /* end else */
+      /* Copy result to output file */
+      if(var_prc_1->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_1->val.vp,var_prc_1->type); else (void)nco_put_vara(grp_out_id,var_prc_out->id,var_prc_out->srt,var_prc_out->cnt,var_prc_1->val.vp,var_prc_1->type);
 
-    } /* Processed variable */
-  } /* Write mode */
+    } /* !prc_typ */
+  } /* !flg_dfn */
 
   /* Free allocated variable structures */
   var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
@@ -3772,6 +3770,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
+  /* Purpose: fxm */
  
   const char fnc_nm[]="nco_prc_cmn_nm()"; /* [sng] Function name */
 
@@ -3792,7 +3791,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
     trv_1=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_1);
     trv_2=trv_tbl_var_nm_fll(cmn_lst[idx].var_nm_fll,trv_tbl_2);
 
-    /* Both objects exist in the 2 files, both objects are to extract */
+    /* Object exists and is flagged for extraction in both files */
     if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
 
       if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
@@ -3800,43 +3799,42 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
       /* Process common object */
       (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
 
-      /* Both objects exist in the 2 files, both objects are to extract */
     }else{
-      /* Object exists only in one file and is to extract */
+      /* Object exists and is flagged for extraction only in one file */
 
       /* Number of depth 1 groups in file 1 greater (typically model file) */
       if(nbr_grp_dpt_1 > nbr_grp_dpt_2){
 
-        /* Object exists only in file 1 and is to extract */
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
+        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
+	  /* Object exists and is flagged for extraction only in file 1 */
 
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
-          /* Try a relative match in file 2 */
+          /* Try relative match in file 2 */
           has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
 
-          /* A match was not found in file 2, copy instead object from file 1 as fixed to output */
+          /* Match not found in file 2, copy instead object from file 1 as fixed to output */
           if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
-        } /* Object exists only in file 1 and is to extract */
-
-        /* Object exists only in file 2 and is to extract */
-        else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+	  /* Object exists and is flagged for extraction only in file 2 */
 
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try relative match in file 1 */
           has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
 
-          /* Match was not found in file 2, copy instead object from file 2 as fixed to output */
+          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
           if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
-        } /* Object exists only in file 2 and is to extract */ 
+        } /* fl_2 */
 
-      }else{ /* Number of depth 1 groups in file 2 greater */
+      }else{ /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
 
-        /* Object exists only in file 1 and is to extract */
-        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] == False && trv_1->flg_xtr){
+	/* Number of depth 1 groups in file 2 greater */
+
+        if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
+	  /* Object exists and is flagged for extraction only in file 1 */
 
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
@@ -3846,22 +3844,20 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           /* Match was not found in file 2, copy instead object from file 1 as fixed to output */
           if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
-        } /* Object exists only in file 1 and is to extract */
-
-        /* Object exists only in file 2 and is to extract */
-        else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+        }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
+	  /* Object exists and is flagged for extraction only in file 2 */
 
           if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try relative match in file 1 */
           has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
 
-          /* Match was not found in file 2, copy instead object from file 2 as fixed to output */
+          /* Match not found in file 2, copy instead object from file 2 as fixed to output */
           if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
-        } /* Object exists only in file 2 and is to extract */ 
+        } /* fl_2 */
 
-      } /* Number of depth 1 groups in file 2 greater */
+      } /* nbr_grp_dpt_1 <= nbr_grp_dpt_2) */
 
     } /* Object exists only in one file and is to extract */
 
@@ -6487,7 +6483,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   } /* !lmt_nbr */
 
   /* Hash traversal table for fastest access */
-  (void)nco_trv_hsh(trv_tbl);
+  (void)nco_trv_hsh_bld(trv_tbl);
 
 } /* nco_bld_trv_tbl() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.91 2013-10-19 00:14:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.92 2013-10-20 22:47:56 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -80,7 +80,6 @@ trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in tab
  prc_typ_enm typ_prc,                  /* I [enm] Processing type */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
-
 void 
 trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of traversal table */
 (const trv_tbl_sct * const trv_tbl,    /* I [sct] Traversal table */
@@ -106,7 +105,6 @@ trv_tbl_cmn_nm_prt                     /* [fnc] Print list of common objects (sa
 (const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm);                /* I [nbr] Number of common names entries */
 
-
 dmn_trv_sct *                         /* O [sct] GTT dimension structure (stored in *groups*) */
 nco_dmn_trv_sct                       /* [fnc] Return unique dimension object from unique ID */
 (const int dmn_id,                    /* I [id] Unique dimension ID */
@@ -124,7 +122,11 @@ nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabbe
  const trv_tbl_sct *trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 void 
-nco_trv_hsh /* Hash traversal table for fastest access */
-(trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */
+nco_trv_hsh_bld /* Hash traversal table for fastest access */
+(trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_trv_hsh_del /* Delete hash table */
+(trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 #endif /* NCO_GRP_TRV_H */

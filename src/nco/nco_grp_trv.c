@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.223 2013-10-20 22:47:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.224 2013-10-20 22:48:25 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -230,7 +230,7 @@ trv_tbl_var_nm_fll                    /* [fnc] Return object from full name key 
   /* Purpose: Return object with given full name */
 
   /* Following line turns-on hash tables: */
-#define NCO_HASH
+  //#define NCO_HASH
 #ifndef NCO_HASH
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) return &trv_tbl->lst[uidx];
