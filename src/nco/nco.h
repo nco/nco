@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.416 2013-10-20 16:35:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.417 2013-10-20 23:51:54 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -136,6 +136,9 @@ extern "C" {
      This value is compared against user-selected dbg_lvl 
      Running operators with --quiet automatically sets dbg_lvl=NCO_DBG_QUIET */
 #define NCO_DBG_QUIET 0
+
+  /* Use hash tables rather bruit-force strcmp() searches to find objects in traversal table */
+  //#define NCO_HSH_TRV_OBJ 1
 
   /* NCO_MSS_VAL_SNG names attribute whose value is "skipped" by arithmetic, aka the missing value attribute
      Attribute name should be either "missing_value" or "_FillValue" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.224 2013-10-20 22:48:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.225 2013-10-20 23:51:54 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -85,9 +85,8 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     tbl->lst_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst_dmn[dmn_idx].grp_nm_fll);
     tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm=(char *)nco_free(tbl->lst_dmn[dmn_idx].lmt_msa.dmn_nm);
 
-    for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn_nbr;lmt_idx++){
+    for(int lmt_idx=0;lmt_idx<tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn_nbr;lmt_idx++)
       tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst_dmn[dmn_idx].lmt_msa.lmt_dmn[lmt_idx]);
-    }
 
     /* Total number of coordinate variables for this dimension */
     int crd_nbr=tbl->lst_dmn[dmn_idx].crd_nbr;
@@ -229,25 +228,16 @@ trv_tbl_var_nm_fll                    /* [fnc] Return object from full name key 
 {
   /* Purpose: Return object with given full name */
 
-  /* Following line turns-on hash tables: */
-  //#define NCO_HASH
-#ifndef NCO_HASH
+#ifdef NCO_HSH_TRV_OBJ
+  trv_sct *trv_obj; /* [sct] GTT object structure */
+  HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
+  return trv_obj;
+#else /* !NCO_HSH_TRV_OBJ */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) return &trv_tbl->lst[uidx];
 
   return NULL;
-#else /* NCO_HASH */
-  trv_sct *trv_obj; /* [sct] GTT object structure */
-  HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
-  return trv_obj;
-#endif /* NCO_HASH */
-
-#if 0
-  int hsh_key; /* [id] Hash key (must be unique!) */
-  trv_sct *trv_obj; /* [sct] GTT object structure */
-  HASH_FIND_INT(trv_tbl->hsh,&hsh_key,trv_obj);
-  return trv_obj;
-#endif /* !0 */
+#endif /* !NCO_HSH_TRV_OBJ */
 
 } /* trv_tbl_var_nm_fll() */
 
@@ -256,8 +246,15 @@ trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
+
+#ifdef NCO_HSH_TRV_OBJ
+  trv_sct *trv_obj; /* [sct] GTT object structure */
+  HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
+  if(trv_obj) trv_obj->flg_xtr=True;
+#else /* !NCO_HSH_TRV_OBJ */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(!strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) trv_tbl->lst[uidx].flg_xtr=True;
+#endif /* !NCO_HSH_TRV_OBJ */
 
   return;
 } /* end trv_tbl_mrk_xtr() */
@@ -353,11 +350,13 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   (void)trv_tbl_srt(trv_tbl_1);
   (void)trv_tbl_srt(trv_tbl_2);
 
-  /* Rebuild hash tables after sorting?
-  (void)nco_trv_hsh_del(trv_tbl_1);
-  (void)nco_trv_hsh_del(trv_tbl_2);
+#ifdef NCO_HSH_TRV_OBJ
+  /* Rebuild hash table after traversal table re-ordering */
+  HASH_CLEAR(hh,trv_tbl_1->hsh);
+  HASH_CLEAR(hh,trv_tbl_2->hsh);
   (void)nco_trv_hsh_bld(trv_tbl_1);
-  (void)nco_trv_hsh_bld(trv_tbl_2); */
+  (void)nco_trv_hsh_bld(trv_tbl_2);
+#endif /* !NCO_HSH_TRV_OBJ */
 
   if(dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",prg_nm_get(),fnc_nm);
@@ -398,7 +397,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
       idx_tbl_1++;
       idx_tbl_2++;
-
     }else if(nco_cmp < 0){
       /* Name(1) is less than Name(2), read next name from List 1  */
 
@@ -408,7 +406,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       idx_lst++;
 
       if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
-
       idx_tbl_1++;
     }else{
       /* Name(1) is greater than Name(2), read next name from List 2 */
@@ -418,7 +415,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       idx_lst++;
 
       if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
-
       idx_tbl_2++;
     } /* end nco_cmp */
 
@@ -430,15 +426,12 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   if(idx_tbl_1 < nbr_tbl_1){
 
     while(idx_tbl_1 < nbr_tbl_1){
-      trv_sct trv_1=trv_tbl_1->lst[idx_tbl_1];
-
       (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=False;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_tbl_1->lst[idx_tbl_1].nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
-
+      if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_tbl_1->lst[idx_tbl_1].nm_fll);
       idx_tbl_1++;
     } /* end while */
   } /* end if */
@@ -446,15 +439,12 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   /* List2 did not end */
   if(idx_tbl_2 < nbr_tbl_2){
     while(idx_tbl_2 < nbr_tbl_2){
-      trv_sct trv_2=trv_tbl_2->lst[idx_tbl_2];
-
       (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_tbl_2->lst[idx_tbl_2].nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
-
+      if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_tbl_2->lst[idx_tbl_2].nm_fll);
       idx_tbl_2++;
     } /* end while */
   } /* end if */
@@ -464,7 +454,6 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
   /* Export number of entries */
   *nbr_cmn_nm=idx_lst;
-
 } /* trv_tbl_mch() */
 
 void                          
@@ -584,7 +573,7 @@ nco_trv_hsh_bld /* Hash traversal table for fastest access */
      More specifically, it requires old hash entries be deleted and new ones added when keys change
      Time-expense of hashes is O(1+n/k)
      Hashes are therefore more fragile yet much quicker than bruit-force searches
-     Care must be used to destroy/replace/re-create hash table entries if when keys change (or table is re-ordered?)
+     Care must be used to destroy/replace/re-create hash table entries if when keys change (or table is re-ordered)
 
      Hash table lookups:
      trv_sct *trv_obj;
