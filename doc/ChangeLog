@@ -17,7 +17,7 @@
 	* Supplant strcmp() with hash table in trv_tbl_var_nm_fll()
 	Works on all operators except ncbo
 
-	* #define NCO_TRV_OBJ_HSH token to use hashes instead of strcmp() loops
+	* #define NCO_HSH_TRV_OBJ token to use hashes instead of strcmp() loops
 
 	* Hash all objects in traversal table and store resultant hash table
 	Use string-keyed hash based on full object name
