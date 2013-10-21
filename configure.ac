@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.14 2013-10-21 20:38:23 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.15 2013-10-21 23:38:20 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -208,6 +208,11 @@ AC_CHECK_SIZEOF(int*)
 AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
+
+# Check for OpenMP
+AC_OPENMP
+AC_SUBST(OPENMP_CFLAGS)
+CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
 
 echo "#################################"
 echo "#  Test for netCDF             #"
@@ -794,10 +799,13 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
 # 20070310: Change to no-shadow so ncoLexer.cpp compiles
+
     GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
     GCC_BASE_FLAGS='-Wall -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
+    GCC_BASE_FLAGS="${GCC_BASE_FLAGS} ${OPENMP_CFLAGS}"
     GCC_CFLAGS="${GCC_BASE_FLAGS} -Wmissing-prototypes"
     GCC_CXXFLAGS="${GCC_BASE_FLAGS}"
+
 # Compilation flags recommended by GSL that I like and use:
 # -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
 # -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
@@ -835,7 +843,7 @@ if test "${enable_debug_custom}" = 'yes'; then
     if (test "x${GCC}" = 'xyes'); then
 	CC="${CC} ${GCC_CMD_ARGS}"
         GCC_CUSTOM_FLAGS='-g -Wall -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-prototypes -fno-common'
-	CFLAGS="${GCC_CUSTOM_FLAGS}"
+	CFLAGS="${GCC_CUSTOM_FLAGS} ${OPENMP_CFLAGS}"
 	if (test "x${CXX}" = 'xg++' && test "x${GXX}" = 'xyes'); then
 	    CXXFLAGS="${GCC_CUSTOM_FLAGS}"
 	fi
@@ -1168,6 +1176,7 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
+echo "OPENMP_CFLAGS.........${OPENMP_CFLAGS}"
 echo "ENABLE_DAP_NETCDF.... ${enable_dap_netcdf}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
