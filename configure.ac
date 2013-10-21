@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.13 2013-10-17 20:31:09 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.14 2013-10-21 20:38:23 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -219,6 +219,10 @@ echo "################################"
 #add this path to CPPFLAGS if it exists, otherwise do nothing
 AC_CHECK_FILE([/opt/local/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include"], [])
 AC_CHECK_FILE([/opt/local/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib -lnetcdf"], [])
+
+# green planet
+AC_CHECK_FILE([/sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/sopt/netcdf/netcdf411-gcc-serial/include"], [])
+AC_CHECK_FILE([/sopt/netcdf/netcdf411-gcc-serial/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/sopt/netcdf/netcdf411-gcc-serial/lib -lnetcdf"], [])
 
 # Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
