@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.36 2013-07-16 18:39:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.37 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic, MSVC macros */
 
@@ -89,7 +89,7 @@ float log10f(float x){return (float)(log10((double)x));}
 #ifdef NEED_LOGF
 float logf(float x){
   /* fxm TODO ncap57: Eventually remove this debugging statement and the include stdio that it requires */
-  /* (void)fprintf(stderr,"%s: DEBUG Using NCO-supplied function logf() from nco_rth_flt.c\n",prg_nm_get()); */
+  /* (void)fprintf(stderr,"%s: DEBUG Using NCO-supplied function logf() from nco_rth_flt.c\n",nco_prg_nm_get()); */
   return (float)(log((double)x));}
 #endif /* !NEED_LOGF */ 
 #ifdef NEED_SINF

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.91 2013-10-03 13:12:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.92 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -122,30 +122,30 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
         /* Dimensions in wgt and var are mutually exclusive */
         CONFORMABLE=False;
         if(MUST_CONFORM){
-          (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),wgt->nm,var->nm);
+          (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",nco_prg_nm_get(),wgt->nm,var->nm);
           nco_exit(EXIT_FAILURE);
         }else{
-          if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"\n%s: DEBUG %s and template %s share no dimensions: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,var->nm,wgt->nm,var->nm);
+          if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"\n%s: DEBUG %s and template %s share no dimensions: Not broadcasting %s to %s\n",nco_prg_nm_get(),wgt->nm,var->nm,wgt->nm,var->nm);
           USE_DUMMY_WGT=True;
         } /* endif */
       }else if(wgt->nbr_dim > var->nbr_dim){
         /* wgt is larger rank than var---no possibility of conforming */
         CONFORMABLE=False;
         if(MUST_CONFORM){
-          (void)fprintf(stdout,"%s: ERROR %s is rank %d but template %s is rank %d: Impossible to broadcast\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim);
+          (void)fprintf(stdout,"%s: ERROR %s is rank %d but template %s is rank %d: Impossible to broadcast\n",nco_prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim);
           nco_exit(EXIT_FAILURE);
         }else{
-          if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
+          if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",nco_prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
           USE_DUMMY_WGT=True;
         } /* endif */
       }else if(wgt_var_dmn_shr_nbr > 0 && wgt_var_dmn_shr_nbr < wgt->nbr_dim){
         /* Some, but not all, of wgt dimensions are in var */
         CONFORMABLE=False;
         if(MUST_CONFORM){
-          (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr);
+          (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",nco_prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr);
           nco_exit(EXIT_FAILURE);
         }else{
-          if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr,wgt->nm,var->nm);
+          if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",nco_prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr,wgt->nm,var->nm);
           USE_DUMMY_WGT=True;
         } /* endif */
       } /* end if */
@@ -267,7 +267,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
           } /* end if */
           /* Sanity check */
           if(idx_dmn == var->nbr_dim-1){
-            (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in nco_var_cnf_dmn()\n",prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
+            (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in nco_var_cnf_dmn()\n",nco_prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
             nco_exit(EXIT_FAILURE);
           } /* end if err */
         } /* end loop over variable dimensions */
@@ -329,7 +329,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
   } /* end if we had to stretch weight to fit variable */
 
   if(MUST_CONFORM && !(*DO_CONFORM)){
-    (void)fprintf(stdout,"%s: ERROR Variables which MUST_CONFORM do not on exit from nco_var_cnf_dmn()\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Variables which MUST_CONFORM do not on exit from nco_var_cnf_dmn()\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
@@ -374,7 +374,7 @@ ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
   } /* endif var_1 > var_2 */
 
   if(!DO_CONFORM){
-    (void)fprintf(stderr,"%s: ncap_var_cnf_dmn() reports that variables %s and %s do not have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get(),(*var_1)->nm,(*var_2)->nm);
+    (void)fprintf(stderr,"%s: ncap_var_cnf_dmn() reports that variables %s and %s do not have have conforming dimensions. Cannot proceed with operation\n",nco_prg_nm_get(),(*var_1)->nm,(*var_2)->nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
@@ -546,8 +546,8 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
     dmn_idx_in_out[dmn_idx_shr_in[dmn_shr_idx]]=dmn_idx_shr_out[dmn_shr_idx];
 
-  if(dbg_lvl_get() > nco_dbg_scl){
-    (void)fprintf(stdout,"%s: DEBUG %s variable %s shares %d of its %d dimensions with the %d dimensions in the re-order list\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_shr_nbr,var_in->nbr_dim,dmn_rdr_nbr);
+  if(nco_dbg_lvl_get() > nco_dbg_scl){
+    (void)fprintf(stdout,"%s: DEBUG %s variable %s shares %d of its %d dimensions with the %d dimensions in the re-order list\n",nco_prg_nm_get(),fnc_nm,var_in->nm,dmn_shr_nbr,var_in->nbr_dim,dmn_rdr_nbr);
     (void)fprintf(stdout,"shr_idx\tshr_rdr\tshr_in\tshr_out\n");
     for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
       (void)fprintf(stdout,"%d\t%d\t%d\t%d\n",dmn_shr_idx,dmn_idx_shr_rdr[dmn_shr_idx],dmn_idx_shr_in[dmn_shr_idx],dmn_idx_shr_out[dmn_shr_idx]);
@@ -620,7 +620,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
       dmn_idx_rec_out=dmn_out_idx;
       /* Request that first dimension be record dimension */
       rec_dmn_nm_out=dmn_out[0]->nm;
-      if(dbg_lvl_get() >= nco_dbg_scl && dmn_idx_rec_out != 0) (void)fprintf(stdout,"%s: INFO %s for variable %s reports old input record dimension %s is now ordinal dimension %d, new record dimension must be %s\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_out[dmn_idx_rec_out]->nm,dmn_idx_rec_out,dmn_out[0]->nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_scl && dmn_idx_rec_out != 0) (void)fprintf(stdout,"%s: INFO %s for variable %s reports old input record dimension %s is now ordinal dimension %d, new record dimension must be %s\n",nco_prg_nm_get(),fnc_nm,var_in->nm,dmn_out[dmn_idx_rec_out]->nm,dmn_idx_rec_out,dmn_out[0]->nm);
     }else{
       /* 20121009: 
       This block only reached by variables that will change from record in input file to fixed in output file
@@ -632,9 +632,9 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     } /* end else */
   } /* endif record variable */
 
-  if(dbg_lvl_get() > nco_dbg_var){
+  if(nco_dbg_lvl_get() > nco_dbg_var){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
-      (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,unknown)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx]);
+      (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,unknown)\n",nco_prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx]);
   } /* endif dbg */
 
   return rec_dmn_nm_out;
@@ -718,14 +718,14 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   } /* end loop over dmn_out */
   
   /* Report full metadata re-order, if requested */
-  if(dbg_lvl_get() > 3){
+  if(nco_dbg_lvl_get() > 3){
     int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
     /* Create reverse correspondence */
     for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
       dmn_idx_in_out[dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
   
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
-      (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
+      (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",nco_prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
   } /* endif dbg */
   
   /* Is identity re-ordering requested? */
@@ -741,13 +741,13 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   } /* !IDENTITY_REORDER */
 
   if(IDENTITY_REORDER){
-    if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",nco_prg_nm_get(),fnc_nm,var_in->nm);
     /* Copy in one fell swoop then return */
     (void)memcpy((void *)(var_out->val.vp),(void *)(var_in->val.vp),var_out->sz*nco_typ_lng(var_out->type));
     return rcd;
   } /* !IDENTITY_REORDER */
 
-  if(var_in->has_dpl_dmn) (void)fprintf(stdout,"%s: WARNING %s reports non-identity re-order for variable with duplicate dimensions %s.\n%s does not support non-identity re-orders of variables with duplicate dimensions\n",prg_nm_get(),fnc_nm,var_in->nm,prg_nm_get());
+  if(var_in->has_dpl_dmn) (void)fprintf(stdout,"%s: WARNING %s reports non-identity re-order for variable with duplicate dimensions %s.\n%s does not support non-identity re-orders of variables with duplicate dimensions\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_prg_nm_get());
 
   /* Compute map for each dimension of input variable */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++) dmn_in_map[dmn_in_idx]=1L;

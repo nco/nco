@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.61 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.62 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -50,11 +50,11 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
     if(strstr(att_val,"CF-1.0")) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
     /* As of 20060514, CLM 3.0 uses CF1.0 not CF-1.0 (CAM gets it right) */
     if(strstr(att_val,"CF1.0")) CNV_CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
-    if(CNV_CCM_CCSM_CF && dbg_lvl_get() >= nco_dbg_std){
-      (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\"\n",prg_nm_get(),cnv_sng,att_val);
-      if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
+    if(CNV_CCM_CCSM_CF && nco_dbg_lvl_get() >= nco_dbg_std){
+      (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\"\n",nco_prg_nm_get(),cnv_sng,att_val);
+      if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",nco_prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
       /* Only warn in arithmetic operators where conventions change behavior */
-      if(dbg_lvl_get() >= nco_dbg_fl && nco_is_rth_opr(prg_get())) (void)fprintf(stderr,"%s: INFO NCO has a unified (though incomplete) treatment of many related (official and unoffical) conventions including the older CCM and CCSM and newer CF conventions. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\", and many operators will always leave coordinate variables unchanged. The full list of exceptions is in the manual http://nco.sf.net/nco.html#CF\n",prg_nm_get());
+      if(nco_dbg_lvl_get() >= nco_dbg_fl && nco_is_rth_opr(nco_prg_id_get())) (void)fprintf(stderr,"%s: INFO NCO has a unified (though incomplete) treatment of many related (official and unoffical) conventions including the older CCM and CCSM and newer CF conventions. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\", and many operators will always leave coordinate variables unchanged. The full list of exceptions is in the manual http://nco.sf.net/nco.html#CF\n",nco_prg_nm_get());
     } /* endif dbg */
     att_val=(char *)nco_free(att_val);
   } /* endif */
@@ -83,7 +83,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
   nco_int date;
   nco_int nbdate;
   
-  (void)sprintf(wrn_sng,"Most, but not all, CCM/CCSM/CF files which are in CCM format contain the fields \"nbdate\", \"time\", and \"date\". When the \"date\" field is present but either \"nbdate\" or \"time\" is missing, then %s is unable to construct a meaningful average \"date\" to store in the output file. Therefore the \"date\" variable in your output file may be meaningless.\n",prg_nm_get());
+  (void)sprintf(wrn_sng,"Most, but not all, CCM/CCSM/CF files which are in CCM format contain the fields \"nbdate\", \"time\", and \"date\". When the \"date\" field is present but either \"nbdate\" or \"time\" is missing, then %s is unable to construct a meaningful average \"date\" to store in the output file. Therefore the \"date\" variable in your output file may be meaningless.\n",nco_prg_nm_get());
 
   /* Find date variable (NC_INT: current date as 6 digit integer (YYMMDD)) */
   for(idx=0;idx<nbr_var;idx++){
@@ -95,8 +95,8 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
   /* Find scalar nbdate variable (NC_INT: base date date as 6 digit integer (YYMMDD)) */
   rcd=nco_inq_varid_flg(nc_id,"nbdate",&nbdate_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" but not \"nbdate\"\n",prg_nm_get());
-    (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
+    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" but not \"nbdate\"\n",nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: %s",nco_prg_nm_get(),wrn_sng);
     return;
   } /* endif */
 
@@ -110,8 +110,8 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
     if(!strcmp(var[idx]->nm,"time")) break;
   } /* end loop over idx */
   if(idx == nbr_var){
-    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" and \"nbdate\" yet lacks \"time\"\n",prg_nm_get());
-    (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
+    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable list contains \"date\" and \"nbdate\" yet lacks \"time\"\n",nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: %s",nco_prg_nm_get(),wrn_sng);
     return;
   }else{
     time_idx=idx;
@@ -127,7 +127,7 @@ nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF file
   }else if(var[date_idx]->type == NC_DOUBLE){
     if(!var[date_idx]->val.dp) return; else var[date_idx]->val.dp[0]=date;
   }else{
-    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable \"date\" is not NC_INT or NC_DOUBLE\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING CCM/CCSM/CF convention file output variable \"date\" is not NC_INT or NC_DOUBLE\n",nco_prg_nm_get());
   } /* end else */
   
   return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
@@ -176,7 +176,7 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
 	/* Yes, get list of specified attributes */
 	(void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
 	if(att_typ != NC_CHAR){
-	  (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+	  (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
 	  return xtr_lst;
 	} /* end if */
 	att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.18 2013-01-13 06:07:49 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.19 2013-10-22 03:03:56 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to high-level NCO utilities
 
@@ -49,9 +49,9 @@ nco_var_dfn // [fnc] Define variables in output netCDF file
   // Local
   register long idx; // [idx] Counting index
   const std::string sbr_nm("nco_var_dfn"); // [sng] Name of subroutine
-  const unsigned short int dbg_lvl(0); // [sng] Debugging level
-  if(dbg_lvl >= nco_dbg_sbr) std::cerr << "DEBUG: Entering " << sbr_nm << "()..." << std::endl;
-  if(dbg_lvl >= nco_dbg_sbr) std::cerr << "DEBUG:"+sbr_nm+"() reports var_mtd_nbr = " << var_mtd_nbr << std::endl;
+  const unsigned short int nco_dbg_lvl(0); // [sng] Debugging level
+  if(nco_dbg_lvl >= nco_dbg_sbr) std::cerr << "DEBUG: Entering " << sbr_nm << "()..." << std::endl;
+  if(nco_dbg_lvl >= nco_dbg_sbr) std::cerr << "DEBUG:"+sbr_nm+"() reports var_mtd_nbr = " << var_mtd_nbr << std::endl;
 
   // Allow file to already be in define mode
   rcd=nco_redef(nc_id,NC_EINDEFINE); // [fnc] Put open netCDF dataset into define mode
@@ -62,7 +62,7 @@ nco_var_dfn // [fnc] Define variables in output netCDF file
     if(var_mtd[idx].dmn_nbr <= dmn_nbr_max){
 
       // Sanity check before output
-      if(dbg_lvl >= nco_dbg_io){
+      if(nco_dbg_lvl >= nco_dbg_io){
 	std::string dmn_nm;
 	size_t dmn_sz;
 	for(dmn_idx=0;dmn_idx<var_mtd[idx].dmn_nbr;dmn_idx++){
@@ -96,7 +96,7 @@ nco_var_dfn // [fnc] Define variables in output netCDF file
   // Be in data mode on exit so values may be written
   rcd=nco_enddef(nc_id); // [fnc] Leave define mode
 
-  if(dbg_lvl >= nco_dbg_sbr) std::cerr << "DEBUG: Exiting " << sbr_nm << "()..." << std::endl;
+  if(nco_dbg_lvl >= nco_dbg_sbr) std::cerr << "DEBUG: Exiting " << sbr_nm << "()..." << std::endl;
   return rcd; // [enm] Return success code
 } // end nco_var_dfn()
 

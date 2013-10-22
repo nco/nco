@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.47 2013-09-22 03:47:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.48 2013-10-22 03:03:45 zender Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -54,8 +54,8 @@ nco_find_lat_lon
 
   /* Make sure CF tag exists. Currently require CF-1.0 value */
   if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.0")){
-    if(dbg_lvl_get() >= nco_dbg_dev)
-    (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n",prg_nm_get(),fnc_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_dev)
+    (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
   } /* !CF */
 
   /* Get number of variables */
@@ -79,7 +79,7 @@ nco_find_lat_lon
         NCO_GET_ATT_CHAR(nc_id,idx,"units",*units);
         units[lenp]='\0';
 
-        if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
+        if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
 
         /* Assign type; assumed same for both lat and lon */
         *crd_typ=var_typ;
@@ -98,7 +98,7 @@ nco_find_lat_lon
 
 
   if(ret != 2){
-    if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"nco_find_lat_lon() unable to identify lat/lon auxiliary coordinate variables.\n");
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"nco_find_lat_lon() unable to identify lat/lon auxiliary coordinate variables.\n");
     return False;
   } else return True;
 
@@ -257,11 +257,11 @@ nco_aux_evl
     cll_nbr_ttl=0; /* [nbr] Total number of cells within this bounding box */
     cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
     if(lon_min == lon_max){
-      (void)fprintf(stderr,"%s: ERROR %s reports degenerate auxiliary coordinate hyperslab with lon_min = lon_max = %g. Auxiliary coordinates do not support degenerate hyperlabs yet. This is TODO nco1010. If this feature is important to you, post your vexation to sourceforge and we will work on it.\n",prg_nm_get(),fnc_nm,lon_min);
+      (void)fprintf(stderr,"%s: ERROR %s reports degenerate auxiliary coordinate hyperslab with lon_min = lon_max = %g. Auxiliary coordinates do not support degenerate hyperlabs yet. This is TODO nco1010. If this feature is important to you, post your vexation to sourceforge and we will work on it.\n",nco_prg_nm_get(),fnc_nm,lon_min);
       nco_exit(EXIT_FAILURE);
     } /* endif */
     if(lat_min == lat_max){
-      (void)fprintf(stderr,"%s: ERROR %s reports degenerate auxiliary coordinate hyperslab with lat_min = lat_max = %g. Auxiliary coordinates do not support degenerate hyperlabs yet. This is TODO nco1010. If this feature is important to you, post your vexation to sourceforge and we will work on it.\n",prg_nm_get(),fnc_nm,lat_min);
+      (void)fprintf(stderr,"%s: ERROR %s reports degenerate auxiliary coordinate hyperslab with lat_min = lat_max = %g. Auxiliary coordinates do not support degenerate hyperlabs yet. This is TODO nco1010. If this feature is important to you, post your vexation to sourceforge and we will work on it.\n",nco_prg_nm_get(),fnc_nm,lat_min);
       nco_exit(EXIT_FAILURE);
     } /* endif */
     /* Loop over auxiliary coordinate cells */
@@ -297,7 +297,7 @@ nco_aux_evl
         cll_idx_min=-1;
       } /* end if one or more consecutive matching cells */
     } /* end loop over cells */
-    if(dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",prg_nm_get(),fnc_nm,lon_min,var_nm_lon,lon_max,lat_min,var_nm_lat,lat_max,cll_grp_nbr,cll_nbr_ttl); 
+    if(nco_dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",nco_prg_nm_get(),fnc_nm,lon_min,var_nm_lon,lon_max,lat_min,var_nm_lat,lat_max,cll_grp_nbr,cll_nbr_ttl); 
   } /* end loop over user supplied -X options */
 
   /* Free allocated memory */
@@ -309,7 +309,7 @@ nco_aux_evl
   record coordinates spanning multiple files. Thus finding no cells within
   any bounding box constitutes a domain error. */
   if(*lmt_nbr == 0){
-    (void)fprintf(stdout,"%s: ERROR %s reports that none of the %d specified auxiliary-coordinate bounding-box(es) contain any latitude/longitude coordinate pairs. This condition was not flagged as an error until 20110221. Prior to that, when no coordinates were in any of the user-specified auxiliary-coordinate hyperslab(s), NCO mistakenly returned the entire coordinate range as being within the hyperslab(s).\n",prg_nm_get(),fnc_nm,aux_nbr);
+    (void)fprintf(stdout,"%s: ERROR %s reports that none of the %d specified auxiliary-coordinate bounding-box(es) contain any latitude/longitude coordinate pairs. This condition was not flagged as an error until 20110221. Prior to that, when no coordinates were in any of the user-specified auxiliary-coordinate hyperslab(s), NCO mistakenly returned the entire coordinate range as being within the hyperslab(s).\n",nco_prg_nm_get(),fnc_nm,aux_nbr);
     nco_exit(EXIT_FAILURE);
   } /* end if */
 

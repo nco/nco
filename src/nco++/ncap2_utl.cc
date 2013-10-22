@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.153 2013-10-08 22:26:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.154 2013-10-22 03:03:55 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -370,7 +370,7 @@ ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   ptr_unn op_swp;
   const char fnc_nm[]="ncap_var_var_mod"; 
 
-  if(dbg_lvl_get() >= 4) 
+  if(nco_dbg_lvl_get() >= 4) 
       dbg_prn(fnc_nm,"Entered function");
   
 
@@ -401,7 +401,7 @@ ncap_var_var_atan2
   ptr_unn op1,op2;
 
   const char fnc_nm[]="ncap_var_var_atan2"; 
-  if(dbg_lvl_get() >= 4) dbg_prn(fnc_nm,"Entered function");
+  if(nco_dbg_lvl_get() >= 4) dbg_prn(fnc_nm,"Entered function");
 
   sz=var1->sz;
 
@@ -519,7 +519,7 @@ ncap_var_var_pwr  /* [fnc] Empowerment of two variables */
 
   const char fnc_nm[]="ncap_var_var_pwr";
    
-  if(dbg_lvl_get() >= 4) 
+  if(nco_dbg_lvl_get() >= 4) 
       dbg_prn(fnc_nm,"Entered function");
 
 
@@ -555,7 +555,7 @@ ncap_var_fnc
   ptr_unn op1;
 
 
-  if(dbg_lvl_get() >= 4) 
+  if(nco_dbg_lvl_get() >= 4) 
       dbg_prn(fnc_nm,"Entered function");
   
   if(var_in->undefined) return var_in;
@@ -973,12 +973,12 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
           err_prn(fnc_nm,std::string(var_lsr->nm)+ " and " +std::string(var_gtr->nm) +" share no dimensions. "); 
-	  //(void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+	  //(void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  //nco_exit(EXIT_FAILURE);
 	}else{
-	  if(dbg_lvl_get() >= 1) 
+	  if(nco_dbg_lvl_get() >= 1) 
 	    wrn_prn(fnc_nm,std::string(var_lsr->nm)+ " and " +std::string(var_gtr->nm) +" share no dimensions. Attempting to convolve..."); 
-	  //(void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+	  //(void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       }else if(var_lsr_var_gtr_dmn_shr_nbr > 0 && var_lsr_var_gtr_dmn_shr_nbr < var_lsr->nbr_dim){
@@ -990,10 +990,10 @@ ncap_var_stretch /* [fnc] Stretch variables */
           os<<var_gtr->nm <<" but " << (var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr) <<" do not.";
           err_prn(fnc_nm,os.str());
 	  
-	  //(void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr);
+	  //(void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",nco_prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr);
 	  //nco_exit(EXIT_FAILURE);
 	}else{
-	  if(dbg_lvl_get() >= 1){ 
+	  if(nco_dbg_lvl_get() >= 1){ 
 	    std::ostringstream os;
 	    os<<var_lsr_var_gtr_dmn_shr_nbr << " dimensions of " << var_lsr->nm << " belong to template ";
 	    os<<var_gtr->nm << " but " << (var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr) <<" do not:";
@@ -1002,7 +1002,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	    wrn_prn(fnc_nm,os.str());
           }
 	  
-	  //(void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
+	  //(void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",nco_prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       } /* end if */
@@ -1033,10 +1033,10 @@ ncap_var_stretch /* [fnc] Stretch variables */
   if(var_lsr_out == NULL_CEWI && CONVOLVE){
     /* Convolve variables by returned stretched variables with minimum possible number of dimensions */
     int dmn_nbr; /* Number of dimensions in convolution */
-    if(dbg_lvl_get() >= 1) 
+    if(nco_dbg_lvl_get() >= 1) 
       dbg_prn(fnc_nm,"Convolution not yet implemented, results of operation between " +std::string(var_lsr->nm) 
               + " and "+std::string(var_gtr->nm) + "are unpredictable");
-    //(void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+    //(void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
     /* Dimensions in convolution are union of dimensions in variables */
     dmn_nbr=var_lsr->nbr_dim+var_gtr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr; /* Number of dimensions in convolution */
     dmn_nbr=dmn_nbr; /* CEWI: Avert compiler warning that variable is set but never used */
@@ -1136,7 +1136,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
             err_prn(fnc_nm,"var_lsr " + std::string(var_lsr->nm)+ " has dimension "+ std::string(var_lsr->dim[idx]->nm)
                     + " but var_gtr " + std::string(var_gtr->nm)+ " does not deep in ncap_var_stretch.");
 	    
-	    //(void)fprintf(stdout,"%s: ERROR var_lsr %s has dimension %s but var_gtr %s does not deep in ncap_var_stretch()\n",prg_nm_get(),var_lsr->nm,var_lsr->dim[idx]->nm,var_gtr->nm);
+	    //(void)fprintf(stdout,"%s: ERROR var_lsr %s has dimension %s but var_gtr %s does not deep in ncap_var_stretch()\n",nco_prg_nm_get(),var_lsr->nm,var_lsr->dim[idx]->nm,var_gtr->nm);
 	    //nco_exit(EXIT_FAILURE);
 	  } /* end if err */
 	} /* end loop over greater variable dimensions */
@@ -2060,7 +2060,7 @@ ncap_cst_mk( /* [fnc] create casting var from a list of dims */
   } /* end scope */
  end_var:
   
-  if(dbg_lvl_get() >= nco_dbg_scl) {
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) {
     std::ostringstream os;
     os<<"creating LHS cast template var->nm " <<var->nm <<" var->nbr_dim " <<var->nbr_dim <<" var->sz " <<var->sz; 
     wrn_prn(fnc_nm,os.str());
@@ -2107,7 +2107,7 @@ ncap_cst_do(
       var=var_tmp;
     }
     
-    if(dbg_lvl_get() >= nco_dbg_scl){
+    if(nco_dbg_lvl_get() >= nco_dbg_scl){
       std::ostringstream os;
       os<<"Stretching variable "<<var->nm << "with LHS template var->nm "<<var_cst->nm <<"var->nbr_dim " <<var_cst->nbr_dim; 
       os<<" var->sz " <<var_cst->sz;
@@ -2378,7 +2378,7 @@ ncap_get_var_mem(
   char *cp_lcl;
   
   
-  if(dbg_lvl_get() >= nco_dbg_scl){
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
     std::ostringstream os;
     os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd;
     dbg_prn(fnc_nm,os.str());
@@ -2542,7 +2542,7 @@ char *cp_out)                   // Slab to be "put"
   char *cp_end;
   
     
-  if(dbg_lvl_get() >= nco_dbg_scl){
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
     std::ostringstream os;
     os<<"Depth=" << dpt<<" "<<dmn_vtr[dpt]->nm<<" "<<srt<<" "<<end<<" "<<cnt<<" "<<srd<<" "<<slb_sz<<" nbr_lpp="<<nbr_lpp;
     dbg_prn(fnc_nm,os.str());
@@ -2894,7 +2894,7 @@ int ncap_mpi_srt(
   
   
   // populate exp_vtr;
-  if(dbg_lvl_get() >= nco_dbg_std)
+  if(nco_dbg_lvl_get() >= nco_dbg_std)
     dbg_prn(fnc_nm,"Start");
   
   
@@ -3028,14 +3028,14 @@ int ncap_mpi_srt(
   } // end while
   
   //Print out vectors
-  if(dbg_lvl_get() >0) {
+  if(nco_dbg_lvl_get() >0) {
     for(idx=0 ; idx<(int)all_ast_vtr.size(); idx++){
       for(jdx=0 ; jdx<(int)all_ast_vtr[idx].size(); jdx++)
 	std::cout << all_ast_vtr[idx][jdx]->toStringTree()<<std::endl;
       std::cout <<"-------------------------------\n";
     } //end idx
   }
-  if(dbg_lvl_get() >= nco_dbg_std) dbg_prn(fnc_nm,"End");       
+  if(nco_dbg_lvl_get() >= nco_dbg_std) dbg_prn(fnc_nm,"End");       
   
   return 0;
 }

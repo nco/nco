@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.156 2013-10-05 07:36:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.157 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -66,10 +66,10 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
       /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
       rx_mch_nbr=nco_lst_rx_search(var_nbr_all,var_lst_all,var_sng,var_xtr_rqs);
-      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),var_sng); 
+      if(rx_mch_nbr == 0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",nco_prg_nm_get(),var_sng); 
       continue;
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),var_sng);
       nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     } /* end if regular expression */
@@ -84,10 +84,10 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     }else{
       if(EXCLUDE_INPUT_LIST){ 
 	/* Variable need not be present if list will be excluded later ... */
-	if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",prg_nm_get(),var_sng); 
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO nco_var_lst_mk() reports explicitly excluded variable \"%s\" is not in input file anyway\n",nco_prg_nm_get(),var_sng); 
       }else{ /* !EXCLUDE_INPUT_LIST */
 	/* Variable should be included but no matches found so die */
-	(void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+	(void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",nco_prg_nm_get(),var_sng); 
 	nco_exit(EXIT_FAILURE);
       } /* !EXCLUDE_INPUT_LIST */
     } /* end else */
@@ -312,7 +312,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
           /* Yes, get list of specified attributes */
           (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
           if(att_typ != NC_CHAR){
-            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
             return xtr_lst;
           } /* end if */
           att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -348,7 +348,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
                 continue;
               } /* end if coordinate was not already in list */
             }else{ /* end if named coordinate exists in input file */
-              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"coordinates\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),crd_lst[idx_crd],xtr_lst[idx_var].nm);
+              if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"coordinates\" attribute of variable %s, is not present in the input file\n",nco_prg_nm_get(),crd_lst[idx_crd],xtr_lst[idx_var].nm);
             } /* end else named coordinate exists in input file */
           } /* end loop over idx_crd */
           /* Free allocated memory */
@@ -397,7 +397,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
           /* Yes, get list of specified attributes */
           (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
           if(att_typ != NC_CHAR){
-            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
             return xtr_lst;
           } /* end if */
           att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -431,7 +431,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
                 continue;
               } /* end if coordinate was not already in list */
             }else{ /* end if named coordinate exists in input file */
-              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),bnd_lst[idx_bnd],xtr_lst[idx_var].nm);
+              if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",nco_prg_nm_get(),bnd_lst[idx_bnd],xtr_lst[idx_var].nm);
             } /* end else named coordinate exists in input file */
           } /* end loop over idx_bnd */
           /* Free allocated memory */
@@ -538,7 +538,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
           /* Yes, get list of specified attributes */
           (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
           if(att_typ != NC_CHAR){
-            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
             return xtr_lst;
           } /* end if */
           att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -576,7 +576,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
                 continue;
               } /* end if coordinate was not already in list */
             }else{ /* end if named coordinate exists in input file */
-              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"coordinates\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),crd_lst[idx_crd],xtr_lst[idx_var].nm);
+              if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"coordinates\" attribute of variable %s, is not present in the input file\n",nco_prg_nm_get(),crd_lst[idx_crd],xtr_lst[idx_var].nm);
             } /* end else named coordinate exists in input file */
           } /* end loop over idx_crd */
           /* Free allocated memory */
@@ -619,7 +619,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
           /* Yes, get list of specified attributes */
           (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
           if(att_typ != NC_CHAR){
-            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
             return xtr_lst;
           } /* end if */
           att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -653,7 +653,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
                 continue;
               } /* end if coordinate was not already in list */
             }else{ /* end if named coordinate exists in input file */
-              if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",prg_nm_get(),bnd_lst[idx_bnd],xtr_lst[idx_var].nm);
+              if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Variable %s, specified in the \"bounds\" attribute of variable %s, is not present in the input file\n",nco_prg_nm_get(),bnd_lst[idx_bnd],xtr_lst[idx_var].nm);
             } /* end else named coordinate exists in input file */
           } /* end loop over idx_bnd */
           /* Free allocated memory */
@@ -807,7 +807,7 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
     } /* end loop over idx_2 */
     /* ...and if variable was not found in second list... */
     if(idx_2 == *var_nbr_2){
-      (void)fprintf(stderr,"%s: ERROR %s variable \"%s\" is in file one and not in file two, i.e., the user is attempting to difference incommensurate sets of variables. %s allows the second file to have more process-able (e.g., differencable) variables than the first file, but disallows the reverse. All process-able variables in the first file must be in the second file (or manually excluded from the operation with the '-x' switch).\n",prg_nm_get(),fnc_nm,var_1[idx_1]->nm,prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR %s variable \"%s\" is in file one and not in file two, i.e., the user is attempting to difference incommensurate sets of variables. %s allows the second file to have more process-able (e.g., differencable) variables than the first file, but disallows the reverse. All process-able variables in the first file must be in the second file (or manually excluded from the operation with the '-x' switch).\n",nco_prg_nm_get(),fnc_nm,var_1[idx_1]->nm,nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if variable was not found in second list */
     /* ...otherwise assign variable to correct slot in output list */
@@ -816,10 +816,10 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
 
   /* Asymmetric lists */
   if(*var_nbr_2 > *var_nbr_1){
-    if(dbg_lvl_get() > nco_dbg_quiet){
+    if(nco_dbg_lvl_get() > nco_dbg_quiet){
       const int orphan_nbr=*var_nbr_2-*var_nbr_1;
       int orphan_idx=0;
-      (void)fprintf(stderr,"%s: INFO %s detects that file two contains %d more \"process-able\" (e.g., difference-able) variable%s than file one. Processable variables exclude those (often coordinates) that are intended to pass through an operator unchanged. The following variable%s present and/or process-able only in file two: ",prg_nm_get(),fnc_nm,orphan_nbr,(orphan_nbr > 1) ? "s" : "",(orphan_nbr > 1) ? "s are" : " is");
+      (void)fprintf(stderr,"%s: INFO %s detects that file two contains %d more \"process-able\" (e.g., difference-able) variable%s than file one. Processable variables exclude those (often coordinates) that are intended to pass through an operator unchanged. The following variable%s present and/or process-able only in file two: ",nco_prg_nm_get(),fnc_nm,orphan_nbr,(orphan_nbr > 1) ? "s" : "",(orphan_nbr > 1) ? "s are" : " is");
       for(idx_2=0;idx_2<*var_nbr_2;idx_2++){ 
 	for(idx_1=0;idx_1<*var_nbr_1;idx_1++)
 	  if(!strcmp(var_out[idx_1]->nm,var_2[idx_2]->nm)) break;
@@ -864,7 +864,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   char *var_nm=NULL_CEWI;
 
   int idx;
-  int prg_id; /* Program key */
+  int nco_prg_id; /* Program key */
 
   int idx_dmn;
   int idx_xcl;
@@ -880,7 +880,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   var_sct **var_prc;
   var_sct **var_prc_out;
 
-  prg_id=prg_get(); /* Program key */
+  nco_prg_id=nco_prg_id_get(); /* Program key */
 
   /* Allocate space for too many structures first then realloc() appropriately
   It is calling function's responsibility to free() this memory */
@@ -889,7 +889,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   var_prc=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
   var_prc_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
 
-  is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc);
+  is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(nco_prg_id,nco_pck_plc);
 
   /* Find operation type for each variable: for now this is either fix or prc */
   for(idx=0;idx<nbr_var;idx++){
@@ -909,7 +909,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
        is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id); */
 
     /* Override operation type depending on variable properties and program */
-    switch(prg_id){
+    switch(nco_prg_id){
     case ncap:
       var_op_typ[idx]=fix_typ;
       break;
@@ -987,7 +987,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     } /* end switch */
 
     /* Previous case-statement does not account for variables with no data */
-    if(nco_is_rth_opr(prg_id))
+    if(nco_is_rth_opr(nco_prg_id))
       if(var[idx]->sz == 0L) var_op_typ[idx]=fix_typ;
 
     if(CNV_CCM_CCSM_CF){
@@ -1028,8 +1028,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
     /* Warn about any expected weird behavior */
     if(var_op_typ[idx] == prc_typ){
-      if(var_typ_fnk && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
-        if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
+      if(var_typ_fnk && ((nco_prg_id != ncecat) && (nco_prg_id != ncpdq) && (nco_prg_id != ncrcat))){
+        if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",nco_prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
       } /* end if */
     } /* end if prc */
 
@@ -1053,46 +1053,46 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
   /* Sanity check */
   if(*nbr_var_prc+*nbr_var_fix != nbr_var){
-    (void)fprintf(stdout,"%s: ERROR nbr_var_prc+nbr_var_fix != nbr_var\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR nbr_var_prc+nbr_var_fix != nbr_var\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
   /* fxm: Remove ncap exception when finished with ncap list processing */
   /* fxm: ncpdq processes all variables when packing requested */
-  if(*nbr_var_prc == 0 && prg_id != ncap && prg_id != ncpdq){
-    (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",prg_nm_get());
-    switch(prg_id){
+  if(*nbr_var_prc == 0 && nco_prg_id != ncap && nco_prg_id != ncpdq){
+    (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",nco_prg_nm_get());
+    switch(nco_prg_id){
     case ncap:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain at least one derived field\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain at least one derived field\n",nco_prg_nm_get());
     case ncatted:
       /* Do nothing */
       break;
     case ncbo:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING in order to perform a binary operation (e.g., subtraction)\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING in order to perform a binary operation (e.g., subtraction)\n",nco_prg_nm_get());
       break;
     case ncea:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING\n",nco_prg_nm_get());
       break;
     case ncecat:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable\n",nco_prg_nm_get());
       break;
     case ncflint:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that is not NC_CHAR, or NC_STRING\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that is not NC_CHAR, or NC_STRING\n",nco_prg_nm_get());
       break;
     case ncks:
       /* Do nothing */
       break;
     case ncpdq:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that shares at least one dimension with the re-order list\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that shares at least one dimension with the re-order list\n",nco_prg_nm_get());
       break;
     case ncra:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_CHAR, or NC_STRING\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_CHAR, or NC_STRING\n",nco_prg_nm_get());
       break;
     case ncrcat:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable which to concatenate\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable which to concatenate\n",nco_prg_nm_get());
       break;
     case ncwa:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that contains an averaging dimension\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that contains an averaging dimension\n",nco_prg_nm_get());
       break;
     default: nco_dfl_case_prg_id_err(); break;
     } /* end switch */
@@ -1123,7 +1123,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
 
   char *var_nm=NULL_CEWI; 
 
-  int prg_id;                     /* [enm] Program key */
+  int nco_prg_id;                     /* [enm] Program key */
   int idx_dmn;
   int idx_xcl;
   prc_typ_enm var_op_typ;
@@ -1133,9 +1133,9 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
 
   nc_type var_typ=NC_NAT;         /* NC_NAT present in netcdf.h version netCDF 3.5+ */
 
-  prg_id=prg_get(); 
+  nco_prg_id=nco_prg_id_get(); 
 
-  is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(prg_id,nco_pck_plc);
+  is_sz_rnk_prv_rth_opr=nco_is_sz_rnk_prv_rth_opr(nco_prg_id,nco_pck_plc);
 
   /* Initialize operation type to processed. Change to fixed where warranted later. */
   var_op_typ=prc_typ;
@@ -1152,7 +1152,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
      is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id); */
 
   /* Override operation type based depending on variable properties and program */
-  switch(prg_id){
+  switch(nco_prg_id){
   case ncap:
     var_op_typ=fix_typ;
     break;
@@ -1232,7 +1232,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   } /* end switch */
 
   /* Previous case-statement does not account for variables with no data */
-  if(nco_is_rth_opr(prg_id))
+  if(nco_is_rth_opr(nco_prg_id))
     if(var->sz == 0L)
       var_op_typ=fix_typ;
 
@@ -1274,8 +1274,8 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
 
   /* Warn about any expected weird behavior */
   if(var_op_typ == prc_typ){
-    if(var_typ_fnk && ((prg_id != ncecat) && (prg_id != ncpdq) && (prg_id != ncrcat))){
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var->nm,nco_typ_sng(var->type));
+    if(var_typ_fnk && ((nco_prg_id != ncecat) && (nco_prg_id != ncpdq) && (nco_prg_id != ncrcat))){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Variable %s is of type %s, for which requested processing (i.e., averaging, differencing) is ill-defined\n",nco_prg_nm_get(),var->nm,nco_typ_sng(var->type));
     } /* end if */
   } /* end if prc */
 

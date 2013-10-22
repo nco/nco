@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.418 2013-10-21 03:09:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.419 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -133,11 +133,11 @@ extern "C" {
 #define NCO_LST_GRP 0
 
   /* Debugging level that quiets all non-requested informational messages
-     This value is compared against user-selected dbg_lvl 
-     Running operators with --quiet automatically sets dbg_lvl=NCO_DBG_QUIET */
+     This value is compared against user-selected nco_dbg_lvl 
+     Running operators with --quiet automatically sets nco_dbg_lvl=NCO_DBG_QUIET */
 #define NCO_DBG_QUIET 0
 
-  /* Use hash tables rather bruit-force strcmp() searches to find traversal table objects by full-name */
+  /* Find traversal table objects via hash table rather than bruit-force strcmp() search */
   //#define NCO_HSH_TRV_OBJ 1
 
   /* NCO_MSS_VAL_SNG names attribute whose value is "skipped" by arithmetic, aka the missing value attribute
@@ -162,9 +162,9 @@ extern "C" {
   /* Prototype global functions before defining them in next block */
   char *nco_mss_val_sng_get(void); /* [sng] Missing value attribute name */
   char *nco_not_mss_val_sng_get(void); /* [sng] Not missing value attribute name */
-  char *prg_nm_get(void);
-  int prg_get(void);
-  unsigned short dbg_lvl_get(void);
+  char *nco_prg_nm_get(void);
+  int nco_prg_id_get(void);
+  unsigned short nco_dbg_lvl_get(void);
   unsigned short nco_hdf_cnv_get(void);
   unsigned short nco_mrd_cnv_get(void);
   unsigned short nco_rth_cnv_get(void);
@@ -174,14 +174,14 @@ extern "C" {
   
   /* Tokens and variables with scope limited to main.c, and global variables allocated here */
   
-  int prg; /* [enm] Program ID */
-  int prg_get(void){return prg;} /* [enm] Program ID */
+  int nco_prg_id; /* [enm] Program ID */
+  int nco_prg_id_get(void){return nco_prg_id;} /* [enm] Program ID */
   
-  char *prg_nm; /* [sng] Program name */
-  char *prg_nm_get(void){return prg_nm;} /* [sng] Program name */
+  char *nco_prg_nm; /* [sng] Program name */
+  char *nco_prg_nm_get(void){return nco_prg_nm;} /* [sng] Program name */
   
-  unsigned short dbg_lvl=0; /* [enm] Debugging level */
-  unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
+  unsigned short nco_dbg_lvl=0; /* [enm] Debugging level */
+  unsigned short nco_dbg_lvl_get(void){return nco_dbg_lvl;} /* [enm] Debugging level */
 
   unsigned short nco_hdf_cnv=0; /* [enm] HDF convention */
   unsigned short nco_hdf_cnv_get(void){return nco_hdf_cnv;} /* [enm] HDF convention */
@@ -358,7 +358,7 @@ extern "C" {
 
 #define TRV_MAP_SIZE NC_MAX_DIMS
 
-  enum prg{ /* [enm] Key value for all netCDF operators */
+  enum nco_prg_id{ /* [enm] Key value for all netCDF operators */
     ncap,
     ncatted,
     ncbo,
@@ -373,7 +373,7 @@ extern "C" {
     ncwa,
     nces, /* 20131018: Potential new operator */
     ncmv /* 20131018: Potential new operator */
-  }; /* end prg enum */
+  }; /* end nco_prg_id enum */
   
   enum nco_dbg_typ_enm{ /* [enm] Debugging levels */
     /* List in increasing levels of verbosity */

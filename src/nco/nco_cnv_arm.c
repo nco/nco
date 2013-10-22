@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.32 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.33 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: ARM conventions, e.g., http://www.arm.gov/data/time.stm */
 
@@ -34,7 +34,7 @@ nco_cnv_arm_inq /* O [fnc] Check if file obeys ARM conventions */
   if(rcd != NC_NOERR){
     CNV_ARM=False;
   }else{
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",prg_nm_get()); 
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",nco_prg_nm_get()); 
     CNV_ARM=True;
   } /* end else */
 
@@ -58,7 +58,7 @@ nco_cnv_arm_time_mk /* [fnc] Return time corresponding to current time offset */
   /* Find base_time variable (NC_INT: base UNIX time of file) */
   rcd=nco_inq_varid_flg(nc_id,"base_time",&base_time_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"base_time\", exiting nco_cnv_arm_time_mk()...\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"base_time\", exiting nco_cnv_arm_time_mk()...\n",nco_prg_nm_get());
     return -1;
   } /* end if */
 
@@ -103,21 +103,21 @@ nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   /* Find time_offset variable */
   rcd=nco_inq_varid_flg(nc_id,"time_offset",&time_offset_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"time_offset\", exiting nco_cnv_arm_time_install()...\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"time_offset\", exiting nco_cnv_arm_time_install()...\n",nco_prg_nm_get());
     return;
   } /* endif */
 
   /* See if time variable already exists */
   rcd=nco_inq_varid_flg(nc_id,time_sng,&time_id);
   if(rcd == NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING ARM file already has variable \"time\"\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING ARM file already has variable \"time\"\n",nco_prg_nm_get());
     return;
   } /* endif */
 
   /* See if time dimension exists */
   rcd=nco_inq_dimid_flg(nc_id,time_sng,&time_dmn_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING ARM file does not have dimension \"time\"\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING ARM file does not have dimension \"time\"\n",nco_prg_nm_get());
     return;
   } /* endif */
   /* Get dimension size */

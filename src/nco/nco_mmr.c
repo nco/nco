@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.59 2013-10-18 23:25:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.60 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -43,7 +43,7 @@ nco_calloc /* [fnc] Wrapper for calloc() */
   
   ptr=calloc(lmn_nbr,lmn_sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_calloc() unable to allocate %lu elements of %lu bytes each totaling %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),(unsigned long)lmn_nbr,(unsigned long)lmn_sz,(unsigned long)(lmn_nbr*lmn_sz),(unsigned long)(lmn_nbr*lmn_sz)/NCO_BYT_PER_KB,(unsigned long)(lmn_nbr*lmn_sz)/NCO_BYT_PER_MB,(unsigned long)(lmn_nbr*lmn_sz)/NCO_BYT_PER_GB);
+    (void)fprintf(stdout,"%s: ERROR nco_calloc() unable to allocate %lu elements of %lu bytes each totaling %lu B = %lu kB = %lu MB = %lu GB\n",nco_prg_nm_get(),(unsigned long)lmn_nbr,(unsigned long)lmn_sz,(unsigned long)(lmn_nbr*lmn_sz),(unsigned long)(lmn_nbr*lmn_sz)/NCO_BYT_PER_KB,(unsigned long)(lmn_nbr*lmn_sz)/NCO_BYT_PER_MB,(unsigned long)(lmn_nbr*lmn_sz)/NCO_BYT_PER_GB);
     nco_exit(EXIT_FAILURE);
   } /* endif */
 #ifdef NCO_MMR_STT
@@ -97,17 +97,17 @@ nco_malloc /* [fnc] Wrapper for malloc() */
   if(sz == 0) return NULL;
   
   /* Only poll memory if debug level set otherwise getenv() would be called on every nco_malloc() reading  */
-  if(dbg_lvl_get() >= nco_dbg_scl){
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
     if((nvr_NCO_MMR_DBG=getenv("NCO_MMR_DBG"))) ntg_NCO_MMR_DBG=(int)strtol(nvr_NCO_MMR_DBG,&sng_cnv_rcd,NCO_SNG_CNV_BASE10); /* [sng] Environment variable NCO_MMR_DBG */
   } /* endif dbg */
 
-  if(ntg_NCO_MMR_DBG && sz > sz_thr) (void)fprintf(stdout,"%s: INFO %s received request to allocate %zu B = %zu kB = %zu MB = %zu GB\n",prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB);
+  if(ntg_NCO_MMR_DBG && sz > sz_thr) (void)fprintf(stdout,"%s: INFO %s received request to allocate %zu B = %zu kB = %zu MB = %zu GB\n",nco_prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB);
 
-  if(sz > sz_max) (void)fprintf(stdout,"%s: WARNING %s received request to allocate %zu B = %zu kB = %zu MB = %zu GB = %zu TB\n",prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB,sz/NCO_BYT_PER_TB);
+  if(sz > sz_max) (void)fprintf(stdout,"%s: WARNING %s received request to allocate %zu B = %zu kB = %zu MB = %zu GB = %zu TB\n",nco_prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB,sz/NCO_BYT_PER_TB);
 
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR %s unable to allocate %zu B = %zu kB = %zu MB = %zu GB\n",prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB);
+    (void)fprintf(stdout,"%s: ERROR %s unable to allocate %zu B = %zu kB = %zu MB = %zu GB\n",nco_prg_nm_get(),fnc_nm,sz,sz/NCO_BYT_PER_KB,sz/NCO_BYT_PER_MB,sz/NCO_BYT_PER_GB);
     (void)nco_malloc_err_hnt_prn();
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
@@ -139,15 +139,15 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), forgives ENOMEM errors */
   
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_malloc_flg() unable to allocate %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),(unsigned long)sz,(unsigned long)sz/NCO_BYT_PER_KB,(unsigned long)sz/NCO_BYT_PER_MB,(unsigned long)sz/NCO_BYT_PER_GB);
+    (void)fprintf(stdout,"%s: ERROR nco_malloc_flg() unable to allocate %lu B = %lu kB = %lu MB = %lu GB\n",nco_prg_nm_get(),(unsigned long)sz,(unsigned long)sz/NCO_BYT_PER_KB,(unsigned long)sz/NCO_BYT_PER_MB,(unsigned long)sz/NCO_BYT_PER_GB);
 #ifndef __GNUG__
     /* 20051205: Triggers G++ error: undefined reference to `__errno_location()' */
-    (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
+    (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",nco_prg_nm_get(),strerror(errno));
     if(errno == ENOMEM) return NULL; /* Unlike nco_malloc(), allow simple OOM errors */
 #else
     return NULL; /* Unlike nco_malloc(), allow simple OOM errors */
 #endif /* __GNUG__ */
-    (void)fprintf(stdout,"%s: ERROR is not ENOMEM, exiting...\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR is not ENOMEM, exiting...\n",nco_prg_nm_get());
     (void)nco_malloc_err_hnt_prn();
     nco_exit(EXIT_FAILURE);
   } /* endif */
@@ -180,12 +180,12 @@ nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnosti
   
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR malloc() returns error on %s request for %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),fnc_nm,(unsigned long)sz,(unsigned long)sz/NCO_BYT_PER_KB,(unsigned long)sz/NCO_BYT_PER_MB,(unsigned long)sz/NCO_BYT_PER_GB);
+    (void)fprintf(stdout,"%s: ERROR malloc() returns error on %s request for %lu B = %lu kB = %lu MB = %lu GB\n",nco_prg_nm_get(),fnc_nm,(unsigned long)sz,(unsigned long)sz/NCO_BYT_PER_KB,(unsigned long)sz/NCO_BYT_PER_MB,(unsigned long)sz/NCO_BYT_PER_GB);
 #ifndef __GNUG__
     /* 20051205: Triggers G++ error: undefined reference to `__errno_location()' */
-    (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
+    (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",nco_prg_nm_get(),strerror(errno));
 #endif /* __GNUG__ */
-    (void)fprintf(stdout,"%s: User-supplied supplemental error message is \"%s\"\n",prg_nm_get(),msg);
+    (void)fprintf(stdout,"%s: User-supplied supplemental error message is \"%s\"\n",nco_prg_nm_get(),msg);
     (void)nco_malloc_err_hnt_prn();
     nco_exit(EXIT_FAILURE);
   } /* endif */
@@ -200,7 +200,7 @@ nco_malloc_err_hnt_prn /* [fnc] Explain meaning and workarounds for malloc() fai
 (void)
 {
   /* Purpose: Explain meaning and workarounds for malloc() failures */
-  (void)fprintf(stdout,"%s: INFO NCO has reported a malloc() failure. malloc() failures usually indicate that your machine does not have enough free memory (RAM+swap) to perform the requested operation. As such, malloc() failures result from the physical limitations imposed by your hardware. Read http://nco.sf.net/nco.html#mmr for a description of NCO memory usage. The likiest case is that this problem is caused by inadequate RAM on your system, and is not an NCO bug. If so, there are two potential workarounds: First is to process your data in smaller chunks, e.g., smaller or more hyperslabs. The second is to use a machine with more free memory, so that malloc() succeeds.\n\nLarge tasks may uncover memory leaks in NCO. This is likeliest to occur with ncap2. ncap2 scripts are completely dynamic and may be of arbitrary length and complexity. A script that contains many thousands of operations may uncover a slow memory leak even though each single operation consumes little additional memory. Memory leaks are usually identifiable by their memory usage signature. Leaks cause peak memory usage to increase monotonically with time regardless of script complexity. Slow leaks are very difficult to find. Sometimes a malloc() failure is the only noticeable clue to their existance. If you have good reasons to believe that your malloc() failure is ultimately due to an NCO memory leak (rather than inadequate RAM on your system), then we would like to receive a detailed bug report.",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO NCO has reported a malloc() failure. malloc() failures usually indicate that your machine does not have enough free memory (RAM+swap) to perform the requested operation. As such, malloc() failures result from the physical limitations imposed by your hardware. Read http://nco.sf.net/nco.html#mmr for a description of NCO memory usage. The likiest case is that this problem is caused by inadequate RAM on your system, and is not an NCO bug. If so, there are two potential workarounds: First is to process your data in smaller chunks, e.g., smaller or more hyperslabs. The second is to use a machine with more free memory, so that malloc() succeeds.\n\nLarge tasks may uncover memory leaks in NCO. This is likeliest to occur with ncap2. ncap2 scripts are completely dynamic and may be of arbitrary length and complexity. A script that contains many thousands of operations may uncover a slow memory leak even though each single operation consumes little additional memory. Memory leaks are usually identifiable by their memory usage signature. Leaks cause peak memory usage to increase monotonically with time regardless of script complexity. Slow leaks are very difficult to find. Sometimes a malloc() failure is the only noticeable clue to their existance. If you have good reasons to believe that your malloc() failure is ultimately due to an NCO memory leak (rather than inadequate RAM on your system), then we would like to receive a detailed bug report.",nco_prg_nm_get());
 } /* nco_malloc_err_hnt_prn() */
 
 /* fxm: when are const qualifiers on return values legal? is this a GNUism? */
@@ -270,7 +270,7 @@ nco_realloc /* [fnc] Wrapper for realloc() */
     new_ptr=realloc(ptr,sz); /* [ptr] Pointer to new buffer */
   } /* endif */
   if(new_ptr == NULL && sz != 0){
-    (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %lu bytes\n",prg_nm_get(),(unsigned long)sz); 
+    (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %lu bytes\n",nco_prg_nm_get(),(unsigned long)sz); 
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
   } /* endif */
@@ -326,7 +326,7 @@ nco_mmr_stt /* [fnc] Track memory statistics */
   } /* end case */
 
   if(True){
-    (void)fprintf(stdout,"%s: INFO nco_mmr_stt() called by %s(): fre_nbr=%li, mll_nbr=%li, mmr_mll_ttl=%li, mmr_fre_ttl=%li, mmr_net_crr=%li bytes\n",prg_nm_get(),nco_mmr_typ_sng(nco_mmr_typ),fre_nbr,mll_nbr,mmr_mll_ttl,mmr_fre_ttl,mmr_net_crr);
+    (void)fprintf(stdout,"%s: INFO nco_mmr_stt() called by %s(): fre_nbr=%li, mll_nbr=%li, mmr_mll_ttl=%li, mmr_fre_ttl=%li, mmr_net_crr=%li bytes\n",nco_prg_nm_get(),nco_mmr_typ_sng(nco_mmr_typ),fre_nbr,mll_nbr,mmr_mll_ttl,mmr_fre_ttl,mmr_net_crr);
   } /* endif */
 
   return mmr_net_crr; /* [B] Net memory currently allocated */
@@ -410,15 +410,15 @@ nco_prc_stt_get /* [fnc] Read /proc/PID/stat */
      &prc_stt->delayacct_blkio_ticks);
 
   /* Were expected number of fields read? */
-  if(rcd_sys != PRC_STT_SCT_NBR) (void)fprintf(stdout,"%s: ERROR scanning %s returned %d fields, expected %d fields",prg_nm_get(),fl_prc,rcd_sys,PRC_STT_SCT_NBR);
+  if(rcd_sys != PRC_STT_SCT_NBR) (void)fprintf(stdout,"%s: ERROR scanning %s returned %d fields, expected %d fields",nco_prg_nm_get(),fl_prc,rcd_sys,PRC_STT_SCT_NBR);
 
   (void)fclose(fp_prc);
 
-  if(dbg_lvl_get() > nco_dbg_std){
+  if(nco_dbg_lvl_get() > nco_dbg_std){
     char *prc_stt_sng;
     prc_stt_sng=(char *)nco_malloc(2048UL*sizeof(char));
     sprintf(prc_stt_sng,prc_stt_fmt_out,prc_stt->pid,prc_stt->comm,prc_stt->state,prc_stt->ppid,prc_stt->pgrp,prc_stt->session,prc_stt->tty_nr,prc_stt->tpgid,prc_stt->flags,prc_stt->minflt,prc_stt->cminflt,prc_stt->majflt,prc_stt->cmajflt,prc_stt->utime,prc_stt->stime,prc_stt->cutime,prc_stt->cstime,prc_stt->priority,prc_stt->nice,prc_stt->num_threads,prc_stt->itrealvalue,prc_stt->starttime,prc_stt->vsize,prc_stt->rss,prc_stt->rlim,prc_stt->startcode,prc_stt->endcode,prc_stt->startstack,prc_stt->kstkesp,prc_stt->kstkeip,prc_stt->signal,prc_stt->blocked,prc_stt->sigignore,prc_stt->sigcatch,prc_stt->wchan,prc_stt->nswap,prc_stt->cnswap,prc_stt->exit_signal,prc_stt->processor,prc_stt->rt_priority,prc_stt->policy,prc_stt->delayacct_blkio_ticks);
-    (void)fprintf(stdout,"%s: INFO %s polled %s and found: %s\n",prg_nm_get(),fnc_nm,fl_prc,prc_stt_sng);
+    (void)fprintf(stdout,"%s: INFO %s polled %s and found: %s\n",nco_prg_nm_get(),fnc_nm,fl_prc,prc_stt_sng);
     if(prc_stt_sng) prc_stt_sng=(char *)nco_free(prc_stt_sng);
   } /* endif dbg */
 
@@ -468,15 +468,15 @@ nco_prc_stm_get /* [fnc] Read /proc/PID/statm */
      &prc_stm->dt);
 
   /* Were expected number of fields read? */
-  if(rcd_sys != PRC_STM_SCT_NBR) (void)fprintf(stdout,"%s: ERROR scanning %s returned %d fields, expected %d fields",prg_nm_get(),fl_prc,rcd_sys,PRC_STM_SCT_NBR);
+  if(rcd_sys != PRC_STM_SCT_NBR) (void)fprintf(stdout,"%s: ERROR scanning %s returned %d fields, expected %d fields",nco_prg_nm_get(),fl_prc,rcd_sys,PRC_STM_SCT_NBR);
 
   (void)fclose(fp_prc);
 
-  if(dbg_lvl_get() > nco_dbg_std){
+  if(nco_dbg_lvl_get() > nco_dbg_std){
     char *prc_stm_sng;
     prc_stm_sng=(char *)nco_malloc(2048UL*sizeof(char));
     sprintf(prc_stm_sng,prc_stm_fmt_out,prc_stm->size,prc_stm->resident,prc_stm->share,prc_stm->text,prc_stm->lib,prc_stm->data,prc_stm->dt);
-    (void)fprintf(stdout,"%s: INFO %s polled %s and found: %s\n",prg_nm_get(),fnc_nm,fl_prc,prc_stm_sng);
+    (void)fprintf(stdout,"%s: INFO %s polled %s and found: %s\n",nco_prg_nm_get(),fnc_nm,fl_prc,prc_stm_sng);
     if(prc_stm_sng) prc_stm_sng=(char *)nco_free(prc_stm_sng);
   } /* endif dbg */
 
@@ -523,7 +523,7 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
 # else /* !PAGESIZE */
   sz_pg=sysconf(_SC_PAGESIZE);
 #  ifndef __GNUG__
-  if(sz_pg < 0) (void)fprintf(stdout,"%s: sysconf() error is \"%s\"\n",prg_nm_get(),strerror(errno));
+  if(sz_pg < 0) (void)fprintf(stdout,"%s: sysconf() error is \"%s\"\n",nco_prg_nm_get(),strerror(errno));
 #  endif /* __GNUG__ */
   if(sz_pg < 0) nco_exit(EXIT_FAILURE);
 # endif /* !PAGESIZE */
@@ -532,13 +532,13 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
   /* Interrorgate /proc/self/stat for current memory usage */
   prc_stt_sct prc_stt;
   rcd_stt=nco_prc_stt_get((int)0,&prc_stt);
-  if(rcd_stt == NCO_ERR) (void)fprintf(stdout,"%s: WARNING call to nco_prc_stt_get() failed, proceeding anyway...\n",prg_nm_get());
-  if(dbg_lvl_get() > nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s thinks pid = %d, comm = %s, ppid = %d, rlim = %lu B = %lu kB = %lu MB, rss = %ld B = %ld kB = %ld MB, vsize = %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),fnc_nm,prc_stt.pid,prc_stt.comm,prc_stt.ppid,prc_stt.rlim,prc_stt.rlim/NCO_BYT_PER_KB,prc_stt.rlim/NCO_BYT_PER_MB,prc_stt.rss,prc_stt.rss/NCO_BYT_PER_KB,prc_stt.rss/NCO_BYT_PER_MB,prc_stt.vsize,prc_stt.vsize/NCO_BYT_PER_KB,prc_stt.vsize/NCO_BYT_PER_MB,prc_stt.vsize/NCO_BYT_PER_GB);
+  if(rcd_stt == NCO_ERR) (void)fprintf(stdout,"%s: WARNING call to nco_prc_stt_get() failed, proceeding anyway...\n",nco_prg_nm_get());
+  if(nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s thinks pid = %d, comm = %s, ppid = %d, rlim = %lu B = %lu kB = %lu MB, rss = %ld B = %ld kB = %ld MB, vsize = %lu B = %lu kB = %lu MB = %lu GB\n",nco_prg_nm_get(),fnc_nm,prc_stt.pid,prc_stt.comm,prc_stt.ppid,prc_stt.rlim,prc_stt.rlim/NCO_BYT_PER_KB,prc_stt.rlim/NCO_BYT_PER_MB,prc_stt.rss,prc_stt.rss/NCO_BYT_PER_KB,prc_stt.rss/NCO_BYT_PER_MB,prc_stt.vsize,prc_stt.vsize/NCO_BYT_PER_KB,prc_stt.vsize/NCO_BYT_PER_MB,prc_stt.vsize/NCO_BYT_PER_GB);
 
   prc_stm_sct prc_stm;
   rcd_stm=nco_prc_stm_get((int)0,&prc_stm);
-  if(rcd_stm == NCO_ERR) (void)fprintf(stdout,"%s: WARNING call to nco_prc_stm_get() failed, proceeding anyway...\n",prg_nm_get());
-  if(dbg_lvl_get() > nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s thinks size = %lu B = %lu kB = %lu MB = %lu GB, resident = %lu B = %lu kB = %lu MB = %lu GB\n",prg_nm_get(),fnc_nm,prc_stm.size,prc_stm.size/NCO_BYT_PER_KB,prc_stm.size/NCO_BYT_PER_MB,prc_stm.size/NCO_BYT_PER_GB,prc_stm.resident,prc_stm.resident/NCO_BYT_PER_KB,prc_stm.resident/NCO_BYT_PER_MB,prc_stm.resident/NCO_BYT_PER_GB);
+  if(rcd_stm == NCO_ERR) (void)fprintf(stdout,"%s: WARNING call to nco_prc_stm_get() failed, proceeding anyway...\n",nco_prg_nm_get());
+  if(nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s thinks size = %lu B = %lu kB = %lu MB = %lu GB, resident = %lu B = %lu kB = %lu MB = %lu GB\n",nco_prg_nm_get(),fnc_nm,prc_stm.size,prc_stm.size/NCO_BYT_PER_KB,prc_stm.size/NCO_BYT_PER_MB,prc_stm.size/NCO_BYT_PER_GB,prc_stm.resident,prc_stm.resident/NCO_BYT_PER_KB,prc_stm.resident/NCO_BYT_PER_MB,prc_stm.resident/NCO_BYT_PER_GB);
 
 #ifdef HAVE_GETRUSAGE
 
@@ -564,29 +564,29 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
   struct rusage usg;
 
 #ifdef AIX
-  (void)fprintf(stdout,"%s: INFO %s reports system type is AIX so getrusage() uses kilobytes [kB] for size and seconds [s] for time. Page size is %d kB.\n",prg_nm_get(),fnc_nm,sz_pg);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is AIX so getrusage() uses kilobytes [kB] for size and seconds [s] for time. Page size is %d kB.\n",nco_prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !AIX */
 #ifdef CRAY
-  (void)fprintf(stdout,"%s: INFO %s reports system type is CRAY so getrusage() units for page size and time are unknown.\n",prg_nm_get(),fnc_nm);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is CRAY so getrusage() units for page size and time are unknown.\n",nco_prg_nm_get(),fnc_nm);
 #endif /* !CRAY */
 #if (defined LINUX) || (defined LINUXAMD64)
-  (void)fprintf(stdout,"%s: INFO %s reports system type is LINUX so getrusage() does implement ru_maxrss [kB] and DOES NOT implement ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is LINUX so getrusage() does implement ru_maxrss [kB] and DOES NOT implement ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",nco_prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !LINUX */
 #ifdef NECSX
-  (void)fprintf(stdout,"%s: INFO %s reports system type is NECSX so getrusage() units for page size and time are unknown.\n",prg_nm_get(),fnc_nm);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is NECSX so getrusage() units for page size and time are unknown.\n",nco_prg_nm_get(),fnc_nm);
 #endif /* !NECSX */
 #ifdef SGIMP64
-  (void)fprintf(stdout,"%s: INFO %s reports system type is SGIMP64 so getrusage() uses bytes [B] for size, while time units are unknown. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is SGIMP64 so getrusage() uses bytes [B] for size, while time units are unknown. Page size is %d B.\n",nco_prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !SGIMP64 */
 #ifdef SUNMP
-  (void)fprintf(stdout,"%s: INFO %s reports system type is SUNMP so getrusage() uses pages [pg] for size and ticks [tck] for time. Page size is %d B.\n",prg_nm_get(),fnc_nm,sz_pg);
+  (void)fprintf(stdout,"%s: INFO %s reports system type is SUNMP so getrusage() uses pages [pg] for size and ticks [tck] for time. Page size is %d B.\n",nco_prg_nm_get(),fnc_nm,sz_pg);
 #endif /* !SUNMP */
 
   /* fxm: CEWI, not necessary */
   rcd_sys=rusage_who;
   /* fxm: use input argument rusage_who instead of RUSAGE_SELF */
   rcd_sys=0*rcd_sys+getrusage(RUSAGE_SELF,&usg);
-  if(dbg_lvl_get() > nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",prg_nm_get(),fnc_nm,usg.ru_utime.tv_sec,usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
+  if(nco_dbg_lvl_get() > nco_dbg_io) (void)fprintf(stdout,"%s: INFO %s reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",nco_prg_nm_get(),fnc_nm,usg.ru_utime.tv_sec,usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
 
   return (long)usg.ru_maxrss; /* [B] Maximum resident set size */
 #else /* !HAVE_GETRUSAGE */

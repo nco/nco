@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.65 2013-10-16 03:27:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.66 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -195,7 +195,7 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   /* This block stolen from: ncdump/utils.c/escaped_name() */ 
 
   if((*chr_in_ptr >= 0x01 && *chr_in_ptr <= 0x20) || (*chr_in_ptr == 0x7f)){
-    (void)fprintf(stderr,"%s: ERROR name begins with space or control-character: %c\n",prg_nm_get(),*chr_in_ptr);
+    (void)fprintf(stderr,"%s: ERROR name begins with space or control-character: %c\n",nco_prg_nm_get(),*chr_in_ptr);
     nco_exit(EXIT_FAILURE);
   } /* endif error */
 
@@ -373,14 +373,14 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
     case '\"': *backslash_ptr='\"'; break; /* Unsure why or if this works! */
     case '0':	
       /* Translating \0 to NUL makes subsequent portion of input string invisible to all string functions */
-      (void)fprintf(stderr,"%s: WARNING C language escape code %.2s found in string, not translating to NUL since this would make the subsequent portion of the string invisible to all C Standard Library string functions\n",prg_nm_get(),backslash_ptr); 
+      (void)fprintf(stderr,"%s: WARNING C language escape code %.2s found in string, not translating to NUL since this would make the subsequent portion of the string invisible to all C Standard Library string functions\n",nco_prg_nm_get(),backslash_ptr); 
       trn_flg=False;
       /* 20101013: Tried changing above behavior to following, and it opened a Hornet's nest of problems... */
       /* *backslash_ptr='\0'; *//* 000   0     00    NUL '\0' */
-      /*      (void)fprintf(stderr,"%s: WARNING translating C language escape code \"\\0\" found in user-supplied string to NUL. This will make the subsequent portion of the string, if any, invisible to C Standard Library string functions. And that may cause unintended consequences.\n",prg_nm_get());*/
+      /*      (void)fprintf(stderr,"%s: WARNING translating C language escape code \"\\0\" found in user-supplied string to NUL. This will make the subsequent portion of the string, if any, invisible to C Standard Library string functions. And that may cause unintended consequences.\n",nco_prg_nm_get());*/
       break;
     default: 
-      (void)fprintf(stderr,"%s: WARNING No ASCII equivalent to possible C language escape code %.2s so no action taken\n",prg_nm_get(),backslash_ptr);
+      (void)fprintf(stderr,"%s: WARNING No ASCII equivalent to possible C language escape code %.2s so no action taken\n",nco_prg_nm_get(),backslash_ptr);
       trn_flg=False;
       break;
     } /* end switch */
@@ -397,7 +397,7 @@ sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII
   } /* end if */
 
   /* Usually there are no escape codes and sng still equals input value */
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG %s Found %d C-language escape sequences, translated %d of them\n",prg_nm_get(),fnc_nm,esc_sqn_nbr,trn_nbr);
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG %s Found %d C-language escape sequences, translated %d of them\n",nco_prg_nm_get(),fnc_nm,esc_sqn_nbr,trn_nbr);
 
   return trn_nbr;
 } /* end sng_ascii_trn() */

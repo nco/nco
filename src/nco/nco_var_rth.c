@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.65 2013-10-05 07:25:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.66 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1726,7 +1726,7 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
   if(has_mss_val){
     (void)cast_void_nctype(type,&mss_val);
   }else{
-    (void)fprintf(stdout,"%s: ERROR has_mss_val is inconsistent with purpose of var_ask(), i.e., has_mss_val is not True\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR has_mss_val is inconsistent with purpose of var_ask(), i.e., has_mss_val is not True\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end else */
   
@@ -2241,28 +2241,28 @@ nco_var_pwr /* [fnc] Raise first operand to power of second operand */
     } /* end else */
     break; /* end NC_DOUBLE */
   case NC_INT:
-    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",nco_prg_nm_get());
     break;
   case NC_SHORT:
-    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",nco_prg_nm_get());
     break;
   case NC_USHORT:
-    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",nco_prg_nm_get());
     break;
   case NC_UINT:
-    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",nco_prg_nm_get());
     break;
   case NC_INT64:
-    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",nco_prg_nm_get());
     break;
   case NC_UINT64:
-    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",nco_prg_nm_get());
     break;
   case NC_BYTE:
-    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",nco_prg_nm_get());
     break;
   case NC_UBYTE:
-    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Attempt to em-power integer type in nco_var_pwr(). See TODO #311.\n",nco_prg_nm_get());
     break;
   case NC_CHAR: break; /* Do nothing */
   case NC_STRING: break; /* Do nothing */

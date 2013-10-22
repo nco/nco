@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.226 2013-09-17 00:48:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.227 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -530,7 +530,7 @@ do_upk:
   (void)nco_pck_dsk_inq(in_id,var_in);
 
   /* Packing/Unpacking */
-  if(nco_is_rth_opr(prg_get())){
+  if(nco_is_rth_opr(nco_prg_id_get())){
     /* Arithmetic operators must unpack variables before performing arithmetic
        Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
@@ -630,7 +630,7 @@ nco_msa_lmt_all_ntl
 
     /* NB: ncra/ncrcat have only one limit for record dimension so skip 
     evaluation otherwise this messes up multi-file operation */
-    if(lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
+    if(lmt_all_lst[idx]->lmt_dmn[0]->is_rec_dmn && (nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat)) continue;
 
     /* Split-up wrapped limits */   
     (void)nco_msa_wrp_splt(lmt_all_lst[idx]);
@@ -665,8 +665,8 @@ nco_msa_lmt_all_ntl
 
     /* Find and store size of output dimension */  
     (void)nco_msa_clc_cnt(lmt_all_lst[idx]);       
-    if(dbg_lvl_get() >= nco_dbg_fl){
-      if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
+    if(nco_dbg_lvl_get() >= nco_dbg_fl){
+      if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),lmt_all_lst[idx]->dmn_nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),lmt_all_lst[idx]->dmn_nm); 
     } /* endif */
 
   } /* end idx */    
@@ -778,9 +778,9 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
 
     if(dmn_trv->lmt_msa.lmt_dmn[idx]->srt > dmn_trv->lmt_msa.lmt_dmn[idx]->end){
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%li->%li):\n",
-          prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end);
+          nco_prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end);
       }
 
       lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
@@ -824,8 +824,8 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
         lmt_wrp[1].srd=srd;
       } /* end else */
 
-      if(dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",prg_nm_get(),fnc_nm,dmn_trv->nm_fll);
+      if(nco_dbg_lvl_get() == nco_dbg_old){
+        (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",nco_prg_nm_get(),fnc_nm,dmn_trv->nm_fll);
         (void)fprintf(stdout,"%d:\n",dmn_trv->lmt_msa.lmt_dmn_nbr);
       }
 
@@ -857,9 +857,9 @@ nco_msa_wrp_splt_trv   /* [fnc] Split wrapped dimensions (GTT version) */
       /* Update current index of dimension limits for this table dimension  */
       dmn_trv->lmt_msa.lmt_crr++;
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",
-          prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end,
+          nco_prg_nm_get(),fnc_nm,dmn_trv->nm_fll,dmn_trv->lmt_msa.lmt_dmn[idx]->srt,dmn_trv->lmt_msa.lmt_dmn[idx]->end,
           dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->srt,dmn_trv->lmt_msa.lmt_dmn[lmt_new_idx]->end);
       }
 
@@ -1060,9 +1060,9 @@ nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new
 
     if(lmt_lst->lmt_dmn[idx]->srt > lmt_lst->lmt_dmn[idx]->end){
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> has wrapped limits (%li->%li):\n",
-          prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end);
+          nco_prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end);
       }
 
       lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
@@ -1106,8 +1106,8 @@ nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new
         lmt_wrp[1].srd=srd;
       } /* end else */
 
-      if(dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",prg_nm_get(),fnc_nm,lmt_lst->dmn_nm);
+      if(nco_dbg_lvl_get() == nco_dbg_old){
+        (void)fprintf(stdout,"%s: INFO %s wrapped limits for <%s> found: ",nco_prg_nm_get(),fnc_nm,lmt_lst->dmn_nm);
         (void)fprintf(stdout,"current limits=%d:\n",lmt_lst->lmt_dmn_nbr);
       }
 
@@ -1139,9 +1139,9 @@ nco_msa_wrp_splt_cpy    /* [fnc] Split wrapped dimensions (make deep copy of new
       /* Update current index of dimension limits for this table dimension  */
       lmt_lst->lmt_crr++;
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO %s dimension <%s> new limits inserted (%li->%li) - (%li->%li):\n",
-          prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end,
+          nco_prg_nm_get(),fnc_nm,lmt_lst->dmn_nm,lmt_lst->lmt_dmn[idx]->srt,lmt_lst->lmt_dmn[idx]->end,
           lmt_lst->lmt_dmn[lmt_new_idx]->srt,lmt_lst->lmt_dmn[lmt_new_idx]->end);
       }
 
@@ -1204,7 +1204,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
-    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out,var_nm,var_nm,var_nm);
+    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",nco_prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out,var_nm,var_nm,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
   nbr_dim=nbr_dmn_out;
@@ -1340,7 +1340,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       /* No limits? ...Make a limit to read all */
       if ( (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr == 0){
 
-        if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
 
         /* Alloc 1 dummy limit */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=1;
@@ -1394,7 +1394,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
       /* No limits? ...Make a limit to read all */
       if ((*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr == 0){
 
-        if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Warning...no limit zone\n "); 
 
         /* Alloc 1 dummy limit */
         (*lmt_msa)[dmn_idx_var]->lmt_dmn_nbr=1;
@@ -1490,7 +1490,7 @@ do_upk:
   (void)nco_pck_dsk_inq(grp_id,var_in);
 
   /* Packing/Unpacking */
-  if(nco_is_rth_opr(prg_get())){
+  if(nco_is_rth_opr(nco_prg_id_get())){
     /* Arithmetic operators must unpack variables before performing arithmetic
     Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical

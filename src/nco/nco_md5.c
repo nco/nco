@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.19 2013-10-18 23:25:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.20 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
@@ -67,20 +67,20 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
      MD5(disk) utilizes netCDF layer to assemble hyperslab data.
      Idea is that this provides the best comparison of RAM vs. disk hyperslabs */
 
-  int prg_id; /* [enm] Program ID */
+  int nco_prg_id; /* [enm] Program ID */
   
   char md5_dgs_hxd_sng_ram[NCO_MD5_DGS_SZ*2+1];
   
   nco_bool MD5_DGS_DSK=False; /* [flg] Perform MD5 digest of variable written to disk */
 
-  prg_id=prg_get(); /* [enm] Program ID */
+  nco_prg_id=nco_prg_id_get(); /* [enm] Program ID */
 
   /* MD5 digest of hyperslab already in RAM */
   (void)nco_md5_chk_ram(var_sz_byt,vp,md5_dgs_hxd_sng_ram);
-  if((prg_id == ncks && dbg_lvl_get() >= nco_dbg_std) ||
-     ((prg_id == ncecat || prg_id == ncrcat) && dbg_lvl_get() >= nco_dbg_var) ||
+  if((nco_prg_id == ncks && nco_dbg_lvl_get() >= nco_dbg_std) ||
+     ((nco_prg_id == ncecat || nco_prg_id == ncrcat) && nco_dbg_lvl_get() >= nco_dbg_var) ||
      False)
-    (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram);
+    (void)fprintf(stderr,"%s: INFO MD5(%s) = %s\n",nco_prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram);
   
   /* Write MD5 attributes */
   if(md5->wrt){
@@ -94,7 +94,7 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
     aed_md5.type=NC_CHAR;
     aed_md5.val.cp=md5_dgs_hxd_sng_ram;
     aed_md5.mode=aed_overwrite;
-    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Writing MD5 digest to attribute %s of variable %s\n",prg_nm_get(),aed_md5.att_nm,var_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO Writing MD5 digest to attribute %s of variable %s\n",nco_prg_nm_get(),aed_md5.att_nm,var_nm);
     (void)nco_aed_prc(nc_id,aed_md5.id,aed_md5);
   } /* !wrt */
 
@@ -103,7 +103,7 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
      Hence it essentially doubles numbers of disk reads, e.g.,
      ncrcat reads/writes only one record of one variable at a time, and will perform an extra read to digest each write.
      Default strategy is to turn on MD5 disk-checking only when user is concatenating files */
-  if(prg_id == ncrcat || prg_id == ncecat) MD5_DGS_DSK=True;  /* [flg] Perform MD5 digest of variable written to disk */
+  if(nco_prg_id == ncrcat || nco_prg_id == ncecat) MD5_DGS_DSK=True;  /* [flg] Perform MD5 digest of variable written to disk */
 
   /* Compare this digest to what is read in from output netCDF file
      This implementation re-uses vp to hold data read from disk 
@@ -142,11 +142,11 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
 
     (void)nco_md5_chk_ram(var_sz_byt_dsk,vp,md5_dgs_hxd_sng_dsk);
     if(strcmp(md5_dgs_hxd_sng_ram,md5_dgs_hxd_sng_dsk)){
-      (void)fprintf(stderr,"%s: ERROR MD5(%s) RAM and disk disagree: %s != %s\n",prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram,md5_dgs_hxd_sng_dsk);
+      (void)fprintf(stderr,"%s: ERROR MD5(%s) RAM and disk disagree: %s != %s\n",nco_prg_nm_get(),var_nm,md5_dgs_hxd_sng_ram,md5_dgs_hxd_sng_dsk);
       nco_exit(EXIT_FAILURE);
     }else{ /* endif digests differ */
 
-      if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO MD5 digests of RAM and disk contents for %s agree\n",prg_nm_get(),var_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO MD5 digests of RAM and disk contents for %s agree\n",nco_prg_nm_get(),var_nm);
     }  /* endif digests agree */
 
   } /* !MD5_DGS_DSK */
@@ -197,7 +197,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.19 2013-10-18 23:25:12 zender Exp $ */
+/* $Id: nco_md5.c,v 1.20 2013-10-22 03:03:46 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

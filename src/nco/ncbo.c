@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.265 2013-10-20 22:47:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.266 2013-10-22 03:03:45 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -131,8 +131,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.265 2013-10-20 22:47:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.265 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.266 2013-10-22 03:03:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.266 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -265,7 +265,7 @@ main(int argc,char **argv)
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
+      {"nco_dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
@@ -309,8 +309,8 @@ main(int argc,char **argv)
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
   
   /* Parse command line arguments */
   while(1){
@@ -390,7 +390,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* The debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
@@ -468,11 +468,11 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -501,11 +501,11 @@ main(int argc,char **argv)
   /* Parse filenames */
   fl_idx=0; /* Input file _1 */
   fl_in_1=nco_fl_nm_prs(fl_in_1,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in_1);
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",nco_prg_nm_get(),fl_idx,fl_in_1);
   /* Make sure file is on local system and is readable or die trying */
   fl_in_1=nco_fl_mk_lcl(fl_in_1,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
-  if(dbg_lvl >= nco_dbg_fl && FILE_1_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_1);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+  if(nco_dbg_lvl >= nco_dbg_fl && FILE_1_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_1);
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   /* Open file once per thread to improve caching */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_1,md_open,&bfr_sz_hnt,in_id_1_arr+thr_idx);
@@ -513,11 +513,11 @@ main(int argc,char **argv)
 
   fl_idx=1; /* Input file _2 */
   fl_in_2=nco_fl_nm_prs(fl_in_2,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in_2);
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",nco_prg_nm_get(),fl_idx,fl_in_2);
   /* Make sure file is on local system and is readable or die trying */
   fl_in_2=nco_fl_mk_lcl(fl_in_2,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
-  if(dbg_lvl >= nco_dbg_fl && FILE_2_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_2);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+  if(nco_dbg_lvl >= nco_dbg_fl && FILE_2_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_2);
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   /* Open file once per thread to improve caching */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,in_id_2_arr+thr_idx);
@@ -546,8 +546,8 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
   if(gpe){
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",prg_nm_get());
-    if(fl_out_fmt != NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups.\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",nco_prg_nm_get());
+    if(fl_out_fmt != NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
   /* Match 2 tables (find common objects) and export common objects */
@@ -573,7 +573,7 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
   }else{
     (void)nco__enddef(out_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
   /* Process common objects (WRITE mode, False as flg_dfn parameter) */

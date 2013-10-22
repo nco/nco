@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.340 2013-10-09 18:37:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.341 2013-10-22 03:03:45 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.340 2013-10-09 18:37:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.340 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.341 2013-10-22 03:03:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.341 $";
   const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -252,7 +252,7 @@ main(int argc,char **argv)
     {"no-coords",no_argument,0,'C'},
     {"no-crd",no_argument,0,'C'},
     {"debug",required_argument,0,'D'},
-    {"dbg_lvl",required_argument,0,'D'},
+    {"nco_dbg_lvl",required_argument,0,'D'},
     {"dimension",required_argument,0,'d'},
     {"dmn",required_argument,0,'d'},
     {"fortran",no_argument,0,'F'},
@@ -300,8 +300,8 @@ main(int argc,char **argv)
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
 
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
 
   /* Parse command line arguments */
   while(1){
@@ -348,7 +348,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
         if(!md5) md5=nco_md5_ini();
 	md5->dgs=True;
-        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
+        if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",nco_prg_nm_get());
       } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"mrd") || !strcmp(opt_crr,"multiple_record_dimension")) nco_mrd_cnv=nco_mrd_allow; /* [enm] Multiple Record Dimension convention */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -386,7 +386,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
@@ -432,7 +432,7 @@ main(int argc,char **argv)
     case 'n': /* NINTAP-style abbreviation of files to process */
       fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 5){
-        (void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
+        (void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",nco_prg_nm);
         (void)nco_usg_prn();
         nco_exit(EXIT_FAILURE);
       } /* end if */
@@ -484,11 +484,11 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -614,7 +614,7 @@ main(int argc,char **argv)
       (void)nco_enddef(out_id);
     }else{
       (void)nco__enddef(out_id,hdr_pad);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
 
     /* Assign zero to start and unity to stride vectors in output variables */
@@ -633,12 +633,12 @@ main(int argc,char **argv)
 
   if(GROUP_AGGREGATE){
 #ifndef ENABLE_NETCDF4
-    (void)fprintf(stderr,"%s: ERROR GAG requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR GAG requires netCDF4 capabilities. HINT: Rebuild NCO with netCDF4 enabled.\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
 #endif /* ENABLE_NETCDF4 */
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Aggregation (GAG) feature enabled\n",prg_nm_get());
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Aggregation (GAG) feature enabled\n",nco_prg_nm_get());
     if(fl_out_fmt != NC_FORMAT_NETCDF4){
-      (void)fprintf(stderr,"%s: ERROR Group Aggregation requires netCDF4 output format but user explicitly requested format = %s\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+      (void)fprintf(stderr,"%s: ERROR Group Aggregation requires netCDF4 output format but user explicitly requested format = %s\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
       nco_exit(EXIT_FAILURE);
     } /* endif err */
   } /* !GROUP_AGGREGATE */
@@ -647,11 +647,11 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",nco_prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
-    if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+    if(nco_dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
     if(GROUP_AGGREGATE){
       size_t gpe_arg_lng; /* [nbr] Length of group specification */
@@ -687,7 +687,7 @@ main(int argc,char **argv)
 	     strncmp(fl_in+sfx_fst,".he5",sfx_lng) && /* HDF-EOS5 (HDF5) suffix used by HIRDLS, OMI Aerosols, e.g., HIRDLS-Aura_L3ZAD_v06-00-00-c02_2005d022-2008d077.he5, OMI-Aura_L2-OMAERUV_2013m1004t2338-o49057_v003-2013m1005t053932.he5 */
 	     strncmp(fl_in+sfx_fst,".nc3",sfx_lng) && /* netCDF3 variant suffix */
 	     strncmp(fl_in+sfx_fst,".nc4",sfx_lng)){ /* netCDF4 variant suffix */
-	    (void)fprintf(stderr,"%s: WARNING GAG filename suffix is unusual---using whole filename as group name\n",prg_nm_get());
+	    (void)fprintf(stderr,"%s: WARNING GAG filename suffix is unusual---using whole filename as group name\n",nco_prg_nm_get());
 	    sfx_lng=0;
 	  } /* endif */
         } /* endif */
@@ -702,13 +702,13 @@ main(int argc,char **argv)
         /* GPE arguments derived from filenames check for existence of path in output file */
         rcd=nco_inq_grp_full_ncid_flg(out_id,gpe_arg,&gpe_id);
         /* Existence implies current file may overwrite contents of previous file */
-        if(rcd == NC_NOERR) (void)fprintf(stderr,"%s: WARNING GAG path \"%s\" automatically derived from stub of filename %s conflicts with existing path in output file. Any input data with same absolute path names as contents of a previous input file will be overwritten. Is the same input file specified multiple times? Is this intentional?\nHINT: To distribute copies of a single input file into different groups, use GPE to generate distinct output group names, e.g., %s -G copy in.nc in.nc out.nc\n",prg_nm_get(),gpe_arg,fl_in,prg_nm_get());
+        if(rcd == NC_NOERR) (void)fprintf(stderr,"%s: WARNING GAG path \"%s\" automatically derived from stub of filename %s conflicts with existing path in output file. Any input data with same absolute path names as contents of a previous input file will be overwritten. Is the same input file specified multiple times? Is this intentional?\nHINT: To distribute copies of a single input file into different groups, use GPE to generate distinct output group names, e.g., %s -G copy in.nc in.nc out.nc\n",nco_prg_nm_get(),gpe_arg,fl_in,nco_prg_nm_get());
       } /* !grp_out */
       /* Free old structure, if any, before re-use */
       if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
       gpe=nco_gpe_prs_arg(gpe_arg);
       gpe_arg=(char *)nco_free(gpe_arg);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file has gpe->arg=%s\n",prg_nm_get(),gpe->arg);
+      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO GAG current file has gpe->arg=%s\n",nco_prg_nm_get(),gpe->arg);
 
       /* Open file using appropriate buffer size hints and verbosity */
       rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
@@ -783,7 +783,7 @@ main(int argc,char **argv)
 
       /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
-# pragma omp parallel for default(none) private(in_id) shared(dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,nbr_dmn_fl,md5,trv_tbl)
+# pragma omp parallel for default(none) private(in_id) shared(nco_dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,nbr_dmn_fl,md5,trv_tbl)
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(int idx=0;idx<nbr_var_prc;idx++){
@@ -793,8 +793,8 @@ main(int argc,char **argv)
         trv_sct *var_trv; /* [sct] Variable GTT object */
 
         in_id=in_id_arr[omp_get_thread_num()];
-        if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
-        if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+        if(nco_dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc[idx]->nm);
+        if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
         /* Obtain variable GTT object using full variable name */
         var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
@@ -838,7 +838,7 @@ main(int argc,char **argv)
         } /* end OpenMP critical */
 
       } /* end (OpenMP parallel for) loop over idx */
-      if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+      if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
       idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 

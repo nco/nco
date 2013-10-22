@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.668 2013-10-16 17:11:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.669 2013-10-22 03:03:45 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -154,8 +154,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.668 2013-10-16 17:11:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.668 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.669 2013-10-22 03:03:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.669 $";
   const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -303,7 +303,7 @@ main(int argc,char **argv)
       {"no-crd",no_argument,0,'C'},
       {"data",required_argument,0,'H'},
       {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
+      {"nco_dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
@@ -355,8 +355,8 @@ main(int argc,char **argv)
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
 
   /* Parse command line arguments */
   while(1){
@@ -425,12 +425,12 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
         if(!md5) md5=nco_md5_ini();
 	md5->dgs=True;
-        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",prg_nm_get());
+        if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",nco_prg_nm_get());
       } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"md5_wrt_att") || !strcmp(opt_crr,"md5_write_attribute")){
         if(!md5) md5=nco_md5_ini();
 	md5->wrt=md5->dgs=True;
-        if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will write MD5 digests as attributes\n",prg_nm_get());
+        if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will write MD5 digests as attributes\n",nco_prg_nm_get());
       } /* endif "md5_wrt_att" */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
@@ -447,7 +447,7 @@ main(int argc,char **argv)
         char **args;
         double crr_val;
 #ifndef ENABLE_UDUNITS
-        (void)fprintf(stdout,"%s: Build NCO with UDUnits support to use this option\n",prg_nm_get());
+        (void)fprintf(stdout,"%s: Build NCO with UDUnits support to use this option\n",nco_prg_nm_get());
         nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_UDUNITS */
         cp=strdup(optarg); 
@@ -512,7 +512,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
@@ -613,11 +613,11 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -670,7 +670,7 @@ main(int argc,char **argv)
 
   /* Process --get_file_info option if requested */ 
   if(GET_FILE_INFO){ 
-    (void)fprintf(stderr,"%s: INFO reports file information\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: INFO reports file information\n",nco_prg_nm_get());
     (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d atomic-type variables, %d non-atomic variables\n",grp_nbr_fl,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,att_glb_nbr+att_glb_nbr,var_nbr_fl,var_ntm_fl);
     goto close_and_free; 
   } /* end GET_FILE_INFO */
@@ -712,13 +712,13 @@ main(int argc,char **argv)
 
   if(fl_bnr && !fl_out){
     /* Native binary files depend on writing netCDF file to enter generic I/O logic */
-    (void)fprintf(stdout,"%s: ERROR Native binary files cannot be written unless netCDF output filename also specified. HINT: Repeat command with dummy netCDF file specified for output file (e.g., -o foo.nc)\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Native binary files cannot be written unless netCDF output filename also specified. HINT: Repeat command with dummy netCDF file specified for output file (e.g., -o foo.nc)\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif fl_bnr */
     
   if(gpe){
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",prg_nm_get());
-    if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups.\n",prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",nco_prg_nm_get());
+    if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
   if(fl_out){
@@ -749,7 +749,7 @@ main(int argc,char **argv)
       (void)nco_enddef(out_id);
     }else{
       (void)nco__enddef(out_id,hdr_pad);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
 
     /* [fnc] Open unformatted binary data file for writing */
@@ -765,7 +765,7 @@ main(int argc,char **argv)
     /* [fnc] Close unformatted binary data file */
     if(fp_bnr) (void)nco_bnr_close(fp_bnr,fl_bnr);
 
-    if(dbg_lvl_get() == 14){
+    if(nco_dbg_lvl_get() == 14){
       (void)nco_wrt_trv_tbl(in_id,trv_tbl,True);
       (void)nco_wrt_trv_tbl(out_id,trv_tbl,True);
     }
@@ -791,7 +791,7 @@ main(int argc,char **argv)
     prn_flg.cdl=PRN_CDL;
     prn_flg.xml=PRN_XML;
     prn_flg.trd=!(PRN_CDL || PRN_XML);
-    if(prn_flg.cdl && dbg_lvl >= nco_dbg_std) prn_flg.nfo_cdl=True; else prn_flg.nfo_cdl=False;
+    if(prn_flg.cdl && nco_dbg_lvl >= nco_dbg_std) prn_flg.nfo_cdl=True; else prn_flg.nfo_cdl=False;
     prn_flg.new_fmt=(PRN_CDL || PRN_XML || PRN_NEW_FMT);
     /* CDL must print filename stub */
     if(prn_flg.cdl || prn_flg.xml){
@@ -813,7 +813,7 @@ main(int argc,char **argv)
     prn_flg.sxn_fst=2;
     prn_flg.var_fst=2;
     prn_flg.tab=4;
-    if(dbg_lvl >= nco_dbg_scl) prn_flg.fll_pth=True; else prn_flg.fll_pth=False;
+    if(nco_dbg_lvl >= nco_dbg_scl) prn_flg.fll_pth=True; else prn_flg.fll_pth=False;
     if(prn_flg.xml) prn_flg.nwl_pst_val=False; else prn_flg.nwl_pst_val=True;
     prn_flg.dlm_sng=dlm_sng;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;

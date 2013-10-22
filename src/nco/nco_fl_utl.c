@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.223 2013-10-08 20:07:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.224 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -26,7 +26,7 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
   int md_create; /* O [enm] Mode flag for nco_create() call */
 
   if(md_clobber != NC_CLOBBER && md_clobber != NC_NOCLOBBER){
-    (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown clobber mode md_clobber\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown clobber mode md_clobber\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
@@ -40,7 +40,7 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
   }else if(fl_out_fmt == NC_COMPRESS){ /* fxm: is NC_COMPRESS legal? */
     md_create|=NC_COMPRESS;
   }else if(fl_out_fmt != NC_FORMAT_CLASSIC){
-    (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown file format = %d\n",prg_nm_get(),fl_out_fmt);
+    (void)fprintf(stderr,"%s: ERROR nco_create_mode_mrg() received unknown file format = %d\n",nco_prg_nm_get(),fl_out_fmt);
     nco_exit(EXIT_FAILURE);
   } /* end else fl_out_fmt */
 
@@ -72,7 +72,7 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
       *fl_fmt_enm=NC_FORMAT_NETCDF4_CLASSIC;
     } /* endif NETCDF4 */
 #else /* !ENABLE_NETCDF4 */
-    (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64bit\" options.\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR This NCO was not built with netCDF4 and cannot create the requested netCDF4 file format. HINT: Re-try with netCDF3 file format, either by omitting the filetype specification, or by explicitly specifying the \"-3\", \"--fl_fmt=classic\", \"-6\",  or \"--fl_fmt=64bit\" options.\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_NETCDF4 */
   }else if(strcasestr("znetcdf",fl_fmt_sng)){
@@ -80,10 +80,10 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
     /* If "znetcdf" contains string */
     *fl_fmt_enm=NC_COMPRESS;
 #else /* !ENABLE_ZNETCDF */
-    (void)fprintf(stderr,"%s: ERROR This NCO was not built with znetCDF (http://snow.cit.cornell.edu/noon/z_netcdf.html) and cannot create the requested znetCDF file format. HINT: Re-try with different (or no) specified file format, such as \"classic\" or \"64bit\".\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR This NCO was not built with znetCDF (http://snow.cit.cornell.edu/noon/z_netcdf.html) and cannot create the requested znetCDF file format. HINT: Re-try with different (or no) specified file format, such as \"classic\" or \"64bit\".\n",nco_prg_nm_get());
 #endif /* !ENABLE_ZNETCDF */
   }else{
-    (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",prg_nm_get(),fl_fmt_sng);
+    (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit\", \"netcdf4\", and \"netcdf4_classic\".\n",nco_prg_nm_get(),fl_fmt_sng);
     nco_exit(EXIT_FAILURE);
   } /* endif fl_fmt_enm */
 
@@ -103,8 +103,8 @@ nco_fl_fmt_vet /* [fnc] Verify output file format supports requested actions */
  const int dfl_lvl) /* I [enm] Deflate level [0..9] */
 {
   /* Purpose: Verify output file format supports requested actions */
-  if(cnk_nbr > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to chunk variables in output file which has netCDF format %s. Chunking is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without chunking. HINT: re-run command and change output type to netCDF4 using \"-4\", \"--fl_fmt=netcdf4\", or \"--fl_fmt=netcdf4_classic\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
-  if(dfl_lvl > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to deflate (compress) variables in output file which has netCDF format %s. Deflation is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without deflation. HINT: re-run command and change output type to netCDF4 using \"-4\", \"--fl_fmt=netcdf4\", or \"--fl_fmt=netcdf4_classic\" option.\n",prg_nm_get(),nco_fmt_sng(fl_fmt));
+  if(cnk_nbr > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to chunk variables in output file which has netCDF format %s. Chunking is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without chunking. HINT: re-run command and change output type to netCDF4 using \"-4\", \"--fl_fmt=netcdf4\", or \"--fl_fmt=netcdf4_classic\" option.\n",nco_prg_nm_get(),nco_fmt_sng(fl_fmt));
+  if(dfl_lvl > 0 && !(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)) (void)fprintf(stdout,"%s: WARNING Attempt to deflate (compress) variables in output file which has netCDF format %s. Deflation is only supported by netCDF filetypes NC_FORMAT_NETCDF4 and NC_FORMAT_NETCDF4_CLASSIC. Command will attempt to complete but without deflation. HINT: re-run command and change output type to netCDF4 using \"-4\", \"--fl_fmt=netcdf4\", or \"--fl_fmt=netcdf4_classic\" option.\n",nco_prg_nm_get(),nco_fmt_sng(fl_fmt));
 } /* end nco_nco_fl_fmt_vet() */
 
 void
@@ -131,10 +131,10 @@ nco_fl_overwrite_prm /* [fnc] Obtain user consent to overwrite output file */
     while(usr_rpl != 'n' && usr_rpl != 'y'){
       nbr_itr++;
       if(nbr_itr > NCO_MAX_NBR_USR_INPUT_RETRY){
-	(void)fprintf(stdout,"\n%s: ERROR %s reports %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),fnc_nm,nbr_itr-1);
+	(void)fprintf(stdout,"\n%s: ERROR %s reports %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",nco_prg_nm_get(),fnc_nm,nbr_itr-1);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
-      (void)fprintf(stdout,"%s: overwrite %s (y/n)? ",prg_nm_get(),fl_nm);
+      (void)fprintf(stdout,"%s: overwrite %s (y/n)? ",nco_prg_nm_get(),fl_nm);
       (void)fflush(stdout);
       usr_rpl=(char)fgetc(stdin);
       /* Allow one carriage return per response free of charge */
@@ -195,17 +195,17 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
   // fl_sys_blk_sz=stat_sct.st_blksize;
   fl_usr_md=fl_md & S_IRWXU;
   fl_usr_wrt_md=fl_usr_md & S_IWUSR;
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports permissions for file %s are (octal) = %lo\n",prg_nm_get(),fnc_nm,fl_nm,(unsigned long)fl_md);
-  // if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports preferred filesystem I/O block size: %ld bytes\n",prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports permissions for file %s are (octal) = %lo\n",nco_prg_nm_get(),fnc_nm,fl_nm,(unsigned long)fl_md);
+  // if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports preferred filesystem I/O block size: %ld bytes\n",nco_prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
   if(!fl_usr_wrt_md){
     /* Set user-write bit of output file */
     fl_md=fl_md | S_IWUSR;
     rcd_sys=chmod(fl_nm,fl_md);
     if(rcd_sys == -1){
 #ifndef __GNUG__
-      (void)fprintf(stdout,"%s: %s reports chmod() returned error \"%s\"\n",prg_nm_get(),fnc_nm,strerror(errno));
+      (void)fprintf(stdout,"%s: %s reports chmod() returned error \"%s\"\n",nco_prg_nm_get(),fnc_nm,strerror(errno));
 #endif /* __GNUG__ */
-      (void)fprintf(stdout,"%s: ERROR Unable to make output file writable by user, exiting...\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Unable to make output file writable by user, exiting...\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* endif rcd_sys */
   } /* end if chmod */
@@ -231,21 +231,21 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_src,fl_dst)){
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to copy.\n",prg_nm_get(),fl_src);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to copy.\n",nco_prg_nm_get(),fl_src);
     return;
   } /* end if */
 
   /* Construct and execute copy command */
   cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Copying %s to %s...",prg_nm_get(),fl_src,fl_dst);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Copying %s to %s...",nco_prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
   rcd=system(cp_cmd);
   if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR nco_fl_cp() is unable to execute cp command \"%s\"\n",prg_nm_get(),cp_cmd);
+    (void)fprintf(stdout,"%s: ERROR nco_fl_cp() is unable to execute cp command \"%s\"\n",nco_prg_nm_get(),cp_cmd);
     nco_exit(EXIT_FAILURE);
   } /* end if */
   cp_cmd=(char *)nco_free(cp_cmd);
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
 } /* end nco_fl_cp() */
 
 #ifdef _MSC_VER
@@ -262,7 +262,7 @@ nco_fl_info_get /* [fnc] Determine canonical filename and properties */
 
   /* Does file exist on local system? */
   rcd=stat(fl_nm_lcl,&stat_sct);
-  if(rcd == -1) (void)fprintf(stderr,"%s: INFO File %s does not exist on local system\n",prg_nm_get(),fl_nm_lcl);
+  if(rcd == -1) (void)fprintf(stderr,"%s: INFO File %s does not exist on local system\n",nco_prg_nm_get(),fl_nm_lcl);
 
   /* Is file a symbolic link? */
   rcd=lstat(fl_nm_lcl,&stat_sct);
@@ -276,13 +276,13 @@ nco_fl_info_get /* [fnc] Determine canonical filename and properties */
     /* Remember to free() fl_nm_cnc after using it */
     fl_nm_cnc=(char *)canonicalize_file_name(fl_nm_lcl);
     if(fl_nm_cnc){
-      (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link to %s",prg_nm_get(),fl_nm_lcl,fl_nm_cnc);
+      (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link to %s",nco_prg_nm_get(),fl_nm_lcl,fl_nm_cnc);
       fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
     }else{
-      (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link but does not canonicalize",prg_nm_get(),fl_nm_lcl);
+      (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link but does not canonicalize",nco_prg_nm_get(),fl_nm_lcl);
     } /* endif link canonicalizes */
 #else /* !HAVE_CANONICALIZE_FILE_NAME */
-    (void)fprintf(stderr,"%s: INFO File %s is a symbolic link\n",prg_nm_get(),fl_nm_lcl);
+    (void)fprintf(stderr,"%s: INFO File %s is a symbolic link\n",nco_prg_nm_get(),fl_nm_lcl);
 #endif /* !HAVE_CANONICALIZE_FILE_NAME */
   } /* endif symbolic link */
 
@@ -318,8 +318,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   int psn_arg_fst=0; /* [nbr] Offset for expected number of positional arguments */
   int psn_arg_nbr; /* [nbr] Number of remaining positional arguments */
 
-  int prg_id; /* Program ID */
-  prg_id=prg_get(); /* [enm] Program ID */
+  int nco_prg_id; /* Program ID */
+  nco_prg_id=nco_prg_id_get(); /* [enm] Program ID */
   psn_arg_nbr=argc-arg_crr; /* [nbr] Number of remaining positional arguments */
 
   /* Is output file already known from command line switch (i.e., -o fl_out)? */
@@ -332,24 +332,24 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
   /* Might there be problems with any specified files? */
   for(idx=arg_crr;idx<argc;idx++){
-    if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not be portable to older operating systems\n",prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
+    if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not be portable to older operating systems\n",nco_prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
   } /* end loop over idx */
 
   /* All operators except multi-file operators must have at least one positional argument */
-  if(!nco_is_mfo(prg_id) && psn_arg_nbr == 0){
-    (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least one\n",prg_nm_get(),psn_arg_nbr);
+  if(!nco_is_mfo(nco_prg_id) && psn_arg_nbr == 0){
+    (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least one\n",nco_prg_nm_get(),psn_arg_nbr);
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
-  switch(prg_id){
+  switch(nco_prg_id){
   case ncap:
   case ncatted:
   case ncks:
   case ncrename:
     /* Operators with single fl_in and optional fl_out */
     if(psn_arg_nbr > 2-psn_arg_fst){
-      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need no more than one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than two\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need no more than one (output file was specified with -o switch)\n",nco_prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
@@ -363,7 +363,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncflint:
     /* Operators with dual fl_in and required fl_out */
     if(psn_arg_nbr != 3-psn_arg_fst){
-      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly three\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need exactly two (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly three\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need exactly two (output file was specified with -o switch)\n",nco_prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
@@ -372,7 +372,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncwa:
     /* Operators with single fl_in and required fl_out */
     if(psn_arg_nbr != 2-psn_arg_fst){
-      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need exactly one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly two\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need exactly one (output file was specified with -o switch)\n",nco_prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
@@ -385,7 +385,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     if(psn_arg_nbr < 2-psn_arg_fst){
 
       /* If multi-file operator has no positional arguments for input files... */
-      if(nco_is_mfo(prg_id) && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
+      if(nco_is_mfo(nco_prg_id) && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
 	/* ...then try to obtain input files from stdin... */
 	char *fl_in=NULL; /* [sng] Input file name */
 	FILE *fp_in; /* [enm] Input file handle */
@@ -395,7 +395,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	char fmt_sng[10];
 	size_t fl_nm_lng; /* [nbr] Filename length */
 
-	if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments. Attempting to read from stdin instead...\n",prg_nm_get());
+	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments. Attempting to read from stdin instead...\n",nco_prg_nm_get());
 
 	/* Initialize information to read stdin */
 	fl_lst_in_lng=0L; /* [nbr] Number of characters in input file name list */
@@ -404,7 +404,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  fp_in=stdin; /* [enm] Input file handle */
 	}else{
 	  if((fp_in=fopen(fl_in,"r")) == NULL){
-	    (void)fprintf(stderr,"%s: ERROR opening file containing input filename list %s\n",prg_nm_get(),fl_in);
+	    (void)fprintf(stderr,"%s: ERROR opening file containing input filename list %s\n",nco_prg_nm_get(),fl_in);
 	    nco_exit(EXIT_FAILURE);
 	  } /* endif err */
 	} /* endelse */
@@ -423,13 +423,13 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	   3. \n allows entries to be separated by carriage returns */
 	while(((cnv_nbr=fscanf(fp_in,fmt_sng,bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
 	  if(cnv_nbr == 0){
-	    (void)fprintf(stdout,"%s: ERROR stdin input not convertable to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",prg_nm_get(),FL_NM_IN_MAX_LNG);
+	    (void)fprintf(stdout,"%s: ERROR stdin input not convertable to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",nco_prg_nm_get(),FL_NM_IN_MAX_LNG);
 	    nco_exit(EXIT_FAILURE);
 	  } /* endif err */
 	  fl_nm_lng=strlen(bfr_in);
 	  fl_lst_in_lng+=fl_nm_lng;
 	  (*fl_nbr)++;
-	  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long int)fl_nm_lng);
+	  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",nco_prg_nm_get(),*fl_nbr,bfr_in,(long int)fl_nm_lng);
 	  /* Increment file number */
 	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
 	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
@@ -444,7 +444,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	/* Discard characters remainining in stdin */
 	char chr_foo;
 	while((chr_foo=getchar()) != '\n' && chr_foo != EOF){
-	  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read and discarded \'%c\'\n",prg_nm_get(),chr_foo);
+	  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read and discarded \'%c\'\n",nco_prg_nm_get(),chr_foo);
 	} /* end while */
 #endif /* endif 0 */
 
@@ -452,17 +452,17 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	bfr_in=(char *)nco_free(bfr_in);
 
 	if(fl_lst_in_lng >= FL_LST_IN_MAX_LNG){
-	  (void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, post request to developer's forum (http://sf.net/projects/nco/forums/forum/9831) to expand FL_LST_IN_MAX_LNG\n",prg_nm_get(),FL_LST_IN_MAX_LNG);
+	  (void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, post request to developer's forum (http://sf.net/projects/nco/forums/forum/9831) to expand FL_LST_IN_MAX_LNG\n",nco_prg_nm_get(),FL_LST_IN_MAX_LNG);
 	  nco_exit(EXIT_FAILURE);
 	} /* endif err */
 
-	if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)fl_lst_in_lng);
-	if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried and failed to get input filenames from stdin\n",prg_nm_get());
+	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",nco_prg_nm_get(),*fl_nbr,(long)fl_lst_in_lng);
+	if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried and failed to get input filenames from stdin\n",nco_prg_nm_get());
 
       } /* endif multi-file operator without positional arguments for fl_in */
 
       if(!*FL_LST_IN_FROM_STDIN){
-	if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need at least one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
+	if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need at least one (output file was specified with -o switch)\n",nco_prg_nm_get(),psn_arg_nbr);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* FL_LST_IN_FROM_STDIN */
@@ -481,7 +481,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   } /* FL_LST_IN_FROM_STDIN */
 
   if(*fl_nbr == 0){
-    (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",nco_prg_nm_get());
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */
@@ -559,7 +559,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
        then search for file on local disk */
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
     if(!fl_pth_lcl_tmp){
-      (void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of SFTP path %s\n",prg_nm_get(),fnc_nm,fl_nm_lcl);
+      (void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of SFTP path %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
       nco_exit(EXIT_FAILURE);
     } /* endif */
     fl_nm_lcl_tmp=fl_nm_lcl;
@@ -578,14 +578,14 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rcd=nco_open_flg(fl_nm_lcl,NC_NOWRITE,&in_id);
 
     if(rcd == NC_NOERR){
-      int prg_id; /* Program ID */
-      prg_id=prg_get(); /* [enm] Program ID */
+      int nco_prg_id; /* Program ID */
+      nco_prg_id=nco_prg_id_get(); /* [enm] Program ID */
 
       /* Fail gracefully if ncatted or ncrename try to use DAP */
-      switch(prg_id){
+      switch(nco_prg_id){
       case ncatted:
       case ncrename:
-        (void)fprintf(stderr,"%s: ERROR %s reminds you that ncatted and ncrename must process truly local (i.e., not read via DAP) files (fxm TODO nco664)\n",prg_nm_get(),fnc_nm);
+        (void)fprintf(stderr,"%s: ERROR %s reminds you that ncatted and ncrename must process truly local (i.e., not read via DAP) files (fxm TODO nco664)\n",nco_prg_nm_get(),fnc_nm);
         nco_exit(EXIT_FAILURE);
         break;
       default:
@@ -599,24 +599,24 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* Great! DAP worked so file has earned DAP identification */
       DAP_URL=True; 
 
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s successfully accessed this file using the DAP protocol\n",prg_nm_get(),fnc_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s successfully accessed this file using the DAP protocol\n",nco_prg_nm_get(),fnc_nm);
 
       /* 20120728: Set rcd_stt=0 to mimic successful stat() return so rest of function treats file as local
 	 (DAP treats HTTP protocol files as local files) */
       rcd_stt=0;
 
     }else{ /* DAP-access failed */
-      (void)fprintf(stderr,"%s: INFO DAP-access to %s failed with error code %d. ",prg_nm_get(),fl_nm_lcl,rcd);
+      (void)fprintf(stderr,"%s: INFO DAP-access to %s failed with error code %d. ",nco_prg_nm_get(),fl_nm_lcl,rcd);
       (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
       /* Error codes explained by Dennis Heimbigner in e-mail on 20110627 */
-      if(rcd == NC_ECANTREAD) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL does not exist. Is there a typo in the URL? Please verify that the file is accessible on the DAP-server at the specified location.\n",prg_nm_get());
-      if(rcd == NC_EDAPSVC) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL _does_ exist, so error appears to be in DAP server. Reasons for this could include an aggregation server (e.g., GDS or THREDDS) that receives a URL that is valid according to the aggregation metadata but the implied back-end dataset may be temporarily unavailable.\n",prg_nm_get());
+      if(rcd == NC_ECANTREAD) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL does not exist. Is there a typo in the URL? Please verify that the file is accessible on the DAP-server at the specified location.\n",nco_prg_nm_get());
+      if(rcd == NC_EDAPSVC) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL _does_ exist, so error appears to be in DAP server. Reasons for this could include an aggregation server (e.g., GDS or THREDDS) that receives a URL that is valid according to the aggregation metadata but the implied back-end dataset may be temporarily unavailable.\n",nco_prg_nm_get());
       /* Error codes NC_EDDS, NC_EDAS, etc. are self-explanatory with nc_strerror() */
     } /* DAP-access failed */
 
 #else /* !ENABLE_DAP */
-    (void)fprintf(stderr,"%s: INFO Access to %s may (because filename starts with \"http://\") require DAP, but NCO was not enabled with DAP. Instead NCO will try to search for the file locally, and then will try wget.\n",prg_nm_get(),fl_nm_lcl); 
-    (void)fprintf(stderr,"%s: HINT: Obtain or build DAP-enabled NCO, e.g., with configure --enable-dap-netcdf ...\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: INFO Access to %s may (because filename starts with \"http://\") require DAP, but NCO was not enabled with DAP. Instead NCO will try to search for the file locally, and then will try wget.\n",nco_prg_nm_get(),fl_nm_lcl); 
+    (void)fprintf(stderr,"%s: HINT: Obtain or build DAP-enabled NCO, e.g., with configure --enable-dap-netcdf ...\n",nco_prg_nm_get());
 #endif /* !ENABLE_DAP */
 
     if(DAP_URL == False){ /* DAP access to http:// file failed */
@@ -627,7 +627,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	 ncks -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc # DAP
 	 ncks -O -D 2 -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc ~/foo.nc # DAP
 	 ncks -O -v one -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc ~/foo.nc # DAP */
-      if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find file on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",prg_nm_get());
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will first attempt to find file on local disk and, if unsuccessful, will then attempt retrieve remote file to local client using wget\n",nco_prg_nm_get());
 
       /* DAP cannot open file so leave DAP_URL=FALSE and set HTTP_URL=True
 	 Later we will attempt to wget file to local system */
@@ -638,7 +638,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       before searching for file on local disk */
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
       if(!fl_pth_lcl_tmp){
-	(void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of HTTP path %s\n",prg_nm_get(),fnc_nm,fl_nm_lcl);
+	(void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of HTTP path %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
 	nco_exit(EXIT_FAILURE);
       } /* endif */
       fl_nm_lcl_tmp=fl_nm_lcl;
@@ -661,7 +661,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* Rearrange fl_nm_lcl to remove hostname: part */
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+url_sng_lng,'/');
       if(!fl_pth_lcl_tmp){
-	(void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of scp or rcp path %s\n",prg_nm_get(),fnc_nm,fl_nm_lcl);
+	(void)fprintf(stderr,"%s: ERROR %s unable to find valid filename component of scp or rcp path %s\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
 	  nco_exit(EXIT_FAILURE);
 	} /* endif */
         fl_nm_lcl_tmp=fl_nm_lcl;
@@ -673,13 +673,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
   /* Does file exist on local system? */
   if(!DAP_URL) rcd_stt=stat(fl_nm_lcl,&stat_sct);
-  if(rcd_stt == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #1 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl);
+  if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #1 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
 
   /* If not, check if file exists on local system under same path interpreted relative to current working directory */
   if(rcd_stt == -1){
     if(fl_nm_lcl[0] == '/'){
       rcd_stt=stat(fl_nm_lcl+1UL,&stat_sct);
-      if(rcd_stt == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #2 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl+1UL);
+      if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #2 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl+1UL);
     } /* end if */
     if(rcd_stt == 0){
       /* NB: Adding one to filename pointer is like deleting initial slash on filename
@@ -688,7 +688,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
       fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
       fl_nm_lcl=fl_nm_lcl_tmp;
-      (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl+1UL);
+      (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",nco_prg_nm_get(),fl_nm,fl_nm_lcl+1UL);
     } /* end if */
   } /* end if */
 
@@ -713,8 +713,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     /* At last, check for file in local storage directory */
     rcd_stt=stat(fl_nm_lcl,&stat_sct);
-    if(rcd_stt != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
-    if(rcd_stt == -1 && (dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #3 failed: %s does not exist\n",prg_nm_get(),fl_nm_lcl);
+    if(rcd_stt != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",nco_prg_nm_get(),fl_nm,fl_nm_lcl);
+    if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"%s: INFO stat() #3 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
   } /* end if */
 
   /* File was not found locally and is not DAP-accessible, try to fetch file from remote filesystem */
@@ -765,7 +765,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
 
         /* Why did stat() command fail? */
-        /* (void)perror(prg_nm_get());*/
+        /* (void)perror(nco_prg_nm_get());*/
 
         /* Remote filename is input filename by definition */
         fl_nm_rmt=fl_nm;
@@ -777,7 +777,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 #ifdef WIN32
             /* #ifndef HAVE_NETWORK fxm */
             /* I have no idea how networking calls work in MS Windows, so just exit */
-            (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported by this operating system\n",prg_nm_get(),fl_nm_rmt);
+            (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported by this operating system\n",nco_prg_nm_get(),fl_nm_rmt);
             nco_exit(EXIT_FAILURE);
 #else /* !WIN32 */
             char *usr_nm;
@@ -828,9 +828,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
               char *fl_netrc_bfr;
               FILE *fp_netrc; /* [fl] .netrc inpu file handle */
               if((fp_netrc=fopen(fl_nm_netrc,"r")) == NULL){
-                (void)fprintf(stderr,"%s: ERROR unable to open user's .netrc file %s\n",prg_nm_get(),fl_nm_netrc);
+                (void)fprintf(stderr,"%s: ERROR unable to open user's .netrc file %s\n",nco_prg_nm_get(),fl_nm_netrc);
                 /* Why did fopen() command fail? */
-                (void)perror(prg_nm_get());
+                (void)perror(nco_prg_nm_get());
                 nco_exit(EXIT_FAILURE);
               } /* end if */
               /* Add one for NUL-terminator */
@@ -839,9 +839,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
               fl_netrc_bfr[stat_sct.st_size]='\0';
               rcd_frd=fread((void *)fl_netrc_bfr,stat_sct.st_size,1,fp_netrc);
               if(rcd_frd <= 0){
-                (void)fprintf(stderr,"%s: ERROR reading %s\n",prg_nm_get(),fl_nm_netrc);
+                (void)fprintf(stderr,"%s: ERROR reading %s\n",nco_prg_nm_get(),fl_nm_netrc);
                 /* Why did fread() command fail? */
-                (void)perror(prg_nm_get());
+                (void)perror(nco_prg_nm_get());
                 /* Check for feof() vs. ferror() here? */
                 rcd_frd=fclose(fp_netrc);
                 nco_exit(EXIT_FAILURE);
@@ -850,7 +850,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
               host_nm_rmt_psn=strstr(fl_netrc_bfr,host_nm_rmt);
               if(host_nm_rmt_psn){
                 FTP_NETRC=True;
-                if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will use .netrc file at %s instead of anonymous FTP\n",prg_nm_get(),fnc_nm,fl_nm_netrc);
+                if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will use .netrc file at %s instead of anonymous FTP\n",nco_prg_nm_get(),fnc_nm,fl_nm_netrc);
               } /* endif host_nm_rmt_psn */
               fl_netrc_bfr=(char *)nco_free(fl_netrc_bfr);
             } /* endif rcd_stt */
@@ -918,7 +918,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         if(rmt_cmd == NULL){
           if(HTTP_URL){
             rmt_cmd=&http;
-            (void)fprintf(stderr,"%s: INFO Will now attempt wget on the full filepath. wget will fail if the file is \"hidden\" behind a DAP server. Unfortunately, failed wget attempts creates rather long pathnames in the current directory. fxm TODO nco970, nco971. On the other hand, wget should succeed if the file is stored in any publicly-accessible web location.\n",prg_nm_get());
+            (void)fprintf(stderr,"%s: INFO Will now attempt wget on the full filepath. wget will fail if the file is \"hidden\" behind a DAP server. Unfortunately, failed wget attempts creates rather long pathnames in the current directory. fxm TODO nco970, nco971. On the other hand, wget should succeed if the file is stored in any publicly-accessible web location.\n",nco_prg_nm_get());
           } /* end if HTTP */
         } /* end if rmt_cmd */
 
@@ -962,7 +962,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         filename has correct syntax to exist on remote system */
         if(rmt_cmd == &msread || rmt_cmd == &nrnet || rmt_cmd == &msrcp){
           if (fl_nm_rmt[0] != '/' || fl_nm_rmt[1] < 'A' || fl_nm_rmt[1] > 'Z'){
-            (void)fprintf(stderr,"%s: ERROR %s is not on local filesystem and is not a syntactically valid filename on remote file system\n",prg_nm_get(),fl_nm_rmt);
+            (void)fprintf(stderr,"%s: ERROR %s is not on local filesystem and is not a syntactically valid filename on remote file system\n",nco_prg_nm_get(),fl_nm_rmt);
             nco_exit(EXIT_FAILURE);
           } /* end if */
         } /* end if */
@@ -978,13 +978,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         } /* end if */
 
         if(rmt_cmd == NULL){
-          (void)fprintf(stderr,"%s: ERROR file %s neither exists locally nor matches remote filename patterns\n",prg_nm_get(),fl_nm_rmt);
+          (void)fprintf(stderr,"%s: ERROR file %s neither exists locally nor matches remote filename patterns\n",nco_prg_nm_get(),fl_nm_rmt);
           nco_exit(EXIT_FAILURE);
         } /* end if */
 
         if(fl_pth_lcl == NULL){
           /* Derive path for storing local file from remote filename */
-          (void)fprintf(stderr,"%s: INFO deriving local filepath from remote filename\n",prg_nm_get());
+          (void)fprintf(stderr,"%s: INFO deriving local filepath from remote filename\n",nco_prg_nm_get());
           fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
           if(HTTP_URL){
             /* Strip leading slash from fl_nm_lcl for HTTP files so, e.g., 
@@ -1000,7 +1000,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
           (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
           fl_pth_lcl_tmp[fl_pth_lcl_lng]='\0';
           /* Tell user what local filepath was derived */
-          (void)fprintf(stderr,"%s: INFO Retrieved files will be stored in derived directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
+          (void)fprintf(stderr,"%s: INFO Retrieved files will be stored in derived directory ./%s\n",nco_prg_nm_get(),fl_pth_lcl_tmp);
         }else{
           /* Copy user-specified local path to unite following code in terms of fl_pth_lcl_tmp */
           fl_pth_lcl_tmp=(char *)strdup(fl_pth_lcl);
@@ -1017,11 +1017,11 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
           (void)strcat(cmd_sys,fl_pth_lcl_tmp);
           rcd_sys=system(cmd_sys);
           if(rcd_sys != 0){
-            (void)fprintf(stderr,"%s: ERROR Unable to create local directory %s\n",prg_nm_get(),fl_pth_lcl_tmp);
-            if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: HINT Use -l option\n",prg_nm_get());
+            (void)fprintf(stderr,"%s: ERROR Unable to create local directory %s\n",nco_prg_nm_get(),fl_pth_lcl_tmp);
+            if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: HINT Use -l option\n",nco_prg_nm_get());
             nco_exit(EXIT_FAILURE);
           } /* end if */
-          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Created local directory ./%s\n",prg_nm_get(),fl_pth_lcl_tmp);
+          if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Created local directory ./%s\n",nco_prg_nm_get(),fl_pth_lcl_tmp);
           /* Free local command space */
           cmd_sys=(char *)nco_free(cmd_sys);
         } /* end if */
@@ -1036,7 +1036,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         }else{
           (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_rmt,fl_nm_lcl);
         } /* end else */
-        if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Retrieving file from remote location with command:\n%s\n",prg_nm_get(),cmd_sys);
+        if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Retrieving file from remote location with command:\n%s\n",nco_prg_nm_get(),cmd_sys);
         (void)fflush(stderr);
         /* Fetch file from remote file system */
         rcd_sys=system(cmd_sys);
@@ -1048,7 +1048,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
         if(rmt_cmd->transfer_mode == synchronous){
           if(rcd_sys != 0){
-            (void)fprintf(stderr,"%s: ERROR Synchronous fetch command failed\n",prg_nm_get());
+            (void)fprintf(stderr,"%s: ERROR Synchronous fetch command failed\n",nco_prg_nm_get());
             nco_exit(EXIT_FAILURE);
           } /* end if */
         }else{
@@ -1084,35 +1084,35 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 #else /* !_MSC_VER */
             (void)sleep((unsigned)tm_sleep_scn);
 #endif /* !_MSC_VER */
-            if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,".");
+            if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,".");
             (void)fflush(stderr);
           } /* end for */
           if(tm_idx == tm_nbr){
-            (void)fprintf(stderr,"%s: ERROR Maximum time (%d seconds = %.1f minutes) for asynchronous file retrieval exceeded.\n",prg_nm_get(),tm_nbr*tm_sleep_scn,tm_nbr*tm_sleep_scn/60.0);
+            (void)fprintf(stderr,"%s: ERROR Maximum time (%d seconds = %.1f minutes) for asynchronous file retrieval exceeded.\n",nco_prg_nm_get(),tm_nbr*tm_sleep_scn,tm_nbr*tm_sleep_scn/60.0);
             nco_exit(EXIT_FAILURE);
           } /* end if */
-          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",prg_nm_get(),tm_idx,tm_sleep_scn,tm_idx*tm_sleep_scn/60.0);
+          if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",nco_prg_nm_get(),tm_idx,tm_sleep_scn,tm_idx*tm_sleep_scn/60.0);
         } /* end else transfer mode is asynchronous */
         *FL_RTR_RMT_LCN=True;
   }else{ /* end if input file did not exist locally */
     *FL_RTR_RMT_LCN=False;
   } /* end if file was already on the local system */
 
-  if(dbg_lvl_get() >= nco_dbg_fl)
+  if(nco_dbg_lvl_get() >= nco_dbg_fl)
     if(DAP_URL && fl_pth_lcl)
-      (void)fprintf(stderr,"%s: INFO User-specified option \"-l %s\" was not used since input file was not retrieved from remote location\n",prg_nm_get(),fl_pth_lcl);
+      (void)fprintf(stderr,"%s: INFO User-specified option \"-l %s\" was not used since input file was not retrieved from remote location\n",nco_prg_nm_get(),fl_pth_lcl);
 
   if(!DAP_URL){
     /* File is (now, anyway) truly local---does local system have read permission? */
     if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
-      (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s, or file does not exist\n",prg_nm_get(),fl_nm_lcl);
+      (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s, or file does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
       nco_exit(EXIT_FAILURE);
     }else{
       (void)fclose(fp_in);
     } /* end else */
 
     /* For local files, perform optional file diagnostics */
-    if(dbg_lvl_get() >= nco_dbg_std){
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
       char *fl_nm_cnc=NULL; /* [sng] Canonical file name */
       /* Determine canonical filename and properties */
       fl_nm_cnc=nco_fl_info_get(fl_nm_lcl);
@@ -1147,21 +1147,21 @@ nco_fl_mv /* [fnc] Move first file to second */
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_src,fl_dst)){
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",prg_nm_get(),fl_src);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_src);
     return;
   } /* end if */
 
   /* Construct and execute copy command */
   cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src,fl_dst);
   rcd_sys=system(cmd_mv);
   if(rcd_sys == -1){
-    (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",prg_nm_get(),cmd_mv);
+    (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",nco_prg_nm_get(),cmd_mv);
     nco_exit(EXIT_FAILURE);
   } /* end if */
   cmd_mv=(char *)nco_free(cmd_mv);
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
 } /* end nco_fl_mv() */
 
 char * /* O [sng] Name of file to retrieve */
@@ -1334,21 +1334,21 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
   /* Is request implicit and sufficiently verbose? */
-  flg_rqs_vrb_mpl = ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && dbg_lvl_get() >= nco_dbg_var) ? True : False;
+  flg_rqs_vrb_mpl = ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_var) ? True : False;
 
   /* Is request explicit and sufficiently verbose? */
-  flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && dbg_lvl_get() >= nco_dbg_fl ) ? True : False;
+  flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_fl ) ? True : False;
 
   /* Print implicit or explicit buffer request depending on debugging level */
-  if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer of default size\n",prg_nm_get()); 
-  if(flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)*bfr_sz_hnt); 
+  if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer of default size\n",nco_prg_nm_get()); 
+  if(flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer size = %lu bytes\n",nco_prg_nm_get(),(unsigned long)*bfr_sz_hnt); 
 
   /* Pass local copy of size hint otherwise user-specified value is overwritten on first call */
   rcd=nco__open(fl_nm,md_open,&bfr_sz_hnt_lcl,nc_id);
   
   /* Print results using same verbosity criteria
      NB: bfr_sz_hnt_lcl is never NULL because nco__open() always returns a valid size */
-  if(flg_rqs_vrb_mpl || flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",prg_nm_get(),(unsigned long)bfr_sz_hnt_lcl);
+  if(flg_rqs_vrb_mpl || flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",nco_prg_nm_get(),(unsigned long)bfr_sz_hnt_lcl);
 
   return rcd;
 } /* end nco_fl_open */
@@ -1394,8 +1394,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* Make sure output is possible */
 #ifndef ENABLE_NETCDF4
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-    (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was built without netCDF4 support\n",prg_nm_get());
-    (void)fprintf(stdout,"%s: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Requested netCDF4-format output file but NCO was built without netCDF4 support\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT: Obtain or build a netCDF4-enabled version of NCO.  Try, e.g., ./configure --enable-netcdf4 ...;make;make install\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* netCDF4 */
 #endif /* ENABLE_NETCDF4 */
@@ -1407,8 +1407,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   if(RAM_CREATE) md_create|=NC_DISKLESS|NC_WRITE;
 
   if(FORCE_OVERWRITE && FORCE_APPEND){
-    (void)fprintf(stdout,"%s: ERROR FORCE_OVERWRITE and FORCE_APPEND are both set\n",prg_nm_get());
-    (void)fprintf(stdout,"%s: HINT: Overwrite (-O) and Append (-A) options are mutually exclusive. Re-run your command, setting at most one of these switches.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR FORCE_OVERWRITE and FORCE_APPEND are both set\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT: Overwrite (-O) and Append (-A) options are mutually exclusive. Re-run your command, setting at most one of these switches.\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
@@ -1426,18 +1426,18 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   (void)sprintf(pid_sng,"%ld",(long)pid);
   /* Theoretical length of decimal representation of PID is 1+ceil(log10(PID)) where the 1 is required iff PID is exact power of 10 */
   pid_sng_lng=1L+(long)ceil(log10((double)pid));
-  /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + prg_nm + "." + tmp_sng_2 + NUL */
-  fl_out_tmp_lng=strlen(fl_out)+1UL+strlen(tmp_sng_1)+strlen(pid_sng)+1UL+strlen(prg_nm_get())+1UL+strlen(tmp_sng_2)+1UL;
+  /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + nco_prg_nm + "." + tmp_sng_2 + NUL */
+  fl_out_tmp_lng=strlen(fl_out)+1UL+strlen(tmp_sng_1)+strlen(pid_sng)+1UL+strlen(nco_prg_nm_get())+1UL+strlen(tmp_sng_2)+1UL;
   /* NB: Calling routine has responsibility to free() this memory */
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
-  (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
-  if(dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: %s reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),fnc_nm,(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
+  (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,nco_prg_nm_get(),tmp_sng_2);
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: %s reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",nco_prg_nm_get(),fnc_nm,(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
 
   /* Free temporary memory */
   pid_sng=(char *)nco_free(pid_sng);
 
 #ifndef _MSC_VER
-  if(dbg_lvl_get() == nco_dbg_vec){
+  if(nco_dbg_lvl_get() == nco_dbg_vec){
   /* Use built-in system routines to generate temporary filename
      This allows file to be built in fast directory like /tmp rather than local
      directory which could be a slow, NFS-mounted directories like /fs/cgd
@@ -1463,7 +1463,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
 #endif /* !HAVE_MKSTEMP */
     fl_out_hnd=fl_out_hnd; /* Removes compiler warning on SGI */
-    if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),fnc_nm,(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",nco_prg_nm_get(),fnc_nm,(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
     fl_out_tmp_sys=(char *)nco_free(fl_out_tmp_sys);
   } /* endif dbg */
 #endif /* _MSC_VER */ 
@@ -1472,7 +1472,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     /* If temporary file already exists, prompt user to remove temporary files and exit */
     rcd_stt=stat(fl_out_tmp,&stat_sct);
     if(rcd_stt != -1){
-      (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",prg_nm_get(),fl_out_tmp);
+      (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",nco_prg_nm_get(),fl_out_tmp);
       nco_exit(EXIT_FAILURE);
     } /* end if */
   }else{ /* !WRT_TMP_FL */
@@ -1496,7 +1496,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
      Changing towards greater NCO-wide consistency would be a good thing? 
      No complaints yet about ncatted/ncrename locality requirement, though */
   if(False){
-    if(prg_get() == ncrename || prg_get() == ncatted){
+    if(nco_prg_id_get() == ncrename || nco_prg_id_get() == ncatted){
       /* ncrename and ncatted allow single filename without question */
       /* Incur expense of copying current file to temporary file */
       int md_open; /* [enm] Mode flag for nc_open() call */
@@ -1538,18 +1538,18 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       /* fxm: i18n necessary here */
       /* int cnv_nbr; *//* [nbr] Number of scanf conversions performed this scan */
       if(nbr_itr++ > NCO_MAX_NBR_USR_INPUT_RETRY){
-	(void)fprintf(stdout,"\n%s: ERROR %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
+	(void)fprintf(stdout,"\n%s: ERROR %d failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",nco_prg_nm_get(),nbr_itr-1);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
-      if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",prg_nm_get());
-      (void)fprintf(stdout,"%s: %s exists---`e'xit, `o'verwrite (i.e., delete existing file), or `a'ppend (i.e., replace duplicate variables in and add new variables to existing file) (e/o/a)? ",prg_nm_get(),fl_out);
+      if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: %s exists---`e'xit, `o'verwrite (i.e., delete existing file), or `a'ppend (i.e., replace duplicate variables in and add new variables to existing file) (e/o/a)? ",nco_prg_nm_get(),fl_out);
       (void)fflush(stdout);
       /*       fgets() reads (at most one less than NCO_USR_RPL_MAX_LNG) to first newline or EOF */
       rcd_fgets=fgets(usr_rpl,NCO_USR_RPL_MAX_LNG,stdin);
       /*       fscanf() reads ... */
       /*      while((cnv_nbr=fscanf(stdin,"%9s",usr_rpl)) != EOF) continue;*/
       /*      while((rcd_fgets=fgets(usr_rpl,NCO_USR_RPL_MAX_LNG,stdin)) == NULL){*/
-	/*	if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read \"%s\" while waiting for non-NULL on stdin...\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);*/
+	/*	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Read \"%s\" while waiting for non-NULL on stdin...\n",nco_prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);*/
       /*      continue;}*/
 
       /* Ensure last character in input string is \n and replace that with \0 */
@@ -1558,7 +1558,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 	if(usr_rpl[usr_rpl_lng-1] == '\n')
 	    usr_rpl[usr_rpl_lng-1]='\0';
 
-      if(dbg_lvl_get() == nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",prg_nm_get(),fnc_nm,(rcd_fgets == NULL) ? "NULL" : usr_rpl);
+      if(nco_dbg_lvl_get() == nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",nco_prg_nm_get(),fnc_nm,(rcd_fgets == NULL) ? "NULL" : usr_rpl);
     } /* end while user reply is not yet "o", "a", or "e" */
 
     /* Ensure one case statement for each exit condition in preceding while loop */
@@ -1606,13 +1606,13 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
 
   rcd=nco_close(nc_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stdout,"%s: ERROR nco_fl_out_cls() is unable to nco_close() file %s\n",prg_nm_get(),fl_out_tmp);
+    (void)fprintf(stdout,"%s: ERROR nco_fl_out_cls() is unable to nco_close() file %s\n",nco_prg_nm_get(),fl_out_tmp);
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
   /* Only bother to perform system() call if files are not identical */
   if(!strcmp(fl_out_tmp,fl_out)){
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",prg_nm_get(),fl_out);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Temporary and final files %s are identical---no need to move.\n",nco_prg_nm_get(),fl_out);
     return;
   }else{
     (void)nco_fl_mv(fl_out_tmp,fl_out);
@@ -1637,9 +1637,9 @@ nco_fl_rm /* [fnc] Remove file */
   rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1UL+strlen(fl_nm)+1UL)*sizeof(char));
   (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
 
-  if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",nco_prg_nm_get(),fl_nm,rm_cmd);
   rcd=system(rm_cmd);
-  if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
+  if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",nco_prg_nm_get(),fl_nm);
 
   rm_cmd=(char *)nco_free(rm_cmd);
 } /* end nco_fl_rm() */

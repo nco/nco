@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.65 2013-06-22 01:09:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.66 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -33,7 +33,7 @@ nco_dmn_dfn /* [fnc] Define dimensions in output file */
 	(void)nco_def_dim(nc_id,dmn[idx]->nm,dmn[idx]->cnt,&(dmn[idx]->id));
       } /* end else */
     }else{
-      (void)fprintf(stderr,"%s: WARNING dimension \"%s\" is already defined in %s\n",prg_nm_get(),dmn[idx]->nm,fl_nm);
+      (void)fprintf(stderr,"%s: WARNING dimension \"%s\" is already defined in %s\n",nco_prg_nm_get(),dmn[idx]->nm,fl_nm);
     } /* end if */
   } /* end loop over idx */
   
@@ -267,7 +267,7 @@ nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specifi
 
   rcd=nco_inq_dimid_flg(*grp_id_dmn,dmn_nm,dmn_id);
   
-  if(dbg_lvl_get() >= nco_dbg_std){
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
     char *grp_nm_fll; /* [sng] Group name */
     char dmn_nm_lcl[NC_MAX_NAME]; /* [sng] Dimension name */
     size_t grp_nm_fll_lng; /* [nbr] Length of group name */
@@ -275,12 +275,12 @@ nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specifi
     grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
     (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
     (void)nco_inq_dimids(*grp_id_dmn,&dmn_nbr,dmn_ids,flg_prn);
-    (void)fprintf(stdout,"%s: %s nco_inq_dimids() reports following dimensions/IDs are visible to group %s:\n",prg_nm_get(),fnc_nm,grp_nm_fll);
+    (void)fprintf(stdout,"%s: %s nco_inq_dimids() reports following dimensions/IDs are visible to group %s:\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll);
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
       (void)nco_inq_dimname(*grp_id_dmn,dmn_ids[dmn_idx],dmn_nm_lcl);
       (void)fprintf(stdout,"%s/%d,%s",dmn_nm_lcl,dmn_ids[dmn_idx],(dmn_idx == dmn_nbr-1) ? "\n" : ", ");
     } /* end loop over dmn */
-    if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s nco_inq_dimid() reports group %s sees dimension %s with ID = %d:\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,*dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s does not see dimension %s\n",prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
+    if(rcd == NC_NOERR) (void)fprintf(stdout,"%s: %s nco_inq_dimid() reports group %s sees dimension %s with ID = %d:\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm,*dmn_id); else (void)fprintf(stdout,"%s: %s reports group %s does not see dimension %s\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,dmn_nm);
     if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
   } /* endif dbg */
 
@@ -293,13 +293,13 @@ nco_inq_dmn_grp_id /* [fnc] Return location and ID of named dimension in specifi
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
       if(dmn_ids[dmn_idx] == *dmn_id) break;
     
-    if(dbg_lvl_get() >= nco_dbg_std){
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
       char *grp_nm_fll; /* [sng] Group name */
       size_t grp_nm_fll_lng; /* [nbr] Length of group name */
       (void)nco_inq_grpname_full(*grp_id_dmn,&grp_nm_fll_lng,(char *)NULL);
       grp_nm_fll=(char *)nco_malloc((grp_nm_fll_lng+1L)*sizeof(char));
       (void)nco_inq_grpname_full(*grp_id_dmn,(size_t *)NULL,grp_nm_fll);
-      (void)fprintf(stdout,"%s: %s reports dimension %s was%s defined in group %s\n",prg_nm_get(),fnc_nm,dmn_nm,(dmn_idx < dmn_nbr) ? "" : " not",grp_nm_fll);
+      (void)fprintf(stdout,"%s: %s reports dimension %s was%s defined in group %s\n",nco_prg_nm_get(),fnc_nm,dmn_nm,(dmn_idx < dmn_nbr) ? "" : " not",grp_nm_fll);
       if(grp_nm_fll) grp_nm_fll=(char *)nco_free(grp_nm_fll);
     } /* endif dbg */
     
@@ -335,12 +335,12 @@ nco_dmn_sct_cmp   /* [fnc] Check that dims in list 2 are a subset of list 1 and 
       }
 		 		
     if(jdx == nbr_dmn_1){
-      (void)fprintf(stderr,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",prg_nm_get(),dim_2[idx]->nm,fl_sng_2,fl_sng_1);
+      (void)fprintf(stderr,"%s: ERROR dimension \"%s\" in second file %s is not present in first file %s\n",nco_prg_nm_get(),dim_2[idx]->nm,fl_sng_2,fl_sng_1);
       nco_exit(EXIT_FAILURE);
     } /* end if missing dimension */
 	
     if(dim_2[idx]->cnt != dim_1[jdx]->cnt){
-      (void)fprintf(stderr,"%s: ERROR %sdimension size mismatch: dimension %s in file %s is size %li while dimension %s in file %s is size %li\n",prg_nm_get(),(dim_1[jdx]->is_rec_dmn) ? "record " : "",dim_1[jdx]->nm,fl_sng_1,dim_1[jdx]->cnt,dim_2[idx]->nm,fl_sng_2,dim_2[idx]->cnt);
+      (void)fprintf(stderr,"%s: ERROR %sdimension size mismatch: dimension %s in file %s is size %li while dimension %s in file %s is size %li\n",nco_prg_nm_get(),(dim_1[jdx]->is_rec_dmn) ? "record " : "",dim_1[jdx]->nm,fl_sng_1,dim_1[jdx]->cnt,dim_2[idx]->nm,fl_sng_2,dim_2[idx]->cnt);
       nco_exit(EXIT_FAILURE); 
     } /* endif size mismatch */
   } /* end loop over dimensions */

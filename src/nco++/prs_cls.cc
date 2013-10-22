@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.29 2013-06-23 19:32:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.30 2013-10-22 03:03:55 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -64,7 +64,7 @@ prs_cls::ncap_var_init(const std::string &snm,bool bfll){
     bfll=false;
   }
   
-  if(dbg_lvl_get() >= nco_dbg_fl && !ntl_scn) {
+  if(nco_dbg_lvl_get() >= nco_dbg_fl && !ntl_scn) {
     std::ostringstream os;
     os<< "Parser VAR action called ncap_var_init() to retrieve " <<var_nm <<" from disk";
     dbg_prn(fnc_nm,os.str());  
@@ -187,7 +187,7 @@ prs_cls::ncap_var_init(const std::string &snm,bool bfll){
 	(void)nco_dmn_dfn(fl_out,out_id,&dmn_nw,1);          
 	(void)dmn_out_vtr.push_back(dmn_nw);
 	
-	if(dbg_lvl_get() >= nco_dbg_fl){
+	if(nco_dbg_lvl_get() >= nco_dbg_fl){
           std::ostringstream os;
           os << "Found new dimension " << dmn_nw->nm << " in input variable " << var_nm <<" in file " << fl_in;
           os << ". Defining dimension " << dmn_nw->nm << " in output file " << fl_out;
@@ -502,7 +502,7 @@ prs_cls::ncap_var_write_omp(
 #ifdef NCO_RUSAGE_DBG
   /* Compile: cd ~/nco/bld;make 'USR_TKN=-DNCO_RUSAGE_DBG';cd - */
   /* Print rusage memory usage statistics */
-  if(dbg_lvl_get() >= nco_dbg_fl) {
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) {
     std::ostringstream os;
     os<<" Writing variable "<<var_nm; <<" to disk.";
     dbg_prn(fnc_nm,os.str());
@@ -544,7 +544,7 @@ void prs_cls::ncap_def_ntl_scn(void)
   
   const std::string fnc_nm("prs_cls::ncap_def_ntl_scn"); 
   
-  if(dbg_lvl_get() >= nco_dbg_scl) dbg_prn(fnc_nm, "Entered function");
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) dbg_prn(fnc_nm, "Entered function");
   
   sz=int_vtr.size();
   
@@ -554,7 +554,7 @@ void prs_cls::ncap_def_ntl_scn(void)
     var1=Nvar->var;
     if(!Nvar->flg_udf && Nvar->xpr_typ==ncap_var){
       
-      if(dbg_lvl_get() >= nco_dbg_scl) dbg_prn(fnc_nm, Nvar->getFll()+ (!Nvar->flg_mem ? " defined in output": " RAM variable"));
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) dbg_prn(fnc_nm, Nvar->getFll()+ (!Nvar->flg_mem ? " defined in output": " RAM variable"));
       
       // Define variable
       if(!Nvar->flg_mem){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.136 2013-10-08 22:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncwa.c,v 1.137 2013-10-22 03:03:45 zender Exp $ */
 
 /* mpncwa -- netCDF weighted averager */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: mpncwa.c,v 1.136 2013-10-08 22:26:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.136 $";
+  const char * const CVS_Id="$Id: mpncwa.c,v 1.137 2013-10-22 03:03:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.137 $";
   const char * const opt_sht_lst="346Aa:B:bCcD:d:FhIL:l:M:m:nNOo:p:rRST:t:v:Ww:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -281,7 +281,7 @@ main(int argc,char **argv)
       {"coords",no_argument,0,'c'},
       {"crd",no_argument,0,'c'},
       {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
+      {"nco_dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
@@ -350,8 +350,8 @@ main(int argc,char **argv)
   NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* CEWI: Avert compiler warning that variable is set but never used */
   NORMALIZE_BY_WEIGHT=NORMALIZE_BY_WEIGHT; /* CEWI: Avert compiler warning that variable is set but never used */
   
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
   
   /* Parse command line arguments */
   while(1){
@@ -421,8 +421,8 @@ main(int argc,char **argv)
       break;
     case 'a': /* Dimensions over which to average hyperslab */
       if(flg_opt_a){
-	(void)fprintf(fp_stdout,"%s: ERROR Option -a appears more than once\n",prg_nm);
-	(void)fprintf(fp_stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",prg_nm);
+	(void)fprintf(fp_stdout,"%s: ERROR Option -a appears more than once\n",nco_prg_nm);
+	(void)fprintf(fp_stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",nco_prg_nm);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* endif */
@@ -442,7 +442,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
@@ -479,7 +479,7 @@ main(int argc,char **argv)
       break;
     case 'n':
       NORMALIZE_BY_WEIGHT=False;
-      (void)fprintf(fp_stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",nco_prg_nm);
       nco_exit(EXIT_FAILURE);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
@@ -503,7 +503,7 @@ main(int argc,char **argv)
       break;
 #ifdef ENABLE_MPI
     case 'S': /* Suspend with signal handler to facilitate debugging */
-      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",nco_prg_nm);
       while(!nco_spn_lck_brk) usleep(nco_spn_lck_us); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
 #endif /* !ENABLE_MPI */
@@ -524,7 +524,7 @@ main(int argc,char **argv)
       break;
     case 'W':
       NORMALIZE_BY_TALLY=False;
-      (void)fprintf(fp_stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",nco_prg_nm);
       nco_exit(EXIT_FAILURE);
       break;
     case 'w': /* Variable to use as weight in reducing.  Default is none */
@@ -542,11 +542,11 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -647,14 +647,14 @@ main(int argc,char **argv)
     for(idx=0;idx<dmn_avg_nbr;idx++){
       dmn_avg_lst_in[idx]=(char *)strdup(dmn_lst[idx].nm);
     } /* end loop over idx */
-    (void)fprintf(stderr,"%s: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",prg_nm);
+    (void)fprintf(stderr,"%s: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",nco_prg_nm);
   } /* end if dmn_avg_nbr == 0 */
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
   
   if(dmn_avg_nbr > 0){
     if(dmn_avg_nbr > nbr_dmn_xtr){
-      (void)fprintf(fp_stdout,"%s: ERROR More reducing dimensions than extracted dimensions\n",prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR More reducing dimensions than extracted dimensions\n",nco_prg_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
@@ -672,7 +672,7 @@ main(int argc,char **argv)
       if(idx != nbr_dmn_xtr){
 	dmn_avg[idx_avg]=dim[idx];
       }else{
-	(void)fprintf(stderr,"%s: WARNING reducing dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
+	(void)fprintf(stderr,"%s: WARNING reducing dimension \"%s\" is not contained in any variable in extraction list\n",nco_prg_nm,dmn_avg_lst[idx_avg].nm);
 	/* Collapse dimension average list by omitting irrelevent dimension */
 	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(dmn_avg_nbr-idx_avg-1)*sizeof(nm_id_sct));
 	--dmn_avg_nbr;
@@ -686,7 +686,7 @@ main(int argc,char **argv)
       for(idx_avg=0;idx_avg<dmn_avg_nbr;idx_avg++){
 	if(idx_avg != idx){
 	  if(dmn_avg[idx]->id == dmn_avg[idx_avg]->id){
-	    (void)fprintf(fp_stdout,"%s: ERROR %s specified more than once in reducing list\n",prg_nm,dmn_avg[idx]->nm);
+	    (void)fprintf(fp_stdout,"%s: ERROR %s specified more than once in reducing list\n",nco_prg_nm,dmn_avg[idx]->nm);
 	    nco_exit(EXIT_FAILURE);
 	  } /* end if */
 	} /* end if */
@@ -716,7 +716,7 @@ main(int argc,char **argv)
     dmn_avg_lst=nco_nm_id_lst_free(dmn_avg_lst,dmn_avg_nbr);
     
     if(nbr_dmn_out != (flg_rdd ? nbr_dmn_xtr : nbr_dmn_xtr-dmn_avg_nbr)){
-      (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != %s\n",prg_nm,(flg_rdd) ? "nbr_dmn_xtr" : "nbr_dmn_xtr-dmn_avg_nbr");
+      (void)fprintf(fp_stdout,"%s: ERROR nbr_dmn_out != %s\n",nco_prg_nm,(flg_rdd) ? "nbr_dmn_xtr" : "nbr_dmn_xtr-dmn_avg_nbr");
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
@@ -738,7 +738,7 @@ main(int argc,char **argv)
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,dmn_avg,dmn_avg_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* We now have final list of variables to extract. Phew. */
-  if(dbg_lvl >= nco_dbg_var){
+  if(nco_dbg_lvl >= nco_dbg_var){
     for(idx=0;idx<xtr_nbr;idx++) (void)fprintf(stderr,"var[%d]->nm = %s, ->id=[%d]\n",idx,var[idx]->nm,var[idx]->id);
     for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stderr,"var_fix[%d]->nm = %s, ->id=[%d]\n",idx,var_fix[idx]->nm,var_fix[idx]->id);
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
@@ -755,7 +755,7 @@ main(int argc,char **argv)
     
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
-    if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
+    if(nco_dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
     
     /* Copy all global attributes */
     (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -810,7 +810,7 @@ main(int argc,char **argv)
       (void)nco_enddef(out_id);
     }else{
       (void)nco__enddef(out_id,hdr_pad);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
     
 #ifdef ENABLE_MPI
@@ -844,10 +844,10 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in);
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
@@ -956,36 +956,36 @@ main(int argc,char **argv)
 	     firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
 	     shared(): msk and wgt are not altered within loop
 	     private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,msk_out,wgt_out) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,nco_dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,in_id_arr,msk,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,nco_prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* !_OPENMP */
 	  /* UP and SMP codes main loop over variables */
 	  for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* !ENABLE_MPI */
 	    in_id=in_id_arr[omp_get_thread_num()];
-	    if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	    if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	    if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	    if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	    
 	    /* Allocate and, if necessary, initialize accumulation space for all processed variables */
 	    var_prc_out[idx]->sz=var_prc[idx]->sz;
 	    /*      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long int))) == NULL){*/
 	    /* fxm: verify that var_prc->tally is not needed */
 	    if((var_prc_out[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long int))) == NULL){
-	      (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long int)sizeof(long int),var_prc_out[idx]->nm);
+	      (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",nco_prg_nm_get(),var_prc_out[idx]->sz,(long int)sizeof(long int),var_prc_out[idx]->nm);
 	      nco_exit(EXIT_FAILURE); 
 	    } /* end if err */
 	    (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
 	    if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
-	      (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+	      (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",nco_prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	      nco_exit(EXIT_FAILURE); 
 	    } /* end if err */
 	    (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
 	    
 	    (void)nco_var_mtd_refresh(in_id,var_prc[idx]);
 	    /* Retrieve variable from disk into memory */
-	    if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+	    if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 About to nco_var_get() %s\n",nco_prg_nm,var_prc[idx]->nm);
 	    /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	    (void)nco_var_get(in_id,var_prc[idx]);
-	    if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
+	    if(False) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco354 Finished nco_var_get() %s\n",nco_prg_nm,var_prc[idx]->nm);
 	    
 	    /* Convert char, short, long, int types to doubles before arithmetic */
 	    var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
@@ -1095,7 +1095,7 @@ main(int argc,char **argv)
 		 tally array into wgt_avg. See related note about this above. TODO #114.*/
 	      if(wgt_avg->sz > 0)
 		if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long int))) == NULL){
-		  (void)fprintf(fp_stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long int)sizeof(long int),wgt_avg->nm);
+		  (void)fprintf(fp_stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",nco_prg_nm_get(),wgt_avg->sz,(long int)sizeof(long int),wgt_avg->nm);
 		  nco_exit(EXIT_FAILURE); 
 		} /* end if */
 	      /* Average weight over specified dimensions (tally array is set here) */
@@ -1142,7 +1142,7 @@ main(int argc,char **argv)
 		case nco_op_ttl: /* Total is already in buffer, do nothing */	
 		  break;
 		default:
-		  (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",prg_nm);
+		  (void)fprintf(fp_stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",nco_prg_nm);
 		  nco_exit(EXIT_FAILURE);
 		  break;
 		} /* end switch */
@@ -1151,7 +1151,7 @@ main(int argc,char **argv)
 	      /* Normalization has been turned off by user, we are done */
 	      ;
 	    }else{
-	      (void)fprintf(fp_stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
+	      (void)fprintf(fp_stdout,"%s: ERROR Unforeseen logical branch in main()\n",nco_prg_nm);
 	      nco_exit(EXIT_FAILURE);
 	    } /* end if */
 	    /* Some non-linear operations require additional processing */
@@ -1250,7 +1250,7 @@ main(int argc,char **argv)
     }  /* end (OpenMP parallel for) loop over idx */
 #endif /* !ENABLE_MPI */
     
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
     
     /* Close input netCDF file */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);

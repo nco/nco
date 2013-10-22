@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dbg.c,v 1.19 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dbg.c,v 1.20 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: Debugging */
 
@@ -21,6 +21,6 @@ err_prn /* [fnc] Print formatted error messages */
      in reality, they often utilize var_args capabilities of fprintf() themselves and
      have multiple formatted inputs. Hold off for now. */
 
-  (void)fprintf(stdout,"%s: %s",prg_nm_get(),err_msg);
+  (void)fprintf(stdout,"%s: %s",nco_prg_nm_get(),err_msg);
 
 } /* end err_prn() */

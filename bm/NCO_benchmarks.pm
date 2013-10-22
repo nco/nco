@@ -1,6 +1,6 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.19 2011-02-21 05:41:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.20 2013-10-22 03:03:34 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
@@ -27,7 +27,7 @@ our @ISA = qw(Exporter);
 #export functions (top) and variables (bottom)
 our @EXPORT = qw(
 	benchmarks
-	$srv_sd $dodap $fl_nbr $dbg_lvl $bm  $mpi_prc $opr_sng_mpi $omp_flg $fl_fmt
+	$srv_sd $dodap $fl_nbr $nco_dbg_lvl $bm  $mpi_prc $opr_sng_mpi $omp_flg $fl_fmt
 	$nco_D_flg $fl_out $tw_prt_bm @tst_cmd $opr_nm $dsc_sng $nsr_xpc $fl_cnt %NCO_RC
 );
 
@@ -35,7 +35,7 @@ use vars qw(
 $drc_dat  $f  @fl_mtd_sct  $in_pth  $in_pth_arg  $ipcc_dm_sz  $ldz  $lnk_fl_nme
 $MY_BIN_DIR $n  $nd  $fl_nbr  $r  $rel_fle  $ssdwrap  $var_pfx  $var_sfx
 $var_sng @var_sz   $wait  $tw_prt_bm $srv_sd $opr_nm $dsc_sng $mpi_prc $fl_out
-$bm $dbg_lvl $dodap $fl_cnt @fl_mtd_sct $fl_fmt $fl_pth %NCO_RC $nco_D_flg
+$bm $nco_dbg_lvl $dodap $fl_cnt @fl_mtd_sct $fl_fmt $fl_pth %NCO_RC $nco_D_flg
 $ncwa_scl_tst $notbodi $nsr_xpc $omp_flg $opr_sng_mpi  @tst_cmd
 );
 
@@ -57,11 +57,11 @@ sub benchmarks{
 	################### Set up the symlinks ###################
 
 	if ($bm && $dodap eq "FALSE" && $srv_sd eq "SSNOTSET") {
-		if ($dbg_lvl > 0) {print "\nINFO: Setting up symlinks for test nc files\n";}
+		if ($nco_dbg_lvl > 0) {print "\nINFO: Setting up symlinks for test nc files\n";}
 		for (my $fl_idx=0; $fl_idx<$fl_nbr; $fl_idx++) {
 			my $rel_fle = "$drc_dat/$fl_mtd_sct[$fl_idx][2]" . ".nc" ;
 			my $ldz = "0"; # leading zero for #s < 10
-			if ($dbg_lvl > 0) {print "\tsymlinking $rel_fle\n";}
+			if ($nco_dbg_lvl > 0) {print "\tsymlinking $rel_fle\n";}
 			for (my $n=0; $n<32; $n ++) {
 				if ($n>9) {$ldz ="";}
 				my $lnk_fl_nme = "$drc_dat/$fl_mtd_sct[$fl_idx][2]" . "_" . "$ldz" . "$n" . ".nc";
@@ -85,17 +85,17 @@ sub benchmarks{
 #	# The last nco command is usually an ncks command that examines a single value generated
 #	# from the preceding chain of commands
 # 		$tst_cmd[0] = "ncea -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg stl_5km_00.nc $fl_out";
-# 		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
+# 		if($nco_dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 # 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $fl_out $fl_out";
 # 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 $fl_out";
 # 		$tst_cmd[3] = "1.604304";
 # 		$tst_cmd[4] = "NO_SS";
 # 		tst_run(\@tst_cmd);
 # 		$#tst_cmd=0;  # reset the array
-# 		if($dbg_lvl >  0){print "\n[past benchmark stanza - $dsc_sng\n";}
+# 		if($nco_dbg_lvl >  0){print "\n[past benchmark stanza - $dsc_sng\n";}
 # 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 #
-# if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+# if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 # Note that that the last SERVERSIDE executable nco statement has to end with a '%stdouterr%' to
 # have it return data.  For both benchmarks and regressions, this is added in the
@@ -128,56 +128,56 @@ if (0) { # DEBUGGING to skip these
 		$tst_cmd[4] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0; # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
 	} else {print "Skipping Benchmark because $opr_nm does not support MPI\n";}
 
-if ($dbg_lvl >= 1) {print "paused after ncap2 - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused after ncap2 - hit return to continue"; $wait = <STDIN>;}
 
 	#################### begin ncbo benchmark
 	$opr_nm='ncbo';
 	$dsc_sng = 'ncbo differencing two files';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncbo -h -O $fl_fmt $nco_D_flg $omp_flg --op_typ='-' $in_pth_arg gcm_T85.nc gcm_T85_00.nc %tmp_fl_00%";
 #		$tst_cmd[0] = "ncbo -h -O $fl_fmt $nco_D_flg $omp_flg --op_typ='-' $in_pth_arg stl_sml.nc stl_sml_00.nc %tmp_fl_00%";  # smaller test file
-		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
+		if($nco_dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v sleepy %tmp_fl_00% ";
 #		$tst_cmd[1] = "ncks -C -H -s '%f' -v weepy %tmp_fl_00%"; # smaller test file
 		$tst_cmd[2] = "0.000000";
 		$tst_cmd[3] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng]\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### begin ncea benchmark
 	$opr_nm='ncea';
 	$dsc_sng = 'ncea averaging 2^5 files';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-		if ($dbg_lvl > 0) {print "\nBenchmark: \$fl_fmt = [$fl_fmt], \$nco_D_flg = $nco_D_flg, \$omp_flg = [$omp_flg], \$dsc_sng = $dsc_sng, \$fl_cnt = [$fl_cnt], \n";}
+		if ($nco_dbg_lvl > 0) {print "\nBenchmark: \$fl_fmt = [$fl_fmt], \$nco_D_flg = $nco_D_flg, \$omp_flg = [$omp_flg], \$dsc_sng = $dsc_sng, \$fl_cnt = [$fl_cnt], \n";}
 		$tst_cmd[0] = "ncea -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg stl_5km_00.nc %tmp_fl_00%";
-		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
+		if($nco_dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon %tmp_fl_00% %tmp_fl_01%";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 %tmp_fl_01%";
 		$tst_cmd[3] = "1.604304";
 		$tst_cmd[4] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### begin ncecat benchmark
 	$opr_nm='ncecat';
 	$dsc_sng = 'ncecat joining 2^5 files'; # tms_lng.nc * 32 = 1.51GB
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
+#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng, files=$fl_cnt\n";}
 		$tst_cmd[0] = "ncecat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg tms_lng_00.nc %tmp_fl_00%";
 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg %tmp_fl_00% %tmp_fl_01%";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v PO2 %tmp_fl_01%";
@@ -187,36 +187,36 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$tst_cmd[4] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### begin ncflint benchmark  - needs to be verified and md5/wc sums created.
 	$opr_nm='ncflint';
 	$dsc_sng = 'ncflint weight-averaging 2 files';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncflint -h -O $fl_fmt $nco_D_flg   -w '0.5' $in_pth_arg gcm_T85_00.nc  gcm_T85_01.nc %tmp_fl_00%";
-		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
+		if($nco_dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon %tmp_fl_00% %tmp_fl_01%";
 		$tst_cmd[2] = "ncks -C -H -s '%f ' -v d1_00 %tmp_fl_01%";
 		$tst_cmd[3] = "1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000 1.800000";
 		$tst_cmd[4] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### begin ncpdq benchmark - reversal
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq dimension-order reversal';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		#!!WARN - change back to testing the ipcc file after verify
 		# !! this one is buggered by the current ssdwrap
 		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a '-time,-lev,-lat,-lon' $in_pth_arg  gcm_T85.nc %tmp_fl_00%";
@@ -226,61 +226,61 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$tst_cmd[3] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### next ncpdq benchmark - re-ordering
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq dimension-order re-ordering';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a 'lon,time,lev,lat' $in_pth_arg  gcm_T85.nc %tmp_fl_00%";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tmp_fl_00%";  #ipcc
 		$tst_cmd[2] = "0.800000";
 		$tst_cmd[3] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### next ncpdq benchmark - re-ordering & reversing
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq dimension-order re-ordering & reversing';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -a '-lon,-time,-lev,-lat' $in_pth_arg  gcm_T85.nc %tmp_fl_00%";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tmp_fl_00%";  #ipcc
 		$tst_cmd[2] = "0.800000";
 		$tst_cmd[3] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### next ncpdq benchmark
 	$opr_nm='ncpdq';
 	$dsc_sng = 'ncpdq packing a file';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncpdq -h -O $fl_fmt $nco_D_flg $omp_flg -P all_new  $in_pth_arg  gcm_T85.nc %tmp_fl_00%";
 		$tst_cmd[1] = "ncks -C -H -s \"%f\" -v dopey %tmp_fl_00%";
 		$tst_cmd[2] = "0.000000";
 		$tst_cmd[3] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### begin cz benchmark list #2
 	$opr_nm='ncra';
@@ -288,7 +288,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 	####################
 	if ($notbodi) { # too big for bodi
 		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#			if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 			$tst_cmd[0] = "ncra -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg gcm_T85_00.nc %tmp_fl_00%";
 			# ~4m on sand.
 			$tst_cmd[1] =  "ncks -C -H -s '%f' -v d1_03   %tmp_fl_00% ";
@@ -296,11 +296,11 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 			$tst_cmd[3] = "NO_SS_OK";
 			tst_run(\@tst_cmd);
 			$#tst_cmd=0;  # reset the array
-			if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+			if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 		} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 	}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 
 
@@ -312,7 +312,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		$dsc_sng = 'ncrcat joining 2^5 files'; # tms_lng.nc * 32 = 1.51GB
 		####################
 		if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-	#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+	#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n 22,2,1 $in_pth_arg tms_lng_00.nc %tmp_fl_00%";
 #			$tst_cmd[0] = "ncrcat -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg tms_lng_00.nc %tmp_fl_00%";
 			$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg %tmp_fl_00% %tmp_fl_01%";
@@ -321,28 +321,28 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 			$tst_cmd[4] = "SS_OK";
 			tst_run(\@tst_cmd);
 			$#tst_cmd=0;  # reset the array
-			if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+			if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 		} else {	print "Skipping Benchmark [$opr_nm] - not MPI-ready\n"; }
  	} else { print "\nNB: ncrcat benchmark skipped for OpenDAP test - takes too long.\n\n"; }
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	#################### begin ncwa benchmark list #1a
 	$opr_nm='ncwa';
 	$dsc_sng = 'ncwa averaging all variables to scalars - stl_5km.nc & sqrt';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -w lat -y sqrt -a lat,lon $in_pth_arg stl_5km.nc %tmp_fl_00%";
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  %tmp_fl_00%";
 		$tst_cmd[2] = "1.673425";
 		$tst_cmd[3] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $wait = <STDIN>;
 
 	# following fails on numeric cmp but why should the result the same?
@@ -351,17 +351,17 @@ printf("paused @ [%s:%d]  - hit return to continue\n", __FILE__, __LINE__); my $
 	$dsc_sng = 'ncwa averaging all variables to scalars - stl_5km.nc & rms';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
-#		if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#		if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 		$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y rms -w lat -a lat,lon $in_pth_arg stl_5km.nc %tmp_fl_00%";
 		$tst_cmd[1] = "ncks -C -H -s '%f' -v d2_02  %tmp_fl_00%";
 		$tst_cmd[2] = "2.800084";
 		$tst_cmd[3] = "SS_OK";
 		tst_run(\@tst_cmd);
 		$#tst_cmd=0;  # reset the array
-		if($dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
+		if($nco_dbg_lvl > 0){print "\n[past benchmark stanza - $dsc_sng\n";}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 		if ($notbodi) { #  ipcc too big for bodi
@@ -369,7 +369,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 			$opr_nm = 'ncwa';
 			$dsc_sng = 'ncwa averaging all variables to scalars - gcm_T85.nc & sqt';
 			####################
-#			if ($dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
+#			if ($nco_dbg_lvl > 0) {print "\nBenchmark:  $dsc_sng\n";}
 			$tst_cmd[0] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt  -w lat -a lat,lon $in_pth_arg gcm_T85.nc %tmp_fl_00%";
 			$tst_cmd[1] = "ncks -C -H -s '%f' -v skanky  %tmp_fl_00%";
 			$tst_cmd[2] = "0.800000";
@@ -379,7 +379,7 @@ if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 		}
 	} else {print "Skipping Benchmark [$opr_nm] - not MPI-ready\n";}
 
-if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
+if ($nco_dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
 
 	if ($ncwa_scl_tst) {

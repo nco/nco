@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.78 2013-01-13 06:07:47 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.79 2013-10-22 03:03:45 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -164,10 +164,10 @@ XPN [eE][+-]?[0-9]+
 <INCLUDE>[^ \t\n]+ {
   /* Get include file name */
   if(ncap_ncl_dpt_crr >= NCO_MAX_NCL_DPT){
-    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %lu is too deep",prg_nm_get(),yytext,(unsigned long)ncap_ncl_dpt_crr);
+    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %lu is too deep",nco_prg_nm_get(),yytext,(unsigned long)ncap_ncl_dpt_crr);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %lu to #include'd file %s at depth %lu\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],(unsigned long)ncap_ncl_dpt_crr,yytext,(unsigned long)ncap_ncl_dpt_crr+1UL);
+  if(nco_dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %lu to #include'd file %s at depth %lu\n",nco_prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],(unsigned long)ncap_ncl_dpt_crr,yytext,(unsigned long)ncap_ncl_dpt_crr+1UL);
   /* Put current input buffer on stack */
   ncl_stk[ncap_ncl_dpt_crr]=YY_CURRENT_BUFFER; 
   /* Increment nesting level */
@@ -180,7 +180,7 @@ XPN [eE][+-]?[0-9]+
   ncap_fl_spt_glb=(char **)nco_realloc(ncap_fl_spt_glb,ncap_ncl_dpt_crr+1UL); 
   ncap_fl_spt_glb[ncap_ncl_dpt_crr]=(char *)strdup(yytext);
   if((yyin=fopen(ncap_fl_spt_glb[ncap_ncl_dpt_crr],"r")) == NULL){
-    (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr]);
+    (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",nco_prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr]);
     nco_exit(EXIT_FAILURE);
   } /* endif error */
 
@@ -198,7 +198,7 @@ XPN [eE][+-]?[0-9]+
   if(ncap_ncl_dpt_crr > 0UL){
     /* If we are exiting a #include'd script, delete its buffers */
     NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=False; /* [flg] */
-    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %lu to file %s at depth %lu\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],(unsigned long)ncap_ncl_dpt_crr,ncap_fl_spt_glb[ncap_ncl_dpt_crr-1],(unsigned long)ncap_ncl_dpt_crr-1UL);
+    if(nco_dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %lu to file %s at depth %lu\n",nco_prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],(unsigned long)ncap_ncl_dpt_crr,ncap_fl_spt_glb[ncap_ncl_dpt_crr-1],(unsigned long)ncap_ncl_dpt_crr-1UL);
     ncap_fl_spt_glb[ncap_ncl_dpt_crr]=(char *)nco_free(ncap_fl_spt_glb[ncap_ncl_dpt_crr]);
     /* Decrement depth of nesting */
     ncap_ncl_dpt_crr--; 
@@ -239,7 +239,7 @@ XPN [eE][+-]?[0-9]+
 
 "(/" {
   /* Dimension list */
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Entering DMN_LST with %s\n",yytext);
+  if(nco_dbg_lvl_get() > 0) (void)fprintf(stderr,"Entering DMN_LST with %s\n",yytext);
 
   BEGIN DMN_LST;
 
@@ -247,7 +247,7 @@ XPN [eE][+-]?[0-9]+
 } /* End dimension list */
 <DMN_LST>[ \t\n]* /* Eat whitespace */
 <DMN_LST>"/)" {
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Exiting DMN_LST with %s\n",yytext);
+  if(nco_dbg_lvl_get() > 0) (void)fprintf(stderr,"Exiting DMN_LST with %s\n",yytext);
 
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
@@ -255,7 +255,7 @@ XPN [eE][+-]?[0-9]+
 <DMN_LST>[^\]\n]*[\]\n]/"/)" {
 /*<DMN_LST>{LPH}{LPHDGT}*[ \t\n]*[,]?[ \t\n]* {*/
   /* Recognize dimension lists */
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Lexing dimension list %s\n",yytext);
+  if(nco_dbg_lvl_get() > 0) (void)fprintf(stderr,"Lexing dimension list %s\n",yytext);
 
   /* Valid subscripts must contain alphanumeric string */
   if(yyleng < 3) goto end_dmn_lst;
@@ -291,7 +291,7 @@ XPN [eE][+-]?[0-9]+
   (void)sng_ascii_trn(bfr);
   lval_ptr->sng=strdup(bfr);
   bfr=(char*)nco_free(bfr);
-  if(dbg_lvl_get() > 3){
+  if(nco_dbg_lvl_get() > 3){
     (void)fprintf(stderr,"Lexing string: %s\n",yytext);
     (void)fprintf(stderr,"Made   string: %s\n",lval_ptr->sng);
   } /* endif */
@@ -304,7 +304,7 @@ XPN [eE][+-]?[0-9]+
      so that unary plus/minus is handled in lexer rather than parser.
      However, this has unintended side effects so let parser handle it for now */
   char *sng_cnv_rcd=char_CEWI; /* [sng] strtol()/strtoul() return code */
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
   lval_ptr->scv.val.d=strtod(yytext,&sng_cnv_rcd);
   if(*sng_cnv_rcd) nco_sng_cnv_err(yytext,"strtod",sng_cnv_rcd);
   lval_ptr->scv.type=NC_DOUBLE;
@@ -314,7 +314,7 @@ XPN [eE][+-]?[0-9]+
 {DGT}*\.{DGT}*({XPN})?[Ff]|{DGT}*({XPN})[Ff] {
   /* float */
   float float_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
   if(sscanf((char *)yytext,"%e",&float_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad float: %s",yytext);
     nco_yyerror(prs_arg,ncap_err_sng);
@@ -328,7 +328,7 @@ XPN [eE][+-]?[0-9]+
 {DGT}+("LL"|"ll") {
   /* int64 */
   nco_int64 int64_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an int64 %s\n",yytext); 
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an int64 %s\n",yytext); 
   if(sscanf((char *)yytext,"%lli",&int64_tkn) != 1){
     sprintf(ncap_err_sng,"Bad int64 constant: %s",(char *)yytext);
     nco_yyerror(prs_arg,ncap_err_sng);
@@ -341,7 +341,7 @@ XPN [eE][+-]?[0-9]+
 {DGT}+("ULL"|"ull") {
   /* uint64 */
   nco_uint64 uint64_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint64 %s\n",yytext); 
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint64 %s\n",yytext); 
   if(sscanf((char *)yytext,"%llu",&uint64_tkn) != 1){
     sprintf(ncap_err_sng,"Bad uint64 constant: %s",(char *)yytext);
     nco_yyerror(prs_arg,ncap_err_sng);
@@ -354,7 +354,7 @@ XPN [eE][+-]?[0-9]+
 {DGT}+[lL]? {
   /* int */
   nco_int int_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an int %s\n",yytext); 
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an int %s\n",yytext); 
   /* NB: Format depends on opaque type of nco_int
      Until 200911, nco_int was C-type long, and now nco_int is C-type int
      if(sscanf((char *)yytext,"%li",&int_tkn) != 1){ */
@@ -370,7 +370,7 @@ XPN [eE][+-]?[0-9]+
 {DGT}+([uU]|"ul"|"UL") {
   /* uint */
   nco_uint uint_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint %s\n",yytext); 
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a uint %s\n",yytext); 
   if(sscanf((char *)yytext,"%u",&uint_tkn) != 1){
     sprintf(ncap_err_sng,"Bad uint constant: %s",(char *)yytext);
     nco_yyerror(prs_arg,ncap_err_sng);
@@ -383,7 +383,7 @@ XPN [eE][+-]?[0-9]+
 {DGT}+[sS] {
   /* short */
   nco_short short_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
   if(sscanf((char *)yytext,"%hi",&short_tkn) != 1){
     sprintf(ncap_err_sng,"Bad short constant: %s",(char *)yytext);
     nco_yyerror(prs_arg,ncap_err_sng);
@@ -396,7 +396,7 @@ XPN [eE][+-]?[0-9]+
 {DGT}+("us"|"US") {
   /* ushort */
   nco_ushort short_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ushort %s\n",yytext); 	
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ushort %s\n",yytext); 	
   if(sscanf((char *)yytext,"%hu",&short_tkn) != 1){
     sprintf(ncap_err_sng,"Bad short constant: %s",(char *)yytext);
     nco_yyerror(prs_arg,ncap_err_sng);
@@ -409,7 +409,7 @@ XPN [eE][+-]?[0-9]+
 {DGT}+[Bb] {
   /* byte */
   nco_byte byte_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
   if(sscanf((char *)yytext,"%hhi",&byte_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad byte: %s",yytext);
     nco_yyerror(prs_arg,ncap_err_sng);
@@ -423,7 +423,7 @@ XPN [eE][+-]?[0-9]+
 {DGT}+("UB"|"ub") {
   /* ubyte */
   nco_ubyte ubyte_tkn;
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ubyte %s\n",yytext); 
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a ubyte %s\n",yytext); 
   if(sscanf((char *)yytext,"%hhu",&ubyte_tkn) != 1){
     sprintf(ncap_err_sng,"#Bad byte: %s",yytext);
     nco_yyerror(prs_arg,ncap_err_sng);
@@ -516,7 +516,7 @@ M_PI {return NAMED_CONSTANT;}
   nco_bool blkp;
   var_sct var_lkp; /* for us when calling lookup vars on first pass only */
   
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing attribute %s\n",yytext);
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing attribute %s\n",yytext);
   amp_ptr=strchr(yytext,'@');
   sng_lng=amp_ptr-yytext;
   
@@ -623,7 +623,7 @@ M_PI {return NAMED_CONSTANT;}
 
 {LPH}{LPHDGT}*/\[ {
   /* Recognize variables with subscripts */
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable with subscripts %s\n",yytext);
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable with subscripts %s\n",yytext);
   if(RHS){
     lval_ptr->var_nm_RHS=(char *)strdup(yytext);
     BEGIN RHS_SUBSCRIPT;
@@ -637,7 +637,7 @@ M_PI {return NAMED_CONSTANT;}
 
 {LPH}{LPHDGT}* {
   /* Recognize plain variables */
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
   if(RHS){
     /* fxm mmr: memory leak since var_nm_RHS is never free()'d */
     lval_ptr->var_nm_RHS=(char *)strdup(yytext); 
@@ -677,7 +677,7 @@ M_PI {return NAMED_CONSTANT;}
   dmn_sct **dmn_new;
 
   /* Valid subscripts must contain alphanumeric string */
-  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"Interpreting %s as LHS_SUBSCRIPT\n",yytext);
+  if(nco_dbg_lvl_get() > 2) (void)fprintf(stderr,"Interpreting %s as LHS_SUBSCRIPT\n",yytext);
   if(yyleng < 3) goto end_LHS_sbs;
 
   /* if(prs_arg->ntl_scn) goto end_LHS_sbs; */  
@@ -774,7 +774,7 @@ M_PI {return NAMED_CONSTANT;}
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
   if((var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type))) == NULL){
-    (void)fprintf(stderr,"%s: ERROR Unable to malloc() %ld*%lu bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,(unsigned long)nco_typ_lng(var->type));
+    (void)fprintf(stderr,"%s: ERROR Unable to malloc() %ld*%lu bytes for var_LHS() in lexer\n",nco_prg_nm_get(),var->sz,(unsigned long)nco_typ_lng(var->type));
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   
@@ -797,7 +797,7 @@ M_PI {return NAMED_CONSTANT;}
   /* Link variable into yylex() argument for use in parser */
   prs_arg->var_LHS=var;
   
-  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
+  if(nco_dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",nco_prg_nm_get(),prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
   
   if(0){ /* Remove some compiler warning messages CEWI */
     /* Following two statements remove "defined but not used" messages in ncap_lex.c (lex.yy.c) */
@@ -872,7 +872,7 @@ M_PI {return NAMED_CONSTANT;}
 
 . {
   /* Everything not parsed by above falls through to here */
-  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: Following token reached last lexer rule: %s\n",prg_nm_get(),yytext);
+  if(nco_dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: Following token reached last lexer rule: %s\n",nco_prg_nm_get(),yytext);
   return yytext[0];
 } /* end trickle down */
 
@@ -888,7 +888,7 @@ yywrap(void)
      been redirected to new source, e.g., yyin points to new file. 
      Returning true (non-zero) means scanning is complete, so scanner terminates and returns 0 to calling function
      Default is to return true (one) when called---this terminates scanner */
-  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncap_ncl_dpt_crr = %lu\n",prg_nm_get(),(unsigned long)ncap_ncl_dpt_crr);
+  if(nco_dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncap_ncl_dpt_crr = %lu\n",nco_prg_nm_get(),(unsigned long)ncap_ncl_dpt_crr);
   /* comp.compilers thread 20020523 yywrap() should always return 1, even when
      scanning a #include'd file
      return (ncap_ncl_dpt_crr <= 1) ? 1 : 0; */
@@ -960,7 +960,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
   }else{
     /* Open script file for reading */
     if((yyin=fopen(ncap_fl_spt_glb[ncap_ncl_dpt_crr],"r")) == NULL){
-      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr]);
+      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",nco_prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr]);
       nco_exit(EXIT_FAILURE);
     } /* endif error */
   } /* endif input from script */
@@ -1035,7 +1035,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
     default: 
       /* Tokens that fall through are perfectly safe and normal
 	 Tokens values 1--256 are ASCII characters, values > 256 defined in yy.tab.h */
-      if(dbg_lvl_get() >= 5)(void)fprintf(stderr,"%s: DEBUG Token type %d not handled in ncap_ntl_scn()\n",prg_nm_get(),tkn_crr);
+      if(nco_dbg_lvl_get() >= 5)(void)fprintf(stderr,"%s: DEBUG Token type %d not handled in ncap_ntl_scn()\n",nco_prg_nm_get(),tkn_crr);
       break;
     } /* end switch */
   } /* end while */
@@ -1100,7 +1100,7 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
     default: 
       /* Tokens that fall through are perfectly safe and normal
 	 Tokens values 1--256 are ASCII characters, values > 256 defined in yy.tab.h */
-      if(dbg_lvl_get() >= 5) (void)fprintf(stderr,"%s: DEBUG Token type %d not handled in ncap_ntl_scn()\n",prg_nm_get(),tkn_crr);
+      if(nco_dbg_lvl_get() >= 5) (void)fprintf(stderr,"%s: DEBUG Token type %d not handled in ncap_ntl_scn()\n",nco_prg_nm_get(),tkn_crr);
       
       /* Assume single '=' means '==' if op_typ is not defined */
       if(tkn_crr == '=' && op_typ == -1) op_typ=nco_op_eq;
@@ -1110,19 +1110,19 @@ ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
   
   /* Check all three items have been scanned in */
   if(msk_nm_LHS == (char *)NULL){
-    (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid variable name\n",prg_nm_get(),msk_sng);
+    (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid variable name\n",nco_prg_nm_get(),msk_sng);
     rcd=0;
   }else{
     *msk_nm=msk_nm_LHS;
   } /* endif */
   if(op_typ == -1){
-    (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid comparison operator\n",prg_nm_get(),msk_sng);
+    (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid comparison operator\n",nco_prg_nm_get(),msk_sng);
     rcd=0;
   }else{
     *op_typ_rlt=op_typ;
   } /* endif */
   if(scv_def == False){
-    (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid number\n",prg_nm_get(),msk_sng);
+    (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid number\n",nco_prg_nm_get(),msk_sng);
     rcd=0;
   }else{ 
     (void)nco_scv_cnf_typ((nc_type)NC_DOUBLE,&scv_out);

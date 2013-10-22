@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.349 2013-09-17 04:45:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.350 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -50,7 +50,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
-    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out,var_nm,var_nm,var_nm);
+    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",nco_prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out,var_nm,var_nm,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
   dmn_nbr=nbr_dmn_out;
@@ -112,7 +112,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
           if(rec_dmn_sz > 0){
             /* ... then check input vs. output record dimension sizes ... */
             if(rec_dmn_sz != dmn_cnt[0]){
-              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",prg_nm_get(),var_nm,dmn_cnt[0],rec_dmn_sz,var_nm);
+              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",nco_prg_nm_get(),var_nm,dmn_cnt[0],rec_dmn_sz,var_nm);
             } /* endif sizes are incommensurate */
           } /* endif records exist in output file */
         } /* endif output file has record dimension */
@@ -319,8 +319,8 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       /* Re-initialize accumulated variables */
       var_sz=1L;
       /* Mimic standard code path debugging information */
-      if(dbg_lvl_get() >= nco_dbg_var && !fp_bnr && rec_idx == 0) (void)fprintf(stderr,"%s, ",var_lst[var_idx]->nm);
-      if(dbg_lvl_get() >= nco_dbg_var && rec_idx == 0) (void)fflush(stderr);
+      if(nco_dbg_lvl_get() >= nco_dbg_var && !fp_bnr && rec_idx == 0) (void)fprintf(stderr,"%s, ",var_lst[var_idx]->nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_var && rec_idx == 0) (void)fflush(stderr);
 
       /* Get ID of requested variable from both files */
       (void)nco_inq_varid(var_lst[var_idx]->grp_id_in,var_lst[var_idx]->nm,&var_in_id);
@@ -328,7 +328,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
       (void)nco_inq_var(var_lst[var_idx]->grp_id_out,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
       (void)nco_inq_var(var_lst[var_idx]->grp_id_in,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
       if(nbr_dmn_out != nbr_dmn_in){
-        (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",prg_nm_get(),nbr_dmn_in,var_lst[var_idx]->nm,nbr_dmn_out,var_lst[var_idx]->nm,var_lst[var_idx]->nm,var_lst[var_idx]->nm);
+        (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",nco_prg_nm_get(),nbr_dmn_in,var_lst[var_idx]->nm,nbr_dmn_out,var_lst[var_idx]->nm,var_lst[var_idx]->nm,var_lst[var_idx]->nm);
         nco_exit(EXIT_FAILURE);
       } /* endif */
       dmn_nbr=nbr_dmn_out;
@@ -380,7 +380,7 @@ nco_cpy_rec_var_val /* [fnc] Copy all record variables, record-by-record, from i
           if(rec_out_sz > 0){
             /* ... then check input vs. output record dimension sizes ... */
             if(rec_sz != rec_out_sz){
-              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",prg_nm_get(),var_lst[var_idx]->nm,rec_sz,rec_out_sz,var_lst[var_idx]->nm);
+              (void)fprintf(stderr,"%s: WARNING record dimension size of %s changes between input and output files from %ld to %ld. Appended variable %s may (likely) be corrupt.\n",nco_prg_nm_get(),var_lst[var_idx]->nm,rec_sz,rec_out_sz,var_lst[var_idx]->nm);
             } /* endif sizes are incommensurate */
           } /* endif records have already been written to output file */
         } /* endif record dimension exists in output file */
@@ -493,7 +493,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
-    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out,var_nm,var_nm,var_nm);
+    (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",nco_prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out,var_nm,var_nm,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
   dmn_nbr=nbr_dmn_out;
@@ -618,7 +618,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
       } /* end loop over lmt */
     } /* end loop over dim */
 
-    if(dbg_lvl_get() >= 5){
+    if(nco_dbg_lvl_get() >= 5){
       (void)fprintf(stderr,"\nvar = %s\n",var_nm);
       (void)fprintf(stderr,"dim\tcnt\tsrtin1\tcnt1\tsrtout1\tsrtin2\tcnt2\tsrtout2\n");
       for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stderr,"%d\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t\n",dmn_idx,dmn_cnt[dmn_idx],dmn_in_srt_1[dmn_idx],dmn_cnt_1[dmn_idx],dmn_out_srt_1[dmn_idx],dmn_in_srt_2[dmn_idx],dmn_cnt_2[dmn_idx],dmn_out_srt_2[dmn_idx]);
@@ -818,7 +818,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
 
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 
-  if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
+  if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",nco_prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.fp[0],nco_typ_sng(var->typ_dsk));
 
   /* 20051021: Removed this potentially critical region by parallelizing 
      over in_id's in calling code */
@@ -870,7 +870,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   (void)nco_pck_dsk_inq(nc_id,var);
   
   /* Packing/Unpacking */
-  if(nco_is_rth_opr(prg_get())){
+  if(nco_is_rth_opr(nco_prg_id_get())){
     /* Arithmetic operators must unpack variables before performing arithmetic
        Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
@@ -1055,12 +1055,12 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
   int idx;
   int dmn_idx;
   int fl_fmt; /* [enm] Output file format */
-  int prg_id; /* [enm] Program ID */
+  int nco_prg_id; /* [enm] Program ID */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   nc_type typ_out; /* [enm] Type in output file */
 
-  prg_id=prg_get(); /* [enm] Program ID */
+  nco_prg_id=nco_prg_id_get(); /* [enm] Program ID */
 
   for(idx=0;idx<nbr_var;idx++){
 
@@ -1074,7 +1074,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     if(rcd != NC_NOERR){
 
       /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, nco_var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, nco_var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
-      if(dmn_ncl || prg_id == ncwa){
+      if(dmn_ncl || nco_prg_id == ncwa){
         /* ...operator is ncwa and/or changes variable rank... */
         int idx_ncl;
         /* Initialize number of dimensions for current variable */
@@ -1102,12 +1102,12 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
         dmn_nbr=var[idx]->nbr_dim;
       } /* end else */
 
-      if(dbg_lvl_get() > 3 && prg_id != ncwa){
+      if(nco_dbg_lvl_get() > 3 && nco_prg_id != ncwa){
         /* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
         contains _wrong name_ when variables will be averaged.
         ncwa does contain write name information now if retain_degenerate_dimensions 
         option is in effect, but this is the exception rather than the rule. */
-        (void)fprintf(stdout,"%s: DEBUG %s about to define variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
+        (void)fprintf(stdout,"%s: DEBUG %s about to define variable %s with %d dimension%s%s",nco_prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
         for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
           (void)fprintf(stdout,"%s (%d,%s)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,"unknown",(dmn_idx < dmn_nbr-1) ? ", " : "");
         } /* end loop over dmn */
@@ -1139,12 +1139,12 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
         } /* endif */
       } /* endif netCDF4 */
 
-      if(dbg_lvl_get() > 3 && prg_id != ncwa){
+      if(nco_dbg_lvl_get() > 3 && nco_prg_id != ncwa){
         /* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
         contains _wrong name_ when variables will be averaged.
         ncwa does contain write name information now if retain_degenerate_dimensions 
         option is in effect, but this is the exception rather than the rule. */
-        (void)fprintf(stdout,"%s: DEBUG %s defined variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
+        (void)fprintf(stdout,"%s: DEBUG %s defined variable %s with %d dimension%s%s",nco_prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
         for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
           (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");
         } /* end loop over dmn */
@@ -1155,7 +1155,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     }else{
       /* Variable is already in output file---use existing definition
       This branch is executed, e.g., by operators in append mode */
-      (void)fprintf(stdout,"%s: WARNING Using existing definition of variable \"%s\" in %s\n",prg_nm_get(),var[idx]->nm,fl_out);
+      (void)fprintf(stdout,"%s: WARNING Using existing definition of variable \"%s\" in %s\n",nco_prg_nm_get(),var[idx]->nm,fl_out);
     } /* end if variable is already in output file */
 
     /* Copy all attributes except in cases where packing/unpacking is involved
@@ -1175,8 +1175,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
     Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
     /* Copy exising packing attributes, if any, unless... */
-    if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
-      prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
+    if(nco_is_rth_opr(nco_prg_id) && /* ...operator is arithmetic... */
+      nco_prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
       !var[idx]->is_fix_var && /* ...and variable is processed (not fixed)... */
       var[idx]->xrf->pck_dsk) /* ...and variable is packed in input file... */
       PCK_ATT_CPY=False;
@@ -1323,7 +1323,7 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
           rcd=nco_inq_varname(nc_id,var_id,var_nm);
-          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_CRD_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -1397,7 +1397,7 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
           rcd=nco_inq_varname(nc_id,var_id,var_nm);
-          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_BND_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -1456,7 +1456,7 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
   nbr_dim_old=var->nbr_dim;
   rcd+=nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
   if(nbr_dim_old != var->nbr_dim){
-    (void)fprintf(stdout,"%s: ERROR Variable \"%s\" changed number of dimensions from %d to %d\n",prg_nm_get(),var->nm,nbr_dim_old,var->nbr_dim);
+    (void)fprintf(stdout,"%s: ERROR Variable \"%s\" changed number of dimensions from %d to %d\n",nco_prg_nm_get(),var->nm,nbr_dim_old,var->nbr_dim);
     nco_err_exit(0,"nco_var_mtd_refresh()");
   } /* endif err */
 
@@ -1486,8 +1486,8 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
   variables with missing_value since so many things could go wrong
   Now un-necessary since multi-file packing ostensibly works
   Leave code here in case we find it does not work */
-  if(nco_is_rth_opr(prg_get()) && var->pck_dsk){
-    if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"NCO_MSS_VAL_SNG\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...\n",prg_nm_get(),var_nm);
+  if(nco_is_rth_opr(nco_prg_id_get()) && var->pck_dsk){
+    if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"NCO_MSS_VAL_SNG\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...\n",nco_prg_nm_get(),var_nm);
   } /* endif variable is packed */
 #endif /* endif False */
 
@@ -1627,8 +1627,8 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
       if(!strcmp(dmn_nm,dim[dmn_idx]->nm)) break;
 
     if(dmn_idx == nbr_dim){
-      (void)fprintf(stdout,"%s: ERROR dimension %s is not in list of dimensions available to nco_var_fll()\n",prg_nm_get(),dmn_nm);
-      if(prg_get() == ncap) (void)fprintf(stdout,"%s: HINT This could be a symptom of TODO nco1045. Workaround is avoid use of append mode (i.e., -A switch) in ncap2.\n",prg_nm_get()); else (void)fprintf(stdout,"%s: HINT This could be a symptom of TODO nco111. Workaround is to make sure each dimension in the weighting and masking variable(s) appears in a variable to be processed.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR dimension %s is not in list of dimensions available to nco_var_fll()\n",nco_prg_nm_get(),dmn_nm);
+      if(nco_prg_id_get() == ncap) (void)fprintf(stdout,"%s: HINT This could be a symptom of TODO nco1045. Workaround is avoid use of append mode (i.e., -A switch) in ncap2.\n",nco_prg_nm_get()); else (void)fprintf(stdout,"%s: HINT This could be a symptom of TODO nco111. Workaround is to make sure each dimension in the weighting and masking variable(s) appears in a variable to be processed.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
@@ -1691,11 +1691,11 @@ nc_type
 nco_get_typ                           /* [fnc] Obtain netCDF type to define variable from NCO program ID */
 (const var_sct * const var)           /* I [sct] Variable to be defined in output file */
 {
-  int prg_id; /* [enm] Program ID */
+  int nco_prg_id; /* [enm] Program ID */
 
   nc_type typ_out=NC_NAT; /* [enm] Type in output file */
 
-  prg_id=prg_get(); /* [enm] Program ID */
+  nco_prg_id=nco_prg_id_get(); /* [enm] Program ID */
   
   /* Checking only nco_is_rth_opr() is too simplistic
      1. All variables handled by arithmetic operators are currently unpacked on reading
@@ -1716,12 +1716,12 @@ nco_get_typ                           /* [fnc] Obtain netCDF type to define vari
      4. All variables in non-arithmetic operators (except ncpdq) should remain un-altered
      5. ncpdq is non-arithmetic operator
      However, ncpdq specially handles fine-grained control [un-]packing options */
-  if(nco_is_rth_opr(prg_id)){
+  if(nco_is_rth_opr(nco_prg_id)){
     /* Arithmetic operators store values as unpacked... */
     typ_out=var->typ_upk; 
     /* ...with two exceptions...
        ncap [un-]packing precedes nco_var_dfn() call, sets var->type appropriately */
-    if(prg_id == ncap) typ_out=var->type;
+    if(nco_prg_id == ncap) typ_out=var->type;
     /* ...and pass through fixed (non-processed) variables untouched... */
     if(var->is_fix_var) typ_out=var->type;
   }else{

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.45 2013-10-09 15:12:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.46 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -31,7 +31,7 @@ nco_nd2endm /* [fnc] Compute number of days to end of month */
   int nbr_day_2_mth_end;
   
   if(mth < 1 || mth > 12 || day < 0){
-    (void)fprintf(stdout,"%s: ERROR nco_nd2endm() reports mth = %d, day = %d\n",prg_nm_get(),mth,day);
+    (void)fprintf(stdout,"%s: ERROR nco_nd2endm() reports mth = %d, day = %d\n",nco_prg_nm_get(),mth,day);
     nco_exit(EXIT_FAILURE);
   } /* end if */
   
@@ -161,10 +161,10 @@ nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two coordinate unit
   
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
-  if(dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
+  if(nco_dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
-    (void)fprintf(stdout,"%s: %s() failed to initialize UDUnits2 library\n",prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: %s() failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
     return NCO_ERR; /* Failure */
   } /* end if err */ 
   
@@ -201,7 +201,7 @@ nco_cln_clc_dff /* [fnc] UDUnits2 Compute difference between two coordinate unit
   /* Convert */
   *og_val=cv_convert_double(ut_cnv,crr_val);
   
-  if(dbg_lvl_get() >= nco_dbg_var) fprintf(stderr, "%s: INFO %s() reports conversion between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,*og_val);
+  if(nco_dbg_lvl_get() >= nco_dbg_var) fprintf(stderr, "%s: INFO %s() reports conversion between systems \"%s\" and \"%s\" is %f\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,*og_val);
 
   ut_free(ut_sct_in);
   ut_free(ut_sct_out);
@@ -229,10 +229,10 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 
   /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
-  if(dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
+  if(nco_dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
-    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits2 library\n",prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
     return NCO_ERR; /* Failure */
   } /* end if err */ 
 
@@ -297,7 +297,7 @@ nco_cln_clc_dff /* [fnc] UDUnits1 Difference between two co-ordinate units */
 #endif /* !UDUNITS_PATH */
 
   if(rcd != UDUNITS_NOERR){
-    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits2 library\n",prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
     return NCO_ERR;
   } /* end if err */ 
 
@@ -331,7 +331,7 @@ nco_cln_clc_dff /* [fnc] UDUnits1 Difference between two co-ordinate units */
   *og_val=crr_val*slp+incpt;
 
   /* debug stuff */
-  if(dbg_lvl_get() > nco_dbg_std) (void)fprintf(stderr,"%s: %s reports difference between systems \"%s\" and \"%s\" is %f\n",prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,*og_val);
+  if(nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(stderr,"%s: %s reports difference between systems \"%s\" and \"%s\" is %f\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,*og_val);
 
   (void)utTerm();
 
@@ -359,7 +359,7 @@ tm_cln_sct *tm_in) /*  O [sct] struct to be populated   */
 #endif /* !UDUNITS_PATH */
 
   if(rcd != UDUNITS_NOERR){
-    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits library\n",prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits library\n",nco_prg_nm_get(),fnc_nm);
     return NCO_ERR;
   } /* end if err */ 
 
@@ -613,7 +613,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   tm_cln_sct unt_cln_sct;
   tm_cln_sct bs_cln_sct;
   
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",prg_nm_get(),fl_unt_sng,fl_bs_sng);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: nco_cln_clc_tm() reports unt_sng=%s bs_sng=%s\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
   
   /* Does fl_unt_sng look like a regular timestamp? */ 
   if(sscanf(fl_unt_sng,"%d-%d",&year,&month) == 2){

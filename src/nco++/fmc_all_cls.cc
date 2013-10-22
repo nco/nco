@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.62 2013-07-19 11:59:20 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_all_cls.cc,v 1.63 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods: families of functions/methods */
 
@@ -2952,7 +2952,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
                
       } // end for
 
-      if(dbg_lvl_get() >= 2){ 
+      if(nco_dbg_lvl_get() >= 2){ 
           os<< sfnm<<": num missing="<<mcnt<<+" num valid="<<vmcnt;
           dbg_prn(fnc_nm,os.str());
       } 
@@ -3058,7 +3058,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
 	} // end for ldx 
 
-        if(dbg_lvl_get() >= 2){ 
+        if(nco_dbg_lvl_get() >= 2){ 
 	      os<< sfnm<<" mask num="<<mdx<<" : num missing="<<mcnt<<+" num processed="<<vmcnt;
               dbg_prn(fnc_nm,os.str());
 	} 

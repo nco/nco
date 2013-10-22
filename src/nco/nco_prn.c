@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.173 2013-10-16 17:11:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.174 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -558,7 +558,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
     } /* end loop over lmt_idx */
 
     if(WRP){
-      (void)fprintf(stdout,"%s: ERROR %s does not print variable hyperslabs where one or more of the coordinates is wrapped using the -d option (i.e., where the minimum index exceeds the maximum index such as longitude hyperslabs which cross the date-line. The workaround is to hyperslab into a new file (without -H) and then to print the values from that file (with -H).\n",prg_nm_get(),prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR %s does not print variable hyperslabs where one or more of the coordinates is wrapped using the -d option (i.e., where the minimum index exceeds the maximum index such as longitude hyperslabs which cross the date-line. The workaround is to hyperslab into a new file (without -H) and then to print the values from that file (with -H).\n",nco_prg_nm_get(),nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* endif error */
   
@@ -599,7 +599,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   /* Allocate enough space to hold variable */
   var.val.vp=(void *)nco_malloc(var.sz*nco_typ_lng(var.type));
   if(var.val.vp == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to malloc() %lu bytes for %s\n",prg_nm_get(),(unsigned long)var.sz*nco_typ_lng(var.type),var.nm);
+    (void)fprintf(stderr,"%s: ERROR unable to malloc() %lu bytes for %s\n",nco_prg_nm_get(),(unsigned long)var.sz*nco_typ_lng(var.type),var.nm);
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
@@ -830,7 +830,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	  (void)sprintf(var_sng,"%%s%c%%ld--%%ld%c='%s' %%s",arr_lft_dlm,arr_rgt_dlm,dmn_sng);
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+dmn_cnt[var.nbr_dim-1]-1L,var.val.cp+lmn,unit_sng);
 	} /* endif */
-	if(dbg_lvl_get() >= 6)(void)fprintf(stdout,"DEBUG: format string used for chars is dmn_sng = %s, var_sng = %s\n",dmn_sng,var_sng); 
+	if(nco_dbg_lvl_get() >= 6)(void)fprintf(stdout,"DEBUG: format string used for chars is dmn_sng = %s, var_sng = %s\n",dmn_sng,var_sng); 
 	/* Newline separates consecutive values within given variable */
 	(void)fprintf(stdout,"\n");
 	(void)fflush(stdout);
@@ -1198,9 +1198,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(prn_flg->md5->dgs) (void)nco_md5_chk(prn_flg->md5,var_nm,var.sz*nco_typ_lng(var.type),grp_id,(long *)NULL,(long *)NULL,var.val.vp);
 
   /* Warn if variable is packed */
-  if(dbg_lvl_get() > 0)
+  if(nco_dbg_lvl_get() > 0)
     if(nco_pck_dsk_inq(grp_id,&var))
-      (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",prg_nm_get(),var_nm);
+      (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",nco_prg_nm_get(),var_nm);
 
   /* Refresh number of attributes and missing value attribute, if any */
   var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
@@ -1486,7 +1486,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
         assert(!strcmp(lmt_msa[idx]->dmn_nm,var_trv->var_dmn[idx].dmn_nm));
 
-        if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s <%s>: reading dimension[%d]:%s: ",prg_nm_get(),fnc_nm,var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s <%s>: reading dimension[%d]:%s: ",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,idx,var_trv->var_dmn[idx].dmn_nm_fll);
 
         dim[idx].val.vp=NULL;
         dim[idx].nm=lmt_msa[idx]->dmn_nm;

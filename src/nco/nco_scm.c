@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.50 2013-01-13 06:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.51 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -48,9 +48,9 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
 
   /* Is cvs_Name keyword expanded? */
   dlr_ptr=(char *)strstr(cvs_Name,spc_dlr);
-  if(dlr_ptr == NULL && dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: INFO cvs_vrs_prs() reports dlr_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
+  if(dlr_ptr == NULL && nco_dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: INFO cvs_vrs_prs() reports dlr_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",nco_prg_nm_get(),nco_prg_nm_get());
   cvs_nm_ptr=(char *)strstr(cvs_Name,dlr_nm_cln_spc);
-  if(cvs_nm_ptr == NULL && dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: INFO cvs_vrs_prs() reports cvs_nm_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
+  if(cvs_nm_ptr == NULL && nco_dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: INFO cvs_vrs_prs() reports cvs_nm_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",nco_prg_nm_get(),nco_prg_nm_get());
   cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-strlen(dlr_nm_cln_spc)); /* 7 is strlen("$Name: ") */
   if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
 
@@ -85,11 +85,11 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   /* cvs_vrs_sng is, e.g., "1.1" */
   nco_sng_len=strlen(nco_sng);
   nco_sng_ptr=strstr(cvs_nm_sng,nco_sng);
-  if(nco_sng_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports nco_sng_ptr == NULL\n",prg_nm_get());
+  if(nco_sng_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports nco_sng_ptr == NULL\n",nco_prg_nm_get());
   dsh_ptr=strstr(cvs_nm_sng,"-");
-  if(dsh_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dsh_ptr == NULL\n",prg_nm_get());
+  if(dsh_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dsh_ptr == NULL\n",nco_prg_nm_get());
   usc_1_ptr=strstr(cvs_nm_sng,"_");
-  if(usc_1_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports usc_1_ptr == NULL\n",prg_nm_get());
+  if(usc_1_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports usc_1_ptr == NULL\n",nco_prg_nm_get());
   cvs_mjr_vrs_len=(int)(usc_1_ptr-dsh_ptr)-1; /* NB: cast pointer to int before subtracting */
   usc_2_ptr=strstr(usc_1_ptr+1,"_");
   cvs_mjr_vrs_sng=(char *)nco_malloc((size_t)cvs_mjr_vrs_len+1);
@@ -124,7 +124,7 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
     (void)sprintf(cvs_vrs_sng,"%li.%li",cvs_mjr_vrs,cvs_mnr_vrs);
   }/* end else */
 
-  if(dbg_lvl_get() == 4){
+  if(nco_dbg_lvl_get() == 4){
     (void)fprintf(stderr,"NCO version %s\n",cvs_vrs_sng);
     (void)fprintf(stderr,"cvs_nm_sng %s\n",cvs_nm_sng);
     (void)fprintf(stderr,"cvs_mjr_vrs_sng %s\n",cvs_mjr_vrs_sng);
@@ -200,9 +200,9 @@ nco_vrs_prn /* [fnc] Print NCO version */
     (void)fprintf(stderr,"NCO netCDF Operators version %s built %s on %s by %s\n",vrs_cpp,date_cpp,hst_cpp,usr_cpp);
   } /* endif */
   if(strlen(CVS_Id) > strlen("*Id*")){
-    (void)fprintf(stderr,"%s version %s\n",prg_nm_get(),vrs_cvs);
+    (void)fprintf(stderr,"%s version %s\n",nco_prg_nm_get(),vrs_cvs);
   }else{
-    (void)fprintf(stderr,"%s version %s\n",prg_nm_get(),vrs_cpp);
+    (void)fprintf(stderr,"%s version %s\n",nco_prg_nm_get(),vrs_cpp);
   } /* endif */
 
   date_cvs=(char *)nco_free(date_cvs);

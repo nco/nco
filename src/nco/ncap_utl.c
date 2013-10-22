@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.154 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.155 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -106,7 +106,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
 	  (void)nco_dmn_xrf(*dim_new,dmn_in);
 	  /* Write new dimension to output file */
 	  (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,dim_new,1);
-	  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Found new dimension %s in input variable %s in file %s. Defining dimension %s in output file %s\n",prg_nm_get(),(*dim_new)->nm,var_nm,prs_arg->fl_in,(*dim_new)->nm,prs_arg->fl_out);
+	  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Found new dimension %s in input variable %s in file %s. Defining dimension %s in output file %s\n",nco_prg_nm_get(),(*dim_new)->nm,var_nm,prs_arg->fl_in,(*dim_new)->nm,prs_arg->fl_out);
 	  break;
 	} /* end loop over dimensions in current output dimension list */
       (void)nco_free(dim_id);
@@ -115,7 +115,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
     
   } /* end else */
   
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",nco_prg_nm_get(),var_nm);
   var=nco_var_fll(fl_id,var_id,var_nm,*(prs_arg->dmn_out),*(prs_arg->nbr_dmn_out));
   /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
       (void)strcpy(var->nm,var_nm); */
@@ -179,7 +179,7 @@ ncap_var_write
     var_dpl=nco_var_dpl(var);
     assert(var_dpl->nm);
     if(ncap_var_lookup(var_dpl,((prs_sct*)prs_arg),True))
-      (void)fprintf(stdout,"%s: variable %s defined\n",prg_nm_get(),var->nm);
+      (void)fprintf(stdout,"%s: variable %s defined\n",nco_prg_nm_get(),var->nm);
     (void)nco_var_free(var);
     return True;
   } /* endif ntl_scn */
@@ -252,7 +252,7 @@ ncap_var_write
 #ifdef NCO_RUSAGE_DBG
   /* Compile: cd ~/nco/bld;make 'USR_TKN=-DNCO_RUSAGE_DBG';cd - */
   /* Print rusage memory usage statistics */
-  if(dbg_lvl_get() >= 0) (void)fprintf(stdout,"%s: INFO ncap_var_write() writing variable %s\n",prg_nm_get(),var->nm);
+  if(nco_dbg_lvl_get() >= 0) (void)fprintf(stdout,"%s: INFO ncap_var_write() writing variable %s\n",nco_prg_nm_get(),var->nm);
   maxrss=nco_mmr_usg_prn((int)0);
 #endif /* !NCO_RUSAGE_DBG */
   
@@ -907,7 +907,7 @@ ncap_scv_minus(scv_sct *scv)
   case NC_UINT: /* NB: Unsigned */
   case NC_UINT64: /* NB: Unsigned */
   case NC_UBYTE: /* NB: Unsigned */
-    (void)fprintf(stdout,"%s: ERROR ncap_scr_minus() reports attempt to convert unsigned integer type to a negative number\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR ncap_scr_minus() reports attempt to convert unsigned integer type to a negative number\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
     break;
   case NC_CHAR: break; /* Do nothing */
@@ -1198,20 +1198,20 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	/* Dimensions in var_lsr and var_gtr are mutually exclusive */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
-	  (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+	  (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  nco_exit(EXIT_FAILURE);
 	}else{
-	  if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+	  if(nco_dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       }else if(var_lsr_var_gtr_dmn_shr_nbr > 0 && var_lsr_var_gtr_dmn_shr_nbr < var_lsr->nbr_dim){
 	/* Some, but not all, of var_lsr dimensions are in var_gtr */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
-	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr);
+	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",nco_prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr);
 	  nco_exit(EXIT_FAILURE);
 	}else{
-	  if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
+	  if(nco_dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",nco_prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       } /* end if */
@@ -1242,7 +1242,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
   if(var_lsr_out == NULL && CONVOLVE){
     /* Convolve variables by returned stretched variables with minimum possible number of dimensions */
     int dmn_nbr; /* Number of dimensions in convolution */
-    if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+    if(nco_dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
     /* Dimensions in convolution are union of dimensions in variables */
     dmn_nbr=var_lsr->nbr_dim+var_gtr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr; /* Number of dimensions in convolution */
     dmn_nbr=dmn_nbr; /* CEWI: Avert compiler warning that variable is set but never used */
@@ -1340,7 +1340,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	  } /* end if */
 	  /* Sanity check */
 	  if(idx_dmn == var_gtr->nbr_dim-1){
-	    (void)fprintf(stdout,"%s: ERROR var_lsr %s has dimension %s but var_gtr %s does not deep in ncap_var_stretch()\n",prg_nm_get(),var_lsr->nm,var_lsr->dim[idx]->nm,var_gtr->nm);
+	    (void)fprintf(stdout,"%s: ERROR var_lsr %s has dimension %s but var_gtr %s does not deep in ncap_var_stretch()\n",nco_prg_nm_get(),var_lsr->nm,var_lsr->dim[idx]->nm,var_gtr->nm);
 	    nco_exit(EXIT_FAILURE);
 	  } /* end if err */
 	} /* end loop over greater variable dimensions */

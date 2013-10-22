@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.108 2013-10-08 22:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.109 2013-10-22 03:03:36 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.108 2013-10-08 22:26:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.108 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.109 2013-10-22 03:03:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.109 $";
   const char * const opt_sht_lst="346Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -258,7 +258,7 @@ main(int argc,char **argv)
       {"coords",no_argument,0,'c'},
       {"crd",no_argument,0,'c'},
       {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
+      {"nco_dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
@@ -307,8 +307,8 @@ main(int argc,char **argv)
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
   
   /* Parse command line arguments */
   while(1){
@@ -386,7 +386,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
@@ -434,7 +434,7 @@ main(int argc,char **argv)
       break;
 #ifdef ENABLE_MPI
     case 'S': /* Suspend with signal handler to facilitate debugging */
-      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",nco_prg_nm);
       while(!nco_spn_lck_brk) usleep(nco_spn_lck_us); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
 #endif /* !ENABLE_MPI */
@@ -466,11 +466,11 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -566,12 +566,12 @@ main(int argc,char **argv)
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
     if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
+    if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",nco_prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
   } /* endif */
   
   /* From this point forward, assume ncpdq operator packs or re-orders, not both */
   if(dmn_rdr_nbr > 0 && nco_pck_plc != nco_pck_plc_nil){
-    (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",prg_nm,prg_nm,prg_nm);
+    (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",nco_prg_nm,nco_prg_nm,nco_prg_nm);
     nco_exit(EXIT_FAILURE);
   } /* end if */
   
@@ -603,7 +603,7 @@ main(int argc,char **argv)
       for(idx=0;idx<nbr_dmn_xtr;idx++){
 	if(!strcmp(dmn_rdr_lst[idx_rdr].nm,dim[idx]->nm)) break;
       } /* end loop over idx_rdr */
-      if(idx != nbr_dmn_xtr) dmn_rdr[dmn_rdr_nbr_utl++]=dim[idx]; else if(dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
+      if(idx != nbr_dmn_xtr) dmn_rdr[dmn_rdr_nbr_utl++]=dim[idx]; else if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",nco_prg_nm,dmn_rdr_lst[idx_rdr].nm);
     } /* end loop over idx_rdr */
     dmn_rdr_nbr=dmn_rdr_nbr_utl;
     /* Collapse extra dimension structure space to prevent accidentally using it */
@@ -616,7 +616,7 @@ main(int argc,char **argv)
       for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
 	if(idx_rdr != idx){
 	  if(dmn_rdr[idx]->id == dmn_rdr[idx_rdr]->id){
-	    (void)fprintf(fp_stdout,"%s: ERROR %s specified more than once in reducing list\n",prg_nm,dmn_rdr[idx]->nm);
+	    (void)fprintf(fp_stdout,"%s: ERROR %s specified more than once in reducing list\n",nco_prg_nm,dmn_rdr[idx]->nm);
 	    nco_exit(EXIT_FAILURE);
 	  } /* end if */
 	} /* end if */
@@ -624,7 +624,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
     
     if(dmn_rdr_nbr > nbr_dmn_xtr){
-      (void)fprintf(fp_stdout,"%s: ERROR More re-ordering dimensions than extracted dimensions\n",prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR More re-ordering dimensions than extracted dimensions\n",nco_prg_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
@@ -649,7 +649,7 @@ main(int argc,char **argv)
   (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* We now have final list of variables to extract. Phew. */
-  if(dbg_lvl >= nco_dbg_var){
+  if(nco_dbg_lvl >= nco_dbg_var){
     for(idx=0;idx<xtr_nbr;idx++) (void)fprintf(stderr,"var[%d]->nm = %s, ->id=[%d]\n",idx,var[idx]->nm,var[idx]->id);
     for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stderr,"var_fix[%d]->nm = %s, ->id=[%d]\n",idx,var_fix[idx]->nm,var_fix[idx]->id);
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
@@ -666,7 +666,7 @@ main(int argc,char **argv)
     
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
-    if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
+    if(nco_dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
     
     /* Copy global attributes */
     (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -714,7 +714,7 @@ main(int argc,char **argv)
 	  /* ...and current output record dimension already differs from input record dimension... */
 	  if(REDEFINED_RECORD_DIMENSION){
 	    /* ...then requested re-order requires multiple record dimensions... */
-	    if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
+	    if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",nco_prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
 	    break;
 	  }else{ /* !REDEFINED_RECORD_DIMENSION */
 	    /* ...otherwise, update output record dimension name... */
@@ -735,7 +735,7 @@ main(int argc,char **argv)
      Hence making following logic prettier or funcionalizing is not high priority.
      Logic may need to be simplified/re-written once netCDF4 is released. */
   if(REDEFINED_RECORD_DIMENSION){
-    if(dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF allows only one record dimension. Hence %s will make %s record (least rapidly varying) dimension in all variables that contain it.\n",prg_nm,rec_dmn_nm_in,rec_dmn_nm_out,prg_nm,rec_dmn_nm_out);
+    if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change record dimension from %s to %s. netCDF allows only one record dimension. Hence %s will make %s record (least rapidly varying) dimension in all variables that contain it.\n",nco_prg_nm,rec_dmn_nm_in,rec_dmn_nm_out,nco_prg_nm,rec_dmn_nm_out);
     /* Changing record dimension may invalidate is_rec_var flag
        Updating is_rec_var flag to correct value, even if value is ignored,
        helps keep user appraised of unexpected dimension re-orders.
@@ -753,14 +753,14 @@ main(int argc,char **argv)
       /* ...Will variable be record variable in output file?... */
       if(dmn_out_idx == var_fix[idx]->nbr_dim){
 	/* ...No. Variable will be non-record---does this change its status?... */
-	if(dbg_lvl >= nco_dbg_var) if(var_fix[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_fix[idx]->nm);
+	if(nco_dbg_lvl >= nco_dbg_var) if(var_fix[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",nco_prg_nm,var_fix[idx]->nm);
 	/* Assign record flag dictated by re-order */
 	var_fix[idx]->is_rec_var=False; 
       }else{ /* ...otherwise variable will be record variable... */
 	/* ...Yes. Variable will be record... */
 	/* ...Will becoming record variable change its status?... */
 	if(var_fix[idx]->is_rec_var == False){
-	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_fix[idx]->nm);
+	  if(nco_dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",nco_prg_nm,var_fix[idx]->nm);
 	  /* Change record flag to status dictated by re-order */
 	  var_fix[idx]->is_rec_var=True;
 	} /* endif status changing from non-record to record */
@@ -775,7 +775,7 @@ main(int argc,char **argv)
       /* ...Will variable be record variable in output file?... */
       if(dmn_out_idx == var_prc_out[idx]->nbr_dim){
 	/* ...No. Variable will be non-record---does this change its status?... */
-	if(dbg_lvl >= nco_dbg_var) if(var_prc_out[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",prg_nm,var_prc_out[idx]->nm);
+	if(nco_dbg_lvl >= nco_dbg_var) if(var_prc_out[idx]->is_rec_var == True) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",nco_prg_nm,var_prc_out[idx]->nm);
 	/* Assign record flag dictated by re-order */
 	var_prc_out[idx]->is_rec_var=False; 
       }else{ /* ...otherwise variable will be record variable... */
@@ -785,14 +785,14 @@ main(int argc,char **argv)
 	  int dmn_dpl_idx;
 	  for(dmn_dpl_idx=1;dmn_dpl_idx<var_prc_out[idx]->nbr_dim;dmn_dpl_idx++){ /* NB: loop starts from 1 */
 	    if(var_prc_out[idx]->dmn_id[0] == var_prc_out[idx]->dmn_id[dmn_dpl_idx]){
-	      (void)fprintf(stdout,"%s: ERROR Requested re-order turns duplicate non-record dimension %s in variable %s into output record dimension. netCDF does not support duplicate record dimensions in a single variable.\n%s: HINT: Exclude variable %s from extraction list with \"-x -v %s\".\n",prg_nm_get(),rec_dmn_nm_out,var_prc_out[idx]->nm,prg_nm_get(),var_prc_out[idx]->nm,var_prc_out[idx]->nm);
+	      (void)fprintf(stdout,"%s: ERROR Requested re-order turns duplicate non-record dimension %s in variable %s into output record dimension. netCDF does not support duplicate record dimensions in a single variable.\n%s: HINT: Exclude variable %s from extraction list with \"-x -v %s\".\n",nco_prg_nm_get(),rec_dmn_nm_out,var_prc_out[idx]->nm,nco_prg_nm_get(),var_prc_out[idx]->nm,var_prc_out[idx]->nm);
 	      nco_exit(EXIT_FAILURE);
 	    } /* endif err */
 	  } /* end loop over dmn_out */
 	} /* endif has_dpl_dmn */
 	/* ...Will becoming record variable change its status?... */
 	if(var_prc_out[idx]->is_rec_var == False){
-	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_prc_out[idx]->nm);
+	  if(nco_dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",nco_prg_nm,var_prc_out[idx]->nm);
 	  /* Change record flag to status dictated by re-order */
 	  var_prc_out[idx]->is_rec_var=True;
 	  /* ...Swap dimension information for multi-dimensional variables... */
@@ -879,7 +879,7 @@ main(int argc,char **argv)
       (void)nco_enddef(out_id);
     }else{
       (void)nco__enddef(out_id,hdr_pad);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
 #ifdef ENABLE_MPI
   } /* prc_rnk != rnk_mgr */
@@ -915,10 +915,10 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in);
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
@@ -990,7 +990,7 @@ main(int argc,char **argv)
 #endif /* !0 */
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,nco_dbg_lvl,dmn_idx_out_in,dmn_rdr_nbr,dmn_rvr_in,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,nco_prg_nm,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	/* UP and SMP codes main loop over variables */
 	for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
@@ -998,15 +998,15 @@ main(int argc,char **argv)
 	  in_id=in_id_arr[omp_get_thread_num()];
 	  /* fxm TODO nco638 temporary fix? */
 	  var_prc[idx]->nc_id=in_id; 
-	  if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	  if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	  
 	  /* Retrieve variable from disk into memory */
 	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	  (void)nco_msa_var_get(in_id,var_prc[idx],lmt_all_lst,nbr_dmn_fl);
 	  if(dmn_rdr_nbr > 0){
 	    if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
-	      (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+	      (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",nco_prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	      nco_exit(EXIT_FAILURE); 
 	    } /* endif err */
 	    
@@ -1076,7 +1076,7 @@ main(int argc,char **argv)
   }  /* end (OpenMP parallel for) loop over idx */
 #endif /* !ENABLE_MPI */
   
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\n");
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\n");
   
 #ifdef ENABLE_MPI
   MPI_Barrier(MPI_COMM_WORLD);
@@ -1119,7 +1119,7 @@ main(int argc,char **argv)
 	       (nco_pck_plc == nco_pck_plc_xst_new_att && var_prc[idx]->pck_ram)
 	       ){
 	      /* Replace dummy packing attributes with final values, or delete them */
-	      if(dbg_lvl >= nco_dbg_io) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
+	      if(nco_dbg_lvl >= nco_dbg_io) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",nco_prg_nm,var_prc[idx]->nm);
 	      (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
 	      (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
 	    } /* endif variable is newly packed by this operator */

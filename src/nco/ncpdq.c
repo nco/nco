@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.371 2013-10-08 22:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.372 2013-10-22 03:03:46 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.371 2013-10-08 22:26:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.371 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.372 2013-10-22 03:03:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.372 $";
   const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -255,7 +255,7 @@ main(int argc,char **argv)
     {"coords",no_argument,0,'c'},
     {"crd",no_argument,0,'c'},
     {"debug",required_argument,0,'D'},
-    {"dbg_lvl",required_argument,0,'D'},
+    {"nco_dbg_lvl",required_argument,0,'D'},
     {"dimension",required_argument,0,'d'},
     {"dmn",required_argument,0,'d'},
     {"fortran",no_argument,0,'F'},
@@ -306,8 +306,8 @@ main(int argc,char **argv)
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
 
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
 
   /* Parse command line arguments */
   while(1){
@@ -392,7 +392,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
@@ -479,11 +479,11 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -497,12 +497,12 @@ main(int argc,char **argv)
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
     if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
+    if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",nco_prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
   } /* dmn_rdr_nbr != 0 */
 
   /* From this point forward, assume ncpdq operator packs or re-orders, not both */
   if(dmn_rdr_nbr > 0 && nco_pck_plc != nco_pck_plc_nil){
-    (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",prg_nm,prg_nm,prg_nm);
+    (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",nco_prg_nm,nco_prg_nm,nco_prg_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
@@ -650,7 +650,7 @@ main(int argc,char **argv)
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
-  if(dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
+  if(nco_dbg_lvl >= nco_dbg_sbr) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -694,7 +694,7 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
   }else{
     (void)nco__enddef(out_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
   /* Assign zero to start and unity to stride vectors in output variables */
@@ -711,12 +711,12 @@ main(int argc,char **argv)
 
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",prg_nm_get(),fl_idx,fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",nco_prg_nm_get(),fl_idx,fl_in);
 
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
-    if(dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+    if(nco_dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
@@ -726,7 +726,7 @@ main(int argc,char **argv)
     ddra_info.tmr_flg=nco_tmr_rgl;
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,dbg_lvl,dmn_rdr_nbr,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,prg_nm,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,IS_REORDER)
+#pragma omp parallel for default(none) private(idx,in_id) shared(aed_lst_add_fst,aed_lst_scl_fct,nco_dbg_lvl,dmn_rdr_nbr,gpe,in_id_arr,nbr_var_prc,nco_pck_map,nco_pck_plc,out_id,nco_prg_nm,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,IS_REORDER)
 #endif /* !_OPENMP */
 
     /* Process all variables in current file */
@@ -742,8 +742,8 @@ main(int argc,char **argv)
       in_id=in_id_arr[omp_get_thread_num()];
       var_prc[idx]->nc_id=in_id; 
 
-      if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+      if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+      if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
@@ -754,7 +754,7 @@ main(int argc,char **argv)
       /* If re-ordering */
       if(IS_REORDER){
         if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
-          (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+          (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",nco_prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
           nco_exit(EXIT_FAILURE); 
         } /* endif err */
 
@@ -805,7 +805,7 @@ main(int argc,char **argv)
 
     } /* end (OpenMP parallel for) loop over idx */
 
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\n");
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stderr,"\n");
 
     /* Write/overwrite packing attributes for newly packed and re-packed variables 
        Logic here should nearly mimic logic in nco_var_dfn() */
@@ -853,7 +853,7 @@ main(int argc,char **argv)
 	     (nco_pck_plc == nco_pck_plc_xst_new_att && var_prc[idx]->pck_ram)
 	     ){
 	    /* Replace dummy packing attributes with final values, or delete them */
-	    if(dbg_lvl >= nco_dbg_io) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
+	    if(nco_dbg_lvl >= nco_dbg_io) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",nco_prg_nm,var_prc[idx]->nm);
 	    (void)nco_aed_prc(grp_out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
 	    (void)nco_aed_prc(grp_out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
           } /* endif variable is newly packed by this operator */

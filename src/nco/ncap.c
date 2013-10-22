@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.274 2013-10-08 22:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.275 2013-10-22 03:03:45 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.274 2013-10-08 22:26:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.274 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.275 2013-10-22 03:03:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.275 $";
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_sct **cnk=NULL_CEWI;
@@ -293,7 +293,7 @@ main(int argc,char **argv)
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
+      {"nco_dbg_lvl",required_argument,0,'D'},
       {"fnc_tbl",no_argument,0,'f'},
       {"prn_fnc_tbl",no_argument,0,'f'},
       {"ftn",no_argument,0,'F'},
@@ -333,8 +333,8 @@ main(int argc,char **argv)
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
   
   /* Parse command line arguments */
   while(1){
@@ -410,7 +410,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
@@ -435,10 +435,10 @@ main(int argc,char **argv)
       break;
     case 'n': /* NINTAP-style abbreviation of files to process */
       /* Currently not used in ncap but should be to allow processing multiple input files by same script */
-      (void)fprintf(stderr,"%s: ERROR %s does not currently implement -n option\n",prg_nm_get(),prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR %s does not currently implement -n option\n",nco_prg_nm_get(),nco_prg_nm_get());
       fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 3){
-	(void)fprintf(stderr,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
+	(void)fprintf(stderr,"%s: ERROR Incorrect abbreviation for file list\n",nco_prg_nm);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* end if */
@@ -464,7 +464,7 @@ main(int argc,char **argv)
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=(char *)strdup(optarg);
-      if(nbr_spt == NCAP_SPT_NBR_MAX-1) (void)fprintf(stderr,"%s: WARNING No more than %d script arguments allowed. TODO #24\n",prg_nm_get(),NCAP_SPT_NBR_MAX);
+      if(nbr_spt == NCAP_SPT_NBR_MAX-1) (void)fprintf(stderr,"%s: WARNING No more than %d script arguments allowed. TODO #24\n",nco_prg_nm_get(),NCAP_SPT_NBR_MAX);
       break;
     case 'S': /* Read command script from file rather than from command line */
       fl_spt_usr=(char *)strdup(optarg);
@@ -475,7 +475,7 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
-      if(EXCLUDE_INPUT_LIST) (void)fprintf(stderr,"%s: ERROR %s does not currently implement -x option\n",prg_nm_get(),prg_nm_get());
+      if(EXCLUDE_INPUT_LIST) (void)fprintf(stderr,"%s: ERROR %s does not currently implement -x option\n",nco_prg_nm_get(),nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     case '?': /* Print proper usage */
@@ -483,11 +483,11 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -587,7 +587,7 @@ main(int argc,char **argv)
   
   if(PRN_FNC_TBL){
     /* ncap TODO #43: alphabetize this list */ 
-    (void)fprintf(stdout,"Maths functions available in %s:\n",prg_nm_get());
+    (void)fprintf(stdout,"Maths functions available in %s:\n",nco_prg_nm_get());
     (void)fprintf(stdout,"Name\tFloat\tDouble\n");          
     for(idx=0;idx<sym_tbl_nbr;idx++)
       (void)fprintf(stdout,"%s\t%c\t%c\n",sym_tbl[idx]->nm,(sym_tbl[idx]->fnc_flt ? 'y' : 'n'),(sym_tbl[idx]->fnc_dbl ? 'y' : 'n'));
@@ -641,7 +641,7 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
   }else{
     (void)nco__enddef(out_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
 
   /* Set arguments for  script execution */
@@ -676,13 +676,13 @@ main(int argc,char **argv)
     if(fl_spt_usr == NULL){
       /* No script file specified, look for command-line scripts */
       if(nbr_spt == 0){
-	(void)fprintf(stderr,"%s: ERROR no script file or command line scripts specified\n",prg_nm_get());
-	(void)fprintf(stderr,"%s: HINT Use, e.g., -s \"foo=bar\"\n",prg_nm_get());
+	(void)fprintf(stderr,"%s: ERROR no script file or command line scripts specified\n",nco_prg_nm_get());
+	(void)fprintf(stderr,"%s: HINT Use, e.g., -s \"foo=bar\"\n",nco_prg_nm_get());
 	nco_exit(EXIT_FAILURE);
       } /* end if */
       
       /* Print all command-line scripts */
-      if(dbg_lvl_get() > nco_dbg_scl){
+      if(nco_dbg_lvl_get() > nco_dbg_scl){
 	for(idx=0;idx<nbr_spt;idx++) (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
       } /* endif debug */
       
@@ -693,7 +693,7 @@ main(int argc,char **argv)
     }else{ /* ...endif command-line scripts, begin script file... */
       /* Open script file for reading */
       if((nco_yyin=fopen(fl_spt_usr,"r")) == NULL){
-	(void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_usr);
+	(void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",nco_prg_nm_get(),fl_spt_usr);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
     } /* end else script file */
@@ -715,7 +715,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_ycc;idx++){
       /* Define variables in output */
       /* Kill variables classified as undefined */
-      if(dbg_lvl >= nco_dbg_var) (void)fprintf(stdout,"%s: Checking var_ycc[%d]->undefined for variable %s...\n",prg_nm_get(),idx,var_ycc[idx]->nm);
+      if(nco_dbg_lvl >= nco_dbg_var) (void)fprintf(stdout,"%s: Checking var_ycc[%d]->undefined for variable %s...\n",nco_prg_nm_get(),idx,var_ycc[idx]->nm);
       if(var_ycc[idx]->undefined){
 	/* 20060225: TODO nco680 free() list at end or risk double-free()'ing*/
 	var_ycc[idx]=nco_var_free(var_ycc[idx]); 

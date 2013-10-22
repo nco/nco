@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.50 2013-06-25 16:56:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.51 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -123,7 +123,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       case NC_STRING: (void)sprintf(mss_val_2_sng,fmt_sng,var2->mss_val.sngp[0]); break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
-      (void)fprintf(stderr,"%s: WARNING Input variables have different NCO_MSS_VAL_SNG's:\nFile 1 variable %s has NCO_MSS_VAL_SNG type = %s, value = %s\nFile 2 variable %s has NCO_MSS_VAL_SNG type = %s, value = %s\nFile 3 variable %s will have NCO_MSS_VAL_SNG type = %s, value = %s\nWill translate values of var2 equaling mss_val2 to mss_val1 before arithmetic operation\n",prg_nm_get(),var1->nm,nco_typ_sng(var1->type),mss_val_1_sng,var2->nm,nco_typ_sng(var2->type),mss_val_2_sng,var1->nm,nco_typ_sng(var1->type),mss_val_1_sng);
+      (void)fprintf(stderr,"%s: WARNING Input variables have different NCO_MSS_VAL_SNG's:\nFile 1 variable %s has NCO_MSS_VAL_SNG type = %s, value = %s\nFile 2 variable %s has NCO_MSS_VAL_SNG type = %s, value = %s\nFile 3 variable %s will have NCO_MSS_VAL_SNG type = %s, value = %s\nWill translate values of var2 equaling mss_val2 to mss_val1 before arithmetic operation\n",nco_prg_nm_get(),var1->nm,nco_typ_sng(var1->type),mss_val_1_sng,var2->nm,nco_typ_sng(var2->type),mss_val_2_sng,var1->nm,nco_typ_sng(var1->type),mss_val_1_sng);
     } /* MSS_VAL_EQL */
     (void)cast_nctype_void(var_typ,&var1->mss_val);
     (void)cast_nctype_void(var_typ,&var2->mss_val);
@@ -293,10 +293,10 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
     if((int)strcasecmp(att_nm,nco_mss_val_sng_get())) continue;
     (void)nco_inq_att(nc_id,var->id,att_nm,&att_typ,&att_sz);
     if(att_sz != 1L && att_typ != NC_CHAR){
-      (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has %li elements and so will not be used\n",prg_nm_get(),att_nm,var->nm,att_sz);
+      (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has %li elements and so will not be used\n",nco_prg_nm_get(),att_nm,var->nm,att_sz);
       continue;
     } /* end if */
-    /* if(att_typ != var->type) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s will be typecast from %s to %s for arithmetic purposes\n",prg_nm_get(),att_nm,var->nm,nco_typ_sng(att_typ),nco_typ_sng(var->type)); */
+    /* if(att_typ != var->type) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s will be typecast from %s to %s for arithmetic purposes\n",nco_prg_nm_get(),att_nm,var->nm,nco_typ_sng(att_typ),nco_typ_sng(var->type)); */
     /* If we got this far then try to retrieve attribute and make sure it conforms to variable's type */
     var->has_mss_val=True;
     /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
@@ -325,13 +325,13 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
 
   /* Always warn when NCO looks for _FillValue but file has missing_value, and/or
      always warn when NCO looks for missing_value but file has _FillValue.
-     20101129: This is a long warning, only print when dbg_lvl > 0 */
-  if(dbg_lvl_get() >= nco_dbg_std && has_fll_val && !var->has_mss_val && WRN_FIRST){
+     20101129: This is a long warning, only print when nco_dbg_lvl > 0 */
+  if(nco_dbg_lvl_get() >= nco_dbg_std && has_fll_val && !var->has_mss_val && WRN_FIRST){
     char sa[1000];
     char sa1[1000];
     char sa2[1000]; 
     WRN_FIRST=False;
-    (void)sprintf(sa,"%s: WARNING Variable %s has attribute \"%s\" but not \"%s\". To comply with netCDF conventions, NCO ignores values that equal the %s attribute when performing arithmetic.",prg_nm_get(),var->nm,nco_not_mss_val_sng_get(), nco_mss_val_sng_get(),nco_mss_val_sng_get()); 
+    (void)sprintf(sa,"%s: WARNING Variable %s has attribute \"%s\" but not \"%s\". To comply with netCDF conventions, NCO ignores values that equal the %s attribute when performing arithmetic.",nco_prg_nm_get(),var->nm,nco_not_mss_val_sng_get(), nco_mss_val_sng_get(),nco_mss_val_sng_get()); 
     (void)sprintf(sa1," Confusingly, values equal to the missing_value should also be neglected. However, it is tedious and (possibly) computationally expensive to check each value against multiple missing values during arithmetic on large variables. So NCO thinks that processing variables with a \"%s\" attribute and no \"%s\" attribute may produce undesired arithmetic results (i.e., where values that were intended to be neglected were not, in fact, neglected).",nco_not_mss_val_sng_get(),nco_mss_val_sng_get());
     (void)sprintf(sa2, " We suggest you rename all \"%s\" attributes to \"%s\" or include both \"%s\" and \"%s\" attributes (with the _same values_) for all variables that have either attribute. Because it is long, this message is only printed once per operator even though multiple variables may have the same attribute configuration. More information on missing values is given at:\nhttp://nco.sf.net/nco.html#mss_val\nExamples of renaming attributes are at:\nhttp://nco.sf.net/nco.html#xmp_ncrename\nExamples of creating and deleting attributes are at:\nhttp://nco.sf.net/nco.html#xmp_ncatted\n",nco_not_mss_val_sng_get(),nco_mss_val_sng_get(),nco_not_mss_val_sng_get(),nco_mss_val_sng_get());
     (void)fprintf(stderr,"%s%s%s",sa,sa1,sa2); 

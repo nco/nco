@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.64 2013-06-25 16:56:55 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.65 2013-10-22 03:03:45 zender Exp $ -*-C-*- */
   
 /* Begin C declarations section */
   
@@ -208,10 +208,10 @@ PRINT '(' var_xpr ')' ';' {
   ptr_aed->type=$3.type;
   ptr_aed->sz=1L;
   (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
-  if(dbg_lvl_get() >= nco_dbg_std) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
   (void)nco_yyerror(prs_arg,ncap_err_sng);
   
-  if(dbg_lvl_get() >= nco_dbg_fl){
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
     (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
     switch($3.type){
   /* NB: Format depends on opaque type of nco_int
@@ -248,7 +248,7 @@ PRINT '(' var_xpr ')' ';' {
   strcpy((char *)(ptr_aed->val.cp),$3);
   (void)cast_nctype_void((nc_type)NC_CHAR,&ptr_aed->val);    
   
-  if(dbg_lvl_get() >= nco_dbg_std) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
   (void)nco_yyerror(prs_arg,ncap_err_sng);
   $1.var_nm=(char *)nco_free($1.var_nm);
   $1.att_nm=(char *)nco_free($1.att_nm);
@@ -271,7 +271,7 @@ PRINT '(' var_xpr ')' ';' {
     (void)nco_var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
     }
     /* cast_nctype_void($3->type,&ptr_aed->val); */
-    if(dbg_lvl_get() >= nco_dbg_std) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
     (void)yyerror(prs_arg,ncap_err_sng); 
   }else{
     (void)sprintf(ncap_err_sng,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim);
@@ -288,7 +288,7 @@ PRINT '(' var_xpr ')' ';' {
   (void)ncap_var_write($3,(prs_sct *)prs_arg);
   
   /* Print mess only for defined variables */
-  if(dbg_lvl_get() >= nco_dbg_std && !$3->undefined){(void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+  if(nco_dbg_lvl_get() >= nco_dbg_std && !$3->undefined){(void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
   (void)yyerror(prs_arg,ncap_err_sng);
   } /* endif */
   $1=(char *)nco_free($1);
@@ -297,7 +297,7 @@ PRINT '(' var_xpr ')' ';' {
 {
   var_sct *var;
   var_sct *var_tmp;  
-  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_xpr = scv_xpr rule for %s\n",prg_nm_get(),$1);
+  if(nco_dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_xpr = scv_xpr rule for %s\n",nco_prg_nm_get(),$1);
   
   /* Turn attribute into temporary variable for writing */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -321,13 +321,13 @@ PRINT '(' var_xpr ')' ';' {
       var=var_tmp;
 	}
 
-    if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",nco_prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
   } /* endif LHS_cst */
 
   var->undefined=False;
   (void)ncap_var_write(var,(prs_sct *)prs_arg);
   
-  if(dbg_lvl_get() >= nco_dbg_std ) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+  if(nco_dbg_lvl_get() >= nco_dbg_std ) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
   (void)yyerror(prs_arg,ncap_err_sng);
   
   
@@ -349,7 +349,7 @@ PRINT '(' var_xpr ')' ';' {
   (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
   (void)ncap_var_write(var,(prs_sct *)prs_arg);
   
-  if(dbg_lvl_get() >= nco_dbg_std) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
   (void)yyerror(prs_arg,ncap_err_sng);
   
   $1=(char *)nco_free($1);
@@ -607,7 +607,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   /* fxm Finish avg,min,max,ttl */
   /* $$=nco_var_avg($3,dim,dmn_nbr,nco_op_typ); */
   /* if(prs_arg->nco_op_typ == nco_op_avg) (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val); */
-  (void)fprintf(stderr,"%s: WARNING RDC tokens not implemented yet\n",prg_nm_get());
+  (void)fprintf(stderr,"%s: WARNING RDC tokens not implemented yet\n",nco_prg_nm_get());
   /* $3 is freed in nco_var_avg() */
 } /* end ABS */
 | PACK '(' var_xpr ')' {
@@ -680,7 +680,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
       var=var_tmp;
     }
   
-    if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var->nm,prs_drf->var_LHS->nm,prs_drf->var_LHS->nbr_dim,prs_drf->var_LHS->sz);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",nco_prg_nm_get(),var->nm,prs_drf->var_LHS->nm,prs_drf->var_LHS->nbr_dim,prs_drf->var_LHS->sz);
     var->undefined=False;
   } /* endif LHS_cst */
   $1=(char*)nco_free($1);
@@ -778,9 +778,9 @@ yyerror /* [fnc] Print error/warning/info messages generated by parser */
   prs_arg=prs_arg; /* CEWI otherwise unused parameter error */
 
   /* if(eprovoke_skip){eprovoke_skip=False ; return 0;} */
-  if(dbg_lvl_get() >= nco_dbg_std){
-    (void)fprintf(stderr,"%s: %s line %lu",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],(unsigned long)ncap_ln_nbr_crr[ncap_ncl_dpt_crr]);
-    if(dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr," %s",err_sng_lcl);
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    (void)fprintf(stderr,"%s: %s line %lu",nco_prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],(unsigned long)ncap_ln_nbr_crr[ncap_ncl_dpt_crr]);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr," %s",err_sng_lcl);
     (void)fprintf(stderr,"\n");
     (void)fflush(stderr);
   } /* endif dbg */

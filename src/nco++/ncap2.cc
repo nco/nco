@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.175 2013-10-08 22:26:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.176 2013-10-22 03:03:50 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.175 2013-10-08 22:26:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.175 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.176 2013-10-22 03:03:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.176 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="346ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -268,7 +268,7 @@ main(int argc,char **argv)
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
+      {"nco_dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
       {"fnc_tbl",no_argument,0,'f'},
@@ -309,8 +309,8 @@ main(int argc,char **argv)
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
   
   /* Parse command line arguments */
   while(1){
@@ -386,7 +386,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
@@ -407,7 +407,7 @@ main(int argc,char **argv)
       break;
     case 'n': /* NINTAP-style abbreviation of files to process */
       /* Currently not used in ncap but should be to allow processing multiple input files by same script */
-      err_prn(fnc_nm,std::string(prg_nm_get())+ " does not currently implement -n option\n");
+      err_prn(fnc_nm,std::string(nco_prg_nm_get())+ " does not currently implement -n option\n");
       fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 3)
 	err_prn(fnc_nm, "Incorrect abbreviation for file list\n");
@@ -454,7 +454,7 @@ main(int argc,char **argv)
       err_prn(fnc_nm,"Long options are not available in this build. Use single letter options instead.\n");
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -569,7 +569,7 @@ main(int argc,char **argv)
   std::sort(fmc_vtr.begin(),fmc_vtr.end());
   
   if(PRN_FNC_TBL){
-    (void)fprintf(stdout,"Methods available in %s:\n",prg_nm_get());
+    (void)fprintf(stdout,"Methods available in %s:\n",nco_prg_nm_get());
     for(idx=0;idx<(signed int)fmc_vtr.size();idx++)
       std::cout<< fmc_vtr[idx].fnm()<<"()"<<std::endl; 
     nco_exit(EXIT_SUCCESS);
@@ -642,7 +642,7 @@ main(int argc,char **argv)
     (void)nco_enddef(out_id);
   }else{
     (void)nco__enddef(out_id,hdr_pad);
-    if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+    if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
     
   /* Set arguments for script execution NB: all these are used as references */
@@ -715,7 +715,7 @@ main(int argc,char **argv)
       if(!dmn_item) continue; 
       (void)nco_dmn_xrf(dmn_item,dmn_out_vtr[idx]);
       if(dmn_item->sz != dmn_out_vtr[idx]->sz) 
-        (void)fprintf(stdout,"%s: WARNING: dimension miss-match. Dimension \"%s\" is size=%ld in input file and size=%ld in output file.\nHINT: Command may work if Append mode (-A) is not used.\n",prg_nm_get(),dmn_item->nm,dmn_item->sz,dmn_out_vtr[idx]->sz);
+        (void)fprintf(stdout,"%s: WARNING: dimension miss-match. Dimension \"%s\" is size=%ld in input file and size=%ld in output file.\nHINT: Command may work if Append mode (-A) is not used.\n",nco_prg_nm_get(),dmn_item->nm,dmn_item->sz,dmn_out_vtr[idx]->sz);
     } /* end loop over dimensions */
 
     /* Get number of variables in output file */
@@ -742,7 +742,7 @@ main(int argc,char **argv)
     if(nbr_spt == 0) err_prn(fnc_nm,"No script file or command line scripts specified\nHINT Use, e.g., -s \"foo=bar\"\n");
 
     /* Print all command-line scripts */
-    if(dbg_lvl_get() >= nco_dbg_std){
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
       for(idx=0;idx<nbr_spt;idx++) 
         (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
     } /* endif debug */
@@ -941,7 +941,7 @@ main(int argc,char **argv)
     } /* end else */
     /* Check size */
     if(att_item.sz > NC_MAX_ATTRS ){ 
-      (void)fprintf(stdout,"%s: Attribute %s size %ld excceeds maximium %d\n",prg_nm_get(),att_item.att_nm,att_item.sz, NC_MAX_ATTRS );
+      (void)fprintf(stdout,"%s: Attribute %s size %ld excceeds maximium %d\n",nco_prg_nm_get(),att_item.att_nm,att_item.sz, NC_MAX_ATTRS );
       goto cln_up;
     } /* end if */
     /* NB: These attributes should probably be written prior to last data mode */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.225 2013-10-20 23:51:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.226 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -287,7 +287,7 @@ trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of travers
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(trv_tbl->lst[uidx].flg_xtr) nbr_flg++;
 
-  (void)fprintf(stdout,"%s: INFO %s reports <%d> objects with extraction flag (flg_xtr) set:\n",prg_nm_get(),fnc_nm,nbr_flg); 
+  (void)fprintf(stdout,"%s: INFO %s reports <%d> objects with extraction flag (flg_xtr) set:\n",nco_prg_nm_get(),fnc_nm,nbr_flg); 
   
   /* Loop table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
@@ -358,10 +358,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
   (void)nco_trv_hsh_bld(trv_tbl_2);
 #endif /* !NCO_HSH_TRV_OBJ */
 
-  if(dbg_lvl_get() == nco_dbg_old){
-    (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",prg_nm_get(),fnc_nm);
+  if(nco_dbg_lvl_get() == nco_dbg_old){
+    (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",nco_prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_1);
-    (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",nco_prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_2);
   } /* endif dbg */
 
@@ -405,7 +405,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_1.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
+      if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",nco_prg_nm_get(),fnc_nm,idx_tbl_1,trv_1.nm_fll);
       idx_tbl_1++;
     }else{
       /* Name(1) is greater than Name(2), read next name from List 2 */
@@ -414,7 +414,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_2.nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
+      if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",nco_prg_nm_get(),fnc_nm,idx_tbl_2,trv_2.nm_fll);
       idx_tbl_2++;
     } /* end nco_cmp */
 
@@ -431,7 +431,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_tbl_1->lst[idx_tbl_1].nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_1,trv_tbl_1->lst[idx_tbl_1].nm_fll);
+      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports tbl_1[%d]:%s\n",nco_prg_nm_get(),fnc_nm,idx_tbl_1,trv_tbl_1->lst[idx_tbl_1].nm_fll);
       idx_tbl_1++;
     } /* end while */
   } /* end if */
@@ -444,13 +444,13 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
       (*cmn_lst)[idx_lst].var_nm_fll=strdup(trv_tbl_2->lst[idx_tbl_2].nm_fll);
       idx_lst++;
 
-      if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",prg_nm_get(),fnc_nm,idx_tbl_2,trv_tbl_2->lst[idx_tbl_2].nm_fll);
+      if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO %s reports tbl_2[%d]:%s\n",nco_prg_nm_get(),fnc_nm,idx_tbl_2,trv_tbl_2->lst[idx_tbl_2].nm_fll);
       idx_tbl_2++;
     } /* end while */
   } /* end if */
 
   /* Print list */
-  if(dbg_lvl_get() >= nco_dbg_var) (void)trv_tbl_cmn_nm_prt(*cmn_lst,idx_lst);
+  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)trv_tbl_cmn_nm_prt(*cmn_lst,idx_lst);
 
   /* Export number of entries */
   *nbr_cmn_nm=idx_lst;
@@ -461,7 +461,7 @@ trv_tbl_cmn_nm_prt                         /* [fnc] Print list of common objects
 (const nco_cmn_t * const cmn_lst,      /* I [sct] List of common names */
  const int nbr_cmn_nm)                 /* I [nbr] Number of common names entries */
 {
-  (void)fprintf(stdout,"%s: INFO reports common objects for both files (same absolute path)\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO reports common objects for both files (same absolute path)\n",nco_prg_nm_get());
   (void)fprintf(stdout,"file1     file2\n");
   (void)fprintf(stdout,"---------------------------------------\n");
   for(int idx=0;idx<nbr_cmn_nm;idx++){

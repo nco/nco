@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.209 2013-10-05 08:33:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.210 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -419,15 +419,15 @@ nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
 } /* end nco_sng_cnv_err() */
 
 void
-nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(prg_id) case */
+nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(nco_prg_id_id) case */
 {
   /* Purpose: Convenience routine for printing error and exiting when
-     switch(prg_id) statement receives an illegal default case
+     switch(nco_prg_id) statement receives an illegal default case
 
      Placing this in its own routine also has the virtue of saving many lines
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_prg_id_err()";
-  (void)fprintf(stdout,"%s: ERROR switch(prg_id) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(prg_id) statements are fully enumerated. Exiting...\n",fnc_nm);
+  (void)fprintf(stdout,"%s: ERROR switch(nco_prg_id) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(nco_prg_id) statements are fully enumerated. Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_prg_id_err() */
 

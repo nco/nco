@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.cc,v 1.4 2013-01-13 19:19:22 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.cc,v 1.5 2013-10-22 03:03:55 zender Exp $ 
 
 // Purpose: Implementation (declaration) of SDO stand-alone utilities 
 
@@ -13,17 +13,17 @@
 // Declare global functions with C++ linkages
 
 void 
-dbg_prn(std::string prg_nm,std::string fnc_nm,std::string msg) // [fnc] Print uniform debugging message
+dbg_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg) // [fnc] Print uniform debugging message
 {
   // Purpose: Print a uniform debugging message
-  std::cerr << prg_nm << ": DEBUG " << fnc_nm << "(): "+msg << std::endl;
+  std::cerr << nco_prg_nm << ": DEBUG " << fnc_nm << "(): "+msg << std::endl;
 } // end dbg_prn()
 
 void 
 dbg_prn(std::string fnc_nm,std::string msg) // [fnc] Print uniform debugging message
 {
   // Purpose: Print a uniform debugging message
-  std::cerr << prg_nm_get() << ": DEBUG " << fnc_nm << "(): "+msg << std::endl;
+  std::cerr << nco_prg_nm_get() << ": DEBUG " << fnc_nm << "(): "+msg << std::endl;
 } // end dbg_prn()
 
 void 
@@ -34,10 +34,10 @@ dbg_prn(std::string msg) // [fnc] Print uniform debugging message
 } // end dbg_prn()
 
 void 
-err_prn(std::string prg_nm,std::string fnc_nm,std::string msg) // [fnc] Print uniform error message and exit 
+err_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg) // [fnc] Print uniform error message and exit 
 {
   // Purpose: Print a uniform error message and exit 
-  std::cerr << prg_nm << ": ERROR " << fnc_nm << "(): "+msg << std::endl;
+  std::cerr << nco_prg_nm << ": ERROR " << fnc_nm << "(): "+msg << std::endl;
 #ifdef ABORT_ON_ERROR
   // abort() produces a core dump and traceback information useful to debuggers
   std::abort(); // [fnc] Exit with core dump
@@ -51,7 +51,7 @@ void
 err_prn(std::string fnc_nm,std::string msg) // [fnc] Print uniform error message and exit 
 {
   // Purpose: Print a uniform error message and exit 
-  std::cerr << prg_nm_get() << ": ERROR " << fnc_nm << "(): "+msg << std::endl;
+  std::cerr << nco_prg_nm_get() << ": ERROR " << fnc_nm << "(): "+msg << std::endl;
 #ifdef ABORT_ON_ERROR
   std::abort(); // [fnc] Produce core dump
 #else
@@ -72,15 +72,15 @@ err_prn(std::string msg) // [fnc] Print uniform error message and exit
 } // end err_prn()
 
 void 
-wrn_prn(std::string prg_nm,std::string fnc_nm,std::string msg) // [fnc] Print uniform warning message and exit
+wrn_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg) // [fnc] Print uniform warning message and exit
 {
   // Purpose: Print a uniform warning message
-  std::cerr << prg_nm << ": WARNING " << fnc_nm << "(): "+msg << std::endl;
+  std::cerr << nco_prg_nm << ": WARNING " << fnc_nm << "(): "+msg << std::endl;
 } // end wrn_prn()
 
 void 
 wrn_prn(std::string fnc_nm,std::string msg) // [fnc] Print uniform warning message and exit
 {
   // Purpose: Print a uniform warning message
-  std::cerr << prg_nm_get() << ": WARNING " << fnc_nm << "(): "+msg << std::endl;
+  std::cerr << nco_prg_nm_get() << ": WARNING " << fnc_nm << "(): "+msg << std::endl;
 } // end wrn_prn()

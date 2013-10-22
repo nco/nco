@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1014 2013-10-20 22:47:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1015 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -241,7 +241,7 @@ nco_grp_stk_pop /* [fnc] Remove and return group ID from stack */
   grp_id=grp_stk->grp_id[grp_stk->grp_nbr-1]; /* [ID] Group ID that was popped */
 
   if(grp_stk->grp_nbr == 0){
-    (void)fprintf(stderr,"%s: ERROR nco_grp_stk_pop() asked to pop empty stack\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR nco_grp_stk_pop() asked to pop empty stack\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
   grp_stk->grp_nbr--; /* [nbr] Number of items in stack = number of elements in grp_id array */
@@ -286,7 +286,7 @@ nco_grp_dfn                          /* [fnc] Define groups in output file */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rcr_lvl=1; /* [nbr] Recursion level */
 
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_grp_dfn() reports file level = 0 parent group = / (root group) will have %d sub-group%s\n",prg_nm_get(),grp_nbr,(grp_nbr == 1) ? "" : "s");
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_grp_dfn() reports file level = 0 parent group = / (root group) will have %d sub-group%s\n",nco_prg_nm_get(),grp_nbr,(grp_nbr == 1) ? "" : "s");
 
   /* For each (possibly user-specified) top-level group ... */
   for(idx=0;idx<grp_nbr;idx++){
@@ -316,7 +316,7 @@ nco_def_grp_rcr                       /* [fnc] Define groups */
   /* How many and which sub-groups are in this group? */
   rcd+=nco_inq_grps(in_id,&grp_nbr,grp_in_ids);
 
-  if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_def_grp_rcr() reports file level = %d parent group = %s will have %d sub-group%s\n",prg_nm_get(),rcr_lvl,prn_nm,grp_nbr,(grp_nbr == 1) ? "" : "s");
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO nco_def_grp_rcr() reports file level = %d parent group = %s will have %d sub-group%s\n",nco_prg_nm_get(),rcr_lvl,prn_nm,grp_nbr,(grp_nbr == 1) ? "" : "s");
 
   /* Define each group, recursively, in output file */
   for(idx=0;idx<grp_nbr;idx++){
@@ -341,21 +341,21 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
   int nbr_sls_chr=0;  /* [nbr] Number of of slash characterrs in  string path */
   int psn_chr;        /* [nbr] Position of character '/' in in full name */
  
-  if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Looking '/' in \"%s\"...",nm_fll);
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Looking '/' in \"%s\"...",nm_fll);
 
   ptr_chr=strchr(nm_fll,'/');
   while (ptr_chr!=NULL)
   {
     psn_chr=ptr_chr-nm_fll;
 
-    if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout," ::found at %d",psn_chr);
+    if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout," ::found at %d",psn_chr);
 
     ptr_chr=strchr(ptr_chr+1,'/');
 
     nbr_sls_chr++;
   }
 
-  if(dbg_lvl_get()== nco_dbg_old) (void)fprintf(stdout,"\n");
+  if(nco_dbg_lvl_get()== nco_dbg_old) (void)fprintf(stdout,"\n");
   return nbr_sls_chr;
 
 } /* nco_get_sls_chr_cnt() */
@@ -398,7 +398,7 @@ nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (pa
   /* Duplicate original, since strtok() changes it */
   char *str=strdup(nm_fll);
 
-  if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Splitting \"%s\" into tokens:\n",str);
 
   /* Get first token */
   ptr_chr_tok=strtok (str,"/");
@@ -407,7 +407,7 @@ nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (pa
 
   while (ptr_chr!=NULL)
   {
-    if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
+    if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
 
     psn_chr=ptr_chr-nm_fll;
     
@@ -425,7 +425,7 @@ nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (pa
     nbr_sls_chr++;   
   }
 
-  if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"\n");
+  if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"\n");
 
   str=(char *)nco_free(str);
 
@@ -477,7 +477,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
 
   int mch_nbr=0;
 #ifndef NCO_HAVE_REGEX_FUNCTIONALITY
-  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),rx_sng);
+  (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),rx_sng);
   nco_exit(EXIT_FAILURE);
 #else /* NCO_HAVE_REGEX_FUNCTIONALITY */
   int err_id;
@@ -516,7 +516,7 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
     case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
     default: rx_err_sng="Invalid pattern"; break;  
     } /* end switch */
-    (void)fprintf(stdout,"%s: ERROR nco_trv_rx_search() error in regular expression \"%s\" %s\n",prg_nm_get(),rx_sng,rx_err_sng); 
+    (void)fprintf(stdout,"%s: ERROR nco_trv_rx_search() error in regular expression \"%s\" %s\n",nco_prg_nm_get(),rx_sng,rx_err_sng); 
     nco_exit(EXIT_FAILURE);
   } /* end if err */
 
@@ -611,7 +611,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   trv_sct trv_obj; /* [sct] Traversal table object */
   trv_sct var_obj; /* [sct] Traversal table object assumed to be variable */
 
-  if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s Extraction list will be formed as %s of group and variable specifications if both are given\n",prg_nm_get(),fnc_nm,(flg_unn) ? "union" : "intersection");
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s Extraction list will be formed as %s of group and variable specifications if both are given\n",nco_prg_nm_get(),fnc_nm,(flg_unn) ? "union" : "intersection");
 
   /* Specifying no groups or variables is equivalent to requesting all */
   if(!grp_xtr_nbr && !var_xtr_nbr && !EXTRACT_ALL_COORDINATES)
@@ -638,7 +638,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       flg_usr_mch_obj=False;
 
       if(!obj_lst_in[obj_idx]){
-        (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name is empty\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable");
+        (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name is empty\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable");
         nco_exit(EXIT_FAILURE);
       } /* end else */
 
@@ -667,10 +667,10 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
           /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
           if((rx_mch_nbr=nco_trv_rx_search(usr_sng,obj_typ,trv_tbl))) flg_usr_mch_obj=True;
-          if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
+          if(!rx_mch_nbr) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any %s\nHINT: See regular expression syntax examples at http://nco.sf.net/nco.html#rx\n",nco_prg_nm_get(),usr_sng,(obj_typ == nco_obj_typ_grp) ? "group" : "variable"); 
           continue;
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-          (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
+          (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
           nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
         } /* end if regular expression */
@@ -735,7 +735,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                   var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
                   if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True;
                 } /* endif */
-                if(dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
+                if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",nco_prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
               } /* endif var */
 
               /* If anchoring, match must begin at root */
@@ -766,8 +766,8 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
               /* Set function return condition */
               if(trv_tbl->lst[tbl_idx].flg_mch) flg_usr_mch_obj=True;
 
-              if(dbg_lvl_get() == nco_dbg_old){
-                (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
+              if(nco_dbg_lvl_get() == nco_dbg_old){
+                (void)fprintf(stderr,"%s: INFO %s reports %s %s matches filepath %s. Begins on boundary? %s. Ends on boundary? %s. Extract? %s.",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng,trv_obj.nm_fll,(flg_pth_srt_bnd) ? "Yes" : "No",(flg_pth_end_bnd) ? "Yes" : "No",(trv_tbl->lst[tbl_idx].flg_mch) ?  "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Anchored? %s.",(flg_ncr_mch_grp) ? "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," Recursive? %s.",(trv_tbl->lst[tbl_idx].flg_rcr) ? "Yes" : "No");
                 if(obj_typ == nco_obj_typ_grp) (void)fprintf(stderr," flg_gcv? %s.",(trv_tbl->lst[tbl_idx].flg_gcv) ? "Yes" : "No");
@@ -782,7 +782,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
         } /* end loop over tbl_idx */
 
         if(!flg_usr_mch_obj){
-          (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
+          (void)fprintf(stderr,"%s: ERROR %s reports user-supplied %s name or regular expression %s is not in and/or does not match contents of input file\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "group" : "variable",usr_sng);
           nco_exit(EXIT_FAILURE);
         } /* flg_usr_mch_obj */
         /* Free dynamic memory */
@@ -790,8 +790,8 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
     } /* obj_idx */
 
-    if(dbg_lvl_get() >= nco_dbg_sbr){
-      (void)fprintf(stdout,"%s: INFO %s reports following %s match sub-setting and regular expressions:\n",prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "groups" : "variables");
+    if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+      (void)fprintf(stdout,"%s: INFO %s reports following %s match sub-setting and regular expressions:\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "groups" : "variables");
       trv_tbl_prn_flg_mch(trv_tbl,obj_typ);
     } /* endif dbg */
 
@@ -832,12 +832,12 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
       trv_tbl->lst[obj_idx].flg_xtr=True;
   } /* end loop over obj_idx */
 
-  if(dbg_lvl_get() == nco_dbg_old){
+  if(nco_dbg_lvl_get() == nco_dbg_old){
     for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
       /* Create shallow copy to avoid indirection */
       trv_obj=trv_tbl->lst[obj_idx];
 
-      (void)fprintf(stderr,"%s: INFO %s final flags of %s %s:\n",prg_nm_get(),fnc_nm,(trv_obj.nco_typ == nco_obj_typ_grp) ? "group" : "variable",trv_obj.nm_fll);
+      (void)fprintf(stderr,"%s: INFO %s final flags of %s %s:\n",nco_prg_nm_get(),fnc_nm,(trv_obj.nco_typ == nco_obj_typ_grp) ? "group" : "variable",trv_obj.nm_fll);
       (void)fprintf(stderr," flg_dfl? %s.",(trv_obj.flg_dfl) ? "Yes" : "No");
       (void)fprintf(stderr," flg_mch? %s.",(trv_obj.flg_mch) ? "Yes" : "No");
       (void)fprintf(stderr," flg_xtr? %s.",(trv_obj.flg_xtr) ? "Yes" : "No");
@@ -850,7 +850,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   } /* endif dbg */
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return (nco_bool)True;
 
@@ -869,7 +869,7 @@ nco_xtr_xcl                           /* [fnc] Convert extraction list to exclus
       trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr;
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* end nco_xtr_xcl() */
@@ -900,7 +900,7 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
   } /* Loop table */
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* end nco_xtr_crd_add() */
@@ -926,7 +926,7 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
 
 
   /* Print extraction list in debug mode */
-  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
   return;
 } /* nco_xtr_cf_add() */
@@ -982,7 +982,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
         (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates CF convention for specifying additional attributes. Therefore will skip this attribute.\n",
-          prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+          nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
         return;
       } /* end if */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -1015,7 +1015,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
         /* CF not found ? */
         if(!flg_cf_fnd){     
           (void)fprintf(stderr,"%s: WARNING Variable %s, specified in \"%s\" attribute of variable %s, is not present in input file\n",
-            prg_nm_get(),cf_lst[idx_cf],cf_nm,var_trv->nm_fll);
+            nco_prg_nm_get(),cf_lst[idx_cf],cf_nm,var_trv->nm_fll);
         } /* CF not found ? */
       } /* end loop over idx_cf */
 
@@ -1205,7 +1205,7 @@ nco_xtr_lst_prn                            /* [fnc] Print name-ID structure list
 (nm_id_sct * const nm_id_lst,          /* I [sct] Name-ID structure list */
  const int nm_id_nbr)                  /* I [nbr] Number of name-ID structures in list */
 {
-  (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",prg_nm_get(),nm_id_nbr); 
+  (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",nco_prg_nm_get(),nm_id_nbr); 
   for(int idx=0;idx<nm_id_nbr;idx++){
     nm_id_sct nm_id=nm_id_lst[idx];
     (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.nm); 
@@ -1405,12 +1405,12 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   int grp_out_id; /* [ID] Group ID in output file */ 
   int nbr_gpe_nm; /* [nbr] Number of GPE entries */
   int var_out_id; /* [ID] Variable ID in output file */
-  int prg_id; /* [enm] Program ID */
+  int nco_prg_id; /* [enm] Program ID */
 
   nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
   /* Get Program ID */
-  prg_id=prg_get(); 
+  nco_prg_id=nco_prg_id_get(); 
 
   nbr_gpe_nm=0;
   gpe_nm=NULL;
@@ -1543,7 +1543,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* Allocate variable structure and fill with metadata */
         var_prc=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);     
 
-        PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_plc,var_prc);
+        PCK_ATT_CPY=nco_pck_cpy_att(nco_prg_id,nco_pck_plc,var_prc);
 
         (void)nco_att_cpy(grp_id,grp_out_id,var_id,var_out_id,PCK_ATT_CPY);
 
@@ -1582,7 +1582,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   for(int idx=0;idx<nbr_gpe_nm;idx++) gpe_nm[idx].var_nm_fll=(char *)nco_free(gpe_nm[idx].var_nm_fll);
 
   /* Print extraction list in developer mode */
-  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
 } /* end nco_xtr_dfn() */
 
@@ -1620,7 +1620,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
     nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
     nm_id_sct *xtr_lst=NULL; /* [sct] Variables to be extracted */
 
-    if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",prg_nm_get());
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",nco_prg_nm_get());
 
     /* Convert extraction list from traversal table to nm_id_sct format to re-use old code */
     xtr_lst=nco_trv_tbl_nm_id(nc_in_id,&xtr_nbr,trv_tbl);
@@ -1630,8 +1630,8 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
     /* Copy fixed-length data variable-by-variable */
     for(idx_var=0;idx_var<fix_nbr;idx_var++){
-      if(dbg_lvl_get() >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",fix_lst[idx_var]->nm);
-      if(dbg_lvl_get() >= nco_dbg_var) (void)fflush(stderr);
+      if(nco_dbg_lvl_get() >= nco_dbg_var && !fp_bnr) (void)fprintf(stderr,"%s, ",fix_lst[idx_var]->nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fflush(stderr);
       (void)nco_cpy_var_val(fix_lst[idx_var]->grp_id_in,fix_lst[idx_var]->grp_id_out,fp_bnr,md5,fix_lst[idx_var]->nm);
     } /* end loop over idx_var */
 
@@ -1651,8 +1651,8 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
       /* If object is an extracted variable... */ 
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
 
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s writing variable <%s> from ",prg_nm_get(),fnc_nm,trv.nm_fll);        
+        if(nco_dbg_lvl_get() == nco_dbg_old){
+          (void)fprintf(stdout,"%s: INFO %s writing variable <%s> from ",nco_prg_nm_get(),fnc_nm,trv.nm_fll);        
           (void)nco_prt_grp_nm_fll(trv.grp_id_in);
           (void)fprintf(stdout," to ");   
           (void)nco_prt_grp_nm_fll(trv.grp_id_out);
@@ -1668,7 +1668,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
   } /* !USE_MM3_WORKAROUND */
 
   /* Print extraction list in developer mode */
-  if(dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
 
 } /* end nco_xtr_wrt() */
 
@@ -1742,8 +1742,8 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
     if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var){
       trv_sct var_trv=trv_tbl->lst[idx_var];   
 
-      if(dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",prg_nm_get(),fnc_nm);
+      if(nco_dbg_lvl_get() == nco_dbg_old){
+        (void)fprintf(stdout,"%s: INFO %s reports variable dimensions\n",nco_prg_nm_get(),fnc_nm);
         (void)fprintf(stdout,"%s:",var_trv.nm_fll); 
         (void)fprintf(stdout," %d dimensions:\n",var_trv.nbr_dmn);
       } /* endif dbg */
@@ -1756,7 +1756,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         /* Get unique dimension object from unique dimension ID */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(var_dmn_id,trv_tbl);
 
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(nco_dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,var_trv.var_dmn[idx_dmn_var].dmn_nm,var_dmn_id);    
           (void)fprintf(stdout,"<%s>\n",dmn_trv->nm_fll);
         } /* endif dbg */
@@ -1801,8 +1801,8 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
         */
 
-          (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with duplicate dimensions\n",prg_nm_get(),fnc_nm,var_trv.nm_fll);
-          (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Please use netCDF version at least 4.3.0.\n",prg_nm_get());
+          (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with duplicate dimensions\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
+          (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Please use netCDF version at least 4.3.0.\n",nco_prg_nm_get());
           (void)nco_prt_trv_tbl(nc_id,trv_tbl);
           nco_exit(EXIT_FAILURE);
         }
@@ -1881,7 +1881,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   sls_psn=grp_nm_fll;
   if(!strcmp(grp_nm_fll,sls_sng)) grp_dpt=0; else grp_dpt=1;
   while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
-  if(dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",prg_nm_get(),grp_nm_fll,grp_dpt);
+  if(nco_dbg_lvl_get() == nco_dbg_crr) (void)fprintf(stderr,"%s: INFO Group %s is at level %d\n",nco_prg_nm_get(),grp_nm_fll,grp_dpt);
 
   /* Keep the old table objects size for insertion */
   unsigned int idx;
@@ -1971,9 +1971,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       obj_typ=nco_obj_typ_var;
     }else{ /* > NC_MAX_ATOMIC_TYPE */
       obj_typ=nco_obj_typ_nonatomic_var;
-      if(dbg_lvl_get() >= nco_dbg_var){
+      if(nco_dbg_lvl_get() >= nco_dbg_var){
         (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",
-          prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
+          nco_prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
       } /* endif */
     } /* > NC_MAX_ATOMIC_TYPE */
 
@@ -2195,8 +2195,8 @@ nco_bld_crd_rec_var_trv               /* [fnc] Build dimension information for a
             /* If the group dimension is a record dimension then the variable is a record variable */
             trv_tbl->lst[idx_var].is_rec_var=dmn_trv.is_rec_dmn;
 
-            if(dbg_lvl_get() == nco_dbg_old){
-              (void)fprintf(stdout,"%s: INFO %s <%s> is ",prg_nm_get(),fnc_nm,var_trv.nm_fll);
+            if(nco_dbg_lvl_get() == nco_dbg_old){
+              (void)fprintf(stdout,"%s: INFO %s <%s> is ",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
               if(dmn_trv.is_rec_dmn) (void)fprintf(stdout,"(record) ");
               (void)fprintf(stdout,"coordinate\n");
             }
@@ -2327,9 +2327,9 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->lmt_msa.lmt_dmn=NULL;
 
             
-            if(dbg_lvl_get() == nco_dbg_old){     
+            if(nco_dbg_lvl_get() == nco_dbg_old){     
               crd_sct *crd=trv_tbl->lst_dmn[idx_dmn].crd[crd_idx];
-              (void)fprintf(stdout,"%s: INFO %s variable <%s> has coordinate <%s> from dimension <%s>\n",prg_nm_get(),fnc_nm,
+              (void)fprintf(stdout,"%s: INFO %s variable <%s> has coordinate <%s> from dimension <%s>\n",nco_prg_nm_get(),fnc_nm,
                 var_trv.nm_fll,crd->crd_nm_fll,crd->dmn_nm_fll);
             }
 
@@ -2369,7 +2369,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
   int nbr_crd_var;  /* [nbr] Total number of coordinate variables */
 
   nbr_dmn=0;
-  (void)fprintf(stdout,"%s: INFO reports group information\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO reports group information\n",nco_prg_nm_get());
   for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
 
     /* Filter groups */
@@ -2393,7 +2393,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
   nbr_crd=0;
   (void)fprintf(stdout,"\n");
-  (void)fprintf(stdout,"%s: INFO reports variable information\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO reports variable information\n",nco_prg_nm_get());
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
 
     trv_sct var_trv=trv_tbl->lst[idx_var];   
@@ -2461,7 +2461,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
   nbr_crd_var=0;
   (void)fprintf(stdout,"\n");
-  (void)fprintf(stdout,"%s: INFO reports coordinate variables and limits listed by dimension:\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: INFO reports coordinate variables and limits listed by dimension:\n",nco_prg_nm_get());
   for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
@@ -2512,12 +2512,12 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
 
   /* Unique dimension list */
 
-  if(dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO reports dimension information with limits: %d dimensions\n",prg_nm_get(),trv_tbl->nbr_dmn);
+  if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"%s: INFO reports dimension information with limits: %d dimensions\n",nco_prg_nm_get(),trv_tbl->nbr_dmn);
   for(unsigned idx_dmn=0;idx_dmn<trv_tbl->nbr_dmn;idx_dmn++){
     dmn_trv_sct dmn_trv=trv_tbl->lst_dmn[idx_dmn]; 
 
     /* Dimension #/name first */
-    if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%d%s\n",dmn_trv.dmn_id,dmn_trv.nm_fll);
+    if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%d%s\n",dmn_trv.dmn_id,dmn_trv.nm_fll);
 
     nco_bool in_scp=False;
 
@@ -2534,8 +2534,8 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
           /* Is variable in scope of dimension ? */
           if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl)){
 
-            if(dbg_lvl_get() == nco_dbg_old){
-              (void)fprintf(stdout,"%s: INFO %s reports variable <%s> in scope of dimension <%s>\n",prg_nm_get(),fnc_nm,
+            if(nco_dbg_lvl_get() == nco_dbg_old){
+              (void)fprintf(stdout,"%s: INFO %s reports variable <%s> in scope of dimension <%s>\n",nco_prg_nm_get(),fnc_nm,
                 var_trv.nm_fll,dmn_trv.nm_fll);        
             } /* endif dbg */
 
@@ -2552,8 +2552,8 @@ nco_has_crd_dmn_scp                  /* [fnc] Is there a variable with same name
     } /* Loop object table */
 
 
-    if(dbg_lvl_get() == nco_dbg_old)
-      if(!in_scp) (void)fprintf(stdout,"%s: INFO %s dimension <%s> with no in scope variables\n",prg_nm_get(),fnc_nm,dmn_trv.nm_fll);        
+    if(nco_dbg_lvl_get() == nco_dbg_old)
+      if(!in_scp) (void)fprintf(stdout,"%s: INFO %s dimension <%s> with no in scope variables\n",nco_prg_nm_get(),fnc_nm,dmn_trv.nm_fll);        
 
     trv_tbl->lst_dmn[idx_dmn].has_crd_scp=in_scp;
 
@@ -2607,8 +2607,8 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
 
   /* Most common case is for the unique dimension full name to match the full variable name   */
   if(strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-    if(dbg_lvl_get() == nco_dbg_old){
-      (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
+    if(nco_dbg_lvl_get() == nco_dbg_old){
+      (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",nco_prg_nm_get(),fnc_nm,
         var_trv->nm_fll,dmn_trv->nm_fll);
     }
     return True;
@@ -2654,8 +2654,8 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
 
       /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
       if(var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",prg_nm_get(),fnc_nm,
+        if(nco_dbg_lvl_get() == nco_dbg_old){
+          (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",nco_prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
         return True;
@@ -2679,8 +2679,8 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
             if(var.nco_typ == nco_obj_typ_var){
               /* Is there a *full* match already for the *input* dimension ?  */
               if(strcmp(var_trv->nm_fll,dmn.nm_fll) == 0 ){
-                if(dbg_lvl_get() == nco_dbg_old){
-                  (void)fprintf(stdout,"%s: INFO %s variable <%s> has another dimension full match <%s>:\n",prg_nm_get(),fnc_nm,
+                if(nco_dbg_lvl_get() == nco_dbg_old){
+                  (void)fprintf(stdout,"%s: INFO %s variable <%s> has another dimension full match <%s>:\n",nco_prg_nm_get(),fnc_nm,
                     var_trv->nm_fll,dmn.nm_fll);
                 }
                 return False;
@@ -2690,16 +2690,16 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
         } /* Loop unique dimensions list in groups */
 
 
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
+        if(nco_dbg_lvl_get() == nco_dbg_old){
+          (void)fprintf(stdout,"%s: INFO %s found variable <%s> in scope of dimension <%s>:\n",nco_prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
         return True;
 
         /* Variable out of scope of dimension */
       }else if(var_nm_fll_lng < dmn_nm_fll_lng){
-        if(dbg_lvl_get() == nco_dbg_old){
-          (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",prg_nm_get(),fnc_nm,
+        if(nco_dbg_lvl_get() == nco_dbg_old){
+          (void)fprintf(stdout,"%s: INFO %s found variable <%s> out of scope of dimension <%s>:\n",nco_prg_nm_get(),fnc_nm,
             var_trv->nm_fll,dmn_trv->nm_fll);
         }
         return False;
@@ -2802,8 +2802,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
         /* No coordinates */
         if(dmn_trv->crd_nbr == 0){
 
-          if(dbg_lvl_get() == nco_dbg_old){
-            (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",prg_nm_get(),fnc_nm,
+          if(nco_dbg_lvl_get() == nco_dbg_old){
+            (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with *NON* coordinate dimension [%d]%s\n",nco_prg_nm_get(),fnc_nm,
               var_trv.nm_fll,idx_dmn_var,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
           } /* endif dbg */
 
@@ -2826,7 +2826,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
           /* The "in scope" coordinate is returned */
           if(crd){
-            if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",prg_nm_get(),fnc_nm,idx_dmn_var,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
+            if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> in scope of coordinate <%s>\n",nco_prg_nm_get(),fnc_nm,idx_dmn_var,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll,var_trv.nm_fll,crd->crd_nm_fll);         
 
             /* Mark as True */
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].is_crd_var=True;
@@ -2856,7 +2856,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
           }else{
 
-            if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> with out of scope coordinate\n",prg_nm_get(),fnc_nm,idx_dmn_var,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll,var_trv.nm_fll);         
+            if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports dimension [%d]%s of variable <%s> with out of scope coordinate\n",nco_prg_nm_get(),fnc_nm,idx_dmn_var,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll,var_trv.nm_fll);         
 
             /* Mark as False */
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].is_crd_var=False;
@@ -2882,8 +2882,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
       for(int idx_dmn_var=0;idx_dmn_var<var_trv.nbr_dmn;idx_dmn_var++) {
         if(trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].is_crd_var == nco_obj_typ_err) {
 
-          if(dbg_lvl_get() == nco_dbg_old ){
-            (void)fprintf(stdout,"%s: OOPSY %s reports variable <%s> with NOT filled dimension [%d]%s\n",prg_nm_get(),fnc_nm,
+          if(nco_dbg_lvl_get() == nco_dbg_old ){
+            (void)fprintf(stdout,"%s: OOPSY %s reports variable <%s> with NOT filled dimension [%d]%s\n",nco_prg_nm_get(),fnc_nm,
               var_trv.nm_fll,idx_dmn_var,var_trv.var_dmn[idx_dmn_var].dmn_nm_fll);        
           } /* endif dbg */
         }
@@ -2933,8 +2933,8 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
     /* If object is an extracted variable... */ 
     if(var_trv.nco_typ == nco_obj_typ_var && flg_xtr){
 
-      if(dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: INFO %s variable <%s>",prg_nm_get(),fnc_nm,var_trv.nm_fll);        
+      if(nco_dbg_lvl_get() == nco_dbg_old){
+        (void)fprintf(stdout,"%s: INFO %s variable <%s>",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);        
       } /* endif dbg */
 
 
@@ -2950,7 +2950,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
       /* Get dimension IDs for variable */
       (void)nco_inq_vardimid(grp_id,var_id,dmn_id_var);
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout," %d dimensions: ",nbr_dmn_var);        
       } /* endif dbg */
 
@@ -2963,13 +2963,13 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
         /* Get dimension name */
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_dmn_var],dmn_nm_var,&dmn_sz_var);
 
-        if(dbg_lvl_get() == nco_dbg_old){
+        if(nco_dbg_lvl_get() == nco_dbg_old){
           (void)fprintf(stdout,"#%d'%s' ",
             dmn_id_var[idx_dmn_var],dmn_nm_var);
         }
       }
 
-      if(dbg_lvl_get() == nco_dbg_old){
+      if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"\n");
       }
 
@@ -3010,7 +3010,7 @@ nco_gpe_chk                            /* [fnc] Check valid GPE new name  */
     /* Put GPE on list only if not already there */
     for(int idx_gpe=0;idx_gpe<nbr_gpe;idx_gpe++){
       if(!strcmp(gpe_var_nm_fll,(*gpe_nm)[idx_gpe].var_nm_fll)){
-        (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined in output file. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",prg_nm_get(),fnc_nm,gpe_var_nm_fll);
+        (void)fprintf(stdout,"%s: ERROR %s reports variable %s already defined in output file. HINT: Removing groups to flatten files can lead to over-determined situations where a single object name (e.g., a variable name) must refer to multiple objects in the same output group. The user's intent is ambiguous so instead of arbitrarily picking which (e.g., the last) variable of that name to place in the output file, NCO simply fails. User should re-try command after ensuring multiple objects of the same name will not be placed in the same group.\n",nco_prg_nm_get(),fnc_nm,gpe_var_nm_fll);
         for(int idx=0;idx<nbr_gpe;idx++) (*gpe_nm)[idx].var_nm_fll=(char *)nco_free((*gpe_nm)[idx].var_nm_fll);
         nco_exit(EXIT_FAILURE);
       } /* strcmp() */
@@ -3101,8 +3101,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
       aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr);
 
-      if(dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s variable [%d]<%s> (%d) limits\n",prg_nm_get(),fnc_nm,idx_var,trv_tbl->lst[idx_var].nm_fll,aux_idx_nbr);     
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s variable [%d]<%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,idx_var,trv_tbl->lst[idx_var].nm_fll,aux_idx_nbr);     
       }
 
       if(aux_idx_nbr > 0){
@@ -3260,8 +3260,8 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
 
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_id_out);
 
-      if(dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: INFO writing fixed variable <%s> from ",prg_nm_get(),var_trv.nm_fll);        
+      if(nco_dbg_lvl_get() == nco_dbg_old){
+        (void)fprintf(stdout,"%s: INFO writing fixed variable <%s> from ",nco_prg_nm_get(),var_trv.nm_fll);        
         (void)nco_prt_grp_nm_fll(grp_id_in);
         (void)fprintf(stdout," to ");   
         (void)nco_prt_grp_nm_fll(grp_id_out);
@@ -3312,7 +3312,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   int grp_id_1;                  /* [id] Group ID in input file */
   int grp_id_2;                  /* [id] Group ID in input file */
   int grp_out_id;                /* [id] Group ID in output file */ 
-  int prg_id;                    /* [enm] Program ID */
+  int nco_prg_id;                    /* [enm] Program ID */
   int var_id_1;                  /* [id] Variable ID in input file */
   int var_id_2;                  /* [id] Variable ID in input file */
   int var_out_id;                /* [id] Variable ID in output file */
@@ -3337,7 +3337,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   assert(trv_2->flg_xtr);
 
   /* Get Program ID */
-  prg_id=prg_get(); 
+  nco_prg_id=nco_prg_id_get(); 
 
   /* Get output file format */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
@@ -3382,7 +3382,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       for(dmn_idx_gtr=0;dmn_idx_gtr<var_prc_gtr->nbr_dim;dmn_idx_gtr++)  
         if(!strcmp(var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->dim[dmn_idx_gtr]->nm)) break;
       if(dmn_idx_gtr == var_prc_gtr->nbr_dim){
-        (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->nm);
+        (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s not present in variable %s\n",nco_prg_nm_get(),var_prc_lsr->nm,var_prc_lsr->dim[dmn_idx_lsr]->nm,var_prc_gtr->nm);
         nco_exit(EXIT_FAILURE);
       } /* endif error */
     } /* end loop over idx */
@@ -3396,7 +3396,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
     /* Make sure variables conform in type */
     if(var_prc_1->type != var_prc_2->type)
-      if(dbg_lvl_get() >= nco_dbg_std && flg_dfn) (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",prg_nm_get(),var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(typ_hgh));
+      if(nco_dbg_lvl_get() >= nco_dbg_std && flg_dfn) (void)fprintf(stderr,"%s: INFO Input variables do not conform in type: file 1 variable %s has type %s, file 2 variable %s has type %s, output variable %s will have type %s\n",nco_prg_nm_get(),var_prc_1->nm,nco_typ_sng(var_prc_1->type),var_prc_2->nm,nco_typ_sng(var_prc_2->type),var_prc_gtr->nm,nco_typ_sng(typ_hgh));
 
     typ_hgh=ncap_var_retype(var_prc_1,var_prc_2);
     trv_1->var_typ=trv_2->var_typ=typ_hgh;
@@ -3411,7 +3411,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 	 Or re-code ncap_var_cnf_dmn() so that it understands how to broadcast degenerate dimensions */
       for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
         if(var_prc_1->dim[idx_dmn]->sz != var_prc_2->dim[idx_dmn]->sz){
-          (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s with sizes %ld and %ld in input files one and two, respectively\n",prg_nm_get(),var_prc_1->nm_fll,var_prc_1->dim[idx_dmn]->nm,var_prc_1->dim[idx_dmn]->sz,var_prc_2->dim[idx_dmn]->sz);
+          (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s with sizes %ld and %ld in input files one and two, respectively\n",nco_prg_nm_get(),var_prc_1->nm_fll,var_prc_1->dim[idx_dmn]->nm,var_prc_1->dim[idx_dmn]->sz,var_prc_2->dim[idx_dmn]->sz);
           nco_exit(EXIT_FAILURE);
         } /* endif error */
       } /* end loop over idx_dmn */
@@ -3433,7 +3433,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 
     nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
-    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_plc_nil,var_prc_1);
+    PCK_ATT_CPY=nco_pck_cpy_att(nco_prg_id,nco_pck_plc_nil,var_prc_1);
 
     /* If output group does not exist, create it */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -3484,7 +3484,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     /* Get variable ID */
     (void)nco_inq_varid(grp_out_id,trv_1->nm,&var_out_id);         
 
-    if(dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
+    if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stdout,"%s: INFO %s reports operation type <%d> for <%s>\n",nco_prg_nm_get(),fnc_nm,prc_typ_1,trv_1->nm_fll);
 
     /* Non-processed variable */
     if(prc_typ_1 == fix_typ || prc_typ_2 == fix_typ){
@@ -3520,7 +3520,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
       case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
         (void)nco_var_sbt(var_prc_1->type,var_prc_1->sz,has_mss_val,mss_val,var_prc_2->val,var_prc_1->val); break;
       default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbo() */
-        (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm_get());
+        (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",nco_prg_nm_get());
         nco_exit(EXIT_FAILURE);
         break;
       } /* end case */
@@ -3569,7 +3569,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
   int fl_fmt;                    /* [enm] netCDF file format */
   int grp_id_1;                  /* [id] Group ID in input file */
   int grp_out_id;                /* [id] Group ID in output file */  
-  int prg_id;                    /* [enm] Program ID */
+  int nco_prg_id;                    /* [enm] Program ID */
   int var_id_1;                  /* [id] Variable ID in input file */
   int var_out_id;                /* [id] Variable ID in output file */
 
@@ -3584,7 +3584,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
   assert(trv_1->flg_xtr);
 
   /* Get Program ID */
-  prg_id=prg_get(); 
+  nco_prg_id=nco_prg_id_get(); 
 
   /* Get output file format */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
@@ -3616,7 +3616,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
   if(flg_dfn){  
     nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
-    PCK_ATT_CPY=nco_pck_cpy_att(prg_id,nco_pck_plc_nil,var_prc_1);
+    PCK_ATT_CPY=nco_pck_cpy_att(nco_prg_id,nco_pck_plc_nil,var_prc_1);
 
     /* If output group does not exist, create it */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -3658,7 +3658,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
 
 nco_bool                               /* O [flg] Copy packing attributes */
 nco_pck_cpy_att                        /* [fnc] Inquire about copying packing attributes  */
-(const int prg_id,                     /* I [enm] Program ID */
+(const int nco_prg_id,                     /* I [enm] Program ID */
  const int nco_pck_plc,                /* I [enm] Packing policy */
  const var_sct * const var_prc)        /* I [sct] Variable */
 {
@@ -3681,8 +3681,8 @@ nco_pck_cpy_att                        /* [fnc] Inquire about copying packing at
      Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
      Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
   /* Copy exising packing attributes, if any, unless... */
-  if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
-    prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
+  if(nco_is_rth_opr(nco_prg_id) && /* ...operator is arithmetic... */
+    nco_prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
     !var_prc->is_fix_var && /* ...and variable is processed (not fixed)... */
     var_prc->pck_dsk) /* ...and variable is packed in input file... */
     PCK_ATT_CPY=False;
@@ -3794,7 +3794,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
     /* Object exists and is flagged for extraction in both files */
     if(trv_1 && trv_2 && cmn_lst[idx].flg_in_fl[0] && cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr && trv_2->flg_xtr){
 
-      if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll); 
+      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll); 
 
       /* Process common object */
       (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
@@ -3808,7 +3808,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
         if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
 	  /* Object exists and is flagged for extraction only in file 1 */
 
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
+          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try relative match in file 2 */
           has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
@@ -3819,7 +3819,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
         }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
 	  /* Object exists and is flagged for extraction only in file 2 */
 
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
+          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try relative match in file 1 */
           has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
@@ -3836,7 +3836,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
         if(trv_1 && cmn_lst[idx].flg_in_fl[0] && !cmn_lst[idx].flg_in_fl[1] && trv_1->flg_xtr){
 	  /* Object exists and is flagged for extraction only in file 1 */
 
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",prg_nm_get(),fnc_nm,trv_1->nm_fll);
+          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try relative match in file 2 */
           has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
@@ -3847,7 +3847,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
         }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
 	  /* Object exists and is flagged for extraction only in file 2 */
 
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",prg_nm_get(),fnc_nm,trv_2->nm_fll);
+          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try relative match in file 1 */
           has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
@@ -3951,7 +3951,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   int fl_fmt;                    /* [enm] File format */  
   int dmn_in_id_var[NC_MAX_DIMS];/* [id] Dimension IDs array for variable */
-  int prg_id;                    /* [enm] Program ID */
+  int nco_prg_id;                    /* [enm] Program ID */
   int dmn_id;                    /* [nbr] Dimension ID */
   
   long dmn_cnt;                  /* [nbr] Dimensio hyperslabbed count (size) */
@@ -3962,7 +3962,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   dmn_sct *dim;                  /* [sct] Dimension structure */  
    
   /* Get Program ID */
-  prg_id=prg_get(); 
+  nco_prg_id=nco_prg_id_get(); 
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
@@ -3985,7 +3985,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   /* Get type and number of dimensions and attributes for variable */
   (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,&var->typ_dsk,&var->nbr_dim,(int *)NULL,&var->nbr_att);
 
-  if(prg_id == ncks) assert(var->typ_dsk == var_trv->var_typ);
+  if(nco_prg_id == ncks) assert(var->typ_dsk == var_trv->var_typ);
 
   assert(var->nbr_dim == var_trv->nbr_dmn);
   assert(var->nbr_att == var_trv->nbr_att);
@@ -4206,7 +4206,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int nbr_dmn_var;                       /* [nbr] Number of dimensions for variable */
   int nbr_dmn_var_out;                   /* [nbr] Number of dimensions for variable on output ( can change for ncwa) */
   int rcd=NC_NOERR;                      /* [rcd] Return code */
-  int prg_id;                            /* [enm] Program ID */
+  int nco_prg_id;                            /* [enm] Program ID */
   int rec_id_out;                        /* [id] Dimension ID for ncecat "record" dimension */  
   int grp_dmn_out_id;                    /* [id] Group ID where dimension visible to specified group is defined */
   int rcd_lcl;                           /* [rcd] Return code */
@@ -4252,15 +4252,15 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* Is requested variable in input file? */
   rcd=nco_inq_varid_flg(grp_in_id,var_nm,&var_in_id);
-  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",prg_nm_get(),fnc_nm,var_nm);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 
   /* Get type of variable and number of dimensions from input */
   (void)nco_inq_var(grp_in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_var,(int *)NULL,(int *)NULL);  
 
   /* Get Program ID */
-  prg_id=prg_get(); 
+  nco_prg_id=nco_prg_id_get(); 
 
-  if(prg_id == ncks) assert(var_typ == var_trv->var_typ);
+  if(nco_prg_id == ncks) assert(var_typ == var_trv->var_typ);
   assert(nbr_dmn_var == var_trv->nbr_dmn);
 
   nbr_dmn_var_out=nbr_dmn_var;
@@ -4271,8 +4271,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* Get dimension IDs for variable */
   (void)nco_inq_vardimid(grp_in_id,var_in_id,dmn_in_id_var);
 
-  if(dbg_lvl_get() == nco_dbg_old){
-    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with dimensions: ",prg_nm_get(),fnc_nm,var_trv->nm_fll);
+  if(nco_dbg_lvl_get() == nco_dbg_old){
+    (void)fprintf(stdout,"%s: DEBUG %s defining variable <%s> with dimensions: ",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
     for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++) (void)fprintf(stdout,"#%d<%s> : ",var_trv->var_dmn[idx_dmn].dmn_id,var_trv->var_dmn[idx_dmn].dmn_nm);
     (void)fprintf(stdout,"\n");
   } /* endif */
@@ -4295,7 +4295,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* If variable has re-defined record dimension. NB: this implies passing NULL as user-specified record dimension parameter */
   if(var_trv->rec_dmn_nm_out){
     /* Must be ncpdq */
-    assert(prg_id == ncpdq);
+    assert(nco_prg_id == ncpdq);
     rec_dmn_nm=(char *)strdup(var_trv->rec_dmn_nm_out);
   } /* endif */
 
@@ -4303,29 +4303,29 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(rec_dmn_nm){
 
     /* ncks */
-    if(prg_id == ncks){
+    if(nco_prg_id == ncks){
       /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
       rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
       int rec_dmn_id_dmy;
       rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
       if(rcd != NC_NOERR){
-        (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
+        (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
         nco_exit(EXIT_FAILURE);
       } /* endif */
 
       /* Does variable contain requested record dimension? */
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
         if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
-          if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
           break;
         } /* endif */
       } /* end loop over idx_dmn */
 
-    }else if(prg_id == ncecat){
+    }else if(nco_prg_id == ncecat){
       /* Is dimension already defined in output? If not, define it */
       rcd_lcl=nco_inq_dimid_flg(nc_out_id,rec_dmn_nm,&rec_id_out);
       if(rcd_lcl != NC_NOERR){
-        if(dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s defining ncecat dimension: <%s>\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s defining ncecat dimension: <%s>\n",nco_prg_nm_get(),fnc_nm,rec_dmn_nm);
         (void)nco_def_dim(nc_out_id,rec_dmn_nm,NC_UNLIMITED,&rec_id_out);
       } /* !dimension */
     } /* !ncecat */
@@ -4363,8 +4363,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Inquire if dimension defined in output using obtained group ID (return value not used in logic) */
     rcd_lcl=nco_inq_dimid_flg(grp_dmn_out_id,dmn_nm,&dmn_id_out);
 
-    if(dbg_lvl_get() == nco_dbg_old){
-      if(rcd_lcl == NC_NOERR) (void)fprintf(stdout,"%s: DEBUG %s dimension is visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,var_dim_id,dmn_trv->nm_fll); else (void)fprintf(stdout,"%s: DEBUG %s dimension is not visible (by parents or group) #%d<%s>\n",prg_nm_get(),fnc_nm,var_dim_id,dmn_trv->nm_fll);
+    if(nco_dbg_lvl_get() == nco_dbg_old){
+      if(rcd_lcl == NC_NOERR) (void)fprintf(stdout,"%s: DEBUG %s dimension is visible (by parents or group) #%d<%s>\n",nco_prg_nm_get(),fnc_nm,var_dim_id,dmn_trv->nm_fll); else (void)fprintf(stdout,"%s: DEBUG %s dimension is not visible (by parents or group) #%d<%s>\n",nco_prg_nm_get(),fnc_nm,var_dim_id,dmn_trv->nm_fll);
     } /* endif dbg */
 
     /* Check output group (only) dimensions */
@@ -4388,8 +4388,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Define dimension in output file if necessary */
     if(NEED_TO_DEFINE_DIM){
 
-      if(dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: DEBUG %s need to define dimension '%s' in ",prg_nm_get(),fnc_nm,dmn_nm);
+      if(nco_dbg_lvl_get() == nco_dbg_old){
+        (void)fprintf(stdout,"%s: DEBUG %s need to define dimension '%s' in ",nco_prg_nm_get(),fnc_nm,dmn_nm);
         (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
         (void)fprintf(stdout,"\n");
       } /* endif dbg */
@@ -4407,7 +4407,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
         if(!strcmp(dmn_nm,rec_dmn_nm)){
           /* ... then honor user's request to define it as a fixed or record dimension ... */
-          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
+          if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",nco_prg_nm_get(),fnc_nm,rec_dmn_nm);
           if(FIX_REC_DMN) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=True;
         }else{ /* strcmp() */
           if(FIX_REC_DMN){
@@ -4426,7 +4426,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
               /* ... output file adheres to netCDF3 API so there can be only one record dimension.
               In other words, define all other dimensions as fixed, non-record dimensions, even
               if they are a record dimension in the input file ... */
-              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
+              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
               DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             } /* !netCDF4 */
 
@@ -4441,7 +4441,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
             User can override this with --mrd (multiple record dimension) switch */
 
             /* Undefine dimension as record if current dimension (e.g., name "time") is also record */
-            if(prg_id == ncecat || prg_id == ncpdq)
+            if(nco_prg_id == ncecat || nco_prg_id == ncpdq)
               if(dmn_trv->is_rec_dmn && nco_mrd_cnv_get() == nco_mrd_restrict)
                 DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
 
@@ -4478,7 +4478,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 
       /* ncwa */
-      if(prg_id == ncwa){
+      if(nco_prg_id == ncwa){
         nco_bool found_dim=False;
         /* Degenerate dimensions */
         for(int idx_dmn_dgn=0;idx_dmn_dgn<trv_tbl->nbr_dmn_dgn;idx_dmn_dgn++){
@@ -4522,7 +4522,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Die informatively if record dimension is not first dimension */
     if(idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4 && DEFINE_DIM[idx_dmn]){
-      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",prg_nm_get(),rec_dmn_nm,var_nm,idx_dmn+1);  
+      (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",nco_prg_nm_get(),rec_dmn_nm,var_nm,idx_dmn+1);  
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
@@ -4532,7 +4532,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(var_trv->flg_rdr){
 
     /* Must be ncpdq */
-    assert(prg_id == ncpdq);
+    assert(nco_prg_id == ncpdq);
 
     for(int dmn_out_idx=0;dmn_out_idx<nbr_dmn_var;dmn_out_idx++)
       dmn_idx_in_out[var_trv->dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
@@ -4545,7 +4545,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   } /* !var_trv->rdr */
 
-  if(prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
+  if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
     /* Insert extra "record" dimension in dimension array if...  
     ...is ncecat and
     ...user requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially and
@@ -4571,12 +4571,12 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   var_typ_out=var_typ;
 
   /* Some operators change output netCDF variable type */
-  if(prg_id == ncflint || prg_id == ncpdq){
+  if(nco_prg_id == ncflint || nco_prg_id == ncpdq){
 
     /* If initialization value was changed, then set output type to new type */
     if(var_trv->var_typ_out != err_typ) var_typ_out=var_trv->var_typ_out; else var_typ_out=var_typ;
 
-  }else if(prg_id != ncbo){
+  }else if(nco_prg_id != ncbo){
     int var_id;        /* [id] Variable ID */
 
     var_sct *var_prc;  /* [sct] Variable to process */
@@ -4594,7 +4594,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   } /* !(ncflint || ncpdq) */
 
   /* Special case for ncwa */
-  if(prg_id == ncwa){
+  if(nco_prg_id == ncwa){
 
     int dmn_ids_out[NC_MAX_DIMS];  /* [id] Dimension IDs array for output variable (ncwa can skip some dimensions, rearranje) */
 
@@ -4649,7 +4649,7 @@ nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to
 {
   /* Purpose: Transfer dimension structures to be re-ordered (ncpdq) into GTT */
 
-  assert(prg_get() == ncpdq);
+  assert(nco_prg_id_get() == ncpdq);
 
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
@@ -4710,7 +4710,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   char *rec_dmn_nm_out;                      /* [sng] Record dimension name, re-ordered */
 
   int dmn_idx_out_in[NC_MAX_DIMS];           /* [idx] Dimension correspondence, output->input  (Stored in GTT ) */
-  int prg_id;                                /* [enm] Program ID */
+  int nco_prg_id;                                /* [enm] Program ID */
 
   nco_bool REDEFINED_RECORD_DIMENSION;       /* [flg] Re-defined record dimension */
   nco_bool dmn_rvr_in[NC_MAX_DIMS];          /* [flg] Reverse dimension  (Stored in GTT ) */
@@ -4718,9 +4718,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
   nm_tbl_sct *rec_dmn_nm;                    /* [sct] Record dimension names array */
 
   /* Get Program ID */
-  prg_id=prg_get(); 
+  nco_prg_id=nco_prg_id_get(); 
 
-  assert(prg_id == ncpdq);
+  assert(nco_prg_id == ncpdq);
 
   /* Loop processed variables */
   for(int idx_var_prc=0;idx_var_prc<nbr_var_prc;idx_var_prc++){
@@ -4769,7 +4769,7 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         /* ...and current output record dimension already differs from input record dimension... */
         if(REDEFINED_RECORD_DIMENSION){
           /* ...then requested re-order requires multiple record dimensions... */
-          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm_get(),var_prc[idx_var_prc]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
+          if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF3 allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",nco_prg_nm_get(),var_prc[idx_var_prc]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
           break;
         }else{ /* !REDEFINED_RECORD_DIMENSION */
           /* ...otherwise, update output record dimension name... */
@@ -4832,9 +4832,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
         /* ...Will variable be record variable in output file?... */
         if(dmn_out_idx == var_fix[idx_var_fix]->nbr_dim){
           /* ...No. Variable will be non-record---does this change its status?... */
-          if(dbg_lvl_get() >= nco_dbg_var){
+          if(nco_dbg_lvl_get() >= nco_dbg_var){
             if(var_fix[idx_var_fix]->is_rec_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",
-              prg_nm_get(),var_fix[idx_var_fix]->nm);
+              nco_prg_nm_get(),var_fix[idx_var_fix]->nm);
           }
           /* Assign record flag dictated by re-order */
           var_fix[idx_var_fix]->is_rec_var=False; 
@@ -4842,8 +4842,8 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
           /* ...Yes. Variable will be record... */
           /* ...Will becoming record variable change its status?... */
           if(!var_fix[idx_var_fix]->is_rec_var){
-            if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",
-              prg_nm_get(),var_fix[idx_var_fix]->nm);
+            if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",
+              nco_prg_nm_get(),var_fix[idx_var_fix]->nm);
             /* Change record flag to status dictated by re-order */
             var_fix[idx_var_fix]->is_rec_var=True;
           } /* endif status changing from non-record to record */
@@ -4925,9 +4925,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                 /* ...Will variable be record variable in output file?... */
                 if(dmn_out_idx == var_prc_out[idx_var_prc_out]->nbr_dim){
                   /* ...No. Variable will be non-record---does this change its status?... */
-                  if(dbg_lvl_get() >= nco_dbg_var){
+                  if(nco_dbg_lvl_get() >= nco_dbg_var){
                     if(var_prc_out[idx_var_prc_out]->is_rec_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from record to non-record variable\n",
-                      prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
+                      nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
                   }
                   /* Assign record flag dictated by re-order */
                   var_prc_out[idx_var_prc_out]->is_rec_var=False; 
@@ -4939,15 +4939,15 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
                     for(dmn_dpl_idx=1;dmn_dpl_idx<var_prc_out[idx_var_prc_out]->nbr_dim;dmn_dpl_idx++){ /* NB: loop starts from 1 */
                       if(var_prc_out[idx_var_prc_out]->dmn_id[0] == var_prc_out[idx_var_prc_out]->dmn_id[dmn_dpl_idx]){
                         (void)fprintf(stdout,"%s: ERROR Requested re-order turns duplicate non-record dimension %s in variable %s into output record dimension. netCDF does not support duplicate record dimensions in a single variable.\n%s: HINT: Exclude variable %s from extraction list with \"-x -v %s\".\n",
-                          prg_nm_get(),rec_dmn_nm_out,var_prc_out[idx_var_prc_out]->nm,prg_nm_get(),var_prc_out[idx_var_prc_out]->nm,var_prc_out[idx_var_prc_out]->nm);
+                          nco_prg_nm_get(),rec_dmn_nm_out,var_prc_out[idx_var_prc_out]->nm,nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm,var_prc_out[idx_var_prc_out]->nm);
                         nco_exit(EXIT_FAILURE);
                       } /* endif err */
                     } /* end loop over dmn_out */
                   } /* endif has_dpl_dmn */
                   /* ...Will becoming record variable change its status?... */
                   if(!var_prc_out[idx_var_prc_out]->is_rec_var){
-                    if(dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",
-                      prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
+                    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",
+                      nco_prg_nm_get(),var_prc_out[idx_var_prc_out]->nm);
                     /* Change record flag to status dictated by re-order */
                     var_prc_out[idx_var_prc_out]->is_rec_var=True;
                     /* ...Swap dimension information for multi-dimensional variables... */
@@ -5223,14 +5223,14 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
       } /* end loop over dmn_out */
 
       /* Report full metadata re-order, if requested */
-      if(dbg_lvl_get() > 3){
+      if(nco_dbg_lvl_get() > 3){
         int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
         /* Create reverse correspondence */
         for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
           dmn_idx_in_out[dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
 
         for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
-          (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
+          (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",nco_prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
       } /* endif dbg */
 
       /* Is identity re-ordering requested? */
@@ -5246,13 +5246,13 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
       } /* !IDENTITY_REORDER */
 
       if(IDENTITY_REORDER){
-        if(dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
+        if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",nco_prg_nm_get(),fnc_nm,var_in->nm);
         /* Copy in one fell swoop then return */
         (void)memcpy((void *)(var_out->val.vp),(void *)(var_in->val.vp),var_out->sz*nco_typ_lng(var_out->type));
         return;
       } /* !IDENTITY_REORDER */
 
-      if(var_in->has_dpl_dmn) (void)fprintf(stdout,"%s: WARNING %s reports non-identity re-order for variable with duplicate dimensions %s.\n%s does not support non-identity re-orders of variables with duplicate dimensions\n",prg_nm_get(),fnc_nm,var_in->nm,prg_nm_get());
+      if(var_in->has_dpl_dmn) (void)fprintf(stdout,"%s: WARNING %s reports non-identity re-order for variable with duplicate dimensions %s.\n%s does not support non-identity re-orders of variables with duplicate dimensions\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_prg_nm_get());
 
       /* Compute map for each dimension of input variable */
       for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++) dmn_in_map[dmn_in_idx]=1L;
@@ -5521,7 +5521,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   int fl_fmt;                            /* [enm] Output file format */
   int nbr_dmn_var;                       /* [nbr] Number of dimensions for variable */
   int rcd=NC_NOERR;                      /* [rcd] Return code */
-  int prg_id;                            /* [enm] Program ID */
+  int nco_prg_id;                            /* [enm] Program ID */
   int var_dim_id;                        /* [id] Variable dimension ID */   
  
   long dmn_cnt;                          /* [sng] Hyperslabbed dimension size  */  
@@ -5544,15 +5544,15 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
   /* Is requested variable in input file? */
   rcd=nco_inq_varid_flg(grp_in_id,var_nm,&var_in_id);
-  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",prg_nm_get(),fnc_nm,var_nm);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: %s reports ERROR unable to find variable \"%s\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 
   /* Get type of variable and number of dimensions from input */
   (void)nco_inq_var(grp_in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_var,(int *)NULL,(int *)NULL);  
 
   /* Get Program ID */
-  prg_id=prg_get(); 
+  nco_prg_id=nco_prg_id_get(); 
 
-  if(prg_id == ncks) assert(var_typ == var_trv->var_typ);
+  if(nco_prg_id == ncks) assert(var_typ == var_trv->var_typ);
   assert(nbr_dmn_var == var_trv->nbr_dmn);
 
   var_typ=var_trv->var_typ;
@@ -5580,7 +5580,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   if(var_trv->rec_dmn_nm_out){
 
     /* Must be ncpdq */
-    assert(prg_id == ncpdq);
+    assert(nco_prg_id == ncpdq);
 
     rec_dmn_nm=(char *)strdup(var_trv->rec_dmn_nm_out);
 
@@ -5590,26 +5590,26 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   if(rec_dmn_nm){
 
     /* ncks */
-    if(prg_id == ncks){
+    if(nco_prg_id == ncks){
       /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
       rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
       int rec_dmn_id_dmy;
       rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
       if(rcd != NC_NOERR){
-        (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
+        (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
         nco_exit(EXIT_FAILURE);
       } /* endif */
 
       /* Does variable contain requested record dimension? */
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
         if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
-          if(dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
           break;
         } /* endif */
       } /* end loop over idx_dmn */
 
       /* ncecat */
-    }else if(prg_id == ncecat){
+    }else if(nco_prg_id == ncecat){
 
     } /* ncecat */
   } /* Is requested record dimension in input file? */
@@ -5645,7 +5645,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
         /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
         if(!strcmp(dmn_nm,rec_dmn_nm)){
           /* ... then honor user's request to define it as a fixed or record dimension ... */
-          if(dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",prg_nm_get(),fnc_nm,rec_dmn_nm);
+          if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",nco_prg_nm_get(),fnc_nm,rec_dmn_nm);
           if(FIX_REC_DMN) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=True;
         }else{ /* strcmp() */
           if(FIX_REC_DMN){
@@ -5664,7 +5664,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
               /* ... output file adheres to netCDF3 API so there can be only one record dimension.
               In other words, define all other dimensions as fixed, non-record dimensions, even
               if they are a record dimension in the input file ... */
-              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
+              if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
               DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             } /* !netCDF4 */
           } /* !FIX_REC_DMN */
@@ -5755,7 +5755,7 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
   nco_bool dmn_flg; /* [flg] Is dimension already inserted in output array  */  
 
   /* Used only by ncpdq , ncwa */
-  assert(prg_get() == ncpdq || prg_get() == ncwa);
+  assert(nco_prg_id_get() == ncpdq || nco_prg_id_get() == ncwa);
 
   nbr_dmn=0;
 
@@ -5831,8 +5831,8 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
   /* Export */
   *nbr_dmn_xtr=nbr_dmn;
 
-  if(dbg_lvl_get() >= nco_dbg_dev){ 
-    (void)fprintf(stdout,"%s: DEBUG %s dimensions to export: ",prg_nm_get(),fnc_nm);        
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
+    (void)fprintf(stdout,"%s: DEBUG %s dimensions to export: ",nco_prg_nm_get(),fnc_nm);        
     for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
       (void)fprintf(stdout,"#%d<%s> : ",(*dmn)[idx_dmn]->id,(*dmn)[idx_dmn]->nm);        
     }
@@ -5893,7 +5893,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   size_t usr_sng_lng;       /* [nbr] Length of user-supplied string */
 
   /* Used only by ncpdq , ncwa */
-  assert(prg_get() == ncpdq || prg_get() == ncwa);
+  assert(nco_prg_id_get() == ncpdq || nco_prg_id_get() == ncwa);
 
   /* Initialize values */
   obj_nbr=nbr_dmn_in;
@@ -5915,7 +5915,7 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
 
 
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
-      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),usr_sng);
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
       nco_exit(EXIT_FAILURE);
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
     } /* end if regular expression */
@@ -6056,8 +6056,8 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
   /* Export */
   *nbr_dmn_avg=nbr_avg_dmn;
 
-  if(dbg_lvl_get() >= nco_dbg_dev){ 
-    (void)fprintf(stdout,"%s: DEBUG %s dimensions to average: ",prg_nm_get(),fnc_nm);        
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
+    (void)fprintf(stdout,"%s: DEBUG %s dimensions to average: ",nco_prg_nm_get(),fnc_nm);        
     for(int idx_dmn=0;idx_dmn<nbr_avg_dmn;idx_dmn++){
       (void)fprintf(stdout,"#%d<%s> : ",(*dmn_avg)[idx_dmn]->id,(*dmn_avg)[idx_dmn]->nm);        
     }
@@ -6087,7 +6087,7 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
   nco_bool flg_dmn_ins;     /* [flg] Is dimension already inserted in output array  */  
 
   /* Used only by ncpdq , ncwa */
-  assert(prg_get() == ncpdq || prg_get() == ncwa);
+  assert(nco_prg_id_get() == ncpdq || nco_prg_id_get() == ncwa);
 
   /* Initialize values */
   nbr_out_dmn=0;
@@ -6148,8 +6148,8 @@ nco_dmn_out_mk                         /* [fnc] Build dimensions array to keep o
   /* Export */
   *nbr_dmn_out=nbr_out_dmn;
 
-  if(dbg_lvl_get() >= nco_dbg_dev){ 
-    (void)fprintf(stdout,"%s: DEBUG %s dimensions to keep on output: ",prg_nm_get(),fnc_nm);        
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
+    (void)fprintf(stdout,"%s: DEBUG %s dimensions to keep on output: ",nco_prg_nm_get(),fnc_nm);        
     for(int idx_dmn=0;idx_dmn<nbr_out_dmn;idx_dmn++){
       (void)fprintf(stdout,"#%d<%s> : ",(*dmn_out)[idx_dmn]->id,(*dmn_out)[idx_dmn]->nm);        
     }
@@ -6170,7 +6170,7 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
   /* Purpose: Mark flag average, optionally flag degenerate for all dimensions that have the input ID */
 
   /* Used only by ncpdq , ncwa */
-  assert(prg_get() == ncpdq || prg_get() == ncwa);
+  assert(nco_prg_id_get() == ncpdq || nco_prg_id_get() == ncwa);
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -6219,7 +6219,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
   /* Used only by ncra */
-  assert(prg_get() == ncra || prg_get() == ncrcat || prg_get() == ncea );
+  assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncea );
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -6314,7 +6314,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
 #ifndef ENABLE_UDUNITS
             if(trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",
-              prg_nm_get(),trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm,prg_nm_get());
+              nco_prg_nm_get(),trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm,nco_prg_nm_get());
 #endif /* !ENABLE_UDUNITS */
 
             /* Increase array size */
@@ -6328,8 +6328,8 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   } /* Loop table */
 
 
-  if(dbg_lvl_get() >= nco_dbg_dev){ 
-    (void)fprintf(stdout,"%s: DEBUG %s record dimensions to process: ",prg_nm_get(),fnc_nm);        
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
+    (void)fprintf(stdout,"%s: DEBUG %s record dimensions to process: ",nco_prg_nm_get(),fnc_nm);        
     for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
       (void)fprintf(stdout,"#%d<%s/%s> : ",trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,trv_tbl->lmt_rec[idx_rec]->nm);        
     }
@@ -6365,7 +6365,7 @@ nco_prt_tbl_lmt                       /* [fnc] Print table limits */
           int lmt_dmn_nbr=crd->lmt_msa.lmt_dmn_nbr;
 
           if(lmt_dmn_nbr){
-            (void)fprintf(stdout,"%s: INFO %s : <%s> : %s : limits:%d ->",prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);
+            (void)fprintf(stdout,"%s: INFO %s : <%s> : %s : limits:%d ->",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);
             for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){ 
               lmt_sct *lmt_dmn=crd->lmt_msa.lmt_dmn[lmt_idx];
               (void)fprintf(stdout," [%d]%s(%li,%li,%li) :",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
@@ -6381,7 +6381,7 @@ nco_prt_tbl_lmt                       /* [fnc] Print table limits */
           int lmt_dmn_nbr=ncd->lmt_msa.lmt_dmn_nbr;
 
           if(lmt_dmn_nbr){
-            (void)fprintf(stdout,"%s: INFO %s : <%s> : %s :limits: %d->",prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);
+            (void)fprintf(stdout,"%s: INFO %s : <%s> : %s :limits: %d->",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm,lmt_dmn_nbr);
             for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){ 
               lmt_sct *lmt_dmn=ncd->lmt_msa.lmt_dmn[lmt_idx];
               (void)fprintf(stdout," [%d]%s(%li,%li,%li) :",lmt_idx,lmt_dmn->nm,lmt_dmn->srt,lmt_dmn->cnt,lmt_dmn->srd);
@@ -6729,7 +6729,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               if(crd->lmt_msa.lmt_dmn_nbr == 0) continue;
 
               /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
-              if(crd->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
+              if(crd->is_rec_dmn && (nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat)) continue;
 
               /* Split-up wrapped limits. NOTE: using deep copy version nco_msa_wrp_splt_cpy() */   
               (void)nco_msa_wrp_splt_cpy(&trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa);
@@ -6772,8 +6772,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               /* Find and store size of output dimension */  
               (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa);
 
-              if(dbg_lvl_get() >= nco_dbg_fl){
-                if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",prg_nm_get(),crd->nm); else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",prg_nm_get(),crd->nm); 
+              if(nco_dbg_lvl_get() >= nco_dbg_fl){
+                if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),crd->nm); else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),crd->nm); 
 	      } /* endif */
 
             }else{
@@ -6789,7 +6789,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               if(ncd->lmt_msa.lmt_dmn_nbr == 0) continue;
 
               /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
-              if(ncd->is_rec_dmn && (prg_get() == ncra || prg_get() == ncrcat)) continue;
+              if(ncd->is_rec_dmn && (nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat)) continue;
 
               /* Split-up wrapped limits */   
               (void)nco_msa_wrp_splt_trv(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd);
@@ -6834,8 +6834,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               /* Find and store size of output dimension */  
               (void)nco_msa_clc_cnt_trv(trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd);
 
-              if(dbg_lvl_get() >= nco_dbg_fl){
-                if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",prg_nm_get(),ncd->nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",prg_nm_get(),ncd->nm); 
+              if(nco_dbg_lvl_get() >= nco_dbg_fl){
+                if(flg_ovl) (void)fprintf(stdout,"%s: dimension \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),ncd->nm); else (void)fprintf(stdout,"%s: dimension \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),ncd->nm); 
 	      } /* endif */
 
             } /* b) case of dimension only (there is no coordinate variable for this dimension */

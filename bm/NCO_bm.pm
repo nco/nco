@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.81 2013-03-28 16:15:22 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.82 2013-10-22 03:03:35 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -41,12 +41,12 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw (
 		  tst_run dbg_msg drc_dat_set bm_ntl
 		  $pfx_cmd $pfx_cmd_crr $drc_dat @fl_mtd_sct $opr_sng_mpi $opr_nm $dsc_sng %NCO_RC
-		  $prsrv_fl  $srv_sd $hiresfound $dodap $bm $dbg_lvl $sock $udp_rpt
+		  $prsrv_fl  $srv_sd $hiresfound $dodap $bm $nco_dbg_lvl $sock $udp_rpt
 		  $mpi_prc $pfx_mpi $mpi_fk $mpi_upx
 		  );
 
 use vars qw(
-	    $aix_mpi_nvr_pfx $aix_mpi_sgl_nvr_pfx $bm $dbg_lvl $dodap $dot_fmt
+	    $aix_mpi_nvr_pfx $aix_mpi_sgl_nvr_pfx $bm $nco_dbg_lvl $dodap $dot_fmt
 	    $dot_nbr $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng
 	    $pfx_fk $hiresfound $md5 $mpi_prc $pfx_mpi $mpi_fk $mpi_upx
         $MY_BIN_DIR %NCO_RC $nsr_xpc
@@ -147,8 +147,8 @@ exit(0);
 sub bm_ntl($$){
     use vars qw($prg_nm %sym_link %failure);
     my $bch_flg; # [flg] Batch behavior
-    my $dbg_lvl; # [flg] Debugging level
-    ($bch_flg,$dbg_lvl)=@_;
+    my $nco_dbg_lvl; # [flg] Debugging level
+    ($bch_flg,$nco_dbg_lvl)=@_;
 # Enumerate operators to test
     @opr_lst_all = qw( ncap2 ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net );
     @opr_lst_mpi = qw( ncbo ncecat ncflint ncpdq ncra ncwa ncpdq ncra);
@@ -219,13 +219,13 @@ sub bm_ntl($$){
 
 # Output string to either stdout, log, or both
 sub bm_vrb {
-    my $dbg_lvl = shift;
+    my $nco_dbg_lvl = shift;
     my $wnt_log = shift;
     my $ts = shift;
 #	my $wnt_log; # why should this be required?
-    if($dbg_lvl > 0){printf ("$ts");}
+    if($nco_dbg_lvl > 0){printf ("$ts");}
     if($wnt_log) {printf (LOG "$ts");}
-} # end of bm_vrb($dbg_lvl, $wnt_log, informational string to output )
+} # end of bm_vrb($nco_dbg_lvl, $wnt_log, informational string to output )
 
 sub fl_mtd_ntl {
 # Purpose: fl_mtd_ntl() initializes metadata for all test files
@@ -235,7 +235,7 @@ sub fl_mtd_ntl {
     my $idx_tms_lng=2;
     dbg_msg(1,"fl_mtd_ntl: \$fl_nbr = $fl_nbr");
     
-    if ($dbg_lvl > 2) {
+    if ($nco_dbg_lvl > 2) {
 	print "\nWaiting for keypress to proceed.\n";
 	my $tmp = <STDIN>;
     }
@@ -277,7 +277,7 @@ sub fl_mk {
     my $fl_nbr = 3;
     $pfx_cmd = "$MY_BIN_DIR";
     
-    if ($dbg_lvl > 2) {
+    if ($nco_dbg_lvl > 2) {
 	print "\nWaiting for keypress to proceed.\n";
 	my $tmp = <STDIN>;
     }
@@ -300,11 +300,11 @@ sub fl_mk {
     $fl_tmg[$idx][1] = $elapsed; # creation time
     if ($idx == 2) { # tms_lng needs extra massaging
 # tms_lng ready for ncap'ing
-	if ($dbg_lvl > 0) {print "extra steps for tms_lng - ncecat...\n";}
+	if ($nco_dbg_lvl > 0) {print "extra steps for tms_lng - ncecat...\n";}
 	system "$pfx_cmd/ncecat -O -h $fl_in $fl_out";  # inserts a record dimension
-	if ($dbg_lvl > 0) {print "ncpdq...\n";}
+	if ($nco_dbg_lvl > 0) {print "ncpdq...\n";}
 	system "$pfx_cmd/ncpdq -O -h -a time,record $fl_in $fl_out"; # swaps time and 'record'
-	if ($dbg_lvl > 0) {print "ncwa...\n";}
+	if ($nco_dbg_lvl > 0) {print "ncwa...\n";}
 	system "$pfx_cmd/ncwa -O -h -a record $fl_in $fl_out"; # averages 'record'
     }
     print "\n==== Populating $fl_out file.\nTiming results:\n";
@@ -324,7 +324,7 @@ sub fl_mk {
 sub rsl_smr_fl_mk {
     $fl_nbr = 3;
 #    print " in rsl_smr_fl_mk,  \$fl_tmg[1][0] = $fl_tmg[1][0] & \$fl_nbr = $fl_nbr\n";
-    if ($dbg_lvl > 0){print "Summarizing results of file creation\n";}
+    if ($nco_dbg_lvl > 0){print "Summarizing results of file creation\n";}
     my $CC = `../src/nco/ncks --compiler`;
     my $CCinfo = '';
     if ($CC =~ /gcc/) {$CCinfo = `gcc --version |grep -i gcc`;}
@@ -346,7 +346,7 @@ sub rsl_smr_fl_mk {
     print $reportstr;
     if ($udp_rpt) {
 	$sock->send($udp_dat);
-	if ($dbg_lvl > 0) { print "File Creation: udp stream sent to $server_ip:\n$udp_dat\n";}
+	if ($nco_dbg_lvl > 0) { print "File Creation: udp stream sent to $server_ip:\n$udp_dat\n";}
     } # and send it back separately
 } # end of rsl_smr_fl_mk
 
@@ -442,11 +442,11 @@ sub tst_run {
 # filenames with names like $fl_nm_lcl{'%tmp_fl_00%'}
     
     # fxm: WTF do these vars require this treatment?!??
-    *dbg_lvl = *main::dbg_lvl;
+    *nco_dbg_lvl = *main::nco_dbg_lvl;
     *fl_out = *main::fl_out;
     *mpi_prc = *main::mpi_prc;
     
-    if ($dbg_lvl > 0) {
+    if ($nco_dbg_lvl > 0) {
 	print "\n\n\n### New tst_run() cycle [$opr_nm: $dsc_sng] ###\n";
 	    if ($fl_nm_lcl{'%tmp_fl_00%'} eq "") {
 		print "fl_out undefined!\n";
@@ -494,7 +494,7 @@ sub tst_run {
     }
 #	print "just past unlinking stage \n";  my $wait = <STDIN>;
     
-    if ($dbg_lvl > 0) {
+    if ($nco_dbg_lvl > 0) {
 	for (my $cmd_idx=0; $cmd_idx <= $#cmd_lst; $cmd_idx++){
 	    print "### cmd_lst[$cmd_idx] = $cmd_lst[$cmd_idx] ###\n";
 	    }
@@ -522,9 +522,9 @@ sub tst_run {
     my $elapsed;
     $lst_cmd--;
     
-    dbg_msg(4,"\n nsr_xpc = $nsr_xpc\n dbg_lvl = $dbg_lvl\n wnt_log = $wnt_log\n cmd_lst = @cmd_lst");
+    dbg_msg(4,"\n nsr_xpc = $nsr_xpc\n nco_dbg_lvl = $nco_dbg_lvl\n wnt_log = $wnt_log\n cmd_lst = @cmd_lst");
     
-    &bm_vrb($dbg_lvl, $wnt_log, "\n\n============ New Test ==================\n");
+    &bm_vrb($nco_dbg_lvl, $wnt_log, "\n\n============ New Test ==================\n");
     
     # csz++
     $dot_nbr_min=3; # Minimum number of dots between description and "ok" result
@@ -624,14 +624,14 @@ sub tst_run {
 	    $cmd_rsl = `($_) 2> nco_bm.stderr`; # stderr contains timing info, if any
 
 #  	print "\nDEBUG: cmd = $_ \n and \$cmd_rsl = $cmd_rsl\n ";
-	    if ($dbg_lvl >= 1) {print "\nDEBUG: result of [$_]\n = [$cmd_rsl]\n";}
+	    if ($nco_dbg_lvl >= 1) {print "\nDEBUG: result of [$_]\n = [$cmd_rsl]\n";}
 	    chomp $cmd_rsl;
 	    
 # 			# still newlines in $cmd_rsl? -> a multiline result & only want the last one.
 # 			if ($cmd_rsl =~/\n/) {
 # 				my @rsl_arr = split(/\n/, $cmd_rsl);
 # 				$cmd_rsl = $rsl_arr[$#rsl_arr]; # take the last line
-# 				if ($dbg_lvl >= 1) {print "\nprocessed multiline \$cmd_rsl = [$cmd_rsl]\n";}
+# 				if ($nco_dbg_lvl >= 1) {print "\nprocessed multiline \$cmd_rsl = [$cmd_rsl]\n";}
 # 			}
 # 			# figure out if $cmd_rsl is numeric or alpha
 # 			if ($cmd_rsl =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
@@ -667,7 +667,7 @@ sub tst_run {
 	    #print "inter benchmark for $opr_nm = $subbenchmarks{$opr_nm} \n";
 	    $subbenchmarks{$opr_nm} += $elapsed;
 	    #		$tst_idx = $tst_nbr{$opr_nm}-1;
-	    if($dbg_lvl > 3){print "\t$opr_nm subtest [$t] took $elapsed seconds\n";}
+	    if($nco_dbg_lvl > 3){print "\t$opr_nm subtest [$t] took $elapsed seconds\n";}
 	    $dbg_sng .= "DEBUG: Result = [$cmd_rsl]\n";
 	    
 	    #and here, check results by md5 checksum for each step - insert guts of rsl_chk_MD5_wc()
@@ -679,11 +679,11 @@ sub tst_run {
 # 				dbg_msg(2,"Entering rsl_chk_MD5_wc() with \$fl_nm_lcl{'%tmp_fl_00%'}=$fl_nm_lcl{'%tmp_fl_00%'}");
 # 				rsl_chk_MD5_wc($fl_nm_lcl{'%tmp_fl_00%'}, $md5_dsc_sng);
 # 			}
-# 			if ($md5_chk == 0 && $dbg_lvl > 0) { $dbg_sng .= "WARN: No MD5/wc check on intermediate file.\n";}
+# 			if ($md5_chk == 0 && $nco_dbg_lvl > 0) { $dbg_sng .= "WARN: No MD5/wc check on intermediate file.\n";}
 	    
 	    # else old-style check has already been done and results are in $cmd_rsl, so process normally
 	    $cmd_lst_cnt++;
-	    if ($dbg_lvl > 2) {
+	    if ($nco_dbg_lvl > 2) {
 		print "\ntst_run: test cycle held - hit <Enter> to continue\n";
 		my $wait = <STDIN>;
 	    }
@@ -701,7 +701,7 @@ sub tst_run {
     if ($cmd_rsl =~/\n/) {
 	my @rsl_arr = split(/\n/, $cmd_rsl);
 	$cmd_rsl = $rsl_arr[$#rsl_arr]; # take the last line
-	if ($dbg_lvl >= 1) {print "\nprocessed multiline \$cmd_rsl = [$cmd_rsl]\n";}
+	if ($nco_dbg_lvl >= 1) {print "\nprocessed multiline \$cmd_rsl = [$cmd_rsl]\n";}
     }
     # Is $cmd_rsl numeric or alpha?
     if ($cmd_rsl =~ /-{0,1}\d{0,9}\.{0,1}\d{0,9}/ &&
@@ -755,7 +755,7 @@ sub tst_run {
 	 $dbg_sng .= "DEBUG: !!FAILED - No result from [$opr_nm]\n";
 						   }
     print $err_sng;
-    if ($dbg_lvl > 0) {print $dbg_sng;}
+    if ($nco_dbg_lvl > 0) {print $dbg_sng;}
     if ($wnt_log) {print LOG $dbg_sng;}
     @cmd_lst =(); # Clear test
     if (!$bm) { $prsrv_fl = 0; } # reset so files will be deleted unless doing benchmarks
@@ -962,8 +962,8 @@ sub rsl_smr_rgr {
     $reportstr .= sprintf "\nNB:MD5: test passes MD5 checksum on file(s) May be more than one intermediate file.\nSVx: test passes single terminal value check SVn=numeric, SVa=alphabetic\n";
     
     chdir "../bld";
-    if ($dbg_lvl == 0) {print $reportstr;}
-    else { &bm_vrb($dbg_lvl, $wnt_log, $reportstr); }
+    if ($nco_dbg_lvl == 0) {print $reportstr;}
+    else { &bm_vrb($nco_dbg_lvl, $wnt_log, $reportstr); }
     
     my $skp_rpt = $ENV{'NCO_AVOID_BM_REPORT'};
     #print "skp_rpt=", $skp_rpt;
@@ -1000,7 +1000,7 @@ REQ_REGR_PACKET
 	if ($udp_rpt || $ansr eq "y" || $ansr eq "yes" || $ansr eq "Y" ||$ansr eq "YES") {
 		$sock->send($udp_dat);
 		print "\nUDP Data sent!  The NCO dev team thanks you!!\nHave a good one, eh!?\n\n\n";
-		if ($dbg_lvl > 0) { print "Regression: udp stream sent to $server_ip:\n$udp_dat\n";}
+		if ($nco_dbg_lvl > 0) { print "Regression: udp stream sent to $server_ip:\n$udp_dat\n";}
 		# and write this agreement to the ~/.ncorc file so user isn't bothered by this again.
 	if (!-e "~/.ncorc") {
 	    #my $HOME = $ENV{'HOME'}
@@ -1045,7 +1045,7 @@ sub rsl_chk_MD5_wc {
 	if ( $MD5_tbl{$testtype} eq $hash ) { print " MD5"; bm_vrb " MD5"; }
 	else {
 	    print " MD5 fail,"; bm_vrb " MD5 fail,";  # test: $testtype\n";
-	    if ($dbg_lvl > 1) {bm_vrb "MD5 sig: $hash should be: $MD5_tbl{$testtype}\n";}
+	    if ($nco_dbg_lvl > 1) {bm_vrb "MD5 sig: $hash should be: $MD5_tbl{$testtype}\n";}
 	    if ($wc eq $wc_tbl{$testtype}) { print "WC PASS "; bm_vrb "WC PASS "; }
 	    else { print " WC fail,"; bm_vrb " WC fail,"; }
 	    my $errfile = "$file" . ".MD5.err"; # will get overwritten; halt test if want to keep it.
@@ -1068,7 +1068,7 @@ sub wat4inpt{
     my $line = shift;
     my $msg = shift;
     if ($msg eq "") {$msg = "no additional info"}
-    if ($dbg_lvl > 2) {
+    if ($nco_dbg_lvl > 2) {
 	print "\n\n-------------------------------\nExecution halted near line $line - hit a key to continue.\n[$msg]\n-------------------------------\n";
 	my $tmp=<STDIN>;
     }
@@ -1077,7 +1077,7 @@ sub wat4inpt{
 sub dbg_msg {
     my $okdbg = shift;
     my $msg = shift;
-    if ($dbg_lvl >= $okdbg) {
+    if ($nco_dbg_lvl >= $okdbg) {
 	print "\nDEBUG[bm:$okdbg]: $msg\n\n";
     }
 }

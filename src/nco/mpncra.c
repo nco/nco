@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.141 2013-10-08 22:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.142 2013-10-22 03:03:36 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.141 2013-10-08 22:26:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.141 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.142 2013-10-22 03:03:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.142 $";
   const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -286,7 +286,7 @@ main(int argc,char **argv)
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
+      {"nco_dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
@@ -343,8 +343,8 @@ main(int argc,char **argv)
   /* Start clock and save command line */
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
   
   /* Parse command line arguments */
   while(1){
@@ -418,7 +418,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
@@ -444,7 +444,7 @@ main(int argc,char **argv)
     case 'n': /* NINTAP-style abbreviation of files to average */
       fl_lst_abb=nco_lst_prs_2D(optarg,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 5){
-	(void)fprintf(stdout,gettext("%s: ERROR Incorrect abbreviation for file list\n"),prg_nm_get());
+	(void)fprintf(stdout,gettext("%s: ERROR Incorrect abbreviation for file list\n"),nco_prg_nm_get());
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* end if */
@@ -474,7 +474,7 @@ main(int argc,char **argv)
       break;
 #ifdef ENABLE_MPI
     case 'S': /* Suspend with signal handler to facilitate debugging */
-      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stderr,"%s: ERROR Could not install suspend handler.\n",prg_nm_get());
+      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stderr,"%s: ERROR Could not install suspend handler.\n",nco_prg_nm_get());
       while(!nco_spn_lck_brk) usleep(nco_spn_lck_us); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
 #endif /* !ENABLE_MPI */
@@ -494,26 +494,26 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
     case 'Y': /* Pseudonym */
-      /* Call prg_prs to reset pseudonym */
+      /* Call nco_prg_prs to reset pseudonym */
       optarg_lcl=(char *)strdup(optarg);
-      if(prg_nm) prg_nm=(char *)nco_free(prg_nm);
-      prg_nm=prg_prs(optarg_lcl,&prg);
+      if(nco_prg_nm) nco_prg_nm=(char *)nco_free(nco_prg_nm);
+      nco_prg_nm=nco_prg_prs(optarg_lcl,&nco_prg_id);
       optarg_lcl=(char *)nco_free(optarg_lcl);
       break;
     case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);
-      if(prg == ncra || prg == ncea ) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+      if(nco_prg_id == ncra || nco_prg_id == ncea ) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -596,15 +596,15 @@ main(int argc,char **argv)
   
   /* Create stand-alone limit structure just for record dimension */
   if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
-    if(prg == ncra || prg == ncrcat){
-      (void)fprintf(stdout,gettext("%s: ERROR input file %s lacks a record dimension\n"),prg_nm_get(),fl_in);
-      if(fl_nbr == 1)(void)fprintf(stdout,gettext("%s: HINT Use ncks instead of %s\n"),prg_nm_get(),prg_nm_get());
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat){
+      (void)fprintf(stdout,gettext("%s: ERROR input file %s lacks a record dimension\n"),nco_prg_nm_get(),fl_in);
+      if(fl_nbr == 1)(void)fprintf(stdout,gettext("%s: HINT Use ncks instead of %s\n"),nco_prg_nm_get(),nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* endif */
   }else{ /* Record dimension exists */
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
     /* Initialize record coordinate re-basing */
-    if(prg == ncra || prg == ncrcat){
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat){
       int var_id;
       
       lmt_rec->lmt_cln=cln_nil; 
@@ -632,10 +632,10 @@ main(int argc,char **argv)
         lmt_all_rec=lmt_all_lst[idx];
 	/* Can only have one record limit */
         if(lmt_all_rec->lmt_dmn_nbr > 1L){
-	  (void)fprintf(stdout,"%s: Although this program allows multiple hyperslab limits for a single dimension, it allows only one unwrapped limit for the record dimension \"%s\". You have specified %i.\n",prg_nm_get(),lmt_all_rec->dmn_nm,lmt_all_rec->lmt_dmn_nbr);
+	  (void)fprintf(stdout,"%s: Although this program allows multiple hyperslab limits for a single dimension, it allows only one unwrapped limit for the record dimension \"%s\". You have specified %i.\n",nco_prg_nm_get(),lmt_all_rec->dmn_nm,lmt_all_rec->lmt_dmn_nbr);
 	  nco_exit(EXIT_FAILURE);
 	} /* end if */
-        if(prg==ncra || prg==ncrcat){
+        if(nco_prg_id==ncra || nco_prg_id==ncrcat){
 	  /* Change record dim in lmt_all_lst so that cnt=1 */
 	  lmt_all_lst[idx]->dmn_cnt=1L;
 	  lmt_all_lst[idx]->lmt_dmn[0]->srt=0L;
@@ -713,7 +713,7 @@ main(int argc,char **argv)
       (void)nco_enddef(out_id);
     }else{
       (void)nco__enddef(out_id,hdr_pad);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
 
 #ifdef ENABLE_MPI
@@ -751,11 +751,11 @@ main(int argc,char **argv)
   
   /* Allocate and, if necesssary, initialize accumulation space for processed variables */
   for(idx=0;idx<nbr_var_prc;idx++){
-    if(prg == ncra || prg == ncrcat){
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat){
       /* Allocate space for only one record */
       var_prc_out[idx]->sz=var_prc[idx]->sz=var_prc[idx]->sz_rec;
     } /* endif */
-    if(prg == ncra || prg == ncea){
+    if(nco_prg_id == ncra || nco_prg_id == ncea){
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long int));
       (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
       var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
@@ -790,7 +790,7 @@ main(int argc,char **argv)
   
   /* Each file can have a different number of records to process
      NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-  if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,rec_usd_cml,FORTRAN_IDX_CNV);
+  if(nco_prg_id == ncra || nco_prg_id == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,rec_usd_cml,FORTRAN_IDX_CNV);
   
   /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
   if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
@@ -798,13 +798,13 @@ main(int argc,char **argv)
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
   
-  if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
+  if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncea jumps to else branch */
     /* Loop over each record in current file */
-    if(dbg_lvl >= nco_dbg_std && lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+    if(nco_dbg_lvl >= nco_dbg_std && lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),nco_prg_nm_get(),fl_in,fl_idx);
     idx_rec=lmt_rec->srt;
     if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
     /* Process all variables in first record */
-    if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,rec_usd_cml);
+    if(nco_dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,rec_usd_cml);
     
     if(prc_rnk == rnk_mgr){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
@@ -823,7 +823,7 @@ main(int argc,char **argv)
 	if(msg_tag_typ == msg_tag_wrk_rqs){
 	  var_wrt_nbr++; /* [nbr] Number of variables written */
 	  /* Worker closed output file before sending msg_tag_wrk_rqs */
-	  if(prg == ncrcat) TKN_WRT_FREE=True; /* File written to at this point only for ncrcat */
+	  if(nco_prg_id == ncrcat) TKN_WRT_FREE=True; /* File written to at this point only for ncrcat */
 	  
 	  if(idx > nbr_var_prc-1){
 	    msg_bfr[0]=idx_all_wrk_ass; /* [enm] All variables already assigned */
@@ -838,7 +838,7 @@ main(int argc,char **argv)
 	    idx++;
 	  } /* endif idx */
 	  MPI_Send(msg_bfr,msg_bfr_lng,MPI_INT,rnk_wrk,msg_tag_wrk_rsp,MPI_COMM_WORLD);
-	}else if(msg_tag_typ == msg_tag_tkn_wrt_rqs && prg == ncrcat){ /* msg_tag_typ != msg_tag_wrk_rqs */
+	}else if(msg_tag_typ == msg_tag_tkn_wrt_rqs && nco_prg_id == ncrcat){ /* msg_tag_typ != msg_tag_wrk_rqs */
 	  /* Allocate token if free, else ask worker to try later */
 	  if(TKN_WRT_FREE){
 	    TKN_WRT_FREE=False;
@@ -870,8 +870,8 @@ main(int argc,char **argv)
 	  /* csz: got to here reading logic */
 	  lcl_nbr_var++;
           var_prc_out[idx]->id=msg_bfr[2];
-	  if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	  if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	  /* Update hyperslab start indices to current record for each variable */
 	  var_prc[idx]->srt[0]=idx_rec;
 	  var_prc[idx]->end[0]=idx_rec;
@@ -879,7 +879,7 @@ main(int argc,char **argv)
 	  /* Retrieve variable from disk into memory */
 	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	  (void)nco_var_get(in_id,var_prc[idx]);
-	  if(prg == ncra){
+	  if(nco_prg_id == ncra){
 	    /* Convert char, short, long, int types to doubles before arithmetic */
 	    /* Output variable type is "sticky" so only convert on first record */
 	    if(rec_usd_cml == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
@@ -890,7 +890,7 @@ main(int argc,char **argv)
 	  } /* !ncra */
 	  
 	  /* Append current record to output file */
-	  if(prg == ncrcat){
+	  if(nco_prg_id == ncrcat){
 	    var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=rec_usd_cml;
 	    var_prc_out[idx]->cnt[0]=1L;
 	    /* Replace this time_offset value with time_offset from initial file base_time */
@@ -924,14 +924,14 @@ main(int argc,char **argv)
 	  } /* end if ncrcat */
 	  
 	  /* Make sure record coordinate, if any, is monotonic */
-	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,rec_usd_cml);
+	  if(nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,rec_usd_cml);
 	  /* Convert missing_value, if any, back to unpacked type */
 	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_RECORD)
 	    var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
 	  /* Free current input buffer */
 	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	  
-	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
+	  if(nco_dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
 	} /* !idx_all_wrk_ass */
       } /* while(1) loop requesting work/token in Worker */
       rec_usd_cml++; /* [idx] Index of current record in output file (0 is first, ...) */
@@ -988,8 +988,8 @@ main(int argc,char **argv)
 	  lcl_idx_lst[lcl_nbr_var]=idx; /* storing the indices for subsequent processing by the worker */
 	  lcl_nbr_var++;
 	  var_prc_out[idx]->id=msg_bfr[2];
-	  if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	  if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	  if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	  /* Retrieve variable from disk into memory */
 	  /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	  (void)nco_var_get(in_id,var_prc[idx]);
@@ -1010,7 +1010,7 @@ main(int argc,char **argv)
     } /* endif Worker */
   } /* end else ncea */
   
-  if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"\n");
+  if(nco_dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"\n");
   
   /* Close input netCDF file */
   nco_close(in_id);
@@ -1036,10 +1036,10 @@ main(int argc,char **argv)
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
     if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,gettext("\nInput file %d is %s; "),fl_idx,fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,gettext("\nInput file %d is %s; "),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
-    if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
+    if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
     
     /* Open file once per thread to improve caching */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
@@ -1053,7 +1053,7 @@ main(int argc,char **argv)
     
     /* Each file can have a different number of records to process
        NB: nco_lmt_evl() with same nc_id contains OpenMP critical region */
-    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,rec_usd_cml,FORTRAN_IDX_CNV);
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat) (void)nco_lmt_evl(in_id,lmt_rec,rec_usd_cml,FORTRAN_IDX_CNV);
     
     /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
     if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
@@ -1061,9 +1061,9 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     
-    if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
-      if(dbg_lvl >= nco_dbg_std && lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),prg_nm_get(),fl_in,fl_idx);
+      if(nco_dbg_lvl >= nco_dbg_std && lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),nco_prg_nm_get(),fl_in,fl_idx);
       for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
 	if(fl_idx == fl_nbr-1 && idx_rec >= 1L+lmt_rec->end-lmt_rec->srd) LAST_RECORD=True;
 	
@@ -1073,7 +1073,7 @@ main(int argc,char **argv)
 	  continue;
 	}else{ /* a loop of idx = stored indices */    
 	  if(prc_rnk == rnk_mgr){ /* For ncrcat, Manager gives write access for each record in each file */
-	    if(prg == ncrcat){ /* Give Write access to write current record */
+	    if(nco_prg_id == ncrcat){ /* Give Write access to write current record */
 	      /* var_wrt_nbr=-prc_nbr+1; */
 	      var_wrt_nbr=0;
 	      while(var_wrt_nbr < nbr_var_prc){ /* Give write access to Workers who have some variables; wrong condn? */
@@ -1110,7 +1110,7 @@ main(int argc,char **argv)
 	      idx=lcl_idx_lst[jdx];
 #endif /* !ENABLE_MPI */
 	      /* Process all variables in current record */
-	      if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,rec_usd_cml);
+	      if(nco_dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,gettext("Record %ld of %s is output record %ld\n"),idx_rec,fl_in,rec_usd_cml);
 #if 0
 	      /* NB: Immediately preceding MPI for scope confounds Emacs indentation
 		 Fake end scope restores correct indentation, simplifies code-checking */
@@ -1118,14 +1118,14 @@ main(int argc,char **argv)
 #endif /* !0 */
 #ifndef ENABLE_MPI
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec,rec_usd_cml,in_id_arr,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,nco_dbg_lvl,fl_in,fl_out,idx_rec,rec_usd_cml,in_id_arr,LAST_RECORD,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	    /* UP and SMP codes main loop over variables */
 	    for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* ENABLE_MPI */
 	      in_id=in_id_arr[omp_get_thread_num()];
-	      if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	      if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	      if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	      /* Update hyperslab start indices to current record for each variable */
 	      var_prc[idx]->srt[0]=idx_rec;
 	      var_prc[idx]->end[0]=idx_rec;
@@ -1133,7 +1133,7 @@ main(int argc,char **argv)
 	      /* Retrieve variable from disk into memory */
 	      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	      (void)nco_var_get(in_id,var_prc[idx]);
-	      if(prg == ncra){
+	      if(nco_prg_id == ncra){
 		/* Convert char, short, long, int types to doubles before arithmetic */
 		var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
 		/* Output variable type is "sticky" so only convert on first record */
@@ -1145,7 +1145,7 @@ main(int argc,char **argv)
 	      } /* end if ncra */
 	      
 	      /* Append current record to output file */
-	      if(prg == ncrcat){
+	      if(nco_prg_id == ncrcat){
 		var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=rec_usd_cml;
 		var_prc_out[idx]->cnt[0]=1L;
 		/* Replace this time_offset value with time_offset from initial file base_time */
@@ -1185,7 +1185,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
 	      } /* end if ncrcat */
 	      /* Make sure record coordinate, if any, is monotonic */
-	      if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,rec_usd_cml);
+	      if(nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,rec_usd_cml);
 	      /* Convert missing_value, if any, back to disk type */
 	      if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !LAST_RECORD)
 		var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
@@ -1193,14 +1193,14 @@ main(int argc,char **argv)
 	      var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	    } /* end (OpenMP Parallel for) loop over variables */
 #ifdef ENABLE_MPI
-	    if(prg == ncrcat){
+	    if(nco_prg_id == ncrcat){
 	      /* Return token after writing record's last variable */
 	      wrk_id_bfr[0]=prc_rnk;
 	      MPI_Send(wrk_id_bfr,wrk_id_bfr_lng,MPI_INT,rnk_mgr,msg_tag_wrk_done,MPI_COMM_WORLD);
 	    } /* !ncrcat */
 #endif /* !ENABLE_MPI */
 	    rec_usd_cml++; /* [idx] Index of current record in output file (0 is first, ...) */
-	    if(dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
+	    if(nco_dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
 #ifdef ENABLE_MPI
 	  } /* !Worker */
 	} /* end else ! fl_idx=0,idx_rec=srt */
@@ -1213,11 +1213,11 @@ main(int argc,char **argv)
 	if(lmt_rec->lmt_typ == lmt_dmn_idx && lmt_rec->is_usr_spc_min && lmt_rec->is_usr_spc_max){
 	  long rec_nbr_rqs; /* Number of records user requested */
 	  rec_nbr_rqs=1L+(lmt_rec->max_idx-lmt_rec->min_idx)/lmt_rec->srd;
-	  if(dbg_lvl >= nco_dbg_std && fl_idx == fl_nbr-1 && rec_nbr_rqs != rec_usd_cml) (void)fprintf(stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),prg_nm_get(),rec_nbr_rqs,rec_usd_cml);
+	  if(nco_dbg_lvl >= nco_dbg_std && fl_idx == fl_nbr-1 && rec_nbr_rqs != rec_usd_cml) (void)fprintf(stdout,gettext("%s: WARNING User requested %li records but only %li were found\n"),nco_prg_nm_get(),rec_nbr_rqs,rec_usd_cml);
 	} /* end if */
 	/* Error if no records were read and final file has been processed */
 	if(rec_usd_cml <= 0 && fl_idx == fl_nbr-1){
-	  (void)fprintf(stdout,gettext("%s: ERROR No records lay within specified hyperslab\n"),prg_nm_get());
+	  (void)fprintf(stdout,gettext("%s: ERROR No records lay within specified hyperslab\n"),nco_prg_nm_get());
 	  nco_exit(EXIT_FAILURE);
 	} /* end if */
 #ifdef ENABLE_MPI
@@ -1235,13 +1235,13 @@ main(int argc,char **argv)
 	    idx=lcl_idx_lst[jdx];
 #else /* !ENABLE_MPI */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(dbg_lvl,fl_idx,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx,in_id) shared(nco_dbg_lvl,fl_idx,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
 #endif /* !_OPENMP */
 	    for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 #endif /* !ENABLE_MPI */	
 	      in_id=in_id_arr[omp_get_thread_num()];
-	      if(dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	      if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	      if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+	      if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	      /* Retrieve variable from disk into memory */
 	      /* NB: nco_var_get() with same nc_id contains OpenMP critical region */
 	      (void)nco_var_get(in_id,var_prc[idx]);
@@ -1264,7 +1264,7 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
       } /* end else ncea */
       
-      if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"\n");
+      if(nco_dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"\n");
       
       /* Close input netCDF file */
       for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
@@ -1276,7 +1276,7 @@ main(int argc,char **argv)
     printf("DEBUG: prc_rnk %d is out of file idx loop\n",prc_rnk); 
 #endif /* !ENABLE_MPI */
     /* Normalize, multiply, etc where necessary */
-    if(prg == ncra || prg == ncea){
+    if(nco_prg_id == ncra || nco_prg_id == ncea){
 #ifdef ENABLE_MPI
       if(prc_rnk != rnk_mgr){ /* Only workers have indices of variables to process */
 	for(jdx=0;jdx<lcl_nbr_var;jdx++){
@@ -1351,7 +1351,7 @@ main(int argc,char **argv)
     printf("DEBUG: prc_rnk %d opened out file\n",prc_rnk);
 #endif /* !ENABLE_MPI */
     /* Manually fix YYMMDD date which was mangled by averaging */
-    if(CNV_CCM_CCSM_CF && prg == ncra) (void)nco_cnv_ccm_ccsm_cf_date(out_id,var_out,xtr_nbr);
+    if(CNV_CCM_CCSM_CF && nco_prg_id == ncra) (void)nco_cnv_ccm_ccsm_cf_date(out_id,var_out,xtr_nbr);
     
     /* End Pass 2: Complete record/file loops with local variable lists */
     /* Begin Pass 3:  */
@@ -1359,7 +1359,7 @@ main(int argc,char **argv)
     
     /* Add time variable to output file
        NB: nco_cnv_arm_time_install() contains OpenMP critical region */
-    if(CNV_ARM && prg == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt,dfl_lvl);
+    if(CNV_ARM && nco_prg_id == ncrcat) (void)nco_cnv_arm_time_install(out_id,base_time_srt,dfl_lvl);
 #ifdef ENABLE_MPI
     nco_close(out_id); 
     printf("DEBUG: Mgr prc_rnk %d closed out file %d after fixing date, time \n", prc_rnk, out_id);
@@ -1369,7 +1369,7 @@ main(int argc,char **argv)
     printf("DEBUG: prc_rnk %d waiting for msg from Mgr for final write\n",prc_rnk);
     MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,prc_rnk-1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD,&mpi_stt);
     printf("DEBUG: prc_rnk %d got token for final write to %d\n",prc_rnk, out_id);
-    if(prg == ncra || prg == ncea){
+    if(nco_prg_id == ncra || nco_prg_id == ncea){
       /* Copy averages to output file and free averaging buffers */
       rcd=nco_fl_open(fl_out_tmp,NC_WRITE|NC_SHARE,&bfr_sz_hnt,&out_id);
       printf("DEBUG: prc_rnk %d opened output file for final write\n",prc_rnk);
@@ -1386,7 +1386,7 @@ main(int argc,char **argv)
 	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	}else{ /* end if variable is scalar */
 	  /* Size of record dimension is one in output file */
-	  if(prg == ncra) var_prc_out[idx]->cnt[0]=1L;
+	  if(nco_prg_id == ncra) var_prc_out[idx]->cnt[0]=1L;
 	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	} /* end if variable is an array */
 	var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
@@ -1407,7 +1407,7 @@ main(int argc,char **argv)
   
 #else /* !ENABLE_MPI */
   /* Copy averages to output file and free averaging buffers */
-  if(prg == ncra || prg == ncea){
+  if(nco_prg_id == ncra || nco_prg_id == ncea){
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Revert any arithmetic promotion but leave unpacked (for now) */
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
@@ -1417,7 +1417,7 @@ main(int argc,char **argv)
 	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
       }else{ /* end if variable is scalar */
 	/* Size of record dimension is 1 in output file */
-	if(prg == ncra) var_prc_out[idx]->cnt[0]=1L;
+	if(nco_prg_id == ncra) var_prc_out[idx]->cnt[0]=1L;
 	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
       } /* end if variable is an array */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
@@ -1432,7 +1432,7 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncra-specific memory cleanup */
-    if(prg == ncra || prg == ncrcat) lmt_rec=nco_lmt_free(lmt_rec);
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat) lmt_rec=nco_lmt_free(lmt_rec);
     
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */

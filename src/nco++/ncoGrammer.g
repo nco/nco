@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.202 2013-08-02 19:52:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.203 2013-10-22 03:03:55 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1314,7 +1314,7 @@ var=NULL_CEWI;
 
                var_nm=vid->getText();
 
-              if(dbg_lvl_get() >= nco_dbg_scl) dbg_prn(fnc_nm,var_nm+"(limits)");
+              if(nco_dbg_lvl_get() >= nco_dbg_scl) dbg_prn(fnc_nm,var_nm+"(limits)");
 
               // evaluate rhs for side effects eg new dims or lvalues 
                var_rhs=out(vid->getNextSibling());         
@@ -1346,7 +1346,7 @@ var=NULL_CEWI;
 
               var_nm=vid1->getText();               
 
-              if(dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm+"[dims]");
+              if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm+"[dims]");
 
               // set class wide variables
               bcst=true;  
@@ -1409,7 +1409,7 @@ var=NULL_CEWI;
               
               var_nm=vid2->getText();
 
-              if(dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
+              if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
 
                var_sct *var1;
                
@@ -1444,7 +1444,7 @@ var=NULL_CEWI;
         var_sct *var1;
         NcapVar *Nvar;
 
-        if(dbg_lvl_get() > nco_dbg_var) dbg_prn(fnc_nm,att2->getText());
+        if(nco_dbg_lvl_get() > nco_dbg_var) dbg_prn(fnc_nm,att2->getText());
       
         var1=ncap_var_udf(att2->getText().c_str());
 
@@ -1486,7 +1486,7 @@ var=NULL_CEWI;
               
                var_nm=vid->getText();
                
-               if(dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm+"(limits)");
+               if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm+"(limits)");
 
                // check to see if we are dealing with a single
                // index in limit -- i.e hyperslab a mult-dimensional var
@@ -1667,7 +1667,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
 
               var_nm=vid1->getText();
               
-              if(dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm+"[dims]");
+              if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm+"[dims]");
 
               // set class wide variables
               bcst=true;  
@@ -1745,7 +1745,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
  
                var_nm=vid2->getText();       
 
-              if(dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
+              if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
                
                bcst=false;
                var_cst=NULL_CEWI; 
@@ -1802,7 +1802,7 @@ end0:         if(lmt->getNextSibling() && lmt->getNextSibling()->getType()==NORE
             var_sct *var1;
             string sa=att2->getText();
 
-            if(dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,sa);
+            if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,sa);
  
             var1=out(att2->getNextSibling());
 
@@ -2688,7 +2688,7 @@ var_sct *var_nbr;
            
                var_nm=vid->getText(); 
 
-               if(dbg_lvl_get() > nco_dbg_var) dbg_prn(fnc_nm,var_nm+"(limit)");
+               if(nco_dbg_lvl_get() > nco_dbg_var) dbg_prn(fnc_nm,var_nm+"(limit)");
            
                Nvar=prs_arg->var_vtr.find(var_nm);
 

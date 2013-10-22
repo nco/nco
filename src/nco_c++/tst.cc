@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.37 2013-01-13 06:07:49 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.38 2013-10-22 03:03:56 zender Exp $
 
 // Purpose: Test for C++ programs using libnco_c++ API
 
@@ -58,13 +58,13 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2013-01-13 06:07:49 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.37 2013-01-13 06:07:49 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.37 2013-01-13 06:07:49 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.37 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2013-10-22 03:03:56 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.38 2013-10-22 03:03:56 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.38 2013-10-22 03:03:56 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.38 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : static_cast<std::string>("Unknown")); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
-  const std::string prg_nm("libnco_c++"); // [sng] Program name
+  const std::string nco_prg_nm("libnco_c++"); // [sng] Program name
   const std::string vrs_cvs(CVS_Revision.length() > 10 ? CVS_Revision.substr(10,4) : static_cast<std::string>("Unknown")); // [sng] Version from CVS
 #define XTKN2SNG(x) #x
 #define TKN2SNG(x) XTKN2SNG(x)
@@ -73,8 +73,8 @@ int main(int argc,char **argv)
   const std::string vrs_cpp(TKN2SNG(VERSION)); // [sng] Version from C pre-processor
   const std::string hst_cpp(TKN2SNG(HOSTNAME)); // [sng] Hostname from C pre-processor
   const std::string usr_cpp(TKN2SNG(USER)); // [sng] Hostname from C pre-processor
-  if(vrs_cvs == "Unknown") std::cerr << prg_nm << " version " << vrs_cpp << " built " << date_cpp << " on " << hst_cpp << " by " << usr_cpp << std::endl;
-  if(vrs_cvs != "Unknown") std::cerr << prg_nm << " version " << vrs_cvs << " last modified " << date_cvs << " built " << date_cpp << " on " << hst_cpp << " by " << usr_cpp << std::endl;
+  if(vrs_cvs == "Unknown") std::cerr << nco_prg_nm << " version " << vrs_cpp << " built " << date_cpp << " on " << hst_cpp << " by " << usr_cpp << std::endl;
+  if(vrs_cvs != "Unknown") std::cerr << nco_prg_nm << " version " << vrs_cvs << " last modified " << date_cvs << " built " << date_cpp << " on " << hst_cpp << " by " << usr_cpp << std::endl;
 
   // Open input file
   int nc_id=nco_open(fl_in,NC_NOWRITE); // [fnc] Open netCDF file

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.29 2013-04-23 06:40:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.30 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -115,7 +115,7 @@ ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar dou
 
   /* Variable must be in memory already */
   if(val.vp == NULL){ 
-    (void)fprintf(stdout,"%s: ERROR ptr_unn_2_scl_dbl() called with empty val.vp\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR ptr_unn_2_scl_dbl() called with empty val.vp\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
   

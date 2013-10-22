@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.82 2013-07-09 18:10:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.83 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -77,7 +77,7 @@ nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
     case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
     default: rx_err_sng="Invalid pattern"; break;  
     } /* end switch */
-    (void)fprintf(stdout,"%s: ERROR %s reports error in regular expression \"%s\" %s.\n",prg_nm_get(),fnc_nm,rx_sng,rx_err_sng); 
+    (void)fprintf(stdout,"%s: ERROR %s reports error in regular expression \"%s\" %s.\n",nco_prg_nm_get(),fnc_nm,rx_sng,rx_err_sng); 
     nco_exit(EXIT_FAILURE);
   } /* end if err */
 
@@ -99,7 +99,7 @@ nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
     (void)sprintf(fmt_sng_new+mch_psn_srt+2,"%s",fmt_sng+mch_psn_end+1);
   } /* !mch_nbr */
   
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG %s reports that the user-supplied formatting string \"%s\" has %d matches to the regular expression \"%s\", which has %zu parenthesized sub-expressions. The first match, if any, begins at offset %d and ends at offset %d and is %d characters long. The revised format string is \"%s\"\n",prg_nm_get(),fnc_nm,fmt_sng,mch_nbr,rx_sng,rx_prn_sub_xpr_nbr,mch_psn_srt,mch_psn_end,mch_psn_end-mch_psn_srt+1,fmt_sng_new);
+  if(nco_dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG %s reports that the user-supplied formatting string \"%s\" has %d matches to the regular expression \"%s\", which has %zu parenthesized sub-expressions. The first match, if any, begins at offset %d and ends at offset %d and is %d characters long. The revised format string is \"%s\"\n",nco_prg_nm_get(),fnc_nm,fmt_sng,mch_nbr,rx_sng,rx_prn_sub_xpr_nbr,mch_psn_srt,mch_psn_end,mch_psn_end-mch_psn_srt+1,fmt_sng_new);
 
   regfree(rx); /* Free regular expression data structure */
   rx=(regex_t *)nco_free(rx);
@@ -156,7 +156,7 @@ nco_lst_rx_search /* [fnc] Search for pattern matches in list of objects (groups
     case REG_BADRPT: rx_err_sng="No preceding re for repetition op"; break;
     default: rx_err_sng="Invalid pattern"; break;  
     } /* end switch */
-    (void)fprintf(stdout,"%s: ERROR nco_lst_rx_search() error in regular expression \"%s\" %s\n",prg_nm_get(),rx_sng,rx_err_sng); 
+    (void)fprintf(stdout,"%s: ERROR nco_lst_rx_search() error in regular expression \"%s\" %s\n",nco_prg_nm_get(),rx_sng,rx_err_sng); 
     nco_exit(EXIT_FAILURE);
   } /* end if err */
 
@@ -191,7 +191,7 @@ nco_srt_ntg /* [fnc] Sort array of integers */
   /* Purpose: Stub for Numerical Recipes-compatible indexx() routine */
   long foo=sizeof(lmn_nbr)+sizeof(arr_in)+sizeof(idx); /* CEWI */
   foo++; /* CEWI */
-  (void)fprintf(stdout,"%s: ERROR nco_srt_ntg() routine should not be called\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: ERROR nco_srt_ntg() routine should not be called\n",nco_prg_nm_get());
   nco_exit(EXIT_FAILURE);
 } /* end nco_srt_ntg() */
 
@@ -204,7 +204,7 @@ nco_srt_lph /* [fnc] Sort array of strings */
   /* Purpose: Stub for Numerical Recipes-compatible indexx_alpha() routine */
   long foo=sizeof(lmn_nbr)+sizeof(arr_in)+sizeof(idx); /* CEWI */
   foo++; /* CEWI */
-  (void)fprintf(stdout,"%s: ERROR nco_srt_lph() routine should not be called\n",prg_nm_get());
+  (void)fprintf(stdout,"%s: ERROR nco_srt_lph() routine should not be called\n",nco_prg_nm_get());
   nco_exit(EXIT_FAILURE);
 } /* end nco_srt_lph() */
 
@@ -345,7 +345,7 @@ nco_lst_prs_1D /* [fnc] Create 1D array of strings from given string and delimit
   for(idx=0;idx<*nbr_lst;idx++)
     if(strlen(lst[idx]) == 0) lst[idx]=NULL;
 
-  if(dbg_lvl_get() == 5){
+  if(nco_dbg_lvl_get() == 5){
     (void)fprintf(stderr,"nco_lst_prs_1d() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
     for(idx=0;idx<*nbr_lst;idx++) 
       (void)fprintf(stderr,"lst[%d] = %s\n",idx,(lst[idx] == NULL) ? "NULL" : lst[idx]);
@@ -768,7 +768,7 @@ sng_lst_cat /* [fnc] Join string list together into one string, delete originals
 
   /* Delimiter must be NUL-terminated (a string) so strlen() works */
   if(dlm_sng == NULL){
-    (void)fprintf(stdout,"%s: ERROR sng_lst_cat() reports delimiter string is NULL\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR sng_lst_cat() reports delimiter string is NULL\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end if */
   dlm_lng=strlen(dlm_sng); 

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.hh,v 1.4 2013-01-13 19:19:22 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.hh,v 1.5 2013-10-22 03:03:55 zender Exp $ 
 
 // Purpose: Description (definition) of SDO stand-alone utilities
 
@@ -37,8 +37,8 @@
 
 // Prototype functions that have C linkages
 extern "C" {
-  char *prg_nm_get(void);
-  unsigned short dbg_lvl_get(void);
+  char *nco_prg_nm_get(void);
+  unsigned short nco_dbg_lvl_get(void);
 } // end extern C
 
 // Define inline'd functions in header so source is visible to calling files
@@ -46,12 +46,12 @@ extern "C" {
 // Prototype functions with C++ linkages
 void dbg_prn(std::string msg);
 void dbg_prn(std::string fnc_nm,std::string msg);
-void dbg_prn(std::string prg_nm,std::string fnc_nm,std::string msg);
+void dbg_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg);
 void err_prn(std::string msg);
 void err_prn(std::string fnc_nm,std::string msg);
-void err_prn(std::string prg_nm,std::string fnc_nm,std::string msg);
+void err_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg);
 void wrn_prn(std::string fnc_nm,std::string msg);
-void wrn_prn(std::string prg_nm,std::string fnc_nm,std::string msg);
+void wrn_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg);
 
 // Templates
 template<class val_T>std::string nbr2sng(const val_T nbr); // O [sng] Number stored as string

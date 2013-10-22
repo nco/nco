@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.58 2013-10-05 07:36:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.59 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -189,26 +189,26 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
   /* Purpose: Process '-y' command line argument
      Convert user-specified string to enumerated operation type */
   const char fnc_nm[]="nco_op_typ_get()"; /* [sng] Function name */
-  char *prg_nm; /* [sng] Program name */
-  int prg_id; /* [enm] Program ID */
+  char *nco_prg_nm; /* [sng] Program name */
+  int nco_prg_id; /* [enm] Program ID */
 
-  prg_nm=prg_nm_get(); /* [sng] Program name */
-  prg_id=prg_get(); /* [enm] Program ID */
+  nco_prg_nm=nco_prg_nm_get(); /* [sng] Program name */
+  nco_prg_id=nco_prg_id_get(); /* [enm] Program ID */
 
   if(nco_op_sng == NULL){
     /* If nco_op_typ_get() is called when user-specified option string is NULL, 
        then operation type may be implied by program name itself */
-    if(!strcmp(prg_nm,"ncadd")) return nco_op_add;
-    if(!strcmp(prg_nm,"mpncbo")) return nco_op_sbt;
-    if(!strcmp(prg_nm,"mpncdiff")) return nco_op_sbt;
-    if(!strcmp(prg_nm,"ncbo")) return nco_op_sbt;
-    if(!strcmp(prg_nm,"ncdiff")) return nco_op_sbt;
-    if(!strcmp(prg_nm,"ncsub")) return nco_op_sbt;
-    if(!strcmp(prg_nm,"ncsubtract")) return nco_op_sbt;
-    if(!strcmp(prg_nm,"ncmult")) return nco_op_mlt;
-    if(!strcmp(prg_nm,"ncmultiply")) return nco_op_mlt;
-    if(!strcmp(prg_nm,"ncdivide")) return nco_op_dvd;
-    (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified operation string in conjunction with unknown or ambiguous executable name %s\n",prg_nm,fnc_nm,prg_nm);
+    if(!strcmp(nco_prg_nm,"ncadd")) return nco_op_add;
+    if(!strcmp(nco_prg_nm,"mpncbo")) return nco_op_sbt;
+    if(!strcmp(nco_prg_nm,"mpncdiff")) return nco_op_sbt;
+    if(!strcmp(nco_prg_nm,"ncbo")) return nco_op_sbt;
+    if(!strcmp(nco_prg_nm,"ncdiff")) return nco_op_sbt;
+    if(!strcmp(nco_prg_nm,"ncsub")) return nco_op_sbt;
+    if(!strcmp(nco_prg_nm,"ncsubtract")) return nco_op_sbt;
+    if(!strcmp(nco_prg_nm,"ncmult")) return nco_op_mlt;
+    if(!strcmp(nco_prg_nm,"ncmultiply")) return nco_op_mlt;
+    if(!strcmp(nco_prg_nm,"ncdivide")) return nco_op_dvd;
+    (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified operation string in conjunction with unknown or ambiguous executable name %s\n",nco_prg_nm,fnc_nm,nco_prg_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
@@ -227,9 +227,9 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
   if(!strcmp(nco_op_sng,"dvd") || !strcmp(nco_op_sng,"/") || !strcmp(nco_op_sng,"divide") || !strcmp(nco_op_sng,"division")) return nco_op_dvd;
   if(!strcmp(nco_op_sng,"mlt") || !strcmp(nco_op_sng,"*") || !strcmp(nco_op_sng,"mult") || !strcmp(nco_op_sng,"multiply") || !strcmp(nco_op_sng,"multiplication")) return nco_op_mlt;
 
-  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified operation type %s\n",prg_nm,fnc_nm,nco_op_sng);
-  (void)fprintf(stderr,"%s: HINT Valid operation type (op_typ) choices:\n",prg_nm);
-  if(prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtration: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min,max,ttl,total,sqrt,sqravg,avgsqr,rms,rmssdn");
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified operation type %s\n",nco_prg_nm,fnc_nm,nco_op_sng);
+  (void)fprintf(stderr,"%s: HINT Valid operation type (op_typ) choices:\n",nco_prg_nm);
+  if(nco_prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtration: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min,max,ttl,total,sqrt,sqravg,avgsqr,rms,rmssdn");
   nco_exit(EXIT_FAILURE);
   return False; /* Statement should not be reached */
 } /* end nco_op_typ_get() */
@@ -254,7 +254,7 @@ nco_op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator int
   }else if(!strcmp(op_sng,"ge")){
     return nco_op_ge;
   }else{
-    (void)fprintf(stdout,"%s: ERROR %s not registered in nco_op_prs_rlt()\n",prg_nm_get(),op_sng);
+    (void)fprintf(stdout,"%s: ERROR %s not registered in nco_op_prs_rlt()\n",nco_prg_nm_get(),op_sng);
     nco_exit(EXIT_FAILURE);
   } /* end else */
 
@@ -326,7 +326,7 @@ nco_zero_long /* [fnc] Zero all values of long array */
      is slower than memset() because of pointer de-referencing. 
      However, it does have the virtue of being correct. */
   if(op1 == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_zero_long() asked to zero NULL pointer\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR nco_zero_long() asked to zero NULL pointer\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
   size_t sz_byt; /* [B] Number of bytes in variable buffer */
@@ -345,7 +345,7 @@ nco_set_long /* [fnc] Set all values of long array */
 
   long idx;
   if(op1 == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_set_long() asked to set NULL pointer\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR nco_set_long() asked to set NULL pointer\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
   for(idx=0;idx<sz;idx++) op1[idx]=val;

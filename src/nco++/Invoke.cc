@@ -182,7 +182,7 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
     t=a;
 
     // Print parser tree
-    if(dbg_lvl_get() >= nco_dbg_scl){
+    if(nco_dbg_lvl_get() >= nco_dbg_scl){
       dbg_prn(fnc_nm,"Printing parser tree...");
       while( t ) {
 	cout << t->toStringTree() << endl;
@@ -223,14 +223,14 @@ int parse_antlr(std::vector<prs_cls> &prs_vtr,char *fl_spt_usr,char *cmd_ln_sng)
 
     // initialize static members 
     (void)ncap_omp_exe(all_ast_vtr,&wlk_vtr[0],thd_nbr);
-    if(dbg_lvl_get() >= nco_dbg_fl) dbg_prn(fnc_nm,"Walkers initialized");
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) dbg_prn(fnc_nm,"Walkers initialized");
   
     wlk_vtr[0]->run_exe(t,0);
   }  catch(std::exception& e) {
     cerr << "exception: " << e.what() << endl;
   }	
   
-  if(dbg_lvl_get() >= nco_dbg_fl) dbg_prn(fnc_nm,"Walkers completed");
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) dbg_prn(fnc_nm,"Walkers completed");
   
   // delete walker pointers
   for(idx=0 ; idx<(int)wlk_vtr.size() ; idx++) delete wlk_vtr[idx];

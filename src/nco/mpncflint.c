@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.114 2013-10-08 22:26:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncflint.c,v 1.115 2013-10-22 03:03:36 zender Exp $ */
 
 /* mpncflint -- netCDF file interpolator */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncflint.c,v 1.114 2013-10-08 22:26:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.114 $";
+  const char * const CVS_Id="$Id: mpncflint.c,v 1.115 2013-10-22 03:03:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.115 $";
   const char * const opt_sht_lst="346ACcD:d:Fhi:L:l:Oo:p:rRSt:v:xw:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -255,7 +255,7 @@ main(int argc,char **argv)
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
-      {"dbg_lvl",required_argument,0,'D'},
+      {"nco_dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
@@ -300,8 +300,8 @@ main(int argc,char **argv)
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   
-  /* Get program name and set program enum (e.g., prg=ncra) */
-  prg_nm=prg_prs(argv[0],&prg);
+  /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
+  nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
   
   /* Parse command line arguments */
   while(1){
@@ -375,7 +375,7 @@ main(int argc,char **argv)
       EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* The debugging level. Default is 0. */
-      dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      nco_dbg_lvl=(unsigned short int)strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       break;
     case 'd': /* Copy limit argument for later processing */
@@ -392,7 +392,7 @@ main(int argc,char **argv)
       /* Name of variable to guide interpolation. Default is none */
       ntp_lst_in=nco_lst_prs_2D(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
-	(void)fprintf(stdout,"%s: ERROR too many arguments to -i\n",prg_nm_get());
+	(void)fprintf(stdout,"%s: ERROR too many arguments to -i\n",nco_prg_nm_get());
 	nco_exit(EXIT_FAILURE);
       } /* end if */
       ntp_nm=ntp_lst_in[0];
@@ -429,7 +429,7 @@ main(int argc,char **argv)
       break;
 #ifdef ENABLE_MPI
     case 'S': /* Suspend with signal handler to facilitate debugging */
-      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",prg_nm);
+      if(signal(SIGUSR1,nco_cnt_run) == SIG_ERR) (void)fprintf(fp_stdout,"%s: ERROR Could not install suspend handler.\n",nco_prg_nm);
       while(!nco_spn_lck_brk) usleep(nco_spn_lck_us); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
 #endif /* !ENABLE_MPI */
@@ -449,7 +449,7 @@ main(int argc,char **argv)
       /* Weight(s) for interpolation.  Default is wgt_val_1=wgt_val_2=0.5 */
       ntp_lst_in=nco_lst_prs_2D(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
-	(void)fprintf(stdout,"%s: ERROR too many arguments to -w\n",prg_nm_get());
+	(void)fprintf(stdout,"%s: ERROR too many arguments to -w\n",nco_prg_nm_get());
 	nco_exit(EXIT_FAILURE);
       }else if(nbr_ntp == 2){
 	wgt_val_1=strtod(ntp_lst_in[0],&sng_cnv_rcd);
@@ -476,11 +476,11 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
@@ -489,10 +489,10 @@ main(int argc,char **argv)
   } /* end while loop */
   
   if(CMD_LN_NTP_VAR && CMD_LN_NTP_WGT){
-    (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) and fixed weight(s) (-w) both set\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) and fixed weight(s) (-w) both set\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   }else if(!CMD_LN_NTP_VAR && !CMD_LN_NTP_WGT){
-    (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) or fixed weight(s) (-w) must be set\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) or fixed weight(s) (-w) must be set\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end else */
   
@@ -513,10 +513,10 @@ main(int argc,char **argv)
   /* Parse filenames */
   fl_idx=0; /* Input file _1 */
   fl_in_1=nco_fl_nm_prs(fl_in_1,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_1);
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_1);
   /* Make sure file is on local system and is readable or die trying */
   fl_in_1=nco_fl_mk_lcl(fl_in_1,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in_1);
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in_1);
   /* Open file once per thread to improve caching */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_1,md_open,&bfr_sz_hnt,in_id_1_arr+thr_idx);
@@ -524,10 +524,10 @@ main(int argc,char **argv)
   
   fl_idx=1; /* Input file _2 */
   fl_in_2=nco_fl_nm_prs(fl_in_2,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_2);
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in_2);
   /* Make sure file is on local system and is readable or die trying */
   fl_in_2=nco_fl_mk_lcl(fl_in_2,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in_2);
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"local file %s:\n",fl_in_2);
   /* Open file once per thread to improve caching */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in_2,md_open,&bfr_sz_hnt,in_id_2_arr+thr_idx);
@@ -656,7 +656,7 @@ main(int argc,char **argv)
       (void)nco_enddef(out_id);
     }else{
       (void)nco__enddef(out_id,hdr_pad);
-      if(dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",prg_nm_get(),(unsigned long)hdr_pad);
+      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
     } /* hdr_pad */
 
 #ifdef ENABLE_MPI
@@ -705,7 +705,7 @@ main(int argc,char **argv)
     
     /* Currently, only support scalar variables */
     if(ntp_1->sz > 1 || ntp_2->sz > 1){
-      (void)fprintf(stdout,"%s: ERROR interpolation variable %s must be scalar\n",prg_nm_get(),ntp_nm);
+      (void)fprintf(stdout,"%s: ERROR interpolation variable %s must be scalar\n",nco_prg_nm_get(),ntp_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
@@ -720,7 +720,7 @@ main(int argc,char **argv)
     
     /* Check for degenerate case */
     if(ntp_1->val.dp[0] == ntp_2->val.dp[0]){
-      (void)fprintf(stdout,"%s: ERROR Interpolation variable %s is identical (%g) in input files, therefore unable to interpolate.\n",prg_nm_get(),ntp_nm,ntp_1->val.dp[0]);
+      (void)fprintf(stdout,"%s: ERROR Interpolation variable %s is identical (%g) in input files, therefore unable to interpolate.\n",nco_prg_nm_get(),ntp_nm,ntp_1->val.dp[0]);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
@@ -749,7 +749,7 @@ main(int argc,char **argv)
     wgt_2=scl_mk_var(val_gnr_unn,NC_DOUBLE);
   } /* end if CMD_LN_NTP_WGT */
   
-  if(dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
+  if(nco_dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
   
   /* Create structure list for second file */
   var_prc_2=(var_sct **)nco_malloc(nbr_var_prc*sizeof(var_sct *));
@@ -818,13 +818,13 @@ main(int argc,char **argv)
 	/* OpenMP notes:
 	   shared(): msk and wgt are not altered within loop
 	   private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,prg_nm,var_prc_1,var_prc_2,var_prc_out,lmt_all_lst,nbr_dmn_fl)
+#pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,nco_dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,in_id_1_arr,in_id_2_arr,nbr_dmn_xtr,nbr_var_prc,out_id,nco_prg_nm,var_prc_1,var_prc_2,var_prc_out,lmt_all_lst,nbr_dmn_fl)
 #endif /* !_OPENMP */
 	/* UP and SMP codes main loop over variables */
 	for(idx=0;idx<nbr_var_prc;idx++){
 #endif /* !ENABLE_MPI */
-	  if(dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
-	  if(dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+	  if(nco_dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"%s, ",var_prc_1[idx]->nm);
+	  if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 	  
 	  in_id_1=in_id_1_arr[omp_get_thread_num()];
 	  in_id_2=in_id_2_arr[omp_get_thread_num()];
@@ -912,7 +912,7 @@ main(int argc,char **argv)
   } /* end (OpenMP parallel for) loop over idx */
 #endif /* !ENABLE_MPI */
   
-  if(dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
+  if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);

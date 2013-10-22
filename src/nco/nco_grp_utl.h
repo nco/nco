@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.391 2013-10-16 06:54:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.392 2013-10-22 03:03:45 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -384,7 +384,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
 
 nco_bool                               /* O [flg] Copy packing attributes */
 nco_pck_cpy_att                        /* [fnc] Inquire about copying packing attributes  */
-(const int prg_id,                     /* I [enm] Program ID */
+(const int nco_prg_id,                     /* I [enm] Program ID */
  const int nco_pck_plc,                /* I [enm] Packing policy */
  const var_sct * const var_prc);       /* I [sct] Variable */
 

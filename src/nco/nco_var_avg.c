@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.72 2013-07-18 07:55:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.73 2013-10-22 03:03:46 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -111,7 +111,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     /* 20050517: ncwa only calls nco_var_avg() with variables containing averaging dimensions
     Variables without averaging dimensions are in the var_fix list 
     We preserve nco_var_avg() capability to work on var_fix variables for future flexibility */
-    (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
+    (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",nco_prg_nm_get(),fix->nm);
     /* Variable does not contain any averaging dimensions so we are done
     For consistency, return copy of variable held in fix and free() original
     Hence, nco_var_avg() always destroys original input and returns valid output */
@@ -227,7 +227,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     for(idx=0;idx<dmn_fix_nbr;idx++) 
       if(idx_fix_var[idx] != idx) break;
     if(idx == dmn_fix_nbr){
-      if(dbg_lvl_get() >= nco_dbg_scl && dbg_lvl_get() < 10) (void)fprintf(stderr,"%s: INFO Reduction dimensions are %d most-rapidly-varying (MRV) dimensions of %s. Will skip collection step and proceed straight to reduction step.\n",prg_nm_get(),dmn_avg_nbr,fix->nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_scl && nco_dbg_lvl_get() < 10) (void)fprintf(stderr,"%s: INFO Reduction dimensions are %d most-rapidly-varying (MRV) dimensions of %s. Will skip collection step and proceed straight to reduction step.\n",nco_prg_nm_get(),dmn_avg_nbr,fix->nm);
       AVG_DMN_ARE_MRV=True; /* [flg] Avergaging dimensions are MRV dimensions */
     } /* idx != dmn_fix_nbr */
 

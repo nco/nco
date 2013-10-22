@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1253 2013-10-12 16:50:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1254 2013-10-22 03:03:36 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -161,13 +161,13 @@ nco277. Use nco_mss_val_cnf() in ncwa
 nco287. Develop dianostics for OMP OpenMP implementation in ncra
 nco292. nco_fl_utl.c: Use autoconf HAVE_NETWORK instead of WIN32
 nco293. nco_fl_utl.c: Use autoconf HAVE_MKDIR_M instead of SUN4
-nco294. Globals variable in NCO operators are prg, prg_nm, dbg_lvl 
+nco294. Globals variable in NCO operators are prg, prg_nm, nco_dbg_lvl 
         If possible, modify so that shared-library (rather than main.c) holds
         and returns thread-specific values for each, set with, e.g., prg_set().
-        Make prg, prg_nm, and dbg_lvl local to main(), not global to main.c
+        Make prg, prg_nm, and nco_dbg_lvl local to main(), not global to main.c
 nco295. Understand/maintain re-entrant behavior of shared library.
 nco298. Localize ncap's three globals: ncap_ncl_dpt_crr, ncap_ln_nbr_crr, ncap_fl_spt_glb?
-nco299. Prefix prg,prg_nm,dbg_lvl globals with nco_ for namespace cleanliness
+nco299. Prefix prg,nco_prg_nm,nco_dbg_lvl globals with nco_ for namespace cleanliness
 nco300. Activate ccmalloc libdl into configure.ac for enable-debug-custom
 nco301. Unable to use DDD on autotools NCO executable with --enable-debug-custom
 nco302. Add speedy GCC optimization flags to --enable-optimize-custom
@@ -892,7 +892,7 @@ ncap15. Link to GSL functions, especially gsl_sf_* (special functions)
 ncap16. Get ncap build working with pure_parser turned off so lex/yacc builds work
 ncap17. Start in console mode if no script and no output file specified, e.g., nco> 
 ncap19. Make all binary operators handle ordering of operands consistently, e.g., divide(1,2)=1/2 not 2/1
-ncap20. Print out contents of each non-comment statement when dbg_lvl==1
+ncap20. Print out contents of each non-comment statement when nco_dbg_lvl==1
 ncap21. Add two-argument functions like fmodf to ncap_sym_init() (using va_args?)
 ncap25. Turn arbitrarily fixed size array tokens NCAP_ATT_LST_NBR_MAX, NCAP_SPT_NBR_MAX into dynamically allocatable arrays
 ncap26. Make sym_tbl_nbr dynamic by implementing sym_add(), sym_rm() functions or linked list

@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.203 2013-10-17 20:31:09 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.204 2013-10-22 03:03:02 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2013-10-17 20:31:09 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.203 2013-10-17 20:31:09 zender Exp $';
-my $CVS_Revision='$Revision: 1.203 $';
+my $CVS_Date='$Date: 2013-10-22 03:03:02 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.204 2013-10-22 03:03:02 zender Exp $';
+my $CVS_Revision='$Revision: 1.204 $';
 my $CVSROOT='zender@nco.cvs.sf.net:/cvsroot/nco'; # CVS repository
 my $DATA=$ENV{'DATA'};
 my $HOME=$ENV{'HOME'};
@@ -95,7 +95,7 @@ my $www_drc_mrr='/home/project-web/nco/htdocs'; # WWW directory for package mirr
 
 # Set defaults for command line arguments
 my $cln=$True; # GNU standard Makefile option `clean'
-my $dbg_lvl=0;
+my $nco_dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
 my $nst_all=$False; # Option nst_all; Install version on all machines
 my $acd_cnt=$False; # Option acd_cnt; Install version in acd contrib
@@ -145,7 +145,7 @@ $rcd=GetOptions( # man Getopt::GetoptLong
 		'cln!' => \$cln,
 		'cray_prs!' => \$cray_prs,
 		'dat_cnt!' => \$dat_cnt,
-		'dbg_lvl=i' => \$dbg_lvl,
+		'nco_dbg_lvl=i' => \$nco_dbg_lvl,
 		'distclean!' => \$dst_cln,
 		'dst_cln!' => \$dst_cln,
 		'nst_all!' => \$nst_all,
@@ -169,24 +169,24 @@ if($nst_all){
 } # endif
 
 # Print initialization state
-if($dbg_lvl >= 1){print ("$prg_nm: $prg_dsc, version $prg_vrs of $prg_date\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$vrs_tag = $vrs_tag\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$dbg_lvl = $dbg_lvl\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$bld = $bld\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$cln = $cln\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$dst_cln = $dst_cln\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$nst_all = $nst_all\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$mk_cmd = $mk_cmd\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$tar_cmd = $tar_cmd\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$acd_cnt = $acd_cnt\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$acd_prs = $acd_prs\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$cgd_cnt = $cgd_cnt\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$cgd_prs = $cgd_prs\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$cray_prs = $cray_prs\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$bbl_cnt = $bbl_cnt\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$blk_cnt = $blk_cnt\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$dat_cnt = $dat_cnt\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$ute_prs = $ute_prs\n");} # endif dbg
+if($nco_dbg_lvl >= 1){print ("$prg_nm: $prg_dsc, version $prg_vrs of $prg_date\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$vrs_tag = $vrs_tag\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$nco_dbg_lvl = $nco_dbg_lvl\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$bld = $bld\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$cln = $cln\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$dst_cln = $dst_cln\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$nst_all = $nst_all\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$mk_cmd = $mk_cmd\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$tar_cmd = $tar_cmd\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$acd_cnt = $acd_cnt\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$acd_prs = $acd_prs\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$cgd_cnt = $cgd_cnt\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$cgd_prs = $cgd_prs\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$cray_prs = $cray_prs\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$bbl_cnt = $bbl_cnt\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$blk_cnt = $blk_cnt\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$dat_cnt = $dat_cnt\n");} # endif dbg
+if($nco_dbg_lvl >= 2){print ("$prg_nm: \$ute_prs = $ute_prs\n");} # endif dbg
 
 if($vrs_tag eq $main_trunk_tag || $vrs_tag eq ''){$dly_snp=$True;}else{$dly_snp=$False;}
 # NCO is distributed using the `cvs export' command, so version tag to be distributed must be supplied to this script
@@ -215,7 +215,7 @@ $dst_fl_tgz=$mdl_sng.'_'.$nco_vrs.'.orig.tar.gz'; # Debian tarball
 
 my $dst_pth_bld=$dst_pth_pfx.'/'.$dst_vrs; # Build directory
 
-if($dbg_lvl >= 1){		 
+if($nco_dbg_lvl >= 1){		 
     print STDOUT "$prg_nm: Version to release: $vrs_tag\n";
     print STDOUT "$prg_nm: Distribution version: $dst_vrs\n";
     print STDOUT "$prg_nm: Distribution file: $dst_fl\n";
