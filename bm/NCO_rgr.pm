@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.357 2013-10-22 03:03:35 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.358 2013-10-22 03:12:10 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -21,12 +21,12 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw (
 		  tst_rgr
-		  $fl_out $dodap $nco_dbg_lvl $pfx_cmd $pfx_cmd_crr $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc
+		  $fl_out $dodap $dbg_lvl $pfx_cmd $pfx_cmd_crr $opr_sng_mpi $opr_nm $dsc_sng $prsrv_fl $nsr_xpc
 		  $foo1_fl $foo_fl $foo_tst $fl_out_rgn $foo_avg_fl $foo_x_fl $foo_y_fl $foo_yx_fl
 		  $foo_xy_fl $foo_xymyx_fl $pth_rmt_scp_tst $omp_flg $nco_D_flg %NCO_RC
 		  );
 use vars qw(
-	    $dodap $nco_dbg_lvl $dsc_sng $dust_usr $fl_fmt $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
+	    $dodap $dbg_lvl $dsc_sng $dust_usr $fl_fmt $fl_pth $foo1_fl $foo2_fl $foo_avg_fl
 	    $foo_fl $foo_tst $foo_x_fl $foo_xy_fl
 	    $foo_xymyx_fl $foo_y_fl $foo_yx_fl $mpi_prc $nco_D_flg $localhostname
 	    $nsr_xpc $omp_flg $opr_nm $opr_rgr_mpi $fl_out_rgn
@@ -50,7 +50,7 @@ sub tst_rgr {
     
 # csz++
 # fxm: pass as arguments or use exporter/importer instead?
-    *nco_dbg_lvl=*main::nco_dbg_lvl;
+    *dbg_lvl=*main::dbg_lvl;
     *dodap=*main::dodap;
     *fl_fmt=*main::fl_fmt;
     *fl_out=*main::fl_out;
@@ -58,7 +58,7 @@ sub tst_rgr {
     *nco_D_flg=*main::nco_D_flg;
     *omp_flg=*main::omp_flg;
     
-    NCO_bm::dbg_msg(1,"in package NCO_rgr, \$nco_dbg_lvl = $nco_dbg_lvl");
+    NCO_bm::dbg_msg(1,"in package NCO_rgr, \$dbg_lvl = $dbg_lvl");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$dodap = $dodap");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$fl_fmt = $fl_fmt");
     NCO_bm::dbg_msg(1,"in package NCO_rgr, \$fl_out = $fl_out");

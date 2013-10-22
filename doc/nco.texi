@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.890 2013-10-22 03:03:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.891 2013-10-22 03:12:10 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1369,7 +1369,7 @@ two small dimensions ought to suffice.
 @cindex @code{--debug-level @var{debug-level}}
 @cindex @code{--dbg_lvl @var{debug-level}}
 @cindex @var{debug-level}
-@cindex @var{nco_dbg_lvl}
+@cindex @var{dbg_lvl}
 Run the operator with @samp{-r} and then run the command with 
 @samp{-D 5} to increase the verbosity of the debugging output.
 It is very important that your report contain the exact error messages 
@@ -2087,7 +2087,7 @@ This is accomplished by supplying a number greater @w{than 0} to the
 @cindex @code{--debug-level @var{debug-level}}
 @cindex @code{--dbg_lvl @var{debug-level}}
 @cindex @var{debug-level}
-@cindex @var{nco_dbg_lvl}
+@cindex @var{dbg_lvl}
 @cindex debugging
 When the @var{debug-level} is nonzero, the operators report their
 current status to the terminal through the @var{stderr} facility.
@@ -2528,14 +2528,14 @@ We encourage users to play with these limits (edit file
 @file{nco_omp.c}) and send us their feedback.
 
 @cindex debugging
-@cindex @var{nco_dbg_lvl}
+@cindex @var{dbg_lvl}
 Once the initial @var{thr_nbr} has been modified for any
 operator-specific limits, @acronym{NCO} requests the system to allocate 
 a team of @var{thr_nbr} threads for the body of the code.
 The operating system then decides how many threads to allocate
 based on this request.
 Users may keep track of this information by running the operator with
-@math{@var{nco_dbg_lvl} > 0}.
+@math{@var{dbg_lvl} > 0}.
 
 By default, threaded operators attach one global attribute,
 @code{nco_openmp_thread_number}, to any file they create or modify. 

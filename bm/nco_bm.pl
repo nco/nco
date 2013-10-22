@@ -2,7 +2,7 @@
 # Shebang line above may have to be set explicitly to /usr/local/bin/perl
 # on ESMF when running in queue. Otherwise it may pick up older perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.153 2013-10-22 03:03:35 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.154 2013-10-22 03:12:10 zender Exp $
 
 # Usage: bm_usg(), below, has more information
 # ~/nco/bm/nco_bm.pl # Tests all operators
@@ -35,7 +35,7 @@ use strict; # Protect all namespaces
 # Declare vars for strict
 use vars qw(
 	    $aix_mpi_nvr_pfx $aix_mpi_sgl_nvr_pfx $arg_nbr $bch_flg $bm
-	    @bm_cmd_ary $bm_drc $caseid $cmd_ln $nco_dbg_lvl $dodap $dot_fmt $dot_nbr
+	    @bm_cmd_ary $bm_drc $caseid $cmd_ln $dbg_lvl $dodap $dot_fmt $dot_nbr
 	    $dot_nbr_min $dot_sng $dsc_fmt $dsc_lng_max $dsc_sng $drc_dat
 	    $dust_usr %failure $fl_cnt @fl_mtd_sct $fl_fmt $fl_pth @fl_tmg
 	    $foo1_fl $foo2_fl $foo_avg_fl $foo_fl $foo_T42_fl $foo_tst $foo_x_fl
@@ -73,7 +73,7 @@ $bch_flg=0; # [flg] Batch behavior
 $bm=0; # [flg] Perform benchmarks
 $rgr=0; # [flg] Perform regression tests
 $caseid = '';
-$nco_dbg_lvl = 0; # [enm] Print tests during execution for debugging
+$dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $dodap = 'FALSE'; # Unless redefined by the command line, it does not get reset
 $dust_usr = '';
 $fl_cnt = 32; # [nbr] Files to process (reduced to 4 if using remote/dap files)
@@ -130,8 +130,8 @@ $rcd=Getopt::Long::Configure('no_ignore_case'); # Turn on case-sensitivity
 	    'bch_flg!'     => \$bch_flg,    # [flg] Batch behavior
 	    'benchmark'    => \$bm,         # Run benchmarks
 	    'bm'           => \$bm,         # Run benchmarks
-	    'nco_dbg_lvl=i'    => \$nco_dbg_lvl,    # Debug level - # is now optional
-	    'debug=i'      => \$nco_dbg_lvl,    # Debug level
+	    'dbg_lvl=i'    => \$dbg_lvl,    # Debug level - # is now optional
+	    'debug=i'      => \$dbg_lvl,    # Debug level
 	    'dods:s'       => \$dodap,      # Optional string is URL to DAP data
 	    'dap:s'        => \$dodap,      # Optional string is URL to DAP data
 	    'fl_fmt=s'     => \$fl_fmt,     # Output format for writing netcdf files; one of: classic,64bit,netcdf4,netcdf4_classic
@@ -328,7 +328,7 @@ if (length($caseid) > 80) {die "\nThe caseid string is > 80 characters - please 
 # Slurp in data for checksum hashes
 if ($md5 == 1) {	do "nco_bm_md5wc_tbl.pl" or die "Can't find the validation data (nco_bm_md5wc_tbl.pl).\n";}
 
-$nco_D_flg.=" -D $nco_dbg_lvl";
+$nco_D_flg.=" -D $dbg_lvl";
 dbg_msg(1,"WARN: Setting --debug to > 0 sets the NCO\n command-line -D flag to the same value.\n  This causes some tests to fail.\n  It is currently set to \$nco_D_flg = $nco_D_flg");
 
 # Determine where $DATA should be, prompt user if necessary
@@ -349,7 +349,7 @@ $fl_pth = "$drc_dat";
 
 # Initialize & set up some variables
 dbg_msg(3, "Calling bm_ntl().");
-bm_ntl($bch_flg,$nco_dbg_lvl);
+bm_ntl($bch_flg,$dbg_lvl);
 
 # Use variables for file names in regressions; some of these could be collapsed into
 # fewer ones, no doubt, but keep them separate until whole shebang starts working correctly
@@ -417,8 +417,8 @@ if ($dodap ne 'FALSE') {
 dbg_msg(3, "after dodap assignment, \$fl_pth = $fl_pth, \$dodap = $dodap");
 
 # Initialize & set up some variables
-#if($nco_dbg_lvl > 0){printf ("$prg_nm: Calling bm_ntl()...\n");}
-#bm_ntl($bch_flg,$nco_dbg_lvl);
+#if($dbg_lvl > 0){printf ("$prg_nm: Calling bm_ntl()...\n");}
+#bm_ntl($bch_flg,$dbg_lvl);
 
 # Grok /usr/bin/time, as in shell scripts
 if(-e "/usr/bin/time" && -x "/usr/bin/time"){
@@ -428,7 +428,7 @@ if(-e "/usr/bin/time" && -x "/usr/bin/time"){
     $tmr_app = "time "; # bash builtin or other 'time'-like application (AIX)
 } # endif time
 
-if($nco_dbg_lvl > 1){
+if($dbg_lvl > 1){
     print "\nAbout to begin requested tests; waiting for keypress to proceed.\n";
     my $tmp = <STDIN>;
 }
@@ -445,19 +445,19 @@ if($rgr){
 
 # Initialize filenames
 if($tst_fl_mk ne '0' || ($bm && $dodap eq 'FALSE')){
-    if($nco_dbg_lvl > 1){printf ("\n$prg_nm: Calling fl_mtd_ntl()...\n");}
+    if($dbg_lvl > 1){printf ("\n$prg_nm: Calling fl_mtd_ntl()...\n");}
     NCO_bm::fl_mtd_ntl(@fl_mtd_sct); # Initialize data strings & timing array
 }
 
 # Check if files have already been created
 # If so, skip file creation if not requested
 if ($bm && $tst_fl_mk eq '0' && $dodap eq 'FALSE'){
-    if ($nco_dbg_lvl> 0){print "\nINFO: File creation tests:\n";}
+    if ($dbg_lvl> 0){print "\nINFO: File creation tests:\n";}
     for (my $fl_idx = 0; $fl_idx < $fl_nbr; $fl_idx++){
 	my $fl = $fl_mtd_sct[$fl_idx][2].'.nc'; # file root name stored in $fl_mtd_sct[$fl_idx][2]
 	print "Testing for $drc_dat/$fl...\n";
 	if (-e "$drc_dat/$fl" && -r "$drc_dat/$fl") {
-	    if ($nco_dbg_lvl> 0){printf ("%50s exists - can skip creation\n", $drc_dat . "/" . $fl);}
+	    if ($dbg_lvl> 0){printf ("%50s exists - can skip creation\n", $drc_dat . "/" . $fl);}
 	} else {
 	    my $e = $fl_idx+1;
 	    $tst_fl_mk .= "$e";
