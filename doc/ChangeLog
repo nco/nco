@@ -1,6 +1,6 @@
 2013-10-23  Charlie Zender  <zender@uci.edu>
 
-	* Add GNU-required AUTHORS file
+	* Add GNU-required AUTHORS file to quiet autoreconf warnings
 
 2013-10-21  Charlie Zender  <zender@uci.edu>
 
