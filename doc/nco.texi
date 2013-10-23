@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.891 2013-10-22 03:12:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.892 2013-10-23 16:52:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -570,11 +570,11 @@ with @samp{tar -xvzf nco.tar.gz}.
 @cindex @cite{NCO User Guide}
 The documentation for @acronym{NCO} is called the 
 @cite{NCO User Guide}. 
-The @cite{User Guide} is available in Postscript, @acronym{HTML},
-@acronym{DVI}, @TeX{}info, and Info formats.
+The @cite{User Guide} is available in @acronym{PDF}, Postscript,
+@acronym{HTML}, @acronym{DVI}, @TeX{}info, and Info formats.
 These formats are included in the source distribution in the files
-@file{nco.ps}, @file{nco.html}, @file{nco.dvi}, @file{nco.texi}, and
-@file{nco.info*}, respectively.
+@file{nco.pdf}, @file{nco.ps}, @file{nco.html}, @file{nco.dvi},
+@file{nco.texi}, and @file{nco.info*}, respectively.
 All the documentation descends from a single source file,
 @file{nco.texi}
 @footnote{   
@@ -646,21 +646,28 @@ More specific use examples for each operator can be seen by visiting the
 operator-specific examples in the @ref{Operator Reference Manual}.
 These can be found directly by prepending the operator name with the
 @code{xmp_} tag, e.g., @uref{http://nco.sf.net/nco.html#xmp_ncks}.
-Also, users can type the operators in the command line to see all the available options.
+Also, users can type the operator name on the shell command line to 
+see all the available options, or type, e.g., @samp{man ncks} to see
+a help man-page.
 
 @acronym{NCO} is a command-line language.
-You can either use an operator after the prompt (e.g., @samp{$} here), like,
+You can either use an operator after the prompt (e.g., @samp{$} here),
+like, 
 @example
 $ @command{operator} @option{[options]} @file{input} @file{[output]}
 @end example
-or write all the command lines into a shell script, like what we did in @acronym{CMIP5} Example 
-(@pxref{CMIP5 Example}).
+or write all commands lines into a shell script, as in
+the @acronym{CMIP5} Example (@pxref{CMIP5 Example}).
 
-If you are new to @acronym{NCO}, there is a Quick Start (@pxref{Quick Start}) showing
-simple examples about how to use @acronym{NCO} on different kinds of data files.
-More detailed and in-real-world examples can be found in @ref{CMIP5 Example, @acronym{CMIP5} Examples}.
-@ref{General Index, Index} can be very helpful, too.
-If all of the above still couldn't solve your problem, please @pxref{Help Requests and Bug Reports}.
+If you are new to @acronym{NCO}, the Quick Start (@pxref{Quick Start})
+shows simple examples about how to use @acronym{NCO} on different kinds
+of data files.  
+More detailed ``real-world'' examples are in the
+@ref{CMIP5 Example, @acronym{CMIP5} Example}. 
+The @ref{General Index, Index} is presents multiple keyword entries for
+the same subject. 
+If these resources do not help enough, please 
+@pxref{Help Requests and Bug Reports}.
 
 @node Compatability, Symbolic Links, How to Use This guide, Introduction
 @section Operating systems compatible with @acronym{NCO}
