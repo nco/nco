@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.165 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.166 2013-10-23 23:02:58 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -98,6 +98,10 @@
    Verify results:
    ncks -C -h ~/foo.nc | m */
 
+#if 0
+#define USE_TRV_API
+#endif
+
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
@@ -156,9 +160,10 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.165 2013-10-22 03:03:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.165 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.166 2013-10-23 23:02:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.166 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -366,10 +371,18 @@ main(int argc,char **argv)
   /* Get number of variables in file */
   (void)nco_inq(nc_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
 
+ /* Initialize traversal table */ 
+  trv_tbl_init(&trv_tbl); 
+
+  /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
+  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,trv_tbl);
+
   /* Timestamp end of metadata setup and disk layout */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_rgl;
 
+
+#ifndef USE_TRV_API
   for(idx=0;idx<nbr_aed;idx++){
     if(aed_lst[idx].var_nm == NULL){
       /* Variable name is blank so edit same attribute for all variables ... */
@@ -393,6 +406,10 @@ main(int argc,char **argv)
       (void)nco_aed_prc(nc_id,aed_lst[idx].id,aed_lst[idx]);
     } /* end var_nm */
   } /* end loop over idx */
+#else /* USE_TRV_API */
+
+
+#endif /* USE_TRV_API */
 
   /* Catenate the timestamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
