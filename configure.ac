@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.17 2013-10-23 17:29:16 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.18 2013-10-23 20:19:03 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -210,10 +210,17 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
-# Check for OpenMP
+# OpenMP
 AC_OPENMP
 AC_SUBST(OPENMP_CFLAGS)
-CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
+AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [[default=yes]]]),enable_openmp=${enableval},enable_openmp=yes)
+
+# Enable OpenMP unless told not to
+if test "${enable_openmp}" != 'no'; then
+    CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
+fi
+# End OpenMP
+
 
 echo "#################################"
 echo "#  Test for netCDF             #"
