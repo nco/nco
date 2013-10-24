@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1015 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1016 2013-10-24 01:15:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7155,8 +7155,6 @@ nco_dmn_usr_sng                       /* [fnc] Parse input string and return tab
 
 } /* nco_dmn_usr_sng() */
 
-
-
 trv_sct *                             /* O [sct] Table object */
 nco_obj_usr_sng                       /* [fnc] Parse input string and return table object */
 (const char * const usr_sng,          /* I [sng] Object name */
@@ -7166,6 +7164,9 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
   /* Purpose: Parse input string and return table object */
 
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
+
+  /* Only used by ncrename */
+  assert(nco_prg_id_get() == ncrename);
 
   *is_opt=False;
 
@@ -7183,7 +7184,7 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
 
   /* Loop table */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Match absolute name */
+    /* Match relative name */
     if(strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm) == 0){
       return &trv_tbl->lst[tbl_idx];
     } /* Match name */
@@ -7207,7 +7208,7 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
   if(usr_sng[0] == opt_chr){
     /* Loop table */
     for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-      /* Match absolute name */
+      /* Match relative name */
       if(strcmp(usr_sng+1,trv_tbl->lst[tbl_idx].nm) == 0){
         *is_opt=True;
         return &trv_tbl->lst[tbl_idx];
@@ -7223,4 +7224,39 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
   return NULL;
 
 } /* nco_obj_usr_sng() */
+
+trv_sct *                             /* O [sct] Table object */
+nco_var_usr_sng                       /* [fnc] Parse input string and return table variable */
+(const char * const usr_sng,          /* I [sng] Variable name (relative or absolute) */
+ const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
+{
+  /* Purpose: Parse input string and return table object */
+
+  /* Only used by ncatted */
+  assert(nco_prg_id_get() == ncatted);
+
+  /* Try absolute match */
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Match absolute name */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm_fll) == 0){
+      return &trv_tbl->lst[tbl_idx];
+    } /* Match name */
+  } /* Loop table */ 
+
+  /* Try relative match */
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Match relative name */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var &&strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm) == 0){
+      return &trv_tbl->lst[tbl_idx];
+    } /* Match name */
+  } /* Loop table */ 
+
+
+  return NULL;
+
+} /* nco_var_usr_sng() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.392 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.393 2013-10-24 01:15:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -640,6 +640,11 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
 (const char * const usr_sng,          /* I [sng] Object name */
  const trv_tbl_sct * const trv_tbl,   /* I [lst] Traversal table */ 
  nco_bool *is_opt);                   /* O [flg] Dimension presence is optional (input string has '.') */
+
+trv_sct *                             /* O [sct] Table object */
+nco_var_usr_sng                       /* [fnc] Parse input string and return table variable */
+(const char * const usr_sng,          /* I [sng] Variable name (relative or absolute) */
+ const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */ 
 
 
 #ifdef __cplusplus

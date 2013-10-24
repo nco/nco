@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.166 2013-10-23 23:02:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.167 2013-10-24 01:15:41 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.166 2013-10-23 23:02:58 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.166 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.167 2013-10-24 01:15:41 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.167 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -178,8 +178,6 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int fl_nbr=0;
-  int idx;
-  int idx_var;
   int nbr_aed=0; /* Option a. NB: nbr_var_aed gets incremented */
   int nbr_var_fl;
   int nc_id;  
@@ -383,17 +381,17 @@ main(int argc,char **argv)
 
 
 #ifndef USE_TRV_API
-  for(idx=0;idx<nbr_aed;idx++){
+  for(int idx=0;idx<nbr_aed;idx++){
     if(aed_lst[idx].var_nm == NULL){
       /* Variable name is blank so edit same attribute for all variables ... */
-      for(idx_var=0;idx_var<nbr_var_fl;idx_var++) (void)nco_aed_prc(nc_id,idx_var,aed_lst[idx]);
+      for(int idx_var=0;idx_var<nbr_var_fl;idx_var++) (void)nco_aed_prc(nc_id,idx_var,aed_lst[idx]);
     }else if(strpbrk(aed_lst[idx].var_nm,".*^$\\[]()<>+?|{}")){
       /* Variable name contains a "regular expression" (rx) ... */
       int xtr_nbr=1;
       nm_id_sct *xtr_lst=NULL;
       xtr_lst=nco_var_lst_mk(nc_id,nbr_var_fl,&aed_lst[idx].var_nm,False,False,&xtr_nbr);
       /* Edit attribute for each matching variable */
-      for(idx_var=0;idx_var<xtr_nbr;idx_var++) (void)nco_aed_prc(nc_id,xtr_lst[idx_var].id,aed_lst[idx]);
+      for(int idx_var=0;idx_var<xtr_nbr;idx_var++) (void)nco_aed_prc(nc_id,xtr_lst[idx_var].id,aed_lst[idx]);
       /* Free Extraction list  */
       xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);
     }else if(!strcasecmp(aed_lst[idx].var_nm,"global")){
@@ -407,6 +405,35 @@ main(int argc,char **argv)
     } /* end var_nm */
   } /* end loop over idx */
 #else /* USE_TRV_API */
+
+  /* Loop input names */
+  for(int idx_aed=0;idx_aed<nbr_aed;idx_aed++){
+    trv_sct *obj_trv=NULL; /* [sct] Table object */
+    int grp_id; /* [nbr] Group ID */
+    if(aed_lst[idx_aed].var_nm == NULL){
+      /* Variable name is blank so edit same attribute for all variables ... */
+
+    }else if(strpbrk(aed_lst[idx_aed].var_nm,".*^$\\[]()<>+?|{}")){
+      /* Variable name contains a "regular expression" (rx) ... */
+
+    }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
+      /* Variable name indicates a global attribute ... */
+
+    }else{ 
+      /* Variable is a normal variable ... */
+      /* Inquire if any object matches  */
+      obj_trv=nco_var_usr_sng(aed_lst[idx_aed].var_nm,trv_tbl);
+      /* Variable found */
+      if (obj_trv){
+        /* Get groups ID */
+        (void)nco_inq_grp_full_ncid(nc_id,obj_trv->grp_nm_fll,&grp_id);
+        /* Use the pair group ID/object name found */
+        (void)nco_inq_varid(grp_id,aed_lst[idx_aed].var_nm,&aed_lst[idx_aed].id);
+        /* Edit attribute */
+        (void)nco_aed_prc(grp_id,aed_lst[idx_aed].id,aed_lst[idx_aed]);
+      } /* Variable found */
+    } /* end var_nm */
+  } /* Loop input names */
 
 
 #endif /* USE_TRV_API */
@@ -431,8 +458,8 @@ main(int argc,char **argv)
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncatted-specific memory */
-    for(idx=0;idx<nbr_aed;idx++) aed_arg[idx]=(char *)nco_free(aed_arg[idx]);
-    for(idx=0;idx<nbr_aed;idx++){
+    for(int idx=0;idx<nbr_aed;idx++) aed_arg[idx]=(char *)nco_free(aed_arg[idx]);
+    for(int idx=0;idx<nbr_aed;idx++){
       if(aed_lst[idx].att_nm) aed_lst[idx].att_nm=(char *)nco_free(aed_lst[idx].att_nm);
       if(aed_lst[idx].var_nm) aed_lst[idx].var_nm=(char *)nco_free(aed_lst[idx].var_nm);
       aed_lst[idx].val.vp=(void *)nco_free(aed_lst[idx].val.vp);
