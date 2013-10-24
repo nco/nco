@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.169 2013-10-24 05:44:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.170 2013-10-24 20:25:57 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -98,7 +98,7 @@
    Verify results:
    ncks -C -h ~/foo.nc | m */
 
-#if 0
+#if 1
 #define USE_TRV_API
 #endif
 
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.169 2013-10-24 05:44:43 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.169 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.170 2013-10-24 20:25:57 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.170 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -372,7 +372,7 @@ main(int argc,char **argv)
  /* Initialize traversal table */ 
   trv_tbl_init(&trv_tbl); 
 
-  /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
+  /* Construct GTT (Group Traversal Table) */
   (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,trv_tbl);
 
   /* Timestamp end of metadata setup and disk layout */
@@ -413,13 +413,23 @@ main(int argc,char **argv)
       (void)nco_aed_prc_var(nc_id,aed_lst[idx_aed],trv_tbl);
     }else if(strpbrk(aed_lst[idx_aed].var_nm,".*^$\\[]()<>+?|{}")){
       /* Variable name contains a "regular expression" (rx) ... */
-
+      trv_tbl_sct *trv_tbl_rx;
+      char **var_lst_in; /* I [sng] User-specified list of variables */
+      int var_lst_in_nbr; /* I [nbr] Number of variables in list */
+      var_lst_in=nco_lst_prs_2D(aed_lst[idx_aed].var_nm,",",&var_lst_in_nbr);
+      trv_tbl_init(&trv_tbl_rx); 
+      /* Construct GTT (Group Traversal Table) */
+      (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,var_lst_in,var_lst_in_nbr,False,False,False,True,trv_tbl_rx);
+      /* Edit same attribute for all variables ... */
+      (void)nco_aed_prc_var(nc_id,aed_lst[idx_aed],trv_tbl_rx);
+      trv_tbl_free(trv_tbl_rx);
+      var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
       /* Variable name indicates a global attribute ... */
       (void)nco_aed_prc_grp(nc_id,aed_lst[idx_aed],trv_tbl);
     }else{ 
       /* Variable is a normal variable ... */
-      trv_sct *obj_trv=NULL; /* [sct] Table object */
+      trv_sct *obj_trv; /* [sct] Table object */
       int grp_id; /* [id] Group ID */
       /* Inquire if any variable matches  */
       obj_trv=nco_var_usr_sng(aed_lst[idx_aed].var_nm,trv_tbl);
