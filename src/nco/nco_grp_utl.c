@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1019 2013-10-24 18:17:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1020 2013-10-24 21:50:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7317,4 +7317,42 @@ nco_aed_prc_var                       /* [fnc] Process attributes in variables *
 
   return;
 
-} /* nco_aed_prc_grp() */
+} /* nco_aed_prc_var() */
+
+
+void                                  
+nco_aed_prc_var_mth                   /* [fnc] Process attributes in variables that match table */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
+ const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
+{
+  /* Purpose: Process attributes  */
+
+  const char fnc_nm[]="nco_aed_prc_var_mth()"; /* [sng] Function name */
+
+  int grp_id; /* [id] Group ID */
+  int var_id; /* [id] Variable ID */
+
+  /* Only used by ncatted */
+  assert(nco_prg_id_get() == ncatted);
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_sct trv=trv_tbl->lst[tbl_idx];
+    /* Is variable to extract */
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s processing variable <%s>\n",nco_prg_nm_get(),fnc_nm,trv.nm_fll);             
+      }
+      /* Get group ID */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      /* Get variable ID  */
+      (void)nco_inq_varid(grp_id,trv.nm,&var_id);
+      /* Process attribute */
+      (void)nco_aed_prc(grp_id,var_id,aed);
+    } /* Is variable */
+  } /* Loop table */ 
+
+  return;
+
+} /* nco_aed_prc_var_mth() */
