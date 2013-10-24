@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.167 2013-10-24 01:15:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.168 2013-10-24 05:27:09 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.167 2013-10-24 01:15:41 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.167 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.168 2013-10-24 05:27:09 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.168 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -408,8 +408,6 @@ main(int argc,char **argv)
 
   /* Loop input names */
   for(int idx_aed=0;idx_aed<nbr_aed;idx_aed++){
-    trv_sct *obj_trv=NULL; /* [sct] Table object */
-    int grp_id; /* [nbr] Group ID */
     if(aed_lst[idx_aed].var_nm == NULL){
       /* Variable name is blank so edit same attribute for all variables ... */
 
@@ -418,10 +416,13 @@ main(int argc,char **argv)
 
     }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
       /* Variable name indicates a global attribute ... */
+      (void)nco_aed_prc_grp(nc_id,aed_lst[idx_aed],trv_tbl);
 
     }else{ 
       /* Variable is a normal variable ... */
-      /* Inquire if any object matches  */
+      trv_sct *obj_trv=NULL; /* [sct] Table object */
+      int grp_id; /* [id] Group ID */
+      /* Inquire if any variable matches  */
       obj_trv=nco_var_usr_sng(aed_lst[idx_aed].var_nm,trv_tbl);
       /* Variable found */
       if (obj_trv){

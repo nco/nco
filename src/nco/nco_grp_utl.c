@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1016 2013-10-24 01:15:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1017 2013-10-24 05:27:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7250,7 +7250,7 @@ nco_var_usr_sng                       /* [fnc] Parse input string and return tab
   /* Loop table */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     /* Match relative name */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var &&strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm) == 0){
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm) == 0){
       return &trv_tbl->lst[tbl_idx];
     } /* Match name */
   } /* Loop table */ 
@@ -7259,4 +7259,34 @@ nco_var_usr_sng                       /* [fnc] Parse input string and return tab
   return NULL;
 
 } /* nco_var_usr_sng() */
+
+void                                  
+nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
+ const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
+{
+  /* Purpose: Process attributes  */
+
+  int grp_id; /* [id] Group ID */
+
+  /* Only used by ncatted */
+  assert(nco_prg_id_get() == ncatted);
+
+  /* Try absolute match */
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Is group */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp){
+      /* Get groups ID */
+      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
+      /* Process attribute */
+      (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
+    } /* Is group */
+  } /* Loop table */ 
+
+  return;
+
+} /* nco_att_usr_sng() */
 

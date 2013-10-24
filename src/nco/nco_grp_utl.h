@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.393 2013-10-24 01:15:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.394 2013-10-24 05:27:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -644,6 +644,12 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
 trv_sct *                             /* O [sct] Table object */
 nco_var_usr_sng                       /* [fnc] Parse input string and return table variable */
 (const char * const usr_sng,          /* I [sng] Variable name (relative or absolute) */
+ const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */ 
+
+void                                  
+nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
  const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */ 
 
 
