@@ -4,6 +4,8 @@
 
 2013-10-23  Charlie Zender  <zender@uci.edu>
 
+	* Update autobld/missing with missing from automake 1.13
+
 	* Add GNU-required AUTHORS file to quiet autoreconf warnings
 
 2013-10-21  Charlie Zender  <zender@uci.edu>

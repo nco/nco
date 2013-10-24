@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.662 2013-10-17 20:31:09 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.663 2013-10-24 03:33:46 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -66,6 +66,7 @@
 # mpi-selector --set openmpi_gcc-1.3.3 # Then use /sopt/netcdf/netcdf3-gcc-serial serial libraries
 # mpi-selector --set mpich_pgi_1.2.7p1 # After compiling
 # cd ${HOME}/nco/bld;ANTLR_ROOT=/sopt/gfortran_g++ CNK=N NETCDF_ROOT=/sopt/gfortran_g++ SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet gcc
+# cd ${HOME}/nco/bld;ANTLR=/home/pvicente/install/antlr-2.7.7/bin/antlr ANTLR_ROOT=/home/pvicente/install/antlr-2.7.7 NETCDF_ROOT=/home/pvicente/install/netcdf-4.3.0 UDUNITS_INC=/home/pvicente/install/udunits-2.1.24/include UDUNITS_LIB=/home/pvicente/install/udunits-2.1.24/lib make OPTS=D allinone;cd - # greenplanet gcc pedro
 # cd ${HOME}/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=Y SZ=Y UDUNITS2=N allinone;cd - # greenplanet intel
 # cd ${HOME}/nco/bld;ANTLR=/sopt/pgf90_pgcc/bin/antlr ANTLR_ROOT=/sopt/pgf90_pgcc CNK=N SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N SZ=Y UDUNITS2=N allinone;cd - # greenplanet pgi
 # cd ${HOME}/nco/bld;make OMP=Y DAP_OPENDAP=N OPTS=D NETCDF4=N UDUNITS2=Y allinone;cd - # pbs
