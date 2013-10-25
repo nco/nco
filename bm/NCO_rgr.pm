@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.359 2013-10-25 18:46:57 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.360 2013-10-25 20:14:59 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -308,12 +308,13 @@ print "\n";
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncap2 -v -C -O -s 'n2=three_dmn_var_int\@nw1;' %tmp_fl_00% %tmp_fl_01%";
 	$tst_cmd[2]="ncks -O -C -H -s '%i'  -v n2 %tmp_fl_01%";
-	$dsc_sng="Check ncatted variable wildcarding -(Failure expected when NOT built with regex)";
+	$dsc_sng="Variable wildcarding (requires regex)";
 	$tst_cmd[3]="999";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
 	
+#4.3.8	
 #ncatted #6
 
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -324,6 +325,36 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array	
 	
+#ncatted #7
+
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a g3_group_attribute,global,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep g3_group_attribute";
+	$dsc_sng="(Groups) Modify attribute for group (input relative name)";
+	$tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 9 NC_CHAR, value = new_value";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array	
+
+#ncatted #8
+
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in_grp.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -m -C  -g g10 -v three_dmn_rec_var %tmp_fl_00%";
+	$dsc_sng="(Groups) Variable wildcarding (requires regex)";
+	$tst_cmd[2]="three_dmn_rec_var attribute 1: nw1, size = 1 NC_INT, value = 999";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array	
+
+#ncatted #9
+
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
+	$dsc_sng="(Groups) Edit all variables";
+	$tst_cmd[2]="rlev attribute 0: purpose, size = 9 NC_CHAR, value = new_value";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array		
+		
 	
     }
     

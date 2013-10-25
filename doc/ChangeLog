@@ -1,3 +1,7 @@
+2013-10-25 Pedro Vicente  <pvicente@uci.edu>
+
+	* ncatted: Regressions #6 to 9. Groups, for single variable, all variables, wildcard variables, group attributes
+
 2013-10-25  Charlie Zender  <zender@uci.edu>
 
 	* Update config.[guess,sub] to enable builds on ARM64 (AArch64) machines
