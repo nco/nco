@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.360 2013-10-25 20:14:59 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.361 2013-10-25 23:56:01 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -317,6 +317,7 @@ print "\n";
 #4.3.8	
 #ncatted #6
 
+    if($HAVE_NETCDF4_H == 1){
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
 	$dsc_sng="(Groups) Modify attribute for variable (input relative name)";
@@ -353,7 +354,8 @@ print "\n";
 	$tst_cmd[2]="rlev attribute 0: purpose, size = 9 NC_CHAR, value = new_value";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0; # Reset array		
+	$#tst_cmd=0; # Reset array	
+    } # $HAVE_NETCDF4_H	
 		
 	
     }
@@ -508,11 +510,44 @@ print "\n";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+
+# ncbo #14
+
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncbo $omp_flg -O $fl_fmt $nco_D_flg -v three_dmn_rec_var %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncks -C -H -v three_dmn_rec_var -d time,9,9,1 -d lat,1,1,1 -d lon,3,3,1 %tmp_fl_01%";
+    $dsc_sng="Copy associated coordinates -v three_dmn_rec_var";
+    $tst_cmd[3]="time[9]=10 lat[1]=90 lon[3]=270 three_dmn_rec_var[79]=0";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array     
+    
+
+#ncbo #15
+#Operate files containing same variable in different orders
+# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
+# ncbo -O -p ~ foo1.nc foo2.nc ~/foo3.nc
+# ncks -C -H -v one ~/foo3.nc
+
+    $dsc_sng="Concatenate variables with different ID ordering";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncbo -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -H -v one %tmp_fl_02%";
+    $tst_cmd[4]="one = 0";
+    $tst_cmd[5]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){
 
 #    
 # NCO 4.3.0: added support for groups; ncbo -g
 #   
-#ncbo #14
+#ncbo #16
 # ncbo -O -y add -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
@@ -531,7 +566,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
     
-#ncbo #15
+#ncbo #17
 # ncbo -O -y add -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
@@ -549,7 +584,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
     
-#ncbo #16
+#ncbo #18
 # ncbo -O -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
@@ -567,7 +602,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			    
 
-#ncbo #17
+#ncbo #19
 # ncbo -O -y mlt -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
@@ -585,7 +620,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
 
-#ncbo #18
+#ncbo #20
 # ncbo -O -y mlt -g g4 -v one_dmn_rec_var in_grp.nc in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
@@ -602,24 +637,9 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			  
+    $#tst_cmd=0; # Reset array 		
 
-#    
-# NCO 4.3.1: 
-#   
-
-# ncbo #19  
-
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v three_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncbo $omp_flg -O $fl_fmt $nco_D_flg -v three_dmn_rec_var %tmp_fl_00% %tmp_fl_00% %tmp_fl_01%";
-    $tst_cmd[2]="ncks -C -H -v three_dmn_rec_var -d time,9,9,1 -d lat,1,1,1 -d lon,3,3,1 %tmp_fl_01%";
-    $dsc_sng="Copy associated coordinates -v three_dmn_rec_var";
-    $tst_cmd[3]="time[9]=10 lat[1]=90 lon[3]=270 three_dmn_rec_var[79]=0";
-    $tst_cmd[4]="SS_OK";
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array  
-
-# ncbo #20
+# ncbo #21
 
     $dsc_sng="(Groups) Process different types -g g1 -v var1 in_grp_1.nc  in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg  -g g1 -v var1 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
@@ -634,7 +654,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
-# ncbo #21
+# ncbo #22
 
     $dsc_sng="(Groups) Process relative match -v var2 in_grp_1.nc in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg -v var2 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
@@ -649,7 +669,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			      
     
-# ncbo #22
+# ncbo #23
 
     $dsc_sng="(Groups) Process relative match from model to observations cmip5.nc -> obs.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg cmip5.nc obs.nc %tmp_fl_00%";
@@ -664,7 +684,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			       
 
-# ncbo #23
+# ncbo #24
 
     $dsc_sng="(Groups) Process relative match from observations to model obs.nc -> cmip5.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg $in_pth_arg obs.nc cmip5.nc %tmp_fl_00%";
@@ -677,28 +697,11 @@ print "\n";
     $tst_cmd[2]="SS_OK";     
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			          
-    
+    $#tst_cmd=0; # Reset array 	
 
-#ncbo #24
-#Operate files containing same variable in different orders
-# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
-# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
-# ncbo -O -p ~ foo1.nc foo2.nc ~/foo3.nc
-# ncks -C -H -v one ~/foo3.nc
-
-    $dsc_sng="Concatenate variables with different ID ordering";
-    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
-    $tst_cmd[2]="ncbo -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
-    $tst_cmd[3]="ncks -C -H -v one %tmp_fl_02%";
-    $tst_cmd[4]="one = 0";
-    $tst_cmd[5]="SS_OK";   
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			       	
-	
-	
-    
+   } # end HAVE_NETCDF4_H
+   
+   
 ####################
 #### ncea tests #### - OK !
 ####################
@@ -815,6 +818,11 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
+	
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){
+
+	
 #ncea #11
 # same as #ncea #01 , with group
 	
@@ -849,7 +857,10 @@ print "\n";
     $tst_cmd[2]="5";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array		
+    $#tst_cmd=0; # Reset array	
+
+    } # #### Group tests	
+	
 	
 	
     
@@ -885,6 +896,10 @@ print "\n";
     $tst_cmd[6]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+	
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){
 
 #ncecat #3    
     
@@ -1030,7 +1045,10 @@ print "\n";
     $tst_cmd[4]="1";
     $tst_cmd[5]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			       
+    $#tst_cmd=0; # Reset array 	
+
+    } #### Group tests	
+	
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
     
@@ -1093,10 +1111,58 @@ print "\n";
     $tst_cmd[6]="NO_SS";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+
+
+#ncflint #5
+#Operate files containing same variable in different orders
+# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
+# ncra -O -p ~ foo1.nc foo2.nc ~/foo3.nc
+# ncks -C -H -v one ~/foo3.nc
+
+    $dsc_sng="Concatenate variables with different ID ordering";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncflint -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -H -v one %tmp_fl_02%";
+    $tst_cmd[4]="one = 1";
+    $tst_cmd[5]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
+	
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){	
+		
+#ncflint #6 
+# ncflint -4 -O -w 0.8,0.0 in.nc in.nc out.nc
+# ncks -H -C -v time  -d time,9,9,1 out.nc
+
+    $dsc_sng="-w 0.8,0.0 in.nc in.nc";
+    $tst_cmd[0]="ncflint $nco_D_flg -4 -O -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks  -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
+    $tst_cmd[2]="time[9]=8";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+
+#ncflint #7  
+# ncflint -4 -O -w 0.8,0.0 in.nc in.nc out.nc
+# ncks -H -C -v time  -d time,9,9,1 out.nc
+# --fix_rec_crd prevents ncflint from multiplying or interpolating any coordinate variables, including record coordinate variables
+
+    $dsc_sng="--fix_rec_crd -w 0.8,0.0 in.nc in.nc";
+    $tst_cmd[0]="ncflint $nco_D_flg -4 -O --fix_rec_crd -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks  -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
+    $tst_cmd[2]="time[9]=10";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
    
 # NCO 4.3.2 ncflint -- groups   
  
-#ncflint #5  
+#ncflint #8
 # ncflint -h -O -g g4 -v one_dmn_rec_var -w 1,1 in_grp.nc in_grp.nc out.nc
 # ncks  -H -C -O -g g4  -d time,9 -v one_dmn_rec_var  out.nc
 
@@ -1113,57 +1179,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			   
 
-#ncflint #6   
-# ncflint -4 -O -w 0.8,0.0 in.nc in.nc out.nc
-# ncks -H -C -v time  -d time,9,9,1 out.nc
-
-    $dsc_sng="-w 0.8,0.0 in.nc in.nc";
-    $tst_cmd[0]="ncflint $nco_D_flg -4 -O -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks  -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[9]=8";
-    $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			
-
-#ncflint #7    
-# ncflint -4 -O -w 0.8,0.0 in.nc in.nc out.nc
-# ncks -H -C -v time  -d time,9,9,1 out.nc
-# --fix_rec_crd prevents ncflint from multiplying or interpolating any coordinate variables, including record coordinate variables
-
-    $dsc_sng="--fix_rec_crd -w 0.8,0.0 in.nc in.nc";
-    $tst_cmd[0]="ncflint $nco_D_flg -4 -O --fix_rec_crd -w 0.8,0.0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
-    if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks  -H -C -v time  -d time,9,9,1 %tmp_fl_00%";
-    $tst_cmd[2]="time[9]=10";
-    $tst_cmd[3]="SS_OK";   
-    }elsif($HAVE_NETCDF4_H == 0){
-    $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-    $tst_cmd[2]="SS_OK";        
-    }
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	
-
-#ncflint #8
-#Operate files containing same variable in different orders
-# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
-# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
-# ncra -O -p ~ foo1.nc foo2.nc ~/foo3.nc
-# ncks -C -H -v one ~/foo3.nc
-
-    $dsc_sng="Concatenate variables with different ID ordering";
-    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
-    $tst_cmd[2]="ncflint -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
-    $tst_cmd[3]="ncks -C -H -v one %tmp_fl_02%";
-    $tst_cmd[4]="one = 1";
-    $tst_cmd[5]="SS_OK";   
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 		
+    }  	#### Group tests
  
 
     
@@ -1376,6 +1392,9 @@ print "\n";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array  
+	
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){	
 #   
 #NCO 4.2.2   
 # 
@@ -2301,7 +2320,11 @@ print "\n";
     $tst_cmd[2]="SS_OK";        
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			
+    $#tst_cmd=0; # Reset array 		
+
+
+   } #### Group tests	
+	
 	
     
 #####################
@@ -2718,6 +2741,10 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
+	
+	
+	#### Group tests	
+	if($HAVE_NETCDF4_H == 1){
 
 #####################
 #### ncpdq GROUP tests 
@@ -2994,6 +3021,9 @@ print "\n";
     $tst_cmd[4]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
+	
+	} ##### Group tests	
+	
 
 ####################
 #### ncrcat tests ## OK !
@@ -3269,6 +3299,9 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){
+	
 	
 #ncrcat #22	
 # same as ncrcat #02 with group
@@ -3318,6 +3351,9 @@ print "\n";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+	
+	} #### Group tests	
+
 	
 	
 	
@@ -3559,6 +3595,8 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){	
 	
 # ncra #23
 # same as ncra #02, for groups
@@ -3664,7 +3702,10 @@ print "\n";
     $tst_cmd[4]="one = 1";
     $tst_cmd[5]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			       	
+    $#tst_cmd=0; # Reset array 		
+
+   } #### Group tests	
+	
 
 
 	
@@ -4152,7 +4193,11 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
-
+	
+	
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){	
+	
 #ncwa #43
 #NEW NCO 4.3.3
 #same as #ncwa #25
@@ -4278,12 +4323,18 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 	
+	} #### Group tests	
+	
+	
     
 ####################
 #### ncrename tests #### OK!
 ####################
     $opr_nm='ncrename';
 ####################
+
+#### Group tests	
+	if($HAVE_NETCDF4_H == 1){	
 
 #################### Attributes 
 
@@ -4550,7 +4601,8 @@ print "\n";
     @tst_cmd=(); # really reset array.		
 
 	
-
+} #### Group tests	
+	
     
     
 #print "paused - hit return to continue"; my $wait=<STDIN>;
