@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.418 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.419 2013-10-25 16:06:04 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.418 2013-10-22 03:03:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.418 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.419 2013-10-25 16:06:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.419 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -346,6 +346,8 @@ main(int argc,char **argv)
     {"program",required_argument,0,'Y'},
     {"prg_nm",required_argument,0,'Y'},
     {"math",required_argument,0,'y'},
+    {"operation",required_argument,0,'y'},
+    {"op_typ",required_argument,0,'y'},
     {"help",no_argument,0,'?'},
     {"hlp",no_argument,0,'?'},
     {0,0,0,0}
@@ -552,7 +554,7 @@ main(int argc,char **argv)
       break;
     case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);
-      if(nco_prg_id == ncra || nco_prg_id == ncea ) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+      if(nco_prg_id == ncra || nco_prg_id == ncea) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.892 2013-10-23 16:52:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.893 2013-10-25 16:06:04 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4696,6 +4696,7 @@ Hence, it is fast.
 We recommend users try to understand the safety trade-offs involved. 
 
 @html
+<a name="duration"></a> <!-- http://nco.sf.net/nco.html#duration -->
 <a name="drn"></a> <!-- http://nco.sf.net/nco.html#drn -->
 <a name="mro"></a> <!-- http://nco.sf.net/nco.html#mro -->
 @end html

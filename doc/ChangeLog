@@ -1,3 +1,7 @@
+2013-10-25  Charlie Zender  <zender@uci.edu>
+
+	* Add missing --op_typ/--operation switches to ncra.c
+
 2013-10-23 Pedro Vicente  <pvicente@uci.edu>
 
 	* Add an option to configure --enable-openmp (default yes), disable with --disable-openmp.
