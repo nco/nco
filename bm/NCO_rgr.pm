@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.358 2013-10-22 03:12:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.359 2013-10-25 18:46:57 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -313,6 +313,18 @@ print "\n";
 	$tst_cmd[4]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
+	
+#ncatted #6
+
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
+	$dsc_sng="(Groups) Modify attribute for variable (input relative name)";
+	$tst_cmd[2]="rlev attribute 0: purpose, size = 9 NC_CHAR, value = new_value";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array	
+	
+	
     }
     
 # printf("paused @ %s:%d  - hit return to continue", __FILE__ , __LINE__); my $wait = <STDIN>;

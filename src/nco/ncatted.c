@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.171 2013-10-24 21:50:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.172 2013-10-25 18:46:58 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.171 2013-10-24 21:50:49 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.171 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.172 2013-10-25 18:46:58 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.172 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -419,7 +419,7 @@ main(int argc,char **argv)
       var_lst_in=nco_lst_prs_2D(aed_lst[idx_aed].var_nm,",",&var_lst_in_nbr);
       trv_tbl_init(&trv_tbl_rx); 
       /* Construct GTT (Group Traversal Table) */
-      (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,var_lst_in,var_lst_in_nbr,False,False,False,True,trv_tbl_rx);
+      (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,var_lst_in,var_lst_in_nbr,False,False,False,False,trv_tbl_rx);
       /* Edit same attribute for all variables ... */
       (void)nco_aed_prc_var_mth(nc_id,aed_lst[idx_aed],trv_tbl_rx);
       trv_tbl_free(trv_tbl_rx);
