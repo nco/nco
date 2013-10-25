@@ -1,5 +1,7 @@
 2013-10-25  Charlie Zender  <zender@uci.edu>
 
+	* Update config.[guess,sub] to enable builds on ARM64 (AArch64) machines
+
 	* Add missing --op_typ/--operation switches to ncra.c
 
 2013-10-23 Pedro Vicente  <pvicente@uci.edu>
