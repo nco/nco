@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.18 2013-10-23 20:19:03 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.19 2013-10-26 01:34:10 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -210,17 +210,6 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
-# OpenMP
-AC_OPENMP
-AC_SUBST(OPENMP_CFLAGS)
-AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [[default=yes]]]),enable_openmp=${enableval},enable_openmp=yes)
-
-# Enable OpenMP unless told not to
-if test "${enable_openmp}" != 'no'; then
-    CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
-fi
-# End OpenMP
-
 
 echo "#################################"
 echo "#  Test for netCDF             #"
@@ -284,25 +273,19 @@ if test "x${enable_netcdf4}" = 'xno' ; then
     AC_ARG_ENABLE(netcdf-4,AS_HELP_STRING([--enable-netcdf-4],[Enable netCDF Version 4 features (same as enable-netcdf4) [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=yes)  
 fi # !netCDF4
 AC_ARG_VAR([NETCDF4_ROOT],[Root of netCDF4 installation] (compile-time))
+
 # Test if user set NETCDF4_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
-#echo "DEBUG: IN netCDF4 enable_netcdf4 WAS set"
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
- #       echo "DEBUG: no NETCDF_ROOT setting to = ${NETCDF_ROOT}"
     else
 	NETCDF_CONFIG="${NETCDF_ROOT}/bin/nc-config"
- #       echo "DEBUG: yes NETCDF_ROOT = ${NETCDF_ROOT}"
     fi
     LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
     CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
-#else
-#echo "DEBUG: IN netCDF4 enable_netcdf4 was NOT set"
 fi
-#echo "DEBUG: After netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
-#echo "DEBUG: After netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
-#echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
+
 
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
@@ -314,7 +297,6 @@ if test "x${header_defines_nc_chunked}" = 'xyes' ; then
     AC_MSG_NOTICE([netcdf.h contains netCDF4 definitions])
 fi
 
-#echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${header_defines_nc_chunked}"
 
 if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" = 'xyes') ; then
     AC_CHECK_LIB([netcdf],[nc_def_var_chunking],[LIBS="-lnetcdf ${LIBS}"
@@ -324,6 +306,20 @@ if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" =
 	    AC_MSG_NOTICE([Bad news: Simple program does not compile and link with netCDF4 library])
 	    ])
 fi
+
+
+# OpenMP
+AC_OPENMP
+AC_SUBST(OPENMP_CFLAGS)
+AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [[default=yes]]]),enable_openmp=${enableval},enable_openmp=yes)
+
+# Enable OpenMP unless told not to
+if ((test "${enable_openmp}" != 'no') && (test "${enable_netcdf4}" = 'xyes')); then
+    CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
+fi
+# End OpenMP
+
+
 
 # Begin DAP support
 echo "Beginning generic tests for DAP support"

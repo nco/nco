@@ -633,10 +633,10 @@ HAVE_ANTLR
 ANTLR_ROOT
 NCO_NEED_GETOPT_LONG_FALSE
 NCO_NEED_GETOPT_LONG_TRUE
+OPENMP_CFLAGS
 NETCDF4_ROOT
 NETCDF_LIB
 NETCDF_INC
-OPENMP_CFLAGS
 POW_LIB
 LIBOBJS
 MAINT
@@ -781,9 +781,9 @@ with_sysroot
 enable_libtool_lock
 enable_maintainer_mode
 enable_largefile
-enable_openmp
 enable_netcdf4
 enable_netcdf_4
+enable_openmp
 enable_dap_netcdf
 enable_ncoxx
 enable_ncap2
@@ -1451,12 +1451,12 @@ Optional Features:
   --enable-maintainer-mode  enable make rules and dependencies not useful
 			  (and sometimes confusing) to the casual installer
   --disable-largefile     omit support for large files
-  --disable-openmp        do not use OpenMP
-  --enable-openmp         Build NCO with OpenMP [[default=yes]]
   --enable-netcdf4        Enable netCDF Version 4 features (same as
                           enable-netcdf-4) [[default=yes]]
   --enable-netcdf-4       Enable netCDF Version 4 features (same as
                           enable-netcdf4) [[default=yes]]
+  --disable-openmp        do not use OpenMP
+  --enable-openmp         Build NCO with OpenMP [[default=yes]]
   --enable-dap-netcdf     Build DAP-enabled NCO with netCDF-provided DAP
                           [[default=yes]]
   --enable-ncoxx          Build libnco++ and ncap2 (same as enable-ncap2)
@@ -17344,87 +17344,6 @@ rm -rf conftest*
 fi
 
 
-# OpenMP
-
-  OPENMP_CFLAGS=
-  # Check whether --enable-openmp was given.
-if test "${enable_openmp+set}" = set; then :
-  enableval=$enable_openmp;
-fi
-
-  if test "$enable_openmp" != no; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $CC option to support OpenMP" >&5
-$as_echo_n "checking for $CC option to support OpenMP... " >&6; }
-if ${ac_cv_prog_c_openmp+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#ifndef _OPENMP
- choke me
-#endif
-#include <omp.h>
-int main () { return omp_get_num_threads (); }
-
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_prog_c_openmp='none needed'
-else
-  ac_cv_prog_c_openmp='unsupported'
-	  	  	  	  	  	  	  	  	  	  	  	  	  for ac_option in -fopenmp -xopenmp -openmp -mp -omp -qsmp=omp; do
-	    ac_save_CFLAGS=$CFLAGS
-	    CFLAGS="$CFLAGS $ac_option"
-	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-#ifndef _OPENMP
- choke me
-#endif
-#include <omp.h>
-int main () { return omp_get_num_threads (); }
-
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_prog_c_openmp=$ac_option
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-	    CFLAGS=$ac_save_CFLAGS
-	    if test "$ac_cv_prog_c_openmp" != unsupported; then
-	      break
-	    fi
-	  done
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_c_openmp" >&5
-$as_echo "$ac_cv_prog_c_openmp" >&6; }
-    case $ac_cv_prog_c_openmp in #(
-      "none needed" | unsupported)
-	;; #(
-      *)
-	OPENMP_CFLAGS=$ac_cv_prog_c_openmp ;;
-    esac
-  fi
-
-
-
-# Check whether --enable-openmp was given.
-if test "${enable_openmp+set}" = set; then :
-  enableval=$enable_openmp; enable_openmp=${enableval}
-else
-  enable_openmp=yes
-fi
-
-
-# Enable OpenMP unless told not to
-if test "${enable_openmp}" != 'no'; then
-    CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
-fi
-# End OpenMP
-
 
 echo "#################################"
 echo "#  Test for netCDF             #"
@@ -17634,25 +17553,19 @@ fi
 
 fi # !netCDF4
 
+
 # Test if user set NETCDF4_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
-#echo "DEBUG: IN netCDF4 enable_netcdf4 WAS set"
     if test -z "${NETCDF_ROOT}"; then
 	NETCDF_CONFIG='nc-config'
 	NETCDF_ROOT="`nc-config --prefix`"
- #       echo "DEBUG: no NETCDF_ROOT setting to = ${NETCDF_ROOT}"
     else
 	NETCDF_CONFIG="${NETCDF_ROOT}/bin/nc-config"
- #       echo "DEBUG: yes NETCDF_ROOT = ${NETCDF_ROOT}"
     fi
     LDFLAGS="`${NETCDF_CONFIG} --libs` ${LDFLAGS}";
     CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
-#else
-#echo "DEBUG: IN netCDF4 enable_netcdf4 was NOT set"
 fi
-#echo "DEBUG: After netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
-#echo "DEBUG: After netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
-#echo "DEBUG: After netCDF4 section LDFLAGS = ${LDFLAGS}"
+
 
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
@@ -17674,7 +17587,6 @@ $as_echo "#define HAVE_NETCDF4_H 1" >>confdefs.h
 $as_echo "$as_me: netcdf.h contains netCDF4 definitions" >&6;}
 fi
 
-#echo "DEBUG: After netCDF4 section header_defines_nc_chunked = ${header_defines_nc_chunked}"
 
 if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" = 'xyes') ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nc_def_var_chunking in -lnetcdf" >&5
@@ -17729,6 +17641,90 @@ $as_echo "$as_me: Bad news: Simple program does not compile and link with netCDF
 fi
 
 fi
+
+
+# OpenMP
+
+  OPENMP_CFLAGS=
+  # Check whether --enable-openmp was given.
+if test "${enable_openmp+set}" = set; then :
+  enableval=$enable_openmp;
+fi
+
+  if test "$enable_openmp" != no; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $CC option to support OpenMP" >&5
+$as_echo_n "checking for $CC option to support OpenMP... " >&6; }
+if ${ac_cv_prog_c_openmp+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifndef _OPENMP
+ choke me
+#endif
+#include <omp.h>
+int main () { return omp_get_num_threads (); }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_prog_c_openmp='none needed'
+else
+  ac_cv_prog_c_openmp='unsupported'
+	  	  	  	  	  	  	  	  	  	  	  	  	  for ac_option in -fopenmp -xopenmp -openmp -mp -omp -qsmp=omp; do
+	    ac_save_CFLAGS=$CFLAGS
+	    CFLAGS="$CFLAGS $ac_option"
+	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#ifndef _OPENMP
+ choke me
+#endif
+#include <omp.h>
+int main () { return omp_get_num_threads (); }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_prog_c_openmp=$ac_option
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+	    CFLAGS=$ac_save_CFLAGS
+	    if test "$ac_cv_prog_c_openmp" != unsupported; then
+	      break
+	    fi
+	  done
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_prog_c_openmp" >&5
+$as_echo "$ac_cv_prog_c_openmp" >&6; }
+    case $ac_cv_prog_c_openmp in #(
+      "none needed" | unsupported)
+	;; #(
+      *)
+	OPENMP_CFLAGS=$ac_cv_prog_c_openmp ;;
+    esac
+  fi
+
+
+
+# Check whether --enable-openmp was given.
+if test "${enable_openmp+set}" = set; then :
+  enableval=$enable_openmp; enable_openmp=${enableval}
+else
+  enable_openmp=yes
+fi
+
+
+# Enable OpenMP unless told not to
+if ((test "${enable_openmp}" != 'no') && (test "${enable_netcdf4}" = 'xyes')); then
+    CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
+fi
+# End OpenMP
+
+
 
 # Begin DAP support
 echo "Beginning generic tests for DAP support"

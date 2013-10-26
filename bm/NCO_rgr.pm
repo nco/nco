@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.361 2013-10-25 23:56:01 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.362 2013-10-26 01:34:10 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -326,7 +326,17 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array	
 	
-#ncatted #7
+#ncatted #7	
+	
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,/g3/rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";
+	$dsc_sng="(Groups) Modify attribute for variable (input absolute name)";
+	$tst_cmd[2]="rlev attribute 0: purpose, size = 9 NC_CHAR, value = new_value";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array	
+	
+#ncatted #8
 
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a g3_group_attribute,global,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep g3_group_attribute";
@@ -336,7 +346,7 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array	
 
-#ncatted #8
+#ncatted #9
 
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a nw1,'^three*',c,i,999 $in_pth_arg in_grp.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -C  -g g10 -v three_dmn_rec_var %tmp_fl_00%";
@@ -346,7 +356,7 @@ print "\n";
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array	
 
-#ncatted #9
+#ncatted #10
 
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -m -g g3 -v rlev %tmp_fl_00%";

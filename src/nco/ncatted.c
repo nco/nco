@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.172 2013-10-25 18:46:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.173 2013-10-26 01:34:10 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.172 2013-10-25 18:46:58 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.172 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.173 2013-10-26 01:34:10 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.173 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -438,7 +438,7 @@ main(int argc,char **argv)
         /* Get groups ID */
         (void)nco_inq_grp_full_ncid(nc_id,obj_trv->grp_nm_fll,&grp_id);
         /* Use the pair group ID/object name found */
-        (void)nco_inq_varid(grp_id,aed_lst[idx_aed].var_nm,&aed_lst[idx_aed].id);
+        (void)nco_inq_varid(grp_id,obj_trv->nm,&aed_lst[idx_aed].id);
         /* Edit attribute */
         (void)nco_aed_prc(grp_id,aed_lst[idx_aed].id,aed_lst[idx_aed]);
       } /* Variable found */
