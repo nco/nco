@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.173 2013-10-26 01:34:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.174 2013-10-29 01:07:42 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.173 2013-10-26 01:34:10 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.173 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.174 2013-10-29 01:07:42 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.174 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -421,7 +421,7 @@ main(int argc,char **argv)
       /* Construct GTT (Group Traversal Table) */
       (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,var_lst_in,var_lst_in_nbr,False,False,False,False,trv_tbl_rx);
       /* Edit same attribute for all variables ... */
-      (void)nco_aed_prc_var_mth(nc_id,aed_lst[idx_aed],trv_tbl_rx);
+      (void)nco_aed_prc_var_xtr(nc_id,aed_lst[idx_aed],trv_tbl_rx);
       trv_tbl_free(trv_tbl_rx);
       var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
     }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
@@ -429,19 +429,8 @@ main(int argc,char **argv)
       (void)nco_aed_prc_grp(nc_id,aed_lst[idx_aed],trv_tbl);
     }else{ 
       /* Variable is a normal variable ... */
-      trv_sct *obj_trv; /* [sct] Table object */
-      int grp_id; /* [id] Group ID */
-      /* Inquire if any variable matches  */
-      obj_trv=nco_var_usr_sng(aed_lst[idx_aed].var_nm,trv_tbl);
-      /* Variable found */
-      if (obj_trv){
-        /* Get groups ID */
-        (void)nco_inq_grp_full_ncid(nc_id,obj_trv->grp_nm_fll,&grp_id);
-        /* Use the pair group ID/object name found */
-        (void)nco_inq_varid(grp_id,obj_trv->nm,&aed_lst[idx_aed].id);
-        /* Edit attribute */
-        (void)nco_aed_prc(grp_id,aed_lst[idx_aed].id,aed_lst[idx_aed]);
-      } /* Variable found */
+      /* Inquire if any variable matches (absolute, relative)  */
+      (void)nco_aed_prc_var_nm(nc_id,aed_lst[idx_aed],trv_tbl);
     } /* end var_nm */
   } /* Loop input names */
 #endif /* USE_TRV_API */

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.362 2013-10-26 01:34:10 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.363 2013-10-29 01:07:40 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -316,6 +316,7 @@ print "\n";
 	
 #4.3.8	
 #ncatted #6
+#ncatted -O -a purpose,rlev,m,c,new_value in_grp_3.nc out.nc
 
     if($HAVE_NETCDF4_H == 1){
 	$tst_cmd[0]="ncatted -O $nco_D_flg -a purpose,rlev,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
