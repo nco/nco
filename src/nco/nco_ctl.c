@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.427 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.428 2013-10-29 21:58:54 pvicente Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -524,6 +524,7 @@ nco_is_mfo /* [fnc] Query whether program is multi-file operator */
   case ncecat: 
   case ncra:
   case ncrcat: 
+  case nces: 
     return True;
     break;
   case ncap: 
@@ -563,6 +564,7 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
   case ncflint:
   case ncra:
   case ncwa:
+  case nces:
     return True;
     break;
   case ncatted: 
@@ -612,6 +614,9 @@ nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmeti
   case ncra: /* Process (not fix) time-varying fields like date, datesec */
   case ncrename: 
   case ncwa:
+    return False;
+    break;
+  case nces: /* TO_DO */
     return False;
     break;
   case ncpdq: 
@@ -873,6 +878,8 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   /* ncwa and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"mpncwa")){*prg_lcl=ncwa;}
+  /* nces and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"nces")){*prg_lcl=nces;}
   else{
     (void)fprintf(stdout,"%s: ERROR executable name %s not registered in nco_prg_prs()\n",nm_out_tmp,nm_out_tmp);
     nco_exit(EXIT_FAILURE);

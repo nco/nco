@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1022 2013-10-29 21:04:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1023 2013-10-29 21:58:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6219,7 +6219,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
   /* Used only by ncra */
-  assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncea );
+  assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncea || nco_prg_id_get() == nces );
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -7412,6 +7412,15 @@ void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
+  /* Purpose: Build ensembles  */
 
+  /* Loop table  */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_sct trv=trv_tbl->lst[tbl_idx];
+    /* Variable */
+    if(trv.nco_typ == nco_obj_typ_var){
+
+    } /* Is variable */
+  } /* Loop table */ 
 
 } /* nco_bld_nsm() */

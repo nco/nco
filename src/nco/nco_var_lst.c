@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.157 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.158 2013-10-29 21:58:54 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -937,6 +937,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       break;
     case ncra:
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
+      break;
+    case nces:
+      /* TO_DO */
       break;
     case ncrcat:
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
