@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1021 2013-10-29 01:07:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1022 2013-10-29 21:04:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7363,7 +7363,7 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
  const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
  const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
 {
-  /* Purpose: Process attributes  */
+  /* Purpose: Process attributes in variables that match input name (absolute or relative)  */
 
   const char fnc_nm[]="nco_aed_prc_var_mth()"; /* [sng] Function name */
 
@@ -7373,41 +7373,33 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
   /* Only used by ncatted */
   assert(nco_prg_id_get() == ncatted);
 
-  /* Loop table */
+  /* Loop table (absolute name) */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     trv_sct trv=trv_tbl->lst[tbl_idx];
     /* Variable name match */
     if(trv.nco_typ == nco_obj_typ_var && strcmp(aed.var_nm,trv.nm_fll) == 0){
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s processing variable <%s>\n",nco_prg_nm_get(),fnc_nm,trv.nm_fll);             
-      }
       /* Get group ID */
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
       /* Get variable ID  */
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
       /* Process attribute */
       (void)nco_aed_prc(grp_id,var_id,aed);
-
+      /* Only 1 match possible, return */
       return;
     } /* Is variable */
   } /* Loop table */ 
 
-  /* Loop table  */
+  /* Loop table (relative name, can be many) */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     trv_sct trv=trv_tbl->lst[tbl_idx];
     /* Variable name (relative) match */
     if(trv.nco_typ == nco_obj_typ_var && strcmp(aed.var_nm,trv.nm) == 0){
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s processing variable <%s>\n",nco_prg_nm_get(),fnc_nm,trv.nm_fll);             
-      }
       /* Get group ID */
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
       /* Get variable ID  */
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
       /* Process attribute */
       (void)nco_aed_prc(grp_id,var_id,aed);
-
-      return;
     } /* Is variable */
   } /* Loop table */ 
 
@@ -7415,3 +7407,11 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
 
 } /* nco_aed_prc_var_nm() */
 
+
+void
+nco_bld_nsm                           /* [fnc] Build ensembles */
+(trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+{
+
+
+} /* nco_bld_nsm() */
