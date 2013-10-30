@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.400 2013-10-30 04:30:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.401 2013-10-30 23:30:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -672,7 +672,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
 void                                    
 nco_grp_var_lst                        /* [fnc] Export list of variable names for group */
-(const int grp_id,                     /* I [ID] Group ID */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ const char * const grp_nm_fll,        /* I [sng] Absolute group name */
  char ***nm_lst,                       /* I/O [sng] List of names */
  int *nm_lst_nbr);                     /* I/O [nbr] Number of items in list */
 

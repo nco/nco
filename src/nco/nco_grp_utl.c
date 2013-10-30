@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1028 2013-10-30 07:38:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1029 2013-10-30 23:30:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1935,7 +1935,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (nces) Parent group full name */         
   else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
   trv_tbl->lst[idx].flg_nsm_prn=False;            /* [flg] (nces) Group is, or variable is in, ensemble parent group */
-  
+  trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] Group is, or variable is in, ensemble member group */ 
 
   /* Variable dimensions  */
   for(int idx_dmn_var=0;idx_dmn_var<NC_MAX_DIMS;idx_dmn_var++){
@@ -2032,6 +2032,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (nces) Parent group full name */         
     else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
     trv_tbl->lst[idx].flg_nsm_prn=False;
+    trv_tbl->lst[idx].flg_nsm_mbr=False;
 
     /* Variable dimensions */
     for(int idx_dmn_var=0;idx_dmn_var<NC_MAX_DIMS;idx_dmn_var++){
@@ -7367,7 +7368,8 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
 
 void                                    
 nco_grp_var_lst                        /* [fnc] Export list of variable names for group */
-(const int grp_id,                     /* I [ID] Group ID */
+(const int nc_id,                      /* I [id] netCDF file ID */
+ const char * const grp_nm_fll,        /* I [sng] Absolute group name */
  char ***nm_lst,                       /* I/O [sng] List of names */
  int *nm_lst_nbr)                      /* I/O [nbr] Number of items in list */
 {
@@ -7376,6 +7378,10 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
   char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name */ 
 
   int nbr_var;                     /* [nbr] Number of variables */
+  int grp_id;                      /* [id] Group ID */
+
+  /* Get group ID */
+  (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Obtain number of variable for group */
   (void)nco_inq(grp_id,(int *)NULL,&nbr_var,(int *)NULL,(int *)NULL);
@@ -7386,7 +7392,7 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
 
-    /* Get type of variable and number of dimensions */
+    /* Get variable name */
     (void)nco_inq_var(grp_id,idx_var,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
 
     /* Add to list */ 
@@ -7414,7 +7420,6 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   int nm_lst_2_nbr;                    /* [nbr] Number of items in list */
   int nbr_cmn_nm;                      /* [nbr] Number of common entries */
   int nsm_nbr=0;                       /* [nbr] Ensemble counter */
-  int grp_id;                          /* [id] Group ID */
 
   nco_cmn_t *cmn_lst=NULL;             /* [sct] A list of common names */ 
 
@@ -7424,11 +7429,9 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv_1=trv_tbl->lst[idx_tbl];
     /* Group (not root, with variables) */
-    if(trv_1.nco_typ == nco_obj_typ_grp && trv_1.grp_dpt > 0 && trv_1.nbr_var > 0){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv_1.grp_nm_fll,&grp_id);
+    if(trv_1.nco_typ == nco_obj_typ_grp && trv_1.grp_dpt > 0 && trv_1.nbr_var > 0){     
       /* Export list of variable names for group */
-      (void)nco_grp_var_lst(grp_id,&nm_lst_1,&nm_lst_1_nbr);
+      (void)nco_grp_var_lst(nc_id,trv_1.grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s looking for ensembles for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1.nm_fll);             
@@ -7456,10 +7459,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
               }  /* Match */
             } /* Loop constructed array to see if already inserted  */
 
-            /* Get group ID */
-            (void)nco_inq_grp_full_ncid(nc_id,trv_2.grp_nm_fll,&grp_id);
             /* Export list of variable names for group */
-            (void)nco_grp_var_lst(grp_id,&nm_lst_2,&nm_lst_2_nbr);
+            (void)nco_grp_var_lst(nc_id,trv_2.grp_nm_fll,&nm_lst_2,&nm_lst_2_nbr);
             /* Match 2 lists of variable names and export common names */
             (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_cmn_nm);
             /* Found common names */
@@ -7470,7 +7471,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_nm=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_nm_fll_prn=(char *)strdup(trv_2.grp_nm_fll_prn);
 
-              /* Group (outer loop) is ensemble parent group */
+              /* Group (NB: outer loop) is ensemble parent group */
               trv_tbl->lst[idx_tbl].flg_nsm_prn=True;
 
               if(nco_dbg_lvl_get() >= nco_dbg_dev){
@@ -7507,10 +7508,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
     trv_sct trv_1=trv_tbl->lst[idx_tbl];
     /* Group (not root, with variables) */
     if(trv_1.nco_typ == nco_obj_typ_grp && trv_1.grp_dpt > 0 && trv_1.nbr_var > 0){
-      /* Get group ID */
-      (void)nco_inq_grp_full_ncid(nc_id,trv_1.grp_nm_fll,&grp_id);
       /* Export list of variable names for group */
-      (void)nco_grp_var_lst(grp_id,&nm_lst_1,&nm_lst_1_nbr);
+      (void)nco_grp_var_lst(nc_id,trv_1.grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s looking for ensembles for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1.nm_fll);             
@@ -7526,10 +7525,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
           trv_1.nbr_var == trv_2.nbr_var &&
           strcmp(trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll_prn) == 0){
 
-            /* Get group ID */
-            (void)nco_inq_grp_full_ncid(nc_id,trv_2.grp_nm_fll,&grp_id);
             /* Export list of variable names for group */
-            (void)nco_grp_var_lst(grp_id,&nm_lst_2,&nm_lst_2_nbr);
+            (void)nco_grp_var_lst(nc_id,trv_2.grp_nm_fll,&nm_lst_2,&nm_lst_2_nbr);
             /* Match 2 lists of variable names and export common names */
             (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_cmn_nm);
             /* Found common names */
@@ -7556,6 +7553,11 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                 trv_tbl->nsm[nsm_nbr].mbr_nbr++;
                 trv_tbl->nsm[nsm_nbr].mbr_nm=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].mbr_nm,trv_tbl->nsm[nsm_nbr].mbr_nbr*sizeof(char *));
                 trv_tbl->nsm[nsm_nbr].mbr_nm[mbr_nbr]=(char *)strdup(trv_2.grp_nm_fll);
+
+                /* Mark variables as ensemble members */
+                for(int idx_cmn_nm=0;idx_cmn_nm<nbr_cmn_nm;idx_cmn_nm++){
+
+                }
 
                 if(nco_dbg_lvl_get() >= nco_dbg_dev){
                   (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll);             

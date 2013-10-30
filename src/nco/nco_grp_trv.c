@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.230 2013-10-30 07:38:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.231 2013-10-30 23:30:55 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -678,13 +678,13 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and exp
   /* If both lists have names, then there are names to process */
   flg_more_names_exist = (nbr_tbl_1 > 0 && nbr_tbl_2 > 0) ? True : False;
 
+  /* Store list of common objects */
+  (*cmn_lst)=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
+
   /* Initialize counters */
   idx_tbl_1=0;
   idx_tbl_2=0;
   idx_lst=0;
-
-  /* Store list of common objects */
-  (*cmn_lst)=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
 
   /* Iterate lists */
   while(flg_more_names_exist){
@@ -739,7 +739,7 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and exp
     while(idx_tbl_2 < nbr_tbl_2){
       (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
       (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
-      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_lst_2[idx_tbl_1]);
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_lst_2[idx_tbl_2]);
       idx_lst++;
       idx_tbl_2++;
     } /* end while */
