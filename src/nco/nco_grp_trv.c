@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.227 2013-10-30 00:45:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.228 2013-10-30 03:39:46 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -36,6 +36,10 @@ trv_tbl_init                           /* [fnc] GTT initialize */
   /* Record dimensions used by ncra */
   tb->nbr_rec=0;
   tb->lmt_rec=NULL;
+
+  /* Ensembles */
+  tb->nbr_mbr=0;
+  tb->mbr_nm=NULL;
 
   *tbl=tb;
 } /* trv_tbl_init() */
@@ -119,6 +123,10 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
   /* (ncwa) Degenerate dimensions */
   tbl->dmn_dgn=(dmn_sct *)nco_free(tbl->dmn_dgn); 
+
+  /* Ensembles */
+  for(int idx_nm=0;idx_nm<tbl->nbr_mbr;idx_nm++) tbl->mbr_nm[idx_nm]=(char *)nco_free(tbl->mbr_nm[idx_nm]);
+  tbl->mbr_nm=(char **)nco_free(tbl->mbr_nm);
 
   tbl=(trv_tbl_sct *)nco_free(tbl);
 } /* end trv_tbl_free() */
@@ -729,9 +737,6 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and exp
       idx_tbl_2++;
     } /* end while */
   } /* end if */
-
-  /* Print list */
-  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)trv_tbl_cmn_nm_prt(*cmn_lst,idx_lst);
 
   /* Export number of entries */
   *nbr_cmn_nm=idx_lst;

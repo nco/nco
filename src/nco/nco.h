@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.419 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.420 2013-10-30 03:39:46 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -872,15 +872,13 @@ extern "C" {
     unsigned int nbr;       /* [nbr] Number of trv_sct elements */   
     dmn_trv_sct *lst_dmn;   /* [sct] Array of dmn_trv_sct */
     unsigned int nbr_dmn;   /* [nbr] Number of dmn_trv_sct elements */
-
-    /* Members used only by transformation operators (non-ncks) */
+    trv_sct *hsh;           /* [hsh] Hash table of all trv_sct objects */
     dmn_sct *dmn_dgn;       /* [sct] (ncwa) Degenerate dimensions */
     int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate dimensions (size of above array) */
-
     lmt_sct **lmt_rec;      /* [sct] (ncra) Record dimensions */
     int nbr_rec;            /* [sct] (ncra) Number of record dimensions (size of above array) */
-
-    trv_sct *hsh;           /* [hsh] Hash table of all trv_sct objects */
+    int nbr_mbr;            /* [nbr] (nces) Number of members of ensemble i.e., number in this ensemble in this file */ 
+    char **mbr_nm;          /* [sng] (nces) List of member group names (size is mbr_nbr) */ 
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */

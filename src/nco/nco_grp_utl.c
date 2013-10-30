@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1024 2013-10-30 00:45:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1025 2013-10-30 03:39:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7357,6 +7357,38 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
 
 } /* nco_aed_prc_var_nm() */
 
+void                                    
+nco_grp_var_lst                        /* [fnc] Export list of variable names for group */
+(const int grp_id,                     /* I [ID] Group ID */
+ char ***nm_lst,                       /* I/O [sng] List of names */
+ int *nm_lst_nbr)                      /* I/O [nbr] Number of items in list */
+{
+  /* Purpose: Export list of variable names for group */
+
+  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name */ 
+
+  int nbr_var;                     /* [nbr] Number of variables */
+
+  /* Obtain number of variable for group */
+  (void)nco_inq(grp_id,(int *)NULL,&nbr_var,(int *)NULL,(int *)NULL);
+
+  /* Allocate list */ 
+  *nm_lst=(char **)nco_malloc(nbr_var*sizeof(char *));
+
+  /* Iterate variables for this group */
+  for(int idx_var=0;idx_var<nbr_var;idx_var++){
+
+    /* Get type of variable and number of dimensions */
+    (void)nco_inq_var(grp_id,idx_var,var_nm,(nc_type)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
+
+    /* Add to list */ 
+    *nm_lst[idx_var]=(char *)strdup(var_nm);
+
+  } /* Iterate variables for this group */
+
+  *nm_lst_nbr=nbr_var;
+
+} /* end nco_grp_var_lst() */
 
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
@@ -7404,50 +7436,43 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
           /* Match 2 lists of variable names and export common names */
           (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_cmn_nm);
           /* Found common names */
-          if (nbr_cmn_nm){
+          if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm){
+            assert(strcmp(trv_grp.grp_nm_fll,trv_grp.grp_nm_fll) == 0);
+
+            trv_tbl->nbr_mbr++;
+            trv_tbl->mbr_nm=(char **)nco_realloc(trv_tbl->mbr_nm,trv_tbl->nbr_mbr*sizeof(char *));
+            trv_tbl->mbr_nm[trv_tbl->nbr_mbr-1]=(char *)strdup(trv_grp.grp_nm_fll);
 
             if(nco_dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"%s: DEBUG %s found ensemble in <%s>\n",nco_prg_nm_get(),fnc_nm,trv_nsm.nm_fll);             
             }
 
           } /* Found common names */
+
+          /* Free list 2 */
+          for(int idx_nm=0;idx_nm<nm_lst_2_nbr;idx_nm++) nm_lst_2[idx_nm]=(char *)nco_free(nm_lst_2[idx_nm]);
+          nm_lst_2=(char **)nco_free(nm_lst_2);
+
         } /* Same depth, same number of variables */
       } /* Loop table  */
+
+      /* Free list 1 */
+      for(int idx_nm=0;idx_nm<nm_lst_1_nbr;idx_nm++) nm_lst_1[idx_nm]=(char *)nco_free(nm_lst_1[idx_nm]);
+      nm_lst_1=(char **)nco_free(nm_lst_1);
+
     }  /* Group (not root) */
   } /* Loop table */ 
+
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
+    for(int idx_nm=0;idx_nm<trv_tbl->nbr_mbr;idx_nm++){
+      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->mbr_nm[idx_nm]); 
+    }
+  }
+
+
 
 } /* nco_bld_nsm() */
 
 
-void                                    
-nco_grp_var_lst                        /* [fnc] Export list of variable names for group */
-(const int grp_id,                     /* I [ID] Group ID */
- char ***nm_lst,                       /* I/O [sng] List of names */
- int *nm_lst_nbr)                      /* I/O [nbr] Number of items in list */
-{
-  /* Purpose: Export list of variable names for group */
-
-  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name */ 
-
-  int nbr_var;                     /* [nbr] Number of variables */
-
-  /* Obtain number of variable for group */
-  (void)nco_inq(grp_id,(int *)NULL,&nbr_var,(int *)NULL,(int *)NULL);
-
-  /* Allocate list */ 
-  *nm_lst=(char **)nco_malloc(nbr_var*sizeof(char *));
-
-  /* Iterate variables for this group */
-  for(int idx_var=0;idx_var<nbr_var;idx_var++){
-
-    /* Get type of variable and number of dimensions */
-    (void)nco_inq_var(grp_id,idx_var,var_nm,(nc_type)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
-
-    /* Add to list */ 
-    *nm_lst[idx_var]=(char *)strdup(var_nm);
-
-  } /* Iterate variables for this group */
-
-  *nm_lst_nbr=nbr_var;
-
-} /* end nco_grp_var_lst() */
