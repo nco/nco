@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1026 2013-10-30 04:30:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1027 2013-10-30 04:52:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7437,6 +7437,19 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
           trv_1.grp_dpt == trv_2.grp_dpt && 
           trv_1.nbr_var == trv_2.nbr_var &&
           strcmp(trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll_prn) == 0){
+
+            /* Assume not yet inserted in array */
+            nco_bool flg_ins=False;
+            /* Loop constructed array to see if already inserted  */
+            for(int idx_nm=0;idx_nm<trv_tbl->nbr_mbr;idx_nm++){
+              /* Match */
+              if(strcmp(trv_tbl->mbr_nm[idx_nm],trv_2.grp_nm_fll) == 0){
+                /* Mark as inserted in array */
+                flg_ins=True;
+                break;
+              }  /* Match */
+            } /* Loop constructed array to see if already inserted  */
+
             /* Get group ID */
             (void)nco_inq_grp_full_ncid(nc_id,trv_2.grp_nm_fll,&grp_id);
             /* Export list of variable names for group */
@@ -7444,7 +7457,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             /* Match 2 lists of variable names and export common names */
             (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_cmn_nm);
             /* Found common names */
-            if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm){
+            if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm && !flg_ins){
               trv_tbl->nbr_mbr++;
               trv_tbl->mbr_nm=(char **)nco_realloc(trv_tbl->mbr_nm,trv_tbl->nbr_mbr*sizeof(char *));
               trv_tbl->mbr_nm[trv_tbl->nbr_mbr-1]=(char *)strdup(trv_2.grp_nm_fll);
