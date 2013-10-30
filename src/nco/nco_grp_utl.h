@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.398 2013-10-29 21:04:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.399 2013-10-30 00:45:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -504,12 +504,6 @@ nco_var_prc_idx_trv                   /* [fnc] Find index of processed variable 
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
  int * var_prc_idx_out);              /* O [nbr] Number of dimension to re-order */
 
-nm_id_sct *                           /* O [sct] Dimension list */
-nco_dmn_lst_mk_trv                    /* [fnc] Attach dimension IDs to dimension list */
-(char **dmn_lst_in,                   /* I [sng] User-specified list of dimension names */
- const int nbr_dmn,                   /* I [nbr] Total number of dimensions in list */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
 void
 nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
 (const int nc_id,                     /* I [id] Input netCDF file ID */
@@ -672,7 +666,14 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
 
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
-(trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void                                    
+nco_grp_var_lst                        /* [fnc] Export list of variable names for group */
+(const int grp_id,                     /* I [ID] Group ID */
+ char ***nm_lst,                       /* I/O [sng] List of names */
+ int *nm_lst_nbr);                     /* I/O [nbr] Number of items in list */
 
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.226 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.227 2013-10-30 00:45:32 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -612,3 +612,129 @@ nco_trv_hsh_bld /* Hash traversal table for fastest access */
   } /* end loop over trv_tbl */
 
 } /* end trv_tbl_hsh() */
+
+
+void 
+nco_nm_srt                             /* [fnc] Sort traversal table */
+(char **nm_lst,                        /* I [sng] List of names */
+ const int nm_lst_nbr)                 /* I [nbr] Number of items in list */
+{
+  /* Purpose: Sort list of strings  */
+  qsort(nm_lst,(size_t)nm_lst_nbr,sizeof(char **),nco_cmp_sng);
+} /* end nco_nm_srt() */
+
+void                          
+nco_nm_mch                             /* [fnc] Match 2 lists of strings and export common strings  */
+(char **nm_lst_1,                      /* I [sng] List of names */
+ const int nm_lst_1_nbr,               /* I [nbr] Number of items in list */
+ char **nm_lst_2,                      /* I [sng] List of names */
+ const int nm_lst_2_nbr,               /* I [nbr] Number of items in list */
+ nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
+ int * nbr_cmn_nm)                     /* I/O [nbr] Number of common names */
+{
+  /* Purpose: Match 2 lists of strings and export common strings. 
+  Use cosequential match algorithm described in
+  Folk, Michael; Zoellick, Bill. (1992). File Structures. Addison-Wesley.
+
+  Compare 2 ordered lists of names:
+  if Name(1) is less than Name(2), read next name from List 1; this is done by incrementing current index
+  if Name(1) is greater than Name(2), read next name from List 2
+  if names are identical, read next names from both lists  */
+
+  const char fnc_nm[]="nco_nm_mch()"; /* [sng] Function name */
+
+  int idx_lst;                   /* [idx] Current position in common List */ 
+  int idx_tbl_1;                 /* [idx] Current position in List 1 */ 
+  int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
+  int nbr_tbl_1;                 /* [nbr] Number of items in list 1 */
+  int nbr_tbl_2;                 /* [nbr] Number of items in list 2 */
+  int nco_cmp;                   /* [nbr] Return value of strcmp() */ 
+
+  nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
+
+  /* Names must be sorted */
+  (void)nco_nm_srt(nm_lst_1,nm_lst_1_nbr);
+  (void)nco_nm_srt(nm_lst_2,nm_lst_2_nbr);
+
+  /* Get number of objects in each table */
+  nbr_tbl_1=nm_lst_1_nbr;
+  nbr_tbl_2=nm_lst_2_nbr;
+
+  /* If both lists have names, then there are names to process */
+  flg_more_names_exist = (nbr_tbl_1 > 0 && nbr_tbl_2 > 0) ? True : False;
+
+  /* Initialize counters */
+  idx_tbl_1=0;
+  idx_tbl_2=0;
+  idx_lst=0;
+
+  /* Store list of common objects */
+  (*cmn_lst)=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
+
+  /* Iterate lists */
+  while(flg_more_names_exist){
+    char *nm_1=nm_lst_1[idx_tbl_1];
+    char *nm_2=nm_lst_2[idx_tbl_2];
+
+    /* Criteria is string compare */
+    nco_cmp=strcmp(nm_1,nm_2);
+
+    /* Names match: store flag, define or write in output file, then read next name from lists */
+    if(!nco_cmp){
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_1);
+      idx_lst++;
+      idx_tbl_1++;
+      idx_tbl_2++;
+    }else if(nco_cmp < 0){
+      /* Name(1) is less than Name(2), read next name from List 1  */
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=False;
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_1);
+      idx_lst++; 
+      idx_tbl_1++;
+    }else{
+      /* Name(1) is greater than Name(2), read next name from List 2 */
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_2);
+      idx_lst++;   
+      idx_tbl_2++;
+    } /* end nco_cmp */
+
+    flg_more_names_exist = (idx_tbl_1 < nbr_tbl_1 && idx_tbl_2 < nbr_tbl_2) ? True : False;
+
+  } /* end while */
+
+  /* List1 did not end */
+  if(idx_tbl_1 < nbr_tbl_1){
+
+    while(idx_tbl_1 < nbr_tbl_1){
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=False;
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_lst_1[idx_tbl_1]);
+      idx_lst++;
+      idx_tbl_1++;
+    } /* end while */
+  } /* end if */
+
+  /* List2 did not end */
+  if(idx_tbl_2 < nbr_tbl_2){
+    while(idx_tbl_2 < nbr_tbl_2){
+      (*cmn_lst)[idx_lst].flg_in_fl[0]=False;
+      (*cmn_lst)[idx_lst].flg_in_fl[1]=True;
+      (*cmn_lst)[idx_lst].var_nm_fll=strdup(nm_lst_2[idx_tbl_1]);
+      idx_lst++;
+      idx_tbl_2++;
+    } /* end while */
+  } /* end if */
+
+  /* Print list */
+  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)trv_tbl_cmn_nm_prt(*cmn_lst,idx_lst);
+
+  /* Export number of entries */
+  *nbr_cmn_nm=idx_lst;
+
+} /* nco_nm_mch() */
+

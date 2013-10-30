@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.92 2013-10-20 22:47:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.93 2013-10-30 00:45:32 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -122,11 +122,25 @@ nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabbe
  const trv_tbl_sct *trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 
 void 
-nco_trv_hsh_bld /* Hash traversal table for fastest access */
+nco_trv_hsh_bld                       /* Hash traversal table for fastest access */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
-nco_trv_hsh_del /* Delete hash table */
+nco_trv_hsh_del                       /* Delete hash table */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void 
+nco_nm_srt                             /* [fnc] Sort traversal table */
+(char **nm_lst,                        /* I [sng] List of names */
+ const int nm_lst_nbr);                /* I [nbr] Number of items in list */
+
+void                          
+nco_nm_mch                             /* [fnc] Match 2 lists of strings and export common strings  */
+(char **nm_lst_1,                      /* I [sng] List of names */
+ const int nm_lst_1_nbr,               /* I [nbr] Number of items in list */
+ char **nm_lst_2,                      /* I [sng] List of names */
+ const int nm_lst_2_nbr,               /* I [nbr] Number of items in list */
+ nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
+ int * nbr_cmn_nm);                    /* I/O [nbr] Number of common names */
 
 #endif /* NCO_GRP_TRV_H */
