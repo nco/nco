@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.228 2013-10-30 03:39:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.229 2013-10-30 04:30:44 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -53,6 +53,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   for(unsigned idx=0;idx<tbl->nbr;idx++){
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
+    tbl->lst[idx].grp_nm_fll_prn=(char *)nco_free(tbl->lst[idx].grp_nm_fll_prn);
     tbl->lst[idx].rec_dmn_nm_out=(char *)nco_free(tbl->lst[idx].rec_dmn_nm_out);
     tbl->lst[idx].hsh_key=(char *)nco_free(tbl->lst[idx].hsh_key);
 

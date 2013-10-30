@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.399 2013-10-30 00:45:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.400 2013-10-30 04:30:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -248,6 +248,7 @@ nco_crd_var_dmn_scp                   /* [fnc] Is coordinate variable in dimensi
 int                                    /* [rcd] Return code */
 nco_grp_itr                            /* [fnc] Populate traversal table by examining, recursively, subgroups of parent */
 (const int grp_id,                     /* I [ID] Group ID */
+ char * const grp_nm_fll_prn,          /* I [sng] Absolute group name of parent (path) */
  char * const grp_nm_fll,              /* I [sng] Absolute group name (path) */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
 

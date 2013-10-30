@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.420 2013-10-30 03:39:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.421 2013-10-30 04:30:44 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -828,13 +828,14 @@ extern "C" {
     nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */
     nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr;                 /* [flg] Extract object */ 
-    /* Following are members only used by transformation operators (non-ncks) (For variables only) */
+    /* Following are members only used by transformation operators (non-ncks)  */
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  
     int dmn_idx_out_in[NC_MAX_DIMS];  /* [nbr] Dimension correspondence, output->input (ncpdq); output of nco_var_dmn_rdr_mtd() */
     nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimensions (ncpdq) */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
+    char *grp_nm_fll_prn;             /* [sng] (nces) Parent group full name */
     /* Good hash, dude */
     UT_hash_handle hh;                /* [sct] Handle for hash table */
     char *hsh_key;                    /* [sng] Hash key (must be unique!) */
