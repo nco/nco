@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1027 2013-10-30 04:52:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1028 2013-10-30 07:38:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1934,6 +1934,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; /* [enm] (For variables only) NetCDF type in output file (used by ncflint, ncpdq)  */
   if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (nces) Parent group full name */         
   else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
+  trv_tbl->lst[idx].flg_nsm_prn=False;            /* [flg] (nces) Group is, or variable is in, ensemble parent group */
+  
 
   /* Variable dimensions  */
   for(int idx_dmn_var=0;idx_dmn_var<NC_MAX_DIMS;idx_dmn_var++){
@@ -2029,6 +2031,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; 
     if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (nces) Parent group full name */         
     else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
+    trv_tbl->lst[idx].flg_nsm_prn=False;
 
     /* Variable dimensions */
     for(int idx_dmn_var=0;idx_dmn_var<NC_MAX_DIMS;idx_dmn_var++){
@@ -7410,9 +7413,12 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   int nm_lst_1_nbr;                    /* [nbr] Number of items in list */
   int nm_lst_2_nbr;                    /* [nbr] Number of items in list */
   int nbr_cmn_nm;                      /* [nbr] Number of common entries */
+  int nsm_nbr=0;                       /* [nbr] Ensemble counter */
   int grp_id;                          /* [id] Group ID */
 
   nco_cmn_t *cmn_lst=NULL;             /* [sct] A list of common names */ 
+
+  /* Insert ensembles (parent group name is key)  */
 
   /* Loop table  */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -7441,9 +7447,9 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             /* Assume not yet inserted in array */
             nco_bool flg_ins=False;
             /* Loop constructed array to see if already inserted  */
-            for(int idx_nm=0;idx_nm<trv_tbl->nbr_mbr;idx_nm++){
+            for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){        
               /* Match */
-              if(strcmp(trv_tbl->mbr_nm[idx_nm],trv_2.grp_nm_fll) == 0){
+              if(strcmp(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,trv_2.grp_nm_fll_prn) == 0){
                 /* Mark as inserted in array */
                 flg_ins=True;
                 break;
@@ -7458,12 +7464,17 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_cmn_nm);
             /* Found common names */
             if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm && !flg_ins){
-              trv_tbl->nbr_mbr++;
-              trv_tbl->mbr_nm=(char **)nco_realloc(trv_tbl->mbr_nm,trv_tbl->nbr_mbr*sizeof(char *));
-              trv_tbl->mbr_nm[trv_tbl->nbr_mbr-1]=(char *)strdup(trv_2.grp_nm_fll);
+              trv_tbl->nsm_nbr++;
+              trv_tbl->nsm=(nsm_sct *)nco_realloc(trv_tbl->nsm,trv_tbl->nsm_nbr*sizeof(nsm_sct));
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_nbr=0;
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_nm=NULL;
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_nm_fll_prn=(char *)strdup(trv_2.grp_nm_fll_prn);
+
+              /* Group (outer loop) is ensemble parent group */
+              trv_tbl->lst[idx_tbl].flg_nsm_prn=True;
 
               if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(stdout,"%s: DEBUG %s found ensemble in <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.nm_fll);             
+                (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll_prn);             
               }
 
             } /* Found common names */
@@ -7480,16 +7491,108 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       nm_lst_1=(char **)nco_free(nm_lst_1);
 
     }  /* Group (not root) */
-  } /* Loop table */ 
-
+  } /* Loop table */
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
-    for(int idx_nm=0;idx_nm<trv_tbl->nbr_mbr;idx_nm++){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->mbr_nm[idx_nm]); 
-    }
+    for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+    } 
   }
 
+  /* Insert names in ensembles */
+
+  /* Loop table  */
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct trv_1=trv_tbl->lst[idx_tbl];
+    /* Group (not root, with variables) */
+    if(trv_1.nco_typ == nco_obj_typ_grp && trv_1.grp_dpt > 0 && trv_1.nbr_var > 0){
+      /* Get group ID */
+      (void)nco_inq_grp_full_ncid(nc_id,trv_1.grp_nm_fll,&grp_id);
+      /* Export list of variable names for group */
+      (void)nco_grp_var_lst(grp_id,&nm_lst_1,&nm_lst_1_nbr);
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s looking for ensembles for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1.nm_fll);             
+      }
+
+      /* Loop table  */
+      for(unsigned idx_nsm=0;idx_nsm<trv_tbl->nbr;idx_nsm++){
+        trv_sct trv_2=trv_tbl->lst[idx_nsm];
+
+        /* Same depth, same number of variables, same parent group */
+        if(trv_1.nco_typ == nco_obj_typ_grp && 
+          trv_1.grp_dpt == trv_2.grp_dpt && 
+          trv_1.nbr_var == trv_2.nbr_var &&
+          strcmp(trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll_prn) == 0){
+
+            /* Get group ID */
+            (void)nco_inq_grp_full_ncid(nc_id,trv_2.grp_nm_fll,&grp_id);
+            /* Export list of variable names for group */
+            (void)nco_grp_var_lst(grp_id,&nm_lst_2,&nm_lst_2_nbr);
+            /* Match 2 lists of variable names and export common names */
+            (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_cmn_nm);
+            /* Found common names */
+            if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm){
+
+              /* Assume not yet inserted in array */
+              nco_bool flg_ins=False;
+              /* Loop constructed array to see if already inserted  */
+              for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+                /* Loop names */
+                for(int idx_nm=0;idx_nm<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_nm++){
+                  /* Match */
+                  if(strcmp(trv_tbl->nsm[idx_nsm].mbr_nm[idx_nm],trv_2.grp_nm_fll) == 0){
+                    /* Mark as inserted in array */
+                    flg_ins=True;
+                    break;
+                  }  /* Match */
+                } /* Loop names */
+              } /* Loop constructed array to see if already inserted  */
+
+              /* Not inserted */
+              if (!flg_ins){
+                int mbr_nbr=trv_tbl->nsm[nsm_nbr].mbr_nbr;
+                trv_tbl->nsm[nsm_nbr].mbr_nbr++;
+                trv_tbl->nsm[nsm_nbr].mbr_nm=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].mbr_nm,trv_tbl->nsm[nsm_nbr].mbr_nbr*sizeof(char *));
+                trv_tbl->nsm[nsm_nbr].mbr_nm[mbr_nbr]=(char *)strdup(trv_2.grp_nm_fll);
+
+                if(nco_dbg_lvl_get() >= nco_dbg_dev){
+                  (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll);             
+                }
+
+              } /* Not inserted */
+            } /* Found common names */
+
+            /* Free list 2 */
+            for(int idx_nm=0;idx_nm<nm_lst_2_nbr;idx_nm++) nm_lst_2[idx_nm]=(char *)nco_free(nm_lst_2[idx_nm]);
+            nm_lst_2=(char **)nco_free(nm_lst_2);
+
+        } /* Same depth, same number of variables */
+      } /* Loop table  */
+
+      /* Free list 1 */
+      for(int idx_nm=0;idx_nm<nm_lst_1_nbr;idx_nm++) nm_lst_1[idx_nm]=(char *)nco_free(nm_lst_1[idx_nm]);
+      nm_lst_1=(char **)nco_free(nm_lst_1);
+
+      if(trv_1.flg_nsm_prn) nsm_nbr++;
+
+    }  /* Group (not root) */
+  } /* Loop table */ 
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
+    for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      for(int idx_nm=0;idx_nm<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_nm++){
+        (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].mbr_nm[idx_nm]); 
+      }
+    } 
+  }
+
+  assert(nsm_nbr == trv_tbl->nsm_nbr);
+
 } /* nco_bld_nsm() */
+
 
 

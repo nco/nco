@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.421 2013-10-30 04:30:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.422 2013-10-30 07:38:22 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -774,11 +774,9 @@ extern "C" {
     crd_sct *crd;            /* [sct] Pointer to coordinate variable if any */
     dmn_trv_sct *ncd;        /* [sct] Pointer to non-coordinate dimension if any */
     int dmn_id;              /* [ID] Dimension ID; same as dmn_trv_sct.id from nc_inq_vardimid() */
-
     /* Following are members only used by transformation operators (non-ncks) */
     nco_bool flg_dmn_avg;    /* [flg] Diferentiate between dimensions to average or keep for this variable (ncwa) */  
     nco_bool flg_rdd;        /* [flg] Retain dimension as degenerate (size 1) (ncwa) */  
-
   } var_dmn_sct; 
 
   /* Processing type enumerator */
@@ -839,6 +837,7 @@ extern "C" {
     /* Good hash, dude */
     UT_hash_handle hh;                /* [sct] Handle for hash table */
     char *hsh_key;                    /* [sng] Hash key (must be unique!) */
+    nco_bool flg_nsm_prn;             /* [flg] (nces) Group is, or variable is in, ensemble parent group */
   } trv_sct;
 
   /* Fill actual value of dmn_sct structure in nco_dmn_fll()
@@ -864,6 +863,13 @@ extern "C" {
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
 
+  /* Ensemble (nces) */
+  typedef struct{
+    char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) */
+    int mbr_nbr;            /* [nbr] Number of members of ensemble (i.e., number in this ensemble in this file) */ 
+    char **mbr_nm;          /* [sng] List of member group names (size is mbr_nbr) */ 
+  } nsm_sct; 
+
   /* GTT (Group Traversal Table) structure contains two lists
      1) lst: All objects (variables and groups) in file tree (HDF5 model)
      2) lst_dmn: All unique dimensions (in groups) in file tree (netCDF addition to HDF5) */
@@ -878,8 +884,8 @@ extern "C" {
     int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate dimensions (size of above array) */
     lmt_sct **lmt_rec;      /* [sct] (ncra) Record dimensions */
     int nbr_rec;            /* [sct] (ncra) Number of record dimensions (size of above array) */
-    int nbr_mbr;            /* [nbr] (nces) Number of members of ensemble i.e., number in this ensemble in this file */ 
-    char **mbr_nm;          /* [sng] (nces) List of member group names (size is mbr_nbr) */ 
+    int nsm_nbr;            /* [nbr] (nces) Number of ensembles (i.e., number in first file) */ 
+    nsm_sct *nsm;           /* [lst] (nces) List of ensembles (size is nsm_nbr) */ 
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */
