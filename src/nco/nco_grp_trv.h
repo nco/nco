@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.93 2013-10-30 00:45:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.94 2013-10-31 01:05:56 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -135,12 +135,13 @@ nco_nm_srt                             /* [fnc] Sort traversal table */
  const int nm_lst_nbr);                /* I [nbr] Number of items in list */
 
 void                          
-nco_nm_mch                             /* [fnc] Match 2 lists of strings and export common strings  */
+nco_nm_mch                             /* [fnc] Match 2 lists of strings and mark common strings  */
 (char **nm_lst_1,                      /* I [sng] List of names */
  const int nm_lst_1_nbr,               /* I [nbr] Number of items in list */
  char **nm_lst_2,                      /* I [sng] List of names */
  const int nm_lst_2_nbr,               /* I [nbr] Number of items in list */
- nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
+ nco_cmn_t **cmn_lst,                  /* I/O [sct] List of all names */
+ int * nbr_nm,                         /* I/O [nbr] Number of all names (size of above array) */
  int * nbr_cmn_nm);                    /* I/O [nbr] Number of common names */
 
 #endif /* NCO_GRP_TRV_H */

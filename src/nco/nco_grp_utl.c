@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1029 2013-10-30 23:30:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1030 2013-10-31 01:05:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7324,8 +7324,6 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
 {
   /* Purpose: Process attributes in variables that match input name (absolute or relative)  */
 
-  const char fnc_nm[]="nco_aed_prc_var_mth()"; /* [sng] Function name */
-
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
 
@@ -7370,7 +7368,7 @@ void
 nco_grp_var_lst                        /* [fnc] Export list of variable names for group */
 (const int nc_id,                      /* I [id] netCDF file ID */
  const char * const grp_nm_fll,        /* I [sng] Absolute group name */
- char ***nm_lst,                       /* I/O [sng] List of names */
+ char ***nm_lst,                       /* I/O [sng] List of names (relative) */
  int *nm_lst_nbr)                      /* I/O [nbr] Number of items in list */
 {
   /* Purpose: Export list of variable names for group */
@@ -7382,7 +7380,6 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
 
   /* Get group ID */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
-
   /* Obtain number of variable for group */
   (void)nco_inq(grp_id,(int *)NULL,&nbr_var,(int *)NULL,(int *)NULL);
 
@@ -7419,6 +7416,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   int nm_lst_1_nbr;                    /* [nbr] Number of items in list */
   int nm_lst_2_nbr;                    /* [nbr] Number of items in list */
   int nbr_cmn_nm;                      /* [nbr] Number of common entries */
+  int nbr_nm;                          /* [nbr] Number of total entries */
   int nsm_nbr=0;                       /* [nbr] Ensemble counter */
 
   nco_cmn_t *cmn_lst=NULL;             /* [sct] A list of common names */ 
@@ -7462,7 +7460,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             /* Export list of variable names for group */
             (void)nco_grp_var_lst(nc_id,trv_2.grp_nm_fll,&nm_lst_2,&nm_lst_2_nbr);
             /* Match 2 lists of variable names and export common names */
-            (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_cmn_nm);
+            (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_nm,&nbr_cmn_nm);
             /* Found common names */
             if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm && !flg_ins){
               trv_tbl->nsm_nbr++;
@@ -7528,14 +7526,14 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             /* Export list of variable names for group */
             (void)nco_grp_var_lst(nc_id,trv_2.grp_nm_fll,&nm_lst_2,&nm_lst_2_nbr);
             /* Match 2 lists of variable names and export common names */
-            (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_cmn_nm);
+            (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_nm,&nbr_cmn_nm);
             /* Found common names */
             if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm){
 
               /* Assume not yet inserted in array */
               nco_bool flg_ins=False;
-              /* Loop constructed array to see if already inserted  */
-              for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+              /* Loop constructed array to see if already inserted (NB: use ensemble counter nsm_nbr) */
+              for(int idx_nsm=0;idx_nsm<nsm_nbr;idx_nsm++){
                 /* Loop names */
                 for(int idx_nm=0;idx_nm<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_nm++){
                   /* Match */
@@ -7560,7 +7558,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                 }
 
                 if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                  (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll);             
+                  (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble member <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll);             
                 }
 
               } /* Not inserted */

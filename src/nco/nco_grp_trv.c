@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.231 2013-10-30 23:30:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.232 2013-10-31 01:05:56 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -639,12 +639,13 @@ nco_nm_srt                             /* [fnc] Sort traversal table */
 } /* end nco_nm_srt() */
 
 void                          
-nco_nm_mch                             /* [fnc] Match 2 lists of strings and export common strings  */
+nco_nm_mch                             /* [fnc] Match 2 lists of strings and mark common strings  */
 (char **nm_lst_1,                      /* I [sng] List of names */
  const int nm_lst_1_nbr,               /* I [nbr] Number of items in list */
  char **nm_lst_2,                      /* I [sng] List of names */
  const int nm_lst_2_nbr,               /* I [nbr] Number of items in list */
- nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
+ nco_cmn_t **cmn_lst,                  /* I/O [sct] List of all names */
+ int * nbr_nm,                         /* I/O [nbr] Number of all names (size of above array) */
  int * nbr_cmn_nm)                     /* I/O [nbr] Number of common names */
 {
   /* Purpose: Match 2 lists of strings and export common strings. 
@@ -663,7 +664,7 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and exp
   int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
   int nbr_tbl_1;                 /* [nbr] Number of items in list 1 */
   int nbr_tbl_2;                 /* [nbr] Number of items in list 2 */
-  int nco_cmp;                   /* [nbr] Return value of strcmp() */ 
+  int nco_cmp;                   /* [nbr] Return value of strcmp() */            
 
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
 
@@ -681,7 +682,9 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and exp
   /* Store list of common objects */
   (*cmn_lst)=(nco_cmn_t *)nco_malloc((nbr_tbl_1+nbr_tbl_2)*sizeof(nco_cmn_t));
 
-  /* Initialize counters */
+  /* Initialize counters and output */
+  *nbr_cmn_nm=0;
+  *nbr_nm=0;
   idx_tbl_1=0;
   idx_tbl_2=0;
   idx_lst=0;
@@ -702,6 +705,8 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and exp
       idx_lst++;
       idx_tbl_1++;
       idx_tbl_2++;
+      /* Export commnon names */
+      *nbr_cmn_nm=idx_lst;
     }else if(nco_cmp < 0){
       /* Name(1) is less than Name(2), read next name from List 1  */
       (*cmn_lst)[idx_lst].flg_in_fl[0]=True;
@@ -746,7 +751,7 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and exp
   } /* end if */
 
   /* Export number of entries */
-  *nbr_cmn_nm=idx_lst;
+  *nbr_nm=idx_lst;
 
 } /* nco_nm_mch() */
 
