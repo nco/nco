@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.893 2013-10-25 16:06:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.894 2013-10-31 06:17:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -11933,14 +11933,40 @@ ncatted -O -a quanta,energy,o,s,"010,101,111,121" in.nc
 @cindex regular expressions
 @cindex pattern matching
 @cindex wildcards
-As of @acronym{NCO} 3.9.6 (January, 2009), variable names arguments 
-to @command{ncatted} may contain @dfn{extended regular expressions}.
+As of @acronym{NCO} 3.9.6 (January, 2009), @command{ncatted} accepts
+@dfn{extended regular expressions} as arguments for variable names.
 Create @code{isotope} attributes for all variables containing @samp{H2O} 
 in their names.
 @example
 ncatted -O -a isotope,'^H2O*',c,s,"18" in.nc
 @end example
 See @ref{Subsetting Files} for more details.
+
+@cindex groups
+As of @acronym{NCO} 4.3.8 (November, 2013), @command{ncatted} 
+accepts full and partial group paths in names of attributes,
+variables, dimensions, and groups.
+@c ncks -m -v lon ~/in_grp.nc
+@example
+ncatted -O -a units,/g1/lon,o,c,"degrees_west" in_grp.nc
+ncatted -O -a csznote,/g1:g2,a,c,"new attribute" in_grp.nc
+ncatted -O -a history,global,m,c,"modified attribute" in_grp.nc
+
+# Overwrite units attribute of specific 'lon' variable
+ncatted -O -a units,/g1/lon,o,c,"degrees_west" in_grp.nc
+# Overwrite units attribute of all 'lon' variables
+ncatted -O -a units,lon,o,c,"degrees_west" in_grp.nc
+# Delete units attribute of all 'lon' variables
+ncatted -O -a units,lon,d,, in_grp.nc
+# Overwrite units attribute with new type for specific 'lon' variable
+ncatted -O -a units,/g1/lon,o,sng,"degrees_west" in_grp.nc
+# Add new_att attribute to all variables
+ncatted -O -a new_att,,c,sng,"new variable attribute" in_grp.nc
+# Add new_grp_att attribute to all groups
+ncatted -O -a new_grp_att,global,c,sng,"new group attribute" in_grp.nc
+# Add new_glb_att attribute to root group
+ncatted -O -a new_glb_att,/,c,sng,"new global attribute" in_grp.nc
+@end example
 
 Demonstrate input of C-language escape sequences (e.g., @code{\n}) and
 other special characters (e.g., @code{\"}) 

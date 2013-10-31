@@ -1,27 +1,24 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.630 2013-10-17 20:31:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.631 2013-10-31 06:17:16 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-The current release is a milestone in NCO interoperability.
-NCO now supports HDF4 files natively. This was last true in 2001!
-NSF-funded harmonization of netCDF with HDF made this possible.
-With few exceptions, all NCO features work natively on HDF4 files.
-One can now often avoid the tedious step of creating intermediate
-netCDF files to perform, e.g., running averages on. ncks produces
-more faithful conversions of HDF4->netCDF than ncl_convert2nc.
+ncatted now supports groups. That's the main new feature.
+NCO has completed its migration from flat- to group-oriented files.
+All core operators are now "group-aware" and support netCDF4 groups. 
+Most relevant options may support full or partial group paths.
+The remaining options that do not will be migrated as time permits.
 
-Interoperability feature #2 is that ncks will produce complete 
-XML (NcML) translations of netCDF (3 and 4) and HDF (4 and 5) files. 
+The exception to this is ncap2. Porting ncap2 to support groups
+will be undertaken as resources permit. The main ncap2 developer
+is a volunteer and we are trying to secure funding for this work.
 
-Finally, this release brings fuller netCDF4 support to ncrename. 
-NCO must be built with netCDF 4.3.1 or later to take advantage of
-ncrename's group renaming feature.  
-
-Work on NCO 4.3.8 is underway and includes improved netCDF4 support
-for more NCO operators (ncatted), and improved support for HDF4 files.    
+Work on NCO 4.3.9 is underway and includes improved netCDF4 support 
+for various options (all -X, ncwa -w and -m), other netCDF4 mop-up,
+and improved support for HDF4 files. And a new operator, nces, which
+we will describe at AGU (Friday 12/13 11:35 AM Moscone West 2010).
 
 Enjoy,
 Charlie

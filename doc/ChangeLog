@@ -1,7 +1,8 @@
 2013-10-25 Pedro Vicente  <pvicente@uci.edu>
 
-	* ncatted: Regressions #6 to 10. Groups, for single variable, all variables, wildcard variables, 
-	group attributes, relative and absolute variable names.
+	* ncatted: Regressions #6 to 10. Groups, for single variable, all
+	variables, wildcard variables, group attributes, relative and
+	absolute variable names.
 
 2013-10-25  Charlie Zender  <zender@uci.edu>
 

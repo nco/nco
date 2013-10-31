@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1031 2013-10-31 01:41:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1032 2013-10-31 06:17:17 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5329,9 +5329,6 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
 } /* nco_var_dmn_rdr_val_trv() */
 
-
-
-
 void
 nco_aed_prc_trv                       /* [fnc] Process single attribute edit for single variable (GTT) */
 (const int nc_id,                     /* I [id] Input netCDF file ID */
@@ -7287,7 +7284,7 @@ nco_aed_prc_var_xtr                   /* [fnc] Process attributes in variables t
 {
   /* Purpose: Process attributes  */
 
-  const char fnc_nm[]="nco_aed_prc_var_mth()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_aed_prc_var_xtr()"; /* [sng] Function name */
 
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
