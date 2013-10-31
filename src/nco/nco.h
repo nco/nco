@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.423 2013-10-30 23:30:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.424 2013-10-31 01:41:42 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -907,7 +907,7 @@ extern "C" {
 
   /* Common variable names; common defined as same absolute path in 2 files */
   typedef struct{		
-    char *var_nm_fll;            /* [sng] Full path of variable */
+    char *var_nm_fll;            /* [sng] Full path of variable (can be relative) */
     nco_bool flg_in_fl[2];       /* [flg] Is this name in each file?; files are [0] and [1] */
   } nco_cmn_t;
 

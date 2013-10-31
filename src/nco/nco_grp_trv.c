@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.232 2013-10-31 01:05:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.233 2013-10-31 01:41:42 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -755,3 +755,19 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
 
 } /* nco_nm_mch() */
 
+void
+trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in table for "var_nm_fll" */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+#ifdef NCO_HSH_TRV_OBJ
+  trv_sct *trv_obj; /* [sct] GTT object structure */
+  HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
+  if(trv_obj) trv_obj->flg_nsm_mbr=True;
+#else /* !NCO_HSH_TRV_OBJ */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+    if(strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0) trv_tbl->lst[uidx].flg_nsm_mbr=True;
+#endif /* !NCO_HSH_TRV_OBJ */
+
+  return;
+} /* end trv_tbl_mrk_nsm_mb() */

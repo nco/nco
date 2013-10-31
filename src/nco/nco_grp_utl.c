@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1030 2013-10-31 01:05:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1031 2013-10-31 01:41:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7553,14 +7553,23 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                 trv_tbl->nsm[nsm_nbr].mbr_nm[mbr_nbr]=(char *)strdup(trv_2.grp_nm_fll);
 
                 /* Mark variables as ensemble members */
-                for(int idx_cmn_nm=0;idx_cmn_nm<nbr_cmn_nm;idx_cmn_nm++){
+                for(int idx_nm=0;idx_nm<nbr_cmn_nm;idx_nm++){
+                  /* Allocate path buffer and include space for trailing NUL */ 
+                  char *var_nm_fll=(char *)nco_malloc(strlen(trv_2.grp_nm_fll)+strlen(cmn_lst[idx_nm].var_nm_fll)+2L);
+                  /* Initialize path with current absolute group path */
+                  strcpy(var_nm_fll,trv_2.grp_nm_fll);
+                  /* If not root group, concatenate separator */
+                  if(strcmp(trv_2.grp_nm_fll,"/")) strcat(var_nm_fll,"/");
+                  /* Concatenate variable to absolute group path */
+                  strcat(var_nm_fll,cmn_lst[idx_nm].var_nm_fll);
+                  /* Mark ensemble member flag in table for "var_nm_fll" */
+                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,trv_tbl);  
 
-                }
+                  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+                    (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,var_nm_fll);             
+                  }
 
-                if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                  (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble member <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll);             
-                }
-
+                } /* Mark variables as ensemble members */
               } /* Not inserted */
             } /* Found common names */
 
