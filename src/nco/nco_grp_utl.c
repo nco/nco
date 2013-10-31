@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1032 2013-10-31 06:17:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1033 2013-10-31 23:44:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7324,8 +7324,12 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
 
+  nco_bool var_fnd; /* [flg] Variable as found */
+
   /* Only used by ncatted */
   assert(nco_prg_id_get() == ncatted);
+
+  var_fnd=False;
 
   /* Loop table (absolute name) */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
@@ -7354,8 +7358,14 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
       /* Process attribute */
       (void)nco_aed_prc(grp_id,var_id,aed);
+      var_fnd=True;
     } /* Is variable */
   } /* Loop table */ 
+
+  if(!var_fnd){
+    (void)fprintf(stderr,"%s: Variable <%s> was not found\n",nco_prg_nm_get(),aed.var_nm);
+    nco_exit(EXIT_FAILURE);
+  } 
 
   return;
 
