@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1033 2013-10-31 23:44:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1034 2013-11-01 00:09:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7244,6 +7244,35 @@ nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
 
 } /* nco_aed_prc_grp() */
 
+
+void                                  
+nco_aed_prc_glb                       /* [fnc] Process attributes in root group */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
+ const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
+{
+  /* Purpose: Process attributes  */
+
+  int grp_id; /* [id] Group ID */
+
+  /* Only used by ncatted */
+  assert(nco_prg_id_get() == ncatted);
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Is root group */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && strcmp("/",trv_tbl->lst[tbl_idx].nm_fll) == 0){
+      /* Get group ID */
+      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
+      /* Process attribute */
+      (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
+    } /* Is group */
+  } /* Loop table */ 
+
+  return;
+
+} /* nco_aed_prc_grp() */
+
 void                                  
 nco_aed_prc_var                       /* [fnc] Process attributes in variables */
 (const int nc_id,                     /* I [id] netCDF file ID */
@@ -7284,8 +7313,6 @@ nco_aed_prc_var_xtr                   /* [fnc] Process attributes in variables t
 {
   /* Purpose: Process attributes  */
 
-  const char fnc_nm[]="nco_aed_prc_var_xtr()"; /* [sng] Function name */
-
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
 
@@ -7297,9 +7324,6 @@ nco_aed_prc_var_xtr                   /* [fnc] Process attributes in variables t
     trv_sct trv=trv_tbl->lst[tbl_idx];
     /* Is variable to extract */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s processing variable <%s>\n",nco_prg_nm_get(),fnc_nm,trv.nm_fll);             
-      }
       /* Get group ID */
       (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
       /* Get variable ID  */

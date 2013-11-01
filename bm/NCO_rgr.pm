@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.364 2013-10-31 06:17:16 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.365 2013-11-01 00:09:59 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -339,7 +339,7 @@ print "\n";
 	
 #ncatted #8
 
-	$tst_cmd[0]="ncatted -O $nco_D_flg -a g3_group_attribute,global,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a g3_group_attribute,group,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
 	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep g3_group_attribute";
 	$dsc_sng="(Groups) Modify attribute for group (input relative name)";
 	$tst_cmd[2]="Group attribute 0: g3_group_attribute, size = 9 NC_CHAR, value = new_value";
@@ -365,7 +365,20 @@ print "\n";
 	$tst_cmd[2]="rlev attribute 0: purpose, size = 9 NC_CHAR, value = new_value";
 	$tst_cmd[3]="SS_OK";
 	NCO_bm::tst_run(\@tst_cmd);
-	$#tst_cmd=0; # Reset array	
+	$#tst_cmd=0; # Reset array
+
+#ncatted #11
+
+	$tst_cmd[0]="ncatted -O $nco_D_flg -a Conventions,group,m,c,new_value $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -M %tmp_fl_00% | grep Conventions";
+	$dsc_sng="(Groups) Modify global attribute";
+	$tst_cmd[2]="Group attribute 0: Conventions, size = 9 NC_CHAR, value = new_value";
+	$tst_cmd[3]="SS_OK";
+	NCO_bm::tst_run(\@tst_cmd);
+	$#tst_cmd=0; # Reset array		
+
+
+	
     } # $HAVE_NETCDF4_H	
     }
     

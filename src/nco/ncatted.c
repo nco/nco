@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.174 2013-10-29 01:07:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.175 2013-11-01 00:09:59 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.174 2013-10-29 01:07:42 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.174 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.175 2013-11-01 00:09:59 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.175 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -424,9 +424,12 @@ main(int argc,char **argv)
       (void)nco_aed_prc_var_xtr(nc_id,aed_lst[idx_aed],trv_tbl_rx);
       trv_tbl_free(trv_tbl_rx);
       var_lst_in=nco_sng_lst_free(var_lst_in,var_lst_in_nbr);
+    }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"group")){
+      /* Variable name indicates a group attribute ... */
+      (void)nco_aed_prc_grp(nc_id,aed_lst[idx_aed],trv_tbl);
     }else if(!strcasecmp(aed_lst[idx_aed].var_nm,"global")){
       /* Variable name indicates a global attribute ... */
-      (void)nco_aed_prc_grp(nc_id,aed_lst[idx_aed],trv_tbl);
+      (void)nco_aed_prc_glb(nc_id,aed_lst[idx_aed],trv_tbl);
     }else{ 
       /* Variable is a normal variable ... */
       /* Inquire if any variable matches (absolute, relative)  */
