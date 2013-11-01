@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1034 2013-11-01 00:09:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1035 2013-11-01 01:01:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7229,6 +7229,10 @@ nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
   /* Only used by ncatted */
   assert(nco_prg_id_get() == ncatted);
 
+
+
+
+
   /* Loop table */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     /* Is group */
@@ -7355,6 +7359,8 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
 
   var_fnd=False;
 
+  /* Assume name is for variable */
+
   /* Loop table (absolute name) */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     trv_sct trv=trv_tbl->lst[tbl_idx];
@@ -7385,6 +7391,37 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
       var_fnd=True;
     } /* Is variable */
   } /* Loop table */ 
+
+
+  /* Try name for group */
+
+  /* Loop table (absolute name) */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_sct trv=trv_tbl->lst[tbl_idx];
+    /* Group name match */
+    if(trv.nco_typ == nco_obj_typ_grp && strcmp(aed.var_nm,trv.nm_fll) == 0){
+      /* Get group ID */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      /* Process attribute */
+      (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      /* Only 1 match possible, return */
+      return;
+    } /* Is variable */
+  } /* Loop table */ 
+
+  /* Loop table (relative name, can be many) */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    trv_sct trv=trv_tbl->lst[tbl_idx];
+    /* Group name (relative) match */
+    if(trv.nco_typ == nco_obj_typ_grp && strcmp(aed.var_nm,trv.nm) == 0){
+      /* Get group ID */
+      (void)nco_inq_grp_full_ncid(nc_id,trv.grp_nm_fll,&grp_id);
+      /* Process attribute */
+      (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      var_fnd=True;
+    } /* Is variable */
+  } /* Loop table */ 
+
 
   if(!var_fnd){
     (void)fprintf(stderr,"%s: Variable <%s> was not found\n",nco_prg_nm_get(),aed.var_nm);
