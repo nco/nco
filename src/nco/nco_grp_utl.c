@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1035 2013-11-01 01:01:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1036 2013-11-01 18:51:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7181,41 +7181,6 @@ nco_obj_usr_sng                       /* [fnc] Parse input string and return tab
 
 } /* nco_obj_usr_sng() */
 
-trv_sct *                             /* O [sct] Table object */
-nco_var_usr_sng                       /* [fnc] Parse input string and return table variable */
-(const char * const usr_sng,          /* I [sng] Variable name (relative or absolute) */
- const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */ 
-{
-  /* Purpose: Parse input string and return table object */
-
-  /* Only used by ncatted */
-  assert(nco_prg_id_get() == ncatted);
-
-  /* Try absolute match */
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Match absolute name */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm_fll) == 0){
-      return &trv_tbl->lst[tbl_idx];
-    } /* Match name */
-  } /* Loop table */ 
-
-  /* Try relative match */
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Match relative name */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && strcmp(usr_sng,trv_tbl->lst[tbl_idx].nm) == 0){
-      return &trv_tbl->lst[tbl_idx];
-    } /* Match name */
-  } /* Loop table */ 
-
-
-  return NULL;
-
-} /* nco_var_usr_sng() */
-
 void                                  
 nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
 (const int nc_id,                     /* I [id] netCDF file ID */
@@ -7226,12 +7191,10 @@ nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
 
   int grp_id; /* [id] Group ID */
 
+  nco_bool var_fnd=False; /* [flg] Variable was found */
+
   /* Only used by ncatted */
   assert(nco_prg_id_get() == ncatted);
-
-
-
-
 
   /* Loop table */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
@@ -7241,8 +7204,14 @@ nco_aed_prc_grp                       /* [fnc] Process attributes in groups */
       (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
       /* Process attribute */
       (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      var_fnd=True;
     } /* Is group */
   } /* Loop table */ 
+
+  if(!var_fnd){
+    (void)fprintf(stderr,"%s: No attributes were found\n",nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } 
 
   return;
 
@@ -7259,6 +7228,8 @@ nco_aed_prc_glb                       /* [fnc] Process attributes in root group 
 
   int grp_id; /* [id] Group ID */
 
+  nco_bool var_fnd=False; /* [flg] Variable was found */
+
   /* Only used by ncatted */
   assert(nco_prg_id_get() == ncatted);
 
@@ -7270,8 +7241,14 @@ nco_aed_prc_glb                       /* [fnc] Process attributes in root group 
       (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
       /* Process attribute */
       (void)nco_aed_prc(grp_id,NC_GLOBAL,aed);
+      var_fnd=True;
     } /* Is group */
   } /* Loop table */ 
+
+  if(!var_fnd){
+    (void)fprintf(stderr,"%s: Attribute was not found\n",nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } 
 
   return;
 
@@ -7288,6 +7265,8 @@ nco_aed_prc_var                       /* [fnc] Process attributes in variables *
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
 
+  nco_bool var_fnd=False; /* [flg] Variable was found */
+
   /* Only used by ncatted */
   assert(nco_prg_id_get() == ncatted);
 
@@ -7301,8 +7280,14 @@ nco_aed_prc_var                       /* [fnc] Process attributes in variables *
       (void)nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
       /* Process attribute */
       (void)nco_aed_prc(grp_id,var_id,aed);
+      var_fnd=True;
     } /* Is variable */
   } /* Loop table */ 
+
+  if(!var_fnd){
+    (void)fprintf(stderr,"%s: No attributes were found\n",nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } 
 
   return;
 
@@ -7320,6 +7305,8 @@ nco_aed_prc_var_xtr                   /* [fnc] Process attributes in variables t
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
 
+  nco_bool var_fnd=False; /* [flg] Variable was found */
+
   /* Only used by ncatted */
   assert(nco_prg_id_get() == ncatted);
 
@@ -7334,8 +7321,14 @@ nco_aed_prc_var_xtr                   /* [fnc] Process attributes in variables t
       (void)nco_inq_varid(grp_id,trv.nm,&var_id);
       /* Process attribute */
       (void)nco_aed_prc(grp_id,var_id,aed);
+      var_fnd=True;
     } /* Is variable */
   } /* Loop table */ 
+
+  if(!var_fnd){
+    (void)fprintf(stderr,"%s: No attributes were found\n",nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } 
 
   return;
 
@@ -7352,12 +7345,10 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
   int grp_id; /* [id] Group ID */
   int var_id; /* [id] Variable ID */
 
-  nco_bool var_fnd; /* [flg] Variable as found */
+  nco_bool var_fnd=False; /* [flg] Variable was found */
 
   /* Only used by ncatted */
   assert(nco_prg_id_get() == ncatted);
-
-  var_fnd=False;
 
   /* Assume name is for variable */
 
