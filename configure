@@ -17532,9 +17532,6 @@ echo "#################################"
 echo "#  Test for netCDF4 support     #"
 echo "#################################"
 
-#echo "DEBUG: Before netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
-#echo "DEBUG: Before netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
-#echo "DEBUG: Before netCDF4 section LDFLAGS = ${LDFLAGS}"
 # Check whether --enable-netcdf4 was given.
 if test "${enable_netcdf4+set}" = set; then :
   enableval=$enable_netcdf4; enable_netcdf4=${enableval}
@@ -19119,7 +19116,14 @@ else
 fi
 
 if test "${enable_gsl}" = 'yes'; then
-    if which gsl-config > /dev/null; then
+
+    if test "${GSL_ROOT}"; then
+	GSL_CONFIG="${GSL_ROOT}/bin/gsl-config"
+	else
+	GSL_CONFIG='gsl-config'
+	fi
+
+    if which ${GSL_CONFIG} > /dev/null; then
 	enable_gsl='yes'
     else
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Did not find 'gsl-config' command in your default path" >&5
@@ -19270,7 +19274,7 @@ else
   ENABLE_GSL_FALSE=
 fi
 
-echo "DEBUG: After GSL tests LIBS = ${LIBS}"
+#echo "DEBUG: After GSL tests LIBS = ${LIBS}"
 # This would activate conditional GSL tests, if there were any
 # AM_CONDITIONAL(TEST_GSL,[test "${enable_gsl}" = 'yes'])
 # End GSL
@@ -20014,7 +20018,7 @@ if test "${enable_optimize_custom}" = 'yes'; then
 
 $as_echo "#define ENABLE_OPTIMIZE_CUSTOM 1" >>confdefs.h
 
-    echo "DEBUG: x\$CC=x${CC},  x\$GCC=x${GCC}"
+    #echo "DEBUG: x\$CC=x${CC},  x\$GCC=x${GCC}"
     if (test "x${GCC}" = 'xyes'); then
 # fxm: TODO #303 go through GCC manual and add more speedy flags
 # Until then, GCC has interesting property that --enable-optimize-custom flags equal --enable-optimize-debug flags!
@@ -20220,7 +20224,7 @@ echo "###############################"
 echo "#    Require Shared Libs?     #"
 echo "###############################"
 # If --enable-shared define ENABLE_SHARED
-echo "DEBUG: enable_shared: ${enable_shared} "
+#echo "DEBUG: enable_shared: ${enable_shared} "
 if (test "${enable_shared}" = 'yes'); then
 
 $as_echo "#define ENABLE_SHARED 1" >>confdefs.h
@@ -20284,7 +20288,7 @@ done
 test -n "$have_makeinfo" || have_makeinfo="no"
 
 
-echo "DEBUG: have_makeinfo  = ${have_makeinfo}"
+#echo "DEBUG: have_makeinfo  = ${have_makeinfo}"
 
 # Begin config
 #AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
@@ -20309,7 +20313,7 @@ if test "${enable_ncoxx}" = 'yes'  \
 else
     NCOXX=""
 fi
-echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
+#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
 
 
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.19 2013-10-26 01:34:10 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.20 2013-11-02 08:59:53 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -264,9 +264,6 @@ echo "#################################"
 echo "#  Test for netCDF4 support     #"
 echo "#################################"
 
-#echo "DEBUG: Before netCDF4 section NETCDF_ROOT = ${NETCDF_ROOT}"
-#echo "DEBUG: Before netCDF4 section NETCDF4_ROOT = ${NETCDF4_ROOT}"
-#echo "DEBUG: Before netCDF4 section LDFLAGS = ${LDFLAGS}"
 AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4 features (same as enable-netcdf-4) [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=yes)
 # 20100105: make --enable-netcdf-4 synonym for --enable-netcdf4
 if test "x${enable_netcdf4}" = 'xno' ; then
@@ -545,7 +542,14 @@ nco_LIBS_no_GSL="${LIBS}"
 nco_CPPFLAGS_no_GSL="${CPPFLAGS}"
 AC_ARG_ENABLE(gsl,AS_HELP_STRING([--enable-gsl],[Build-in GSL support if possible [[default=yes]]]),enable_gsl=${enableval},enable_gsl=yes)
 if test "${enable_gsl}" = 'yes'; then
-    if which gsl-config > /dev/null; then
+
+    if test "${GSL_ROOT}"; then
+	GSL_CONFIG="${GSL_ROOT}/bin/gsl-config"
+	else
+	GSL_CONFIG='gsl-config'
+	fi
+
+    if which ${GSL_CONFIG} > /dev/null; then
 	enable_gsl='yes'
     else
 	AC_MSG_NOTICE([WARNING: Did not find 'gsl-config' command in your default path])
@@ -600,7 +604,7 @@ if test "${enable_gsl}" != 'no'; then
     fi
 fi
 AM_CONDITIONAL(ENABLE_GSL,[test "${enable_gsl}" = 'yes'])
-echo "DEBUG: After GSL tests LIBS = ${LIBS}"
+#echo "DEBUG: After GSL tests LIBS = ${LIBS}"
 # This would activate conditional GSL tests, if there were any
 # AM_CONDITIONAL(TEST_GSL,[test "${enable_gsl}" = 'yes'])
 # End GSL
@@ -912,7 +916,7 @@ fi
 AC_ARG_ENABLE(optimize-custom,AS_HELP_STRING([--enable-optimize-custom],[Activate all known, helpful switches for fastest possible run-time performance (slowest compilation) [[default=no]]]),enable_optimize_custom=${enableval},enable_optimize_custom=no)
 if test "${enable_optimize_custom}" = 'yes'; then
     AC_DEFINE(ENABLE_OPTIMIZE_CUSTOM,1,Fastest possible execution (slowest compilation))
-    echo "DEBUG: x\$CC=x${CC},  x\$GCC=x${GCC}"
+    #echo "DEBUG: x\$CC=x${CC},  x\$GCC=x${GCC}"
     if (test "x${GCC}" = 'xyes'); then
 # fxm: TODO #303 go through GCC manual and add more speedy flags
 # Until then, GCC has interesting property that --enable-optimize-custom flags equal --enable-optimize-debug flags!
@@ -1078,7 +1082,7 @@ echo "###############################"
 echo "#    Require Shared Libs?     #"
 echo "###############################"
 # If --enable-shared define ENABLE_SHARED
-echo "DEBUG: enable_shared: ${enable_shared} "
+#echo "DEBUG: enable_shared: ${enable_shared} "
 if (test "${enable_shared}" = 'yes'); then
     AC_DEFINE(ENABLE_SHARED,1,Enable shared libraries)
 fi
@@ -1096,7 +1100,7 @@ fi
 # AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
 AC_CHECK_PROGS(have_makeinfo,[makeinfo],no,${PATH},[]) 
 
-echo "DEBUG: have_makeinfo  = ${have_makeinfo}"
+#echo "DEBUG: have_makeinfo  = ${have_makeinfo}"
 
 # Begin config
 #AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
@@ -1118,7 +1122,7 @@ if test "${enable_ncoxx}" = 'yes'  \
 else
     NCOXX=""
 fi
-echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
+#echo "DEBUG: enable_ncoxx: ${enable_ncoxx} and NCOXX = ${NCOXX}"
 
 AC_SUBST(NCOXX)
 
