@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.70 2013-06-14 02:56:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.71 2013-11-02 22:35:27 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -120,7 +120,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
  int * const nbr_var_fix, /* O [nbr] Number of fixed variables */
  var_sct *** const var_prc_ptr, /* O [sct] Processed-variables (input file) */
  var_sct *** const var_prc_out_ptr, /* O [sct] Processed-variables (output file) */
- int * const nbr_var_prc); /* O [nbr] Number of processed variables */
+ int * const nbr_var_prc, /* O [nbr] Number of processed variables */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 int /* O [enm] Return code */
 nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */

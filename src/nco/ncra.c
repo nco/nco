@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.420 2013-10-29 21:04:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.421 2013-11-02 22:35:27 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.420 2013-10-29 21:04:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.420 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.421 2013-11-02 22:35:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.421 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -226,6 +226,10 @@ main(int argc,char **argv)
   int grp_out_id;    /* [ID] Group ID (output) */
   int var_out_id;    /* [ID] Variable ID (output) */
   int nbr_rec;       /* [nbr] Number of records to process */
+  int mbr_idx;       /* [idx] Counting index for member */
+  int nsm_idx;       /* [idx] Counting index for ensemble */
+  int mbr_nbr=0;     /* [nbr] Number of members of ensemble */
+  int nsm_nbr=0;     /* [nbr] Number of ensembles */
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
 
@@ -637,7 +641,7 @@ main(int argc,char **argv)
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
-  } /* end loop ovar xtr */
+  } /* end loop over xtr */
 
   /* Refresh var_out with dim_out data */
   (void)nco_var_dmn_refresh(var_out,xtr_nbr);
@@ -646,7 +650,7 @@ main(int argc,char **argv)
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc,trv_tbl);
 
   /* Store processed and fixed variables info into GTT */
   (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc,nbr_var_fix,var_fix,trv_tbl);
@@ -1043,18 +1047,20 @@ main(int argc,char **argv)
         /* End ncea section */
       }else if(nco_prg_id == nces){ /* nces */
 
-        int mbr_idx; /* [idx] Counting index for member */
-        int nsm_idx; /* [idx] Counting index for ensemble */
-        int mbr_nbr=0; /* [nbr] Number of members of ensemble */
-        int nsm_nbr=0; /* [nbr] Number of ensembles */
-
+        nsm_nbr=trv_tbl->nsm_nbr;
+        
         for(nsm_idx=0;nsm_idx<nsm_nbr;nsm_idx++){ /* Loop over ensembles in current file */
+          mbr_nbr=trv_tbl->nsm[nsm_idx].mbr_nbr;
           for(mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
 
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(nco_dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id)
 #endif /* !_OPENMP */
             for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+
+              if(nco_dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: DEBUG processing variable <%s>\n",nco_prg_nm_get(),var_prc[idx]->nm_fll);             
+              }
 
               in_id=in_id_arr[omp_get_thread_num()];
               if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.158 2013-10-29 21:58:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.159 2013-11-02 22:35:27 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -857,7 +857,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
  int * const nbr_var_fix, /* O [nbr] Number of fixed variables */
  var_sct *** const var_prc_ptr, /* O [sct] Processed-variables (input file) */
  var_sct *** const var_prc_out_ptr, /* O [sct] Processed-variables (output file) */
- int * const nbr_var_prc) /* O [nbr] Number of processed variables */
+ int * const nbr_var_prc, /* O [nbr] Number of processed variables */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
   /* Purpose: Divide two input lists into output lists based on program type */
 
@@ -880,6 +881,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   var_sct **var_prc;
   var_sct **var_prc_out;
 
+  trv_sct *var_trv; /* [sct] GTT variable */
+
   nco_prg_id=nco_prg_id_get(); /* Program key */
 
   /* Allocate space for too many structures first then realloc() appropriately
@@ -894,8 +897,15 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   /* Find operation type for each variable: for now this is either fix or prc */
   for(idx=0;idx<nbr_var;idx++){
 
-    /* Initialize operation type to processed. Change to fixed where warranted later. */
-    var_op_typ[idx]=prc_typ;
+    /* nces case */
+    if (nco_prg_id == nces){
+      /* Mark all variables as fixed and later detect ensemble variable in table to mark as processed */
+      var_op_typ[idx]=fix_typ;
+    }else{
+      /* Initialize operation type to processed. Change to fixed where warranted later. */
+      var_op_typ[idx]=prc_typ;
+    } /* ! nces case */
+
     var_nm=var[idx]->nm;
     var_typ=var[idx]->type;
     /* Until 20131005, NCO default was to consider NC_BYTE and NC_UBYTE as funky, too */
@@ -939,7 +949,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
       break;
     case nces:
-      /* TO_DO */
+      /* Obtain variable GTT object using full variable name */
+      var_trv=trv_tbl_var_nm_fll(var[idx]->nm_fll,trv_tbl);
+      /* If variable is ensemble member group, mark as processed */
+      if (var_trv->flg_nsm_mbr && var_trv->nco_typ == nco_obj_typ_var){
+        var_op_typ[idx]=prc_typ;
+      }
       break;
     case ncrcat:
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
@@ -1062,7 +1077,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
   /* fxm: Remove ncap exception when finished with ncap list processing */
   /* fxm: ncpdq processes all variables when packing requested */
-  if(*nbr_var_prc == 0 && nco_prg_id != ncap && nco_prg_id != ncpdq){
+  if(*nbr_var_prc == 0 && nco_prg_id != ncap && nco_prg_id != ncpdq && nco_prg_id != nces){
     (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",nco_prg_nm_get());
     switch(nco_prg_id){
     case ncap:
