@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.66 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/fmc_gsl_cls.cc,v 1.67 2013-11-02 01:14:16 pvicente Exp $ */
 
 /* Purpose: netCDF arithmetic processor class methods for GSL */
 
@@ -5047,7 +5047,7 @@ int gsl_dmm_stb(void){return 1;}
  
 #endif // !ENABLE_GSL
 
-
+#ifdef ENABLE_GSL
 // nco_gsl 
 nco_gsl_cls::nco_gsl_cls(bool  flg_dbg)
 {
@@ -5296,6 +5296,6 @@ var_sct *nco_gsl_cls::fit_fnd(bool &is_mtd,std::vector<RefAST> &vtr_args,fmc_cls
   // return status flag
   return ncap_sclr_var_mk("~nco_gsl_cls",(nco_int)ret);   
 } // end nco_gsl_cls::fit_fnd 
-
+#endif // !ENABLE_GSL
 
 

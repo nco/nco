@@ -446,7 +446,7 @@ public:
 
 #endif // !ENABLE_GSL
 
-// nco_gsl (no GSL lib/headers required )
+#ifdef ENABLE_GSL
 class nco_gsl_cls: public vtl_cls 
 {
 private:
@@ -458,6 +458,6 @@ public:
   var_sct *fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &walker);
   var_sct *fit_fnd(bool &is_mtd,std::vector<RefAST> &args_vtr,fmc_cls &fmc_obj,ncoTree &walker);   
 };
-
+#endif // !ENABLE_GSL
 
 #endif // FMC_GSL_CLS_HH
