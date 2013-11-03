@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.233 2013-10-31 01:41:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.234 2013-11-03 03:50:25 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -54,6 +54,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
     tbl->lst[idx].grp_nm_fll_prn=(char *)nco_free(tbl->lst[idx].grp_nm_fll_prn);
+    tbl->lst[idx].nsm_nm=(char *)nco_free(tbl->lst[idx].nsm_nm);
     tbl->lst[idx].rec_dmn_nm_out=(char *)nco_free(tbl->lst[idx].rec_dmn_nm_out);
     tbl->lst[idx].hsh_key=(char *)nco_free(tbl->lst[idx].hsh_key);
 
@@ -758,6 +759,7 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
 void
 trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const char * const grp_nm_fll_prn,   /* I [sng] Parent group full name (key for ensemble) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
 #ifdef NCO_HSH_TRV_OBJ
@@ -766,7 +768,10 @@ trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in tabl
   if(trv_obj) trv_obj->flg_nsm_mbr=True;
 #else /* !NCO_HSH_TRV_OBJ */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0) trv_tbl->lst[uidx].flg_nsm_mbr=True;
+    if(strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
+      trv_tbl->lst[uidx].flg_nsm_mbr=True;
+      trv_tbl->lst[uidx].nsm_nm=strdup(grp_nm_fll_prn);
+    }
 #endif /* !NCO_HSH_TRV_OBJ */
 
   return;

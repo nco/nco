@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.422 2013-11-03 03:11:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.423 2013-11-03 03:50:25 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.422 2013-11-03 03:11:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.422 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.423 2013-11-03 03:50:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.423 $";
   const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1047,54 +1047,63 @@ main(int argc,char **argv)
         /* End ncea section */
       }else if(nco_prg_id == nces){ /* nces */
 
-        nsm_nbr=trv_tbl->nsm_nbr;      
-        
+        nsm_nbr=trv_tbl->nsm_nbr;
+
         for(nsm_idx=0;nsm_idx<nsm_nbr;nsm_idx++){ /* Loop over ensembles in current file */
           mbr_nbr=trv_tbl->nsm[nsm_idx].mbr_nbr;
           for(mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
-            char **nm_lst; /* [sng] List of names */
-            int nm_lst_nbr;/* [nbr] Number of items in list */
-            /* Get group full name */
-            char *grp_nm_fll=trv_tbl->nsm[nsm_idx].mbr_nm[mbr_idx];
-            /* Export list of variable (relative) names for group */
-            (void)nco_grp_var_lst(in_id,grp_nm_fll,&nm_lst,&nm_lst_nbr);
 
-            /* Process all variables */
-            for(int idx_nm=0;idx_nm<nm_lst_nbr;idx_nm++){
-              /* Allocate path buffer and include space for trailing NUL */ 
-              char *var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(nm_lst[idx_nm])+2L);
-              /* Initialize path with current absolute group path */
-              strcpy(var_nm_fll,grp_nm_fll);
-              /* If not root group, concatenate separator */
-              if(strcmp(grp_nm_fll,"/")) strcat(var_nm_fll,"/");
-              /* Concatenate variable to absolute group path */
-              strcat(var_nm_fll,nm_lst[idx_nm]);
-
-              /* Obtain variable GTT object using full variable name */
-              var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
-              /* Obtain group ID using full group name */
-              (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-              /* Edit group name for output */
-              if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
-              /* Obtain output group ID using full group name */
-              (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
-              /* Memory management after current extracted group */
-              if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-              /* Get variable ID */
-              (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(idx,in_id) shared(nco_dbg_lvl,nsm_idx,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id)
+#endif /* !_OPENMP */
+            for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 
               if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(stdout,"%s: DEBUG processing variable <%s>\n",nco_prg_nm_get(),var_nm_fll);             
+                (void)fprintf(stdout,"%s: DEBUG processing variable <%s>\n",nco_prg_nm_get(),var_prc[idx]->nm_fll);             
               }
 
+              in_id=in_id_arr[omp_get_thread_num()];
+              if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+              if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
-              /* Free */
-              var_nm_fll=(char *)nco_free(var_nm_fll);
-            } /* Process all variables */
+              /* Obtain variable GTT object using full variable name */
+              var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
-            /* Free list */
-            for(int idx_nm=0;idx_nm<nm_lst_nbr;idx_nm++) nm_lst[idx_nm]=(char *)nco_free(nm_lst[idx_nm]);
-            nm_lst=(char **)nco_free(nm_lst);
+              /* Variable is part of sensemble, do ensemble statistics */
+              if( strcmp(var_trv->nsm_nm,trv_tbl->nsm[nsm_idx].grp_nm_fll_prn) == 0){
+
+                /* Obtain group ID using full group name */
+                (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+                /* Edit group name for output */
+                if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+                /* Obtain output group ID using full group name */
+                (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+                /* Memory management after current extracted group */
+                if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+                /* Get variable ID */
+                (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+                /* Store the output variable ID */
+                var_prc_out[idx]->id=var_out_id;
+
+                /* Retrieve variable from disk into memory */
+                (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
+
+                /* Convert char, short, long, int types to doubles before arithmetic
+                Output variable type is "sticky" so only convert on first record */
+                if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+                var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
+                /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
+                nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+                FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
+
+                /* Free current input buffer */
+                var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+
+              }else { /* Variable is part of sensemble, do ensemble statistics */
+                continue;
+              } /* ! Variable is part of sensemble, do ensemble statistics */
+            } /* end (OpenMP parallel for) loop over idx */
 
           } /* end loop over members of current ensemble */
         } /* end loop over ensembles in current file */

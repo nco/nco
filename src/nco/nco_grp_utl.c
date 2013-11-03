@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1037 2013-11-03 03:11:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1038 2013-11-03 03:50:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1935,7 +1935,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (nces) Parent group full name */         
   else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
   trv_tbl->lst[idx].flg_nsm_prn=False;            /* [flg] (nces) Group is, or variable is in, ensemble parent group */
-  trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] Group is, or variable is in, ensemble member group */ 
+  trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] (nces ) Group is, or variable is in, ensemble member group */  
+  trv_tbl->lst[idx].nsm_nm=NULL;                  /* [sng] (nces) Ensemble parent group name i.e., full path to ensemble parent */ 
 
   /* Variable dimensions  */
   for(int idx_dmn_var=0;idx_dmn_var<NC_MAX_DIMS;idx_dmn_var++){
@@ -2033,6 +2034,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
     trv_tbl->lst[idx].flg_nsm_prn=False;
     trv_tbl->lst[idx].flg_nsm_mbr=False;
+    trv_tbl->lst[idx].nsm_nm=NULL;
 
     /* Variable dimensions */
     for(int idx_dmn_var=0;idx_dmn_var<NC_MAX_DIMS;idx_dmn_var++){
@@ -7622,7 +7624,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   /* Concatenate variable to absolute group path */
                   strcat(var_nm_fll,cmn_lst[idx_nm].var_nm_fll);
                   /* Mark ensemble member flag in table for "var_nm_fll" */
-                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,trv_tbl); 
+                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,trv_1.grp_nm_fll_prn,trv_tbl); 
                   
                   if(nco_dbg_lvl_get() >= nco_dbg_dev){
                     (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,var_nm_fll);             
