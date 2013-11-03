@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1036 2013-11-01 18:51:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1037 2013-11-03 03:11:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7622,11 +7622,13 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   /* Concatenate variable to absolute group path */
                   strcat(var_nm_fll,cmn_lst[idx_nm].var_nm_fll);
                   /* Mark ensemble member flag in table for "var_nm_fll" */
-                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,trv_tbl);  
-
+                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,trv_tbl); 
+                  
                   if(nco_dbg_lvl_get() >= nco_dbg_dev){
                     (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,var_nm_fll);             
                   }
+                  /* Free */
+                  var_nm_fll=(char *)nco_free(var_nm_fll);
 
                 } /* Mark variables as ensemble members */
               } /* Not inserted */
