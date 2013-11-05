@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.896 2013-11-04 20:51:46 pvicente Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.897 2013-11-05 23:06:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6200,7 +6200,7 @@ Operators which may benefit from RAM disks include @command{ncwa}, which
 may need to read weighting variables multiple times, the multi-file 
 operators @command{ncra}, @command{ncrcat}, and @command{ncecat},
 which may try to write output at least once per input file, and
-p@command{ncap2} scripts which may be arbitrarily long and convoluted. 
+@command{ncap2} scripts which may be arbitrarily long and convoluted. 
 
 The @samp{--open_ram} switch causes input files to copied to RAM when
 opened. 
