@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.901 2013-11-06 19:56:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.902 2013-11-06 23:12:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2216,6 +2216,9 @@ Hence, the sustained memory required for integer variables and
 single-precision floats are two or four-times their on-disk,
 uncompressed, unpacked sizes if they meet the rules for automatic
 internal promotion. 
+Put another way, disabling auto-promotion of single-precision variables
+(with @samp{--flt}) considerably reduces the @acronym{RAM} footprint 
+of arithmetic operators.
 
 The @samp{--open_ram} switch (and switches that invoke it like
 @samp{--ram_all} and @samp{--diskless_all}) incurs a @acronym{RAM}
