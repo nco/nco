@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1039 2013-11-06 01:37:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1040 2013-11-06 23:20:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1766,7 +1766,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
         ncks -O  -v two_dmn_rec_var in_grp.nc out.nc
 
-        nco_cpy_var_dfn_trv() defines new dimesions for the file, as
+        nco_cpy_var_dfn_trv() defines new dimensions for the file, as
 
         ID=0 index [0]:</time> 
         ID=1 index [1]:</lev> 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.427 2013-11-06 17:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.428 2013-11-06 23:20:01 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.427 2013-11-06 17:51:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.427 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.428 2013-11-06 23:20:01 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.428 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1099,9 +1099,9 @@ main(int argc,char **argv)
                 /* Free current input buffer */
                 var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 
-              }else { /* Variable is part of sensemble, do ensemble statistics */
+              }else { /* Variable is part of ensemble, do ensemble statistics */
                 continue;
-              } /* ! Variable is part of sensemble, do ensemble statistics */
+              } /* ! Variable is part of ensemble, do ensemble statistics */
             } /* end (OpenMP parallel for) loop over idx */
 
           } /* end loop over members of current ensemble */
@@ -1164,8 +1164,15 @@ main(int argc,char **argv)
 
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var_prc_out[idx]->nm_fll,trv_tbl);
-      /* Edit group name for output */
-      if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+
+      /* For nces, group to save is ensemble parent group */
+      if(nco_prg_id == nces){
+        grp_out_fll=(char *)strdup(var_trv->nsm_nm);
+      }else if(nco_prg_id == ncea){
+        /* Edit group name for output */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+      }
+     
       /* Obtain output group ID using full group name */
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
       /* Memory management after current extracted group */
