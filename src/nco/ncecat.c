@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.342 2013-11-02 22:35:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.343 2013-11-06 17:51:13 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,9 +124,9 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.342 2013-11-02 22:35:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.342 $";
-  const char * const opt_sht_lst="346ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.343 2013-11-06 17:51:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.343 $";
+  const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -375,6 +375,9 @@ main(int argc,char **argv)
       break;
     case '6': /* Request netCDF3 64-bit offset output storage format */
       fl_out_fmt=NC_FORMAT_64BIT;
+      break;
+    case '7': /* Request netCDF4-classic output storage format */
+      fl_out_fmt=NC_FORMAT_NETCDF4_CLASSIC;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

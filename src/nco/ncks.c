@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.669 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.670 2013-11-06 17:51:13 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -154,9 +154,9 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.669 2013-10-22 03:03:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.669 $";
-  const char * const opt_sht_lst="3456aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.670 2013-11-06 17:51:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.670 $";
+  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -289,6 +289,7 @@ main(int argc,char **argv)
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
       {"netcdf4",no_argument,0,'4'},
+      {"7",no_argument,0,'7'},
       {"abc",no_argument,0,'a'},
       {"alphabetize",no_argument,0,'a'},
       {"append",no_argument,0,'A'},
@@ -495,6 +496,9 @@ main(int argc,char **argv)
       break;
     case '6': /* Request netCDF3 64-bit offset output storage format */
       fl_out_fmt=NC_FORMAT_64BIT;
+      break;
+    case '7': /* Request netCDF4-classic output storage format */
+      fl_out_fmt=NC_FORMAT_NETCDF4_CLASSIC;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

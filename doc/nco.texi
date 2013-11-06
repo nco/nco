@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.898 2013-11-06 03:33:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.899 2013-11-06 17:51:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1230,25 +1230,32 @@ Converting @acronym{HDF4} files to netCDF:
 Since @acronym{NCO} reads @acronym{HDF4} files natively, it is now easy  
 to convert @acronym{HDF4} files to netCDF4 files directly, e.g.,
 @example
-ncks --hdf4 fl.hdf fl.nc      # Convert HDF4->netCDF
-ncks --hdf4 -L 1 fl.hdf fl.nc # Convert HDF4->netCDF with compression
+ncks --hdf4 fl.hdf fl.nc      # Convert HDF4->netCDF4
+ncks --hdf4 -L 1 fl.hdf fl.nc # Convert HDF4->netCDF4 with compression
 @end example
 This produces a netCDF4 file not a netCDF3 file.
-To obtain a netCDF3 file from an @acronym{HDF4} file is more arduous. 
-There can be no netCDF4 atomic types in a netCDF3 file.
-And @acronym{HDF4} producers like @acronym{NASA} love to use netCDF4
+Obtaining a netCDF3 file from an @acronym{HDF4} file can be easy or
+arduous, depending whether the input contains any netCDF4 atomic types
+(e.g., unsigned bytes, 64-bit integers):
+@example
+ncks --hdf4 -3 fl.hdf fl.nc      # HDF4->netCDF3
+ncks --hdf4 -7 -L 1 fl.hdf fl.nc # HDF4->netCDF4 classic with compression
+@end example
+These commands work only if the input has no netCDF4 atomic types.
+Many @acronym{HDF4} producers (@acronym{NASA}!) love to use netCDF4
 types, e.g., unsigned bytes. 
-So to get a netCDF3 file one must first convert to netCDF4 then use a
-tool like @command{ncap2} to convert all netCDF4 types to netCDF3
+So to get a netCDF3 file from an HDF4 file that @emph{does} contain
+netCDF4 atomic types, one must first convert to netCDF4 then use a
+tool like @command{ncap2} to convert any netCDF4 types to netCDF3
 types. 
 No one wants to do that. 
 Instead we recommend the @command{ncl_convert2nc} tool to convert
 @acronym{HDF} to netCDF3 when both these are true: @w{1. You} must have
 netCDF3 and @w{2. the} @acronym{HDF} file contains netCDF4 atomic
 types. 
-Otherwise use @command{ncks}. 
-@command{ncl_convert2nc} automatically converts netCDF4 types to netCDF3 
-types, yet it will not produce full netCDF4 files.
+Otherwise use @command{ncks} which is faster and more space-efficient.
+Moreover, @command{ncl_convert2nc} automatically converts netCDF4 types
+to netCDF3  types, yet it will not produce full netCDF4 files.
 In contrast, @command{ncks} happily converts @acronym{HDF} straight to
 netCDF4 files with netCDF4 types. 
 Hence @command{ncks} can and does preserve the variable types.
@@ -3348,7 +3355,9 @@ when your other preferred methods are not available locally.
 @cindex @code{--3}
 @cindex @code{-3}
 @cindex @code{-4}
+@cindex @code{-7}
 @cindex @code{--4}
+@cindex @code{--7}
 @cindex @code{--netcdf4}
 @cindex @code{--fl_fmt}
 @cindex @code{--file_format}
@@ -3357,8 +3366,8 @@ when your other preferred methods are not available locally.
 Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
-Short options: @samp{-3}, @samp{-4}@*
-Long options: @samp{--3}, @samp{--4}, @samp{--64bit}, @samp{--fl_fmt},
+Short options: @samp{-3}, @samp{-4}, @samp{-7}@*
+Long options: @samp{--3}, @samp{--4}, @samp{--64bit}, @samp{--7}, @samp{--fl_fmt},
 @samp{--netcdf4}@*  
 @end cartouche
 All @acronym{NCO} operators support (read and write) all three (or four, 
@@ -3377,8 +3386,10 @@ netCDF supports four types of files: @code{CLASSIC}, @code{64BIT},
 @code{NETCDF4}, and @code{NETCDF4_CLASSIC}, 
 The @code{CLASSIC} format is the traditional 32-bit offset written by
 netCDF2 and netCDF3.
-As of 2005, most netCDF datasets are in @code{CLASSIC} format. 
+As of 2005, nearly all netCDF datasets were in @code{CLASSIC} format. 
 The @code{64BIT} format was added in Fall, 2004.
+As of 2010, many netCDF datasets were in @code{64BIT} format. 
+As of 2013, many netCDF datasets are in @code{NETCDF4_CLASSIC} format. 
 
 The @code{NETCDF4} format uses @acronym{HDF5} as the file storage layer. 
 The files are (usually) created, accessed, and manipulated using the 
@@ -3388,16 +3399,19 @@ the @code{NC_CLASSIC_MODEL} mask.
 Such files use @acronym{HDF5} as the back-end storage format (unlike
 netCDF3), though they incorporate only netCDF3 features.
 Hence @code{NETCDF4_CLASSIC} files are perfectly readable by
-applications which use only the netCDF3 @acronym{API} and library.
+applications which use only the netCDF3 @acronym{API}.
 @acronym{NCO} must be built with @w{netCDF4} to write files in the new
 @code{NETCDF4} and @code{NETCDF4_CLASSIC} formats, and to read files in
-the new @code{NETCDF4} format. 
-Users are advised to use the default @code{CLASSIC} format or the
-@code{NETCDF4_CLASSIC} format until netCDF4 is more widespread.
-Widespread support for @code{NETCDF4} format files is not expected for 
-a few more years, 2013--2014, say.
-If performance or coolness are issues, then use @code{NETCDF4_CLASSIC}  
-instead of @code{CLASSIC} format files.
+these formats. 
+Datasets in the default @code{CLASSIC} or the newer @code{64BIT} formats
+have maximum backwards-compatibility with older applications. 
+@acronym{NCO} has deep support for @code{NETCDF4} formats, yet many
+applications do not. 
+If performance or disk-space as important as backwards compatibility,
+then use @code{NETCDF4_CLASSIC} instead of @code{CLASSIC} format files. 
+As of 2014, @acronynm{NCO} support for the @code{NETCDF4} format is
+complete and the most powerful and disk/@acronym{RAM} efficient
+workflows will utilize this format.
 
 As mentioned above, all operators write use the input file format for
 output files unless told otherwise.
@@ -3409,12 +3423,19 @@ a @code{64BIT} file.
 Using the @samp{-4} switch (or its long option equivalents
 @samp{--4} or @samp{--netcdf4}), or setting its @var{key}-@var{value}
 equivalent @samp{--fl_fmt=netcdf4} produces a @code{NETCDF4} file
-(i.e., @acronym{HDF}).
-Casual users are advised to use the default (netCDF3) @code{CLASSIC}
-format until @w{netCDF 3.6} and @w{netCDF 4.0} are more widespread.
-Conversely, operators given the @samp{-3} (or @samp{--3}) switch
-without arguments will (attempt to) produce netCDF3 @code{CLASSIC}
-output, even from netCDF4 input files. 
+(i.e., with all supported @acronym{HDF5} features).
+Using the @samp{-7} switch (or its long option equivalent
+@samp{--7}
+@footnote{
+The reason (and mnemonic) for @samp{-7} is that @code{NETCDF4_CLASSIC}
+contains the best of netCDF3 and netCDF4 and, well, @math{3+4=7}.}, or
+setting its @var{key}-@var{value} equivalent
+@samp{--fl_fmt=netcdf4_classic} produces a @code{NETCDF4_CLASSIC}  
+file (i.e., with all supported @acronym{HDF5} features like compression
+and chunking but without groups or new atomic types).
+Operators given the @samp{-3} (or @samp{--3}) switch without arguments
+will (attempt to) produce netCDF3 @code{CLASSIC} output, even from
+netCDF4 input files.  
 
 @html
 <a name="3to4"></a> <!-- http://nco.sf.net/nco.html#3to4 -->
@@ -3432,6 +3453,8 @@ ncks --3 in.nc foo_3c.nc # netCDF3 classic
 ncks --64 in.nc foo_364.nc # netCDF3 64bit
 ncks -4 in.nc foo_4.nc # netCDF4 
 ncks --4 in.nc foo_4.nc # netCDF4 
+ncks -7 in.nc foo_4c.nc # netCDF4 classic
+ncks --7 in.nc foo_4c.nc # netCDF4 classic
 @end example
 Of course since most operators support these switches, the
 ``conversions'' can be done at the output stage of arithmetic
@@ -8008,7 +8031,7 @@ in-depth examples of @command{ncap2} solutions to complex problems.
 @noindent
 SYNTAX
 @example
-ncap2 [-3] [-4] [-6] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] 
+ncap2 [-3] [-4] [-6] [-7] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] 
 [-D @var{dbg}] [-F] [-f] [-h] [--hdf] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}]
 [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
@@ -12043,7 +12066,7 @@ omitted in batch scripts.
 @noindent
 SYNTAX
 @example 
-ncbo [-3] [-4] [-6] [-A] [-C] [-c]
+ncbo [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
@@ -12464,7 +12487,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 SYNTAX
 @example
-ncea [-3] [-4] [-6] [-A] [-C] [-c]
+ncea [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
@@ -12598,7 +12621,7 @@ Additionally, only data inside the tropics is included.
 @noindent
 SYNTAX
 @example
-ncecat [-3] [-4] [-6] [-A] [-C] [-c]
+ncecat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [-h] [--hdf] [--hdr_pad @var{nbr}]
@@ -12855,7 +12878,7 @@ of changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncflint [-3] [-4] [-6] [-A] [-C] [-c]
+ncflint [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
@@ -13117,7 +13140,7 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-3] [-4] [-5] [-6] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
+ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{binary-file}] [-C] [-c] [--cdl]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-H] [-h] [--hdr_pad @var{nbr}]
@@ -14012,7 +14035,7 @@ For more details @xref{Wrapped Coordinates}.
 @noindent
 SYNTAX
 @example
-ncpdq [-3] [-4] [-6] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
+ncpdq [-3] [-4] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}]
@@ -14595,7 +14618,7 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-3] [-4] [-6] [-A] [-C] [-c]
+ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
@@ -14709,7 +14732,7 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncrcat [-3] [-4] [-6] [-A] [-C] [-c]
+ncrcat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{duration}]]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}]
@@ -15058,7 +15081,7 @@ Variables not prefixed with a period (@code{global}) must be present.
 @noindent
 SYNTAX
 @example
-ncwa [-3] [-4] [-6] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
+ncwa [-3] [-4] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdr_pad @var{nbr}] [-I]

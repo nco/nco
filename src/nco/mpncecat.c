@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.114 2013-10-22 03:03:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.115 2013-11-06 17:51:13 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -102,9 +102,9 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.114 2013-10-22 03:03:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.114 $";
-  const char * const opt_sht_lst="346ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.115 2013-11-06 17:51:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.115 $";
+  const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
   
   cnk_sct **cnk=NULL_CEWI;
 
@@ -231,6 +231,7 @@ main(int argc,char **argv)
       {"4",no_argument,0,'4'},
       {"64bit",no_argument,0,'4'},
       {"netcdf4",no_argument,0,'4'},
+      {"7",no_argument,0,'7'},
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"crd",no_argument,0,'c'},
@@ -350,6 +351,9 @@ main(int argc,char **argv)
       break;
     case '6': /* Request netCDF3 64-bit offset output storage format */
       fl_out_fmt=NC_FORMAT_64BIT;
+      break;
+    case '7': /* Request netCDF4-classic output storage format */
+      fl_out_fmt=NC_FORMAT_NETCDF4_CLASSIC;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

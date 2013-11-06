@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.373 2013-11-02 22:35:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.374 2013-11-06 17:51:13 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -120,9 +120,9 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.373 2013-11-02 22:35:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.373 $";
-  const char * const opt_sht_lst="346Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.374 2013-11-06 17:51:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.374 $";
+  const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -376,6 +376,9 @@ main(int argc,char **argv)
       break;
     case '6': /* Request netCDF3 64-bit offset output storage format */
       fl_out_fmt=NC_FORMAT_64BIT;
+      break;
+    case '7': /* Request netCDF4-classic output storage format */
+      fl_out_fmt=NC_FORMAT_NETCDF4_CLASSIC;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.426 2013-11-06 01:37:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.427 2013-11-06 17:51:13 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,9 +165,9 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.426 2013-11-06 01:37:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.426 $";
-  const char * const opt_sht_lst="346ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
+  const char * const CVS_Id="$Id: ncra.c,v 1.427 2013-11-06 17:51:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.427 $";
+  const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
 
@@ -451,6 +451,9 @@ main(int argc,char **argv)
       break;
     case '6': /* Request netCDF3 64-bit offset output storage format */
       fl_out_fmt=NC_FORMAT_64BIT;
+      break;
+    case '7': /* Request netCDF4-classic output storage format */
+      fl_out_fmt=NC_FORMAT_NETCDF4_CLASSIC;
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=True;
