@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.897 2013-11-05 23:06:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.898 2013-11-06 03:33:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1545,8 +1545,8 @@ to be the same as the @var{input-file} without any danger of
 @cindex @code{--write_tmp_fl}
 @cindex @code{--create_ram}
 @cindex @code{--open_ram}
-@cindex RAM disks
-@cindex RAM files
+@cindex @acronym{RAM} disks
+@cindex @acronym{RAM} files
 Over time many ``power users'' have requested a way to turn-off the
 fault-tolerance safety feature of automatically creating a temporary
 file. 
@@ -1569,7 +1569,7 @@ the final output file instead of to an intermediate temporary file.
 When eschewing temporary files, users may forsake the ability to have
 the same name for both @var{output-file} and @var{input-file} since, as   
 described above, the temporary file prevented overlap issues.
-However, if the user creates the output file in RAM (@pxref{RAM disks})
+However, if the user creates the output file in @acronym{RAM} (@pxref{RAM disks})
 then it is still possible to have the same name for both
 @var{output-file} and @var{input-file}.
 @example
@@ -1592,7 +1592,7 @@ However, as of 20130328, the behavior of the @samp{--create_ram} and
 @samp{--open_ram} examples has not been thoroughly tested.
 
 The @acronym{NCO} authors have seen compelling use cases for utilizing
-the RAM switches, but not (yet) for combining them with
+the @acronym{RAM} switches, but not (yet) for combining them with
 @samp{--no_tmp_fl}. 
 @acronym{NCO} implements both options because they are largely
 independent of eachother.
@@ -2112,9 +2112,12 @@ multi-file @acronym{NCO} operators consume is given in
 @section Memory Requirements
 @cindex memory requirements
 @cindex memory available
-@cindex RAM
+@cindex @acronym{RAM}
 @cindex swap space
 @cindex peak memory usage
+@cindex @code{--ram_all}
+@cindex @code{--open_ram}
+@cindex @code{--diskless_all}
 
 Many people use @acronym{NCO} on gargantuan files which dwarf the
 memory available (free @acronym{RAM} plus swap space) even on today's powerful
@@ -2194,16 +2197,27 @@ to the memory requirements.
 Further note that some operators perform internal type-promotion on some
 variables prior to arithmetic (@pxref{Type Conversion}).
 For example, @command{ncra} and @command{ncea} both promote integer
-types to double-precision floating point prior to arithmetic, then
+types to double-precision floating point prior to arithmetic, then 
 perform the arithmetic, then demote back to the original integer type
 after arithmetic.
 This preserves the on-disk storage type while obtaining the accuracy
 advantages of floating point arithmetic. 
-Single-precision floating point variables however are not by default
-promoted to double-precision prior to arithmetic.
-Hence, the sustained memory required for integer variables are two or 
-four-times their on-disk, uncompressed, unpacked sizes if they meet the
-rules for automatic internal promotion.
+Since version 4.3.6 (released in September, 2013), @acronym{NCO} also
+by default converts single-precision floating point to double-precision
+prior to arithmetic, which incurs the same @acronym{RAM} penalty.
+Hence, the sustained memory required for integer variables and
+single-precision floats are two or four-times their on-disk,
+uncompressed, unpacked sizes if they meet the rules for automatic
+internal promotion. 
+
+The @samp{--open_ram} switch (and switches that invoke it like
+@samp{--ram_all} and @samp{--diskless_all}) incurs a @acronym{RAM}
+penalty.
+These switches cause each input file to be copied to @acronym{RAM} upon
+opening. 
+Hence any operator invoking these switches utilizes an additional
+@math{FT} of @acronym{RAM} (i.e., @math{MS += FT}).
+See @ref{RAM disks} for further details. 
 
 @html
 <a name="mmr_ncwa"></a> <!-- http://nco.sf.net/nco.html#mmr_ncwa -->
@@ -6171,10 +6185,15 @@ ncks: INFO nc__open() opened file with buffer size = 2097152 bytes
 @cindex @code{--create_ram}
 @cindex @code{--open_ram}
 @cindex @code{--diskless_all}
-@cindex RAM disks
-@cindex RAM files
+@cindex @acronym{RAM} disks
+@cindex @acronym{RAM} files
 @cindex @code{NC_DISKLESS}
 @cindex diskless files
+@cindex memory requirements
+@cindex memory available
+@cindex @acronym{RAM}
+@cindex swap space
+@cindex peak memory usage
 @cartouche
 Availability: All operators@*
 Short options: @*
@@ -6183,43 +6202,55 @@ Long options: @samp{--ram_all}, @samp{--create_ram}, @samp{--open_ram},
 @end cartouche
 
 As of @acronym{NCO} version 4.2.1 (August, 2012), @acronym{NCO} supports
-the use of diskless files, aka RAM disks, for file access and creation. 
+the use of diskless files, aka @acronym{RAM} disks, for file access and creation. 
 Two independent switches, @samp{--open_ram} and @samp{--create_ram},
 control this feature. 
 Before describing the specifics of these switches, we describe why many 
 @acronym{NCO} operations will not benefit from them.
-Essentially, reading/writing from/to RAM rather than disk only hastens 
+Essentially, reading/writing from/to @acronym{RAM} rather than disk only hastens 
 the task when reads/writes to disk are avoided.
 Most @acronym{NCO} operations are simple enough that they require a
 single read-from/write-to disk for every block of input/output. 
 Diskless access does not change this, but it does add an extra
 read-from/write-to RAM. 
-However this extra RAM write/read does avoid contention for limited
+However this extra @acronym{RAM} write/read does avoid contention for limited
 system resources like disk-head access.
-Operators which may benefit from RAM disks include @command{ncwa}, which
+Operators which may benefit from @acronym{RAM} disks include @command{ncwa}, which
 may need to read weighting variables multiple times, the multi-file 
 operators @command{ncra}, @command{ncrcat}, and @command{ncecat},
 which may try to write output at least once per input file, and
 @command{ncap2} scripts which may be arbitrarily long and convoluted. 
 
-The @samp{--open_ram} switch causes input files to copied to RAM when
+The @samp{--open_ram} switch causes input files to copied to @acronym{RAM} when
 opened. 
-All further metadata and data access occurs in RAM and thus avoids
+All further metadata and data access occurs in @acronym{RAM} and thus avoids
 access time delays caused by disk-head movement.
 Usually input data is read at most once so it is unlikely that
-requesting input files be stored in RAM will save much time.
+requesting input files be stored in @acronym{RAM} will save much time.
 The likeliest exceptions are files that are accessed numerous times,
 such as those analyzed extensively analyzed by @command{ncap2}. 
 
-@cindex RAM variables
+Invoking @samp{--open_ram}, @samp{--ram_all}, or @samp{--diskless_all}
+uses much more system memory.
+To copy the input file to @acronym{RAM} increases the sustained
+memory use by exactly the on-disk filesize of the input file, i.e.,
+@math{MS += FT}.
+For large input files this can be a huge memory burden that starves
+the rest of the @acronym{NCO} analysis of sufficient @acronym{RAM}.
+To be safe, use @samp{--open_ram}, @samp{--ram_all}, or
+@samp{--diskless_all} only on files that are much (say at least a factor
+of four) smaller than your available system @acronym{RAM}.
+See @ref{Memory Requirements} for further details. 
+
+@cindex @acronym{RAM} variables
 The @samp{--create_ram} switch causes output files to be created in RAM,
 rather than on disk. 
 These files are copied to disk only when closed, i.e., when the
 operator completes.
-Creating files in RAM may save time, especially with @command{ncap2}
+Creating files in @acronym{RAM} may save time, especially with @command{ncap2}
 computations that are iterative, e.g., loops, and for multi-file
 operators that write output every record (timestep) or file.
-RAM files provide many of the same benefits as RAM variables in such
+RAM files provide many of the same benefits as @acronym{RAM} variables in such
 cases (@pxref{RAM variables}). 
 
 Two switches, @samp{--ram_all} and @samp{--diskless_all}, are convenient
@@ -6236,7 +6267,7 @@ ncks --ram_all in.nc out.nc # Same as above
 ncks --diskless_all in.nc out.nc # Same as above
 @end example
 
-It is straightforward to demonstrate the efficacy of RAM disks.
+It is straightforward to demonstrate the efficacy of @acronym{RAM} disks.
 For @acronym{NASA} we constructed a test that employs @command{ncecat}
 an arbitrary number (set to one hundred thousand) of files are all
 symbolically linked to the same file. 
@@ -6257,7 +6288,7 @@ Run normally on a laptop in 201303, this completes in @w{21 seconds}.
 The @samp{--create_ram} reduces the elapsed time to @w{9 seconds}.
 Some of this speed may be due to using symlinks and caching.
 However, the efficacy of @samp{--create_ram} is clear.
-Placing the output file in RAM avoids thousands of disk writes.
+Placing the output file in @acronym{RAM} avoids thousands of disk writes.
 It is not unreasonable to for @acronym{NCO} to process a million files
 like this in a few minutes. 
 However, there is no substitute for benchmarking with real files.
@@ -9181,9 +9212,9 @@ n3=1/(three_dmn_var_dbl.cos().pow(2))-tan(three_dmn_var_dbl)^2; // n3 type doubl
 @html
 <a name="ncap_ram"></a> <!-- http://nco.sf.net/nco.html#ncap_ram -->
 @end html
-@cindex RAM variables
+@cindex @acronym{RAM} variables
 @node RAM variables, Where statement, Methods and functions, ncap2 netCDF Arithmetic Processor
-@subsection RAM variables
+@subsection @acronym{RAM} variables
 Unlike regular variables, @acronym{RAM} variables are never written to disk.
 Hence using @acronym{RAM} variables in place of regular variables (especially
 within loops) significantly increases execution speed.
@@ -11948,10 +11979,6 @@ accepts full and partial group paths in names of attributes,
 variables, dimensions, and groups.
 @c ncks -m -v lon ~/in_grp.nc
 @example
-ncatted -O -a units,/g1/lon,o,c,"degrees_west" in_grp.nc
-ncatted -O -a csznote,/g1:g2,a,c,"new attribute" in_grp.nc
-ncatted -O -a history,global,m,c,"modified attribute" in_grp.nc
-
 # Overwrite units attribute of specific 'lon' variable
 ncatted -O -a units,/g1/lon,o,c,"degrees_west" in_grp.nc
 # Overwrite units attribute of all 'lon' variables
@@ -11962,10 +11989,12 @@ ncatted -O -a units,lon,d,, in_grp.nc
 ncatted -O -a units,/g1/lon,o,sng,"degrees_west" in_grp.nc
 # Add new_att attribute to all variables
 ncatted -O -a new_att,,c,sng,"new variable attribute" in_grp.nc
-# Add new_grp_att attribute to all groups
-ncatted -O -a new_grp_att,global,c,sng,"new group attribute" in_grp.nc
-# Add new_glb_att attribute to root group
-ncatted -O -a new_glb_att,/,c,sng,"new global attribute" in_grp.nc
+# Add new_grp_att group attribute to all groups
+ncatted -O -a new_grp_att,group,c,sng,"new group attribute" in_grp.nc
+# Add new_grp_att group attribute to single group
+ncatted -O -a g1_grp_att,g1,c,sng,"new group attribute" in_grp.nc
+# Add new_glb_att global attribute to root group
+ncatted -O -a new_glb_att,global,c,sng,"new global attribute" in_grp.nc
 @end example
 
 Demonstrate input of C-language escape sequences (e.g., @code{\n}) and
