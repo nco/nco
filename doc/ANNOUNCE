@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.633 2013-11-06 18:12:24 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.634 2013-11-06 19:56:41 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.8 are ready. 
 
@@ -6,19 +6,19 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 ncatted now supports groups. That's the main new feature.
-NCO has completed its migration from flat- to group-oriented files.
+This completes NCO's migration from flat- to group-oriented files.
 All core operators are now "group-aware" and support netCDF4 groups. 
 Most relevant options may support full or partial group paths.
 Remaining options that do not will be migrated as time permits.
 
 The exception to this is ncap2. Porting ncap2 to support groups
 will be undertaken as resources permit. The main ncap2 developer
-is a volunteer and we are trying to secure funding for this work.
+is a volunteer for whom we are trying to secure funding.
 
 Work on NCO 4.3.9 is underway and includes improved netCDF4 support 
 for various options (all -X, ncwa -w and -m), other netCDF4 mop-up,
-and improved support for HDF4 files. And a new operator, nces, which
-we will describe at AGU (Friday 12/13 11:35 AM Moscone West 2010).
+and improved support for HDF4 files. And the operator, nces, which
+we will debut/describe at AGU (Friday 12/13 11:35 AM Moscone West 2010). 
 
 Enjoy,
 Charlie

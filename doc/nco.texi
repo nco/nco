@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.900 2013-11-06 18:12:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.901 2013-11-06 19:56:42 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7849,9 +7849,8 @@ As of @acronym{NCO} version 4.0.8 (April, 2011), @acronym{NCO}
 supports the @acronym{CF} @code{bounds} convention for cell boundaries
 described 
 @uref{http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.6/cf-conventions.html#cell-boundaries, here}.
-This convention allows coordinate variables
-(including multidimensional coordinates) to describe the boundaries of
-their cells.
+This convention allows coordinate variables (including multidimensional
+coordinates) to describe the boundaries of their cells.
 This is done by naming the variable which contains the bounds in
 in the @code{bounds} attribute. 
 Note that coordinates of rank @math{N} have bounds of rank @math{N+1}.
@@ -13969,6 +13968,22 @@ coordinates, except variable @code{time}, from netCDF @file{in.nc}:
 @example
 ncks -x -v time in.nc out.nc
 @end example
+As a special case of this, consider how to remove a 
+@acronym{CF} Convention comliant @code{bounds} or @code{coordinates}
+variable (@pxref{CF Conventions}) such as @code{time_bounds}.
+@acronym{NCO} subsetting assumes the user wants all coordinates 
+and bounds and axes associated with all extracted variables 
+(@pxref{Subsetting Coordinate Variables}).
+Hence to exclude a @code{bounds} or @code{coordinates} variable while
+retaining the ``parent'' variable (here @code{time}), one must use the
+@samp{-C} switch: 
+@example
+ncks -C -x -v time_bounds in.nc out.nc
+@end example
+The @samp{-C} switch tells the operator @emph{NOT} to necessarily
+include all the @acronym{CF} coordinates and bounds and axes.
+Hence the output file will contain @code{time} and not
+@code{time_bounds}. 
 
 Extract variables @code{time} and @code{pressure} from netCDF
 @file{in.nc}.  
