@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.631 2013-10-31 06:17:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.632 2013-11-06 04:35:36 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.8 are ready. 
 
@@ -9,7 +9,7 @@ ncatted now supports groups. That's the main new feature.
 NCO has completed its migration from flat- to group-oriented files.
 All core operators are now "group-aware" and support netCDF4 groups. 
 Most relevant options may support full or partial group paths.
-The remaining options that do not will be migrated as time permits.
+Remaining options that do not will be migrated as time permits.
 
 The exception to this is ncap2. Porting ncap2 to support groups
 will be undertaken as resources permit. The main ncap2 developer
@@ -27,92 +27,26 @@ Charlie
 
 NEW FEATURES:
 
-A. HDF4: 
-   First build/install netCDF with the --enable-hdf4 flag:
-   http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html
-   Then build NCO. Try NCO on HDF files. It should work!
-
-   ncks --hdf4 modis.hdf modis.nc
-
-   Until certain issues in the netCDF library are fixed (possibly
-   as soon as netCDF 4.3.2), one must use the new --hdf4 switch
-   to tell NCO that a file is in fact an HDF4 file.
-   The need for this switch will go away eventually. Hopefully soon. 
-
-   NCO can now convert HDF4 to netCDF4 files:
-   ncks --hdf4 fl.hdf fl.nc
-   This produces a more faithful conversion than ncl_convert2nc since 
-   it preserves all native HDF data types (e.g., unsigned bytes):
-   http://nco.sf.net/nco.html#hdf4
-   http://nco.sf.net/nco.html#ncl_convert2nc
-
-B. ncrename accepts full group paths to variables and groups.
-   Previously ncrename worked only on the root group of netCDF4 files.
-   Now you can go to town and rename everything!
-   ncrename -a /g1/lon@units,lon@new -g /g1/g1g2,new in.nc
-   http://nco.sf.net/nco.html#ncrename
-
-C. ncdismember accepts the CF Convention version number as an optional
-   fourth argument, e.g., 
-   ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf 1.3
-   http://nco.sf.net/nco.html#ncdismember
-
-D. XML: ncks --xml now prints variable metadata _and_ data in NcML.
-   Please give us feedback on this capability. One related new feature 
-   is the --xml_no_location switch which turns off the location tag,
-   ncks --xml --xml_no_location -v time ~/nco/data/in.nc
-   http://nco.sf.net/nco.html#xml
-
-E. Add --mrd = --multiple_record_dimension switch to ncecat, ncpdq.
-   Invoking this switch allows these operators to increase the number
-   of record dimensions in a variable as a natural or incidental
-   consequence of processing netCDF4 files.
-   http://nco.sf.net/nco.html#mrd
-
-F. Operators perform arithmetic on atomic types NC_BYTE, NC_UBYTE. 
-   NCO never performed arithmetic on 8-bit integers (bytes) before.
-   This is because we never had datasets that used this type.
-   We encounter more and more byte-data.
-   NASA, for example, tends to store data with two significant digits
-   as bytes rather than shorts. This makes perfect sense.
-
-G. ncks allow finer-grained control of copying data/metadata.
-   When copying/subsetting/appending files (as opposed to printing
-   them), the copying of data, variable metadata, and global/group
-   metadata are now turned OFF by -H, -m, -M, respectively. 
-   This is the opposite sense in which these switches work and
-   have always worked when printing a file. Thus:
-   -H turns off copying and turns on printing of data, 
-   -m turns off copying and turns on printing of variable metadata, 
-   -M turns off copying and turns on printing of group metadata.
-   This allows people to easily replace data or metadata in one file
-   with data or metadata from another.
-   http://nco.sf.net/nco.html#xmp_att_var_cpy
+A. ncatted accepts full group paths to variables and groups.
+   Previously ncatted worked only on the root group of netCDF4 files.
+   Now you can edit all attributes in group files, in all
+   permutations, i.e., for variables, for groups and the root group.
+   ncatted -a units,/g1/lon,o,c,"degrees_west" in_grp.nc
+   ncatted -a new_grp_att,group,c,sng,"new group attribute" in_grp.nc
+   http://nco.sf.net/nco.html#xmp_ncatted
 
 BUG FIXES:
 
-A. CDL-mode now protects special characters with backslashes
-   http://nco.sf.net/nco.html#cdl
+A. Reduced namespace conflicts with other shared libraries
 
-B. Fix ncecat bug reading variables whose IDs change across files
-
-C. Fix ncap2.exe Windows-native bug that prevented file move
-
-D. Fix ncwa -b behavior. 
-   Versions 4.3.3-4.3.6 of ncwa -b preserve the averaged dimensions
-   as degenerate dimensions (i.e., of size 1) when the -b switch is
-   given. However, record dimensions were inadvertently converted to
-   fixed dimensions in the output, making the output files unsuitable
-   as input files to ncrcat etc. The workaround is to use 
-   ncks --mk_rec_dmn time on the output files. The solution is to
-   upgrade ncwa to version 4.3.7, where the bug has been fixed.
+A. Added missing --op_typ/--operation switches to ncra
 
 KNOWN ISSUES NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.3.7 built/tested with netCDF
-   4.3.1-rc4 snapshot 20131007 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.3.1-rc4 snapshot 20131106 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism

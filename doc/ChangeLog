@@ -1,3 +1,11 @@
+2013-11-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.3.8 release procedure:
+ 	Changes since nco-4_3_7: ncatted groups, namespace safety
+	cd ~/nco;cvs tag -d nco-4_3_8;cvs tag -d nco-4_3_8-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.3.8 release"
+	cvs tag -c nco-4_3_8;cvs tag -c nco-4_3_8-1
+
 2013-10-31 Pedro Vicente  <pvicente@uci.edu>
 
 	* ncatted: Regressions #6 to 11. Groups, for single variable, all
@@ -12,7 +20,7 @@
 
 2013-10-23 Pedro Vicente  <pvicente@uci.edu>
 
-	* Add an option to configure --enable-openmp (default yes), disable with --disable-openmp.
+	* Add option to configure --enable-openmp (default yes), disable with --disable-openmp
 
 2013-10-23  Charlie Zender  <zender@uci.edu>
 
@@ -21,12 +29,6 @@
 	* Add GNU-required AUTHORS file to quiet autoreconf warnings
 
 2013-10-21  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.3.8 release procedure:
- 	Changes since nco-4_3_7: hash?
-	cd ~/nco;cvs tag -d nco-4_3_8;cvs tag -d nco-4_3_8-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.3.8 release"
-	cvs tag -c nco-4_3_8;cvs tag -c nco-4_3_8-1
 
 	* Rename most external symbols to have nco_ prefix
 	This changes prg,prg_nm,dbg_lvl to nco_prg_id,nco_prg_nm,nco_dbg_lvl
