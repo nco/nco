@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.159 2013-11-02 22:35:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.160 2013-11-06 01:37:18 pvicente Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -951,8 +951,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case nces:
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var[idx]->nm_fll,trv_tbl);
-      /* If variable is ensemble member group, mark as processed */
-      if (var_trv->flg_nsm_mbr && var_trv->nco_typ == nco_obj_typ_var){
+      /* If variable is template, mark as processed */
+      if (var_trv->flg_nsm_tpl && var_trv->nco_typ == nco_obj_typ_var){
+        assert(var_trv->flg_nsm_mbr == True);
         var_op_typ[idx]=prc_typ;
       }
       break;

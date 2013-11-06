@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1038 2013-11-03 03:50:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1039 2013-11-06 01:37:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1936,6 +1936,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
   trv_tbl->lst[idx].flg_nsm_prn=False;            /* [flg] (nces) Group is, or variable is in, ensemble parent group */
   trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] (nces ) Group is, or variable is in, ensemble member group */  
+  trv_tbl->lst[idx].flg_nsm_tpl=False;            /* [flg] Group is, or variable is in, template member group */
   trv_tbl->lst[idx].nsm_nm=NULL;                  /* [sng] (nces) Ensemble parent group name i.e., full path to ensemble parent */ 
 
   /* Variable dimensions  */
@@ -2034,6 +2035,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
     trv_tbl->lst[idx].flg_nsm_prn=False;
     trv_tbl->lst[idx].flg_nsm_mbr=False;
+    trv_tbl->lst[idx].flg_nsm_tpl=False;
     trv_tbl->lst[idx].nsm_nm=NULL;
 
     /* Variable dimensions */
@@ -7615,6 +7617,11 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
                 /* Mark variables as ensemble members */
                 for(int idx_nm=0;idx_nm<nbr_cmn_nm;idx_nm++){
+                  nco_bool flg_nsm_tpl=False;  /* [flg] Variable is template */                
+                  /* If first variable and there are no members in ensemble, consider the first variable to insert the template */ 
+                  if (idx_nm == 0 && mbr_nbr == 0){
+                    flg_nsm_tpl=True;
+                  }
                   /* Allocate path buffer and include space for trailing NUL */ 
                   char *var_nm_fll=(char *)nco_malloc(strlen(trv_2.grp_nm_fll)+strlen(cmn_lst[idx_nm].var_nm_fll)+2L);
                   /* Initialize path with current absolute group path */
@@ -7624,10 +7631,10 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   /* Concatenate variable to absolute group path */
                   strcat(var_nm_fll,cmn_lst[idx_nm].var_nm_fll);
                   /* Mark ensemble member flag in table for "var_nm_fll" */
-                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,trv_1.grp_nm_fll_prn,trv_tbl); 
+                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_tbl); 
                   
                   if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                    (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s>\n",nco_prg_nm_get(),fnc_nm,var_nm_fll);             
+                    (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s> as template %d\n",nco_prg_nm_get(),fnc_nm,var_nm_fll,flg_nsm_tpl);             
                   }
                   /* Free */
                   var_nm_fll=(char *)nco_free(var_nm_fll);

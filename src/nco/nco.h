@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.425 2013-11-03 03:50:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.426 2013-11-06 01:37:17 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -839,6 +839,7 @@ extern "C" {
     char *hsh_key;                    /* [sng] Hash key (must be unique!) */
     nco_bool flg_nsm_prn;             /* [flg] (nces) Group is, or variable is in, ensemble parent group */
     nco_bool flg_nsm_mbr;             /* [flg] (nces) Group is, or variable is in, ensemble member group */
+    nco_bool flg_nsm_tpl;             /* [flg] Group is, or variable is in, template member group */
     char *nsm_nm;                     /* [sng] (nces) Ensemble parent group name i.e., full path to ensemble parent */ 
   } trv_sct;
 
