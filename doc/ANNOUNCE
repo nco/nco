@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.632 2013-11-06 04:35:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.633 2013-11-06 18:12:24 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.8 are ready. 
 
@@ -35,11 +35,19 @@ A. ncatted accepts full group paths to variables and groups.
    ncatted -a new_grp_att,group,c,sng,"new group attribute" in_grp.nc
    http://nco.sf.net/nco.html#xmp_ncatted
 
+B. Add -7 switch to write netCDF4-classic files.
+   This is simply a synonym for --fl_fmt=netcdf4_classic.
+   The reason (and mnemonic) for -7 is that NETCDF4_CLASSIC files
+   include great features of both netCDF3 (compatibility) and
+   netCDF4 (compression, chunking) and, well, 3+4=7 :)
+   Anyway, -7 is much easier to remember/type than the alternative.
+   http://nco.sf.net/nco.html#fl_fmt
+
 BUG FIXES:
 
 A. Reduced namespace conflicts with other shared libraries
 
-A. Added missing --op_typ/--operation switches to ncra
+B. Added missing --op_typ/--operation switches to ncra
 
 KNOWN ISSUES NOT YET FIXED:
 

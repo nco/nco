@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.899 2013-11-06 17:51:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.900 2013-11-06 18:12:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -115,8 +115,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.8
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 17 October 2013
-@set update-month October 2013
+@set update-date 6 November 2013
+@set update-month November 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -3355,6 +3355,7 @@ when your other preferred methods are not available locally.
 @cindex @code{--3}
 @cindex @code{-3}
 @cindex @code{-4}
+@cindex @code{-6}
 @cindex @code{-7}
 @cindex @code{--4}
 @cindex @code{--7}
@@ -3366,7 +3367,7 @@ when your other preferred methods are not available locally.
 Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
-Short options: @samp{-3}, @samp{-4}, @samp{-7}@*
+Short options: @samp{-3}, @samp{-4}, @samp{-6}, @samp{-7}@*
 Long options: @samp{--3}, @samp{--4}, @samp{--64bit}, @samp{--7}, @samp{--fl_fmt},
 @samp{--netcdf4}@*  
 @end cartouche
@@ -3409,15 +3410,15 @@ have maximum backwards-compatibility with older applications.
 applications do not. 
 If performance or disk-space as important as backwards compatibility,
 then use @code{NETCDF4_CLASSIC} instead of @code{CLASSIC} format files. 
-As of 2014, @acronynm{NCO} support for the @code{NETCDF4} format is
+As of 2014, @acronym{NCO} support for the @code{NETCDF4} format is
 complete and the most powerful and disk/@acronym{RAM} efficient
 workflows will utilize this format.
 
 As mentioned above, all operators write use the input file format for
 output files unless told otherwise.
-Toggling the long option @samp{--64bit} switch (or its
-@var{key}-@var{value} equivalent @samp{--fl_fmt=64bit}) produces the
-netCDF3 64-bit offset format named @code{64BIT}. 
+Toggling the short option @samp{-6} or the long option @samp{--64bit}
+switch (or its @var{key}-@var{value} equivalent @samp{--fl_fmt=64bit})
+produces the netCDF3 64-bit offset format named @code{64BIT}. 
 @acronym{NCO} must be built with @w{netCDF 3.6} or higher to produce
 a @code{64BIT} file.
 Using the @samp{-4} switch (or its long option equivalents
@@ -3428,7 +3429,8 @@ Using the @samp{-7} switch (or its long option equivalent
 @samp{--7}
 @footnote{
 The reason (and mnemonic) for @samp{-7} is that @code{NETCDF4_CLASSIC}
-contains the best of netCDF3 and netCDF4 and, well, @math{3+4=7}.}, or
+files include great features of both netCDF3 (compatibility) and
+netCDF4 (compression, chunking) and, well, @math{3+4=7}.}, or 
 setting its @var{key}-@var{value} equivalent
 @samp{--fl_fmt=netcdf4_classic} produces a @code{NETCDF4_CLASSIC}  
 file (i.e., with all supported @acronym{HDF5} features like compression
@@ -3450,6 +3452,7 @@ ncks --fl_fmt=netcdf4_classic in.nc foo_4c.nc # netCDF4 classic
 ncks --fl_fmt=netcdf4 in.nc foo_4.nc # netCDF4 
 ncks -3 in.nc foo_3c.nc # netCDF3 classic
 ncks --3 in.nc foo_3c.nc # netCDF3 classic
+ncks -6 in.nc foo_364.nc # netCDF3 64bit
 ncks --64 in.nc foo_364.nc # netCDF3 64bit
 ncks -4 in.nc foo_4.nc # netCDF4 
 ncks --4 in.nc foo_4.nc # netCDF4 
