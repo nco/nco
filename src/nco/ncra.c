@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.428 2013-11-06 23:20:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.429 2013-11-07 03:46:22 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -126,15 +126,12 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool HAS_REC=False; /* File has at least one record (handy ncea/non-ncea switch) */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool REC_APN=False; /* [flg] Append records directly to output file */
   nco_bool REC_FRS_GRP=False; /* [flg] Record is first in current group */
-
   nco_bool *REC_LST_DSR=NULL; /* [flg] Record is last desired from all input files */
-
   nco_bool REC_LST_GRP=False; /* [flg] Record is last in current group */
   nco_bool REC_SRD_LST=False; /* [flg] Record belongs to last stride of current file */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -165,8 +162,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.428 2013-11-06 23:20:01 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.428 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.429 2013-11-07 03:46:22 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.429 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -225,18 +222,15 @@ main(int argc,char **argv)
   int grp_id;        /* [ID] Group ID */
   int grp_out_id;    /* [ID] Group ID (output) */
   int var_out_id;    /* [ID] Variable ID (output) */
-  int nbr_rec;       /* [nbr] Number of records to process */
   int mbr_idx;       /* [idx] Counting index for member */
   int nsm_idx;       /* [idx] Counting index for ensemble */
   int mbr_nbr=0;     /* [nbr] Number of members of ensemble */
   int nsm_nbr=0;     /* [nbr] Number of ensembles */
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
-
   long *idx_rec_out=NULL; /* [idx] Index of current record in output file (0 is first, ...) */
   long *rec_in_cml=NULL;  /* [nbr] Number of records, read or not, in all processed files */
   long *rec_usd_cml=NULL; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
-
   long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
   long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
 
@@ -257,6 +251,7 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
   trv_sct *var_trv;  /* [sct] Variable GTT object */
   trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
+
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
   static struct option opt_lng[]=
@@ -614,8 +609,6 @@ main(int argc,char **argv)
   /* Build record dimensions array */
   (void)nco_bld_rec_dmn(in_id,FORTRAN_IDX_CNV,flg_rec_all,trv_tbl);  
 
-  if(trv_tbl->nbr_rec) HAS_REC=True;
-
   /* Allocate arrays for multi-records cases */
   idx_rec_out=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
   rec_in_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
@@ -745,13 +738,12 @@ main(int argc,char **argv)
       (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
     } /* end loop over variables */
 
-    nbr_rec=trv_tbl->nbr_rec;
-    if(nco_prg_id == ncea || nco_prg_id == nces) nbr_rec=1;
 
-    /* Loop over number of records to process */
-    for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncea and nces jump to else branch */
 
-      if(HAS_REC){
+      /* Loop over number of records to process */
+      for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+
         /* Obtain group ID using full group name */
         (void)nco_inq_grp_full_ncid(in_id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
 
@@ -773,20 +765,17 @@ main(int argc,char **argv)
         /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
         if(FLG_MRO) trv_tbl->lmt_rec[idx_rec]->flg_mro=True;
         if(trv_tbl->lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
-      } /* !HAS_REC */
 
-      /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
-      if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
+        /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
+        if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
 
-      /* Perform various error-checks on input file */
-      if(False) (void)nco_fl_cmp_err_chk();
+        /* Perform various error-checks on input file */
+        if(False) (void)nco_fl_cmp_err_chk();
 
-      /* This file may be superfluous though valid data will be found in upcoming files */
-      if(nco_dbg_lvl >= nco_dbg_std && HAS_REC)
-        if((trv_tbl->lmt_rec[idx_rec]->srt > trv_tbl->lmt_rec[idx_rec]->end) && (trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn == 0L))
-          (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),nco_prg_nm_get(),fl_in,fl_idx);
-
-      if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncea and nces jump to else branch */
+        /* This file may be superfluous though valid data will be found in upcoming files */
+        if(nco_dbg_lvl >= nco_dbg_std)
+          if((trv_tbl->lmt_rec[idx_rec]->srt > trv_tbl->lmt_rec[idx_rec]->end) && (trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn == 0L))
+            (void)fprintf(fp_stdout,gettext("%s: INFO %s (input file %d) is superfluous\n"),nco_prg_nm_get(),fl_in,fl_idx);
 
         rec_dmn_sz=trv_tbl->lmt_rec[idx_rec]->rec_dmn_sz;
         rec_rmn_prv_drn=trv_tbl->lmt_rec[idx_rec]->rec_rmn_prv_drn; /* Local copy may be decremented later */
@@ -1005,113 +994,113 @@ main(int argc,char **argv)
           } /* end if */
         } /* end if */
 
-        /* End of ncra, ncrcat section */
-      }else if(nco_prg_id == ncea){ /* ncea */
+      } /* Loop over number of records to process */
+
+      /* End of ncra, ncrcat section */
+    }else if(nco_prg_id == ncea){ /* ncea */
 
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(nco_dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id)
 #endif /* !_OPENMP */
-        for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+      for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 
-          in_id=in_id_arr[omp_get_thread_num()];
-          if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-          if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
+        in_id=in_id_arr[omp_get_thread_num()];
+        if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+        if(nco_dbg_lvl >= nco_dbg_var) (void)fflush(fp_stderr);
 
-          /* Obtain variable GTT object using full variable name */
-          var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
-          /* Obtain group ID using full group name */
-          (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-          /* Edit group name for output */
-          if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
-          /* Obtain output group ID using full group name */
-          (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
-          /* Memory management after current extracted group */
-          if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-          /* Get variable ID */
-          (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+        /* Obtain variable GTT object using full variable name */
+        var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+        /* Edit group name for output */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+        /* Obtain output group ID using full group name */
+        (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+        /* Memory management after current extracted group */
+        if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+        /* Get variable ID */
+        (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
-          /* Store the output variable ID */
-          var_prc_out[idx]->id=var_out_id;
+        /* Store the output variable ID */
+        var_prc_out[idx]->id=var_out_id;
 
-          /* Retrieve variable from disk into memory */
-          (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
+        /* Retrieve variable from disk into memory */
+        (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 
-          /* Convert char, short, long, int types to doubles before arithmetic
-          Output variable type is "sticky" so only convert on first record */
-          if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
-          var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
-          /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
-          nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
-          FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
+        /* Convert char, short, long, int types to doubles before arithmetic
+        Output variable type is "sticky" so only convert on first record */
+        if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+        var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
+        /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
+        nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+        FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
-          /* Free current input buffer */
-          var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
-        } /* end (OpenMP parallel for) loop over idx */
-        /* End ncea section */
-      }else if(nco_prg_id == nces){ /* nces */
+        /* Free current input buffer */
+        var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+      } /* end (OpenMP parallel for) loop over idx */
+      /* End ncea section */
+    }else if(nco_prg_id == nces){ /* nces */
 
-        nsm_nbr=trv_tbl->nsm_nbr;
+      nsm_nbr=trv_tbl->nsm_nbr;
 
-        for(nsm_idx=0;nsm_idx<nsm_nbr;nsm_idx++){ /* Loop over ensembles in current file */
-          mbr_nbr=trv_tbl->nsm[nsm_idx].mbr_nbr;
-          for(mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
+      for(nsm_idx=0;nsm_idx<nsm_nbr;nsm_idx++){ /* Loop over ensembles in current file */
+        mbr_nbr=trv_tbl->nsm[nsm_idx].mbr_nbr;
+        for(mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
 
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx,in_id) shared(nco_dbg_lvl,nsm_idx,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id)
 #endif /* !_OPENMP */
-            for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
-              in_id=in_id_arr[omp_get_thread_num()];          
-              /* Obtain variable GTT object using full variable name */
-              var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+          for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+            in_id=in_id_arr[omp_get_thread_num()];          
+            /* Obtain variable GTT object using full variable name */
+            var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
-              /* Variable is part of ensemble, do ensemble statistics */
-              if( strcmp(var_trv->nsm_nm,trv_tbl->nsm[nsm_idx].grp_nm_fll_prn) == 0){
+            /* Variable is part of ensemble, do ensemble statistics */
+            if( strcmp(var_trv->nsm_nm,trv_tbl->nsm[nsm_idx].grp_nm_fll_prn) == 0){
 
-                if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                  (void)fprintf(fp_stdout,"%s: DEBUG ensemble <%s> : variable <%s>\n",nco_prg_nm_get(),var_trv->nsm_nm,var_prc[idx]->nm_fll);             
-                }
+              if(nco_dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(fp_stdout,"%s: DEBUG ensemble <%s> : variable <%s>\n",nco_prg_nm_get(),var_trv->nsm_nm,var_prc[idx]->nm_fll);             
+              }
 
-                /* Obtain group ID using full group name */
-                (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-                /* Edit group name for output */
-                if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
-                /* Obtain output group ID using full group name */
-                (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
-                /* Memory management after current extracted group */
-                if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-                /* Get variable ID */
-                (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+              /* Obtain group ID using full group name */
+              (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+              /* Edit group name for output */
+              if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+              /* Obtain output group ID using full group name */
+              (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+              /* Memory management after current extracted group */
+              if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+              /* Get variable ID */
+              (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
-                /* Store the output variable ID */
-                var_prc_out[idx]->id=var_out_id;
+              /* Store the output variable ID */
+              var_prc_out[idx]->id=var_out_id;
 
-                /* Retrieve variable from disk into memory */
-                (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
+              /* Retrieve variable from disk into memory */
+              (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 
-                /* Convert char, short, long, int types to doubles before arithmetic
-                Output variable type is "sticky" so only convert on first record */
-                if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
-                var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
-                /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
-                nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
-                FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
+              /* Convert char, short, long, int types to doubles before arithmetic
+              Output variable type is "sticky" so only convert on first record */
+              if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+              var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
+              /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
+              nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+              FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
-                /* Free current input buffer */
-                var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+              /* Free current input buffer */
+              var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 
-              }else { /* Variable is part of ensemble, do ensemble statistics */
-                continue;
-              } /* ! Variable is part of ensemble, do ensemble statistics */
-            } /* end (OpenMP parallel for) loop over idx */
+            }else { /* Variable is part of ensemble, do ensemble statistics */
+              continue;
+            } /* ! Variable is part of ensemble, do ensemble statistics */
+          } /* end (OpenMP parallel for) loop over idx */
 
-          } /* end loop over members of current ensemble */
-        } /* end loop over ensembles in current file */
+        } /* end loop over members of current ensemble */
+      } /* end loop over ensembles in current file */
 
-      } /* End nces section */
+    } /* End nces section */
 
-      if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
-
-    } /* Loop over number of records to process */
+    if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
 
     /* Close input netCDF file */
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
@@ -1172,7 +1161,7 @@ main(int argc,char **argv)
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
       }
-     
+
       /* Obtain output group ID using full group name */
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
       /* Memory management after current extracted group */
@@ -1203,7 +1192,6 @@ main(int argc,char **argv)
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
-
 
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
@@ -1253,7 +1241,6 @@ main(int argc,char **argv)
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
-
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   nco_exit_gracefully();
   return EXIT_SUCCESS;
