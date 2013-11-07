@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.428 2013-11-07 09:06:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.429 2013-11-07 23:42:59 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -864,11 +864,18 @@ extern "C" {
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
 
+  /* Ensemble group structure (nces). It contains a name for the group (e.g /cesm/cesm_01) and a list of variables for the group */
+  typedef struct{
+    char *mbr_nm_fll;       /* [sng] Goup full name */ 
+    char **var_nm_fll;      /* [sng] List of full variable names for this group (e.g /cesm/cesm_01/tas) */
+    int var_nbr;            /* [nbr] Number of variable for this group (size of above array) */ 
+  } nsm_grp_sct; 
+
   /* Ensemble (nces) */
   typedef struct{
-    char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) */
+    char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) (e.g /cesm) */
     int mbr_nbr;            /* [nbr] Number of members of ensemble (i.e., number in this ensemble in this file) */ 
-    char **mbr_nm;          /* [sng] List of member group names (size is mbr_nbr) */ 
+    nsm_grp_sct *mbr;       /* [sng] List of ensemble group member structs (size is mbr_nbr) */ 
   } nsm_sct; 
 
   /* GTT (Group Traversal Table) structure contains two lists
