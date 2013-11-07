@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.404 2013-11-07 05:31:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.405 2013-11-07 07:39:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -460,8 +460,8 @@ nco_var_fll_trv                        /* [fnc] Allocate variable structure and 
 
 int                                    /* O [id] Output file variable ID */
 nco_cpy_var_dfn_trv                    /* [fnc] Define specified variable in output file */
-(const int nc_out_id,                  /* I [ID] netCDF output file ID */ 
- const int grp_in_id,                  /* I [id] netCDF input group ID */
+(const int nc_in_id,                   /* I [ID] netCDF output file ID */
+ const int nc_out_id,                  /* I [ID] netCDF output file ID */
  const int grp_out_id,                 /* I [id] netCDF output group ID */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
