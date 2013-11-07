@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.430 2013-11-07 09:06:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.431 2013-11-07 10:18:25 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.430 2013-11-07 09:06:32 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.430 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.431 2013-11-07 10:18:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.431 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1045,57 +1045,59 @@ main(int argc,char **argv)
 
       for(nsm_idx=0;nsm_idx<nsm_nbr;nsm_idx++){ /* Loop over ensembles in current file */
         mbr_nbr=trv_tbl->nsm[nsm_idx].mbr_nbr;
-        for(mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
+        for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file (for nces these are only the templates) */
+          for(mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
 
-#ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(nco_dbg_lvl,nsm_idx,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id)
-#endif /* !_OPENMP */
-          for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
-            in_id=in_id_arr[omp_get_thread_num()];          
-            /* Obtain variable GTT object using full variable name */
-            var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+            /* For nces, construct the variable name, since the processed array only has template names */
 
-            /* Variable is part of ensemble, do ensemble statistics */
-            if( strcmp(var_trv->nsm_nm,trv_tbl->nsm[nsm_idx].grp_nm_fll_prn) == 0){
+            /* Get group full name for the current ensemble member (variable) */
+            char *grp_nm_fll=trv_tbl->nsm[nsm_idx].mbr_nm[mbr_idx];
+            /* Allocate path buffer and include space for trailing NUL */ 
+            char *var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_prc[idx]->nm)+2L);
+            /* Initialize path with current absolute group path */
+            strcpy(var_nm_fll,grp_nm_fll);
+            /* If not root group, concatenate separator */
+            if(strcmp(grp_nm_fll,"/")) strcat(var_nm_fll,"/");
+            /* Concatenate variable to absolute group path. TO DO: Using relative name  */
+            strcat(var_nm_fll,var_prc[idx]->nm);
 
-              if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(fp_stdout,"%s: DEBUG ensemble <%s> : variable <%s>\n",nco_prg_nm_get(),var_trv->nsm_nm,var_prc[idx]->nm_fll);             
-              }
+            /* Obtain variable GTT object using the constructed full variable name */
+            var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
 
-              /* Obtain group ID using full group name */
-              (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-              /* Edit group name for output */
-              if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
-              /* Obtain output group ID using full group name */
-              (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
-              /* Memory management after current extracted group */
-              if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-              /* Get variable ID */
-              (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(fp_stdout,"%s: DEBUG ensemble <%s> : variable <%s>\n",nco_prg_nm_get(),var_trv->nsm_nm,var_nm_fll);             
+            }
 
-              /* Store the output variable ID */
-              var_prc_out[idx]->id=var_out_id;
+            /* Obtain group ID using full group name */
+            (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
+            /* Edit group name for output */
+            if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+            /* Obtain output group ID using full group name */
+            (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+            /* Memory management after current extracted group */
+            if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+            /* Get variable ID */
+            (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
-              /* Retrieve variable from disk into memory */
-              (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
+            /* Store the output variable ID */
+            var_prc_out[idx]->id=var_out_id;
 
-              /* Convert char, short, long, int types to doubles before arithmetic
-              Output variable type is "sticky" so only convert on first record */
-              if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
-              var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
-              /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
-              nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
-              FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
+            /* Retrieve variable from disk into memory */
+            (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
 
-              /* Free current input buffer */
-              var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+            /* Convert char, short, long, int types to doubles before arithmetic
+            Output variable type is "sticky" so only convert on first record */
+            if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+            var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
+            /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
+            nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+            FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
-            }else { /* Variable is part of ensemble, do ensemble statistics */
-              continue;
-            } /* ! Variable is part of ensemble, do ensemble statistics */
-          } /* end (OpenMP parallel for) loop over idx */
+            /* Free current input buffer */
+            var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 
-        } /* end loop over members of current ensemble */
+          } /* end loop over members of current ensemble */
+        } /* end loop over idx */
       } /* end loop over ensembles in current file */
 
     } /* End nces section */
