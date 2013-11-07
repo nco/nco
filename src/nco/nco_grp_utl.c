@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1043 2013-11-07 08:01:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1044 2013-11-07 09:06:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1069,13 +1069,8 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
       Store in/out group IDs as determined in nco_xtr_dfn() 
       In MM3/4 cases, either grp_in_id or grp_out_id are always root
       Other is always root unless GPE is used */
-#ifdef REMOVE
-      xtr_lst[nbr_tbl].grp_id_in=trv_tbl->lst[uidx].grp_id_in;
-      xtr_lst[nbr_tbl].grp_id_out=trv_tbl->lst[uidx].grp_id_out;
-#else
       xtr_lst[nbr_tbl].grp_id_in=grp_id_in;
       xtr_lst[nbr_tbl].grp_id_out=grp_id_out;
-#endif
       xtr_lst[nbr_tbl].id=var_id;
       xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
 
@@ -1537,7 +1532,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
 
       /* Define variable in output file */
-      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
+      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,grp_out_fll,False,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
 
       /* Set chunksize parameters */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&var_trv);
@@ -1583,15 +1578,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
       /* Memory management after current extracted variable */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-
-#ifdef REMOVE
-      /* Store input and output group IDs for use by nco_xtr_wrt() */
-      trv_tbl->lst[uidx].grp_id_in=grp_id;
-      trv_tbl->lst[uidx].grp_id_out=grp_out_id;
-#endif
-
     } /* end if variable and flg_xtr */
-
   } /* end loop over uidx */
 
   /* Memory management for GPE names */
@@ -1941,14 +1928,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_xcl=False;                /* [flg] Object matches exclusion criteria */
   trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
   trv_tbl->lst[idx].flg_rdr=False;                /* [flg] Variable has dimensions to re-order (ncpdq) */
-  trv_tbl->lst[idx].rec_dmn_nm_out=NULL;          /* [sng] Record dimension name, re-ordered */
-   
+  trv_tbl->lst[idx].rec_dmn_nm_out=NULL;          /* [sng] Record dimension name, re-ordered */ 
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
-#ifdef REMOVE
-  trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err;    /* [id] Group ID in input file */
-  trv_tbl->lst[idx].grp_id_out=nco_obj_typ_err;   /* [id] Group ID in output file */
-#endif
-
   trv_tbl->lst[idx].nbr_dmn=nbr_dmn_grp;          /* [nbr] Number of dimensions */
   trv_tbl->lst[idx].nbr_att=nbr_att;              /* [nbr] Number of attributes */
   trv_tbl->lst[idx].nbr_grp=nbr_grp;              /* [nbr] Number of sub-groups (for group) */
@@ -2043,13 +2024,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_xtr=False;
     trv_tbl->lst[idx].flg_rdr=False;
     trv_tbl->lst[idx].rec_dmn_nm_out=NULL;                     
-
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
-#ifdef REMOVE
-    trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err; 
-    trv_tbl->lst[idx].grp_id_out=nco_obj_typ_err; 
-#endif
-
     trv_tbl->lst[idx].nbr_att=nbr_att;
     trv_tbl->lst[idx].nbr_dmn=nbr_dmn_var;
     trv_tbl->lst[idx].nbr_grp=nco_obj_typ_err;
@@ -3493,7 +3468,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
+    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,False,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,grp_out_fll,False,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,rnk_gtr);
@@ -3668,7 +3643,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
 
     /* Define variable in output file. */
-    var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
+    var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,False,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,trv_1);
@@ -4208,9 +4183,10 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
 int                                 /* O [id] Output file variable ID */
 nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output file */
-(const int nc_in_id,                /* I [ID] netCDF output file ID */
+(const int nc_in_id,                /* I [ID] netCDF input file ID */
  const int nc_out_id,               /* I [ID] netCDF output file ID */
  const char * const grp_out_fll,    /* I [sng] Output group name */
+ const nco_bool USE_GRP_DMN,        /* I [flg] Use output group name to define dimensions for variable (nces) */
  const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,         /* I [sct] GPE structure */
  const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
@@ -4404,7 +4380,12 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Test group existence before testing dimension existence */
 
     /* Determine where to place new dimension in output file */
-    if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll); else grp_dmn_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
+    if (USE_GRP_DMN){
+      assert(nco_prg_id == nces);
+      grp_dmn_out_fll=(char *)strdup(grp_out_fll);
+    }else{
+      if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll); else grp_dmn_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
+    }
 
     /* Test existence of group and create if not existent */
     if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id)) nco_def_grp_full(nc_out_id,grp_dmn_out_fll,&grp_dmn_out_id);

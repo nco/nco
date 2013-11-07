@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.429 2013-11-07 03:46:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.430 2013-11-07 09:06:32 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.429 2013-11-07 03:46:22 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.429 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.430 2013-11-07 09:06:32 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.430 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1102,12 +1102,6 @@ main(int argc,char **argv)
 
     if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
 
-    /* Close input netCDF file */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
-
-    /* Dispose local copy of file */
-    if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
-
     /* Our data tanks are already full */
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){
       /* Loop records */
@@ -1157,18 +1151,20 @@ main(int argc,char **argv)
       /* For nces, group to save is ensemble parent group */
       if(nco_prg_id == nces){
         grp_out_fll=(char *)strdup(var_trv->nsm_nm);
+        /* Define variable in output file */
+        var_out_id=nco_cpy_var_dfn_trv(in_id,out_id,grp_out_fll,True,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
       }else if(nco_prg_id == ncea){
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+        /* Get variable ID */
+        (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
       }
 
       /* Obtain output group ID using full group name */
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
       /* Memory management after current extracted group */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-      /* Get variable ID */
-      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
-
+      
       /* Store the output variable ID */
       var_prc_out[idx]->id=var_out_id;
 
@@ -1189,6 +1185,12 @@ main(int argc,char **argv)
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     } /* end loop over idx */
   } /* endif ncra || ncea */
+
+  /* Close input netCDF file */
+  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
+
+  /* Dispose local copy of file */
+  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
