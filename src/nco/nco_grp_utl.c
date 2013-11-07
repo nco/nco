@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1040 2013-11-06 23:20:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1041 2013-11-07 05:31:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1033,7 +1033,9 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
 
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_sct from traversal table */
-(const int nc_id,                     /* I [id] netCDF file ID */
+(const int nc_id_in,                  /* I [ID] netCDF input file ID */
+ const int nc_id_out,                 /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,           /* I [sct] GPE structure */
  int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
@@ -1050,20 +1052,32 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
   nbr_tbl=0;
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && trv_tbl->lst[uidx].flg_xtr){
-      xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
+      int var_id;
+      int grp_id_in;
+      int grp_id_out;
+      char *grp_out_fll;
+      /* Get input group ID */
+      (void)nco_inq_grp_full_ncid(nc_id_in,trv_tbl->lst[uidx].grp_nm_fll,&grp_id_in);
+      /* Edit group name for output */
+      if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_tbl->lst[uidx].grp_nm_fll); else grp_out_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
+      /* Get output group ID */
+      (void)nco_inq_grp_full_ncid(nc_id_out,grp_out_fll,&grp_id_out);
+      /* Get variable ID */
+      (void)nco_inq_varid(grp_id_in,trv_tbl->lst[uidx].nm,&var_id);
+
       /* 20130213: Necessary to allow MM3->MM4 and MM4->MM3 workarounds
       Store in/out group IDs as determined in nco_xtr_dfn() 
       In MM3/4 cases, either grp_in_id or grp_out_id are always root
       Other is always root unless GPE is used */
+#ifdef REMOVE
       xtr_lst[nbr_tbl].grp_id_in=trv_tbl->lst[uidx].grp_id_in;
       xtr_lst[nbr_tbl].grp_id_out=trv_tbl->lst[uidx].grp_id_out;
-
-      /* To deprecate: variable ID valid only in a netCDF3 context */
-      int var_id;
-      int grp_id;
-      (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[uidx].grp_nm_fll,&grp_id);
-      (void)nco_inq_varid(grp_id,trv_tbl->lst[uidx].nm,&var_id);
+#else
+      xtr_lst[nbr_tbl].grp_id_in=grp_id_in;
+      xtr_lst[nbr_tbl].grp_id_out=grp_id_out;
+#endif
       xtr_lst[nbr_tbl].id=var_id;
+      xtr_lst[nbr_tbl].nm=(char *)strdup(trv_tbl->lst[uidx].nm);
 
       nbr_tbl++;
     } /* end flg == True */
@@ -1570,9 +1584,11 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Memory management after current extracted variable */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
+#ifdef REMOVE
       /* Store input and output group IDs for use by nco_xtr_wrt() */
       trv_tbl->lst[uidx].grp_id_in=grp_id;
       trv_tbl->lst[uidx].grp_id_out=grp_out_id;
+#endif
 
     } /* end if variable and flg_xtr */
 
@@ -1588,8 +1604,9 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
 void
 nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
-(const int nc_in_id,                  /* I [ID] netCDF input file ID */
- const int nc_out_id,                 /* I [ID] netCDF output file ID */
+(const int nc_id_in,                  /* I [ID] netCDF input file ID */
+ const int nc_id_out,                 /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,           /* I [sct] GPE structure */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
  const md5_sct * const md5,           /* I [flg] MD5 Configuration */
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist ( For convenience, ideally... not needed ) */
@@ -1603,10 +1620,10 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
   nco_bool USE_MM3_WORKAROUND=False; /* [flg] Faster copy on Multi-record Multi-variable netCDF3 files */
 
-  (void)nco_inq_format(nc_out_id,&fl_out_fmt);
+  (void)nco_inq_format(nc_id_out,&fl_out_fmt);
 
   /* 20120309 Special case to improve copy speed on large blocksize filesystems (MM3s) */
-  USE_MM3_WORKAROUND=nco_use_mm3_workaround(nc_in_id,fl_out_fmt);
+  USE_MM3_WORKAROUND=nco_use_mm3_workaround(nc_id_in,fl_out_fmt);
   if(HAVE_LIMITS) USE_MM3_WORKAROUND=False; 
 
   if(USE_MM3_WORKAROUND){  
@@ -1623,10 +1640,10 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",nco_prg_nm_get());
 
     /* Convert extraction list from traversal table to nm_id_sct format to re-use old code */
-    xtr_lst=nco_trv_tbl_nm_id(nc_in_id,&xtr_nbr,trv_tbl);
+    xtr_lst=nco_trv_tbl_nm_id(nc_id_in,nc_id_out,gpe,&xtr_nbr,trv_tbl);
 
     /* Split list into fixed-length and record variables */
-    (void)nco_var_lst_fix_rec_dvd(nc_in_id,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
+    (void)nco_var_lst_fix_rec_dvd(nc_id_in,xtr_lst,xtr_nbr,&fix_lst,&fix_nbr,&rec_lst,&rec_nbr);
 
     /* Copy fixed-length data variable-by-variable */
     for(idx_var=0;idx_var<fix_nbr;idx_var++){
@@ -1636,7 +1653,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
     } /* end loop over idx_var */
 
     /* Copy record data record-by-record */
-    (void)nco_cpy_rec_var_val(nc_in_id,fp_bnr,md5,rec_lst,rec_nbr);
+    (void)nco_cpy_rec_var_val(nc_id_in,fp_bnr,md5,rec_lst,rec_nbr);
 
     /* Extraction lists no longer needed */
     if(fix_lst) fix_lst=(nm_id_sct **)nco_free(fix_lst);
@@ -1650,18 +1667,27 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
       /* If object is an extracted variable... */ 
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+        int grp_id_in;
+        int grp_id_out;
+        char *grp_out_fll;
+        /* Get input group ID */
+        (void)nco_inq_grp_full_ncid(nc_id_in,trv_tbl->lst[uidx].grp_nm_fll,&grp_id_in);
+        /* Edit group name for output */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,trv_tbl->lst[uidx].grp_nm_fll); else grp_out_fll=(char *)strdup(trv_tbl->lst[uidx].grp_nm_fll);
+        /* Get output group ID */
+        (void)nco_inq_grp_full_ncid(nc_id_out,grp_out_fll,&grp_id_out);
 
-        if(nco_dbg_lvl_get() == nco_dbg_old){
+        if(nco_dbg_lvl_get() >= nco_dbg_vrb){
           (void)fprintf(stdout,"%s: INFO %s writing variable <%s> from ",nco_prg_nm_get(),fnc_nm,trv.nm_fll);        
-          (void)nco_prt_grp_nm_fll(trv.grp_id_in);
+          (void)nco_prt_grp_nm_fll(grp_id_in);
           (void)fprintf(stdout," to ");   
-          (void)nco_prt_grp_nm_fll(trv.grp_id_out);
+          (void)nco_prt_grp_nm_fll(grp_id_out);
           (void)fprintf(stdout,"\n");
         } /* endif dbg */
 
         /* Copy variable data from input netCDF file to output netCDF file */
-        (void)nco_cpy_var_val_mlt_lmt_trv(trv.grp_id_in,trv.grp_id_out,fp_bnr,md5,&trv); 
-       
+        (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_in,grp_id_out,fp_bnr,md5,&trv); 
+
       } /* endif */
 
     } /* end loop over uidx */
@@ -1918,8 +1944,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].rec_dmn_nm_out=NULL;          /* [sng] Record dimension name, re-ordered */
    
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
+#ifdef REMOVE
   trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err;    /* [id] Group ID in input file */
   trv_tbl->lst[idx].grp_id_out=nco_obj_typ_err;   /* [id] Group ID in output file */
+#endif
 
   trv_tbl->lst[idx].nbr_dmn=nbr_dmn_grp;          /* [nbr] Number of dimensions */
   trv_tbl->lst[idx].nbr_att=nbr_att;              /* [nbr] Number of attributes */
@@ -2017,8 +2045,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].rec_dmn_nm_out=NULL;                     
 
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
+#ifdef REMOVE
     trv_tbl->lst[idx].grp_id_in=nco_obj_typ_err; 
     trv_tbl->lst[idx].grp_id_out=nco_obj_typ_err; 
+#endif
 
     trv_tbl->lst[idx].nbr_att=nbr_att;
     trv_tbl->lst[idx].nbr_dmn=nbr_dmn_var;

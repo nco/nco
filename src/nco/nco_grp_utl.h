@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.403 2013-11-02 22:35:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.404 2013-11-07 05:31:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -52,7 +52,9 @@ extern "C" {
 
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_sct from traversal table */
-(const int nc_id,                     /* I [id] netCDF file ID */
+(const int nc_id_in,                  /* I [ID] netCDF input file ID */
+ const int nc_id_out,                 /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,           /* I [sct] GPE structure */
  int * const xtr_nbr,                 /* I/O [nbr] Number of variables in extraction list */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
@@ -234,6 +236,7 @@ void
 nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int nc_out_id,                 /* I [ID] netCDF output file ID */
+ const gpe_sct * const gpe,           /* I [sct] GPE structure */
  FILE * const fp_bnr,                 /* I [fl] Unformatted binary output file handle */
  const md5_sct * const md5,           /* I [flg] MD5 Configuration */
  const nco_bool HAVE_LIMITS,          /* I [flg] Dimension limits exist */

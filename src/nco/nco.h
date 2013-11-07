@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.426 2013-11-06 01:37:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.427 2013-11-07 05:31:18 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -806,8 +806,10 @@ extern "C" {
     char nm[NC_MAX_NAME+1L];          /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
     size_t nm_lng;                    /* [sng] Length of short name */
     int grp_dpt;                      /* [nbr] Depth of group (root = 0) */
+#ifdef REMOVE
     int grp_id_in;                    /* [id] Group ID in input file */
     int grp_id_out;                   /* [id] Group ID in output file */
+#endif
     int nbr_att;                      /* [nbr] Number of attributes */
     int nbr_dmn;                      /* [nbr] Number of dimensions  */
     int nbr_rec;                      /* [nbr] Number of record dimensions */
