@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.432 2013-11-07 23:42:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.433 2013-11-08 01:07:41 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.432 2013-11-07 23:42:59 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.432 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.433 2013-11-08 01:07:41 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.433 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -222,10 +222,6 @@ main(int argc,char **argv)
   int grp_id;        /* [ID] Group ID */
   int grp_out_id;    /* [ID] Group ID (output) */
   int var_out_id;    /* [ID] Variable ID (output) */
-  int mbr_idx;       /* [idx] Counting index for member */
-  int nsm_idx;       /* [idx] Counting index for ensemble */
-  int mbr_nbr=0;     /* [nbr] Number of members of ensemble */
-  int nsm_nbr=0;     /* [nbr] Number of ensembles */
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
   long *idx_rec_out=NULL; /* [idx] Index of current record in output file (0 is first, ...) */
@@ -1041,12 +1037,9 @@ main(int argc,char **argv)
       /* End ncea section */
     }else if(nco_prg_id == nces){ /* nces */
 
-      nsm_nbr=trv_tbl->nsm_nbr;
-
-      for(nsm_idx=0;nsm_idx<nsm_nbr;nsm_idx++){ /* Loop over ensembles in current file */
-        mbr_nbr=trv_tbl->nsm[nsm_idx].mbr_nbr;
-        for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file (for nces these are only the templates) */
-          for(mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
+      for(int nsm_idx=0;nsm_idx<trv_tbl->nsm_nbr;nsm_idx++){ /* Loop over ensembles in current file */
+        for(int idx_prc=0;idx_prc<nbr_var_prc;idx_prc++){ /* Process all variables in current file (for nces these are only the templates) */
+          for(int mbr_idx=0;mbr_idx<trv_tbl->nsm[nsm_idx].mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
             for(int idx_var=0;idx_var<trv_tbl->nsm[nsm_idx].mbr[mbr_idx].var_nbr;idx_var++){ /* Loop over variables of current ensemble */
 
               /* Obtain variable GTT object using the full variable name */
@@ -1068,32 +1061,34 @@ main(int argc,char **argv)
               (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
               /* Store the output variable ID */
-              var_prc_out[idx]->id=var_out_id;
+              var_prc_out[idx_prc]->id=var_out_id;
 
               var_sct *var_tmp; /* [sct] Dummy variable, since processed array only has templates */
-              var_tmp=nco_var_dpl(var_prc[idx]);
+              var_tmp=nco_var_dpl(var_prc[idx_prc]);
 
               /* Replace the template variable name with the member variable name */
               var_tmp->nm_fll=(char *)nco_free(var_tmp->nm_fll);
               var_tmp->nm_fll=strdup(var_trv->nm_fll);
 
               /* Retrieve variable from disk into memory */
-              (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
+              (void)nco_msa_var_get_trv(in_id,var_tmp,trv_tbl);
 
               /* Convert char, short, long, int types to doubles before arithmetic
               Output variable type is "sticky" so only convert on first record */
-              if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
-              var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
+              if(fl_idx == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
+              var_tmp=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_tmp);
               /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
-              nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
+              nco_opr_drv(fl_idx,nco_op_typ,var_tmp,var_prc_out[idx_prc]);
               FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
               /* Free current input buffer */
-              var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+              var_prc[idx_prc]->val.vp=nco_free(var_prc[idx_prc]->val.vp);
+              var_tmp=(var_sct *)nco_var_free(var_tmp);
 
             } /* Loop over variables of current ensemble */
-          } /* end loop over members of current ensemble */
-        } /* end loop over idx */
+
+          } /* end loop over members of current ensemble */   
+        } /* end loop over processed array */
       } /* end loop over ensembles in current file */
 
     } /* End nces section */
