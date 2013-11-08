@@ -1,3 +1,7 @@
+2013-11-08 Pedro Vicente  <pvicente@uci.edu>
+
+	* nces: Regression #1. mdl.cdl ensembles.
+
 2013-11-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.8 release procedure:

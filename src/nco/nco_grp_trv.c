@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.236 2013-11-07 23:42:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.237 2013-11-08 23:02:48 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -781,3 +781,20 @@ trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in tabl
 
   return;
 } /* end trv_tbl_mrk_nsm_mb() */
+
+
+void
+trv_tbl_mrk_tpl                       /* [fnc] Convert table extracted objects only for ensemble templates */
+(const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_tbl->lst[uidx].flg_xtr=False;
+  }
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(trv_tbl->lst[uidx].flg_nsm_tpl){
+      trv_tbl->lst[uidx].flg_xtr=True;
+    }
+  }
+
+  return;
+} /* end trv_tbl_mrk_tpl() */

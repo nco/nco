@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1045 2013-11-07 23:42:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1046 2013-11-08 23:02:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7697,6 +7697,9 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   }
 
   assert(nsm_nbr == trv_tbl->nsm_nbr);
+
+  /* Convert table extracted objects only for ensemble templates */
+  (void)trv_tbl_mrk_tpl(trv_tbl);  
 
 } /* nco_bld_nsm() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.435 2013-11-08 03:14:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.436 2013-11-08 23:02:48 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.435 2013-11-08 03:14:30 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.435 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.436 2013-11-08 23:02:48 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.436 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1058,20 +1058,6 @@ main(int argc,char **argv)
                 (void)fprintf(fp_stdout,"%s: DEBUG ensemble %d <%s> : variable %d <%s> : template %d <%s>\n",nco_prg_nm_get(),
                   nsm_idx,var_trv->nsm_nm,idx_var,var_trv->nm_fll,idx_prc,prc_trv->nm_fll);             
               }
-
-              /* Obtain group ID using full group name */
-              (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
-              /* Edit group name for output */
-              if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
-              /* Obtain output group ID using full group name */
-              (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
-              /* Memory management after current extracted group */
-              if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-              /* Get variable ID */
-              (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
-
-              /* Store the output variable ID */
-              var_prc_out[idx_prc]->id=var_out_id;
 
               var_sct *var_tmp; /* [sct] Dummy variable, since processed array only has templates */
               var_tmp=nco_var_dpl(var_prc[idx_prc]);

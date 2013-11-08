@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.97 2013-11-06 01:37:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.98 2013-11-08 23:02:48 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -150,5 +150,9 @@ trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in tabl
  const nco_bool flg_nsm_tpl,          /* I [flg] Variable is template member */
  const char * const grp_nm_fll_prn,   /* I [sng] Parent group full name (key for ensemble) */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+void
+trv_tbl_mrk_tpl                       /* [fnc] Convert table extracted objects only for ensemble templates */
+(const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 #endif /* NCO_GRP_TRV_H */
