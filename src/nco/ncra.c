@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.433 2013-11-08 01:07:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.434 2013-11-08 01:44:20 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.433 2013-11-08 01:07:41 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.433 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.434 2013-11-08 01:44:20 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.434 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -246,6 +246,7 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   trv_sct *var_trv;  /* [sct] Variable GTT object */
+  trv_sct* prc_trv;
   trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
@@ -1042,11 +1043,20 @@ main(int argc,char **argv)
           for(int mbr_idx=0;mbr_idx<trv_tbl->nsm[nsm_idx].mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
             for(int idx_var=0;idx_var<trv_tbl->nsm[nsm_idx].mbr[mbr_idx].var_nbr;idx_var++){ /* Loop over variables of current ensemble */
 
-              /* Obtain variable GTT object using the full variable name */
+              /* Obtain variable GTT object for the processed array (template) */
+              prc_trv=trv_tbl_var_nm_fll(var_prc[idx_prc]->nm_fll,trv_tbl);
+
+              /* Obtain variable GTT object for the variable in ensemble */
               var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[nsm_idx].mbr[mbr_idx].var_nm_fll[idx_var],trv_tbl);
 
+              /* Skip if from diferent ensembles */
+              if (strcmp(prc_trv->grp_nm_fll_prn,var_trv->grp_nm_fll_prn) != 0 ){
+                continue;
+              }
+
               if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(fp_stdout,"%s: DEBUG ensemble <%s> : variable <%s>\n",nco_prg_nm_get(),var_trv->nsm_nm,var_trv->nm_fll);             
+                (void)fprintf(fp_stdout,"%s: DEBUG ensemble %d <%s> : variable %d <%s> : template %d <%s>\n",nco_prg_nm_get(),
+                  nsm_idx,var_trv->nsm_nm,idx_var,var_trv->nm_fll,idx_prc,prc_trv->nm_fll);             
               }
 
               /* Obtain group ID using full group name */
