@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.434 2013-11-08 01:44:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.435 2013-11-08 03:14:30 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
   char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.434 2013-11-08 01:44:20 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.434 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.435 2013-11-08 03:14:30 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.435 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1049,7 +1049,7 @@ main(int argc,char **argv)
               /* Obtain variable GTT object for the variable in ensemble */
               var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[nsm_idx].mbr[mbr_idx].var_nm_fll[idx_var],trv_tbl);
 
-              /* Skip if from diferent ensembles */
+              /* Skip if from different ensembles */
               if (strcmp(prc_trv->grp_nm_fll_prn,var_trv->grp_nm_fll_prn) != 0 ){
                 continue;
               }
@@ -1090,6 +1090,11 @@ main(int argc,char **argv)
               /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
               nco_opr_drv(fl_idx,nco_op_typ,var_tmp,var_prc_out[idx_prc]);
               FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
+
+              /* Transfer the tally to the template, since the dummy is going to be deleted... software enginnering at its best */
+              var_prc[idx_prc]->tally=(long *)nco_free(var_prc[idx_prc]->tally);
+              var_prc[idx_prc]->tally=(long *)nco_malloc(var_prc[idx_prc]->sz*sizeof(long));
+              (void)memcpy((void *)var_prc[idx_prc]->tally,(void *)var_tmp->tally,var_tmp->sz /* tally size? */ *sizeof(long));
 
               /* Free current input buffer */
               var_prc[idx_prc]->val.vp=nco_free(var_prc[idx_prc]->val.vp);
