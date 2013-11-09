@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1046 2013-11-08 23:02:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1047 2013-11-09 03:16:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1492,8 +1492,13 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* Obtain group ID from netCDF API using full group name */
         (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
 
-        /* Edit group name for output */
-        if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
+        /* Template parent (this avoids the creation of the leaf) */
+        if(nces == nco_prg_id_get() && grp_trv.grp_dpt>0){
+          grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
+        }else {
+          /* Edit group name for output */
+          if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
+        } /* ! nces */
 
         /* If output group does not exist, create it */
         if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -1522,8 +1527,13 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Obtain group ID using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-      /* Edit group name for output */
-      if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
+      /* Template parent */
+      if(nces == nco_prg_id_get()){
+        grp_out_fll=(char *)strdup(var_trv.grp_nm_fll_prn);
+      }else {
+        /* Edit group name for output */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
+      } /* ! nces */
 
       /* If output group does not exist, create it */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -4380,8 +4390,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Test group existence before testing dimension existence */
 
     /* Determine where to place new dimension in output file */
-    if (USE_GRP_DMN){
-      assert(nco_prg_id == nces);
+    if (nco_prg_id == nces){
       grp_dmn_out_fll=(char *)strdup(grp_out_fll);
     }else{
       if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll); else grp_dmn_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
