@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.436 2013-11-08 23:02:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.437 2013-11-11 04:57:13 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -49,8 +49,10 @@
    ncea in.nc in.nc ~/foo.nc
    ncea -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
    ncea -O -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
-   ncea -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
+   ncea -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc
 
+   ncra -Y nces -O -p ~/nco/data mdl.nc ~/foo.nc
+   ncra -Y nces -O --nsm_sfx=_avg -p ~/nco/data mdl.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -153,17 +155,18 @@ main(int argc,char **argv)
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *grp_out_fll=NULL; /* [sng] Group name */
   char *lmt_arg[NC_MAX_DIMS];
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type Option y */
   char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
+  char *nsm_sfx=NULL; /* [sng] Ensemble suffix */
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
-  char *grp_out_fll=NULL; /* [sng] Group name */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.436 2013-11-08 23:02:48 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.436 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.437 2013-11-11 04:57:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.437 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -297,6 +300,8 @@ main(int argc,char **argv)
     {"fl_fmt",required_argument,0,0},
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
+    {"nsm_sfx",required_argument,0,0},
+    {"ensemble_suffix",required_argument,0,0},
     /* Long options with short counterparts */
     {"3",no_argument,0,'3'},
     {"4",no_argument,0,'4'},
@@ -418,6 +423,9 @@ main(int argc,char **argv)
       } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"mro") || !strcmp(opt_crr,"multi_record_output")) FLG_MRO=True; /* [flg] Multi-Record Output */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+      if(!strcmp(opt_crr,"nsm_sfx") || !strcmp(opt_crr,"ensemble_suffix")){
+	nsm_sfx=(char *)strdup(optarg);
+      } /* endif "nsm_sfx" */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"rec_apn") || !strcmp(opt_crr,"record_append")){
@@ -1145,6 +1153,21 @@ main(int argc,char **argv)
       /* For nces, group to save is ensemble parent group */
       if(nco_prg_id == nces){
         grp_out_fll=(char *)strdup(var_trv->nsm_nm);
+	if(nsm_sfx){
+	  /* nsm_sfx directs output to same level as input ensemble, rather than to parent level
+	     NB: Current flaws: only implemented here at output end, needs to be in nco_xtr_mk() */
+	  char *stb_nm;
+	  stb_nm=strrchr(grp_out_fll,'/');
+	  if(grp_out_fll+1){
+	    grp_out_fll=nco_realloc(grp_out_fll,strlen(grp_out_fll)+strlen(stb_nm)+strlen(nsm_sfx)+1L);
+	    strcat(grp_out_fll,stb_nm);
+	  }else{
+	    grp_out_fll=nco_realloc(grp_out_fll,strlen(nsm_sfx)+2L);
+	  } /* end else */
+	  strcat(grp_out_fll,nsm_sfx);
+	  /* If output group does not exist, create it */
+	  if(nco_inq_grp_full_ncid_flg(out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(out_id,grp_out_fll,&grp_out_id);
+	} /* !nsm_sfx */
         /* Define variable in output file */
         var_out_id=nco_cpy_var_dfn_trv(in_id,out_id,grp_out_fll,True,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
       }else if(nco_prg_id == ncea){
@@ -1152,7 +1175,7 @@ main(int argc,char **argv)
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
         /* Get variable ID */
         (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
-      }
+      } /* end else */
 
       /* Obtain output group ID using full group name */
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.430 2013-11-06 17:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.431 2013-11-11 04:57:13 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -604,6 +604,7 @@ nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmeti
   case ncap: 
   case ncbo:
   case ncea:
+  case nces:
   case ncflint:
     return True;
     break;
@@ -614,9 +615,6 @@ nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmeti
   case ncra: /* Process (not fix) time-varying fields like date, datesec */
   case ncrename: 
   case ncwa:
-    return False;
-    break;
-  case nces: /* TO_DO */
     return False;
     break;
   case ncpdq: 
@@ -801,7 +799,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always Include terminal \n so mnemonic does not dangle */
-  return "Christian Grey\n";
+  return "La Jolla Kellogg-to-Scripps swim\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -850,11 +848,12 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   else if(!strcmp(nm_out_tmp,"ncsubtract")){*prg_lcl=ncbo;}
   /* ncea and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncea")){*prg_lcl=ncea;}
-  else if(!strcmp(nm_out_tmp,"ncea2")){*prg_lcl=ncea;}
   else if(!strcmp(nm_out_tmp,"mpncea")){*prg_lcl=ncea;}
   /* ncecat and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncecat")){*prg_lcl=ncecat;}
   else if(!strcmp(nm_out_tmp,"mpncecat")){*prg_lcl=ncecat;}
+  /* nces and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"nces")){*prg_lcl=nces;}
   /* ncflint and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncflint")){*prg_lcl=ncflint;}
   else if(!strcmp(nm_out_tmp,"mpncflint")){*prg_lcl=ncflint;}
@@ -867,19 +866,15 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   else if(!strcmp(nm_out_tmp,"ncunpack")){*prg_lcl=ncpdq;}
   /* ncra and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncra")){*prg_lcl=ncra;}
-  else if(!strcmp(nm_out_tmp,"ncra2")){*prg_lcl=ncra;}
   else if(!strcmp(nm_out_tmp,"mpncra")){*prg_lcl=ncra;}
   /* ncrcat and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncrcat")){*prg_lcl=ncrcat;}
-  else if(!strcmp(nm_out_tmp,"ncrcat2")){*prg_lcl=ncrcat;}
   else if(!strcmp(nm_out_tmp,"mpncrcat")){*prg_lcl=ncrcat;}
   /* ncrename and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncrename")){*prg_lcl=ncrename;}
   /* ncwa and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"mpncwa")){*prg_lcl=ncwa;}
-  /* nces and acceptable synonyms (symbolic links): */
-  else if(!strcmp(nm_out_tmp,"nces")){*prg_lcl=nces;}
   else{
     (void)fprintf(stdout,"%s: ERROR executable name %s not registered in nco_prg_prs()\n",nm_out_tmp,nm_out_tmp);
     nco_exit(EXIT_FAILURE);
@@ -927,7 +922,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [-G grp:lvl] [-g ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--mro] [--msa] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [--rec_apn] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
   case ncea:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [-G grp:lvl] [-g ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--msa] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [-G grp:lvl] [-g ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--msa] [-n ...] [--no_tmp_fl] [--nsm_sfx] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
   case ncrcat:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [-G grp:lvl] [-g ...] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [--md5_digest] [--msa] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [--rec_apn] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
@@ -1039,6 +1034,7 @@ nco_usg_prn(void)
   } /* end if -n */
   if(strstr(opt_sng,"--no_blank")) (void)fprintf(stdout,"    --no_blank\t\tPrint numeric missing values\n");
   if(strstr(opt_sng,"--no_tmp_fl")) (void)fprintf(stdout,"    --no_tmp_fl\t\tDo not write output to temporary file\n");
+  if(strstr(opt_sng,"--nsm_sfx")) (void)fprintf(stdout,"    --nsm_sfx, --ensemble_suffix\tPlace ensemble output in group parent/parent+nsm_sfx\n");
   if(strstr(opt_sng,"[-o")) (void)fprintf(stdout,"-o, --output, --fl_out fl_out\tOutput file name (or use last positional argument)\n");
   if(strstr(opt_sng,"[-O]")) (void)fprintf(stdout,"-O, --ovr, --overwrite\tOverwrite existing output file, if any\n");
   if(strstr(opt_sng,"[-P")){

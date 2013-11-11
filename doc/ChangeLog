@@ -1,6 +1,10 @@
+2013-11-10  Charlie Zender  <zender@uci.edu>
+
+	* nces first stab at --nsm_sfx switch. Must place in nco_xtr_mk() too.
+
 2013-11-08 Pedro Vicente  <pvicente@uci.edu>
 
-	* nces: Regression #1. mdl.cdl ensembles.
+	* nces: Regression #1. mdl.cdl ensembles
 
 2013-11-06  Charlie Zender  <zender@uci.edu>
 

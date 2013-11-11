@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1047 2013-11-09 03:16:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1048 2013-11-11 04:57:13 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1493,12 +1493,12 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
 
         /* Template parent (this avoids the creation of the leaf) */
-        if(nces == nco_prg_id_get() && grp_trv.grp_dpt>0){
+        if(nco_prg_id_get() == nces && grp_trv.grp_dpt > 0){
           grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
         }else {
           /* Edit group name for output */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
-        } /* ! nces */
+        } /* !nces */
 
         /* If output group does not exist, create it */
         if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -1533,7 +1533,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       }else {
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
-      } /* ! nces */
+      } /* !nces */
 
       /* If output group does not exist, create it */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -4390,7 +4390,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Test group existence before testing dimension existence */
 
     /* Determine where to place new dimension in output file */
-    if (nco_prg_id == nces){
+    if(nco_prg_id == nces){
       grp_dmn_out_fll=(char *)strdup(grp_out_fll);
     }else{
       if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll); else grp_dmn_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
@@ -6202,7 +6202,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
   /* Used only by ncra */
-  assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncea || nco_prg_id_get() == nces );
+  assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncea || nco_prg_id_get() == nces);
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){

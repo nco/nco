@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.225 2013-10-29 21:58:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.226 2013-11-11 04:57:13 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -857,8 +857,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
             } /* endif rcd_stt */
 
             if(!FTP_NETRC){
-              /* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but
-              MAXHOSTNAMELEN isn't in there on Solaris */
+              /* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but 
+		 Solaris does not have MAXHOSTNAMELEN in sys/param.h */
               host_nm_lcl=(char *)nco_malloc((256UL+1UL)*sizeof(char));
               (void)gethostname(host_nm_lcl,256UL+1UL);
               /* fxm: move to gethostbyname() next */

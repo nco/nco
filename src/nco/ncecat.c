@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.344 2013-11-07 05:31:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.345 2013-11-11 04:57:13 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.344 2013-11-07 05:31:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.344 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.345 2013-11-11 04:57:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.345 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -673,7 +673,7 @@ main(int argc,char **argv)
         size_t sfx_fst; /* [nbr] Offset of suffix from start of string */
         size_t sfx_lng; /* [nbr] Suffix has this many characters */
 
-        /* Is there a .nc, .cdf, .nc3, or .nc4 suffix? */
+        /* Is there a .nc, .cdf, .nc3, or .nc4 suffix? or an .hdf, .HDF, .h5, .H5, or .he5 suffix? */
         fl_in_lng=strlen(fl_in);
         sfx_lng=3L;
         sfx_fst=fl_in_lng-sfx_lng;
@@ -685,7 +685,7 @@ main(int argc,char **argv)
 	  sfx_lng=4L;
 	  sfx_fst=fl_in_lng-sfx_lng;
 	  if(strncmp(fl_in+sfx_fst,".cdf",sfx_lng) && /* netCDF old-fashioned suffix */
-	     strncmp(fl_in+sfx_fst,".hdf",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by AIRS, AMSR-E, MODIS, MOPPITT, e.g., AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf, MSR_E_L2_Rain_V10_200905312326_A.hdf, MOD10CM.A2007001.005.2007108111758.hdf, MOP01-20121231-L1V3.34.10.hdf */
+	     strncmp(fl_in+sfx_fst,".hdf",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by AIRS, AMSR-E, MODIS, MOPPITT, SeaWiFS, e.g., AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf, MSR_E_L2_Rain_V10_200905312326_A.hdf, MOD10CM.A2007001.005.2007108111758.hdf, MOP01-20121231-L1V3.34.10.hdf, S1999001.L3m_DAY_CDOM_cdom_index_9km.hdf */
 	     strncmp(fl_in+sfx_fst,".HDF",sfx_lng) && /* HDF-EOS2 (HDF4) suffix used by TRMM, e.g., 3B43.070901.6A.HDF */
 	     strncmp(fl_in+sfx_fst,".he5",sfx_lng) && /* HDF-EOS5 (HDF5) suffix used by HIRDLS, OMI Aerosols, e.g., HIRDLS-Aura_L3ZAD_v06-00-00-c02_2005d022-2008d077.he5, OMI-Aura_L2-OMAERUV_2013m1004t2338-o49057_v003-2013m1005t053932.he5 */
 	     strncmp(fl_in+sfx_fst,".nc3",sfx_lng) && /* netCDF3 variant suffix */
