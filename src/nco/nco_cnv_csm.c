@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.62 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.63 2013-11-12 23:50:57 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -235,7 +235,8 @@ nco_cnv_cf_cll_mth_add /* [fnc] Add cell_methods attributes */
 {
   /* Purpose: Add/modify cell_methods attribute according to CF convention
      http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#cell-methods
-     http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#sub_app */
+     http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-1.0.html#sub_app
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods */
 
   const char fnc_nm[]="nco_cnv_cf_cll_mth_add()"; /* [sng] Function name */
 

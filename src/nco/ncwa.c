@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.381 2013-11-06 17:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.382 2013-11-12 23:50:57 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.381 2013-11-06 17:51:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.381 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.382 2013-11-12 23:50:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.382 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -659,7 +659,7 @@ main(int argc,char **argv)
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
-  }
+  } /* end loop over var */
 
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
@@ -697,9 +697,7 @@ main(int argc,char **argv)
   /* Add new missing values to output file while in define mode */
   if(msk_nm){
     for(idx=0;idx<nbr_var_prc;idx++){
-
       char *grp_out_fll=NULL; /* [sng] Group name */
-
       int grp_out_id;    /* [ID] Group ID (output) */
       int var_out_id;    /* [ID] Variable ID (output) */
       trv_sct *var_trv;  /* [sct] Variable GTT object */
@@ -798,21 +796,10 @@ main(int argc,char **argv)
       in_id=in_id_arr[omp_get_thread_num()];
 
       /* Find weighting variable that matches current variable */
-      if(wgt_nm){
-
-        /* Retrieve weighting variable */
-        wgt=nco_var_get_wgt_trv(in_id,wgt_nm,var_prc[idx],trv_tbl);
-
-      } /* Find weighting variable that matches current variable */
-
+      if(wgt_nm) wgt=nco_var_get_wgt_trv(in_id,wgt_nm,var_prc[idx],trv_tbl);
 
       /* Find mask variable that matches current variable */
-      if(msk_nm){
-
-        /* Retrieve mask variable */
-        msk=nco_var_get_wgt_trv(in_id,msk_nm,var_prc[idx],trv_tbl);
-
-      } /* Find mask variable that matches current variable */   
+      if(msk_nm) msk=nco_var_get_wgt_trv(in_id,msk_nm,var_prc[idx],trv_tbl);
 
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
@@ -1054,7 +1041,6 @@ main(int argc,char **argv)
 
       /* Store the output variable ID */
       var_prc_out[idx]->id=var_out_id;
-
 
 #ifdef _OPENMP
 #pragma omp critical
