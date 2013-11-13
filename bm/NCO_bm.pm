@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.83 2013-10-22 03:12:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.84 2013-11-13 02:38:07 pvicente Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -150,7 +150,7 @@ sub bm_ntl($$){
     my $dbg_lvl; # [flg] Debugging level
     ($bch_flg,$dbg_lvl)=@_;
 # Enumerate operators to test
-    @opr_lst_all = qw( ncap2 ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net );
+    @opr_lst_all = qw( ncap2 ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net nces);
     @opr_lst_mpi = qw( ncbo ncecat ncflint ncpdq ncra ncwa ncpdq ncra);
     $opr_sng_mpi = "ncbo ncdiff ncecat ncflint ncea ncpdq ncra ncwa "; # ncpdq ncra MPI, but fail bench
     $opr_rgr_mpi = "ncbo ncdiff ncecat ncflint ncea ncpdq ncra ncwa ncrcat"; # need all of them for regression
@@ -187,6 +187,7 @@ sub bm_ntl($$){
     $sym_link{ncdiff}=$dotlib . "ncbo";
     $sym_link{ncea}=$dotlib . "ncra";
     $sym_link{ncrcat}=$dotlib . "ncra";
+	$sym_link{nces}=$dotlib . "ncra";
     foreach(keys %sym_link) {
 	system("cd $MY_BIN_DIR && ln -s -f $sym_link{$_} $_ || (/bin/rm -f $_ && ln -s -f $sym_link{$_} $_)");
     }
