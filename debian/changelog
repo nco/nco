@@ -1,3 +1,9 @@
+nco (4.3.9-1) unstable; urgency=low
+
+  * new upstream version (nces, XML)
+
+ -- Charlie Zender <zender@uci.edu>  Wed, 06 Dec 2013 12:24:55 -0700
+
 nco (4.3.8-1) unstable; urgency=low
 
   * new upstream version (ncatted groups, -7, namespace safety)

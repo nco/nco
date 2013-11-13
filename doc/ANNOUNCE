@@ -1,21 +1,19 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.634 2013-11-06 19:56:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.635 2013-11-13 20:57:02 zender Exp $ -*-text-*-
 
-The netCDF Operators NCO version 4.3.8 are ready. 
+The netCDF Operators NCO version 4.3.9 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-ncatted now supports groups. That's the main new feature.
-This completes NCO's migration from flat- to group-oriented files.
-All core operators are now "group-aware" and support netCDF4 groups. 
-Most relevant options may support full or partial group paths.
-Remaining options that do not will be migrated as time permits.
+We are pleased to report the birth of a new operator, nces.
+nces arrived on schedule in November, at about 1000 lines of code.
+nces is for netCDF Ensemble Statistics.
+nces extends the old ncea by allowing groups to be treated as an
+unlimited dimension of datasets. See below for more info.
 
-The exception to this is ncap2. Porting ncap2 to support groups
-will be undertaken as resources permit. The main ncap2 developer
-is a volunteer for whom we are trying to secure funding.
+This version also improves ncks support for XML (NcML) output.
 
-Work on NCO 4.3.9 is underway and includes improved netCDF4 support 
+Work on NCO 4.4.0 is underway and includes improved netCDF4 support 
 for various options (all -X, ncwa -w and -m), other netCDF4 mop-up,
 and improved support for HDF4 files. And the operator, nces, which
 we will debut/describe at AGU (Friday 12/13 11:35 AM Moscone West 2010). 
@@ -23,31 +21,23 @@ we will debut/describe at AGU (Friday 12/13 11:35 AM Moscone West 2010).
 Enjoy,
 Charlie
 
-"New stuff" in 4.3.8 summary (full details always in ChangeLog):
+"New stuff" in 4.3.9 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
-A. ncatted accepts full group paths to variables and groups.
-   Previously ncatted worked only on the root group of netCDF4 files.
-   Now you can edit all attributes in group files, in all
-   permutations, i.e., for variables, for groups and the root group.
-   ncatted -a units,/g1/lon,o,c,"degrees_west" in_grp.nc
-   ncatted -a new_grp_att,group,c,sng,"new group attribute" in_grp.nc
-   http://nco.sf.net/nco.html#xmp_ncatted
+A. nces fxm
 
-B. Add -7 switch to write netCDF4-classic files.
-   This is simply a synonym for --fl_fmt=netcdf4_classic.
-   The reason (and mnemonic) for -7 is that NETCDF4_CLASSIC files
-   include great features of both netCDF3 (compatibility) and
-   netCDF4 (compression, chunking) and, well, 3+4=7 :)
-   Anyway, -7 is much easier to remember/type than the alternative.
-   http://nco.sf.net/nco.html#fl_fmt
+A. Separators for XML now user-configurable with --xml_spr_mtd and
+   --xml_spr_dat for metadata and data, respectively.
+   ncks -v att_var --xml --xml_spr_mtd="," ~/nco/data/in.nc
+   ncks -v att_var --xml --xml_spr_dat="," ~/nco/data/in.nc
 
 BUG FIXES:
 
-A. Reduced namespace conflicts with other shared libraries
-
-B. Added missing --op_typ/--operation switches to ncra
+A. XML mode corrects a number of issues reported by Aleksandar Jelenak 
+   1. Print </variable> in metadata mode
+   2. Adds type="typ_nm" attribute to non-string attribute elements
+   3. Add separator=", " attribute to attribute element and variable element
 
 KNOWN ISSUES NOT YET FIXED:
 
