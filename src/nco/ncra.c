@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.439 2013-11-13 07:38:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.440 2013-11-13 07:59:27 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.439 2013-11-13 07:38:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.439 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.440 2013-11-13 07:59:27 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.440 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1172,7 +1172,7 @@ main(int argc,char **argv)
         } /* !trv_tbl->nsm_sfx */
 
         /* Define variable in output file */
-        var_out_id=nco_cpy_var_dfn_trv(in_id,out_id,grp_out_fll,True,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
+        var_out_id=nco_cpy_var_dfn_trv(in_id,out_id,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
       }else if(nco_prg_id == ncea){
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);

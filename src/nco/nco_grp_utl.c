@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1050 2013-11-13 07:38:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1051 2013-11-13 07:59:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1538,9 +1538,9 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Obtain group ID using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-      /* Template parent */
+      /* nces variables are created at ncra end, nothing to do here */
       if(nces == nco_prg_id_get()){
-        grp_out_fll=(char *)strdup(var_trv.grp_nm_fll_prn);
+        continue;
       }else {
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
@@ -1553,7 +1553,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
 
       /* Define variable in output file */
-      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,grp_out_fll,False,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
+      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
 
       /* Set chunksize parameters */
       if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&var_trv);
@@ -3489,7 +3489,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,False,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,grp_out_fll,False,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
+    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,rnk_gtr);
@@ -3664,7 +3664,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
 
     /* Define variable in output file. */
-    var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,False,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
+    var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
 
     /* Set chunksize parameters */
     if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,trv_1);
@@ -4207,7 +4207,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 (const int nc_in_id,                /* I [ID] netCDF input file ID */
  const int nc_out_id,               /* I [ID] netCDF output file ID */
  const char * const grp_out_fll,    /* I [sng] Output group name */
- const nco_bool USE_GRP_DMN,        /* I [flg] Use output group name to define dimensions for variable (nces) */
  const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,         /* I [sct] GPE structure */
  const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
