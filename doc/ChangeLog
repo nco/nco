@@ -1,3 +1,16 @@
+2013-11-13  Charlie Zender  <zender@uci.edu>
+
+	* Numerous XML fixes spurred by Aleksandar Jelenak report:
+
+	* Make XML separator configurable via ncks --xml_spr_mtd, --xml_spr_dat
+	that now default to " " and ", " respectively fxm
+
+	* Add separator=", " attribute to attribute element and variable element
+
+	* Add type="cdl_typ_nm" attribute to non-string attribute elements
+
+	* XML print </variable> in metadata mode
+
 2013-11-13 Pedro Vicente  <pvicente@uci.edu>
 
 	* nces: Regression #1, #2. 1 file ensembles, with --nsm_sfx

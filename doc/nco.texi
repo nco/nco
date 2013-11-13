@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.902 2013-11-06 23:12:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.903 2013-11-13 20:31:34 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4321,12 +4321,12 @@ An operator could be written to dismember all groups with a single
 invocation, but the point is dismembering without loss of information 
 is possible now with this simple script.
 Note that all dimensions inherited by groups in the input file are
-correctly placed in the flat files.
+correctly placed by @command{ncdismember} into the flat files.
 Moreover, each output file preserves the group metadata of all ancestor
 groups, including the global metadata from the input file.
-As written, the script fails on any groups which contain netCDF4
-features because the user requests (with the @samp{-3} option) that 
-output be netCDF3 classic format. 
+As written, the script fails on groups that contain netCDF4 features
+because the user requests (with the @samp{-3} option) that output be
+netCDF3 classic format.  
 Naturally groups containing netCDF4-only atomic-types (such as
 @code{NC_STRING} and @code{NC_UINT64}) should be dismembered into flat
 netCDF4 files, not flat netCDF3 files (compliance-checkers may complain

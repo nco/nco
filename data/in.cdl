@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.177 2013-10-16 03:27:25 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.178 2013-11-13 20:31:34 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -465,6 +465,10 @@ variables:
 	int int_var;
 	int_var:long_name = "int";
 
+	long long_var;
+	long_var:long_name = "long";
+	long_var:purpose = "Variable of CDL type=long, which is deprecated for int. Included to test back-compatibility";
+
 	short short_var;
 	short_var:long_name = "short";
 
@@ -581,6 +585,7 @@ variables:
 	att_var:char_att = "Sentence one.\nSentence two.\n";
 	att_var:short_att = 37s;
 	att_var:int_att = 73;
+	att_var:long_att = 73l;
         att_var:float_att = 73.0f,72.0f,71.0f,70.010f,69.0010f,68.010000f,67.01000100f;
 	att_var:double_att = 73.0,72.0,71.0,70.010,69.0010,68.010000,67.01000100;
 
@@ -589,6 +594,7 @@ variables:
 	bnd_var:char_att = "Sentence one.\nSentence two.\n";
 	bnd_var:short_att = 37s;
 	bnd_var:int_att = 73;
+	bnd_var:long_att = 73l;
 	bnd_var:float_att = 73.f;
 	bnd_var:double_att = 73.d;
 
@@ -1342,6 +1348,7 @@ data:
 // 	        date=640312,640313,640314,640315,640316,640317,640318,640319,640320,640321;
 	date=640224,640225,640226,640227,640228,640301,640302,640303,640304,640305;
  	int_var=10;
+ 	long_var=10;
  	nbdate=640224;
 	fl_nm_arr="/data/zender/dstccm04/dstccm04_8589_01.nc",
 		"/data/zender/dstccm04/dstccm04_8589_02.nc",

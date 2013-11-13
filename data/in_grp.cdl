@@ -79,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.102 2013-10-31 06:17:16 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.103 2013-11-13 20:31:34 zender Exp $";
   
  data:
   area=10.,10.;
@@ -264,8 +264,32 @@ netcdf in_grp {
   } // end g10
 
  group: g11 { // Level 1
-    // Purpose: Test netCDF4-specific atomic types
+    // Purpose: Test all netCDF3 and netCDF4 atomic types
   variables:
+    // netCDF3 atomic types
+    byte byte_var;
+  byte_var:long_name = "byte-type variable";
+    
+    char char_var;
+  char_var:long_name = "char-type variable";
+    
+    int int_var;
+  int_var:long_name = "int-type variable";
+    
+    short short_var;
+  short_var:long_name = "short-type variable";
+
+    long long_var;
+  long_var:long_name = "long-type variable ";
+  long_var:purpose = "Variable of CDL type=long, which is deprecated for int. Included to test back-compatibility";
+
+    double double_var;
+  double_var:long_name = "double-type variable";
+
+    float float_var;
+  float_var:long_name = "float-type variable";
+
+    // netCDF4-only atomic types
     int64 int64_var;
   int64_var:long_name = "int64-type variable";
     
@@ -293,6 +317,15 @@ netcdf in_grp {
     ushort ushort_var;
   ushort_var:long_name = "ushort-type variable";
   data:
+    // netCDF3 atomic types
+    byte_var='z';
+    char_var="z";
+    double_var=10.;
+    float_var=10.;
+    short_var=10;
+    int_var=10;
+    long_var=10;
+    // netCDF4-only atomic types
     int64_var=9223372036854775807; // LLONG_MAX = 9223372036854775807, NC_FILL_INT64 is -9223372036854775806LL
     string_var="If you prick us, do we not bleed? If you tickle us, do we not laugh? If you poison us, do we not die? And if you wrong us, shall we not revenge?";
     string_arr="Stanza 1","Stanza 2";

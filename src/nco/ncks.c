@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.671 2013-11-07 05:31:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.672 2013-11-13 20:31:34 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -151,11 +151,13 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  char *spr_sng_dat=NULL; /* [sng] Output separator string for data */
+  char *spr_sng_mtd=NULL; /* [sng] Output separator string for metadata */
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.671 2013-11-07 05:31:18 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.671 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.672 2013-11-13 20:31:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.672 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -809,6 +811,8 @@ main(int argc,char **argv)
     /* XML must print filename */
     if(prn_flg.xml) prn_flg.fl_in=fl_in;
     prn_flg.xml_lcn=PRN_XML_LOCATION;
+    prn_flg.spr_sng_dat=spr_sng_dat;
+    prn_flg.spr_sng_mtd=spr_sng_mtd;
     prn_flg.gpe=gpe;
     prn_flg.md5=md5;
     prn_flg.nbr_zro=0;
@@ -925,6 +929,8 @@ main(int argc,char **argv)
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
     if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
     if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
+    if(spr_sng_dat) spr_sng_dat=(char *)nco_free(spr_sng_dat);
+    if(spr_sng_mtd) spr_sng_mtd=(char *)nco_free(spr_sng_mtd);
     /* Free lists of strings */
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.174 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.175 2013-11-13 20:31:34 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -93,7 +93,12 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       nm_cdl=(char *)nco_free(nm_cdl);
     } /* !cdl */
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
-    if(prn_flg->xml) (void)fprintf(stdout,"%*s<attribute name=\"%s\" value=\"",prn_ndn,spc_sng,att[idx].nm); 
+    if(prn_flg->xml){
+      (void)fprintf(stdout,"%*s<attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
+      if(att[idx].type != NC_STRING && att[idx].type != NC_CHAR) (void)fprintf(stdout," type=\"%s\"",cdl_typ_nm(att[idx].type));
+      if(att[idx].sz > 1L) (void)fprintf(stdout," separator=\"%s\"",cma_sng);
+      (void)fprintf(stdout," value=\"");
+    } /* !xml */
     
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
@@ -1104,9 +1109,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   char *dlm_sng=NULL;                        /* [sng] User-specified delimiter string, if any */
   char *nm_cdl;
-  char *unit_sng;                            /* [sng] Units string */ 
   char *sng_val_sng;                         /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
+  char *spr_sng=NULL;                        /* [sng] Output separator string */
+  char *unit_sng;                            /* [sng] Units string */ 
   char val_sng[NCO_ATM_SNG_LNG];
   char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
   char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
@@ -1139,15 +1145,22 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   long var_dsk;                              /* [nbr] Variable index relative to disk */
   long var_szm1;
 
+  nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
+  nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
+  nco_bool spr_sng_dfl=True;                 /* [flg] Default separator string */
+
+  nco_string sng_val;                        /* [sng] Current string */
+
   var_sct var;                               /* [sct] Variable structure */
   var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
 
-  nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
-  nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
-
-  nco_string sng_val; /* [sng] Current string */
-
   if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
+  spr_sng=cma_sng; /* [sng] Output separator string */
+
+  /* Allow user to override default separator string for XML only */
+  if(prn_flg->xml){
+    if(prn_flg->spr_sng_mtd) spr_sng=prn_flg->spr_sng_dat; /* [sng] Output separator string */
+  } /* !xml */
 
   /* Obtain group ID where variable is located using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
@@ -1271,8 +1284,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(prn_flg->cdl) chr2sng_sf=chr2sng_cdl; else chr2sng_sf=chr2sng_xml;
     if(prn_flg->cdl) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var.type));
     if(prn_flg->xml) (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var.type));
+
     nm_cdl=nm2sng_cdl(var_nm);
-    if(prn_flg->xml) (void)fprintf(stdout,"%*s<values>",prn_ndn+prn_flg->var_fst,spc_sng);
+    if(prn_flg->xml){
+      if(var.sz > 1L) (void)fprintf(stdout,"%*s<values separator=\"%s\">",prn_ndn+prn_flg->var_fst,spc_sng,cma_sng); else (void)fprintf(stdout,"%*s<values>",prn_ndn+prn_flg->var_fst,spc_sng);
+    } /* !xml */
     if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
     nm_cdl=(char *)nco_free(nm_cdl);
     var_szm1=var.sz-1L;
@@ -1925,10 +1941,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Print variable attributes */
     if(var_trv.nbr_att > 0 && prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
 
-    if(prn_flg->xml && prn_flg->PRN_VAR_DATA){
-      (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
-      (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
-    } /* !prn_flg->xml */
+    if(prn_flg->xml && prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
+    if(prn_flg->xml) (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
 
     if(var_idx != var_nbr_xtr-1 && !prn_flg->xml) (void)fprintf(stdout,"\n");
   } /* end loop over var_idx */

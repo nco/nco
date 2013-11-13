@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.430 2013-11-13 07:07:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.431 2013-11-13 20:31:34 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -664,9 +664,11 @@ extern "C" {
 
   /* Print flags structure */
   typedef struct{ /* prn_fmt_sct */
-    char *smr_sng; /* [sng] Summary string */
     char *fl_in; /* [sng] Input filename */
     char *fl_stb; /* [sng] Input filename stub */
+    char *smr_sng; /* [sng] Summary string */
+    char *spr_sng_dat; /* [sng] Separator string for data */
+    char *spr_sng_mtd; /* [sng] Separator string for metadata */
     gpe_sct *gpe; /* I [sng] GPE structure */
     md5_sct *md5; /* [flg] MD5 configuration */
     nco_bool cdl; /* [flg] Print valid CDL */
