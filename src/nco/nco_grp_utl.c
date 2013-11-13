@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1051 2013-11-13 07:59:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1052 2013-11-13 08:17:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1492,20 +1492,26 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* Obtain group ID from netCDF API using full group name */
         (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
 
-        /* nces case: This avoids the creation of the leaf, test ensemble group flag, this happens only for group members (e.g /cesm/cesm_01) */ 
-        if(nco_prg_id_get() == nces && grp_trv.flg_nsm_mbr == True){ 
-          /* Check if suffix needed. Appends to default name (e.g /cesm + _avg) */
-          if(trv_tbl->nsm_sfx){
-            /* Just define (append) and forget a new name */
-            char *nm_fll_sfx=(char*)nco_malloc(strlen(grp_trv.grp_nm_fll_prn)+strlen(trv_tbl->nsm_sfx)+1L);
-            strcpy(nm_fll_sfx,grp_trv.grp_nm_fll_prn);
-            strcat(nm_fll_sfx,trv_tbl->nsm_sfx);
-            /* Use the new name */
-            grp_out_fll=(char *)strdup(nm_fll_sfx);
-            nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
-          } else { /* Non suffix case */
-            grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
-          } /* !trv_tbl->nsm_sfx */
+        /* nces case */ 
+        if(nco_prg_id_get() == nces ){ 
+
+          /* This avoids the creation of the leaf, test ensemble group flag, this happens only for group members (e.g /cesm/cesm_01) */
+          if (grp_trv.flg_nsm_mbr == True){
+            /* Check if suffix needed. Appends to default name (e.g /cesm + _avg) */
+            if(trv_tbl->nsm_sfx){
+              /* Just define (append) and forget a new name */
+              char *nm_fll_sfx=(char*)nco_malloc(strlen(grp_trv.grp_nm_fll_prn)+strlen(trv_tbl->nsm_sfx)+1L);
+              strcpy(nm_fll_sfx,grp_trv.grp_nm_fll_prn);
+              strcat(nm_fll_sfx,trv_tbl->nsm_sfx);
+              /* Use the new name */
+              grp_out_fll=(char *)strdup(nm_fll_sfx);
+              nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+            } else { /* Non suffix case */
+              grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
+            } /* !trv_tbl->nsm_sfx */
+          } else {
+            continue;
+          } /* Non ensemble group members, nothing to do */
         }else {
           /* Non nces case: Edit group name for output */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
