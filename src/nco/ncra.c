@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.438 2013-11-12 23:50:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.439 2013-11-13 07:38:26 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.438 2013-11-12 23:50:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.438 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.439 2013-11-13 07:38:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.439 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -424,7 +424,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"mro") || !strcmp(opt_crr,"multi_record_output")) FLG_MRO=True; /* [flg] Multi-Record Output */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"nsm_sfx") || !strcmp(opt_crr,"ensemble_suffix")){
-	nsm_sfx=(char *)strdup(optarg);
+        nsm_sfx=(char *)strdup(optarg);
       } /* endif "nsm_sfx" */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
@@ -605,6 +605,12 @@ main(int argc,char **argv)
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
+
+  /* Store the nces ensemble suffix in table here. No need to modify several functions with new parameter */
+  if(nco_prg_id == nces && nsm_sfx){
+    trv_tbl->nsm_sfx=(char *)nco_malloc(strlen(nsm_sfx)+1L);
+    strcpy(trv_tbl->nsm_sfx,nsm_sfx);
+  }
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -1151,22 +1157,20 @@ main(int argc,char **argv)
 
       /* For nces, group to save is ensemble parent group */
       if(nco_prg_id == nces){
-        grp_out_fll=(char *)strdup(var_trv->nsm_nm);
-	if(nsm_sfx){
-	  /* nsm_sfx directs output to same level as input ensemble, rather than to parent level
-	     NB: Current flaws: only implemented here at output end, needs to be in nco_xtr_mk() */
-	  char *stb_nm;
-	  stb_nm=strrchr(grp_out_fll,'/');
-	  if(grp_out_fll+1){
-	    grp_out_fll=nco_realloc(grp_out_fll,strlen(grp_out_fll)+strlen(stb_nm)+strlen(nsm_sfx)+1L);
-	    strcat(grp_out_fll,stb_nm);
-	  }else{
-	    grp_out_fll=nco_realloc(grp_out_fll,strlen(nsm_sfx)+2L);
-	  } /* end else */
-	  strcat(grp_out_fll,nsm_sfx);
-	  /* If output group does not exist, create it */
-	  if(nco_inq_grp_full_ncid_flg(out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(out_id,grp_out_fll,&grp_out_id);
-	} /* !nsm_sfx */
+
+        /* Check if suffix needed. Appends to default name (e.g /cesm + _avg) */
+        if(trv_tbl->nsm_sfx){
+          /* Just define (append) and forget a new name */
+          char *nm_fll_sfx=(char*)nco_malloc(strlen(var_trv->grp_nm_fll_prn)+strlen(trv_tbl->nsm_sfx)+1L);
+          strcpy(nm_fll_sfx,var_trv->grp_nm_fll_prn);
+          strcat(nm_fll_sfx,trv_tbl->nsm_sfx);
+          /* Use the new name */
+          grp_out_fll=(char *)strdup(nm_fll_sfx);
+          nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+        } else { /* Non suffix case */
+          grp_out_fll=(char *)strdup(var_trv->nsm_nm);
+        } /* !trv_tbl->nsm_sfx */
+
         /* Define variable in output file */
         var_out_id=nco_cpy_var_dfn_trv(in_id,out_id,grp_out_fll,True,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
       }else if(nco_prg_id == ncea){
@@ -1180,7 +1184,7 @@ main(int argc,char **argv)
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
       /* Memory management after current extracted group */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-      
+
       /* Store the output variable ID */
       var_prc_out[idx]->id=var_out_id;
 
