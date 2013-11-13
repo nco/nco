@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1048 2013-11-11 04:57:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1049 2013-11-13 07:07:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1492,8 +1492,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* Obtain group ID from netCDF API using full group name */
         (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
 
-        /* Template parent (this avoids the creation of the leaf) */
-        if(nco_prg_id_get() == nces && grp_trv.grp_dpt > 0){
+        /* Template parent (this avoids the creation of the leaf). Test ensemble group flag, this happens only for group members (e.g /cesm/cesm_01) */ 
+        if(nco_prg_id_get() == nces && grp_trv.flg_nsm_mbr == True){ 
           grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
         }else {
           /* Edit group name for output */
@@ -7659,7 +7659,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   /* Concatenate variable to absolute group path */
                   strcat(var_nm_fll,cmn_lst[idx_var].var_nm_fll);
                   /* Mark ensemble member flag in table for "var_nm_fll" */
-                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_tbl); 
+                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
 
                   /* Insert variable in table ensemble struct */
                   trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nbr++;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.237 2013-11-08 23:02:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.238 2013-11-13 07:07:33 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -40,6 +40,7 @@ trv_tbl_init                           /* [fnc] GTT initialize */
   /* Ensembles */
   tb->nsm_nbr=0;
   tb->nsm=NULL;
+  tb->nsm_sfx=NULL;
 
   *tbl=tb;
 } /* trv_tbl_init() */
@@ -137,7 +138,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     }
     tbl->nsm[idx_nsm].mbr=(nsm_grp_sct*)nco_free(tbl->nsm[idx_nsm].mbr);
   }
-  
+  tbl->nsm_sfx=(char *)nco_free(tbl->nsm_sfx);  
 
   tbl=(trv_tbl_sct *)nco_free(tbl);
 } /* end trv_tbl_free() */
@@ -764,19 +765,27 @@ trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in tabl
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const nco_bool flg_nsm_tpl,          /* I [flg] Variable is template member */
  const char * const grp_nm_fll_prn,   /* I [sng] Parent group full name (key for ensemble) */
+ const char * const grp_nm_fll,       /* I [sng] Group full name to mark flg_nsm_prn (Group is ensemble group) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
 #ifdef NCO_HSH_TRV_OBJ
   trv_sct *trv_obj; /* [sct] GTT object structure */
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
   if(trv_obj) trv_obj->flg_nsm_mbr=True;
+  assert(0); 
 #else /* !NCO_HSH_TRV_OBJ */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
       trv_tbl->lst[uidx].flg_nsm_mbr=True;
       trv_tbl->lst[uidx].nsm_nm=strdup(grp_nm_fll_prn);
       if (flg_nsm_tpl) trv_tbl->lst[uidx].flg_nsm_tpl=True;
     }
+  }
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(strcmp(grp_nm_fll,trv_tbl->lst[uidx].grp_nm_fll) == 0){
+      trv_tbl->lst[uidx].flg_nsm_mbr=True;
+    }
+  }
 #endif /* !NCO_HSH_TRV_OBJ */
 
   return;
