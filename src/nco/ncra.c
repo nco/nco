@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.440 2013-11-13 07:59:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.441 2013-11-14 00:28:41 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.440 2013-11-13 07:59:27 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.440 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.441 2013-11-14 00:28:41 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.441 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1160,10 +1160,9 @@ main(int argc,char **argv)
 
         /* Check if suffix needed. Appends to default name (e.g /cesm + _avg) */
         if(trv_tbl->nsm_sfx){
+
           /* Just define (append) and forget a new name */
-          char *nm_fll_sfx=(char*)nco_malloc(strlen(var_trv->grp_nm_fll_prn)+strlen(trv_tbl->nsm_sfx)+1L);
-          strcpy(nm_fll_sfx,var_trv->grp_nm_fll_prn);
-          strcat(nm_fll_sfx,trv_tbl->nsm_sfx);
+          char *nm_fll_sfx=nco_bld_nsm_sfx(var_trv->grp_nm_fll_prn,trv_tbl);
           /* Use the new name */
           grp_out_fll=(char *)strdup(nm_fll_sfx);
           nm_fll_sfx=(char *)nco_free(nm_fll_sfx);

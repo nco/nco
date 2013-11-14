@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.175 2013-11-13 20:31:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.176 2013-11-14 00:28:41 pvicente Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1155,7 +1155,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
 
   if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
-  spr_sng=cma_sng; /* [sng] Output separator string */
+  spr_sng=(char *)cma_sng; /* [sng] Output separator string */
 
   /* Allow user to override default separator string for XML only */
   if(prn_flg->xml){

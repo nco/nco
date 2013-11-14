@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1052 2013-11-13 08:17:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1053 2013-11-14 00:28:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1499,10 +1499,9 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
           if (grp_trv.flg_nsm_mbr == True){
             /* Check if suffix needed. Appends to default name (e.g /cesm + _avg) */
             if(trv_tbl->nsm_sfx){
+
               /* Just define (append) and forget a new name */
-              char *nm_fll_sfx=(char*)nco_malloc(strlen(grp_trv.grp_nm_fll_prn)+strlen(trv_tbl->nsm_sfx)+1L);
-              strcpy(nm_fll_sfx,grp_trv.grp_nm_fll_prn);
-              strcat(nm_fll_sfx,trv_tbl->nsm_sfx);
+              char *nm_fll_sfx=nco_bld_nsm_sfx(grp_trv.grp_nm_fll_prn,trv_tbl);
               /* Use the new name */
               grp_out_fll=(char *)strdup(nm_fll_sfx);
               nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
@@ -7729,4 +7728,31 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 } /* nco_bld_nsm() */
 
 
+char *                                 /* O [sng] Full path with suffix */
+nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
+(const char * const grp_nm_fll_prn,    /* I [sng] Absolute group name of ensemble root */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+{
+  assert(trv_tbl->nsm_sfx);
 
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Match */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && strcmp(grp_nm_fll_prn,trv_tbl->lst[tbl_idx].nm_fll) == 0){
+
+      /* Define (append) a new name */
+      char *nm_fll_sfx=(char*)nco_malloc(strlen(grp_nm_fll_prn)+strlen(trv_tbl->lst[tbl_idx].nm)+strlen(trv_tbl->nsm_sfx)+2L);
+      strcpy(nm_fll_sfx,grp_nm_fll_prn);
+      strcat(nm_fll_sfx,"/");
+      strcat(nm_fll_sfx,trv_tbl->lst[tbl_idx].nm);
+      strcat(nm_fll_sfx,trv_tbl->nsm_sfx);
+      return nm_fll_sfx;
+
+    } /* Match */
+  } /* Loop table*/
+
+
+  assert(0);
+  return NULL;
+
+} /* nco_bld_nsm_sfx() */
