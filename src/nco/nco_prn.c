@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.176 2013-11-14 00:28:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.177 2013-11-14 03:18:55 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -22,11 +22,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   att_sct *att=NULL_CEWI;
 
   const char spc_sng[]=""; /* [sng] Space string */
-  const char cma_sng[]=", "; /* [sng] Comma string */
+  char cma_sng[]=", "; /* [sng] Comma string */
+  const char cma_chr=','; /* [sng] Comma character */
 
   char *nm_cdl;
   char *sng_val_sng; /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
+  char *spr_sng=NULL; /* [sng] Output separator string */
 
   char att_sng_dlm[NCO_MAX_LEN_FMT_SNG];
   char att_sng_pln[NCO_MAX_LEN_FMT_SNG];
@@ -93,11 +95,30 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       nm_cdl=(char *)nco_free(nm_cdl);
     } /* !cdl */
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s attribute %i: %s, size = %li %s, value = ",prn_ndn,spc_sng,src_sng,idx,att[idx].nm,att_sz,nco_typ_sng(att[idx].type));
+
+    spr_sng=cma_sng; /* [sng] Output separator string */
     if(prn_flg->xml){
       (void)fprintf(stdout,"%*s<attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
+      if(prn_flg->spr_sng_mtd){
+	/* User may override default separator string for XML only */
+	if(strcmp(prn_flg->spr_sng_mtd,spr_sng)) spr_sng=prn_flg->spr_sng_mtd;
+      } /* !prn_flg->spr_sng_mtd */
+
+      /* Print type of non-string variables */
       if(att[idx].type != NC_STRING && att[idx].type != NC_CHAR) (void)fprintf(stdout," type=\"%s\"",cdl_typ_nm(att[idx].type));
-      if(att[idx].sz > 1L) (void)fprintf(stdout," separator=\"%s\"",cma_sng);
-      (void)fprintf(stdout," value=\"");
+      
+      /* Print separator */
+      if(att[idx].sz > 1L){ 
+	if(
+	   /* Default separator and attribute is not a string */
+	   (!prn_flg->spr_sng_mtd && (att[idx].type != NC_STRING && att[idx].type != NC_CHAR)) || 
+	   /* User-specified separator */
+	   (prn_flg->spr_sng_mtd) || 
+	   False){ 
+	  (void)fprintf(stdout," separator=\"%s\"",spr_sng);
+	} /* NC_STRING || NC_CHAR) */
+	(void)fprintf(stdout," value=\"");
+      } /* att[idx].sz */
     } /* !xml */
     
     /* Typecast pointer to values before access */
@@ -115,7 +136,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	}else{
 	  if(isnan(val_flt)) (void)sprintf(val_sng,"NaNf"); else if(isinf(val_flt)) (void)sprintf(val_sng,"%sInfinityf",(val_flt < 0.0f) ? "-" : "");
 	} /* endelse */
-	(void)fprintf(stdout,"%s%s",val_sng,(lmn != att_szm1) ? cma_sng : "");
+	(void)fprintf(stdout,"%s%s",val_sng,(lmn != att_szm1) ? spr_sng : "");
       } /* end loop */
       break;
     case NC_DOUBLE:
@@ -127,14 +148,14 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	}else{
 	  if(isnan(val_dbl)) (void)sprintf(val_sng,"NaNf"); else if(isinf(val_dbl)) (void)sprintf(val_sng,"%sInfinity",(val_dbl < 0.0) ? "-" : "");
 	} /* endelse */
-	(void)fprintf(stdout,"%s%s",val_sng,(lmn != att_szm1) ? cma_sng : "");
+	(void)fprintf(stdout,"%s%s",val_sng,(lmn != att_szm1) ? spr_sng : "");
       } /* end loop */
       break;
     case NC_SHORT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.sp[lmn],(lmn != att_szm1) ? cma_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.sp[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_INT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,(long)att[idx].val.ip[lmn],(lmn != att_szm1) ? cma_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,(long)att[idx].val.ip[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_CHAR:
       for(lmn=0;lmn<att_sz;lmn++){
@@ -157,7 +178,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  if(lmn%sng_lng == sng_lngm1){
 	    (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
 	    /* Print commas after non-final strings */
-	    if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
+	    if(lmn != att_szm1) (void)fprintf(stdout,"%s",spr_sng);
 	  } /* endif string end */
 	  if(lmn == att_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
 	}else{ /* Traditional */
@@ -167,22 +188,22 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       } /* end loop over element */
       break;
     case NC_BYTE:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.bp[lmn],(lmn != att_szm1) ? cma_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.bp[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_UBYTE:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ubp[lmn],(lmn != att_szm1) ? cma_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ubp[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_USHORT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.usp[lmn],(lmn != att_szm1) ? cma_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.usp[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_UINT:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.uip[lmn],(lmn != att_szm1) ? cma_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.uip[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_INT64:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.i64p[lmn],(lmn != att_szm1) ? cma_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.i64p[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_UINT64:
-      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ui64p[lmn],(lmn != att_szm1) ? cma_sng : "");
+      for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,att[idx].val.ui64p[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_STRING:
       for(lmn=0;lmn<att_sz;lmn++){
@@ -201,10 +222,10 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  } /* end loop over character */
 	  (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
 	  /* Print commas after non-final strings */
-	  if(lmn != att_szm1) (void)fprintf(stdout,"%s",cma_sng);
+	  if(lmn != att_szm1) (void)fprintf(stdout,"%s",spr_sng);
 	  sng_val_sng=(char *)nco_free(sng_val_sng);
 	}else{ /* Traditional */
-	  (void)fprintf(stdout,att_sng_dlm,att[idx].val.sngp[lmn],(lmn != att_szm1) ? cma_sng : "");
+	  (void)fprintf(stdout,att_sng_dlm,att[idx].val.sngp[lmn],(lmn != att_szm1) ? spr_sng : "");
 	} /* endelse CDL, XML, Traditional */
       } /* end loop over element */
       break;
@@ -365,7 +386,7 @@ nco_typ_fmt_sng_att_xml /* [fnc] Provide sprintf() format string for specified a
   static const char fmt_NC_UBYTE[]="%hhu"; /*  */
   static const char fmt_NC_USHORT[]="%hu"; /*  */
   static const char fmt_NC_UINT[]="%u"; /*  */
-  static const char fmt_NC_INT64[]="%ll"; /*  */
+  static const char fmt_NC_INT64[]="%lli"; /*  */
   static const char fmt_NC_UINT64[]="%llu"; /*  */
   static const char fmt_NC_STRING[]="%s"; /*  */
 
@@ -1016,7 +1037,9 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     (void)fprintf(stdout,"%*s%s %s%s ;\n",prn_ndn,spc_sng,cdl_typ_nm(var_typ),nm_cdl,dmn_sng);
     nm_cdl=(char *)nco_free(nm_cdl);
   } /* !cdl */
-  if(prn_flg->xml) (void)fprintf(stdout,"%s>\n",dmn_sng);
+  if(prn_flg->xml){
+    if(prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA) (void)fprintf(stdout,"%s>\n",dmn_sng); else (void)fprintf(stdout,"%s />\n",dmn_sng);
+  } /* !xml */
 
   /* Print dimension sizes and names */
 
@@ -1103,7 +1126,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
      Tests for coordinate variables in ancestor groups:
      ncks -D 11 -d lat,1,1,1 -H  -v area ~/nco/data/in_grp.nc */
 
-  const char cma_sng[]=", "; /* [sng] Comma string */
+  char cma_sng[]=", "; /* [sng] Comma string */
   const char fnc_nm[]="nco_prn_var_val_trv()"; /* [sng] Function name  */
   const char spc_sng[]=""; /* [sng] Space string */
 
@@ -1111,7 +1134,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   char *nm_cdl;
   char *sng_val_sng;                         /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
-  char *spr_sng=NULL;                        /* [sng] Output separator string */
   char *unit_sng;                            /* [sng] Units string */ 
   char val_sng[NCO_ATM_SNG_LNG];
   char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
@@ -1147,7 +1169,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
   nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
-  nco_bool spr_sng_dfl=True;                 /* [flg] Default separator string */
 
   nco_string sng_val;                        /* [sng] Current string */
 
@@ -1155,12 +1176,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
 
   if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
-  spr_sng=(char *)cma_sng; /* [sng] Output separator string */
-
-  /* Allow user to override default separator string for XML only */
-  if(prn_flg->xml){
-    if(prn_flg->spr_sng_mtd) spr_sng=prn_flg->spr_sng_dat; /* [sng] Output separator string */
-  } /* !xml */
 
   /* Obtain group ID where variable is located using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
@@ -1287,7 +1302,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     nm_cdl=nm2sng_cdl(var_nm);
     if(prn_flg->xml){
-      if(var.sz > 1L) (void)fprintf(stdout,"%*s<values separator=\"%s\">",prn_ndn+prn_flg->var_fst,spc_sng,cma_sng); else (void)fprintf(stdout,"%*s<values>",prn_ndn+prn_flg->var_fst,spc_sng);
+      if(var.type != NC_STRING && var.type != NC_CHAR){
+	if(var.sz > 1L) (void)fprintf(stdout,"%*s<values separator=\"%s\">",prn_ndn+prn_flg->var_fst,spc_sng,cma_sng); else (void)fprintf(stdout,"%*s<values>",prn_ndn+prn_flg->var_fst,spc_sng);
+      } /* NC_STRING || NC_CHAR) */
     } /* !xml */
     if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
     nm_cdl=(char *)nco_free(nm_cdl);
@@ -1942,7 +1959,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(var_trv.nbr_att > 0 && prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
 
     if(prn_flg->xml && prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
-    if(prn_flg->xml) (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
+    if(prn_flg->xml && (prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA)) (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
 
     if(var_idx != var_nbr_xtr-1 && !prn_flg->xml) (void)fprintf(stdout,"\n");
   } /* end loop over var_idx */

@@ -11,6 +11,10 @@
 	* Make XML separator configurable via ncks --xml_spr_mtd, --xml_spr_dat
 	that now default to " " and ", " respectively fxm
 
+	* Fix printf() format string for NC_INT64 in nco_typ_fmt_sng_att_xml()
+
+	* Close content-less <variable> elements with "/>" not ">" (in contrast to ncdump -x, toolsui)
+
 	* Add separator=", " attribute to attribute element and variable element
 
 	* Add type="cdl_typ_nm" attribute to non-string attribute elements

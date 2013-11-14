@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.672 2013-11-13 20:31:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.673 2013-11-14 03:18:55 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -151,13 +151,13 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  char *spr_sng_dat=NULL; /* [sng] Output separator string for data */
-  char *spr_sng_mtd=NULL; /* [sng] Output separator string for metadata */
+  char *spr_sng_dat=NULL; /* [sng] Separator string for XML data */
+  char *spr_sng_mtd=NULL; /* [sng] Separator string for XML metadata */
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.672 2013-11-13 20:31:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.672 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.673 2013-11-14 03:18:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.673 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -286,6 +286,8 @@ main(int argc,char **argv)
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"tst_udunits",required_argument,0,0},
+      {"xml_spr_dat",required_argument,0,0}, /* [flg] Output separator string for XML data */
+      {"xml_spr_mtd",required_argument,0,0}, /* [flg] Output separator string for XML metadata */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -394,7 +396,6 @@ main(int argc,char **argv)
         cnk_plc_sng=(char *)strdup(optarg);
         cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
       } /* endif cnk */
-      if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
         (void)fprintf(stdout,"%s\n",nco_cmp_get());
         nco_exit(EXIT_SUCCESS);
@@ -421,6 +422,7 @@ main(int argc,char **argv)
         (void)nco_lbr_vrs_prn();
         nco_exit(EXIT_SUCCESS);
       } /* endif "lbr" */
+      if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")) rec_dmn_nm=strdup(optarg);
       if(!strcmp(opt_crr,"mpi_implementation")){
         (void)fprintf(stdout,"%s\n",nco_mpi_get());
         nco_exit(EXIT_SUCCESS);
@@ -439,6 +441,18 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_dmn_var_nm") || !strcmp(opt_crr,"no_nm_prn")) PRN_DMN_VAR_NM=False;
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
+      if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSysconf\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        nco_exit(EXIT_SUCCESS);
+      } /* endif "shh" */
+      if(!strcmp(opt_crr,"sysconf")){
+	long maxrss; /* [B] Maximum resident set size */
+	maxrss=nco_mmr_usg_prn((int)0);
+	maxrss+=0; /* CEWI */
+        nco_exit(EXIT_SUCCESS);
+      } /* endif "sysconf" */
       if(!strcmp(opt_crr,"tst_udunits")){ 
 	/* Use this feature with, e.g.,
 	   ncks --tst_udunits='5 meters',centimeters ~/nco/data/in.nc
@@ -460,18 +474,6 @@ main(int argc,char **argv)
         if(cp) cp=(char *)nco_free(cp);
         nco_exit(EXIT_SUCCESS);
       } /* endif "tst_udunits" */
-      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
-      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
-      if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNameless printing\t--no_nm_prn, --no_dmn_var_nm\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSysconf\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
-        nco_exit(EXIT_SUCCESS);
-      } /* endif "shh" */
-      if(!strcmp(opt_crr,"sysconf")){
-	long maxrss; /* [B] Maximum resident set size */
-	maxrss=nco_mmr_usg_prn((int)0);
-	maxrss+=0; /* CEWI */
-        nco_exit(EXIT_SUCCESS);
-      } /* endif "sysconf" */
       if(!strcmp(opt_crr,"unn") || !strcmp(opt_crr,"union")) GRP_VAR_UNN=True;
       if(!strcmp(opt_crr,"nsx") || !strcmp(opt_crr,"intersection")) GRP_VAR_UNN=False;
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
@@ -482,6 +484,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
       if(!strcmp(opt_crr,"xml") || !strcmp(opt_crr,"ncml")) PRN_XML=True; /* [flg] Print XML (NcML) */
       if(!strcmp(opt_crr,"xml_no_location") || !strcmp(opt_crr,"ncml_no_location")) PRN_XML_LOCATION=False; /* [flg] Print XML location tag */
+      if(!strcmp(opt_crr,"xml_spr_dat")) spr_sng_dat=(char *)strdup(optarg); /* [flg] Separator string for XML data */
+      if(!strcmp(opt_crr,"xml_spr_mtd")) spr_sng_mtd=(char *)strdup(optarg); /* [flg] Separator string for XML metadata */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -810,9 +814,9 @@ main(int argc,char **argv)
     } /* endif CDL */
     /* XML must print filename */
     if(prn_flg.xml) prn_flg.fl_in=fl_in;
-    prn_flg.xml_lcn=PRN_XML_LOCATION;
     prn_flg.spr_sng_dat=spr_sng_dat;
     prn_flg.spr_sng_mtd=spr_sng_mtd;
+    prn_flg.xml_lcn=PRN_XML_LOCATION;
     prn_flg.gpe=gpe;
     prn_flg.md5=md5;
     prn_flg.nbr_zro=0;
