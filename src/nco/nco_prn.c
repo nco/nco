@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.177 2013-11-14 03:18:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.178 2013-11-14 23:18:26 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -23,6 +23,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   const char spc_sng[]=""; /* [sng] Space string */
   char cma_sng[]=", "; /* [sng] Comma string */
+  char spr_xml_chr[]=" "; /* [sng] Default XML separator for alphabetic types */
+  char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
   const char cma_chr=','; /* [sng] Comma character */
 
   char *nm_cdl;
@@ -99,26 +101,23 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     spr_sng=cma_sng; /* [sng] Output separator string */
     if(prn_flg->xml){
       (void)fprintf(stdout,"%*s<attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
-      if(prn_flg->spr_sng_mtd){
-	/* User may override default separator string for XML only */
-	if(strcmp(prn_flg->spr_sng_mtd,spr_sng)) spr_sng=prn_flg->spr_sng_mtd;
-      } /* !prn_flg->spr_sng_mtd */
+
+      /* User may override default separator string for XML only */
+      if(att[idx].type == NC_STRING || att[idx].type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
 
       /* Print type of non-string variables */
       if(att[idx].type != NC_STRING && att[idx].type != NC_CHAR) (void)fprintf(stdout," type=\"%s\"",cdl_typ_nm(att[idx].type));
       
-      /* Print separator */
-      if(att[idx].sz > 1L){ 
-	if(
-	   /* Default separator and attribute is not a string */
-	   (!prn_flg->spr_sng_mtd && (att[idx].type != NC_STRING && att[idx].type != NC_CHAR)) || 
-	   /* User-specified separator */
-	   (prn_flg->spr_sng_mtd) || 
-	   False){ 
-	  (void)fprintf(stdout," separator=\"%s\"",spr_sng);
-	} /* NC_STRING || NC_CHAR) */
-	(void)fprintf(stdout," value=\"");
+      /* Print separator element for non-whitespace separators */
+      if(att[idx].sz > 1L && att[idx].type != NC_CHAR){ 
+	size_t spr_sng_idx=0L;
+	size_t spr_sng_lng;
+	spr_sng_lng=strlen(spr_sng);
+	while(spr_sng_idx < spr_sng_lng)
+	  if(!isspace(spr_sng[spr_sng_idx])) break; else spr_sng_idx++;
+	if(spr_sng_idx < spr_sng_lng) (void)fprintf(stdout," separator=\"%s\"",spr_sng);
       } /* att[idx].sz */
+      (void)fprintf(stdout," value=\"");
     } /* !xml */
     
     /* Typecast pointer to values before access */

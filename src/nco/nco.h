@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.431 2013-11-13 20:31:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.432 2013-11-14 23:18:26 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -667,8 +667,8 @@ extern "C" {
     char *fl_in; /* [sng] Input filename */
     char *fl_stb; /* [sng] Input filename stub */
     char *smr_sng; /* [sng] Summary string */
-    char *spr_sng_dat; /* [sng] Separator string for data */
-    char *spr_sng_mtd; /* [sng] Separator string for metadata */
+    char *spr_chr; /* [sng] Separator string for character types */
+    char *spr_nmr; /* [sng] Separator string for numeric types */
     gpe_sct *gpe; /* I [sng] GPE structure */
     md5_sct *md5; /* [flg] MD5 configuration */
     nco_bool cdl; /* [flg] Print valid CDL */

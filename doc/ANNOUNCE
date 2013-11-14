@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.635 2013-11-13 20:57:02 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.636 2013-11-14 23:18:26 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -27,10 +27,11 @@ NEW FEATURES:
 
 A. nces fxm
 
-A. Separators for XML now user-configurable with --xml_spr_mtd and
-   --xml_spr_dat for metadata and data, respectively.
-   ncks -v att_var --xml --xml_spr_mtd="," ~/nco/data/in.nc
-   ncks -v att_var --xml --xml_spr_dat="," ~/nco/data/in.nc
+A. Separators for XML now user-configurable with --xml_spr_chr and
+   --xml_spr_nmr for character types (i.e., strings) and numeric
+   types (i.e., numbers), respectively.
+   ncks -v att_var --xml --xml_spr_chr="***" ~/nco/data/in.nc
+   ncks -v att_var --xml --xml_spr_nmr=", " ~/nco/data/in.nc
 
 BUG FIXES:
 

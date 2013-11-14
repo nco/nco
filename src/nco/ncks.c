@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.673 2013-11-14 03:18:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.674 2013-11-14 23:18:26 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -151,13 +151,13 @@ main(int argc,char **argv)
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
-  char *spr_sng_dat=NULL; /* [sng] Separator string for XML data */
-  char *spr_sng_mtd=NULL; /* [sng] Separator string for XML metadata */
+  char *spr_chr=NULL; /* [sng] Separator for XML character types */
+  char *spr_nmr=NULL; /* [sng] Separator for XML numeric types */
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.673 2013-11-14 03:18:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.673 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.674 2013-11-14 23:18:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.674 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -286,8 +286,8 @@ main(int argc,char **argv)
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"tst_udunits",required_argument,0,0},
-      {"xml_spr_dat",required_argument,0,0}, /* [flg] Output separator string for XML data */
-      {"xml_spr_mtd",required_argument,0,0}, /* [flg] Output separator string for XML metadata */
+      {"xml_spr_chr",required_argument,0,0}, /* [flg] Output separator string for XML character types */
+      {"xml_spr_nmr",required_argument,0,0}, /* [flg] Output separator string for XML numeric types */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -484,8 +484,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
       if(!strcmp(opt_crr,"xml") || !strcmp(opt_crr,"ncml")) PRN_XML=True; /* [flg] Print XML (NcML) */
       if(!strcmp(opt_crr,"xml_no_location") || !strcmp(opt_crr,"ncml_no_location")) PRN_XML_LOCATION=False; /* [flg] Print XML location tag */
-      if(!strcmp(opt_crr,"xml_spr_dat")) spr_sng_dat=(char *)strdup(optarg); /* [flg] Separator string for XML data */
-      if(!strcmp(opt_crr,"xml_spr_mtd")) spr_sng_mtd=(char *)strdup(optarg); /* [flg] Separator string for XML metadata */
+      if(!strcmp(opt_crr,"xml_spr_chr")) spr_chr=(char *)strdup(optarg); /* [flg] Separator for XML character types */
+      if(!strcmp(opt_crr,"xml_spr_nmr")) spr_nmr=(char *)strdup(optarg); /* [flg] Separator for XML numeric types */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -814,8 +814,8 @@ main(int argc,char **argv)
     } /* endif CDL */
     /* XML must print filename */
     if(prn_flg.xml) prn_flg.fl_in=fl_in;
-    prn_flg.spr_sng_dat=spr_sng_dat;
-    prn_flg.spr_sng_mtd=spr_sng_mtd;
+    prn_flg.spr_nmr=spr_nmr;
+    prn_flg.spr_chr=spr_chr;
     prn_flg.xml_lcn=PRN_XML_LOCATION;
     prn_flg.gpe=gpe;
     prn_flg.md5=md5;
@@ -933,8 +933,8 @@ main(int argc,char **argv)
     if(fl_out_tmp) fl_out_tmp=(char *)nco_free(fl_out_tmp);
     if(fl_pth) fl_pth=(char *)nco_free(fl_pth);
     if(fl_pth_lcl) fl_pth_lcl=(char *)nco_free(fl_pth_lcl);
-    if(spr_sng_dat) spr_sng_dat=(char *)nco_free(spr_sng_dat);
-    if(spr_sng_mtd) spr_sng_mtd=(char *)nco_free(spr_sng_mtd);
+    if(spr_nmr) spr_nmr=(char *)nco_free(spr_nmr);
+    if(spr_chr) spr_chr=(char *)nco_free(spr_chr);
     /* Free lists of strings */
     if(fl_lst_in && fl_lst_abb == NULL) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
