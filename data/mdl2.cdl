@@ -1,0 +1,127 @@
+// -*-C++-*-
+// Generate netCDF file with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/mdl.nc ~/nco/data/mdl.cdl
+
+netcdf mdl {
+
+ group: cesm {
+
+  group: cesm_03 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "CESM";
+      :Realization = "1";
+
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=272.3,272.3,272.3,272.3;
+ 
+    } // cesm_03
+
+  group: cesm_04 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "CESM";
+      :Realization = "2";
+      
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=272.4,272.4,272.4,272.4;
+      
+    } // cesm_04
+    
+  group: cesm_05 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "CESM";
+      :Realization = "2";
+      
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=272.5,272.5,272.5,272.5;
+      
+    } // cesm_05
+    
+  } // cesm
+  
+ group: ecmwf {
+    
+  group: ecmwf_03 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "ECMWF";
+      :Realization = "1";
+      
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=273.3,273.3,273.3,273.3;
+      
+    } // ecmwf_03
+    
+  group: ecmwf_04 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "ECMWF";
+      :Realization = "2";
+      
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=273.4,273.4,273.4,273.4;
+      
+    } // ecmwf_04
+
+  group: ecmwf_05 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "ECMWF";
+      :Realization = "2";
+      
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=273.5,273.5,273.5,273.5;
+      
+    } // ecmwf_05
+
+  group: ecmwf_06 {
+      :Conventions = "CF-1.5";
+      :history = "yada yada yada";
+      :Scenario = "Historical";
+      :Model = "ECMWF";
+      :Realization = "2";
+      
+    dimensions:
+      time=4;
+    variables:
+      float tas(time);
+    data:
+      tas=273.6,273.6,273.6,273.6;
+      
+    } // ecmwf_06
+
+  } // ecmwf
+
+} // root group
