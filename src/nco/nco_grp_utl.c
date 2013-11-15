@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1053 2013-11-14 00:28:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1054 2013-11-15 22:06:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1503,10 +1503,10 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
               /* Just define (append) and forget a new name */
               char *nm_fll_sfx=nco_bld_nsm_sfx(grp_trv.grp_nm_fll_prn,trv_tbl);
               /* Use the new name */
-              grp_out_fll=(char *)strdup(nm_fll_sfx);
+              if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
               nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
             } else { /* Non suffix case */
-              grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
+              if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
             } /* !trv_tbl->nsm_sfx */
           } else {
             continue;
