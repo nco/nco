@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.178 2013-11-14 23:18:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.179 2013-11-15 05:34:37 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -22,19 +22,20 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   att_sct *att=NULL_CEWI;
 
   const char spc_sng[]=""; /* [sng] Space string */
-  char cma_sng[]=", "; /* [sng] Comma string */
-  char spr_xml_chr[]=" "; /* [sng] Default XML separator for alphabetic types */
-  char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
-  const char cma_chr=','; /* [sng] Comma character */
 
   char *nm_cdl;
   char *sng_val_sng; /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
   char *spr_sng=NULL; /* [sng] Output separator string */
 
+  char cma_sng[]=", "; /* [sng] Comma string */
+  char spr_xml_chr[]=" "; /* [sng] Default XML separator for character types */
+  char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
+
+  char chr_val; /* [sng] Current character */
+
   char att_sng_dlm[NCO_MAX_LEN_FMT_SNG];
   char att_sng_pln[NCO_MAX_LEN_FMT_SNG];
-  char chr_val; /* [sng] Current character */
   char src_sng[NC_MAX_NAME];
   char val_sng[NCO_ATM_SNG_LNG];
 
@@ -176,7 +177,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  if(chr_val == '\n' && lmn != att_szm1 && prn_flg->cdl) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
 	  if(lmn%sng_lng == sng_lngm1){
 	    (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
-	    /* Print commas after non-final strings */
+	    /* Print separator after non-final string */
 	    if(lmn != att_szm1) (void)fprintf(stdout,"%s",spr_sng);
 	  } /* endif string end */
 	  if(lmn == att_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
@@ -220,7 +221,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    (void)strcat(sng_val_sng,(prn_flg->cdl) ? chr2sng_cdl(chr_val,val_sng) : chr2sng_xml(chr_val,val_sng));
 	  } /* end loop over character */
 	  (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
-	  /* Print commas after non-final strings */
+	  /* Print separator after non-final string */
 	  if(lmn != att_szm1) (void)fprintf(stdout,"%s",spr_sng);
 	  sng_val_sng=(char *)nco_free(sng_val_sng);
 	}else{ /* Traditional */
@@ -995,6 +996,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   if(prn_flg->new_fmt) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
   if(prn_flg->trd && (nco_hdf_cnv_get() == nco_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? HDF4_UNKNOWN, compressed? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
   if(prn_flg->trd && (nco_hdf_cnv_get() != nco_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
+
   if(prn_flg->xml) (void)fprintf(stdout,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,cdl_typ_nm(var_typ));
 
   /* Print type, shape, and total size of variable */
@@ -1125,21 +1127,27 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
      Tests for coordinate variables in ancestor groups:
      ncks -D 11 -d lat,1,1,1 -H  -v area ~/nco/data/in_grp.nc */
 
-  char cma_sng[]=", "; /* [sng] Comma string */
   const char fnc_nm[]="nco_prn_var_val_trv()"; /* [sng] Function name  */
   const char spc_sng[]=""; /* [sng] Space string */
+
+  char cma_sng[]=", "; /* [sng] Comma string */
+  char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
+  char spr_xml_chr[]=" "; /* [sng] Default XML separator for character types */
+  char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
+  char nul_chr='\0'; /* [sng] Character to end string */ 
 
   char *dlm_sng=NULL;                        /* [sng] User-specified delimiter string, if any */
   char *nm_cdl;
   char *sng_val_sng;                         /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
+  char *spr_sng=NULL; /* [sng] Output separator string */
   char *unit_sng;                            /* [sng] Units string */ 
-  char val_sng[NCO_ATM_SNG_LNG];
-  char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
-  char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
-  char nul_chr='\0';                         /* [sng] Character to end string */ 
-  char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (used for validation only) */ 
+
   char chr_val;                              /* [sng] Current character */
+
+  char val_sng[NCO_ATM_SNG_LNG];
+  char var_nm[NC_MAX_NAME+1];                /* [sng] Variable name (used for validation only) */ 
+  char var_sng[NCO_MAX_LEN_FMT_SNG];         /* [sng] Variable string */
 
   dmn_sct dim[NC_MAX_DIMS];                  /* [sct] Dimension structure  */
 
@@ -1285,6 +1293,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   } /* end if dlm_sng */
 
+  spr_sng=cma_sng; /* [sng] Output separator string */
   if(prn_flg->cdl || prn_flg->xml){
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
@@ -1301,9 +1310,20 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     nm_cdl=nm2sng_cdl(var_nm);
     if(prn_flg->xml){
-      if(var.type != NC_STRING && var.type != NC_CHAR){
-	if(var.sz > 1L) (void)fprintf(stdout,"%*s<values separator=\"%s\">",prn_ndn+prn_flg->var_fst,spc_sng,cma_sng); else (void)fprintf(stdout,"%*s<values>",prn_ndn+prn_flg->var_fst,spc_sng);
-      } /* NC_STRING || NC_CHAR) */
+      /* User may override default separator string for XML only */
+      if(var.type == NC_STRING || var.type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
+
+      (void)fprintf(stdout,"%*s<values",prn_ndn+prn_flg->var_fst,spc_sng);
+      /* Print separator element for non-whitespace separators */
+      if(var.sz > 1L && var.type != NC_CHAR){ 
+	size_t spr_sng_idx=0L;
+	size_t spr_sng_lng;
+	spr_sng_lng=strlen(spr_sng);
+	while(spr_sng_idx < spr_sng_lng)
+	  if(!isspace(spr_sng[spr_sng_idx])) break; else spr_sng_idx++;
+	if(spr_sng_idx < spr_sng_lng) (void)fprintf(stdout," separator=\"%s\"",spr_sng);
+      } /* var.sz */
+      (void)fprintf(stdout,">");
     } /* !xml */
     if(prn_flg->cdl) (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
     nm_cdl=(char *)nco_free(nm_cdl);
@@ -1378,8 +1398,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
             if(lmn%sng_lng == sng_lngm1){
               (void)fprintf(stdout,"%s\"",sng_val_sng);
-              /* Print commas after non-final strings */
-              if(lmn != var_szm1) (void)fprintf(stdout,"%s",cma_sng);
+              /* Print separator after non-final string */
+              if(lmn != var_szm1) (void)fprintf(stdout,"%s",spr_sng);
             } /* endif string end */
             if(lmn == var_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
           } /* var.nbr_dim > 0 */
@@ -1404,14 +1424,14 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	    (void)strcat(sng_val_sng,(*chr2sng_sf)(chr_val,val_sng));
           } /* end loop over character */
           (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->xml) ? "" : "\"");
-          /* Print commas after non-final strings */
-          if(lmn != var_szm1) (void)fprintf(stdout,"%s",cma_sng);
+          /* Print separator after non-final string */
+          if(lmn != var_szm1) (void)fprintf(stdout,"%s",spr_sng);
           sng_val_sng=(char *)nco_free(sng_val_sng);
           break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
-      if(var.type != NC_CHAR && var.type != NC_STRING) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? cma_sng : "");
+      if(var.type != NC_CHAR && var.type != NC_STRING) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? spr_sng : "");
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
     if(prn_flg->cdl) (void)fprintf(stdout," ;\n");
