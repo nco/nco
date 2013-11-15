@@ -1,4 +1,4 @@
-2013-11-13  Charlie Zender  <zender@uci.edu>
+2013-11-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.9 release procedure:
  	Changes since nco-4_3_8: nces, XML
@@ -6,10 +6,13 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.9 release"
 	cvs tag -c nco-4_3_9;cvs tag -c nco-4_3_9-1
 
+	* Add non-whitespace separator to multi-dimensional NC_CHAR variables
+
+2013-11-13  Charlie Zender  <zender@uci.edu>
+
 	* Numerous XML fixes spurred by Aleksandar Jelenak report:
 
-	* Make XML separator configurable via ncks --xml_spr_mtd, --xml_spr_dat
-	that now default to " " and ", " respectively fxm
+	* Make XML separator configurable via ncks --xml_spr_chr, --xml_spr_nmr
 
 	* Fix printf() format string for NC_INT64 in nco_typ_fmt_sng_att_xml()
 

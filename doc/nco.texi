@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.904 2013-11-13 20:57:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.905 2013-11-15 21:18:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -115,7 +115,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.3.9
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 13 November 2013
+@set update-date 15 November 2013
 @set update-month November 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13631,13 +13631,18 @@ Also @samp{--units}.
 @end html
 @cindex @code{--xml}
 @cindex @code{--ncml}
+@cindex @command{ncdump}
 @cindex @acronym{XML}
 @cindex @acronym{NcML}
 @item --xml, --ncml
 As of @acronym{NCO} version 4.3.3 (July, 2013), @command{ncks} can
-print extracted metadata to screen (i.e., @code{stdout}) as valid 
-@acronym{XML} in @acronym{NcML}, the netCDF Markup Language. 
-@acronym{XML} is also exported by @samp{ncdump -x}.
+print extracted metadata to screen (i.e., @code{stdout}) as
+@acronym{XML} in @acronym{NcML}, the netCDF Markup Language.  
+@command{ncks} supports for @acronym{XML} more completely than 
+of @samp{ncdump -x}.
+With @command{ncks} one can translate entire netCDF3 and netCDF4 files
+into @acronym{NcML}, including metadata and data, using all 
+@acronym{NCO}'s subsetting and hyperslabbing capabilities.
 Compare @command{ncks} ``traditional'' with @acronym{XML} printing:
 @example
 @verbatim
@@ -13660,16 +13665,62 @@ zender@roulee:~$ ncks --xml -v one ~/nco/data/in.nc
 @end example
 @acronym{XML}-mode prints variable metadata, and, as of 
 @acronym{NCO} version 4.3.7 (October, 2013), variable data.
-@footnote{@samp{ncdump -x} only prints variable metadata, which makes it
-difficult for us to be sure what the proper @acronym{NcML} format is for
-all datatypes.
-For this purpose we use the @command{toolsUI} Java program.
-We have found that @command{toolsUI} chokes on some @acronym{NcML}
-produced by @command{ncdump -x} and @command{ncks --xml}.
-However, most common features work well in both.
-Please let us know if more @acronym{XML}/@acronym{NcML} printing
-features would be useful to you.
-}
+We know of no reference application that translates @acronym{CDM}
+files completely into @acronym{NcML}, so it is possible that
+@acronym{ncks} produces incorrect translations for some datatypes.
+The @command{toolsUI} Java program is helpful but incomplete.
+We have found that @command{toolsUI} fails to ingest some @acronym{NcML} 
+produced by both @command{ncks --xml} and @command{ncdump -x}.
+However, most common features work well.
+Please let us know how to improve @acronym{XML}/@acronym{NcML}
+features. 
+
+@cindex @code{--xml_no_location}
+@cindex @code{--xml_spr_chr}
+@cindex @code{--xml_spr_nmr}
+@cindex separator
+@command{ncks} provides additional options to configure @acronym{NcML}
+output: @samp{--xml_no_location}, @samp{--xml_spr_chr}, and
+@samp{--xml_spr_nmr}. 
+Every @acronym{NcML} configuration option automatically triggers
+@acronym{NcML} printing, so that specifying @samp{--xml} in addition
+to a configuration option is redundant and unnecessary.
+The @samp{--xml_no_location} switch prevents output of the
+@acronym{NcML} @code{location} element.
+By default the location element is printed with a value equal to the
+location of the input dataset, e.g.,
+@code{location="/home/zender/in.nc"}.
+The @samp{--xml_spr_chr} and @samp{--xml_spr_nmr} options customize
+the strings used as @acronym{NcML} separators for attributes and
+variables of character-type and numeric-type, respectively.
+@example
+@verbatim
+zender@@roulee:~$ ncks --xml -v two_dmn_rec_var_sng ~/nco/data/in.nc
+...
+<values>abc bcd cde def efg fgh ghi hij jkl klm</values>
+...
+ zender@@roulee:~$ ncks --xml_spr_chr=', ' -v two_dmn_rec_var_sng ~/nco/data/in.nc
+...
+<values separator=", ">abc, bcd, cde, def, efg, fgh, ghi, hij, jkl, klm</values>
+...
+zender@@roulee:~$ ncks --xml -v one_dmn_rec_var ~/nco/data/in.nc
+...
+<values>1 2 3 4 5 6 7 8 9 10</values>
+...
+zender@@roulee:~$ ncks --xml_spr_nmr=', ' -v one_dmn_rec_var ~/nco/data/in.nc
+...
+<values separator=", ">1, 2, 3, 4, 5, 6, 7, 8, 9, 10</values>
+...
+@end verbatim
+@end example
+Separator elements for strings are a thorny issue.
+One must be sure that the separator element is not mistaken as a portion
+of the string. 
+@acronym{NCO} attempts to produce valid @acronym{NcML} and supplies the
+@samp{--xml_spr_chr} option to work around any difficulties.
+Until a reference @acronym{NcML} implementation specifies how to encode
+string values, some aspects of the @acronym{NCO} implementation may be
+ill-defined.
 @end table
 
 @html

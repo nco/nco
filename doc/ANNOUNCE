@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.636 2013-11-14 23:18:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.637 2013-11-15 21:18:14 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -6,17 +6,39 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 We are pleased to report the birth of a new operator, nces.
-nces arrived on schedule in November, at about 1000 lines of code.
+nces will debut at AGU (Friday 12/13 11:35 AM Moscone West 2010).  
 nces is for netCDF Ensemble Statistics.
-nces extends the old ncea by allowing groups to be treated as an
-unlimited dimension of datasets. See below for more info.
+nces comprises the existing functionality of ncea and extends it by
+allowing groups to be treated as an unlimited dimension of datasets.   
+nces is really ncea with a new and powerful feature and a new name.
+See below for more info on the feature. Regarding the name...
+
+We renamed ncea as nces to more accurately describe the operator.
+For historical reasons, NCO is full of misnamed operators:
+NCO itself is misnamed because the operators now work well on HDF (4
+and 5) files, not just netCDF files. We planned to change their name
+to SDO (Scientific Data Operators) but the name just wouldn't stick.
+And the "averagers" (ncea, ncra, ncwa) are all misnamed because they
+all do more statistics (min/max/ttl/rms...) than just averages. 
+The addition of this powerful feature is an opportune time to rename
+ncea as nces.  
+
+We faced the same problem of back-compatibility when we renamed ncdiff
+to ncbo many years ago. We will use the same method. Invoking 'ncea'
+will continue to produce the same results. Scripts will not break.
+Under the hood, 'ncea' will invoke 'nces --nsm_fl', just as 'ncdiff' 
+invokes 'ncbo --op_typ=subtract'. To cause nces to utilize the new
+group ensemble mode, invoke it with 'nces --nsm_grp'. This is similar
+to how ncecat has two modes, record aggregation (the default) and
+group aggregation, invoked with 'ncecat --rag' and 'ncecat --gag', 
+respectively.
 
 This version also improves ncks support for XML (NcML) output.
 
-Work on NCO 4.4.0 is underway and includes improved netCDF4 support 
-for various options (all -X, ncwa -w and -m), other netCDF4 mop-up,
-and improved support for HDF4 files. And the operator, nces, which
-we will debut/describe at AGU (Friday 12/13 11:35 AM Moscone West 2010). 
+Work on NCO 4.4.0 is underway. It will focus on stability and speed.  
+There will be some netCDF4 mop-up, including netCDF4 support for
+various options (all -X, ncwa -w and -m), and, possibly, improved
+support for HDF4 files. 
 
 Enjoy,
 Charlie
@@ -27,18 +49,20 @@ NEW FEATURES:
 
 A. nces fxm
 
-A. Separators for XML now user-configurable with --xml_spr_chr and
+A. Improved XML/NcML standards compliance and flexibility.
+   Separators for XML now user-configurable with --xml_spr_chr and
    --xml_spr_nmr for character types (i.e., strings) and numeric
    types (i.e., numbers), respectively.
-   ncks -v att_var --xml --xml_spr_chr="***" ~/nco/data/in.nc
-   ncks -v att_var --xml --xml_spr_nmr=", " ~/nco/data/in.nc
+   ncks -v att_var --xml_spr_chr="***" ~/nco/data/in.nc
+   ncks -v att_var --xml_spr_nmr=", " ~/nco/data/in.nc
 
 BUG FIXES:
 
 A. XML mode corrects a number of issues reported by Aleksandar Jelenak 
    1. Print </variable> in metadata mode
    2. Adds type="typ_nm" attribute to non-string attribute elements
-   3. Add separator=", " attribute to attribute element and variable element
+   3. Add separator=", " element when separator is not whitespace
+   4. Fix printing of int64-type data
 
 KNOWN ISSUES NOT YET FIXED:
 

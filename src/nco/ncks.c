@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.674 2013-11-14 23:18:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.675 2013-11-15 21:18:14 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -156,8 +156,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.674 2013-11-14 23:18:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.674 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.675 2013-11-15 21:18:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.675 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -286,8 +286,8 @@ main(int argc,char **argv)
       {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
       {"tst_udunits",required_argument,0,0},
-      {"xml_spr_chr",required_argument,0,0}, /* [flg] Output separator string for XML character types */
-      {"xml_spr_nmr",required_argument,0,0}, /* [flg] Output separator string for XML numeric types */
+      {"xml_spr_chr",required_argument,0,0}, /* [flg] Separator for XML character types */
+      {"xml_spr_nmr",required_argument,0,0}, /* [flg] Separator for XML numeric types */
       /* Long options with short counterparts */
       {"3",no_argument,0,'3'},
       {"4",no_argument,0,'4'},
@@ -483,9 +483,9 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
       if(!strcmp(opt_crr,"xml") || !strcmp(opt_crr,"ncml")) PRN_XML=True; /* [flg] Print XML (NcML) */
-      if(!strcmp(opt_crr,"xml_no_location") || !strcmp(opt_crr,"ncml_no_location")) PRN_XML_LOCATION=False; /* [flg] Print XML location tag */
-      if(!strcmp(opt_crr,"xml_spr_chr")) spr_chr=(char *)strdup(optarg); /* [flg] Separator for XML character types */
-      if(!strcmp(opt_crr,"xml_spr_nmr")) spr_nmr=(char *)strdup(optarg); /* [flg] Separator for XML numeric types */
+      if(!strcmp(opt_crr,"xml_no_location") || !strcmp(opt_crr,"ncml_no_location")){PRN_XML_LOCATION=False;PRN_XML=True;} /* [flg] Print XML location tag */
+      if(!strcmp(opt_crr,"xml_spr_chr")){spr_chr=(char *)strdup(optarg);PRN_XML=True;} /* [flg] Separator for XML character types */
+      if(!strcmp(opt_crr,"xml_spr_nmr")){spr_nmr=(char *)strdup(optarg);PRN_XML=True;} /* [flg] Separator for XML numeric types */
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -829,7 +829,7 @@ main(int argc,char **argv)
     if(prn_flg.xml) prn_flg.nwl_pst_val=False; else prn_flg.nwl_pst_val=True;
     prn_flg.dlm_sng=dlm_sng;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
-    //	prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;
+    // prn_flg.ALPHA_BY_FULL_OBJECT=ALPHA_BY_FULL_OBJECT;
     prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
     // prn_flg.ALPHA_BY_STUB_OBJECT=ALPHA_BY_STUB_OBJECT;
     prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;

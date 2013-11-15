@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.180 2013-11-15 05:56:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.181 2013-11-15 21:18:14 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1317,8 +1317,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       if(var.type == NC_STRING || var.type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
 
       (void)fprintf(stdout,"%*s<values",prn_ndn+prn_flg->var_fst,spc_sng);
-      /* Print separator element for non-whitespace separators */
-      if(var.sz > 1L && var.type != NC_CHAR){ 
+      /* Print non-whitespace separators between elements */
+      if(var.sz > 1L && /* Must be multiple elements AND ... */
+	 ((var.type != NC_CHAR) || /* ... EITHER non-NC_CHAR variable OR ... */
+	  (var.type == NC_CHAR && var.nbr_dim > 1))){ /* ... NC_CHAR variable with multiple dimenssions */
 	size_t spr_sng_idx=0L;
 	size_t spr_sng_lng;
 	spr_sng_lng=strlen(spr_sng);
