@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.179 2013-11-15 05:34:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.180 2013-11-15 05:56:29 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -101,6 +101,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
     spr_sng=cma_sng; /* [sng] Output separator string */
     if(prn_flg->xml){
+      /* Official NcML XML Schema is here:
+	 http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/ncml/v2.2/AnnotatedSchema4.html */
+
       (void)fprintf(stdout,"%*s<attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
 
       /* User may override default separator string for XML only */
@@ -1391,13 +1394,13 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             } /* endif first element of string array */
             /* New string begins each element where penultimate dimension changes */
             if(lmn%sng_lng == 0L){
-              (void)fprintf(stdout,"\"");
+              if(prn_flg->cdl) (void)fprintf(stdout,"\"");
               sng_val_sng[0]='\0';
             } /* endif new string */
             if(chr_val != '\0') (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
             if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
             if(lmn%sng_lng == sng_lngm1){
-              (void)fprintf(stdout,"%s\"",sng_val_sng);
+              (void)fprintf(stdout,"%s%s",sng_val_sng,(prn_flg->cdl) ? "\"" : "");
               /* Print separator after non-final string */
               if(lmn != var_szm1) (void)fprintf(stdout,"%s",spr_sng);
             } /* endif string end */
@@ -1416,7 +1419,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           sng_lngm1=sng_lng-1UL;
           /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
           sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
-          (void)fprintf(stdout,"\"");
+          if(prn_flg->cdl) (void)fprintf(stdout,"\"");
           sng_val_sng[0]='\0';
           for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
             val_sng[0]='\0';
