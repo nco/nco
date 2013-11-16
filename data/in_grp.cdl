@@ -79,7 +79,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.103 2013-11-13 20:31:34 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.104 2013-11-16 22:00:57 zender Exp $";
   
  data:
   area=10.,10.;
@@ -307,6 +307,8 @@ netcdf in_grp {
     
     uint uint_var;
   uint_var:long_name = "uint-type variable";
+  uint_var:_FillValue = 73u;
+  uint_var:purpose = "_FillValue attribute tests whether NcML parser inadvertently creates two _FillValues for unsigned types";
     
     uint uint_arr(lat);
   uint_arr:long_name = "uint-type array variable";

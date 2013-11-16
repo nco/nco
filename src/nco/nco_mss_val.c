@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.51 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.52 2013-11-16 22:00:58 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -268,17 +268,18 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
 
   char att_nm[NC_MAX_NAME];
   
-  long att_sz;
   int idx;
+
+  long att_sz;
   
   nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
-
-  size_t att_lng;
 
   nc_type att_typ;
 
   ptr_unn mss_tmp;
   
+  size_t att_lng;
+
   /* Refresh netCDF "mss_val" attribute for this variable */
   var->has_mss_val=False;
   var->mss_val.vp=nco_free(var->mss_val.vp);
