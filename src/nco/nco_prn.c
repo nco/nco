@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.184 2013-11-16 22:00:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.185 2013-11-16 22:13:13 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -29,7 +29,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   char *spr_sng=NULL; /* [sng] Output separator string */
 
   char cma_sng[]=", "; /* [sng] Comma string */
-  char spr_xml_chr[]=" "; /* [sng] Default XML separator for character types */
+  char spr_xml_chr[]="*|*"; /* [sng] Default XML separator for character types */
   char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
 
   char chr_val; /* [sng] Current character */
@@ -1165,7 +1165,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   char cma_sng[]=", "; /* [sng] Comma string */
   char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
-  char spr_xml_chr[]=" "; /* [sng] Default XML separator for character types */
+  char spr_xml_chr[]="*|*"; /* [sng] Default XML separator for character types */
   char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
   char nul_chr='\0'; /* [sng] Character to end string */ 
 
