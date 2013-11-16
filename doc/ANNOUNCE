@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.637 2013-11-15 21:18:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.638 2013-11-16 15:46:59 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -49,20 +49,24 @@ NEW FEATURES:
 
 A. nces fxm
 
-A. Improved XML/NcML standards compliance and flexibility.
+A. Much improved XML/NcML standards compliance and flexibility.
    Separators for XML now user-configurable with --xml_spr_chr and
    --xml_spr_nmr for character types (i.e., strings) and numeric
    types (i.e., numbers), respectively.
    ncks -v att_var --xml_spr_chr="***" ~/nco/data/in.nc
    ncks -v att_var --xml_spr_nmr=", " ~/nco/data/in.nc
+   http://nco.sf.net/nco.html#xml
 
 BUG FIXES:
 
-A. XML mode corrects a number of issues reported by Aleksandar Jelenak 
+A. Correct XML-mode issues, many reported by Aleksandar Jelenak 
    1. Print </variable> in metadata mode
    2. Adds type="typ_nm" attribute to non-string attribute elements
    3. Add separator=", " element when separator is not whitespace
    4. Fix printing of int64-type data
+   5. Use NcML not CDL type names
+   6. Add hidden _Unsigned attribute for unsigned types
+   7. Add hidden _FillValue attribute for unsigned types
 
 KNOWN ISSUES NOT YET FIXED:
 

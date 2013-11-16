@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.182 2013-11-16 15:20:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.183 2013-11-16 15:46:59 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1242,7 +1242,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       (void)nco_get_var1(grp_id,var.id,0L,var.val.vp,var.type);
     } /* end potential OpenMP critical */
   } else { /* ! Scalars */
-
     /* Allocate local MSA */
     lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
     lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
@@ -1252,7 +1251,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     /* Call super-dooper recursive routine */
     var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
-
   } /* ! Scalars */
 
   /* Call also initializes var.sz with final size */
@@ -1317,7 +1315,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     (void)fprintf(stdout,"\n");
 
     if(fmt_sng_mss_val) fmt_sng_mss_val=(char *)nco_free(fmt_sng_mss_val);
-
   } /* end if dlm_sng */
 
   spr_sng=cma_sng; /* [sng] Output separator string */
@@ -1406,9 +1403,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         case NC_CHAR: 
           chr_val=var.val.cp[lmn];
           if(var.nbr_dim == 0){
-            (void)fprintf(stdout,"\"");
+            if(!prn_flg->xml) (void)fprintf(stdout,"\"");
             if(chr_val != '\0') (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
-            (void)fprintf(stdout,"\"");
+            if(!prn_flg->xml) (void)fprintf(stdout,"\"");
             val_sng[0]='\0';
           }else{ /* var.nbr_dim > 0 */
             /* Multi-dimensional string arrays of NC_CHAR */

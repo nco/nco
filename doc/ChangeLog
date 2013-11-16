@@ -1,5 +1,7 @@
 2013-11-16  Charlie Zender  <zender@uci.edu>
 
+	* Eliminate all quotes from <values> elements
+
 	* XML mode add _FillValue attribute for unsigned variable types
 
 	* XML mode add _Unsigned attribute for unsigned variable types
