@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.638 2013-11-16 15:46:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.639 2013-11-16 15:53:50 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -55,6 +55,9 @@ A. Much improved XML/NcML standards compliance and flexibility.
    types (i.e., numbers), respectively.
    ncks -v att_var --xml_spr_chr="***" ~/nco/data/in.nc
    ncks -v att_var --xml_spr_nmr=", " ~/nco/data/in.nc
+   We think ncks dumps all netCDF3 and netCDF4 groups and atomic types
+   correctly. netCDF4 non-atomic are ignored. Java/NcML users please
+   test this assertion and and give us feedback.
    http://nco.sf.net/nco.html#xml
 
 BUG FIXES:
