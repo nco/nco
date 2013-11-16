@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.181 2013-11-15 21:18:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.182 2013-11-16 15:20:07 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -110,8 +110,11 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       if(att[idx].type == NC_STRING || att[idx].type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
 
       /* Print type of non-string variables */
-      if(att[idx].type != NC_STRING && att[idx].type != NC_CHAR) (void)fprintf(stdout," type=\"%s\"",cdl_typ_nm(att[idx].type));
+      if(att[idx].type != NC_STRING && att[idx].type != NC_CHAR) (void)fprintf(stdout," type=\"%s\"",xml_typ_nm(att[idx].type));
       
+      /* Print hidden attributes of attributes */
+      // if(nco_xml_typ_has_nsg_att(att[idx].type)) (void)fprintf(stdout,""); /* toolsui shows no way to indicate unsigned types for attributes? */
+
       /* Print separator element for non-whitespace separators */
       if(att[idx].sz > 1L && att[idx].type != NC_CHAR){ 
 	size_t spr_sng_idx=0L;
@@ -245,7 +248,28 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   if(!prn_flg->new_fmt && !prn_flg->xml) (void)fprintf(stdout,"\n");
   (void)fflush(stdout);
   
-  /* Free the space holding attribute values */
+  /* Print any hidden attributes */
+  if(prn_flg->xml && var_id != NC_GLOBAL){
+    /* _FillValue, _Netcdf4Dimid, _Unsigned:
+       _FillValue: No documentation. 
+       Set to -1 for unsigned types: ubyte, ushort, uint, 
+       Set to -2 for unsigned types: uint64
+
+       _Netcdf4Dimid: https://bugtracking.unidata.ucar.edu/browse/NCF-244
+       "Netcdf4Dimid is an artifact stored in the HDF5 dataset of a dimension scale variable to record dimids when nc_enddef() detects that the coordinate variables have a different creation order than the corresponding dimensions. In that case, the documentation says: If this attribute is present on any dimension scale, it must be present on all dimension scales in the file."
+       Is usually (always?) present in array variables in toolsui
+       However, it appears at most once even in multi-dimensional arrays
+       Thus information provided appears to be ambiguous
+       
+       _Unsigned: http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/
+       "There are not separate unsigned integer types. The Variable and Array objects have isUnsigned() methods, and conversion to wider types is correctly done. Since Java does not have unsigned types, the alternative is to automatically widen unsigned data arrays, which would double the memory used. */
+    nc_type var_type;
+    (void)nco_inq_vartype(grp_id,var_id,&var_type);
+    if(nco_xml_typ_has_nsg_att(var_type)) (void)fprintf(stdout,"%*s<attribute name=\"_Unsigned\" value=\"true\" />\n",prn_ndn,spc_sng);
+    if(nco_xml_typ_has_flv_att(var_type)) (void)fprintf(stdout,"%*s<attribute name=\"_FillValue\" type=\"%s\" value=\"%d\" />\n",prn_ndn,spc_sng,xml_typ_nm(var_type),(var_type == NC_UINT64) ? -2 : -1);
+  } /* !xml */
+
+  /* Free space holding attribute values */
   for(idx=0;idx<nbr_att;idx++){
     att[idx].val.vp=nco_free(att[idx].val.vp);
     att[idx].nm=(char *)nco_free(att[idx].nm);
@@ -1000,7 +1024,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   if(prn_flg->trd && (nco_hdf_cnv_get() == nco_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? HDF4_UNKNOWN, compressed? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
   if(prn_flg->trd && (nco_hdf_cnv_get() != nco_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
 
-  if(prn_flg->xml) (void)fprintf(stdout,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,cdl_typ_nm(var_typ));
+  if(prn_flg->xml) (void)fprintf(stdout,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,xml_typ_nm(var_typ));
 
   /* Print type, shape, and total size of variable */
   dmn_sng[0]='\0';
@@ -1327,6 +1351,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	while(spr_sng_idx < spr_sng_lng)
 	  if(!isspace(spr_sng[spr_sng_idx])) break; else spr_sng_idx++;
 	if(spr_sng_idx < spr_sng_lng) (void)fprintf(stdout," separator=\"%s\"",spr_sng);
+	if(spr_sng_idx == spr_sng_lng && (var.type == NC_CHAR || var.type == NC_STRING)) (void)fprintf(stderr,"%s: WARNING %s reports XML separator \"%s\" is pure whitespace for variable %s which is an array of strings of type %s. Result may be ambiguous to NcML parsers. HINT: Consider using --xml_spr_chr to specify a multi-character separator that 1. does not appear in the string array and 2. does not include an NcML formatting characters (e.g., commas, angles, quotes).\n",nco_prg_nm_get(),fnc_nm,spr_sng,var.nm,nco_typ_sng(var.type));
       } /* var.sz */
       (void)fprintf(stdout,">");
     } /* !xml */
@@ -1980,7 +2005,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
 
     /* Print variable attributes */
-    if(var_trv.nbr_att > 0 && prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
+    if(prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
 
     if(prn_flg->xml && prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
     if(prn_flg->xml && (prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA)) (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
@@ -2067,3 +2092,59 @@ nco_prn_cpd_chk                     /* [fnc] Check whether variable is compound 
   
   if(dmn_idx != var_trv->nbr_dmn) return True; else return False;
 } /* end nco_prn_cpd_chk() */
+
+nco_bool /* O [flg] Type requires hidden _Unsigned attribute string */
+nco_xml_typ_has_nsg_att /* [fnc] Does type require hidden _Unsigned attribute for XML representation? */
+(const nc_type nco_typ) /* I [enm] netCDF type */
+{
+  /* Purpose: Return boolean if netCDF type requires hidden _Unsigned attribute for XML representation
+     Output of toolsui shows these attributes */
+  switch(nco_typ){
+  case NC_FLOAT:
+  case NC_DOUBLE:
+  case NC_INT:
+  case NC_SHORT:
+  case NC_CHAR:
+  case NC_BYTE:
+  case NC_INT64:
+  case NC_STRING:
+    return False;
+  case NC_UBYTE:
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_UINT64:
+    return True;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return False;
+} /* end nco_xml_typ_has_nsg_att() */
+
+nco_bool /* O [flg] Type requires hidden _FillValue attribute string */
+nco_xml_typ_has_flv_att /* [fnc] Does type require hidden _FillValue attribute for XML representation? */
+(const nc_type nco_typ) /* I [enm] netCDF type */
+{
+  /* Purpose: Return boolean if netCDF type requires hidden _FillValue attribute for XML representation
+     Output of toolsui shows these attributes */
+  switch(nco_typ){
+  case NC_FLOAT:
+  case NC_DOUBLE:
+  case NC_INT:
+  case NC_SHORT:
+  case NC_CHAR:
+  case NC_BYTE:
+  case NC_INT64:
+  case NC_STRING:
+    return False;
+  case NC_UBYTE:
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_UINT64:
+    return True;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return False;
+} /* end nco_xml_typ_has_flv_att() */

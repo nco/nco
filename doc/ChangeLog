@@ -1,8 +1,10 @@
-2013-11-15 Pedro Vicente  <pvicente@uci.edu>
+2013-11-16  Charlie Zender  <zender@uci.edu>
 
-	* nces: Regression #3 file ensemble with GPE
-	
-2013-11-15  Charlie Zender  <zender@uci.edu>
+	* XML mode add _FillValue attribute for unsigned variable types
+
+	* XML mode add _Unsigned attribute for unsigned variable types
+
+	* XML mode use xml_typ_nm() instead of cdl_typ_nm()
 
 	* NCO 4.3.9 release procedure:
  	Changes since nco-4_3_8: nces, XML
@@ -10,7 +12,13 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.9 release"
 	cvs tag -c nco-4_3_9;cvs tag -c nco-4_3_9-1
 
-	* Add non-whitespace separator to multi-dimensional NC_CHAR variables
+2013-11-15 Pedro Vicente  <pvicente@uci.edu>
+
+	* nces: Regression #3 file ensemble with GPE
+
+2013-11-15  Charlie Zender  <zender@uci.edu>
+
+	* Add XML non-whitespace separator to multi-dimensional NC_CHAR variables
 
 2013-11-13  Charlie Zender  <zender@uci.edu>
 
@@ -22,7 +30,7 @@
 
 	* Close content-less <variable> elements with "/>" not ">" (in contrast to ncdump -x, toolsui)
 
-	* Add separator=", " attribute to attribute element and variable element
+	* Add separator=", " attribute for non-whitespace separators
 
 	* Add type="cdl_typ_nm" attribute to non-string attribute elements
 

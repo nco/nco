@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.210 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.211 2013-11-16 15:20:07 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -199,6 +199,43 @@ cdl_typ_nm /* [fnc] Return string describing native CDL type */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end cdl_typ_nm() */
+
+const char * /* O [sng] Native XML type */
+xml_typ_nm /* [fnc] Return string describing native XML type */
+(const nc_type type) /* I [enm] netCDF type */
+{
+  /* Purpose: Divine XML type string from netCDF external type enum */
+  switch(type){
+  case NC_FLOAT:
+    return "float";
+  case NC_DOUBLE:
+    return "double";
+  case NC_INT:
+    return "int";
+  case NC_SHORT:
+    return "short";
+  case NC_CHAR:
+    return "char";
+  case NC_BYTE:
+    return "byte";
+  case NC_UBYTE:
+    return "byte";
+  case NC_USHORT:
+    return "short";
+  case NC_UINT:
+    return "int";
+  case NC_INT64:
+    return "long";
+  case NC_UINT64:
+    return "long";
+  case NC_STRING:
+    return "String";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end xml_typ_nm() */
 
 const char * /* O [sng] Native CDL type suffix */
 cdl_typ_sfx /* [fnc] Return suffix string for CDL type */

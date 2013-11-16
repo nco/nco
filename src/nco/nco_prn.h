@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.48 2013-08-02 19:52:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.49 2013-11-16 15:20:07 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -103,6 +103,14 @@ nco_bool /* O [flg] Variable is compound */
 nco_prn_cpd_chk /* [fnc] Check whether variable is compound */
 (const trv_sct * const var_trv, /* I [sct] Variable to check */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */ 
+
+nco_bool /* O [flg] Type requires hidden _FillValue attribute string */
+nco_xml_typ_has_flv_att /* [fnc] Does type require hidden _FillValue attribute for XML representation? */
+(const nc_type nco_typ); /* I [enm] netCDF type */
+
+nco_bool /* O [flg] Type requires hidden attribute string */
+nco_xml_typ_has_nsg_att /* [fnc] Does type require hidden _Unsigned attribute for XML representation? */
+(const nc_type nco_typ); /* I [enm] netCDF type */
 
 #ifdef __cplusplus
 } /* end extern "C" */

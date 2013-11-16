@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.102 2013-08-01 05:02:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.103 2013-11-16 15:20:07 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -123,6 +123,10 @@ cdl_typ_nm /* [fnc] Return string describing native CDL type */
 
 const char * /* O [sng] Native CDL type suffix */
 cdl_typ_sfx /* [fnc] Return suffix string for CDL type */
+(const nc_type type); /* I [enm] netCDF type */
+
+const char * /* O [sng] Native XML type */
+xml_typ_nm /* [fnc] Return string describing native XML type */
 (const nc_type type); /* I [enm] netCDF type */
 
 const char * /* O [sng] Native Fortran77 type */
