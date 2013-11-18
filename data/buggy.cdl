@@ -25,6 +25,24 @@ netcdf buggy {
   tm3=unlimited;
 
  variables:
+  float att_var;
+ att_var:byte_att = '\000','\001','\002','\177','\200','\201','\376','\377';
+ att_var:char_att = "Sentence one.\nSentence two.\n";
+ att_var:short_att = 37s;
+ att_var:int_att = 73;
+ att_var:float_att = 73.0f,72.0f,71.0f,70.010f,69.0010f,68.010000f,67.01000100f;
+ att_var:double_att = 73.0,72.0,71.0,70.010,69.0010,68.010000,67.01000100;
+ att_var:ubyte_att = 0ub, 1ub, 2ub, 127ub, 128ub, 254ub, 255ub, 0ub; // 20130712: ncgen 4.3.0 translates this to byte
+ att_var:ubyte2_att = '\000','\001','\002','\177','\200','\201','\376','\377'; // 20130712: ncgen 4.3.0 translates this to byte
+ att_var:ushort_att = 37us;
+ att_var:uint_att = 73u;
+ att_var:int64_att = 9223372036854775807l; // 20130712: ncgen 4.3.0 chokes on ll, LL suffix for int64 attributes, and translates -l suffixed numbers to NC_UINT64. Bug reported (netCDF #HEX-795132) and fixed in snapshot 20131117
+ att_var:uint64_att = 18446744073709551615ul; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes
+ att_var:string_att1 = "20130723: ncgen -k netCDF-4 version 4.0.x converts quoted string to NC_STRING not NC_CHAR. Incompatible with classic behavior.";
+ att_var:string_att2 = "20130712: ncgen -k netCDF-4 version 4.2.x+ converts quoted string to NC_CHAR not NC_STRING. Backwards compatible with classic behavior.";
+  string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
+  string att_var:string_att4 = "20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three sentences.";
+
   float lat_tm2(lat,tm2);
   float lat_tm3(lat,tm3);
   float tm2_lat(tm2,lat);
@@ -35,7 +53,14 @@ netcdf buggy {
   tm2_tm3:note = "ncdump prior to snapshot 20121116 and/or release netCDF 4.3 fails to print braces required to dis-ambiguate data sizes of mutiple record dimensions";
   tm2_tm3:note2 = "ncgen from netCDF after ~201207 fails when ambiguous syntax (without braces) is used. Catch 22. Therefore remove tm2_tm3 from test file for now.";
 
+  uint uint_var;
+  uint_var:long_name = "uint-type variable";
+  uint_var:_FillValue = 73u;
+  uint_var:purpose = "_FillValue attribute tests whether NcML parser inadvertently creates two _FillValues for unsigned types";
+    
  data:
+  att_var=10.0;
+
   // 20130127: Braces are required to disambiguate correct record dimension sizes, but brace syntax was not supported by ncgen until netCDF snapshots ~201211, i.e., post netCDF 4.2.1.1. Uggh.
   lat_tm2={1,2},{3,4}; // NB: Unlimited dimensions (other than the first) must be enclosed in braces
   lat_tm3={1,2,3},{4,5,6}; // NB: Unlimited dimensions (other than the first) must be enclosed in braces
@@ -43,6 +68,15 @@ netcdf buggy {
   tm3_lat=1,2,3,4,5,6; // NB: Braces forbidden when unlimited dimension is first. sizeof(tm2)=sizeof(whole)/$lat
 
   tm2_tm3={1.,2.,3.},{4.,5.,6.};
+
+   // 20130208: netCDF 4.2.1.1- fail as nc_get_var1_uint() returns -60 = NetCDF: Numeric conversion not representable on (valid) input values exceeding INT_MAX=2147483647. This was bug netCDF #PUX-602809 fixed in daily snapshot 20130210.
+   uint_var=4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
+
+ group: \1g { 
+    // Bug netCDF #TLO-836022 reported 20131118: ncgen fails on group names that begin with numeric characters. Response:
+    // "An identifier with a leading digit is allowed, but the leading digit must be escaped. So in your example change 1g -> \1g"
+ :att=1;
+ }
 
  group: g1 {
   dimensions:

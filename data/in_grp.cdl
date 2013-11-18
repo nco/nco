@@ -75,11 +75,10 @@ netcdf in_grp {
   float lat_lon(lat,lon);
   
   //global attributes
-  
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.104 2013-11-16 22:00:57 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.105 2013-11-18 22:28:35 zender Exp $";
   
  data:
   area=10.,10.;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.186 2013-11-18 19:42:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.187 2013-11-18 22:28:36 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -68,11 +68,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     /* Which group is this? */
     rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
     if(rcd == NC_ENOGRP) (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Global"); else (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Group");
-    if(prn_flg->new_fmt && !prn_flg->trd) prn_ndn+=prn_flg->sxn_fst;
+    if(prn_flg->cdl) prn_ndn+=prn_flg->sxn_fst;
+    if(prn_flg->xml) prn_ndn+=prn_flg->sxn_fst;
   }else{
     /* Get name and number of attributes for variable */
     (void)nco_inq_var(grp_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
-    if(prn_flg->new_fmt && !prn_flg->trd) prn_ndn+=2*prn_flg->var_fst;
+    if(prn_flg->cdl) prn_ndn+=2*prn_flg->var_fst;
+    if(prn_flg->xml) prn_ndn+=prn_flg->sxn_fst;
     if(prn_flg->new_fmt && prn_flg->trd) prn_ndn+=prn_flg->var_fst;
   } /* end else */
 
