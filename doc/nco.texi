@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.906 2013-11-18 17:45:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.907 2013-11-18 19:42:05 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -42,7 +42,7 @@ cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
-makeinfo --no-split --output=nco.info nco.texi 
+makeinfo --no-split --output=nco.info nco.texi
 makeinfo --no-headers --no-split --output=nco.txt nco.texi
 makeinfo --xml --no-split --output=nco.xml nco.texi
 makeinfo --docbook --no-split --output=nco.xml nco.texi
