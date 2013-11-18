@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.443 2013-11-15 22:06:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.444 2013-11-18 23:20:41 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.443 2013-11-15 22:06:45 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.443 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.444 2013-11-18 23:20:41 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.444 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -248,6 +248,7 @@ main(int argc,char **argv)
   var_sct **var_out=NULL_CEWI;
   var_sct **var_prc;
   var_sct **var_prc_out;
+  var_sct *var_tmp; /* [sct] Dummy variable, since processed array only has templates */
   trv_sct *var_trv;  /* [sct] Variable GTT object */
   trv_sct* prc_trv;
   trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
@@ -1067,12 +1068,14 @@ main(int argc,char **argv)
                   nsm_idx,var_trv->nsm_nm,idx_var,var_trv->nm_fll,idx_prc,prc_trv->nm_fll);             
               }
 
-              var_sct *var_tmp; /* [sct] Dummy variable, since processed array only has templates */
               var_tmp=nco_var_dpl(var_prc[idx_prc]);
 
               /* Replace the template variable name with the member variable name */
               var_tmp->nm_fll=(char *)nco_free(var_tmp->nm_fll);
+              var_tmp->nm=(char *)nco_free(var_tmp->nm);
               var_tmp->nm_fll=strdup(var_trv->nm_fll);
+              var_tmp->nm=strdup(var_trv->nm);
+              var_tmp->nbr_dim=var_trv->nbr_dmn;
 
               /* Retrieve variable from disk into memory */
               (void)nco_msa_var_get_trv(in_id,var_tmp,trv_tbl);

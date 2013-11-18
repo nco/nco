@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1054 2013-11-15 22:06:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1055 2013-11-18 23:20:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7488,7 +7488,7 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
   (void)nco_inq(grp_id,(int *)NULL,&nbr_var,(int *)NULL,(int *)NULL);
 
   /* Allocate list */ 
-  *nm_lst=(char **)nco_malloc(nbr_var*sizeof(char *));
+  (*nm_lst)=(char **)nco_malloc(nbr_var*sizeof(char *));
 
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
@@ -7497,7 +7497,7 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
     (void)nco_inq_var(grp_id,idx_var,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
 
     /* Add to list */ 
-    *nm_lst[idx_var]=(char *)strdup(var_nm);
+    (*nm_lst)[idx_var]=(char *)strdup(var_nm);
 
   } /* Iterate variables for this group */
 
