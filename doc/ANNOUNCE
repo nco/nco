@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.640 2013-11-16 22:13:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.641 2013-11-18 17:45:13 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -20,8 +20,7 @@ and 5) files, not just netCDF files. We planned to change their name
 to SDO (Scientific Data Operators) but the name just wouldn't stick.
 And the "averagers" (ncea, ncra, ncwa) are all misnamed because they
 all do more statistics (min/max/ttl/rms...) than just averages. 
-The addition of this powerful feature is an opportune time to rename
-ncea as nces.  
+This feature addition is an opportune time to rename ncea as nces.  
 
 We faced the same problem of back-compatibility when we renamed ncdiff
 to ncbo many years ago. We will use the same method. Invoking 'ncea'
@@ -34,8 +33,9 @@ group aggregation, invoked with 'ncecat --rag' and 'ncecat --gag',
 respectively.
 
 This version also improves ncks support for XML (NcML) output.
+All output now validates without errors against the NcML 2.2 schema.  
 
-Work on NCO 4.4.0 is underway. It will focus on stability and speed.  
+Work on NCO 4.4.0 is underway. It focuses on stability and speed.  
 There will be some netCDF4 mop-up, including netCDF4 support for
 various options (all -X, ncwa -w and -m), and, possibly, improved
 support for HDF4 files. 
@@ -47,7 +47,26 @@ Charlie
 
 NEW FEATURES:
 
-A. nces fxm
+A. ncea is now nces or nces --nsm_fl, meaning ensembles of files.
+   Use nces --nsm_grp, for ensembles of groups, a new feature.
+   The same input is valid in both modes and produces the same
+   output unless group ensembles are present. Members of a group
+   ensemble are groups that share the same structure, parent group,
+   and nesting level. Their contents usually have different values
+   because they represent an ensemble of replicated experiments.
+   In group ensemble mode nces will perform the statistics across
+   the ensemble, which may span multiple input files. Files may
+   contain members of multiple ensembles. However, all ensembles
+   must have at least one member in the first input file.
+   Output statistics are stored in the parent group by default.
+   If the ensemble members are /cesm/cesm_01 and /cesm/cesm_02,
+   then the computed statistic will be in /cesm in the output file. 
+   The --nsm_sfx option instructs nces to instead store output in 
+   a new child group of the parent created by attaching the suffix
+   to the parent group's name, i.e., /cesm/cesm_avg:
+   nces --nsm_grp                  mdl1.nc mdl2.nc mdl3.nc out.nc
+   nces --nsm_grp --nsm_sfx='_avg' mdl1.nc mdl2.nc mdl3.nc out.nc
+   http://nco.sf.net/nco.html#nces
 
 A. Much improved XML/NcML standards compliance and flexibility.
    Separators for XML now user-configurable with --xml_spr_chr and

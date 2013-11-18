@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.905 2013-11-15 21:18:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.906 2013-11-18 17:45:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13693,21 +13693,22 @@ location of the input dataset, e.g.,
 The @samp{--xml_spr_chr} and @samp{--xml_spr_nmr} options customize
 the strings used as @acronym{NcML} separators for attributes and
 variables of character-type and numeric-type, respectively.
+Their default separators are "*|*" and " ":
 @example
 @verbatim
-zender@@roulee:~$ ncks --xml -v two_dmn_rec_var_sng ~/nco/data/in.nc
+zender@@roulee:~$ ncks --xml -d time,0,3 -v two_dmn_rec_var_sng in.nc
 ...
-<values>abc bcd cde def efg fgh ghi hij jkl klm</values>
+<values separator="*|*">abc*|*bcd*|*cde*|*def</values>
 ...
- zender@@roulee:~$ ncks --xml_spr_chr=', ' -v two_dmn_rec_var_sng ~/nco/data/in.nc
+ zender@@roulee:~$ ncks --xml_spr_chr=', ' -v two_dmn_rec_var_sng in.nc
 ...
 <values separator=", ">abc, bcd, cde, def, efg, fgh, ghi, hij, jkl, klm</values>
 ...
-zender@@roulee:~$ ncks --xml -v one_dmn_rec_var ~/nco/data/in.nc
+zender@@roulee:~$ ncks --xml -v one_dmn_rec_var in.nc
 ...
 <values>1 2 3 4 5 6 7 8 9 10</values>
 ...
-zender@@roulee:~$ ncks --xml_spr_nmr=', ' -v one_dmn_rec_var ~/nco/data/in.nc
+zender@@roulee:~$ ncks --xml_spr_nmr=', ' -v one_dmn_rec_var in.nc
 ...
 <values separator=", ">1, 2, 3, 4, 5, 6, 7, 8, 9, 10</values>
 ...
