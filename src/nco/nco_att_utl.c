@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.161 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.162 2013-11-19 10:41:36 pvicente Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -367,7 +367,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     } /* endif attribute is "scale_factor" or "add_offset" */
 
     /* Inform user when copy will overwrite an existing attribute */
-    if(nco_dbg_lvl_get() >= nco_dbg_std){
+    if(nco_dbg_lvl_get() >= nco_dbg_std && nco_dbg_lvl_get() != nco_dbg_dev){
       if(rcd == NC_NOERR){
         if(var_out_id == NC_GLOBAL){
           (void)fprintf(stderr,"%s: INFO Overwriting global attribute %s\n",nco_prg_nm_get(),att_nm);

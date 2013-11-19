@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1064 2013-11-19 08:30:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1065 2013-11-19 10:41:36 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7743,6 +7743,17 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       if(trv_tbl->lst[uidx].flg_nsm_tpl){
         (void)fprintf(stdout,"%s: DEBUG %s <template> %d <%s>\n",nco_prg_nm_get(),fnc_nm,idx_tpl,trv_tbl->lst[uidx].nm_fll); 
         idx_tpl++;
+      }
+    }
+  }
+
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s list of ensemble members\n",nco_prg_nm_get(),fnc_nm); 
+    for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+      (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
+        (void)fprintf(stdout,"%s: DEBUG %s \t <group %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_mbr,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
       }
     }
   }

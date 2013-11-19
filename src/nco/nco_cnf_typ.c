@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.71 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.72 2013-11-19 10:41:36 pvicente Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -261,7 +261,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   var_in_typ=var_in->type;
   
   /* Simple error-checking and diagnostics */
-  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+  if(nco_dbg_lvl_get() >= nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s variable %s from type %s to type %s\n",nco_prg_nm_get(),var_out_typ > var_in_typ ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_typ),nco_typ_sng(var_out_typ));
   } /* end if */
   
