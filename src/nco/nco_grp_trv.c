@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.239 2013-11-19 01:48:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.240 2013-11-19 02:42:24 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -229,7 +229,7 @@ trv_tbl_prn                          /* [fnc] Print table with -z */
   } /* end uidx */
 } /* end trv_tbl_prn() */
 
-nco_bool                              /* O [nbr] Item found or not */
+nco_bool                              /* O [flg] Item found or not */
 trv_tbl_fnd_var_nm_fll                /* [fnc] Check if "var_nm_fll" is in table */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */

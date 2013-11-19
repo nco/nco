@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1057 2013-11-19 01:48:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1058 2013-11-19 02:42:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7552,6 +7552,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   int nbr_nm;                          /* [nbr] Number of total entries */
   int nsm_nbr=0;                       /* [nbr] Ensemble counter */
 
+  nco_bool flg_nsm_tpl;                /* [flg] Variable is template */           
+
   nco_cmn_t *cmn_lst=NULL;             /* [sct] A list of common names */ 
 
   /* Insert ensembles (parent group name is key)  */
@@ -7689,11 +7691,9 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
                 /* Mark variables as ensemble members */
                 for(int idx_var=0;idx_var<nbr_cmn_nm;idx_var++){
-                  nco_bool flg_nsm_tpl=False;  /* [flg] Variable is template */                
-                  /* If first variable and there are no members in ensemble, consider the first variable to insert the template */ 
-                  if (idx_var == 0 && mbr_nbr == 0){
-                    flg_nsm_tpl=True;
-                  }
+
+                  /* Define variable full name */
+
                   /* Allocate path buffer and include space for trailing NUL */ 
                   char *var_nm_fll=(char *)nco_malloc(strlen(trv_2.grp_nm_fll)+strlen(cmn_lst[idx_var].var_nm_fll)+2L);
                   /* Initialize path with current absolute group path */
@@ -7702,6 +7702,10 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   if(strcmp(trv_2.grp_nm_fll,"/")) strcat(var_nm_fll,"/");
                   /* Concatenate variable to absolute group path */
                   strcat(var_nm_fll,cmn_lst[idx_var].var_nm_fll);
+              
+                  /* Template criteria */
+                  flg_nsm_tpl=nco_var_is_tpl(var_nm_fll,trv_tbl);
+                 
                   /* Mark ensemble member flag in table for "var_nm_fll" */
                   (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
 
@@ -7771,3 +7775,30 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
 
 
+nco_bool                              /* O [flg] Is template */
+nco_var_is_tpl                        /* [fnc] Check if "var_nm_fll" should be a template */
+(const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  /* Tentative template criteria. Same as ncea, done in nco_var_lst_dvd(), but has to be done here  */
+
+  /* Loop table */
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+  {
+    trv_sct var_trv=trv_tbl->lst[uidx];
+    /* Match name */
+    if(var_trv.nco_typ == nco_obj_typ_var && strcmp(var_nm_fll,var_trv.nm_fll) == 0){
+
+      /* Avoid coordinate variables */ 
+      if (var_trv.is_crd_var == True){
+        return False;
+      }
+
+      /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
+
+
+    } /* Match name */
+  } /* Loop table */
+
+  return True;
+} /* end nco_var_is_tpl() */

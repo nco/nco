@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.409 2013-11-14 00:28:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.410 2013-11-19 02:42:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -669,11 +669,6 @@ nco_aed_prc_var_nm                    /* [fnc] Process attributes in variables t
  const aed_sct aed,                   /* I [sct] Structure containing information necessary to edit */
  const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */ 
 
-void
-nco_bld_nsm                           /* [fnc] Build ensembles */
-(const int nc_id,                     /* I [id] netCDF file ID */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
-
 void                                    
 nco_grp_var_lst                        /* [fnc] Export list of variable names for group */
 (const int nc_id,                      /* I [id] netCDF file ID */
@@ -685,6 +680,16 @@ char *                                 /* O [sng] Full path with suffix */
 nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
 (const char * const grp_nm_fll_prn,    /* I [sng] Absolute group name of ensemble root */
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+
+void
+nco_bld_nsm                           /* [fnc] Build ensembles */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+nco_bool                               /* O [flg] Is template */
+nco_var_is_tpl                         /* [fnc] Check if "var_nm_fll" should be a template */
+(const char * const var_nm_fll,        /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
