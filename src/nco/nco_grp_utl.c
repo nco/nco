@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1060 2013-11-19 05:24:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1061 2013-11-19 06:25:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7521,11 +7521,13 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   int nm_lst_2_nbr;                    /* [nbr] Number of items in list */
   int nbr_cmn_nm;                      /* [nbr] Number of common entries */
   int nbr_nm;                          /* [nbr] Number of total entries */
+  int nbr_skp_nm;                      /* [nbr] Number of names to avoid for template definition (array skp_lst) */
   int nsm_nbr=0;                       /* [nbr] Ensemble counter */
 
   nco_bool flg_nsm_tpl;                /* [flg] Variable is template */           
 
   nco_cmn_t *cmn_lst=NULL;             /* [sct] A list of common names */ 
+  nco_cmn_t *skp_lst=NULL;             /* [sct] A list of skip ('skp') names (NB: using same sct as common names, with different meaning) */ 
 
   /* Insert ensembles (parent group name is key)  */
 
@@ -7631,14 +7633,15 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
             /* Export list of variable names for group */
             (void)nco_grp_var_lst(nc_id,trv_2.grp_nm_fll,&nm_lst_2,&nm_lst_2_nbr);
-            /* Match 2 lists of variable names and export common names */
+
+            /* Match 2 lists of variable names and export common names (NB: relative names) */
             (void)nco_nm_mch(nm_lst_1,nm_lst_1_nbr,nm_lst_2,nm_lst_2_nbr,&cmn_lst,&nbr_nm,&nbr_cmn_nm);
+
             /* Found common names */
             if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm){
 
               /* Define a list of variables to avoid.. like the plague... these are not for template definition  */
-
-
+              (void)nco_nm_skp(nc_id,trv_2.grp_nm_fll,cmn_lst,nbr_cmn_nm,&skp_lst,&nbr_skp_nm,trv_tbl);    
 
               /* Assume not yet inserted in array */
               nco_bool flg_ins=False;
@@ -7780,7 +7783,7 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,       /* I [sct] Variable (object) */
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
- trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Detect associated coordinates specified by CF "bounds" or "coordinates" convention for single variable
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
@@ -7856,3 +7859,48 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
   return flg_cf_fnd;
 
 } /* nco_var_has_cf() */
+
+
+void                          
+nco_nm_skp                             /* [fnc] Extract list of variable names to skip for template definition  */
+(const int nc_id,                      /* I [ID] netCDF file ID */
+ const char * const grp_nm_fll,        /* I [sng] Group full name where all names reside */
+ const nco_cmn_t *cmn_lst,             /* I [sct] List of names (relative)  */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of names (size of above array) */
+ nco_cmn_t **skp_lst,                  /* I/O [sct] List of skip names (full) */
+ int * nbr_skp_nm,                     /* I/O [nbr] Number of skip names (size of above array) */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
+{
+  trv_sct *var_trv; /* [sct] Table object */
+
+  int idx_skp=0;    /* [nbr] Counter for skip list */
+
+  /* Malloc possible maximum size */
+  (*skp_lst)=(nco_cmn_t *)nco_malloc(nbr_cmn_nm*sizeof(nco_cmn_t));
+
+  /* Loop input (relative) names */
+  for(int idx_var=0;idx_var<nbr_cmn_nm;idx_var++){
+
+    /* Define variable full name (NB: cmn_lst->var_nm_fll is relative here) */
+    char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var].var_nm_fll);
+
+    /* Obtain variable GTT object using full variable name */
+    var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
+
+    /* Avoid coordinate variables */ 
+    if (var_trv->is_crd_var == True){
+      (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll);
+      idx_skp++;
+    }
+
+    /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
+    nco_bool flg_cf=nco_var_has_cf(nc_id,var_trv,"bounds",trv_tbl);
+    if (flg_cf == True){
+      (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll);
+      idx_skp++;
+    }
+
+
+  } /* Loop input (relative) names */
+
+} /* nco_nm_skp() */

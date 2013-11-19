@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.412 2013-11-19 05:24:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.413 2013-11-19 06:25:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -681,6 +681,16 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
+void                          
+nco_nm_skp                             /* [fnc] Extract list of variable names to skip for template definition  */
+(const int nc_id,                      /* I [ID] netCDF file ID */
+ const char * const grp_nm_fll,        /* I [sng] Group full name where all names reside */
+ const nco_cmn_t *cmn_lst,             /* I [sct] List of names (relative)  */
+ const int nbr_cmn_nm,                 /* I [nbr] Number of names (size of above array) */
+ nco_cmn_t **skp_lst,                  /* I/O [sct] List of skip names (full) */
+ int * nbr_skp_nm,                     /* I/O [nbr] Number of skip names (size of above array) */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] GTT (Group Traversal Table) */
+
 nco_bool                               /* O [flg] Is template */
 nco_var_is_tpl                         /* [fnc] Check if "var_nm_fll" should be a template */
 (const int nc_id,                      /* I [ID] netCDF file ID */
@@ -692,7 +702,7 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,       /* I [sct] Variable (object) */
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
- trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
