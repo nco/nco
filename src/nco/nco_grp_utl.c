@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1062 2013-11-19 07:39:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1063 2013-11-19 08:04:11 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7640,7 +7640,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             /* Found common names */
             if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm){
 
-              /* Define a list of variables to avoid.. like the plague... these are not for template definition  */
+              /* Define a list of variables to avoid.. like the plague... these are *NOT* for template definition  */
               (void)nco_nm_skp(nc_id,trv_2.grp_nm_fll,cmn_lst,nbr_cmn_nm,&skp_lst,&nbr_skp_nm,trv_tbl);    
 
               /* Assume not yet inserted in array */
@@ -7673,8 +7673,15 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   /* Define variable full name (NB: cmn_lst->var_nm_fll is relative here) */
                   char *var_nm_fll=nco_bld_nm_fll(trv_2.grp_nm_fll,cmn_lst[idx_var].var_nm_fll);
               
-                  /* Template criteria */
-                  flg_nsm_tpl=False;
+                  /* Template criteria: check the names to skip build above in nco_nm_skp() */
+                  flg_nsm_tpl=True;
+                  /* Loop skip names */
+                  for(int idx_skp=0;idx_skp<nbr_skp_nm;idx_skp++){
+                    /* Match */
+                    if(strcmp(var_nm_fll,skp_lst[idx_skp].var_nm_fll) == 0){
+                      flg_nsm_tpl=False;
+                    }  /* Match */
+                  } /* Loop skip  names */
                  
                   /* Mark ensemble member flag in table for "var_nm_fll" */
                   (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
@@ -7766,6 +7773,9 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
   int var_id;                   /* [id] Variable ID */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
+
+  /* Initialize return value */
+  *flg_cf_fnd=False;
 
   /* Obtain group ID from netCDF API using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
@@ -7919,7 +7929,10 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
   /* Re-Alloc */
   (*skp_lst)=(nco_cmn_t *)nco_realloc((*skp_lst),idx_skp*sizeof(nco_cmn_t));
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+  /* Export */
+  *nbr_skp_nm=idx_skp;
+
+  if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s list of variables to skip for template definition\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_var=0;idx_var<idx_skp;idx_var++){
       (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,(*skp_lst)[idx_var].var_nm_fll); 
