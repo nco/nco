@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.444 2013-11-18 23:20:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.445 2013-11-19 09:38:36 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.444 2013-11-18 23:20:41 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.444 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.445 2013-11-19 09:38:36 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.445 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -248,9 +248,7 @@ main(int argc,char **argv)
   var_sct **var_out=NULL_CEWI;
   var_sct **var_prc;
   var_sct **var_prc_out;
-  var_sct *var_tmp; /* [sct] Dummy variable, since processed array only has templates */
   trv_sct *var_trv;  /* [sct] Variable GTT object */
-  trv_sct* prc_trv;
   trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
@@ -1050,54 +1048,25 @@ main(int argc,char **argv)
       for(int nsm_idx=0;nsm_idx<trv_tbl->nsm_nbr;nsm_idx++){ /* Loop over ensembles in current file */
         for(int idx_prc=0;idx_prc<nbr_var_prc;idx_prc++){ /* Process all variables in current file (for nces these are only the templates) */
           for(int mbr_idx=0;mbr_idx<trv_tbl->nsm[nsm_idx].mbr_nbr;mbr_idx++){ /* Loop over members of current ensemble */
-            for(int idx_var=0;idx_var<trv_tbl->nsm[nsm_idx].mbr[mbr_idx].var_nbr;idx_var++){ /* Loop over variables of current ensemble */
 
-              /* Obtain variable GTT object for the processed array (template) */
-              prc_trv=trv_tbl_var_nm_fll(var_prc[idx_prc]->nm_fll,trv_tbl);
+            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(fp_stdout,"%s: DEBUG ensemble %d <%s> : template %d <%s>\n",nco_prg_nm_get(),
+                nsm_idx,trv_tbl->nsm[nsm_idx].grp_nm_fll_prn,idx_prc,var_prc[idx_prc]->nm_fll);             
+            }
 
-              /* Obtain variable GTT object for the variable in ensemble */
-              var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[nsm_idx].mbr[mbr_idx].var_nm_fll[idx_var],trv_tbl);
+            /* Retrieve variable from disk into memory */
+            (void)nco_msa_var_get_trv(in_id,var_prc[idx_prc],trv_tbl);
 
-              /* Skip if from different ensembles */
-              if (strcmp(prc_trv->grp_nm_fll_prn,var_trv->grp_nm_fll_prn) != 0 ){
-                continue;
-              }
+            /* Convert char, short, long, int types to doubles before arithmetic
+            Output variable type is "sticky" so only convert on first record */
+            if(fl_idx == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
+            var_prc[idx_prc]=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_prc[idx_prc]);
+            /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
+            nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx_prc],var_prc_out[idx_prc]);
+            FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
-              if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(fp_stdout,"%s: DEBUG ensemble %d <%s> : variable %d <%s> : template %d <%s>\n",nco_prg_nm_get(),
-                  nsm_idx,var_trv->nsm_nm,idx_var,var_trv->nm_fll,idx_prc,prc_trv->nm_fll);             
-              }
-
-              var_tmp=nco_var_dpl(var_prc[idx_prc]);
-
-              /* Replace the template variable name with the member variable name */
-              var_tmp->nm_fll=(char *)nco_free(var_tmp->nm_fll);
-              var_tmp->nm=(char *)nco_free(var_tmp->nm);
-              var_tmp->nm_fll=strdup(var_trv->nm_fll);
-              var_tmp->nm=strdup(var_trv->nm);
-              var_tmp->nbr_dim=var_trv->nbr_dmn;
-
-              /* Retrieve variable from disk into memory */
-              (void)nco_msa_var_get_trv(in_id,var_tmp,trv_tbl);
-
-              /* Convert char, short, long, int types to doubles before arithmetic
-              Output variable type is "sticky" so only convert on first record */
-              if(fl_idx == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
-              var_tmp=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_tmp);
-              /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
-              nco_opr_drv(fl_idx,nco_op_typ,var_tmp,var_prc_out[idx_prc]);
-              FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
-
-              /* Transfer the tally to the template, since the dummy is going to be deleted... software enginnering at its best */
-              var_prc[idx_prc]->tally=(long *)nco_free(var_prc[idx_prc]->tally);
-              var_prc[idx_prc]->tally=(long *)nco_malloc(var_prc[idx_prc]->sz*sizeof(long));
-              (void)memcpy((void *)var_prc[idx_prc]->tally,(void *)var_tmp->tally,var_tmp->sz /* tally size? */ *sizeof(long));
-
-              /* Free current input buffer */
-              var_prc[idx_prc]->val.vp=nco_free(var_prc[idx_prc]->val.vp);
-              var_tmp=(var_sct *)nco_var_free(var_tmp);
-
-            } /* Loop over variables of current ensemble */
+            /* Free current input buffer */
+            var_prc[idx_prc]->val.vp=nco_free(var_prc[idx_prc]->val.vp);
 
           } /* end loop over members of current ensemble */   
         } /* end loop over processed array */
