@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1055 2013-11-18 23:20:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1056 2013-11-19 00:00:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7535,7 +7535,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       /* Export list of variable names for group */
       (void)nco_grp_var_lst(nc_id,trv_1.grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: DEBUG %s looking for ensembles for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1.nm_fll);             
       }
 
@@ -7576,7 +7576,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
               /* Group (NB: outer loop) is ensemble parent group */
               trv_tbl->lst[idx_tbl].flg_nsm_prn=True;
 
-              if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              if(nco_dbg_lvl_get() == nco_dbg_old){
                 (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll_prn);             
               }
 
@@ -7596,7 +7596,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
     }  /* Group (not root) */
   } /* Loop table */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+  if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
       (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
@@ -7613,7 +7613,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       /* Export list of variable names for group */
       (void)nco_grp_var_lst(nc_id,trv_1.grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: DEBUG %s looking for ensembles for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1.nm_fll);             
       }
 
@@ -7681,7 +7681,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nm_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nm_fll,trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nbr*sizeof(char *));
                   trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nm_fll[idx_var]=(char *)strdup(var_nm_fll);
                   
-                  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+                  if(nco_dbg_lvl_get() == nco_dbg_old){
                     (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble variable <%s> as template %d\n",nco_prg_nm_get(),fnc_nm,var_nm_fll,flg_nsm_tpl);             
                   }
                   /* Free */
@@ -7711,10 +7711,14 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
     (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
       (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+    } 
+    (void)fprintf(stdout,"%s: DEBUG %s list of variables\n",nco_prg_nm_get(),fnc_nm); 
+    for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+      (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
       for(int idx_nm=0;idx_nm<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_nm++){
-        (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].mbr[idx_nm].mbr_nm_fll); 
+        (void)fprintf(stdout,"%s: DEBUG %s \t <group %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nm,trv_tbl->nsm[idx_nsm].mbr[idx_nm].mbr_nm_fll); 
         for(int idx_var=0;idx_var<trv_tbl->nsm[idx_nsm].mbr[idx_nm].var_nbr;idx_var++){
-          (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].mbr[idx_nm].var_nm_fll[idx_var]); 
+          (void)fprintf(stdout,"%s: DEBUG %s \t\t <variable> %d <%s>\n",nco_prg_nm_get(),fnc_nm,idx_var,trv_tbl->nsm[idx_nsm].mbr[idx_nm].var_nm_fll[idx_var]); 
         }
       }
     } 
