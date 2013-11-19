@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1066 2013-11-19 11:17:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1067 2013-11-19 21:53:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7578,6 +7578,10 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_nm_fll_prn=(char *)strdup(trv_2.grp_nm_fll_prn);
 
+              /* "Real" variable ensemble members */
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=0;
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=NULL;
+
               /* Group (NB: outer loop) is ensemble parent group */
               trv_tbl->lst[idx_tbl].flg_nsm_prn=True;
 
@@ -7684,14 +7688,22 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                     }  /* Match */
                   } /* Loop skip  names */
 
-                
-                  /* If not the first group member, then it's not a template */
-                  if (mbr_nbr > 0){
-                    flg_nsm_tpl=False;
-                  }
-                 
-                  /* Mark ensemble member flag in table for "var_nm_fll" */
-                  (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
+                  /* "Real" ensemble members. Meaning here is "template" as "member" TODO */
+                  if (flg_nsm_tpl){
+                    int mbr_var_nbr=trv_tbl->nsm[nsm_nbr].mbr_var_nbr;
+                    trv_tbl->nsm[nsm_nbr].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
+                    trv_tbl->nsm[nsm_nbr].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
+                    trv_tbl->nsm[nsm_nbr].mbr_var_nbr++;
+
+                    /* If not the first group member, then it's not a template */
+                    if (mbr_nbr > 0){
+                      flg_nsm_tpl=False;
+                    }
+
+                    /* Mark ensemble member flag in table for "var_nm_fll" real member */
+                    (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
+
+                  } /* "Real" ensemble members */             
 
                   /* Insert variable in table ensemble struct */
                   trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nbr++;
@@ -7763,6 +7775,19 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       }
     }
   }
+
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s list of ensemble variable members\n",nco_prg_nm_get(),fnc_nm); 
+    for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+      (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      for(int idx_var_mbr=0;idx_var_mbr<trv_tbl->nsm[idx_nsm].mbr_var_nbr;idx_var_mbr++){
+        (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_var_mbr,trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_var_mbr]); 
+      }
+    }
+  }
+
+
 
   assert(nsm_nbr == trv_tbl->nsm_nbr);
 
