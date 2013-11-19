@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1061 2013-11-19 06:25:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1062 2013-11-19 07:39:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7674,7 +7674,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   char *var_nm_fll=nco_bld_nm_fll(trv_2.grp_nm_fll,cmn_lst[idx_var].var_nm_fll);
               
                   /* Template criteria */
-                  flg_nsm_tpl=nco_var_is_tpl(nc_id,var_nm_fll,trv_tbl);
+                  flg_nsm_tpl=False;
                  
                   /* Mark ensemble member flag in table for "var_nm_fll" */
                   (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
@@ -7745,45 +7745,13 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
 
 
-nco_bool                              /* O [flg] Is template */
-nco_var_is_tpl                        /* [fnc] Check if "var_nm_fll" should be a template */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- const char * const var_nm_fll,       /* I [sng] Variable name to find */
- trv_tbl_sct * const trv_tbl)         /* I [sct] Traversal table */
-{
-  /* Tentative template criteria. Same as ncea, done in nco_var_lst_dvd(), but has to be done here  */
 
-  /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-  {
-    trv_sct var_trv=trv_tbl->lst[uidx];
-    /* Match name */
-    if(var_trv.nco_typ == nco_obj_typ_var && strcmp(var_nm_fll,var_trv.nm_fll) == 0){
-
-      /* Avoid coordinate variables */ 
-      if (var_trv.is_crd_var == True){
-        return False;
-      }
-
-      /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
-      nco_bool flg_cf=nco_var_has_cf(nc_id,&var_trv,"bounds",trv_tbl);
-      if (flg_cf == True){
-        return False;
-      }
-
-    } /* Match name */
-  } /* Loop table */
-
-  return True;
-} /* end nco_var_is_tpl() */
-
-
-nco_bool
+char *                                /* O [sng] Name of variable   */
 nco_var_has_cf                        /* [fnc] Variable has CF-compliant information ("coordinates" or "bounds") */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,       /* I [sct] Variable (object) */
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+ nco_bool *flg_cf_fnd)                /* I/O [flg] CF variable was found */
 {
   /* Detect associated coordinates specified by CF "bounds" or "coordinates" convention for single variable
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
@@ -7796,8 +7764,6 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
   int nbr_att;                  /* [nbr] Number of attributes */
   int nbr_cf;                   /* [nbr] Number of coordinates specified in "bounds" or "coordinates" attribute */
   int var_id;                   /* [id] Variable ID */
-
-  nco_bool flg_cf_fnd=False;    /* [flg] CF variable was found */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
@@ -7824,14 +7790,14 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
       long att_sz;
       nc_type att_typ;
 
-      flg_cf_fnd=True;
+      *flg_cf_fnd=True;
 
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
         (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates CF convention for specifying additional attributes. Therefore will skip this attribute.\n",
           nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
-        return False;
+        return NULL;
       } /* end if */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
       if(att_sz > 0L) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
@@ -7846,17 +7812,21 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;
 
-        flg_cf_fnd=True;
       } /* end loop over idx_cf */
+
+      /* Return cf_lst_var, associated name (e.g "lat_bounds"). NB: Assumption only 1 associated name */
+      char *cf_lst_var=strdup(cf_lst[0]);
 
       /* Free allocated memory */
       att_val=(char *)nco_free(att_val);
       cf_lst=nco_sng_lst_free(cf_lst,nbr_cf);
 
+      return cf_lst_var;
+
     } /* end strcmp() */
   } /* end loop over attributes */
 
-  return flg_cf_fnd;
+  return NULL;
 
 } /* nco_var_has_cf() */
 
@@ -7871,9 +7841,19 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
  int * nbr_skp_nm,                     /* I/O [nbr] Number of skip names (size of above array) */
  const trv_tbl_sct * const trv_tbl)    /* I [sct] GTT (Group Traversal Table) */
 {
-  trv_sct *var_trv; /* [sct] Table object */
+  const char fnc_nm[]="nco_nm_skp()"; /* [sng] Function name */
 
-  int idx_skp=0;    /* [nbr] Counter for skip list */
+  char *var_nm_fll;  /* [sng] Variable full name */
+  char *var_cf;      /* [sng] Variable name that has 'CF' info */
+
+  int idx_skp;       /* [nbr] Counter for skip list */
+
+  nco_bool flg_cf;   /* [flg] Variable has 'CF' info */
+  nco_bool lst_ins;  /* [flg] Detect duplicate names in array */
+
+  trv_sct *var_trv;  /* [sct] Table object */
+
+  idx_skp=0;
 
   /* Malloc possible maximum size */
   (*skp_lst)=(nco_cmn_t *)nco_malloc(nbr_cmn_nm*sizeof(nco_cmn_t));
@@ -7882,25 +7862,68 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
   for(int idx_var=0;idx_var<nbr_cmn_nm;idx_var++){
 
     /* Define variable full name (NB: cmn_lst->var_nm_fll is relative here) */
-    char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var].var_nm_fll);
+    var_nm_fll=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var].var_nm_fll);
 
     /* Obtain variable GTT object using full variable name */
     var_trv=trv_tbl_var_nm_fll(var_nm_fll,trv_tbl);
 
     /* Avoid coordinate variables */ 
     if (var_trv->is_crd_var == True){
-      (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll);
-      idx_skp++;
-    }
+      /* Utility function to detect inserted names in a name list */
+      lst_ins=nco_lst_ins(var_nm_fll,*skp_lst,idx_skp);
+      /* Insert in list */
+      if (lst_ins == False){
+        (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll);
+        idx_skp++;
+      } /* Insert in list */
+    } /* Avoid coordinate variables */ 
 
     /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
-    nco_bool flg_cf=nco_var_has_cf(nc_id,var_trv,"bounds",trv_tbl);
+    var_cf=nco_var_has_cf(nc_id,var_trv,"bounds",&flg_cf);
     if (flg_cf == True){
-      (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll);
-      idx_skp++;
-    }
+      /* Utility function to detect inserted names in a name list */
+      lst_ins=nco_lst_ins(var_nm_fll,*skp_lst,idx_skp);
+      /* Insert in list */
+      if (lst_ins == False){
+        (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll);
+        idx_skp++;
+      } /* Insert in list */
+    } /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
 
+    /* There is an associated 'CF" variable  */ 
+    if (var_cf){
+      /* Second Loop input (relative) names */
+      for(int idx_var_2=0;idx_var_2<nbr_cmn_nm;idx_var_2++){
+        /* Match (NB: cmn_lst->var_nm_fll is relative here) */
+        if(strcmp(var_cf,cmn_lst[idx_var_2].var_nm_fll) == 0){
+          char *var_nm_fll_2;  /* [sng] Variable full name */
+          var_nm_fll_2=nco_bld_nm_fll(grp_nm_fll,cmn_lst[idx_var_2].var_nm_fll);
+          /* Utility function to detect inserted names in a name list */
+          lst_ins=nco_lst_ins(var_nm_fll_2,*skp_lst,idx_skp);
+          /* Insert in list */
+          if (lst_ins == False){
+            (*skp_lst)[idx_skp].var_nm_fll=strdup(var_nm_fll_2);
+            idx_skp++;
+          } /* Insert in list */
+        } /* Match */
+      } /* Second Loop input (relative) names */
+      /* Free */
+      var_cf=(char *)nco_free(var_cf);
+    } /* There is an associated 'CF" variable  */ 
+
+    /* Free */
+    var_nm_fll=(char *)nco_free(var_nm_fll);
 
   } /* Loop input (relative) names */
+
+  /* Re-Alloc */
+  (*skp_lst)=(nco_cmn_t *)nco_realloc((*skp_lst),idx_skp*sizeof(nco_cmn_t));
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s list of variables to skip for template definition\n",nco_prg_nm_get(),fnc_nm); 
+    for(int idx_var=0;idx_var<idx_skp;idx_var++){
+      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,(*skp_lst)[idx_var].var_nm_fll); 
+    }
+  }
 
 } /* nco_nm_skp() */

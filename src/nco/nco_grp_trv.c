@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.241 2013-11-19 05:24:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.242 2013-11-19 07:39:51 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -809,6 +809,29 @@ nco_bld_nm_fll                         /* [fnc] Utility function to build a full
   return var_nm_fll;
 
 } /* nco_bld_nm_fll() */
+
+
+nco_bool                              
+nco_lst_ins                            /* [fnc] Utility function to detect inserted names in a name list */
+(const char * const nm,                /* I [sng] A name to detect */
+ const nco_cmn_t *cmn_lst,             /* I [sct] List of names   */
+ const int nbr_nm)                     /* I [nbr] Number of names (size of above array) */
+{
+  /* Loop constructed array to see if already inserted */
+  for(int idx_nm=0;idx_nm<nbr_nm;idx_nm++){
+    /* Loop names */
+    for(int idx_nm=0;idx_nm<nbr_nm;idx_nm++){
+      /* Match */
+      if(strcmp(cmn_lst[idx_nm].var_nm_fll,nm) == 0){
+        /* Mark as inserted in array */
+        return True;
+      }  /* Match */
+    } /* Loop names */
+  } /* Loop constructed array to see if already inserted  */
+
+  return False;
+
+} /* nco_lst_ins() */
 
 
 char *                                 /* O [sng] Full path with suffix */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.101 2013-11-19 05:24:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.102 2013-11-19 07:39:51 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -156,6 +156,12 @@ char *                                 /* O [sng] Full path  */
 nco_bld_nm_fll                         /* [fnc] Utility function to build a full path */
 (const char * const grp_nm_fll,        /* I [sng] Group full name */
  const char * const var_nm);           /* I [sng] Variable name */
+
+nco_bool                              
+nco_lst_ins                            /* [fnc] Utility function to detect inserted names in a name list */
+(const char * const nm,                /* I [sng] A name to detect */
+ const nco_cmn_t *cmn_lst,             /* I [sct] List of names   */
+ const int nbr_nm);                    /* I [nbr] Number of names (size of above array) */
 
 char *                                 /* O [sng] Full path with suffix */
 nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
