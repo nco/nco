@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.446 2013-11-19 10:41:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.447 2013-11-19 12:01:52 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.446 2013-11-19 10:41:37 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.446 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.447 2013-11-19 12:01:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.447 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -249,6 +249,7 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   trv_sct *var_trv;  /* [sct] Variable GTT object */
+  trv_sct *prc_trv;
   trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
@@ -1058,18 +1059,21 @@ main(int argc,char **argv)
         /* Loop over members (groups) of current ensemble */
         for(int idx_mbr=0;idx_mbr<mbr_nbr;idx_mbr++){
 
+          /* Variables in current group */
+          int nbr_var=trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nbr;
+
           if(nco_dbg_lvl_get() >= nco_dbg_dev){
             (void)fprintf(stdout,"%s: DEBUG \t <group %d> <%s>\n",nco_prg_nm_get(),idx_mbr,trv_tbl->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll); 
           }
 
-          /* Process all variables in current file (for nces these are only the templates) */
+          /* Loop templates */
           for(int idx_prc=0;idx_prc<nbr_var_prc;idx_prc++){ 
 
-            /* Obtain variable GTT object for the variable in ensemble (template) */ 
-            var_trv=trv_tbl_var_nm_fll(var_prc[idx_prc]->nm_fll,trv_tbl); 
+            /* Obtain variable GTT object for the processed variable in ensemble (template) */ 
+            prc_trv=trv_tbl_var_nm_fll(var_prc[idx_prc]->nm_fll,trv_tbl); 
 
             /* Skip if from different ensembles */ 
-            if (strcmp(var_trv->grp_nm_fll_prn,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn) != 0 ){ 
+            if (strcmp(prc_trv->grp_nm_fll_prn,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn) != 0 ){ 
               continue; 
             } 
 
@@ -1077,6 +1081,23 @@ main(int argc,char **argv)
               (void)fprintf(fp_stdout,"%s: DEBUG \t\t template %d <%s>\n",nco_prg_nm_get(),
                 idx_prc,var_prc[idx_prc]->nm_fll);             
             }
+
+            /* Loop over variables of current ensemble  */ 
+            for(int idx_var=0;idx_var<trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nbr;idx_var++){ 
+
+              /* Obtain variable GTT object for the variable in ensemble */ 
+              var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].mbr[idx_mbr].var_nm_fll[idx_var],trv_tbl);
+
+              if(nco_dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(fp_stdout,"%s: DEBUG \t\t variable %d <%s>\n",nco_prg_nm_get(),
+                  idx_var,var_trv->nm_fll);             
+              }
+            } /* Loop over variables of current ensemble  */ 
+
+
+            /* TODO: use the variable that is not template */
+
+
 
             /* Retrieve variable from disk into memory */
             (void)nco_msa_var_get_trv(in_id,var_prc[idx_prc],trv_tbl);
@@ -1092,7 +1113,7 @@ main(int argc,char **argv)
             /* Free current input buffer */
             var_prc[idx_prc]->val.vp=nco_free(var_prc[idx_prc]->val.vp);
 
-          } /* Process all variables in current file (for nces these are only the templates) */
+          } /* Loop templates */
         } /* Loop over members (groups) of current ensemble */
       } /* Loop over ensembles in current file */
 
