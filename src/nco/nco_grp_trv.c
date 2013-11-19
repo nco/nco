@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.238 2013-11-13 07:07:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.239 2013-11-19 01:48:40 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -310,8 +310,9 @@ trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of travers
   (void)fprintf(stdout,"%s: INFO %s reports <%d> objects with extraction flag (flg_xtr) set:\n",nco_prg_nm_get(),fnc_nm,nbr_flg); 
   
   /* Loop table */
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].flg_xtr) (void)fprintf(stdout,"[%d] %s\n",idx++,trv_tbl->lst[uidx].nm_fll); 
+  }
 
 } /* end trv_tbl_prn_xtr() */
 
@@ -790,20 +791,3 @@ trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in tabl
 
   return;
 } /* end trv_tbl_mrk_nsm_mb() */
-
-
-void
-trv_tbl_mrk_tpl                       /* [fnc] Convert table extracted objects only for ensemble templates */
-(const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
-{
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    trv_tbl->lst[uidx].flg_xtr=False;
-  }
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(trv_tbl->lst[uidx].flg_nsm_tpl){
-      trv_tbl->lst[uidx].flg_xtr=True;
-    }
-  }
-
-  return;
-} /* end trv_tbl_mrk_tpl() */

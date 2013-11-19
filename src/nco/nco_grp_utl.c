@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1056 2013-11-19 00:00:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1057 2013-11-19 01:48:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7505,6 +7505,35 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
 
 } /* end nco_grp_var_lst() */
 
+char *                                 /* O [sng] Full path with suffix */
+nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
+(const char * const grp_nm_fll_prn,    /* I [sng] Absolute group name of ensemble root */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+{
+  assert(trv_tbl->nsm_sfx);
+
+  /* Loop table */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    /* Match */
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && strcmp(grp_nm_fll_prn,trv_tbl->lst[tbl_idx].nm_fll) == 0){
+
+      /* Define (append) a new name */
+      char *nm_fll_sfx=(char*)nco_malloc(strlen(grp_nm_fll_prn)+strlen(trv_tbl->lst[tbl_idx].nm)+strlen(trv_tbl->nsm_sfx)+2L);
+      strcpy(nm_fll_sfx,grp_nm_fll_prn);
+      strcat(nm_fll_sfx,"/");
+      strcat(nm_fll_sfx,trv_tbl->lst[tbl_idx].nm);
+      strcat(nm_fll_sfx,trv_tbl->nsm_sfx);
+      return nm_fll_sfx;
+
+    } /* Match */
+  } /* Loop table*/
+
+
+  assert(0);
+  return NULL;
+
+} /* nco_bld_nsm_sfx() */
+
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
@@ -7721,42 +7750,24 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
           (void)fprintf(stdout,"%s: DEBUG %s \t\t <variable> %d <%s>\n",nco_prg_nm_get(),fnc_nm,idx_var,trv_tbl->nsm[idx_nsm].mbr[idx_nm].var_nm_fll[idx_var]); 
         }
       }
-    } 
+    }
+  }
+
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s list of templates\n",nco_prg_nm_get(),fnc_nm); 
+    int idx_tpl=0;
+    for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+      if(trv_tbl->lst[uidx].flg_nsm_tpl){
+        (void)fprintf(stdout,"%s: DEBUG %s <template> %d <%s>\n",nco_prg_nm_get(),fnc_nm,idx_tpl,trv_tbl->lst[uidx].nm_fll); 
+        idx_tpl++;
+      }
+    }
   }
 
   assert(nsm_nbr == trv_tbl->nsm_nbr);
 
-  /* Convert table extracted objects only for ensemble templates */
-  (void)trv_tbl_mrk_tpl(trv_tbl);  
-
 } /* nco_bld_nsm() */
 
 
-char *                                 /* O [sng] Full path with suffix */
-nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
-(const char * const grp_nm_fll_prn,    /* I [sng] Absolute group name of ensemble root */
- trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
-{
-  assert(trv_tbl->nsm_sfx);
 
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Match */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && strcmp(grp_nm_fll_prn,trv_tbl->lst[tbl_idx].nm_fll) == 0){
-
-      /* Define (append) a new name */
-      char *nm_fll_sfx=(char*)nco_malloc(strlen(grp_nm_fll_prn)+strlen(trv_tbl->lst[tbl_idx].nm)+strlen(trv_tbl->nsm_sfx)+2L);
-      strcpy(nm_fll_sfx,grp_nm_fll_prn);
-      strcat(nm_fll_sfx,"/");
-      strcat(nm_fll_sfx,trv_tbl->lst[tbl_idx].nm);
-      strcat(nm_fll_sfx,trv_tbl->nsm_sfx);
-      return nm_fll_sfx;
-
-    } /* Match */
-  } /* Loop table*/
-
-
-  assert(0);
-  return NULL;
-
-} /* nco_bld_nsm_sfx() */
