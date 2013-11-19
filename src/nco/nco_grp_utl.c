@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1065 2013-11-19 10:41:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1066 2013-11-19 11:17:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7674,7 +7674,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   /* Define variable full name (NB: cmn_lst->var_nm_fll is relative here) */
                   char *var_nm_fll=nco_bld_nm_fll(trv_2.grp_nm_fll,cmn_lst[idx_var].var_nm_fll);
               
-                  /* Template criteria: check the names to skip build above in nco_nm_skp() */
+                  /* Template criteria: check the names to skip built above in nco_nm_skp() */
                   flg_nsm_tpl=True;
                   /* Loop skip names */
                   for(int idx_skp=0;idx_skp<nbr_skp_nm;idx_skp++){
@@ -7683,6 +7683,12 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                       flg_nsm_tpl=False;
                     }  /* Match */
                   } /* Loop skip  names */
+
+                
+                  /* If not the first group member, then it's not a template */
+                  if (mbr_nbr > 0){
+                    flg_nsm_tpl=False;
+                  }
                  
                   /* Mark ensemble member flag in table for "var_nm_fll" */
                   (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
