@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.908 2013-11-19 01:19:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.909 2013-11-19 03:34:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8607,7 +8607,7 @@ th[$time,$lat,$lon]=
 th(1,1,3);        // 16
 th(2,0,:);        // 17, 18, 19, 20
 th(:,1,3);        // 8, 16, 24, -99, 40, 48, 56, 64, 72, -99 
-th(::5 ,:,0:3:2); // 1, 3, 5, 7, 41, 43, 45, 47
+th(::5,:,0:3:2); // 1, 3, 5, 7, 41, 43, 45, 47
 @end example
 
 If hyperslab arguments collapse to a single value (a cross-section has
