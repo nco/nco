@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.187 2013-11-18 22:28:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.188 2013-11-19 01:19:11 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -69,7 +69,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
     if(rcd == NC_ENOGRP) (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Global"); else (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Group");
     if(prn_flg->cdl) prn_ndn+=prn_flg->sxn_fst;
-    if(prn_flg->xml) prn_ndn+=prn_flg->sxn_fst;
   }else{
     /* Get name and number of attributes for variable */
     (void)nco_inq_var(grp_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
@@ -1028,7 +1027,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   } /* end loop over dimensions */
 
   /* Print header for variable */
-  if(prn_flg->new_fmt) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
+  if(prn_flg->new_fmt && !prn_flg->xml) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
+  if(prn_flg->xml) prn_ndn=prn_flg->sxn_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
   if(prn_flg->trd && (nco_hdf_cnv_get() == nco_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? HDF4_UNKNOWN, compressed? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
   if(prn_flg->trd && (nco_hdf_cnv_get() != nco_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
 
@@ -1217,7 +1217,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   var_sct var;                               /* [sct] Variable structure */
   var_sct var_crd;                           /* [sct] Variable structure for associated coordinate variable */
 
-  if(prn_flg->new_fmt) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
+  if(prn_flg->new_fmt && !prn_flg->xml) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
+  if(prn_flg->xml) prn_ndn=prn_flg->ndn;
 
   /* Obtain group ID where variable is located using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
@@ -1934,7 +1935,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
   if(dmn_nbr > 0 && !prn_flg->xml) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
-  prn_ndn+=prn_flg->var_fst;
+  if(prn_flg->cdl) prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     if(prn_flg->xml){
       (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");

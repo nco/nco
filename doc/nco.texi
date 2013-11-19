@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.907 2013-11-18 19:42:05 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.908 2013-11-19 01:19:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12751,12 +12751,12 @@ as positional arguments on the command line
 (@pxref{Large Numbers of Files}).
 
 @cindex @code{-M}
-@cindex @code{--glb_mtd_spr}
+@cindex @code{--glb_mtd_spp}
 @cindex metadata, global 
-Turn off global metadata copying.
-By default all @acronym{NCO} operators copy the global metadata of the 
-first input file into @var{output-file}.  
-This helps preserve the provenance of the output data.
+Suppress global metadata copying.
+By default @acronym{NCO}'s multi-file operators copy the global metadata
+from the first input file into @var{output-file}.  
+This helps to preserve the provenance of the output data.
 However, the use of metadata is burgeoning and is not uncommon to
 encounter files with excessive amounts of extraneous metadata.
 Extracting small bits of data from such files leads to output files
@@ -12764,7 +12764,7 @@ which are much larger than necessary due to the automatically copied
 metadata.
 @command{ncecat} supports turning off the default copying of global
 metadata via the @samp{-M} switch (or its long option equivalents,
-@samp{--glb_mtd_spr} and @samp{--global_metadata_suppress}). 
+@samp{--glb_mtd_spp} and @samp{--global_metadata_suppress}). 
 
 @cindex climate model
 Consider five realizations, @file{85a.nc}, @file{85b.nc}, 

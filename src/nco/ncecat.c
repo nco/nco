@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.345 2013-11-11 04:57:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.346 2013-11-19 01:19:11 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.345 2013-11-11 04:57:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.345 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.346 2013-11-19 01:19:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.346 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -268,7 +268,7 @@ main(int argc,char **argv)
     {"deflate",required_argument,0,'L'}, /* [enm] Deflate level */
     {"local",required_argument,0,'l'},
     {"lcl",required_argument,0,'l'},
-    {"glb_mtd_spr",no_argument,0,'M'},
+    {"glb_mtd_spp",no_argument,0,'M'},
     {"global_metadata_suppress",no_argument,0,'M'},
     {"nintap",required_argument,0,'n'},
     {"overwrite",no_argument,0,'O'},

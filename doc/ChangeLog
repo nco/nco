@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.9 release"
 	cvs tag -c nco-4_3_9;cvs tag -c nco-4_3_9-1
 
+	* Neaten XML indentation
+
 	* Add more backwards-incompatible members to buggy.cdl
 
 	* XML mode use stub-name not full name in group name element

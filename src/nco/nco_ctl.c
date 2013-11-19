@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.432 2013-11-15 21:18:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.433 2013-11-19 01:19:11 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -1014,7 +1014,7 @@ nco_usg_prn(void)
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-l")) (void)fprintf(stdout,"-l, --lcl, --local path\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"[-M")){
-    if(prg_lcl == ncecat) (void)fprintf(stdout,"-M, --glb_mtd_spr\tDo not copy global metadata\n");
+    if(prg_lcl == ncecat) (void)fprintf(stdout,"-M, --glb_mtd_spp\tDo not copy global metadata\n");
     if(prg_lcl == ncks) (void)fprintf(stdout,"-M, --Mtd, --Metadata\tToggle printing global metadata\n");
     if(prg_lcl == ncpdq) (void)fprintf(stdout,"-M, --pck_map, --pack_map, --map pck_map\tPack map [flt_sht,flt_byt,hgh_sht,hgh_byt,nxt_lsr]\n");
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-M, --msk_val, --mask-value, --mask_value mask_val\tMasking value (default is 1.0)\n");
