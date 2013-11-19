@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1058 2013-11-19 02:42:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1059 2013-11-19 04:22:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7704,7 +7704,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   strcat(var_nm_fll,cmn_lst[idx_var].var_nm_fll);
               
                   /* Template criteria */
-                  flg_nsm_tpl=nco_var_is_tpl(var_nm_fll,trv_tbl);
+                  flg_nsm_tpl=nco_var_is_tpl(nc_id,var_nm_fll,trv_tbl);
                  
                   /* Mark ensemble member flag in table for "var_nm_fll" */
                   (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
@@ -7777,8 +7777,9 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
 nco_bool                              /* O [flg] Is template */
 nco_var_is_tpl                        /* [fnc] Check if "var_nm_fll" should be a template */
-(const char * const var_nm_fll,       /* I [sng] Variable name to find */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ const char * const var_nm_fll,       /* I [sng] Variable name to find */
+ trv_tbl_sct * const trv_tbl)         /* I [sct] Traversal table */
 {
   /* Tentative template criteria. Same as ncea, done in nco_var_lst_dvd(), but has to be done here  */
 
@@ -7795,10 +7796,96 @@ nco_var_is_tpl                        /* [fnc] Check if "var_nm_fll" should be a
       }
 
       /* Avoid special "CF" variables ('bounds', 'coordinates') */ 
-
+      nco_bool flg_cf=nco_var_has_cf(nc_id,&var_trv,"bounds",trv_tbl);
+      if (flg_cf == True){
+        return False;
+      }
 
     } /* Match name */
   } /* Loop table */
 
   return True;
 } /* end nco_var_is_tpl() */
+
+
+nco_bool
+nco_var_has_cf                        /* [fnc] Variable has CF-compliant information ("coordinates" or "bounds") */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ const trv_sct * const var_trv,       /* I [sct] Variable (object) */
+ const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+{
+  /* Detect associated coordinates specified by CF "bounds" or "coordinates" convention for single variable
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
+
+  char **cf_lst;                /* [sng] 1D array of list elements */
+  char att_nm[NC_MAX_NAME];     /* [sng] Attribute name */
+  const char dlm_sng[]=" ";     /* [sng] Delimiter string */
+
+  int grp_id;                   /* [id] Group ID */
+  int nbr_att;                  /* [nbr] Number of attributes */
+  int nbr_cf;                   /* [nbr] Number of coordinates specified in "bounds" or "coordinates" attribute */
+  int var_id;                   /* [id] Variable ID */
+
+  nco_bool flg_cf_fnd=False;    /* [flg] CF variable was found */
+
+  assert(var_trv->nco_typ == nco_obj_typ_var);
+
+  /* Obtain group ID from netCDF API using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
+
+  /* Obtain variable ID */
+  (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
+
+  /* Find number of attributes */
+  (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
+
+  assert(nbr_att == var_trv->nbr_att);
+
+  /* Loop attributes */
+  for(int idx_att=0;idx_att<nbr_att;idx_att++){
+
+    /* Get attribute name */
+    (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
+
+    /* Is attribute part of CF convention? */
+    if(!strcmp(att_nm,cf_nm)){
+      char *att_val;
+      long att_sz;
+      nc_type att_typ;
+
+      flg_cf_fnd=True;
+
+      /* Yes, get list of specified attributes */
+      (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
+      if(att_typ != NC_CHAR){
+        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates CF convention for specifying additional attributes. Therefore will skip this attribute.\n",
+          nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR));
+        return False;
+      } /* end if */
+      att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
+      if(att_sz > 0L) (void)nco_get_att(grp_id,var_id,att_nm,(void *)att_val,NC_CHAR);	  
+      /* NUL-terminate attribute */
+      att_val[att_sz]='\0';
+
+      /* Split list into separate coordinate names
+      Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+      cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
+      /* ...for each coordinate in CF convention attribute, i.e., "bounds" or "coordinate"... */
+      for(int idx_cf=0;idx_cf<nbr_cf;idx_cf++){
+        char *cf_lst_var=cf_lst[idx_cf];
+        if(!cf_lst_var) continue;
+
+        flg_cf_fnd=True;
+      } /* end loop over idx_cf */
+
+      /* Free allocated memory */
+      att_val=(char *)nco_free(att_val);
+      cf_lst=nco_sng_lst_free(cf_lst,nbr_cf);
+
+    } /* end strcmp() */
+  } /* end loop over attributes */
+
+  return flg_cf_fnd;
+
+} /* nco_var_has_cf() */

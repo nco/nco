@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.410 2013-11-19 02:42:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.411 2013-11-19 04:22:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -688,8 +688,16 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
 nco_bool                               /* O [flg] Is template */
 nco_var_is_tpl                         /* [fnc] Check if "var_nm_fll" should be a template */
-(const char * const var_nm_fll,        /* I [sng] Variable name to find */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+(const int nc_id,                      /* I [ID] netCDF file ID */
+ const char * const var_nm_fll,        /* I [sng] Variable name to find */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
+
+nco_bool
+nco_var_has_cf                        /* [fnc] Variable has CF-compliant information ("coordinates" or "bounds") */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ const trv_sct * const var_trv,       /* I [sct] Variable (object) */
+ const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
