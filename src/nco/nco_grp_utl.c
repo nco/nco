@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1063 2013-11-19 08:04:11 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1064 2013-11-19 08:30:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1509,8 +1509,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
               if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
             } /* !trv_tbl->nsm_sfx */
           } else {
-            continue;
-          } /* Non ensemble group members, nothing to do */
+            if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
+          } /* Non ensemble group members */
         }else {
           /* Non nces case: Edit group name for output */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
@@ -1543,9 +1543,10 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Obtain group ID using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-      /* nces variables are created at ncra end, nothing to do here */
+      /* nces */
       if(nces == nco_prg_id_get()){
-        continue;
+        /* Edit group name for output (TODO) */
+        if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
       }else {
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
