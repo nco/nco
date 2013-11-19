@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1059 2013-11-19 04:22:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1060 2013-11-19 05:24:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7505,35 +7505,6 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
 
 } /* end nco_grp_var_lst() */
 
-char *                                 /* O [sng] Full path with suffix */
-nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
-(const char * const grp_nm_fll_prn,    /* I [sng] Absolute group name of ensemble root */
- trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
-{
-  assert(trv_tbl->nsm_sfx);
-
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Match */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_grp && strcmp(grp_nm_fll_prn,trv_tbl->lst[tbl_idx].nm_fll) == 0){
-
-      /* Define (append) a new name */
-      char *nm_fll_sfx=(char*)nco_malloc(strlen(grp_nm_fll_prn)+strlen(trv_tbl->lst[tbl_idx].nm)+strlen(trv_tbl->nsm_sfx)+2L);
-      strcpy(nm_fll_sfx,grp_nm_fll_prn);
-      strcat(nm_fll_sfx,"/");
-      strcat(nm_fll_sfx,trv_tbl->lst[tbl_idx].nm);
-      strcat(nm_fll_sfx,trv_tbl->nsm_sfx);
-      return nm_fll_sfx;
-
-    } /* Match */
-  } /* Loop table*/
-
-
-  assert(0);
-  return NULL;
-
-} /* nco_bld_nsm_sfx() */
-
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
@@ -7665,6 +7636,10 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             /* Found common names */
             if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm){
 
+              /* Define a list of variables to avoid.. like the plague... these are not for template definition  */
+
+
+
               /* Assume not yet inserted in array */
               nco_bool flg_ins=False;
               /* Loop constructed array to see if already inserted (NB: use ensemble counter nsm_nbr) */
@@ -7692,16 +7667,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                 /* Mark variables as ensemble members */
                 for(int idx_var=0;idx_var<nbr_cmn_nm;idx_var++){
 
-                  /* Define variable full name */
-
-                  /* Allocate path buffer and include space for trailing NUL */ 
-                  char *var_nm_fll=(char *)nco_malloc(strlen(trv_2.grp_nm_fll)+strlen(cmn_lst[idx_var].var_nm_fll)+2L);
-                  /* Initialize path with current absolute group path */
-                  strcpy(var_nm_fll,trv_2.grp_nm_fll);
-                  /* If not root group, concatenate separator */
-                  if(strcmp(trv_2.grp_nm_fll,"/")) strcat(var_nm_fll,"/");
-                  /* Concatenate variable to absolute group path */
-                  strcat(var_nm_fll,cmn_lst[idx_var].var_nm_fll);
+                  /* Define variable full name (NB: cmn_lst->var_nm_fll is relative here) */
+                  char *var_nm_fll=nco_bld_nm_fll(trv_2.grp_nm_fll,cmn_lst[idx_var].var_nm_fll);
               
                   /* Template criteria */
                   flg_nsm_tpl=nco_var_is_tpl(nc_id,var_nm_fll,trv_tbl);

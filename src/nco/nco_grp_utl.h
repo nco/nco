@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.411 2013-11-19 04:22:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.412 2013-11-19 05:24:52 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -675,11 +675,6 @@ nco_grp_var_lst                        /* [fnc] Export list of variable names fo
  const char * const grp_nm_fll,        /* I [sng] Absolute group name */
  char ***nm_lst,                       /* I/O [sng] List of names */
  int *nm_lst_nbr);                     /* I/O [nbr] Number of items in list */
-
-char *                                 /* O [sng] Full path with suffix */
-nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
-(const char * const grp_nm_fll_prn,    /* I [sng] Absolute group name of ensemble root */
- trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
