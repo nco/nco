@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.244 2013-11-20 02:23:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.245 2013-11-20 07:39:58 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -785,7 +785,7 @@ trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in tabl
   assert(0); 
 #else /* !NCO_HSH_TRV_OBJ */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
+    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
       trv_tbl->lst[uidx].flg_nsm_mbr=True;
       trv_tbl->lst[uidx].nsm_nm=strdup(grp_nm_fll_prn);
       if (flg_nsm_tpl) trv_tbl->lst[uidx].flg_nsm_tpl=True;

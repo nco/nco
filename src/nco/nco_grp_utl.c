@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1069 2013-11-20 02:23:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1070 2013-11-20 07:39:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1495,22 +1495,26 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* nces case */ 
         if(nco_prg_id_get() == nces ){ 
 
-          /* This avoids the creation of the leaf, test ensemble group flag, this happens only for group members (e.g /cesm/cesm_01) */
-          if (grp_trv.flg_nsm_mbr == True){
+          /* Is ensemble parent group */
+          if(grp_trv.flg_nsm_prn){
             /* Check if suffix needed. Appends to default name (e.g /cesm + _avg) */
             if(trv_tbl->nsm_sfx){
-
               /* Just define (append) and forget a new name */
               char *nm_fll_sfx=nco_bld_nsm_sfx(grp_trv.grp_nm_fll_prn,trv_tbl);
               /* Use the new name */
               if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
               nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
-            } else { /* Non suffix case */
-              if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
-            } /* !trv_tbl->nsm_sfx */
+            }else {
+              if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll_prn); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
+            } /* ! Suffix */
+            /* If group is an ensemble member, do not create it in the same location as input */
+          } else if (grp_trv.flg_nsm_mbr){
+            continue;
           } else {
+            /* Regular group */
             if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
-          } /* Non ensemble group members */
+          } /* ! Ensemble parent group */
+
         }else {
           /* Non nces case: Edit group name for output */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
@@ -7706,6 +7710,9 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                     trv_tbl->nsm[nsm_nbr].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
                     trv_tbl->nsm[nsm_nbr].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
                     trv_tbl->nsm[nsm_nbr].mbr_var_nbr++;
+
+                    /* Mark group as emsemble member */
+                    trv_tbl->lst[idx_nsm].flg_nsm_mbr=True;
 
                     /* If not the first group member, then it's not a template */
                     if (mbr_nbr > 0){
