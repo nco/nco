@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.909 2013-11-19 03:34:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.910 2013-11-20 01:48:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13161,24 +13161,26 @@ DESCRIPTION
 
 @cindex @command{ncextr}
 The nickname ``kitchen sink'' is a catch-all because @command{ncks}
-combines selected features of @command{ncdump} with (non-existent but
-easily imaginable) operators @command{ncextract}, @command{nccut}, and
-@command{ncpaste}, into one versatile utility. 
+combines most features of @command{ncdump} and @command{nccopy} with
+extra features to extract, hyperslab, multi-slab, sub-set, and translate  
+into one versatile utility. 
 @command{ncks} extracts a subset of the data from @var{input-file} and
-prints it as @acronym{ASCII} text to @file{stdout}, writes it in
-flat binary format to @file{binary-file}, and writes (or pastes) it in
-netCDF format to @var{output-file}.
+writes it in flat binary format to @file{binary-file}, and writes (or
+pastes) it in netCDF format to @var{output-file}. 
 
-@command{ncks} will print netCDF data in @acronym{ASCII} format to
-@code{stdout}, like @command{ncdump}, but with these differences: 
+@command{ncks} will also print netCDF data in @acronym{ASCII},
+@acronym{CDL}, or @acronym{NcML} text formats @code{stdout}, like
+@command{ncdump}.
 By default @command{ncks} prints data in a tabular format intended to be
 easy to search for the data you want, one datum per screen line, with
 all dimension subscripts and coordinate values (if any) preceding the
 datum. 
 Option @samp{-s} (or long options @samp{--sng_fmt} and @samp{--string}) 
 lets the user format the data using C-style format strings, while option
-@samp{--cdl} outputs @acronym{CDL} like @command{ncdump} but in a more
-finely tunable way.
+@samp{--cdl} outputs @acronym{CDL} and option @samp{--xml} outputs
+@acronym{NcML}. 
+@command{ncks} exposes many flexible controls over printed output,
+including @acronym{CDL} and @acronym{NcML}.
 
 Options @samp{-5}, @samp{-a}, @samp{--cdl}, @samp{-F} , @samp{-H},
 @samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q}, @samp{-q}, @samp{-s},

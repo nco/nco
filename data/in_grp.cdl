@@ -78,7 +78,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.105 2013-11-18 22:28:35 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.106 2013-11-20 01:48:39 zender Exp $";
   
  data:
   area=10.,10.;
@@ -272,6 +272,9 @@ netcdf in_grp {
     char char_var;
   char_var:long_name = "char-type variable";
     
+    char char_var_arr(time);
+  char_var_arr:long_name = "char-type variable array";
+    
     int int_var;
   int_var:long_name = "int-type variable";
     
@@ -279,7 +282,7 @@ netcdf in_grp {
   short_var:long_name = "short-type variable";
 
     long long_var;
-  long_var:long_name = "long-type variable ";
+  long_var:long_name = "long-type variable";
   long_var:purpose = "Variable of CDL type=long, which is deprecated for int. Included to test back-compatibility";
 
     double double_var;
@@ -321,6 +324,7 @@ netcdf in_grp {
     // netCDF3 atomic types
     byte_var='z';
     char_var="z";
+    char_var_arr="two words";
     double_var=10.;
     float_var=10.;
     short_var=10;
