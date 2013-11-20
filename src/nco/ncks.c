@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.675 2013-11-15 21:18:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.676 2013-11-20 19:21:39 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -156,8 +156,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.675 2013-11-15 21:18:14 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.675 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.676 2013-11-20 19:21:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.676 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -845,6 +845,9 @@ main(int argc,char **argv)
       prn_flg.PRN_DMN_UNITS=False;
       prn_flg.PRN_DMN_VAR_NM=True;
       prn_flg.PRN_MSS_VAL_BLANK=True;
+    } /* endif */
+    if(prn_flg.xml){
+      prn_flg.PRN_MSS_VAL_BLANK=False;
     } /* endif */
 
     /* File summary */

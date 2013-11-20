@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.18 2013-11-18 22:28:35 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.19 2013-11-20 19:21:39 zender Exp $";
 	string :sng_att = "Test global string attribute"; // 20130723 This is how to specify global string attributes
 
 //	netCDF4-only atomic types
@@ -539,7 +539,8 @@ variables:
 	att_var:ushort_att = 37us;
 	att_var:uint_att = 73u;
 	att_var:int64_att = 9223372036854775807l; // 20130712: ncgen 4.3.0 chokes on ll, LL suffix for int64 attributes, and translates -l suffixed numbers to NC_UINT64. Bug reported (netCDF #HEX-795132) and fixed in snapshot 20131117
-	att_var:uint64_att = 18446744073709551615ul; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes
+//	att_var:uint64_att = 18446744073709551615ul; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes. 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maxium ubyte, ushort, and uint values)
+	att_var:uint64_att = 0ul;
 	att_var:string_att1 = "20130723: ncgen -k netCDF-4 version 4.0.x converts quoted string to NC_STRING not NC_CHAR. Incompatible with classic behavior.";
 	att_var:string_att2 = "20130712: ncgen -k netCDF-4 version 4.2.x+ converts quoted string to NC_CHAR not NC_STRING. Backwards compatible with classic behavior.";
 	string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
@@ -953,7 +954,8 @@ data:
 	string_arr_var="20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three sentences.","Woops, I mean four.";
 	ubyte_var='z';
 	uint_var=4294967295;
-	uint64_var=18446744073709551615;
+//	uint64_var = 18446744073709551615; // 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maxium ubyte, ushort, and uint values)
+	uint64_var=0;
 	ushort_var=65535;
 
 //	netCDF3 atomic types:

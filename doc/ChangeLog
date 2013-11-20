@@ -1,3 +1,10 @@
+2013-11-20  Charlie Zender  <zender@uci.edu>
+
+	* XML mode never print blank (underscore) for missing values
+
+	* Workaround NcML limitations on uint64 types by removing
+	max(uint64) values from input CDL files other than buggy.cdl
+
 2013-11-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.9 release procedure:

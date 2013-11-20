@@ -78,7 +78,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.106 2013-11-20 01:48:39 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.107 2013-11-20 19:21:39 zender Exp $";
   
  data:
   area=10.,10.;
@@ -340,7 +340,8 @@ netcdf in_grp {
     // uint_var=4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
     uint_var=0; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
     uint_arr=4294967295,4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
-    uint64_var=18446744073709551615; // ULLONG_MAX = 18446744073709551615, NC_FILL_UINT is 18446744073709551614ULL
+    //    uint64_var=18446744073709551615; // ULLONG_MAX = 18446744073709551615, NC_FILL_UINT is 18446744073709551614ULL, 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maxium ubyte, ushort, and uint values)
+    uint64_var = 0ul; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes, 
     ushort_var=65535; // USHRT_MAX = 65535, NC_FILL_USHORT = 65535
  } // end g11
    

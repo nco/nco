@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.190 2013-11-20 02:05:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.191 2013-11-20 19:21:39 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -113,7 +113,12 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       /* User may override default separator string for XML only */
       if(att[idx].type == NC_STRING || att[idx].type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
 
-      /* Print type of non-string variables */
+      /* Print type of non-string variables
+	 NB: Take or lose this opportunity to distinguish char from string?
+	 NcML does not preserve unsigned types, so why not turn char attributes into strings? 
+	 Can turn char into string here just by omitting "type=char" attribute
+	 toolsui NcML does not print "type=char" for for char attributes
+	 Hence neither does ncks */
       if(att[idx].type != NC_STRING && att[idx].type != NC_CHAR) (void)fprintf(stdout," type=\"%s\"",xml_typ_nm(att[idx].type));
       
       /* Print hidden attributes of attributes */
