@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1068 2013-11-20 02:00:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1069 2013-11-20 02:23:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3305,6 +3305,7 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
      
       /* If variable is an ensemble member, do not create it in the same location as input */
       if (var_trv.flg_nsm_mbr == True){
+        assert(nco_prg_id_get() == nces);
         continue;
       }
 
@@ -7699,7 +7700,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                     }  /* Match */
                   } /* Loop skip  names */
 
-                  /* "Real" ensemble members. Meaning here is "template" as "member" TODO */
+                  /* "Real" ensemble members (variables). Meaning here is "template" as "member" TODO */
                   if (flg_nsm_tpl){
                     int mbr_var_nbr=trv_tbl->nsm[nsm_nbr].mbr_var_nbr;
                     trv_tbl->nsm[nsm_nbr].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
@@ -7764,7 +7765,6 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
     }
   }
 
-
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s list of templates\n",nco_prg_nm_get(),fnc_nm); 
     int idx_tpl=0;
@@ -7776,7 +7776,6 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
     }
   }
 
-
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s list of ensemble members\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
@@ -7787,7 +7786,6 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
     }
   }
 
-
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: DEBUG %s list of ensemble variable members\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
@@ -7797,8 +7795,6 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       }
     }
   }
-
-
 
   assert(nsm_nbr == trv_tbl->nsm_nbr);
 
