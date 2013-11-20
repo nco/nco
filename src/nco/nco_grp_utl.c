@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1067 2013-11-19 21:53:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1068 2013-11-20 02:00:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1545,8 +1545,13 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
       /* nces */
       if(nces == nco_prg_id_get()){
-        /* Edit group name for output (TODO) */
-        if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
+        /* If variable is an ensemble member, do not create it in the same location as input */
+        if (var_trv.flg_nsm_mbr == True){
+          continue;
+        }else{
+          /* Edit group name for output */
+          if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
+        } /* ! ensemble member  */
       }else {
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
@@ -3284,9 +3289,12 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
  const gpe_sct * const gpe,           /* I [sng] GPE structure */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
-  md5_sct *md5=NULL; /* [sct] MD5 configuration */
-
   char *grp_out_fll; /* [sng] Group name */
+
+  int grp_id_in;  /* [ID] Group ID */
+  int grp_id_out; /* [ID] Group ID */
+
+  md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
   /* Loop table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -3294,8 +3302,11 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
 
     /* If object is a fixed variable... */ 
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.enm_prc_typ == fix_typ){
-      int grp_id_in;  /* [ID] Group ID */
-      int grp_id_out; /* [ID] Group ID */
+     
+      /* If variable is an ensemble member, do not create it in the same location as input */
+      if (var_trv.flg_nsm_mbr == True){
+        continue;
+      }
 
       /* Obtain group IDs using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id_in);
