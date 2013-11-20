@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.641 2013-11-18 17:45:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.642 2013-11-20 23:57:34 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -17,14 +17,14 @@ We renamed ncea as nces to more accurately describe the operator.
 For historical reasons, NCO is full of misnamed operators:
 NCO itself is misnamed because the operators now work well on HDF (4
 and 5) files, not just netCDF files. We planned to change their name
-to SDO (Scientific Data Operators) but the name just wouldn't stick.
+to SDO (Scientific Data Operators) but the name wouldn't stick.
 And the "averagers" (ncea, ncra, ncwa) are all misnamed because they
 all do more statistics (min/max/ttl/rms...) than just averages. 
 This feature addition is an opportune time to rename ncea as nces.  
 
 We faced the same problem of back-compatibility when we renamed ncdiff
 to ncbo many years ago. We will use the same method. Invoking 'ncea'
-will continue to produce the same results. Scripts will not break.
+will continue to produce the same results so scripts will not break.
 Under the hood, 'ncea' will invoke 'nces --nsm_fl', just as 'ncdiff' 
 invokes 'ncbo --op_typ=subtract'. To cause nces to utilize the new
 group ensemble mode, invoke it with 'nces --nsm_grp'. This is similar
@@ -33,7 +33,8 @@ group aggregation, invoked with 'ncecat --rag' and 'ncecat --gag',
 respectively.
 
 This version also improves ncks support for XML (NcML) output.
-All output now validates without errors against the NcML 2.2 schema.  
+All output now validates without errors with the NcML 2.2 schema.  
+Happy NcML'ing!
 
 Work on NCO 4.4.0 is underway. It focuses on stability and speed.  
 There will be some netCDF4 mop-up, including netCDF4 support for
@@ -86,10 +87,11 @@ A. Correct XML-mode issues, many reported by Aleksandar Jelenak
    1. Print </variable> in metadata mode
    2. Adds type="typ_nm" attribute to non-string attribute elements
    3. Add separator=", " element when separator is not whitespace
-   4. Fix printing of int64-type data
+   4. Fix int64-type printing
    5. Use NcML not CDL type names
    6. Add hidden _Unsigned attribute for unsigned types
    7. Add hidden _FillValue attribute for unsigned types
+   8. Do not print underscores for missing data in XML mode
 
 KNOWN ISSUES NOT YET FIXED:
 

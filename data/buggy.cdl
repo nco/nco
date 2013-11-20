@@ -78,11 +78,12 @@ netcdf buggy {
 
    uint64_var=18446744073709551615; // 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maxium ubyte, ushort, and uint values)
 
- group: \1g { 
+   // group: \1g { 
+ group: oneg { 
     // Bug netCDF #TLO-836022 reported 20131118: ncgen fails on group names that begin with numeric characters. Response:
     // "An identifier with a leading digit is allowed, but the leading digit must be escaped. So in your example change 1g -> \1g"
  :att=1;
- }
+ } // 1g
 
  group: g1 {
   dimensions:
@@ -114,6 +115,8 @@ netcdf buggy {
     lon=1;
   variables:
     float latlon(lat,lon);
+    // 20131120: Test whether out-of-scope dimensions can be referenced by full paths
+    // Result: They cannot
     // float lat2lon4(/g1/lat,/g1/lon);
     //    float lat3lon3(/g2/lat,/g2/lon);
     //    float lat2lon3(/g1/lat,/g2/lon);
@@ -123,6 +126,13 @@ netcdf buggy {
     // lat3lon3=1,2,3,4,5,6,7,8,9;
     //    lat2lon3=1,2,3,4,5,6;
   } // /g3
+
+ group: g4 {
+   variables:
+     float one;
+   data:
+     one=1;
+   } // /g4
 
  group: g12 {
     // Purpose: Test netCDF4 vlen type
