@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Id: pvmgetarch,v 1.8 2010-07-05 19:18:26 zender Exp $
+# $Id: pvmgetarch,v 1.9 2013-11-21 00:15:17 pvicente Exp $
 
 # Purpose: Generate PVM architecture string
 
@@ -170,6 +170,10 @@ if [ "$ARCH" = UNKNOWN ]; then
 			ht="`/usr/bin/uname -m`"
 			rv="`/usr/bin/uname -r`"
 		fi
+
+		case "$os,$ht" in
+		    CYGWIN*,x86_64) ARCH=WIN32 ;;
+                esac
 
 		case "$os,$ht" in
 		*,i[3456]86 )    case "$rv" in

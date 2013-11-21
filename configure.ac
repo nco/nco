@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.21 2013-11-13 20:57:01 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.22 2013-11-21 00:15:17 pvicente Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -121,6 +121,8 @@ case ${host} in
     i*86-pc-freebsd* ) AC_DEFINE(FREEBSD,1,Compatibility pvmgetarch token for FreeBSD on Intel x86)
 	;;
     i*86-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) LINUX=1 ;
+	;;
+    x86_64-unknown-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel-compatible x86_64)
 	;;
     i*86-pc-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel x86)
 	;;
