@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.22 2013-11-21 00:15:17 pvicente Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.23 2013-11-21 00:51:52 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -42,6 +42,7 @@
 # AC_CHECK_LIB Find libXXX.a, prepend -lXXX to LIBS, define HAVE_LIBXXX
 # AC_CHECK_PROG Find whether prg_nm is on ${PATH}, define ${flg} accordingly
 # AC_DEFINE Define token TKN to value VAL with comment CMNT in config.h
+# AC_DEFINE_UNQUOTED Define token TKN to value VAL with comment CMNT in config.h. Use then when TKN or VAL are shell variables.
 # AC_EGREP_HEADER Search CPP output of header.h (NB: CPP outputs C-code only), define ${flg} accordingly
 # AC_MSG_NOTICE Print MSG to output
 # AC_MSG_WARN Print MSG to output
@@ -122,8 +123,6 @@ case ${host} in
 	;;
     i*86-pc-linux* ) AC_DEFINE(LINUX,1,Compatibility pvmgetarch token for Linux on Intel x86) LINUX=1 ;
 	;;
-    x86_64-unknown-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel-compatible x86_64)
-	;;
     i*86-pc-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel x86)
 	;;
     mips*-sgi-irix* ) AC_DEFINE(SGIMP64,1,Compatibility pvmgetarch token for IRIX on SGI MIPS)
@@ -142,9 +141,16 @@ case ${host} in
 	;;
     sx*-nec-superux* ) AC_DEFINE(NECSX,1,Compatibility pvmgetarch token for SuperUX on NEC SX)
 	;;
+    x86_64-unknown-cygwin* ) AC_DEFINE(WIN32,1,Compatibility pvmgetarch token for Windows on Intel-compatible x86_64)
+	;;
     x86_64*-linux* ) AC_DEFINE(LINUXAMD64,1,Compatibility pvmgetarch token for Linux on AMD x86_64)
 	;;
 esac
+# 20131120: Workaround for Cygwin64
+if test "x${host}" = 'xx86_64-unknown-cygwin'; then
+    AC_DEFINE(NEED_STRDUP,1,Use NCO strdup on Cygwin)
+fi
+
 # End pvmgetarch Compatibility
 
 # Use automake to create Makefiles
