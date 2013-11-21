@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1072 2013-11-21 06:56:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1073 2013-11-21 07:43:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8018,6 +8018,8 @@ nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 fi
 
   size_t grp_nm_lng;  /* [nbr] Group name lenght */
 
+  trv_sct *var_trv;   /* [sct] Variable GTT object */
+
   /* Loop over ensembles in table */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
 
@@ -8025,7 +8027,7 @@ nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 fi
       (void)fprintf(stdout,"%s: DEBUG <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     }
 
-    /* Obtain group ID where variable is located using full group name */
+    /* Obtain group ID using full group name */
     (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
 
     /* Get number of sub-groups */
@@ -8052,11 +8054,24 @@ nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 fi
       /* Export list of variable names for group */
       (void)nco_grp_var_lst(nc_id,grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
+      /* Loop variables in group */
+      for(int idx_var=0;idx_var<nm_lst_1_nbr;idx_var++){ 
 
+        /* Loop over members (variables) of old ensemble (NB: Assumption, same number of variables for new ensembles) */
+        for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_var_nbr;idx_mbr++){
 
+          /* Obtain variable GTT object for the member variable in ensemble */ 
+          var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_mbr],trv_tbl);
 
+          /* Match relative name  */
+          if(strcmp(nm_lst_1[idx_var],var_trv->nm) == 0){
+
+            /* Found, exit loop */
+            break;
+          } /* Match relative name  */
+        } /* Loop old ensemble */
+      } /* Loop variables in group */
     } /* Loop sub-groups */
-
 
     /* Clean up memory */
     grp_ids=(int *)nco_free(grp_ids);
