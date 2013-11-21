@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.668 2013-11-21 00:36:22 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.669 2013-11-21 04:31:00 pvicente Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -98,7 +98,7 @@
 # cd ~/nco/bld;ANTLR='antlr' make --jobs=1 GSL=Y OPTS=D NETCDF4=Y UDUNITS2=Y allinone;cd -
 # cd ~/bin/WIN32;tar cvzf ~/nco-4.3.9.win32.cygwin.tar.gz nc* ; scp ~/nco-4.3.9.win32.cygwin.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 # Data files to dust
-# cd ~/nco/data;scp cmip5.nc obs.nc mdl.nc in_grp*.nc in.nc dust.ess.uci.edu:/var/www/html/nco
+# cd ~/nco/data;scp cmip5.nc obs.nc mdl.nc mdl2.nc in_grp*.nc in.nc dust.ess.uci.edu:/var/www/html/nco
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g., make DAP_OPENDAP=Y
@@ -1792,7 +1792,7 @@ tst:	dat
 dap:	data
 	- cd ~/nco/data; scp in.nc in.cdl dust.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/data/dodsdata
 data:	dat
-dat:	${MY_DAT_DIR}/buggy.nc ${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/mdl.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_rec_zero.nc
+dat:	${MY_DAT_DIR}/buggy.nc ${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/mdl.nc ${MY_DAT_DIR}/mdl2.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_rec_zero.nc
 	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	ncgen -b -o $@ $<
@@ -1819,6 +1819,8 @@ ${MY_DAT_DIR}/cmip5.nc: ${MY_DAT_DIR}/cmip5.cdl
 ${MY_DAT_DIR}/obs.nc: ${MY_DAT_DIR}/obs.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/mdl.nc: ${MY_DAT_DIR}/mdl.cdl
+	-ncgen -k netCDF-4 -b -o $@ $<
+${MY_DAT_DIR}/mdl2.nc: ${MY_DAT_DIR}/mdl2.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/snd_ncwa.nc: ${MY_DAT_DIR}/snd_ncwa.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
@@ -2060,7 +2062,7 @@ dbg:
 distclean: dst_cln
 dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
-	cd ${MY_DAT_DIR}; rm -f buggy.nc cmip5.nc obs.nc mdl.nc in.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_rec_zero.nc *~
+	cd ${MY_DAT_DIR}; rm -f buggy.nc cmip5.nc obs.nc mdl.nc mdl2.nc in.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_rec_zero.nc *~
 tags: 
 	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
 

@@ -1,8 +1,8 @@
-# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.26 2013-09-27 19:41:39 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/data/Makefile.am,v 1.27 2013-11-21 04:31:00 pvicente Exp $ -*-makefile-*-
 
 test_data = big.nc in.nc in_rec_zero.nc
 
-test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc obs.nc mdl.nc
+test_data_netCDF4 = in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc obs.nc mdl.nc mdl2.nc
 
 # netCDF build rules
 %.nc : %.cdl
@@ -35,6 +35,9 @@ obs.nc : obs.cdl
 mdl.nc : mdl.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
+mdl2.nc : mdl2.cdl
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+
 all: ${test_data} ${test_data_netCDF4}
 
 EXTRA_DIST = big.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in_1.cdl in_2.cdl cmip5.cdl obs.cdl mdl.cdl buggy.cdl in_rec_zero.cdl ncap.in ncap.in2 ncap2.in tst.nco
@@ -45,7 +48,7 @@ EXTRA_DIST = big.cdl in.cdl in_grp.cdl in_grp_1.cdl in_grp_2.cdl in_grp_3.cdl in
 DISTCLEANFILES = foo*
 
 # Build procedure produces these files:
-CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc big.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc obs.nc mdl.nc buggy.nc in_rec_zero.nc ../src/nco_c++/in.nc
+CLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc big.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc cmip5.nc obs.nc mdl.nc mdl2.nc buggy.nc in_rec_zero.nc ../src/nco_c++/in.nc
 
 MAINTAINERCLEANFILES = Makefile.in
 
