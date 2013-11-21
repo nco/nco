@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.454 2013-11-21 23:05:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.455 2013-11-21 23:06:44 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.454 2013-11-21 23:05:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.454 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.455 2013-11-21 23:06:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.455 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1087,7 +1087,7 @@ main(int argc,char **argv)
 	       Output variable type is "sticky" so only convert on first member */
             if(fl_idx == 0 && mbr_idx == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
             var_tmp=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_tmp);
-            /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
+            /* Perform arithmetic operations: avg, min, max, ttl, ... */
             nco_opr_drv(fl_idx+mbr_idx,nco_op_typ,var_tmp,var_prc_out[idx_prc]);
             FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
