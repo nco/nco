@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.451 2013-11-21 05:42:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.452 2013-11-21 09:54:54 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.451 2013-11-21 05:42:51 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.451 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.452 2013-11-21 09:54:54 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.452 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -738,7 +738,7 @@ main(int argc,char **argv)
     /* Do nces ensemble refresh */
     if(nco_prg_id == nces){
       /* Refresh ensembles (more than 1 file cases) */
-      if (fl_idx > 0) (void)nco_nsm_refresh(in_id,nbr_var_prc,var_prc,trv_tbl);         
+      if (fl_idx > 0) (void)nco_nsm_inc(in_id,nbr_var_prc,var_prc,trv_tbl);         
     } else { /* ! nces */
       /* Variables may have different ID, missing_value, type, in each file */
       for(idx=0;idx<nbr_var_prc;idx++){

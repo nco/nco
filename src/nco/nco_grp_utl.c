@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1074 2013-11-21 08:05:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1075 2013-11-21 09:54:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7999,7 +7999,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
 
 void
-nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 file cases) */
+nco_nsm_inc                           /* [fnc] Increase ensembles (more than 1 file cases) */
 (const int nc_id,                     /* I [id] netCDF file ID ( new file ) */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
  var_sct **var_prc,                   /* I [sct] Array of processed variables */
@@ -8014,8 +8014,7 @@ nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 fi
   int nm_lst_1_nbr;   /* [nbr] Number of items in list */
   int grp_id;         /* [id] Group ID */
   int nbr_grp;        /* [nbr] Numberof sub-groups */
-  int *grp_ids;       /* [id] Sub-group IDs array */ 
-  int nsm_nbr;        /* [nbr] Ensemble counter */
+  int *grp_ids;       /* [id] Sub-group IDs array */
 
   size_t grp_nm_lng;  /* [nbr] Group name lenght */
 
@@ -8067,7 +8066,13 @@ nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 fi
           /* Match relative name  */
           if(strcmp(nm_lst_1[idx_var],var_trv->nm) == 0){
 
-            /* Inset new ensemble */
+            /* New variable name */
+            char *var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+1L);
+            strcpy(var_nm_fll,grp_nm_fll);
+            strcat(var_nm_fll,"/");
+            strcat(var_nm_fll,nm_lst_1[idx_var]);
+
+            /* Insert new ensemble */
             trv_tbl->nsm_nbr++;
             trv_tbl->nsm=(nsm_sct *)nco_realloc(trv_tbl->nsm,trv_tbl->nsm_nbr*sizeof(nsm_sct));
             trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_nbr=0;
@@ -8078,11 +8083,25 @@ nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 fi
             trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=0;
             trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=NULL;
 
+            int mbr_var_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr;
+            trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
+            trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
+            trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr++;
+
+
+
             /* Found, exit loop */
             break;
           } /* Match relative name  */
         } /* Loop old ensemble */
       } /* Loop variables in group */
+
+
+      /* Free list */
+      for(int idx_nm=0;idx_nm<nm_lst_1_nbr;idx_nm++) nm_lst_1[idx_nm]=(char *)nco_free(nm_lst_1[idx_nm]);
+      nm_lst_1=(char **)nco_free(nm_lst_1);
+      grp_nm_fll=(char *)nco_free(grp_nm_fll);
+
     } /* Loop sub-groups */
 
     /* Clean up memory */
@@ -8090,4 +8109,4 @@ nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 fi
 
   } /* Loop over ensembles in table */
 
-} /* nco_nsm_refresh() */
+} /* nco_nsm_inc() */
