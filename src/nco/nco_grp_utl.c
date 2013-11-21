@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1075 2013-11-21 09:54:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1076 2013-11-21 10:14:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8080,17 +8080,16 @@ nco_nsm_inc                           /* [fnc] Increase ensembles (more than 1 f
             trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_nm_fll_prn=(char *)strdup(grp_nm_fll);
 
             /* "Real" variable ensemble members */
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=0;
+            trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=idx_var; /* Trick here is to initialize with idx_var */
             trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=NULL;
 
             int mbr_var_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr;
             trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
             trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr++;
 
 
 
-            /* Found, exit loop */
+            /* Found, exit loop of old ensemble */
             break;
           } /* Match relative name  */
         } /* Loop old ensemble */
