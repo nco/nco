@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.414 2013-11-19 07:39:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.415 2013-11-21 05:42:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -697,6 +697,13 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
  const trv_sct * const var_trv,       /* I [sct] Variable (object) */
  const char * const cf_nm,            /* I [sng] CF convention ( "coordinates" or "bounds") */
  nco_bool *flg_cf_fnd);               /* I/O [flg] CF variable was found */
+
+void
+nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 file cases) */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const int nbr_var_prc,               /* I [nbr] Number of processed variables */
+ var_sct **var_prc,                   /* I [sct] Array of processed variables */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1070 2013-11-20 07:39:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1071 2013-11-21 05:42:51 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7997,3 +7997,25 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
   }
 
 } /* nco_nm_skp() */
+
+void
+nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 file cases) */
+(const int nc_id,                     /* I [id] netCDF file ID ( new file ) */
+ const int nbr_var_prc,               /* I [nbr] Number of processed variables */
+ var_sct **var_prc,                   /* I [sct] Array of processed variables */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+{
+  const char fnc_nm[]="nco_nsm_refresh()"; /* [sng] Function name */
+
+  /* Loop over ensembles in table */
+  for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+    }
+
+
+
+  } /* Loop over ensembles in table */
+
+} /* nco_nsm_refresh() */

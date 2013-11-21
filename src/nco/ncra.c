@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.450 2013-11-19 23:53:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.451 2013-11-21 05:42:51 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.450 2013-11-19 23:53:17 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.450 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.451 2013-11-21 05:42:51 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.451 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -248,9 +248,9 @@ main(int argc,char **argv)
   var_sct **var_out=NULL_CEWI;
   var_sct **var_prc;
   var_sct **var_prc_out;
-  trv_sct *var_trv;  /* [sct] Variable GTT object */
-  trv_sct *prc_trv;
-  trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
+  trv_sct *var_trv;        /* [sct] Variable GTT object */
+  trv_sct *prc_trv;        /* [sct] Variable GTT object */
+  trv_tbl_sct *trv_tbl;    /* [lst] Traversal table */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
@@ -735,14 +735,20 @@ main(int argc,char **argv)
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,in_id_arr+thr_idx);
     in_id=in_id_arr[0];
 
-    /* Variables may have different ID, missing_value, type, in each file */
-    for(idx=0;idx<nbr_var_prc;idx++){
-      /* Obtain variable GTT object using full variable name */
-      trv_sct *trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
-      /* Obtain group ID using full group name */
-      (void)nco_inq_grp_full_ncid(in_id,trv->grp_nm_fll,&grp_id);
-      (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
-    } /* end loop over variables */
+    /* Do nces ensemble refresh */
+    if(nco_prg_id == nces){
+      /* Refresh ensembles (more than 1 file cases) */
+      if (fl_idx > 0) (void)nco_nsm_refresh(in_id,nbr_var_prc,var_prc,trv_tbl);         
+    } else { /* ! nces */
+      /* Variables may have different ID, missing_value, type, in each file */
+      for(idx=0;idx<nbr_var_prc;idx++){
+        /* Obtain variable GTT object using full variable name */
+        trv_sct *trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
+        /* Obtain group ID using full group name */
+        (void)nco_inq_grp_full_ncid(in_id,trv->grp_nm_fll,&grp_id);
+        (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
+      } /* end loop over variables */
+    } /* ! nces */
 
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncea and nces jump to else branch */
 
