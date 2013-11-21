@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1076 2013-11-21 10:14:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1077 2013-11-21 23:44:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7783,9 +7783,11 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr=NULL;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_nm_fll_prn=(char *)strdup(trv_2.grp_nm_fll_prn);
 
-              /* "Real" variable ensemble members */
+              /* Variable ensemble members */
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=0;
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=NULL;
+
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_mbr_fll=NULL;
 
               /* Group (NB: outer loop) is ensemble parent group */
               trv_tbl->lst[idx_tbl].flg_nsm_prn=True;
@@ -7900,6 +7902,9 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                     trv_tbl->nsm[nsm_nbr].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
                     trv_tbl->nsm[nsm_nbr].mbr_var_nbr++;
 
+                    trv_tbl->nsm[nsm_nbr].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].grp_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
+                    trv_tbl->nsm[nsm_nbr].grp_mbr_fll[mbr_var_nbr]=(char *)strdup(trv_2.grp_nm_fll);
+
                     /* Mark group as emsemble member */
                     trv_tbl->lst[idx_nsm].flg_nsm_mbr=True;
 
@@ -7999,7 +8004,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
 
 void
-nco_nsm_inc                           /* [fnc] Increase ensembles (more than 1 file cases) */
+nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
 (const int nc_id,                     /* I [id] netCDF file ID ( new file ) */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
  var_sct **var_prc,                   /* I [sct] Array of processed variables */

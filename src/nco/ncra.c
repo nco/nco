@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.455 2013-11-21 23:06:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.456 2013-11-21 23:44:05 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -53,6 +53,10 @@
 
    ncra -Y nces -O -p ~/nco/data mdl.nc ~/foo.nc
    ncra -Y nces -O --nsm_sfx=_avg -p ~/nco/data mdl.nc ~/foo.nc */
+
+#if 1
+#define LOOP_VERSION_2 
+#endif 
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -165,8 +169,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.455 2013-11-21 23:06:44 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.455 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.456 2013-11-21 23:44:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.456 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -738,7 +742,7 @@ main(int argc,char **argv)
     /* Do nces ensemble refresh */
     if(nco_prg_id == nces){
       /* Refresh ensembles */
-      if(fl_idx > 0) (void)nco_nsm_inc(in_id,nbr_var_prc,var_prc,trv_tbl);         
+      if(fl_idx > 0) (void)nco_nsm_ncr(in_id,nbr_var_prc,var_prc,trv_tbl);         
     } else { /* ! nces */
       /* Variables may have different ID, missing_value, type, in each file */
       for(idx=0;idx<nbr_var_prc;idx++){
@@ -1060,35 +1064,38 @@ main(int argc,char **argv)
         int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
         int mbr_var_nbr=trv_tbl->nsm[idx_nsm].mbr_var_nbr;
 
-#if 0
+#ifdef LOOP_VERSION_2
         /* Loop over members of current ensemble */
         for(int idx_mbr=0;idx_mbr<mbr_nbr;idx_mbr++){
 
           /* Loop over all variables */
           for(int idx_prc=0;idx_prc<nbr_var_prc;idx_prc++){ 
 
-	    /* Obtain variable GTT object for the member *variable* in ensemble (the ones to average) */
-	    var_trv=trv_tbl_var_nm_fll(var_prc[idx_prc]->nm_fll,trv_tbl);
+            /* Obtain variable GTT object for the member *variable* in ensemble (the ones to average) */
+            var_trv=trv_tbl_var_nm_fll(var_prc[idx_prc]->nm_fll,trv_tbl);
 
-	    if(strcmp(var_trv->nsm_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)) continue;
+            /* Skip if from different ensembles */
+            if(strcmp(var_trv->nsm_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)){
+              continue;
+            }
 
-	    grp_nm_fll=trv_tbl->nsm[idx_nsm].mbr_fll[idx_mbr];
-	    var_prc[idx_prc]->nm_fll=(char *)nco_free(var_prc[idx_prc]->nm_fll);
-	    var_prc[idx_prc]->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);
+            char *grp_nm_fll=trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr];
+            var_prc[idx_prc]->nm_fll=(char *)nco_free(var_prc[idx_prc]->nm_fll);
+            var_prc[idx_prc]->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);
 
-	    /* Obtain group ID using full group name */
-	    (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);
-	    (void)nco_var_mtd_refresh(grp_id,var_prc[idx_prc]);
+            /* Obtain group ID using full group name */
+            (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);
+            (void)nco_var_mtd_refresh(grp_id,var_prc[idx_prc]);
 
-	    /* Retrieve variable from disk into memory */
+            /* Retrieve variable from disk into memory */
             (void)nco_msa_var_get_trv(in_id,var_prc[idx_prc],trv_tbl);
 
             /* Convert char, short, long, int types to doubles before arithmetic
-	       Output variable type is "sticky" so only convert on first member */
-            if(fl_idx == 0 && mbr_idx == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
-            var_tmp=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_tmp);
+            Output variable type is "sticky" so only convert on first member */
+            if(fl_idx == 0 && idx_mbr == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
+            var_prc[idx_prc]=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_prc[idx_prc]);
             /* Perform arithmetic operations: avg, min, max, ttl, ... */
-            nco_opr_drv(fl_idx+mbr_idx,nco_op_typ,var_tmp,var_prc_out[idx_prc]);
+            nco_opr_drv(fl_idx+idx_mbr,nco_op_typ,var_prc[idx_prc],var_prc_out[idx_prc]);
             FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
             /* Free current input buffer */
@@ -1097,7 +1104,7 @@ main(int argc,char **argv)
           } /* end loop over var_prc */
         } /* end loop over mbr */
 
-#endif /* !0 */
+#else /* !LOOP_VERSION_2 */
 
         /* Loop over members (variables) of current ensemble */
         for(int idx_mbr=0;idx_mbr<mbr_var_nbr;idx_mbr++){
@@ -1107,7 +1114,7 @@ main(int argc,char **argv)
 
           /* Skip if from different ensembles */
           if(strcmp(var_trv->grp_nm_fll_prn,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)) continue;
- 
+
           if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG \t <variable %d> <%s>\n",nco_prg_nm_get(),idx_mbr,trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_mbr]); 
 
           /* Loop templates */
@@ -1167,6 +1174,9 @@ main(int argc,char **argv)
 
           } /* Loop templates */
         } /* Loop over members (groups) of current ensemble */
+
+#endif /* !LOOP_VERSION_2 */
+
       } /* Loop over ensembles in current file */
 
     } /* End nces section */

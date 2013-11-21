@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.416 2013-11-21 09:54:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.417 2013-11-21 23:44:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -699,7 +699,7 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
  nco_bool *flg_cf_fnd);               /* I/O [flg] CF variable was found */
 
 void
-nco_nsm_inc                           /* [fnc] Increase ensembles (more than 1 file cases) */
+nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const int nbr_var_prc,               /* I [nbr] Number of processed variables */
  var_sct **var_prc,                   /* I [sct] Array of processed variables */

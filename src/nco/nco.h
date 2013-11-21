@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.434 2013-11-20 07:39:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.435 2013-11-21 23:44:05 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -876,10 +876,11 @@ extern "C" {
   /* Ensemble (nces) */
   typedef struct{
     char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) (e.g /cesm) */
-    int mbr_nbr;            /* [nbr] Number of members of ensemble (i.e., number in this ensemble in this file) */ 
+    int mbr_nbr;            /* [nbr] Number of members (groups) of ensemble (i.e., number in this ensemble in this file) */ 
     nsm_grp_sct *mbr;       /* [sng] List of ensemble group member structs (size is mbr_nbr) */
     char **var_mbr_fll;     /* [sng] List of variable ensemble members (e.g /cesm/cesm_01/tas) */
-    int mbr_var_nbr;        /* [nbr] Number of "real" members (TODO, revise )  of ensemble */ 
+    char **grp_mbr_fll;     /* [sng] List of group ensemble members (e.g /cesm/cesm_01) */
+    int mbr_var_nbr;        /* [nbr] Number of variable members of ensemble */ 
   } nsm_sct; 
 
   /* GTT (Group Traversal Table) structure contains two lists
