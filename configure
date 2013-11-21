@@ -3194,6 +3194,10 @@ $as_echo "#define FREEBSD 1" >>confdefs.h
 $as_echo "#define LINUX 1" >>confdefs.h
  LINUX=1 ;
 	;;
+    x86_64-unknown-cygwin* )
+$as_echo "#define WIN32 1" >>confdefs.h
+
+	;;
     i*86-pc-cygwin* )
 $as_echo "#define WIN32 1" >>confdefs.h
 
