@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1071 2013-11-21 05:42:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1072 2013-11-21 06:56:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8007,6 +8007,17 @@ nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 fi
 {
   const char fnc_nm[]="nco_nsm_refresh()"; /* [sng] Function name */
 
+  char **nm_lst_1;    /* [sng] List of names */
+  char *grp_nm_fll;   /* I [sng] Full group name */
+  char *grp_nm;       /* I [sng] Group name */
+
+  int nm_lst_1_nbr;   /* [nbr] Number of items in list */
+  int grp_id;         /* [id] Group ID */
+  int nbr_grp;        /* [nbr] Numberof sub-groups */
+  int *grp_ids;       /* [id] Sub-group IDs array */  
+
+  size_t grp_nm_lng;  /* [nbr] Group name lenght */
+
   /* Loop over ensembles in table */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
 
@@ -8014,7 +8025,41 @@ nco_nsm_refresh                       /* [fnc] Refresh ensembles (more than 1 fi
       (void)fprintf(stdout,"%s: DEBUG <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     }
 
+    /* Obtain group ID where variable is located using full group name */
+    (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
 
+    /* Get number of sub-groups */
+    (void)nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
+    grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
+    (void)nco_inq_grps(grp_id,(int *)NULL,grp_ids);
+
+    /* Loop sub-groups */
+    for(int idx_grp=0;idx_grp<nbr_grp;idx_grp++){ 
+
+      /* Get group name lenght */
+      (void)nco_inq_grpname_len(grp_ids[idx_grp],&grp_nm_lng);
+      grp_nm=(char *)nco_malloc(grp_nm_lng+1L);
+
+      /* Get group name */
+      (void)nco_inq_grpname(grp_ids[idx_grp],grp_nm);
+
+      /* Construct full name  */
+      grp_nm_fll=(char *)nco_malloc(grp_nm_lng+strlen(trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)+2L);
+      strcpy(grp_nm_fll,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      strcat(grp_nm_fll,"/");
+      strcat(grp_nm_fll,grp_nm);
+
+      /* Export list of variable names for group */
+      (void)nco_grp_var_lst(nc_id,grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
+
+
+
+
+    } /* Loop sub-groups */
+
+
+    /* Clean up memory */
+    grp_ids=(int *)nco_free(grp_ids);
 
   } /* Loop over ensembles in table */
 
