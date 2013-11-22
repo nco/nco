@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.436 2013-11-22 04:40:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.437 2013-11-22 21:06:08 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -675,7 +675,7 @@ extern "C" {
     nco_bool xml; /* [flg] Print valid XML (NcML) */
     nco_bool xml_lcn; /* [flg] Print XML location tag */
     nco_bool trd; /* [flg] Print traditional NCO format */
-    nco_bool nfo_cdl; /* [flg] Print extra information in CDL mode */
+    nco_bool nfo_xtr; /* [flg] Print extra information in CDL/XML mode */
     nco_bool new_fmt; /* [flg] Print in new format */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
     int nbr_zro; /* [nbr] Trailing zeros allowed after decimal point */
