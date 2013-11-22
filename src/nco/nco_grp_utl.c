@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1078 2013-11-22 00:00:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1079 2013-11-22 01:58:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7895,7 +7895,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                     }  /* Match */
                   } /* Loop skip  names */
 
-                  /* "Real" ensemble members (variables). Meaning here is "template" as "member" TODO */
+                  /* Ensemble members. Meaning here is "template" as "member" TODO */
                   if (flg_nsm_tpl){
                     int mbr_var_nbr=trv_tbl->nsm[nsm_nbr].mbr_var_nbr;
                     trv_tbl->nsm[nsm_nbr].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
@@ -7951,7 +7951,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   } /* Loop table */ 
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
+    (void)fprintf(stdout,"\n%s: DEBUG %s list of ensembles\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
       (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     } 
@@ -7968,7 +7968,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   }
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s list of templates\n",nco_prg_nm_get(),fnc_nm); 
+    (void)fprintf(stdout,"\n%s: DEBUG %s list of templates\n",nco_prg_nm_get(),fnc_nm); 
     int idx_tpl=0;
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       if(trv_tbl->lst[uidx].flg_nsm_tpl){
@@ -7979,7 +7979,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   }
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s list of ensemble members\n",nco_prg_nm_get(),fnc_nm); 
+    (void)fprintf(stdout,"\n%s: DEBUG %s list of ensemble members\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
       (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
       for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
@@ -7989,11 +7989,21 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   }
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s list of ensemble variable members\n",nco_prg_nm_get(),fnc_nm); 
+    (void)fprintf(stdout,"\n%s: DEBUG %s list of ensemble variable members\n",nco_prg_nm_get(),fnc_nm); 
     for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
       (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
       for(int idx_var_mbr=0;idx_var_mbr<trv_tbl->nsm[idx_nsm].mbr_var_nbr;idx_var_mbr++){
         (void)fprintf(stdout,"%s: DEBUG %s \t <variable %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_var_mbr,trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_var_mbr]); 
+      }
+    }
+  }
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"\n%s: DEBUG %s list of ensemble members\n",nco_prg_nm_get(),fnc_nm); 
+    for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+      (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_var_nbr;idx_mbr++){
+        (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_mbr,trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]); 
       }
     }
   }
@@ -8010,7 +8020,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
  var_sct **var_prc,                   /* I [sct] Array of processed variables */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
-  const char fnc_nm[]="nco_nsm_refresh()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_nsm_ncr()"; /* [sng] Function name */
 
   char **nm_lst_1;    /* [sng] List of names */
   char *grp_nm_fll;   /* I [sng] Full group name */
@@ -8020,7 +8030,6 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
   int grp_id;         /* [id] Group ID */
   int nbr_grp;        /* [nbr] Numberof sub-groups */
   int *grp_ids;       /* [id] Sub-group IDs array */
-  int idx_mbr_ctr;    /* [nbr] Member counter */
 
   size_t grp_nm_lng;  /* [nbr] Group name lenght */
 
@@ -8033,7 +8042,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
       (void)fprintf(stdout,"%s: DEBUG <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
     }
 
-    /* Obtain group ID using full group name */
+    /* Obtain group ID of current ensemble using full group name */
     (void)nco_inq_grp_full_ncid(nc_id,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn,&grp_id);
 
     /* Get number of sub-groups */
@@ -8069,37 +8078,25 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
           /* Obtain variable GTT object for the member variable in ensemble */ 
           var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_mbr],trv_tbl);
 
-          idx_mbr_ctr=0;
-
           /* Match relative name  */
           if(strcmp(nm_lst_1[idx_var],var_trv->nm) == 0){
 
-            /* Increase member counter (variables in group may not match variables needed) */
-            idx_mbr_ctr++;
+            /* Build new variable name */
+            char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,nm_lst_1[idx_var]);
 
-            /* New variable name */
-            char *var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+1L);
-            strcpy(var_nm_fll,grp_nm_fll);
-            strcat(var_nm_fll,"/");
-            strcat(var_nm_fll,nm_lst_1[idx_var]);
+            /* Variable ensemble members */
+            int mbr_var_nbr=trv_tbl->nsm[idx_nsm].mbr_var_nbr;
+            trv_tbl->nsm[idx_nsm].mbr_var_nbr++; 
+            trv_tbl->nsm[idx_nsm].mbr_nbr++; 
+            
+            trv_tbl->nsm[idx_nsm].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
+            trv_tbl->nsm[idx_nsm].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
 
-            /* Insert new ensemble */
-            trv_tbl->nsm_nbr++;
-            trv_tbl->nsm=(nsm_sct *)nco_realloc(trv_tbl->nsm,trv_tbl->nsm_nbr*sizeof(nsm_sct));
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_nbr=0;
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr=NULL;
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_nm_fll_prn=(char *)strdup(grp_nm_fll);
+            /* Groups ensemble members */
+            trv_tbl->nsm[idx_nsm].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].grp_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
+            trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_var_nbr]=(char *)strdup(grp_nm_fll);
 
-            /* "Real" variable ensemble members */
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=idx_mbr_ctr; /* Trick here is to initialize member counter */
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=NULL;
-
-            int mbr_var_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr;
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
-
-
-
+            var_nm_fll=(char *)nco_free(var_nm_fll);
             /* Found, exit loop of old ensemble */
             break;
           } /* Match relative name  */
@@ -8119,4 +8116,14 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 
   } /* Loop over ensembles in table */
 
-} /* nco_nsm_inc() */
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s list of ensemble members\n",nco_prg_nm_get(),fnc_nm); 
+    for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+      (void)fprintf(stdout,"%s: DEBUG %s <ensemble %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+      for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
+        (void)fprintf(stdout,"%s: DEBUG %s \t <member %d> <%s>\n",nco_prg_nm_get(),fnc_nm,idx_mbr,trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]); 
+      }
+    }
+  }
+
+} /* nco_nsm_ncr() */

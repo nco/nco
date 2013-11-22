@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.456 2013-11-21 23:44:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.457 2013-11-22 01:58:49 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -169,8 +169,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.456 2013-11-21 23:44:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.456 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.457 2013-11-22 01:58:49 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.457 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1059,7 +1059,7 @@ main(int argc,char **argv)
       /* Loop over ensembles in current file */
       for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
 
-        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+        (void)fprintf(stdout,"%s: <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
 
         int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
         int mbr_var_nbr=trv_tbl->nsm[idx_nsm].mbr_var_nbr;
@@ -1082,6 +1082,8 @@ main(int argc,char **argv)
             char *grp_nm_fll=trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr];
             var_prc[idx_prc]->nm_fll=(char *)nco_free(var_prc[idx_prc]->nm_fll);
             var_prc[idx_prc]->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);
+
+            (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_prc[idx_prc]->nm_fll);             
 
             /* Obtain group ID using full group name */
             (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);
