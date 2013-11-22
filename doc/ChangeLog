@@ -1,10 +1,14 @@
-2013-11-20  Charlie Zender  <zender@uci.edu>
+2013-11-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.9 release procedure:
  	Changes since nco-4_3_8: nces, XML
 	cd ~/nco;cvs tag -d nco-4_3_9;cvs tag -d nco-4_3_9-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.9 release"
 	cvs tag -c nco-4_3_9;cvs tag -c nco-4_3_9-1
+
+	* XML mode ensure string variables and attributes do not contain string separator
+
+2013-11-20  Charlie Zender  <zender@uci.edu>
 
 	* XML mode never print blank (underscore) for missing values
 

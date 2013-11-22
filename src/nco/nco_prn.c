@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.191 2013-11-20 19:21:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.192 2013-11-22 06:06:50 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -30,6 +30,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   char cma_sng[]=", "; /* [sng] Comma string */
   char spr_xml_chr[]="*|*"; /* [sng] Default XML separator for character types */
+  char spr_xml_chr_bck[]="cszzsc"; /* [sng] Backup default XML separator for character types */
   char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
 
   char chr_val; /* [sng] Current character */
@@ -125,7 +126,19 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       // if(nco_xml_typ_rqr_nsg_att(att[idx].type)) (void)fprintf(stdout,""); /* toolsui shows no way to indicate unsigned types for attributes? */
 
       /* Print separator element for non-whitespace separators */
-      if((att[idx].sz == 1L && att[idx].type == NC_STRING) || (att[idx].sz > 1L)){ 
+      if((att[idx].sz == 1L && att[idx].type == NC_STRING) || att[idx].sz > 1L){ 
+	/* Ensure string attribute value does not contain separator string */
+	if(att[idx].type == NC_CHAR)
+	  if(strstr(att[idx].val.cp,spr_sng)) spr_sng=spr_xml_chr_bck;
+	if(att[idx].type == NC_STRING){
+	  for(lmn=0;lmn<att_sz;lmn++){
+	    if(strstr(att[idx].val.sngp[lmn],spr_sng)){
+	      spr_sng=spr_xml_chr_bck;
+	      break;
+	    } /* endif */
+	  } /* end loop over lmn */
+	} /* !NC_STRING */
+
 	size_t spr_sng_idx=0L;
 	size_t spr_sng_lng;
 	spr_sng_lng=strlen(spr_sng);
@@ -1174,6 +1187,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   char cma_sng[]=", "; /* [sng] Comma string */
   char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
   char spr_xml_chr[]="*|*"; /* [sng] Default XML separator for character types */
+  char spr_xml_chr_bck[]="cszzsc"; /* [sng] Backup default XML separator for character types */
   char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
   char nul_chr='\0'; /* [sng] Character to end string */ 
 
@@ -1354,8 +1368,19 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
       (void)fprintf(stdout,"%*s<values",prn_ndn+prn_flg->var_fst,spc_sng);
       /* Print non-whitespace separators between elements */
-      if((var.sz == 1L && var.type == NC_STRING) || /* ... For scalar strings OR ... */
-	 (var.sz > 1L)){ /* ... Arrays of all other types */
+      if((var.sz == 1L && var.type == NC_STRING) || var.sz > 1L){
+	/* Ensure string variable value does not contain separator string */
+	if(var.type == NC_CHAR)
+	  if(strstr(var.val.cp,spr_sng)) spr_sng=spr_xml_chr_bck;
+	if(var.type == NC_STRING){
+	  for(lmn=0;lmn<var.sz;lmn++){
+	    if(strstr(var.val.sngp[lmn],spr_sng)){
+	      spr_sng=spr_xml_chr_bck;
+	      break;
+	    } /* endif */
+	  } /* end loop over lmn */
+	} /* !NC_STRING */
+
 	size_t spr_sng_idx=0L;
 	size_t spr_sng_lng;
 	spr_sng_lng=strlen(spr_sng);

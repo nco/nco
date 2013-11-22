@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.19 2013-11-20 19:21:39 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_4.cdl,v 1.20 2013-11-22 06:06:50 zender Exp $";
 	string :sng_att = "Test global string attribute"; // 20130723 This is how to specify global string attributes
 
 //	netCDF4-only atomic types
@@ -69,6 +69,9 @@ variables:
 
 	string string_var;
 	string_var:long_name = "string-type variable";
+
+	string string_var2;
+	string_var2:long_name = "string-type variable with default XML separator";
 
 	string string_arr_var(lon);
 	string_arr_var:long_name = "arrays of string-types";
@@ -530,6 +533,7 @@ variables:
 	float att_var(time);
 	att_var:byte_att = '\000','\001','\002','\177','\200','\201','\376','\377';
 	att_var:char_att = "Sentence one.\nSentence two.\n";
+	att_var:char_att2 = "Character string containing default XML separator: *|*\n";
 	att_var:short_att = 37s;
 	att_var:int_att = 73;
         att_var:float_att = 73.0f,72.0f,71.0f,70.010f,69.0010f,68.010000f,67.01000100f;
@@ -544,7 +548,8 @@ variables:
 	att_var:string_att1 = "20130723: ncgen -k netCDF-4 version 4.0.x converts quoted string to NC_STRING not NC_CHAR. Incompatible with classic behavior.";
 	att_var:string_att2 = "20130712: ncgen -k netCDF-4 version 4.2.x+ converts quoted string to NC_CHAR not NC_STRING. Backwards compatible with classic behavior.";
 	string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
-	string att_var:string_att4 = "20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three sentences.";
+	string att_var:string_att4 = "20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three elements. Each is a sentence or three long.";
+	string att_var:string_att5 = "20131121: This NC_STRING contains NCO's default XML string separator, *|*. Be sure the XML separator provided when ncks translates the netCDF file uses a different separator, aka the backup separator, which is this uncapitalized: CSZZSC.";
 
 	int bnd_var(lev,bnd);
 	bnd_var:byte_att = '\0';
@@ -951,7 +956,9 @@ data:
 //	netCDF4-specific atomic types:
 	int64_var=9223372036854775807;
 	string_var="If you prick us, do we not bleed? If you tickle us, do we not laugh? If you poison us, do we not die? And if you wrong us, shall we not revenge?";
+	string_var2="20131121: This NC_STRING contains NCO's default XML string separator, *|*. Be sure the XML separator provided when ncks translates the netCDF file uses a different separator, aka the backup separator, which is this uncapitalized: CSZZSC.";
 	string_arr_var="20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three sentences.","Woops, I mean four.";
+
 	ubyte_var='z';
 	uint_var=4294967295;
 //	uint64_var = 18446744073709551615; // 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maxium ubyte, ushort, and uint values)

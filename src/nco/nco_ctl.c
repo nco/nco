@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.433 2013-11-19 01:19:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.434 2013-11-22 06:06:50 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -949,7 +949,7 @@ nco_usg_prn(void)
 #endif /* !ENABLE_NETCDF4 */
   if(strstr(opt_sng,"[-5]")) (void)fprintf(stdout,"-5, --5, \t\tPrint alphabetically by group then variable\n");
   if(strstr(opt_sng,"[-6]")) (void)fprintf(stdout,"-6, --64, --fl_fmt=64bit\tOutput file in netCDF3 64-bit offset storage format\n");
-  if(strstr(opt_sng,"[-7]")) (void)fprintf(stdout,"-7, --7, --fl_fmt=netcdf4_classic\tOutput file in netCDF4 CLASSIC format\n");
+  if(strstr(opt_sng,"[-7]")) (void)fprintf(stdout,"-7, --7, --fl_fmt=netcdf4_classic\tOutput file in netCDF4 CLASSIC format (3+4=7)\n");
   if(strstr(opt_sng,"[-A]")) (void)fprintf(stdout,"-A, --apn, --append\tAppend to existing output file, if any\n");
   if(strstr(opt_sng,"[-a")){
     if(prg_lcl == ncatted) (void)fprintf(stdout,"-a, --attribute att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n");
@@ -1058,7 +1058,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-U]")) (void)fprintf(stdout,"-U, --upk, --unpack\tUnpack input file\n");
   if(strstr(opt_sng,"[-u")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
-    if(prg_lcl == ncecat) (void)fprintf(stdout,"-u, --ulm_nm --rcd_nm\t\tNew unlimited (record) dimension name\n");
+    if(prg_lcl == ncecat) (void)fprintf(stdout,"-u, --ulm_nm --rcd_nm\tNew unlimited (record) dimension name\n");
   } /* end if */
   if(strstr(opt_sng,"--unn")) (void)fprintf(stdout,"    --unn, --union\tSelect union of specified groups and variables\n");
   if(strstr(opt_sng,"[-v")){
