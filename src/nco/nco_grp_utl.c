@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1079 2013-11-22 01:58:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1080 2013-11-22 04:40:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7788,6 +7788,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=NULL;
 
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_mbr_fll=NULL;
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_srt=0;
+              trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_end=0;
 
               /* Group (NB: outer loop) is ensemble parent group */
               trv_tbl->lst[idx_tbl].flg_nsm_prn=True;
@@ -7905,6 +7907,10 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                     trv_tbl->nsm[nsm_nbr].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].grp_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
                     trv_tbl->nsm[nsm_nbr].grp_mbr_fll[mbr_var_nbr]=(char *)strdup(trv_2.grp_nm_fll);
 
+                    /* Update offsets */
+                    trv_tbl->nsm[nsm_nbr].mbr_srt=0;
+                    trv_tbl->nsm[nsm_nbr].mbr_end=mbr_var_nbr+1;
+
                     /* Mark group as emsemble member */
                     trv_tbl->lst[idx_nsm].flg_nsm_mbr=True;
 
@@ -7916,7 +7922,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                     /* Mark ensemble member flag in table for "var_nm_fll" real member */
                     (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
 
-                  } /* "Real" ensemble members */             
+                  } /* Ensemble members */             
 
                   /* Insert variable in table ensemble struct */
                   trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nbr++;
@@ -8028,8 +8034,9 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 
   int nm_lst_1_nbr;   /* [nbr] Number of items in list */
   int grp_id;         /* [id] Group ID */
-  int nbr_grp;        /* [nbr] Numberof sub-groups */
+  int nbr_grp;        /* [nbr] Number of sub-groups */
   int *grp_ids;       /* [id] Sub-group IDs array */
+  int mbr_srt;        /* [nbr] Offset */
 
   size_t grp_nm_lng;  /* [nbr] Group name lenght */
 
@@ -8037,6 +8044,10 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 
   /* Loop over ensembles in table */
   for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
+
+    /* Update offsets */
+    mbr_srt=trv_tbl->nsm[idx_nsm].mbr_end;
+    trv_tbl->nsm[idx_nsm].mbr_srt=mbr_srt;
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: DEBUG <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
@@ -8095,6 +8106,9 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
             /* Groups ensemble members */
             trv_tbl->nsm[idx_nsm].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].grp_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
             trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_var_nbr]=(char *)strdup(grp_nm_fll);
+
+            /* Update offsets */
+            trv_tbl->nsm[idx_nsm].mbr_end=mbr_var_nbr+1;
 
             var_nm_fll=(char *)nco_free(var_nm_fll);
             /* Found, exit loop of old ensemble */

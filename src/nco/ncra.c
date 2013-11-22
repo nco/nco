@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.457 2013-11-22 01:58:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.458 2013-11-22 04:40:05 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -169,8 +169,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.457 2013-11-22 01:58:49 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.457 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.458 2013-11-22 04:40:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.458 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1063,10 +1063,12 @@ main(int argc,char **argv)
 
         int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
         int mbr_var_nbr=trv_tbl->nsm[idx_nsm].mbr_var_nbr;
+        int mbr_srt=trv_tbl->nsm[idx_nsm].mbr_srt;
+        int mbr_end=trv_tbl->nsm[idx_nsm].mbr_end;
 
 #ifdef LOOP_VERSION_2
-        /* Loop over members of current ensemble */
-        for(int idx_mbr=0;idx_mbr<mbr_nbr;idx_mbr++){
+        /* Loop over members of current ensemble (use start and end members, multi file cases) */
+        for(int idx_mbr=mbr_srt;idx_mbr<mbr_end;idx_mbr++){
 
           /* Loop over all variables */
           for(int idx_prc=0;idx_prc<nbr_var_prc;idx_prc++){ 
@@ -1079,7 +1081,7 @@ main(int argc,char **argv)
               continue;
             }
 
-            char *grp_nm_fll=trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr];
+            char *grp_nm_fll=trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]; 
             var_prc[idx_prc]->nm_fll=(char *)nco_free(var_prc[idx_prc]->nm_fll);
             var_prc[idx_prc]->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);
 
@@ -1089,7 +1091,7 @@ main(int argc,char **argv)
             (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);
             (void)nco_var_mtd_refresh(grp_id,var_prc[idx_prc]);
 
-            /* Retrieve variable from disk into memory */
+            /* Retrieve variable from disk into memory. TODO: new funtion that does not use table, valif 1st file only */
             (void)nco_msa_var_get_trv(in_id,var_prc[idx_prc],trv_tbl);
 
             /* Convert char, short, long, int types to doubles before arithmetic
