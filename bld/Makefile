@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.669 2013-11-21 04:31:00 pvicente Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.670 2013-11-22 19:33:40 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1789,10 +1789,13 @@ tst:	dat
 	env MY_BIN_DIR=${MY_BIN_DIR} ../bm/nco_bm.pl --dbg=0 --regress --udpreport ${FL_FMT_SNG} ${MPI_PRC_SNG} ${THR_NBR_SNG}
 # Targets in dat
 # ncgen rules to build netCDF4 files must be error-tolerant to build on netCDF3-only installations
+bug:	${MY_DAT_DIR}/buggy.nc
+${MY_DAT_DIR}/buggy.nc: ${MY_DAT_DIR}/buggy.cdl
+	-ncgen -k netCDF-4 -b -o $@ $<
 dap:	data
 	- cd ~/nco/data; scp in.nc in.cdl dust.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/data/dodsdata
 data:	dat
-dat:	${MY_DAT_DIR}/buggy.nc ${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/mdl.nc ${MY_DAT_DIR}/mdl2.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_rec_zero.nc
+dat:	${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/mdl.nc ${MY_DAT_DIR}/mdl2.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_rec_zero.nc
 	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	ncgen -b -o $@ $<
@@ -1811,8 +1814,6 @@ ${MY_DAT_DIR}/in_1.nc: ${MY_DAT_DIR}/in_1.cdl
 ${MY_DAT_DIR}/in_2.nc: ${MY_DAT_DIR}/in_2.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/in_grp_3.nc: ${MY_DAT_DIR}/in_grp_3.cdl
-	-ncgen -k netCDF-4 -b -o $@ $<
-${MY_DAT_DIR}/buggy.nc: ${MY_DAT_DIR}/buggy.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/cmip5.nc: ${MY_DAT_DIR}/cmip5.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<

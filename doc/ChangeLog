@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.9 release"
 	cvs tag -c nco-4_3_9;cvs tag -c nco-4_3_9-1
 
+	* XML mode isolate toolsui/ncgen/XML bugginess in buggy.cdl so in_grp.cdl "just works"
+
 	* XML mode add precise multi-dimensional NC_CHAR warnings when dbg_lbl > 0
 
 	* XML mode change default and backup string separator to "*" and "*|*" respectively

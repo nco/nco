@@ -43,6 +43,9 @@ netcdf buggy {
   string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
   string att_var:string_att4 = "20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three sentences.";
 
+  string string_var2;
+ string_var2:long_name = "string-type variable with default XML separator";
+
   float lat_tm2(lat,tm2);
   float lat_tm3(lat,tm3);
   float tm2_lat(tm2,lat);
@@ -72,6 +75,8 @@ netcdf buggy {
   tm3_lat=1,2,3,4,5,6; // NB: Braces forbidden when unlimited dimension is first. sizeof(tm2)=sizeof(whole)/$lat
 
   tm2_tm3={1.,2.,3.},{4.,5.,6.};
+
+  string_var2="20131121: This NC_STRING contains NCO's default XML string separator, *. And it contains multiple sequential copies of that separator, ***. Be sure ncks automatically switches to a different separator, aka the backup separator, the string obtained by removing the two spaces from this:\"* | *\". As of 20131121, ncks handles this correctly, yet toolsui breaks when trying to input the ncks-generated NcML. Appears to be a toolsui bug.";
 
    // 20130208: netCDF 4.2.1.1- fail as nc_get_var1_uint() returns -60 = NetCDF: Numeric conversion not representable on (valid) input values exceeding INT_MAX=2147483647. This was bug netCDF #PUX-602809 fixed in daily snapshot 20130210.
    uint_var=4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
