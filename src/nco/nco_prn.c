@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.192 2013-11-22 06:06:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.193 2013-11-22 19:20:25 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -29,8 +29,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   char *spr_sng=NULL; /* [sng] Output separator string */
 
   char cma_sng[]=", "; /* [sng] Comma string */
-  char spr_xml_chr[]="*|*"; /* [sng] Default XML separator for character types */
-  char spr_xml_chr_bck[]="cszzsc"; /* [sng] Backup default XML separator for character types */
+  char spr_xml_chr[]="*"; /* [sng] Default XML separator for character types */
+  char spr_xml_chr_bck[]="*|*"; /* [sng] Backup default XML separator for character types */
   char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
 
   char chr_val; /* [sng] Current character */
@@ -1057,6 +1057,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   dmn_sng[0]='\0';
   if(nbr_dim == 0){
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
+    /* 20131122: Implement ugly NcML requirement that scalars have shape="" attribute */
+    if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"\"");
   }else{
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       if(prn_flg->xml){
@@ -1186,8 +1188,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   char cma_sng[]=", "; /* [sng] Comma string */
   char mss_val_sng[]="_"; /* [sng] Print this instead of numerical missing value */
-  char spr_xml_chr[]="*|*"; /* [sng] Default XML separator for character types */
-  char spr_xml_chr_bck[]="cszzsc"; /* [sng] Backup default XML separator for character types */
+  char spr_xml_chr[]="*"; /* [sng] Default XML separator for character types */
+  char spr_xml_chr_bck[]="*|*"; /* [sng] Backup default XML separator for character types */
   char spr_xml_nmr[]=" "; /* [sng] Default XML separator for numeric types */
   char nul_chr='\0'; /* [sng] Character to end string */ 
 
@@ -1383,11 +1385,20 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
 	size_t spr_sng_idx=0L;
 	size_t spr_sng_lng;
+	static short FIRST_WARNING=True;
 	spr_sng_lng=strlen(spr_sng);
 	while(spr_sng_idx < spr_sng_lng)
 	  if(!isspace(spr_sng[spr_sng_idx])) break; else spr_sng_idx++;
 	if(spr_sng_idx < spr_sng_lng) (void)fprintf(stdout," separator=\"%s\"",spr_sng);
-	if(spr_sng_idx == spr_sng_lng && (var.type == NC_CHAR || var.type == NC_STRING)) (void)fprintf(stderr,"%s: WARNING %s reports XML separator \"%s\" is pure whitespace for variable %s which is an array of strings of type %s. Result may be ambiguous to NcML parsers. HINT: Consider using --xml_spr_chr to specify a multi-character separator that 1. does not appear in the string array and 2. does not include an NcML formatting characters (e.g., commas, angles, quotes).\n",nco_prg_nm_get(),fnc_nm,spr_sng,var.nm,nco_typ_sng(var.type));
+	if(var.type == NC_CHAR && var.nbr_dim > 1 && FIRST_WARNING && nco_dbg_lvl_get() > 0){
+	  /* 20131122: Warnings about XML ambiguities caused by spr_sng appearing in val_sng would go here
+	     New procedure to pre-check strings above obviates need for this in all all cases except one:
+	     Multi-dimensional NC_CHAR variables may have embedded NULs that prevent strstr(val,spr_sng)
+	     appearances of spr_sng after first NUL. Could use GNU-specific memmem() instead?
+	     Balance of simplicity and readability suggests warning at most once */
+	  (void)fprintf(stderr,"%s: WARNING %s converting to NcML multi-dimensional variable %s, presumably an array of strings of type %s, with NcML separator \"%s\". NCO perfoms precautionary checks with strstr(val,spr) to identify presence of separator string (spr) in data (val) and, when it detect a match, automatically switches to a backup separator string (\"%s\"). However limitations of strstr() may lead to false negatives when separator string occurs in data beyond the first string in multi-dimensional NC_CHAR arrays. Hence, result may be ambiguous to NcML parsers. HINT: If problems arise, use --xml_spr_chr to specify a multi-character separator that 1. does not appear in the string array and 2. does not include an NcML formatting characters (e.g., commas, angles, quotes). This warning is printed at most once per file.\n",nco_prg_nm_get(),fnc_nm,var.nm,nco_typ_sng(var.type),spr_sng,spr_xml_chr_bck);
+	  FIRST_WARNING=False;
+	} /* endif WARNING */
       } /* var.sz */
       (void)fprintf(stdout,">");
     } /* !xml */
