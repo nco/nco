@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1077 2013-11-21 23:44:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1078 2013-11-22 00:00:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8020,6 +8020,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
   int grp_id;         /* [id] Group ID */
   int nbr_grp;        /* [nbr] Numberof sub-groups */
   int *grp_ids;       /* [id] Sub-group IDs array */
+  int idx_mbr_ctr;    /* [nbr] Member counter */
 
   size_t grp_nm_lng;  /* [nbr] Group name lenght */
 
@@ -8068,8 +8069,13 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
           /* Obtain variable GTT object for the member variable in ensemble */ 
           var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_mbr],trv_tbl);
 
+          idx_mbr_ctr=0;
+
           /* Match relative name  */
           if(strcmp(nm_lst_1[idx_var],var_trv->nm) == 0){
+
+            /* Increase member counter (variables in group may not match variables needed) */
+            idx_mbr_ctr++;
 
             /* New variable name */
             char *var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+1L);
@@ -8085,7 +8091,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
             trv_tbl->nsm[trv_tbl->nsm_nbr-1].grp_nm_fll_prn=(char *)strdup(grp_nm_fll);
 
             /* "Real" variable ensemble members */
-            trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=idx_var; /* Trick here is to initialize with idx_var */
+            trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr=idx_mbr_ctr; /* Trick here is to initialize member counter */
             trv_tbl->nsm[trv_tbl->nsm_nbr-1].var_mbr_fll=NULL;
 
             int mbr_var_nbr=trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_var_nbr;
