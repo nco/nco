@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.459 2013-11-22 22:57:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.460 2013-11-22 23:37:29 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -56,6 +56,10 @@
 
 #if 1
 #define LOOP_VERSION_2 
+#endif 
+
+#if 1
+#define VAR_TMP
 #endif 
 
 #ifdef HAVE_CONFIG_H
@@ -169,8 +173,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.459 2013-11-22 22:57:04 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.459 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.460 2013-11-22 23:37:29 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.460 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -606,7 +610,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
 
   /* Store nces ensemble suffix in table */
   if(nco_prg_id == nces && nsm_sfx) trv_tbl->nsm_sfx=nsm_sfx;
@@ -1056,6 +1060,14 @@ main(int argc,char **argv)
       /* End ncea section */
     }else if(nco_prg_id == nces){ /* nces */
 
+      trv_tbl_sct *trv_tbl1;    /* [lst] Traversal table (needed for multi-file cases)  */
+
+      /* Initialize traversal table */ 
+      trv_tbl_init(&trv_tbl1); 
+
+      /* Construct GTT using current file ID */
+      (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl1);
+
       /* Loop over ensembles in current file */
       for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
 
@@ -1075,6 +1087,7 @@ main(int argc,char **argv)
 
             /* Obtain variable GTT object for the member *variable* in ensemble (the ones to average) */
             var_trv=trv_tbl_var_nm_fll(var_prc[idx_prc]->nm_fll,trv_tbl);
+            assert(var_trv);
 
             /* Skip if from different ensembles */
             if(strcmp(var_trv->nsm_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)){
@@ -1082,17 +1095,54 @@ main(int argc,char **argv)
             }
 
             char *grp_nm_fll=trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]; 
+
+#ifdef VAR_TMP
+            /* Use the a temporary variable with replaced name */
+            var_sct *var_tmp=nco_var_dpl(var_prc[idx_prc]);
+
+            /* Replace the template variable name with the member variable name */
+            var_tmp->nm_fll=(char *)nco_free(var_tmp->nm_fll);
+            var_tmp->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm); 
+            (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_tmp->nm_fll); 
+
+            /* Obtain group ID using full group name */
+            (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);
+            (void)nco_var_mtd_refresh(grp_id,var_tmp);
+
+#else /* VAR_TMP */
             var_prc[idx_prc]->nm_fll=(char *)nco_free(var_prc[idx_prc]->nm_fll);
             var_prc[idx_prc]->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);
-
-            (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_prc[idx_prc]->nm_fll);             
+            (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_prc[idx_prc]->nm_fll); 
 
             /* Obtain group ID using full group name */
             (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);
             (void)nco_var_mtd_refresh(grp_id,var_prc[idx_prc]);
+#endif /* VAR_TMP */
 
-            /* Retrieve variable from disk into memory. TODO: new funtion that does not use table, valif 1st file only */
-            (void)nco_msa_var_get_trv(in_id,var_prc[idx_prc],trv_tbl);
+            
+
+#ifdef VAR_TMP
+            /* Retrieve variable from disk into memory. NB: Using table in file loop */
+            (void)nco_msa_var_get_trv(in_id,var_tmp,trv_tbl1);
+
+            /* Convert char, short, long, int types to doubles before arithmetic
+            Output variable type is "sticky" so only convert on first member */
+            if(fl_idx == 0 && idx_mbr == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
+            var_tmp=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_tmp);
+            /* Perform arithmetic operations: avg, min, max, ttl, ... */
+            nco_opr_drv(fl_idx+idx_mbr,nco_op_typ,var_tmp,var_prc_out[idx_prc]);
+            FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
+
+            /* Transfer the tally to the template, since the dummy is going to be deleted... software enginnering at its best */
+            var_prc[idx_prc]->tally=(long *)nco_free(var_prc[idx_prc]->tally);
+            var_prc[idx_prc]->tally=(long *)nco_malloc(var_prc[idx_prc]->sz*sizeof(long));
+            (void)memcpy((void *)var_prc[idx_prc]->tally,(void *)var_tmp->tally,var_tmp->sz /* tally size? */ *sizeof(long));
+            /* Free temporary variable */
+            var_tmp=(var_sct *)nco_var_free(var_tmp); 
+
+#else /* VAR_TMP */
+            /* Retrieve variable from disk into memory. NB: Using table in file loop */
+            (void)nco_msa_var_get_trv(in_id,var_prc[idx_prc],trv_tbl1);
 
             /* Convert char, short, long, int types to doubles before arithmetic
             Output variable type is "sticky" so only convert on first member */
@@ -1101,6 +1151,8 @@ main(int argc,char **argv)
             /* Perform arithmetic operations: avg, min, max, ttl, ... */
             nco_opr_drv(fl_idx+idx_mbr,nco_op_typ,var_prc[idx_prc],var_prc_out[idx_prc]);
             FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
+
+#endif /* VAR_TMP */
 
             /* Free current input buffer */
             var_prc[idx_prc]->val.vp=nco_free(var_prc[idx_prc]->val.vp);
@@ -1182,6 +1234,8 @@ main(int argc,char **argv)
 #endif /* !LOOP_VERSION_2 */
 
       } /* Loop over ensembles in current file */
+
+      (void)trv_tbl_free(trv_tbl1);
 
     } /* End nces section */
 
