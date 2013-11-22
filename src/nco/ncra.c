@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.458 2013-11-22 04:40:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.459 2013-11-22 22:57:04 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -169,8 +169,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.458 2013-11-22 04:40:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.458 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.459 2013-11-22 22:57:04 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.459 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1247,20 +1247,15 @@ main(int argc,char **argv)
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->nsm_nm); else grp_out_fll=(char *)strdup(var_trv->nsm_nm);
         } /* !trv_tbl->nsm_sfx */
 
-        /* Define variable in output file */
-        var_out_id=nco_cpy_var_dfn_trv(in_id,out_id,grp_out_fll,dfl_lvl,gpe,NULL,var_trv,trv_tbl);
       }else if(nco_prg_id == ncea){
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
-        /* Get variable ID */
-        (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
       } /* end else */
 
       /* Obtain output group ID using full group name */
       (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
-      /* Memory management after current extracted group */
-      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-
+      /* Get output variable ID */
+      (void)nco_inq_varid(grp_out_id,var_prc_out[idx]->nm,&var_out_id);   
       /* Store the output variable ID */
       var_prc_out[idx]->id=var_out_id;
 
@@ -1268,6 +1263,9 @@ main(int argc,char **argv)
       /* Packing/Unpacking */
       if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
       if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+
+      /* Memory management after current extracted group */
+      if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
     } /* end loop over idx */
   } /* end if ncea and nces */
 

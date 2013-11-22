@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1080 2013-11-22 04:40:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1081 2013-11-22 22:57:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1551,7 +1551,18 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(nces == nco_prg_id_get()){
         /* If variable is an ensemble member, do not create it in the same location as input */
         if (var_trv.flg_nsm_mbr == True){
-          continue;
+          
+          /* Check if suffix needed. Appends to default name */
+          if(trv_tbl->nsm_sfx){
+            /* Just define (append) and forget a new name */
+            char *nm_fll_sfx=nco_bld_nsm_sfx(var_trv.grp_nm_fll_prn,trv_tbl);
+            /* Use the new name */
+            if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
+            nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
+          } else { /* Non suffix case */
+            if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.nsm_nm); else grp_out_fll=(char *)strdup(var_trv.nsm_nm);
+          } /* !trv_tbl->nsm_sfx */
+
         }else{
           /* Edit group name for output */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
@@ -1563,6 +1574,16 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
       /* If output group does not exist, create it */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
+
+      /* nces */
+      if(nces == nco_prg_id_get()){
+        /* Is requested variable in output file? */
+        int rcd=nco_inq_varid_flg(grp_out_id,var_trv.nm,&var_out_id);
+        /* Yes, get out of dodge... this is just to avoid GPE failure on duplicate definition */
+        if (rcd == 0){
+          continue;
+        }
+      } /* nces */
 
       /* Detect duplicate GPE names in advance, then exit with helpful error */
       if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
