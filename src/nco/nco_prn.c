@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.194 2013-11-22 21:06:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.195 2013-11-23 01:50:43 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1396,7 +1396,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	     Multi-dimensional NC_CHAR variables may have embedded NULs that prevent strstr(val,spr_sng)
 	     appearances of spr_sng after first NUL. Could use GNU-specific memmem() instead?
 	     Balance of simplicity and readability suggests warning at most once */
-	  (void)fprintf(stderr,"%s: WARNING %s converting to NcML multi-dimensional variable %s, presumably an array of strings of type %s, with NcML separator \"%s\". NCO perfoms precautionary checks with strstr(val,spr) to identify presence of separator string (spr) in data (val) and, when it detect a match, automatically switches to a backup separator string (\"%s\"). However limitations of strstr() may lead to false negatives when separator string occurs in data beyond the first string in multi-dimensional NC_CHAR arrays. Hence, result may be ambiguous to NcML parsers. HINT: If problems arise, use --xml_spr_chr to specify a multi-character separator that 1. does not appear in the string array and 2. does not include an NcML formatting characters (e.g., commas, angles, quotes). This warning is printed at most once per file.\n",nco_prg_nm_get(),fnc_nm,var.nm,nco_typ_sng(var.type),spr_sng,spr_xml_chr_bck);
+	  (void)fprintf(stderr,"%s: WARNING %s converting to NcML multi-dimensional variable %s, presumably an array of strings of type %s, with NcML separator \"%s\". NCO performs precautionary checks with strstr(val,spr) to identify presence of separator string (spr) in data (val) and, if it detects a match, automatically switches to a backup separator string (\"%s\"). However limitations of strstr() may lead to false negatives when separator string occurs in data beyond the first string in multi-dimensional NC_CHAR arrays. Hence, result may be ambiguous to NcML parsers. HINT: If problems arise, use --xml_spr_chr to specify a multi-character separator that 1. does not appear in the string array and 2. does not include an NcML formatting characters (e.g., commas, angles, quotes). This warning is printed at most once per file.\n",nco_prg_nm_get(),fnc_nm,var.nm,nco_typ_sng(var.type),spr_sng,spr_xml_chr_bck);
 	  FIRST_WARNING=False;
 	} /* endif WARNING */
       } /* var.sz */

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.910 2013-11-20 01:48:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.911 2013-11-23 01:50:43 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -13629,7 +13629,7 @@ Also @samp{--units}.
 
 @html
 <a name="xml"></a> <!-- http://nco.sf.net/nco.html#xml -->
-<a name="ncml"></a> <!-- http://nco.sf.net/nco.html#ncml -->
+<a name="ncmnl"></a> <!-- http://nco.sf.net/nco.html#ncml -->
 @end html
 @cindex @code{--xml}
 @cindex @code{--ncml}
@@ -13658,10 +13658,10 @@ one = 1
 zender@roulee:~$ ncks --xml -v one ~/nco/data/in.nc
 <?xml version="1.0" encoding="UTF-8"?>
 <netcdf xmlns="http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2" location="/home/zender/nco/data/in.nc">
-    <variable name="one" type="float">
-      <attribute name="long_name" value="one" />
-      <values>1.</values>
-    </variable>
+  <variable name="one" type="float" shape="">
+    <attribute name="long_name" separator="*" value="one" />
+    <values>1.</values>
+  </variable>
 </netcdf>
 @end verbatim
 @end example
@@ -13695,13 +13695,13 @@ location of the input dataset, e.g.,
 The @samp{--xml_spr_chr} and @samp{--xml_spr_nmr} options customize
 the strings used as @acronym{NcML} separators for attributes and
 variables of character-type and numeric-type, respectively.
-Their default separators are "*|*" and " ":
+Their default separators are "*" and " ":
 @example
 @verbatim
 zender@@roulee:~$ ncks --xml -d time,0,3 -v two_dmn_rec_var_sng in.nc
 ...
-<values separator="*|*">abc*|*bcd*|*cde*|*def</values>
-...
+   <values separator="*">abc*bcd*cde*def</values>
+ ...
  zender@@roulee:~$ ncks --xml_spr_chr=', ' -v two_dmn_rec_var_sng in.nc
 ...
 <values separator=", ">abc, bcd, cde, def, efg, fgh, ghi, hij, jkl, klm</values>
@@ -13721,9 +13721,17 @@ One must be sure that the separator element is not mistaken as a portion
 of the string. 
 @acronym{NCO} attempts to produce valid @acronym{NcML} and supplies the
 @samp{--xml_spr_chr} option to work around any difficulties.
-Until a reference @acronym{NcML} implementation specifies how to encode
-string values, some aspects of the @acronym{NCO} implementation may be
-ill-defined.
+@acronym{NCO} performs precautionary checks with
+@code{strstr(@var{val},@var{spr})} to identify presence of the separator
+string (@var{spr}) in data (@var{val}) and, when it detects a match,
+automatically switches to a backup separator string (@code{*|*}). 
+However limitations of @code{strstr()} may lead to false negatives 
+when the separator string occurs in data beyond the first string in
+multi-dimensional @code{NC_CHAR} arrays. 
+Hence, results may be ambiguous to NcML parsers. 
+If problems arise, use @samp{--xml_spr_chr} to specify a multi-character
+separator that does not appear in the string array and that does not
+include an NcML formatting characters (e.g., commas, angles, quotes).
 @end table
 
 @html
