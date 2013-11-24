@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.57 2013-10-18 23:25:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.58 2013-11-24 04:05:40 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -248,6 +248,8 @@ nco/src/nco/nco_scm.c
 nco/src/nco/nco_scm.h
 nco/src/nco/nco_sng_utl.c
 nco/src/nco/nco_sng_utl.h
+nco/src/nco/nco_srm.c
+nco/src/nco/nco_srm.h
 nco/src/nco/nco_typ.h
 nco/src/nco/nco_uthash.h
 nco/src/nco/nco_var_avg.c

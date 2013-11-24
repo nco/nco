@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.195 2013-11-23 01:50:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.196 2013-11-24 04:05:41 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1965,6 +1965,9 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     }else{ /* grp_dpt != 0 */
       (void)fprintf(stdout,"%*s<group name=\"%s\">\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
     } /* grp_dpt != 0 */
+  }else if(prn_flg->srm){ /* !xml */
+    /* https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/stream/NcStream.html */
+    
   }else{ /* !xml */
     nm_cdl=nm2sng_cdl(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
     if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_cdl);

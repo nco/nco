@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.437 2013-11-22 21:06:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.438 2013-11-24 04:05:41 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -671,10 +671,11 @@ extern "C" {
     char *spr_nmr; /* [sng] Separator string for numeric types */
     gpe_sct *gpe; /* I [sng] GPE structure */
     md5_sct *md5; /* [flg] MD5 configuration */
-    nco_bool cdl; /* [flg] Print valid CDL */
-    nco_bool xml; /* [flg] Print valid XML (NcML) */
-    nco_bool xml_lcn; /* [flg] Print XML location tag */
+    nco_bool cdl; /* [flg] Print CDL */
+    nco_bool srm; /* [flg] Print ncStream */
     nco_bool trd; /* [flg] Print traditional NCO format */
+    nco_bool xml; /* [flg] Print XML (NcML) */
+    nco_bool xml_lcn; /* [flg] Print XML location tag */
     nco_bool nfo_xtr; /* [flg] Print extra information in CDL/XML mode */
     nco_bool new_fmt; /* [flg] Print in new format */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */

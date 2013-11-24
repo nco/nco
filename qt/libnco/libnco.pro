@@ -72,7 +72,9 @@ HEADERS += ../../src/nco/libnco.h \
 ../../src/nco/nco_scl_utl.h \
 ../../src/nco/nco_scm.h \
 ../../src/nco/nco_sng_utl.h \
+../../src/nco/nco_srm.h \
 ../../src/nco/nco_typ.h \
+../../src/nco/nco_uthash.h \
 ../../src/nco/nco_var_avg.h \
 ../../src/nco/nco_var_lst.h \
 ../../src/nco/nco_var_rth.h \
@@ -112,6 +114,7 @@ SOURCES += ../../src/nco/nco_att_utl.c \
 ../../src/nco/nco_scl_utl.c \
 ../../src/nco/nco_scm.c \
 ../../src/nco/nco_sng_utl.c \
+../../src/nco/nco_srm.c \
 ../../src/nco/nco_var_avg.c \
 ../../src/nco/nco_var_lst.c \
 ../../src/nco/nco_var_rth.c \

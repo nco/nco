@@ -1,14 +1,18 @@
-2013-11-22 Pedro Vicente  <pvicente@uci.edu>
-
-	* nces: Regression #4 multi file ensembles
-
-2013-11-22  Charlie Zender  <zender@uci.edu>
+2013-11-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.3.9 release procedure:
  	Changes since nco-4_3_8: nces, XML
 	cd ~/nco;cvs tag -d nco-4_3_9;cvs tag -d nco-4_3_9-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.9 release"
 	cvs tag -c nco-4_3_9;cvs tag -c nco-4_3_9-1
+
+	* Add nco_srm.[ch] for streams
+
+2013-11-22 Pedro Vicente  <pvicente@uci.edu>
+
+	* nces: Regression #4 multi file ensembles
+
+2013-11-22  Charlie Zender  <zender@uci.edu>
 
 	* XML mode add informational comments like CDL with -D 1
 
