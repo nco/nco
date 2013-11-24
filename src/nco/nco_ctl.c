@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.435 2013-11-22 19:20:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.436 2013-11-24 23:05:44 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -1032,7 +1032,7 @@ nco_usg_prn(void)
     /*    if(prg_lcl == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");*/
     if(prg_lcl != ncwa) (void)fprintf(stdout,"-n, --nintap nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style abbreviation of file list\n");
   } /* end if -n */
-  if(strstr(opt_sng,"--no_blank")) (void)fprintf(stdout,"    --no_blank\t\tPrint numeric missing values\n");
+  if(strstr(opt_sng,"--no_blank")) (void)fprintf(stdout,"    --no_blank\t\tPrint numeric missing values instead of blanks (underscores)\n");
   if(strstr(opt_sng,"--no_tmp_fl")) (void)fprintf(stdout,"    --no_tmp_fl\t\tDo not write output to temporary file\n");
   if(strstr(opt_sng,"--nsm_sfx")) (void)fprintf(stdout,"    --nsm_sfx, --ensemble_suffix\tPlace ensemble output in group parent/parent+nsm_sfx\n");
   if(strstr(opt_sng,"[-o")) (void)fprintf(stdout,"-o, --output, --fl_out fl_out\tOutput file name (or use last positional argument)\n");
@@ -1074,9 +1074,9 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-X")) (void)fprintf(stdout,"-X, --auxiliary lon_min,lon_max,lat_min,lat_max\tAuxiliary coordinate bounding box\n");
   if(strstr(opt_sng,"[-x]")) (void)fprintf(stdout,"-x, --xcl, --exclude\tExtract all variables EXCEPT those specified with -v\n");
   if(strstr(opt_sng,"--xml")) (void)fprintf(stdout,"    --xml\t\tPrint XML (NcML, netCDF Markup Language)\n");
-  if(strstr(opt_sng,"--xml_no_loc")) (void)fprintf(stdout,"    --xml_no_location\tOmit XML/NcML location element\n");
-  if(strstr(opt_sng,"--xml_spr_chr")) (void)fprintf(stdout,"    --xml_spr_chr sng\tSeparator for XML character types\n");
-  if(strstr(opt_sng,"--xml_spr_nmr")) (void)fprintf(stdout,"    --xml_spr_nmr sng\tSeparator for XML numeric types\n");
+  if(strstr(opt_sng,"--xml_no_loc")) (void)fprintf(stdout,"    --xml_no_location\tOmit NcML location element\n");
+  if(strstr(opt_sng,"--xml_spr_chr")) (void)fprintf(stdout,"    --xml_spr_chr sng\tSeparator for NcML character types\n");
+  if(strstr(opt_sng,"--xml_spr_nmr")) (void)fprintf(stdout,"    --xml_spr_nmr sng\tSeparator for NcML numeric types\n");
   if(strstr(opt_sng,"[-y op_typ]")){
     if(prg_lcl == ncbo)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tBinary arithmetic operation: add,sbt,mlt,dvd (+,-,*,/)\n");
     if(prg_lcl == ncra || prg_lcl == ncea || prg_lcl == ncwa)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");

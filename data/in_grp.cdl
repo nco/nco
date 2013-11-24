@@ -78,7 +78,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.109 2013-11-22 19:33:40 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.110 2013-11-24 23:05:44 zender Exp $";
   
  data:
   area=10.,10.;
@@ -298,6 +298,9 @@ netcdf in_grp {
     string string_var;
   string_var:long_name = "string-type variable";
     
+    // string string_var2;
+    // string_var2:long_name = "string-type variable with default XML separator";
+
     string string_arr(lat);
   string_arr:long_name = "string-type array variable";
 
@@ -333,6 +336,7 @@ netcdf in_grp {
     // netCDF4-only atomic types
     int64_var=9223372036854775807; // LLONG_MAX = 9223372036854775807, NC_FILL_INT64 is -9223372036854775806LL
     string_var="If you prick us, do we not bleed? If you tickle us, do we not laugh? If you poison us, do we not die? And if you wrong us, shall we not revenge?";
+    //  string_var2="20131121: This NC_STRING contains NCO's default XML string separator, *. And it contains multiple sequential copies of that separator, ***. Be sure ncks automatically switches to a different separator, aka the backup separator, the string obtained by removing the two spaces from this:\"* | *\". As of 20131121, ncks handles this correctly, yet toolsui breaks when trying to input the ncks-generated NcML. Appears to be a toolsui bug.";
     string_arr="Stanza 1","Stanza 2";
     string_rec_arr="One little ","two little ","three little indians, ","four little ","five little ","six little indians, ","seven little ","eight little ","nine little indians, ","ten little indian boys.";
     ubyte_var='z'; // UCHAR_MAX = 255, NC_FILL_UBYTE = 255
