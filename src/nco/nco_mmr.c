@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.61 2013-10-24 20:25:57 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.62 2013-11-25 01:07:25 pvicente Exp $ */
 
 /* Purpose: Memory management */
 
@@ -86,11 +86,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 
   size_t sz_thr=1024UL*1024UL; /* I [B] Bytes to allocate threshold size for reporting */
 
-#if 0
-  size_t sz_max=1024UL*1024UL*1024UL*1024UL; /* I [B] Maximum bytes to allocate without warning */
-#else
-  size_t sz_max=SIZE_MAX; /* C99 macro maximum value of size_t */
-#endif
+  size_t sz_max=(size_t)-1; /* I [B] Maximum value of size_t */
 
   void *ptr; /* [ptr] Pointer to new buffer */
   

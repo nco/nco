@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1081 2013-11-22 22:57:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1082 2013-11-25 01:07:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3176,7 +3176,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
       aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr);
 
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: DEBUG %s variable [%d]<%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,idx_var,trv_tbl->lst[idx_var].nm_fll,aux_idx_nbr);     
       }
 
@@ -5639,7 +5639,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
       /* Does variable contain requested record dimension? */
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
         if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
-          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
           break;
         } /* endif */
       } /* end loop over idx_dmn */
@@ -6251,6 +6251,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   int grp_id;              /* [id] Group ID */
 
   nco_bool flg_dmn_ins;    /* [flg] Is dimension already inserted in output array  */  
+  nco_bool flg_prn=False;  /* [flg] Print warning  */  
 
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
@@ -6349,8 +6350,11 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
             trv_tbl->lmt_rec[trv_tbl->nbr_rec]->id=dmn_id;
 
 #ifndef ENABLE_UDUNITS
-            if(trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",
-              nco_prg_nm_get(),trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm,nco_prg_nm_get());
+            if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev && flg_prn== False){
+              if(trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",
+                nco_prg_nm_get(),trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm,nco_prg_nm_get());
+              flg_prn=True;
+            }
 #endif /* !ENABLE_UDUNITS */
 
             /* Increase array size */
@@ -6364,7 +6368,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   } /* Loop table */
 
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){ 
+  if(nco_dbg_lvl_get() == nco_dbg_old){ 
     (void)fprintf(stdout,"%s: DEBUG %s record dimensions to process: ",nco_prg_nm_get(),fnc_nm);        
     for(int idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
       (void)fprintf(stdout,"#%d<%s/%s> : ",trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,trv_tbl->lmt_rec[idx_rec]->nm);        

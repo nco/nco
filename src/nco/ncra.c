@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.460 2013-11-22 23:37:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.461 2013-11-25 01:07:25 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -173,8 +173,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.460 2013-11-22 23:37:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.460 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.461 2013-11-25 01:07:25 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.461 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -780,7 +780,7 @@ main(int argc,char **argv)
           (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
         } /* !REC_APN */
 
-        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>(%ld)\n",nco_prg_nm_get(),idx_rec,trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl->lmt_rec[idx_rec]->rec_dmn_sz);                    
+        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(fp_stdout,"%s: DEBUG record [%d] #%d<%s>(%ld)\n",nco_prg_nm_get(),idx_rec,trv_tbl->lmt_rec[idx_rec]->id,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl->lmt_rec[idx_rec]->rec_dmn_sz);                    
         /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
         if(FLG_MRO) trv_tbl->lmt_rec[idx_rec]->flg_mro=True;
         if(trv_tbl->lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
