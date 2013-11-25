@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1082 2013-11-25 01:07:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1083 2013-11-25 22:43:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7763,8 +7763,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   /* Insert ensembles (parent group name is key)  */
 
   /* Loop table  */
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_sct trv_1=trv_tbl->lst[idx_tbl];
+  for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl->nbr;idx_tbl_1++){
+    trv_sct trv_1=trv_tbl->lst[idx_tbl_1];
     /* Group (not root, with variables) */
     if(trv_1.nco_typ == nco_obj_typ_grp && trv_1.grp_dpt > 0 && trv_1.nbr_var > 0){     
       /* Export list of variable names for group */
@@ -7775,8 +7775,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       }
 
       /* Loop table  */
-      for(unsigned idx_nsm=0;idx_nsm<trv_tbl->nbr;idx_nsm++){
-        trv_sct trv_2=trv_tbl->lst[idx_nsm];
+      for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl->nbr;idx_tbl_2++){
+        trv_sct trv_2=trv_tbl->lst[idx_tbl_2];
 
         /* Same depth, same number of variables, same parent group */
         if(trv_1.nco_typ == nco_obj_typ_grp && 
@@ -7817,7 +7817,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
               trv_tbl->nsm[trv_tbl->nsm_nbr-1].mbr_end=0;
 
               /* Group (NB: outer loop) is ensemble parent group */
-              trv_tbl->lst[idx_tbl].flg_nsm_prn=True;
+              trv_tbl->lst[idx_tbl_1].flg_nsm_prn=True;
 
               if(nco_dbg_lvl_get() == nco_dbg_old){
                 (void)fprintf(stdout,"%s: DEBUG %s inserted ensemble for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_2.grp_nm_fll_prn);             
@@ -7849,8 +7849,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   /* Insert names in ensembles */
 
   /* Loop table  */
-  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_sct trv_1=trv_tbl->lst[idx_tbl];
+  for(unsigned idx_tbl_1=0;idx_tbl_1<trv_tbl->nbr;idx_tbl_1++){
+    trv_sct trv_1=trv_tbl->lst[idx_tbl_1];
     /* Group (not root, with variables) */
     if(trv_1.nco_typ == nco_obj_typ_grp && trv_1.grp_dpt > 0 && trv_1.nbr_var > 0){
       /* Export list of variable names for group */
@@ -7861,8 +7861,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       }
 
       /* Loop table  */
-      for(unsigned idx_nsm=0;idx_nsm<trv_tbl->nbr;idx_nsm++){
-        trv_sct trv_2=trv_tbl->lst[idx_nsm];
+      for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl->nbr;idx_tbl_2++){
+        trv_sct trv_2=trv_tbl->lst[idx_tbl_2];
 
         /* Same depth, same number of variables, same parent group */
         if(trv_1.nco_typ == nco_obj_typ_grp && 
@@ -7879,17 +7879,17 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
             /* Found common names */
             if (nbr_cmn_nm && nm_lst_1_nbr == nm_lst_2_nbr && nm_lst_1_nbr == nbr_cmn_nm){
 
-              /* Define a list of variables to avoid.. like the plague... these are *NOT* for template definition  */
+              /* Define a list of variables to avoid for template definition */
               (void)nco_nm_skp(nc_id,trv_2.grp_nm_fll,cmn_lst,nbr_cmn_nm,&skp_lst,&nbr_skp_nm,trv_tbl);    
 
               /* Assume not yet inserted in array */
               nco_bool flg_ins=False;
-              /* Loop constructed array to see if already inserted (NB: use ensemble counter nsm_nbr) */
-              for(int idx_nsm=0;idx_nsm<nsm_nbr;idx_nsm++){
-                /* Loop names */
-                for(int idx_nm=0;idx_nm<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_nm++){
+              /* Loop constructed array to see if already inserted  */
+              for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){
+                /* Loop members */
+                for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr++){
                   /* Match */
-                  if(strcmp(trv_tbl->nsm[idx_nsm].mbr[idx_nm].mbr_nm_fll,trv_2.grp_nm_fll) == 0){
+                  if(strcmp(trv_tbl->nsm[idx_nsm].mbr[idx_mbr].mbr_nm_fll,trv_2.grp_nm_fll) == 0){
                     /* Mark as inserted in array */
                     flg_ins=True;
                     break;
@@ -7905,6 +7905,10 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                 trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].mbr_nm_fll=(char *)strdup(trv_2.grp_nm_fll);
                 trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nbr=0;
                 trv_tbl->nsm[nsm_nbr].mbr[mbr_nbr].var_nm_fll=NULL;
+
+                /* Update offsets */
+                trv_tbl->nsm[nsm_nbr].mbr_srt=0;
+                trv_tbl->nsm[nsm_nbr].mbr_end=trv_tbl->nsm[nsm_nbr].mbr_nbr;
 
                 /* Mark variables as ensemble members */
                 for(int idx_var=0;idx_var<nbr_cmn_nm;idx_var++){
@@ -7932,12 +7936,8 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                     trv_tbl->nsm[nsm_nbr].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].grp_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
                     trv_tbl->nsm[nsm_nbr].grp_mbr_fll[mbr_var_nbr]=(char *)strdup(trv_2.grp_nm_fll);
 
-                    /* Update offsets */
-                    trv_tbl->nsm[nsm_nbr].mbr_srt=0;
-                    trv_tbl->nsm[nsm_nbr].mbr_end=mbr_var_nbr+1;
-
-                    /* Mark group as emsemble member */
-                    trv_tbl->lst[idx_nsm].flg_nsm_mbr=True;
+                    /* Mark group as emsemble member (NB: loop 2) */
+                    trv_tbl->lst[idx_tbl_2].flg_nsm_mbr=True;
 
                     /* If not the first group member, then it's not a template */
                     if (mbr_nbr > 0){
@@ -8133,7 +8133,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
             trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_var_nbr]=(char *)strdup(grp_nm_fll);
 
             /* Update offsets */
-            trv_tbl->nsm[idx_nsm].mbr_end=mbr_var_nbr+1;
+            trv_tbl->nsm[idx_nsm].mbr_end=trv_tbl->nsm[idx_nsm].mbr_nbr;
 
             var_nm_fll=(char *)nco_free(var_nm_fll);
             /* Found, exit loop of old ensemble */
