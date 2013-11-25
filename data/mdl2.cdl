@@ -16,43 +16,14 @@ netcdf mdl {
     dimensions:
       time=4;
     variables:
-      float tas(time);
+      float tas1(time);
+	  float tas2(time);
     data:
-      tas=272.3,272.3,272.3,272.3;
+      tas1=272.3,272.3,272.3,272.3;
+	  tas2=272.3,272.3,272.3,272.3;
  
     } // cesm_03
 
-  group: cesm_04 {
-      :Conventions = "CF-1.5";
-      :history = "yada yada yada";
-      :Scenario = "Historical";
-      :Model = "CESM";
-      :Realization = "2";
-      
-    dimensions:
-      time=4;
-    variables:
-      float tas(time);
-    data:
-      tas=272.4,272.4,272.4,272.4;
-      
-    } // cesm_04
-    
-  group: cesm_05 {
-      :Conventions = "CF-1.5";
-      :history = "yada yada yada";
-      :Scenario = "Historical";
-      :Model = "CESM";
-      :Realization = "2";
-      
-    dimensions:
-      time=4;
-    variables:
-      float tas(time);
-    data:
-      tas=272.5,272.5,272.5,272.5;
-      
-    } // cesm_05
     
   } // cesm
   
@@ -68,9 +39,11 @@ netcdf mdl {
     dimensions:
       time=4;
     variables:
-      float tas(time);
+      float tas1(time);
+	  float tas2(time);
     data:
-      tas=273.3,273.3,273.3,273.3;
+      tas1=273.3,273.3,273.3,273.3;
+	  tas2=273.3,273.3,273.3,273.3;
       
     } // ecmwf_03
     
@@ -84,43 +57,13 @@ netcdf mdl {
     dimensions:
       time=4;
     variables:
-      float tas(time);
+      float tas1(time);
+	  float tas2(time);
     data:
-      tas=273.4,273.4,273.4,273.4;
+      tas1=273.4,273.4,273.4,273.4;
+	  tas2=273.4,273.4,273.4,273.4;
       
     } // ecmwf_04
-
-  group: ecmwf_05 {
-      :Conventions = "CF-1.5";
-      :history = "yada yada yada";
-      :Scenario = "Historical";
-      :Model = "ECMWF";
-      :Realization = "2";
-      
-    dimensions:
-      time=4;
-    variables:
-      float tas(time);
-    data:
-      tas=273.5,273.5,273.5,273.5;
-      
-    } // ecmwf_05
-
-  group: ecmwf_06 {
-      :Conventions = "CF-1.5";
-      :history = "yada yada yada";
-      :Scenario = "Historical";
-      :Model = "ECMWF";
-      :Realization = "2";
-      
-    dimensions:
-      time=4;
-    variables:
-      float tas(time);
-    data:
-      tas=273.6,273.6,273.6,273.6;
-      
-    } // ecmwf_06
 
   } // ecmwf
 

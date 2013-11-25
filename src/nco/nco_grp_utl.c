@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1084 2013-11-25 23:16:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1085 2013-11-25 23:51:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8092,6 +8092,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 
             /* Variable ensemble members */
             int mbr_var_nbr=trv_tbl->nsm[idx_nsm].mbr_var_nbr;
+            int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
             trv_tbl->nsm[idx_nsm].mbr_var_nbr++; 
             trv_tbl->nsm[idx_nsm].mbr_nbr++; 
             
@@ -8099,8 +8100,8 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
             trv_tbl->nsm[idx_nsm].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
 
             /* Groups ensemble members */
-            trv_tbl->nsm[idx_nsm].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].grp_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
-            trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_var_nbr]=(char *)strdup(grp_nm_fll);
+            trv_tbl->nsm[idx_nsm].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].grp_mbr_fll,(mbr_nbr+1)*sizeof(char *));
+            trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_nbr]=(char *)strdup(grp_nm_fll);
 
             /* Update offsets */
             trv_tbl->nsm[idx_nsm].mbr_end=trv_tbl->nsm[idx_nsm].mbr_nbr;

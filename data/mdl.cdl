@@ -16,9 +16,11 @@ netcdf mdl {
     dimensions:
       time=4;
     variables:
-      float tas(time);
+      float tas1(time);
+	  float tas2(time);
     data:
-      tas=272.1,272.1,272.1,272.1;
+      tas1=272.1,272.1,272.1,272.1;
+	  tas2=272.1,272.1,272.1,272.1;
  
     } // cesm_01
 
@@ -32,9 +34,11 @@ netcdf mdl {
     dimensions:
       time=4;
     variables:
-      float tas(time);
+      float tas1(time);
+	  float tas2(time);
     data:
-      tas=272.2,272.2,272.2,272.2;
+      tas1=272.2,272.2,272.2,272.2;
+	  tas2=272.2,272.2,272.2,272.2;
       
     } // cesm_02
     
@@ -52,9 +56,11 @@ netcdf mdl {
     dimensions:
       time=4;
     variables:
-      float tas(time);
+      float tas1(time);
+	  float tas2(time);
     data:
-      tas=273.1,273.1,273.1,273.1;
+      tas1=273.1,273.1,273.1,273.1;
+	  tas2=273.1,273.1,273.1,273.1;
       
     } // ecmwf_01
     
@@ -68,9 +74,11 @@ netcdf mdl {
     dimensions:
       time=4;
     variables:
-      float tas(time);
+      float tas1(time);
+	  float tas2(time);
     data:
-      tas=273.2,273.2,273.2,273.2;
+      tas1=273.2,273.2,273.2,273.2;
+	  tas2=273.2,273.2,273.2,273.2;
       
     } // ecmwf_02
 
