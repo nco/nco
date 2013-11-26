@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.642 2013-11-20 23:57:34 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.643 2013-11-26 00:42:16 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -10,7 +10,7 @@ nces will debut at AGU (Friday 12/13 11:35 AM Moscone West 2010).
 nces is for netCDF Ensemble Statistics.
 nces comprises the existing functionality of ncea and extends it by
 allowing groups to be treated as an unlimited dimension of datasets.   
-nces is really ncea with a new and powerful feature and a new name.
+nces is really ncea with a powerful new feature and a new name.
 See below for more info on the feature. Regarding the name...
 
 We renamed ncea as nces to more accurately describe the operator.
@@ -86,12 +86,13 @@ BUG FIXES:
 A. Correct XML-mode issues, many reported by Aleksandar Jelenak 
    1. Print </variable> in metadata mode
    2. Adds type="typ_nm" attribute to non-string attribute elements
-   3. Add separator=", " element when separator is not whitespace
+   3. Add separator="foo" element when separator is not whitespace
    4. Fix int64-type printing
    5. Use NcML not CDL type names
    6. Add hidden _Unsigned attribute for unsigned types
    7. Add hidden _FillValue attribute for unsigned types
    8. Do not print underscores for missing data in XML mode
+   9. Add shape="" to scalar variables (cough, cough)
 
 KNOWN ISSUES NOT YET FIXED:
 
