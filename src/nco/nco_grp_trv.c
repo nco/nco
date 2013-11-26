@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.248 2013-11-25 23:16:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.249 2013-11-26 22:28:06 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -590,7 +590,7 @@ nco_trv_hsh_bld /* Hash traversal table for fastest access */
      Time-expense of bruit-force searches is O(n)
      This method is therefore more robust yet much slower than hashes
      2. Hash table: (new method)
-     Add each object to hash table on creation by calling nco_trv_hsh_bld() from nco_blr_trv_tbl()
+     Add each object to hash table on creation by calling nco_trv_hsh_bld() from nco_bld_trv_tbl()
      This generates hash table as string-keyed hash with object's full-name as key
      Then, as needed, pass key to hash table to retrieve desired object
      This method does not depend on traversal table remaining in same order as when keys were generated
