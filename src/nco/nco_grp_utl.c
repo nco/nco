@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1085 2013-11-25 23:51:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1086 2013-11-26 02:08:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8091,20 +8091,37 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
             char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,nm_lst_1[idx_var]);
 
             /* Variable ensemble members */
-            int mbr_var_nbr=trv_tbl->nsm[idx_nsm].mbr_var_nbr;
-            int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
-            trv_tbl->nsm[idx_nsm].mbr_var_nbr++; 
-            trv_tbl->nsm[idx_nsm].mbr_nbr++; 
-            
+            int mbr_var_nbr=trv_tbl->nsm[idx_nsm].mbr_var_nbr;          
+            trv_tbl->nsm[idx_nsm].mbr_var_nbr++;   
             trv_tbl->nsm[idx_nsm].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
             trv_tbl->nsm[idx_nsm].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
 
             /* Groups ensemble members */
-            trv_tbl->nsm[idx_nsm].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].grp_mbr_fll,(mbr_nbr+1)*sizeof(char *));
-            trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_nbr]=(char *)strdup(grp_nm_fll);
 
-            /* Update offsets */
-            trv_tbl->nsm[idx_nsm].mbr_end=trv_tbl->nsm[idx_nsm].mbr_nbr;
+            /* We detected variables, for groups detect duplicate insertions */
+
+            /* Assume not yet inserted in array */
+            nco_bool flg_ins=False;
+
+            /* Loop constructed array to see if already inserted  */
+            for(int idx_mbr1=0;idx_mbr1<trv_tbl->nsm[idx_nsm].mbr_nbr;idx_mbr1++){
+              /* Match */
+              if(strcmp(trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr1],grp_nm_fll) == 0){
+                /* Mark as inserted in array */
+                flg_ins=True;
+                break;
+              }  /* Match */
+            } /* Loop constructed array to see if already inserted  */
+
+            /* Not inserted */
+            if (!flg_ins){
+              int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
+              trv_tbl->nsm[idx_nsm].grp_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[idx_nsm].grp_mbr_fll,(mbr_nbr+1)*sizeof(char *));
+              trv_tbl->nsm[idx_nsm].grp_mbr_fll[mbr_nbr]=(char *)strdup(grp_nm_fll);
+              trv_tbl->nsm[idx_nsm].mbr_nbr++; 
+              /* Update offsets */
+              trv_tbl->nsm[idx_nsm].mbr_end=trv_tbl->nsm[idx_nsm].mbr_nbr;
+            } /* Not inserted */
 
             var_nm_fll=(char *)nco_free(var_nm_fll);
             /* Found, exit loop of old ensemble */

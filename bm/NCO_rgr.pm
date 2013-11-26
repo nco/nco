@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.373 2013-11-25 23:51:20 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.374 2013-11-26 02:08:08 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -926,15 +926,13 @@ print "\n";
 	
 #nces #04
 #ncra -Y nces -O mdl.nc mdl2.nc out.nc
-	if (0) {
     $tst_cmd[0]="ncra -Y nces $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -g cesm -v tas1 %tmp_fl_00%";
+    $tst_cmd[1]="ncks -g ecmwf -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) 2 files ensembles";
     $tst_cmd[2]="time[3] tas1[3]=273.25";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-	}
 
      } # #### Group tests	
 
