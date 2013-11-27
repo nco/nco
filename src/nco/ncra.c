@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.462 2013-11-26 22:23:50 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.463 2013-11-27 23:00:14 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -53,10 +53,6 @@
 
    ncra -Y nces -O -p ~/nco/data mdl.nc ~/foo.nc
    ncra -Y nces -O --nsm_sfx=_avg -p ~/nco/data mdl.nc ~/foo.nc */
-
-#if 1
-#define VAR_TMP
-#endif 
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -169,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.462 2013-11-26 22:23:50 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.462 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.463 2013-11-27 23:00:14 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.463 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1089,22 +1085,11 @@ main(int argc,char **argv)
               continue;
             }
 
+            /* Build new variable name */
             char *grp_nm_fll=trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]; 
+            char *var_nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);;
+            char *nm_fll=strdup(var_prc[idx_prc]->nm_fll);
 
-#ifdef VAR_TMP
-            /* Use the a temporary variable with replaced name */
-            var_sct *var_tmp=nco_var_dpl(var_prc[idx_prc]);
-
-            /* Replace the template variable name with the member variable name */
-            var_tmp->nm_fll=(char *)nco_free(var_tmp->nm_fll);
-            var_tmp->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm); 
-            (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_tmp->nm_fll); 
-
-            /* Obtain group ID using full group name */
-            (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);
-            (void)nco_var_mtd_refresh(grp_id,var_tmp);
-
-#else /* VAR_TMP */
             var_prc[idx_prc]->nm_fll=(char *)nco_free(var_prc[idx_prc]->nm_fll);
             var_prc[idx_prc]->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);
             (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_prc[idx_prc]->nm_fll); 
@@ -1112,28 +1097,7 @@ main(int argc,char **argv)
             /* Obtain group ID using full group name */
             (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);
             (void)nco_var_mtd_refresh(grp_id,var_prc[idx_prc]);
-#endif /* VAR_TMP */
 
-#ifdef VAR_TMP
-            /* Retrieve variable from disk into memory. NB: Using table in file loop */
-            (void)nco_msa_var_get_trv(in_id,var_tmp,trv_tbl1);
-
-            /* Convert char, short, long, int types to doubles before arithmetic
-            Output variable type is "sticky" so only convert on first member */
-            if(fl_idx == 0 && idx_mbr == 0) var_prc_out[idx_prc]=nco_typ_cnv_rth(var_prc_out[idx_prc],nco_op_typ);
-            var_tmp=nco_var_cnf_typ(var_prc_out[idx_prc]->type,var_tmp);
-            /* Perform arithmetic operations: avg, min, max, ttl, ... */
-            nco_opr_drv(fl_idx+idx_mbr,nco_op_typ,var_tmp,var_prc_out[idx_prc]);
-            FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
-
-            /* Transfer the tally to the template, since the dummy is going to be deleted... software enginnering at its best */
-            var_prc[idx_prc]->tally=(long *)nco_free(var_prc[idx_prc]->tally);
-            var_prc[idx_prc]->tally=(long *)nco_malloc(var_prc[idx_prc]->sz*sizeof(long));
-            (void)memcpy((void *)var_prc[idx_prc]->tally,(void *)var_tmp->tally,var_tmp->sz /* tally size? */ *sizeof(long));
-            /* Free temporary variable */
-            var_tmp=(var_sct *)nco_var_free(var_tmp); 
-
-#else /* VAR_TMP */
             /* Retrieve variable from disk into memory. NB: Using table in file loop */
             (void)nco_msa_var_get_trv(in_id,var_prc[idx_prc],trv_tbl1);
 
@@ -1145,10 +1109,16 @@ main(int argc,char **argv)
             nco_opr_drv(fl_idx+idx_mbr,nco_op_typ,var_prc[idx_prc],var_prc_out[idx_prc]);
             FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
-#endif /* VAR_TMP */
+            /* Put old name back */
+            var_prc[idx_prc]->nm_fll=(char *)nco_free(var_prc[idx_prc]->nm_fll);
+            var_prc[idx_prc]->nm_fll=strdup(nm_fll);
 
             /* Free current input buffer */
             var_prc[idx_prc]->val.vp=nco_free(var_prc[idx_prc]->val.vp);
+
+            /* Free built variable name */
+            var_nm_fll=(char *)nco_free(var_nm_fll);
+            nm_fll=(char *)nco_free(nm_fll);
 
           } /* end loop over var_prc */
         } /* end loop over mbr */
