@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.160 2013-11-06 01:37:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.161 2013-12-01 23:54:39 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -897,14 +897,14 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   /* Find operation type for each variable: for now this is either fix or prc */
   for(idx=0;idx<nbr_var;idx++){
 
-    /* nces case */
-    if (nco_prg_id == nces){
+    /* ncge case */
+    if (nco_prg_id == ncge){
       /* Mark all variables as fixed and later detect ensemble variable in table to mark as processed */
       var_op_typ[idx]=fix_typ;
     }else{
       /* Initialize operation type to processed. Change to fixed where warranted later. */
       var_op_typ[idx]=prc_typ;
-    } /* ! nces case */
+    } /* ! ncge case */
 
     var_nm=var[idx]->nm;
     var_typ=var[idx]->type;
@@ -948,7 +948,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncra:
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix_typ;
       break;
-    case nces:
+    case ncge:
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var[idx]->nm_fll,trv_tbl);
       /* If variable is template, mark as processed */
@@ -1078,7 +1078,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
   /* fxm: Remove ncap exception when finished with ncap list processing */
   /* fxm: ncpdq processes all variables when packing requested */
-  if(*nbr_var_prc == 0 && nco_prg_id != ncap && nco_prg_id != ncpdq && nco_prg_id != nces){
+  if(*nbr_var_prc == 0 && nco_prg_id != ncap && nco_prg_id != ncpdq && nco_prg_id != ncge){
     (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",nco_prg_nm_get());
     switch(nco_prg_id){
     case ncap:

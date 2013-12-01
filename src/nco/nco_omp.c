@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.60 2013-10-30 03:39:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.61 2013-12-01 23:54:39 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -141,7 +141,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     case ncra:
     case ncrename: 
     case ncwa: 
-    case nces:
+    case ncge:
       thr_nbr_max_fsh=4;
       break;
     default: nco_dfl_case_prg_id_err(); break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.436 2013-11-24 23:05:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.437 2013-12-01 23:54:39 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -524,7 +524,7 @@ nco_is_mfo /* [fnc] Query whether program is multi-file operator */
   case ncecat: 
   case ncra:
   case ncrcat: 
-  case nces: 
+  case ncge: 
     return True;
     break;
   case ncap: 
@@ -564,7 +564,7 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
   case ncflint:
   case ncra:
   case ncwa:
-  case nces:
+  case ncge:
     return True;
     break;
   case ncatted: 
@@ -604,7 +604,7 @@ nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmeti
   case ncap: 
   case ncbo:
   case ncea:
-  case nces:
+  case ncge:
   case ncflint:
     return True;
     break;
@@ -852,8 +852,8 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   /* ncecat and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncecat")){*prg_lcl=ncecat;}
   else if(!strcmp(nm_out_tmp,"mpncecat")){*prg_lcl=ncecat;}
-  /* nces and acceptable synonyms (symbolic links): */
-  else if(!strcmp(nm_out_tmp,"nces")){*prg_lcl=nces;}
+  /* ncge and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncge")){*prg_lcl=ncge;}
   /* ncflint and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncflint")){*prg_lcl=ncflint;}
   else if(!strcmp(nm_out_tmp,"mpncflint")){*prg_lcl=ncflint;}

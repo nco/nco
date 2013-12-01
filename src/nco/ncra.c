@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.463 2013-11-27 23:00:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.464 2013-12-01 23:54:39 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
@@ -51,8 +51,8 @@
    ncea -O -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
    ncea -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc
 
-   ncra -Y nces -O -p ~/nco/data mdl.nc ~/foo.nc
-   ncra -Y nces -O --nsm_sfx=_avg -p ~/nco/data mdl.nc ~/foo.nc */
+   ncra -Y ncge -O -p ~/nco/data mdl.nc ~/foo.nc
+   ncra -Y ncge -O --nsm_sfx=_avg -p ~/nco/data mdl.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.463 2013-11-27 23:00:14 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.463 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.464 2013-12-01 23:54:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.464 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -604,8 +604,8 @@ main(int argc,char **argv)
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
 
-  /* Store nces ensemble suffix in table */
-  if(nco_prg_id == nces && nsm_sfx) trv_tbl->nsm_sfx=nsm_sfx;
+  /* Store ncge ensemble suffix in table */
+  if(nco_prg_id == ncge && nsm_sfx) trv_tbl->nsm_sfx=nsm_sfx;
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -706,13 +706,13 @@ main(int argc,char **argv)
       /* Allocate space for only one record */
       var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
     } /* endif */
-    if(nco_prg_id == ncra || nco_prg_id == ncea || nco_prg_id == nces){
+    if(nco_prg_id == ncra || nco_prg_id == ncea || nco_prg_id == ncge){
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
       var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
-      if(nco_prg_id == ncea || nco_prg_id == nces){
+      if(nco_prg_id == ncea || nco_prg_id == ncge){
         (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
         (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
-      } /* end if ncea || nces */
+      } /* end if ncea || ncge */
     } /* end if */
   } /* end loop over idx */
 
@@ -735,11 +735,11 @@ main(int argc,char **argv)
     for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,in_id_arr+thr_idx);
     in_id=in_id_arr[0];
 
-    /* Do nces ensemble refresh */
-    if(nco_prg_id == nces){
+    /* Do ncge ensemble refresh */
+    if(nco_prg_id == ncge){
       /* Refresh ensembles */
       if(fl_idx > 0) (void)nco_nsm_ncr(in_id,nbr_var_prc,var_prc,trv_tbl);         
-    } else { /* ! nces */
+    } else { /* ! ncge */
       /* Variables may have different ID, missing_value, type, in each file */
       for(idx=0;idx<nbr_var_prc;idx++){
         /* Obtain variable GTT object using full variable name */
@@ -748,9 +748,9 @@ main(int argc,char **argv)
         (void)nco_inq_grp_full_ncid(in_id,trv->grp_nm_fll,&grp_id);
         (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
       } /* end loop over variables */
-    } /* ! nces */
+    } /* ! ncge */
 
-    if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncea and nces jump to else branch */
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncea and ncge jump to else branch */
 
       /* Loop over number of records to process */
       for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
@@ -1050,7 +1050,7 @@ main(int argc,char **argv)
         var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
       } /* end (OpenMP parallel for) loop over idx */
       /* End ncea section */
-    }else if(nco_prg_id == nces){ /* nces */
+    }else if(nco_prg_id == ncge){ /* ncge */
 
       trv_tbl_sct *trv_tbl1;    /* [lst] Traversal table (needed for multi-file cases)  */
 
@@ -1127,7 +1127,7 @@ main(int argc,char **argv)
 
       (void)trv_tbl_free(trv_tbl1);
 
-    } /* End nces section */
+    } /* End ncge section */
 
     if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
 
@@ -1160,7 +1160,7 @@ main(int argc,char **argv)
   except ncra normalizes after every DRN records, while ncea normalizes once, after all files.
   Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
   In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
-  FLG_BFR_NRM is always true here for ncea and nces */
+  FLG_BFR_NRM is always true here for ncea and ncge */
   if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True,(char *)NULL,(trv_tbl_sct *)NULL);
 
   /* Manually fix YYMMDD date which was mangled by averaging */
@@ -1170,15 +1170,15 @@ main(int argc,char **argv)
   NB: nco_cnv_arm_time_install() contains OpenMP critical region */
   if(CNV_ARM && nco_prg_id == ncrcat) (void)nco_cnv_arm_time_install(grp_out_id,base_time_srt,dfl_lvl);
 
-  /* Copy averages to output file for ncea and nces always and for ncra when trailing file(s) was/were superfluous */
+  /* Copy averages to output file for ncea and ncge always and for ncra when trailing file(s) was/were superfluous */
   if(FLG_BFR_NRM){
     for(idx=0;idx<nbr_var_prc;idx++){
 
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var_prc_out[idx]->nm_fll,trv_tbl);
 
-      /* For nces, group to save is ensemble parent group */
-      if(nco_prg_id == nces){
+      /* For ncge, group to save is ensemble parent group */
+      if(nco_prg_id == ncge){
 
         /* Check if suffix needed. Appends to default name */
         if(trv_tbl->nsm_sfx){
@@ -1211,10 +1211,10 @@ main(int argc,char **argv)
       /* Memory management after current extracted group */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
     } /* end loop over idx */
-  } /* end if ncea and nces */
+  } /* end if ncea and ncge */
 
   /* Free averaging and tally buffers */
-  if(nco_prg_id == ncra || nco_prg_id == ncea || nco_prg_id == nces){
+  if(nco_prg_id == ncra || nco_prg_id == ncea || nco_prg_id == ncge){
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(idx) shared(nbr_var_prc,nco_op_typ,var_prc,var_prc_out)
 #endif /* !_OPENMP */

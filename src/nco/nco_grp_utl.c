@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1086 2013-11-26 02:08:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1087 2013-12-01 23:54:39 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1492,8 +1492,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         /* Obtain group ID from netCDF API using full group name */
         (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
 
-        /* nces case */ 
-        if(nco_prg_id_get() == nces ){ 
+        /* ncge case */ 
+        if(nco_prg_id_get() == ncge ){ 
 
           /* Is ensemble parent group */
           if(grp_trv.flg_nsm_prn){
@@ -1516,9 +1516,9 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
           } /* ! Ensemble parent group */
 
         }else {
-          /* Non nces case: Edit group name for output */
+          /* Non ncge case: Edit group name for output */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
-        } /* !nces */
+        } /* !ncge */
 
         /* If output group does not exist, create it */
         if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
@@ -1547,8 +1547,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       /* Obtain group ID using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-      /* nces */
-      if(nces == nco_prg_id_get()){
+      /* ncge */
+      if(nco_prg_id_get() == ncge){
         /* If variable is an ensemble member, do not create it in the same location as input */
         if (var_trv.flg_nsm_mbr == True){
           
@@ -1570,20 +1570,20 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       }else {
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
-      } /* !nces */
+      } /* !ncge */
 
       /* If output group does not exist, create it */
       if(nco_inq_grp_full_ncid_flg(nc_out_id,grp_out_fll,&grp_out_id)) nco_def_grp_full(nc_out_id,grp_out_fll,&grp_out_id);
 
-      /* nces */
-      if(nces == nco_prg_id_get()){
+      /* ncge */
+      if(nco_prg_id_get() == ncge){
         /* Is requested variable in output file? */
         int rcd=nco_inq_varid_flg(grp_out_id,var_trv.nm,&var_out_id);
         /* Yes, get out of dodge... this is just to avoid GPE failure on duplicate definition */
         if (rcd == 0){
           continue;
         }
-      } /* nces */
+      } /* ncge */
 
       /* Detect duplicate GPE names in advance, then exit with helpful error */
       if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
@@ -1998,12 +1998,12 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;/* [enm] (For variables only) NetCDF type  */  
   trv_tbl->lst[idx].enm_prc_typ=err_typ;          /* [enm] (For variables only) Processing type enumerator  */  
   trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; /* [enm] (For variables only) NetCDF type in output file (used by ncflint, ncpdq)  */
-  if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (nces) Parent group full name */         
+  if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (ncge) Parent group full name */         
   else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
-  trv_tbl->lst[idx].flg_nsm_prn=False;            /* [flg] (nces) Group is, or variable is in, ensemble parent group */
-  trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] (nces ) Group is, or variable is in, ensemble member group */  
+  trv_tbl->lst[idx].flg_nsm_prn=False;            /* [flg] (ncge) Group is, or variable is in, ensemble parent group */
+  trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] (ncge ) Group is, or variable is in, ensemble member group */  
   trv_tbl->lst[idx].flg_nsm_tpl=False;            /* [flg] Group is, or variable is in, template member group */
-  trv_tbl->lst[idx].nsm_nm=NULL;                  /* [sng] (nces) Ensemble parent group name i.e., full path to ensemble parent */ 
+  trv_tbl->lst[idx].nsm_nm=NULL;                  /* [sng] (ncge) Ensemble parent group name i.e., full path to ensemble parent */ 
 
   /* Variable dimensions  */
   for(int idx_dmn_var=0;idx_dmn_var<NC_MAX_DIMS;idx_dmn_var++){
@@ -2093,7 +2093,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_typ=var_typ; 
     trv_tbl->lst[idx].enm_prc_typ=err_typ;
     trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; 
-    if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (nces) Parent group full name */         
+    if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (ncge) Parent group full name */         
     else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
     trv_tbl->lst[idx].flg_nsm_prn=False;
     trv_tbl->lst[idx].flg_nsm_mbr=False;
@@ -3330,7 +3330,7 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
      
       /* If variable is an ensemble member, do not create it in the same location as input */
       if (var_trv.flg_nsm_mbr == True){
-        assert(nco_prg_id_get() == nces);
+        assert(nco_prg_id_get() == ncge);
         continue;
       }
 
@@ -4443,7 +4443,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Test group existence before testing dimension existence */
 
     /* Determine where to place new dimension in output file */
-    if(nco_prg_id == nces){
+    if(nco_prg_id == ncge){
       grp_dmn_out_fll=(char *)strdup(grp_out_fll);
     }else{
       if(gpe) grp_dmn_out_fll=nco_gpe_evl(gpe,dmn_trv->grp_nm_fll); else grp_dmn_out_fll=(char *)strdup(dmn_trv->grp_nm_fll);
@@ -6256,7 +6256,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
   /* Used only by ncra */
-  assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncea || nco_prg_id_get() == nces);
+  assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncea || nco_prg_id_get() == ncge);
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -6526,7 +6526,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_trv_hsh_bld(trv_tbl);
 
   /* Build ensembles */
-  if(nco_prg_id_get() == nces) (void)nco_bld_nsm(nc_id,trv_tbl);
+  if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,trv_tbl);
 
 } /* nco_bld_trv_tbl() */
 

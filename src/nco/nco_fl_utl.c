@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.226 2013-11-11 04:57:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.227 2013-12-01 23:54:39 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -381,7 +381,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncea:
   case ncrcat:
   case ncecat:
-  case nces:
+  case ncge:
     /* Operators with multiple fl_in and required fl_out */
     if(psn_arg_nbr < 2-psn_arg_fst){
 

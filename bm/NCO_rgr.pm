@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.374 2013-11-26 02:08:08 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.375 2013-12-01 23:54:39 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -885,17 +885,17 @@ print "\n";
 	
 	
 ####################
-#### nces tests #### 
+#### ncge tests #### 
 ####################
-    $opr_nm='nces';  
+    $opr_nm='ncge';  
 ####################	
 
      #### Group tests 
 	if($HAVE_NETCDF4_H == 1){
 	
-#nces #01
+#ncge #01
 	
-    $tst_cmd[0]="ncra -Y nces $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g cesm -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) 1 file mdl.cdl ensemble";
     $tst_cmd[2]="time[3] tas1[3]=272.15";
@@ -903,9 +903,9 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#nces #02
+#ncge #02
 	
-    $tst_cmd[0]="ncra -Y nces $omp_flg -h -O --nsm_sfx=_avg $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O --nsm_sfx=_avg $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g cesm_avg -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) 1 file mdl.cdl --nsm_sfx suffix ensemble";
     $tst_cmd[2]="time[3] tas1[3]=272.15";
@@ -913,10 +913,10 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-#nces #03
-# ncra -Y nces -h -O -G /gpe_grp mdl.nc out.nc
+#ncge #03
+# ncra -Y ncge -h -O -G /gpe_grp mdl.nc out.nc
 	
-    $tst_cmd[0]="ncra -Y nces $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g /gpe_grp/ecmwf -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) GPE 1 file mdl.cdl ensemble";
     $tst_cmd[2]="time[3] tas1[3]=273.15";
@@ -924,9 +924,9 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#nces #04
-#ncra -Y nces -O mdl.nc mdl2.nc out.nc
-    $tst_cmd[0]="ncra -Y nces $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
+#ncge #04
+#ncra -Y ncge -O mdl.nc mdl2.nc out.nc
+    $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g ecmwf -v tas1 %tmp_fl_00%";
     $dsc_sng="(Groups) 2 files ensembles";
     $tst_cmd[2]="time[3] tas1[3]=273.25";

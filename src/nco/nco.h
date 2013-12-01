@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.438 2013-11-24 04:05:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.439 2013-12-01 23:54:39 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -371,7 +371,7 @@ extern "C" {
     ncrcat,
     ncrename,
     ncwa,
-    nces, /* 20131018: Potential new operator */
+    ncge, /* 20131018: Potential new operator */
     ncmv /* 20131018: Potential new operator */
   }; /* end nco_prg_id enum */
   
@@ -834,14 +834,14 @@ extern "C" {
     nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimensions (ncpdq) */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
-    char *grp_nm_fll_prn;             /* [sng] (nces) Parent group full name */
+    char *grp_nm_fll_prn;             /* [sng] (ncge) Parent group full name */
     /* Good hash, dude */
     UT_hash_handle hh;                /* [sct] Handle for hash table */
     char *hsh_key;                    /* [sng] Hash key (must be unique!) */
-    nco_bool flg_nsm_prn;             /* [flg] (nces) Group is ensemble parent group */
-    nco_bool flg_nsm_mbr;             /* [flg] (nces) Variable or group is ensemble member */
-    nco_bool flg_nsm_tpl;             /* [flg] (nces) Variable is template */
-    char *nsm_nm;                     /* [sng] (nces) Ensemble parent group name i.e., full path to ensemble parent */ 
+    nco_bool flg_nsm_prn;             /* [flg] (ncge) Group is ensemble parent group */
+    nco_bool flg_nsm_mbr;             /* [flg] (ncge) Variable or group is ensemble member */
+    nco_bool flg_nsm_tpl;             /* [flg] (ncge) Variable is template */
+    char *nsm_nm;                     /* [sng] (ncge) Ensemble parent group name i.e., full path to ensemble parent */ 
   } trv_sct;
 
   /* Fill actual value of dmn_sct structure in nco_dmn_fll()
@@ -867,14 +867,14 @@ extern "C" {
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
 
-  /* Ensemble group structure (nces). It contains a name for the group (e.g /cesm/cesm_01) and a list of variables for the group */
+  /* Ensemble group structure (ncge). It contains a name for the group (e.g /cesm/cesm_01) and a list of variables for the group */
   typedef struct{
     char *mbr_nm_fll;       /* [sng] Goup full name */ 
     char **var_nm_fll;      /* [sng] List of full variable names for this group (e.g /cesm/cesm_01/tas) */
     int var_nbr;            /* [nbr] Number of variable for this group (size of above array) */ 
   } nsm_grp_sct; 
 
-  /* Ensemble (nces) */
+  /* Ensemble (ncge) */
   typedef struct{
     char *grp_nm_fll_prn;   /* [sng] Parent group full name (key for ensemble) (e.g /cesm) */
     nsm_grp_sct *mbr;       /* [sng] List of ensemble group member structs (size is mbr_nbr) */
@@ -900,9 +900,9 @@ extern "C" {
     int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate dimensions (size of above array) */
     lmt_sct **lmt_rec;      /* [sct] (ncra) Record dimensions */
     int nbr_rec;            /* [sct] (ncra) Number of record dimensions (size of above array) */
-    int nsm_nbr;            /* [nbr] (nces) Number of ensembles (i.e., number in first file) */ 
-    nsm_sct *nsm;           /* [lst] (nces) List of ensembles (size is nsm_nbr) */ 
-    char *nsm_sfx;          /* [sng] (nces) Ensemble suffix (e.g /cesm + _avg). Store here instead of passing as function parameters (nces only) */
+    int nsm_nbr;            /* [nbr] (ncge) Number of ensembles (i.e., number in first file) */ 
+    nsm_sct *nsm;           /* [lst] (ncge) List of ensembles (size is nsm_nbr) */ 
+    char *nsm_sfx;          /* [sng] (ncge) Ensemble suffix (e.g /cesm + _avg). Store here instead of passing as function parameters (ncge only) */
   } trv_tbl_sct;
  
   /* GPE duplicate name check structure */
