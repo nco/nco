@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1255 2013-12-02 01:05:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1256 2013-12-02 20:48:45 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -601,7 +601,7 @@ nco1028. ncap2: create maintainable list of reserved words and put in manual
 nco1033. ncrcat: warn when first file has more variables than subsequent files
 nco1035. rewrite nco_var_cnf_typ() to use default rather than truncated missing values
 nco1036. ncks: implement rew's copy workaround in nco_cpy_var_val()
-nco1037. nco: support NaN's in math, comparison, averagers following template in NC_FLOAT in nco_var_avg() using isnormal()
+nco1037. nco: support NaN's in math, comparison, averagers following template in NC_FLOAT in nco_var_avg() using isfinite()
          ncwa -O -v nan_arr ~/nco/data/in.nc ~/foo.nc;ncks -C -m -H -v nan_arr ~/foo.nc
          ncatted -O -D 3 -a _FillValue,nan_arr,o,f,1.0e36 ~/nco/data/in.nc ~/foo.nc;ncks -C -m -H -v nan_arr ~/foo.nc
          ncks -C -H -v nan_arr,nan_scl ~/nco/data/in.nc

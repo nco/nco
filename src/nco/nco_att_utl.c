@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.163 2013-11-19 11:17:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.164 2013-12-02 20:48:45 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -155,17 +155,17 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
       /*    case NC_FLOAT: for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;} break;*/
       /*    case NC_DOUBLE: for(idx=0L;idx<var_sz;idx++) {if(var_val.dp[idx] == *mss_val_crr.dp) var_val.dp[idx]=*mss_val_new.dp;} break;*/
     case NC_FLOAT: 
-      if(isnormal(*mss_val_crr.fp)){
+      if(isfinite(*mss_val_crr.fp)){
 	for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;}
-      }else{ /* Old missing value is NaN-like so comparisons to it are always false---must use macros */
-	for(idx=0L;idx<var_sz;idx++) {if(!isnormal(var_val.fp[idx])) {var_val.fp[idx]=*mss_val_new.fp;}}
+      }else{ /* Old missing value is NaN-like so arithmetic comparisons are always false---must use macros */
+	for(idx=0L;idx<var_sz;idx++) {if(!isfinite(var_val.fp[idx])) var_val.fp[idx]=*mss_val_new.fp;}
       } /* endif NaN */
       break;
     case NC_DOUBLE:
-      if(isnormal(*mss_val_crr.dp)){
+      if(isfinite(*mss_val_crr.dp)){
 	for(idx=0L;idx<var_sz;idx++) {if(var_val.dp[idx] == *mss_val_crr.dp) var_val.dp[idx]=*mss_val_new.dp;}
-      }else{ /* Old missing value is NaN-like so comparisons to it are always false---must use macros */
-	for(idx=0L;idx<var_sz;idx++) {if(!isnormal(var_val.dp[idx])){var_val.dp[idx]=*mss_val_new.dp;}}
+      }else{ /* Old missing value is NaN-like so arithmetic comparisons are always false---must use macros */
+	for(idx=0L;idx<var_sz;idx++) {if(!isfinite(var_val.dp[idx])) var_val.dp[idx]=*mss_val_new.dp;}
       } /* endif NaN */
       break;
     case NC_INT: for(idx=0L;idx<var_sz;idx++) {if(var_val.ip[idx] == *mss_val_crr.ip) var_val.ip[idx]=*mss_val_new.ip;} break;

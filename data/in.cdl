@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.178 2013-11-13 20:31:34 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.179 2013-12-02 20:48:45 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -345,8 +345,8 @@ variables:
 	nan_arr:note4 = "If your NCO build fails because your version of netCDF does not support nan, then cd to the directory that contains the file nco/data/in.cdl and run the command in note5 first and then try to build again";
 	nan_arr:note5 = "sed -e 's/nan;/1.0f;/' in.cdl > foo.cdl;ncgen -b -o in.nc foo.cdl";
 	nan_arr:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
-//	nan_arr:_FillValue = nan;
-	nan_arr:_FillValue = 1.0f;
+	nan_arr:_FillValue = nan;
+	//	nan_arr:_FillValue = 1.0f;
 
 	float nan_scl;
 	nan_scl:long_name = "Intended for scalar representation of IEEE NaN";
@@ -354,8 +354,8 @@ variables:
 	nan_scl:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";
 	nan_scl:note3 = "20120625 netCDF ncgen on netCDF 4.1.1 on apparently chokes on variable/attribute values of nan";
 	nan_scl:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
-//	nan_scl:_FillValue = nan;
-	nan_scl:_FillValue = 1.0f;
+	// nan_scl:_FillValue = nan;
+        nan_scl:_FillValue = 1.0f;
 
 	float nm_spc;
 	nm_spc:long_name = "Variable name with space (invalid)";
@@ -1139,8 +1139,8 @@ data:
 	mss_val_all=1.0e36,1.0e36,1.0e36,1.0e36;
 	mss_val_fst=-999,73,-999,73;
 	mss_val_scl=1.0e36;
-//	nan_arr=1,nan;
-	nan_arr=1,73;
+	nan_arr=0,nan;
+	//	nan_arr=0,73;
 //	nan_scl=nan;
 	nan_scl=1;
 	negative_one=-1.;

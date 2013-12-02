@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.73 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.74 2013-12-02 20:48:45 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -482,7 +482,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
         tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
-      if(isnormal(mss_val_flt)){
+      if(isfinite(mss_val_flt)){
         for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
           const long blk_off=idx_op2*sz_blk;
           for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
@@ -500,7 +500,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
           for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
             idx_op1=blk_off+idx_blk;
             /* Missing value is NaN-like so comparisons to it are always false---must use macros */
-            if(isnormal(op1.fp[idx_op1])){
+            if(isfinite(op1.fp[idx_op1])){
               op2.fp[idx_op2]+=op1.fp[idx_op1];
               tally[idx_op2]++;
             } /* end if */
@@ -520,7 +520,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
           tally[idx_op2]=sz_blk;
         } /* end loop over idx_op2 */
       }else{
-        if(isnormal(mss_val_flt)){
+        if(isfinite(mss_val_flt)){
           for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
             for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
               if(op1_2D[idx_op2][idx_blk] != mss_val_flt){
@@ -533,7 +533,7 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
         }else{ /* Missing value exists and is NaN-like */
           for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
             for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-              if(isnormal(op1_2D[idx_op2][idx_blk])){
+              if(isfinite(op1_2D[idx_op2][idx_blk])){
                 op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
                 tally[idx_op2]++;
               } /* end if */
