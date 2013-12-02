@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.645 2013-12-02 19:08:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.646 2013-12-02 20:14:49 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -17,7 +17,7 @@ We renamed ncea as nces to more accurately describe the operator.
 For historical reasons, NCO is full of misnamed operators:
 NCO itself is misnamed because the operators now work well on HDF (4
 and 5) files, not just netCDF files. We tried to change their name
-to SDO (Scientific Data Operators) but the name wouldn't stick.
+to SDO (Scientific Data Operators) but the new name didn't stick.
 And the "averagers" (ncea, ncra, ncwa) are all misnamed because they
 all do more statistics (min/max/ttl/rms...) than just averages. 
 This feature addition is an opportune time to rename ncea as nces.  

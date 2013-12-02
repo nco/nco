@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.915 2013-12-02 19:08:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.916 2013-12-02 20:14:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -12557,6 +12557,17 @@ This simplifies analysis of unequal length timeseries from simulation
 ensembles (e.g., the @acronym{CMIP3} @acronym{IPCC} @acronym{AR4}
 archive).   
 
+@html
+<a name="nsm_fl"></a> <!-- http://nco.sf.net/nco.html#nsm_fl -->
+<a name="nsm_grp"></a> <!-- http://nco.sf.net/nco.html#nsm_grp -->
+<a name="nsm_sfx"></a> <!-- http://nco.sf.net/nco.html#nsm_sfx -->
+@end html
+@cindex @code{--nsm_fl}
+@cindex @code{--nsm_grp}
+@cindex @code{--ensemble_file}
+@cindex @code{--ensemble_group}
+@cindex @code{--nsm_sfx}
+@cindex @code{--ensemble_suffix}
 @command{nces} works in one of two modes, file ensembles 
 or group ensembles.
 File ensembles are the default (equivalent to the old @command{ncea}) 
@@ -12670,7 +12681,7 @@ These commands average both ensembles:
 @example
 nces --nsm_grp mdl1.nc mdl2.nc mdl3.nc out.nc
 nces --nsm_grp --nsm_sfx='_min' --op_typ=min -n 3,1,1 mdl1.nc out.nc
-nces --nsm_grp -v tas -d time,0,3 -n 3,1,1 mdl1.nc out.nc
+nces --nsm_grp -g cesm -v tas -d time,0,3 -n 3,1,1 mdl1.nc out.nc
 @end example
 The first command stores averages in the output groups @file{/cesm} and 
 @file{/ecmwf}, while the second stores minima in the output groups

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1088 2013-12-02 00:13:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1089 2013-12-02 20:14:49 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6237,7 +6237,6 @@ nco_dmn_id_mk                          /* [fnc] Mark flag average, optionally fl
 
 } /* nco_dmn_id_mk() */
 
-
 void                          
 nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
@@ -6250,10 +6249,9 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   int var_id;              /* [id] Variable ID */
   int grp_id;              /* [id] Group ID */
 
-  nco_bool flg_dmn_ins;    /* [flg] Is dimension already inserted in output array  */  
-  nco_bool flg_prn=False;  /* [flg] Print warning  */  
-
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
+
+  nco_bool flg_dmn_ins;    /* [flg] Is dimension already inserted in output array  */  
 
   /* Used only by ncra */
   assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncfe || nco_prg_id_get() == ncge);
@@ -6301,7 +6299,6 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
             /* Obtain group ID using full group name */
             (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
-
             /* a) case where the dimension has coordinate variables */
             if(var_trv.var_dmn[idx_var_dmn].crd){
 
@@ -6313,7 +6310,6 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               /* Insert full group name, key for group ID match */
               trv_tbl->lmt_rec[trv_tbl->nbr_rec]->grp_nm_fll=(char *)strdup(crd->crd_grp_nm_fll);
               trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm_fll=(char *)strdup(crd->dmn_nm_fll);
-
 
               /* b) case of dimension only (there is no coordinate variable for this dimension */
             }else{
@@ -6351,8 +6347,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
 #ifndef ENABLE_UDUNITS
             if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev && flg_prn== False){
-              if(trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",
-                nco_prg_nm_get(),trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm,nco_prg_nm_get());
+              if(trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",nco_prg_nm_get(),trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm,nco_prg_nm_get());
               flg_prn=True;
             }
 #endif /* !ENABLE_UDUNITS */
@@ -6366,7 +6361,6 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
       } /* Loop variable dimensions */ 
     } /* Variable to extract */
   } /* Loop table */
-
 
   if(nco_dbg_lvl_get() == nco_dbg_old){ 
     (void)fprintf(stdout,"%s: DEBUG %s record dimensions to process: ",nco_prg_nm_get(),fnc_nm);        
@@ -7615,7 +7609,6 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
       for(int idx_cf=0;idx_cf<nbr_cf;idx_cf++){
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;
-
       } /* end loop over idx_cf */
 
       /* Return cf_lst_var, associated name (e.g "lat_bounds"). NB: Assumption only 1 associated name */
@@ -7633,7 +7626,6 @@ nco_var_has_cf                        /* [fnc] Variable has CF-compliant informa
   return NULL;
 
 } /* nco_var_has_cf() */
-
 
 void                          
 nco_nm_skp                             /* [fnc] Extract list of variable names to skip for template definition  */
@@ -7728,13 +7720,10 @@ nco_nm_skp                             /* [fnc] Extract list of variable names t
 
   if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s list of variables to skip for template definition\n",nco_prg_nm_get(),fnc_nm); 
-    for(int idx_var=0;idx_var<idx_skp;idx_var++){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,(*skp_lst)[idx_var].var_nm_fll); 
-    }
+    for(int idx_var=0;idx_var<idx_skp;idx_var++) (void)fprintf(stdout,"%s: DEBUG %s <%s>\n",nco_prg_nm_get(),fnc_nm,(*skp_lst)[idx_var].var_nm_fll); 
   }
 
 } /* nco_nm_skp() */
-
 
 void
 nco_bld_nsm                           /* [fnc] Build ensembles */
@@ -7770,9 +7759,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
       /* Export list of variable names for group */
       (void)nco_grp_var_lst(nc_id,trv_1.grp_nm_fll,&nm_lst_1,&nm_lst_1_nbr);
 
-      if(nco_dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: DEBUG %s looking for ensembles for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1.nm_fll);             
-      }
+      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: DEBUG %s looking for ensembles for <%s>\n",nco_prg_nm_get(),fnc_nm,trv_1.nm_fll);
 
       /* Loop table  */
       for(unsigned idx_tbl_2=0;idx_tbl_2<trv_tbl->nbr;idx_tbl_2++){
@@ -7930,7 +7917,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                   } /* Loop skip  names */
 
                   /* Ensemble members. Meaning here is "template" as "member" TODO */
-                  if (flg_nsm_tpl){
+                  if(flg_nsm_tpl){
                     int mbr_var_nbr=trv_tbl->nsm[nsm_nbr].mbr_var_nbr;
                     trv_tbl->nsm[nsm_nbr].var_mbr_fll=(char **)nco_realloc(trv_tbl->nsm[nsm_nbr].var_mbr_fll,(mbr_var_nbr+1)*sizeof(char *));
                     trv_tbl->nsm[nsm_nbr].var_mbr_fll[mbr_var_nbr]=(char *)strdup(var_nm_fll);
@@ -7940,12 +7927,10 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
                     trv_tbl->lst[idx_tbl_2].flg_nsm_mbr=True;
 
                     /* If not the first group member, then it's not a template */
-                    if (mbr_nbr > 0){
-                      flg_nsm_tpl=False;
-                    }
+                    if(mbr_nbr > 0) flg_nsm_tpl=False;
 
                     /* Mark ensemble member flag in table for "var_nm_fll" real member */
-                    (void)trv_tbl_mrk_nsm_mb(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_2.grp_nm_fll,trv_tbl); 
+                    (void)trv_tbl_mrk_nsm_mbr(var_nm_fll,flg_nsm_tpl,trv_1.grp_nm_fll_prn,trv_tbl); 
 
                   } /* Ensemble members */             
 
@@ -8010,15 +7995,11 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
   }
 
   assert(nsm_nbr == trv_tbl->nsm_nbr);
-
 } /* nco_bld_nsm() */
-
 
 void
 nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
 (const int nc_id,                     /* I [id] netCDF file ID ( new file ) */
- const int nbr_var_prc,               /* I [nbr] Number of processed variables */
- var_sct **var_prc,                   /* I [sct] Array of processed variables */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   const char fnc_nm[]="nco_nsm_ncr()"; /* [sng] Function name */
@@ -8129,7 +8110,6 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
           } /* Match relative name  */
         } /* Loop old ensemble */
       } /* Loop variables in group */
-
 
       /* Free list */
       for(int idx_nm=0;idx_nm<nm_lst_1_nbr;idx_nm++) nm_lst_1[idx_nm]=(char *)nco_free(nm_lst_1[idx_nm]);

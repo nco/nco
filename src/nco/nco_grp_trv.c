@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.249 2013-11-26 22:28:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.250 2013-12-02 20:14:49 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -667,8 +667,6 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
   if Name(1) is greater than Name(2), read next name from List 2
   if names are identical, read next names from both lists  */
 
-  const char fnc_nm[]="nco_nm_mch()"; /* [sng] Function name */
-
   int idx_lst;                   /* [idx] Current position in common List */ 
   int idx_tbl_1;                 /* [idx] Current position in List 1 */ 
   int idx_tbl_2;                 /* [idx] Current position in List 2 */ 
@@ -766,11 +764,10 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
 } /* nco_nm_mch() */
 
 void
-trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in table for "var_nm_fll" */
+trv_tbl_mrk_nsm_mbr                    /* [fnc] Mark ensemble member flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const nco_bool flg_nsm_tpl,          /* I [flg] Variable is template member */
  const char * const grp_nm_fll_prn,   /* I [sng] Parent group full name (key for ensemble) */
- const char * const grp_nm_fll,       /* I [sng] Group full name to mark flg_nsm_prn (Group is ensemble group) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
 #ifdef NCO_HSH_TRV_OBJ
@@ -789,7 +786,7 @@ trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in tabl
 #endif /* !NCO_HSH_TRV_OBJ */
 
   return;
-} /* end trv_tbl_mrk_nsm_mb() */
+} /* end trv_tbl_mrk_nsm_mbr() */
 
 char *                                 /* O [sng] Full path  */
 nco_bld_nm_fll                         /* [fnc] Utility function to build a full path */
@@ -818,14 +815,11 @@ nco_lst_ins                            /* [fnc] Utility function to detect inser
 {
   /* Loop constructed array to see if already inserted */
   for(int idx_nm=0;idx_nm<nbr_nm;idx_nm++){
-    /* Loop names */
-    for(int idx_nm=0;idx_nm<nbr_nm;idx_nm++){
       /* Match */
       if(strcmp(cmn_lst[idx_nm].var_nm_fll,nm) == 0){
         /* Mark as inserted in array */
         return True;
       }  /* Match */
-    } /* Loop names */
   } /* Loop constructed array to see if already inserted  */
 
   return False;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.467 2013-12-02 17:43:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.468 2013-12-02 20:14:50 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.467 2013-12-02 17:43:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.467 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.468 2013-12-02 20:14:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.468 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -188,6 +188,8 @@ main(int argc,char **argv)
   Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
+
+  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
   int *in_id_arr;
 
@@ -248,11 +250,10 @@ main(int argc,char **argv)
   var_sct **var_out=NULL_CEWI;
   var_sct **var_prc;
   var_sct **var_prc_out;
-  trv_sct *var_trv;        /* [sct] Variable GTT object */
-  trv_sct *prc_trv;        /* [sct] Variable GTT object */
-  trv_tbl_sct *trv_tbl;    /* [lst] Traversal table */
 
-  gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
+  trv_sct *var_trv;        /* [sct] Variable GTT object */
+
+  trv_tbl_sct *trv_tbl;    /* [lst] Traversal table */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -748,7 +749,7 @@ main(int argc,char **argv)
     /* Do ncge ensemble refresh */
     if(nco_prg_id == ncge){
       /* Refresh ensembles */
-      if(fl_idx > 0) (void)nco_nsm_ncr(in_id,nbr_var_prc,var_prc,trv_tbl);         
+      if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl);         
     } else { /* ! ncge */
       /* Variables may have different ID, missing_value, type, in each file */
       for(idx=0;idx<nbr_var_prc;idx++){
@@ -1073,10 +1074,8 @@ main(int argc,char **argv)
       /* Loop over ensembles in current file */
       for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
 
-        (void)fprintf(stdout,"%s: <ensemble %d> <%s>\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
+        if(nco_dbg_lvl > nco_dbg_std) (void)fprintf(stdout,"%s: ensemble %d: %s\n",nco_prg_nm_get(),idx_nsm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn);
 
-        int mbr_nbr=trv_tbl->nsm[idx_nsm].mbr_nbr;
-        int mbr_var_nbr=trv_tbl->nsm[idx_nsm].mbr_var_nbr;
         int mbr_srt=trv_tbl->nsm[idx_nsm].mbr_srt;
         int mbr_end=trv_tbl->nsm[idx_nsm].mbr_end;
 
@@ -1091,9 +1090,7 @@ main(int argc,char **argv)
             assert(var_trv);
 
             /* Skip if from different ensembles */
-            if(strcmp(var_trv->nsm_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)){
-              continue;
-            }
+            if(strcmp(var_trv->nsm_nm,trv_tbl->nsm[idx_nsm].grp_nm_fll_prn)) continue;
 
             /* Build new variable name */
             char *grp_nm_fll=trv_tbl->nsm[idx_nsm].grp_mbr_fll[idx_mbr]; 
@@ -1102,7 +1099,7 @@ main(int argc,char **argv)
 
             var_prc[idx_prc]->nm_fll=(char *)nco_free(var_prc[idx_prc]->nm_fll);
             var_prc[idx_prc]->nm_fll=nco_bld_nm_fll(grp_nm_fll,var_prc[idx_prc]->nm);
-            (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_prc[idx_prc]->nm_fll); 
+            if(nco_dbg_lvl > nco_dbg_std) (void)fprintf(fp_stdout,"%s:\t variable <%s>\n",nco_prg_nm_get(),var_prc[idx_prc]->nm_fll); 
 
             /* Obtain group ID using full group name */
             (void)nco_inq_grp_full_ncid(in_id,grp_nm_fll,&grp_id);

@@ -1,5 +1,7 @@
 2013-12-02  Charlie Zender  <zender@uci.edu>
 
+	* nces: Clean-up nco_grp_utl.c, nco_grp_trv.c, ncra.c
+
 	* Document nces and group mode in nco.texi, man pages, internally
 
 2013-12-01  Charlie Zender  <zender@uci.edu>

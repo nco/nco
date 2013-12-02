@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.102 2013-11-19 07:39:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.103 2013-12-02 20:14:49 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -145,11 +145,10 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
  int * nbr_cmn_nm);                    /* I/O [nbr] Number of common names */
 
 void
-trv_tbl_mrk_nsm_mb                    /* [fnc] Mark ensemble member flag in table for "var_nm_fll" */
+trv_tbl_mrk_nsm_mbr                    /* [fnc] Mark ensemble member flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const nco_bool flg_nsm_tpl,          /* I [flg] Variable is template member */
  const char * const grp_nm_fll_prn,   /* I [sng] Parent group full name (key for ensemble) */
- const char * const grp_nm_fll,       /* I [sng] Group full name to mark flg_nsm_prn (Group is ensemble group) */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 char *                                 /* O [sng] Full path  */
