@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.38 2013-12-02 00:13:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.39 2013-12-02 01:05:56 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -48,7 +48,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 (const char * const nco_op_sng); /* I [sng] User-specified operation */
 
 void 
-nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
+nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
 (const int nco_op_typ, /* I [enm] Operation type */
  const int nbr_var_prc, /* I [nbr] Number of processed variables */
  X_CST_PTR_CST_PTR_Y(var_sct,var_prc), /* I [sct] Variables in input file */
@@ -58,7 +58,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
 void 
-nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */
+nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces */
 (const long idx_rec, /* I [idx] Index of record (ncra), file (ncfe), or group (ncge) in current operation */
  const int nco_op_typ, /* I [enm] Operation type */
  const var_sct * const var_prc, /* I [sct] Variable in input file */

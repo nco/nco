@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.60 2013-12-02 00:13:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.61 2013-12-02 01:05:56 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -34,7 +34,7 @@ nco_rth_prc_rnk /* [fnc] Rank precision of arithmetic type */
 } /* end nco_rth_prc_rnk() */
 
 void 
-nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
+nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
 (const int nco_op_typ, /* I [enm] Operation type */
  const int nbr_var_prc, /* I [nbr] Number of processed variables */
  X_CST_PTR_CST_PTR_Y(var_sct,var_prc), /* I [sct] Variables in input file */
@@ -43,7 +43,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
  const char * const rec_nm_fll,      /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
-  /* Purpose: Normalize appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
+  /* Purpose: Normalize appropriate ncra/nces operation (avg, min, max, ttl, ...) on operands
      Values of var_prc are not altered but are not const because missing values are cast
      Values of var_prc_out are altered (i.e., normalized) */
 
@@ -112,14 +112,14 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/ncea */
 } /* end nco_opr_nrm() */
 
 void 
-nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */
+nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces */
 (const long idx_rec, /* I [idx] Index of record (ncra), file (ncfe), or group (ncge) in current operation */
  const int nco_op_typ, /* I [enm] Operation type */
  const var_sct * const var_prc, /* I [sct] Variable in input file */
  var_sct * const var_prc_out) /* I/O [sct] Variable in output file */
 {
-  /* Purpose: Perform appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
-     nco_opr_drv() is called within the record loop of ncra, and within file loop of ncea
+  /* Purpose: Perform appropriate ncra/nces operation (avg, min, max, ttl, ...) on operands
+     nco_opr_drv() is called within the record loop of ncra, and within file loop of nces
      These operations perform some, but not all, of necessary operations for each procedure
      Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been processed
      Some operations require special care at initialization

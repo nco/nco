@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.144 2013-12-02 00:13:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.145 2013-12-02 01:05:56 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
-   ncea -- netCDF ensemble averager
+   nces -- netCDF ensemble statistics
    ncrcat -- netCDF record concatenator */
 
 /* Purpose: Compute averages or extract series of specified hyperslabs of 
@@ -40,10 +40,10 @@
    ncra -n 3,4,1 -p /ZENDER/tmp -l ${HOME}/nco/data h0001.nc ~/foo.nc
    scp ~/nco/src/nco/ncra.c esmf.ess.uci.edu:nco/src/nco
    
-   ncea in.nc in.nc ~/foo.nc
-   ncea -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
-   ncea -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
-   ncea -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
+   nces in.nc in.nc ~/foo.nc
+   nces -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
+   nces -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
+   nces -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.144 2013-12-02 00:13:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.144 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.145 2013-12-02 01:05:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.145 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -772,18 +772,18 @@ main(int argc,char **argv)
      Pass 1: Workers construct local persistant variable lists
      Open first file
      mpncra and mpncrcat process first record only
-     mpncea ingests complete file
+     mpnces ingests complete file
      Workers create local list of their variables 
      Pass 2: Complete record/file loops with local variable lists
      Workers skip first timestep (mpncra/mpncrcat) 
      Workers process only variables in their local list from Pass 1 
-     This variable persistance is necessary for mpncra and mpncea
+     This variable persistance is necessary for mpncra and mpnces
      since their workers must maintain running tallies for each variable.
      Variable persistance is not necessary for mpncrcat 
      However, we do it anyway to keep mpncrcat and mpncra similar
      mpncrcat writes records as it reads them and finishes after pass 2
      Pass 3: 
-     mpncea and mpncra require a final loop to normalize and write
+     mpnces and mpncra require a final loop to normalize and write
      Write-token for this loop is passed sequentially through the ranks */
   
   /* Begin Pass 1: Workers construct local persistant variable lists */

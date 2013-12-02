@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.465 2013-12-02 00:13:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.466 2013-12-02 01:05:56 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF running averager
-   ncea -- netCDF ensemble averager
+   nces -- netCDF ensemble statistics
    ncrcat -- netCDF record concatenator */
 
 /* Purpose: Compute averages or extract series of specified hyperslabs of 
@@ -46,10 +46,10 @@
    
    scp ~/nco/src/nco/ncra.c esmf.ess.uci.edu:nco/src/nco
    
-   ncea in.nc in.nc ~/foo.nc
-   ncea -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
-   ncea -O -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
-   ncea -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc
+   nces in.nc in.nc ~/foo.nc
+   nces -O -n 3,4,1 -p ${HOME}/nco/data h0001.nc ~/foo.nc
+   nces -O -n 3,4,1 -p ${HOME}/nco/data -l ${HOME} h0001.nc ~/foo.nc
+   nces -O -n 3,4,1 -p /ZENDER/tmp -l ${HOME} h0001.nc ~/foo.nc
 
    ncra -Y ncge -O -p ~/nco/data mdl.nc ~/foo.nc
    ncra -Y ncge -O --nsm_sfx=_avg -p ~/nco/data mdl.nc ~/foo.nc */
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.465 2013-12-02 00:13:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.465 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.466 2013-12-02 01:05:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.466 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -300,6 +300,8 @@ main(int argc,char **argv)
     {"fl_fmt",required_argument,0,0},
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
+    {"nsm_fl",required_argument,0,0},
+    {"nsm_grp",required_argument,0,0},
     {"nsm_sfx",required_argument,0,0},
     {"ensemble_suffix",required_argument,0,0},
     /* Long options with short counterparts */
@@ -423,6 +425,14 @@ main(int argc,char **argv)
       } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"mro") || !strcmp(opt_crr,"multi_record_output")) FLG_MRO=True; /* [flg] Multi-Record Output */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+      if(!strcmp(opt_crr,"nsm_fl") || !strcmp(opt_crr,"nsm_file") || !strcmp(opt_crr,"ensemble_file")){
+	if(nco_prg_nm) nco_prg_nm=(char *)nco_free(nco_prg_nm);
+	nco_prg_nm=nco_prg_prs("ncfe",&nco_prg_id);
+      } /* endif nsm_fl */
+      if(!strcmp(opt_crr,"nsm_grp") || !strcmp(opt_crr,"nsm_group") || !strcmp(opt_crr,"ensemble_group")){
+	if(nco_prg_nm) nco_prg_nm=(char *)nco_free(nco_prg_nm);
+	nco_prg_nm=nco_prg_prs("ncge",&nco_prg_id);
+      } /* endif nsm_grp */
       if(!strcmp(opt_crr,"nsm_sfx") || !strcmp(opt_crr,"ensemble_suffix")) nsm_sfx=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
@@ -551,7 +561,7 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
     case 'Y': /* Pseudonym */
-      /* Call nco_prg_prs to reset pseudonym */
+      /* Call nco_prg_prs() to reset pseudonym */
       optarg_lcl=(char *)strdup(optarg);
       if(nco_prg_nm) nco_prg_nm=(char *)nco_free(nco_prg_nm);
       nco_prg_nm=nco_prg_prs(optarg_lcl,&nco_prg_id);
@@ -924,8 +934,8 @@ main(int argc,char **argv)
           } /* end (OpenMP parallel for) loop over variables */
 
           if(nco_prg_id == ncra && ((FLG_MRO && REC_LST_GRP) || REC_LST_DSR[idx_rec])){
-            /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
-            except ncra normalizes after every drn records, while ncea normalizes once, after files loop. */
+            /* Normalize, multiply, etc where necessary: ncra and nces normalization blocks are identical, 
+            except ncra normalizes after every drn records, while nces normalizes once, after files loop. */
             (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
             FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
 
@@ -1156,8 +1166,8 @@ main(int argc,char **argv)
     } /* Loop records */
   } /* Duration argument warning */
 
-  /* Normalize, multiply, etc where necessary: ncra and ncea normalization blocks are identical, 
-  except ncra normalizes after every DRN records, while ncea normalizes once, after all files.
+  /* Normalize, multiply, etc where necessary: ncra and nces normalization blocks are identical, 
+  except ncra normalizes after every DRN records, while nces normalizes once, after all files.
   Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
   In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
   FLG_BFR_NRM is always true here for ncfe and ncge */
@@ -1222,7 +1232,7 @@ main(int argc,char **argv)
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_free(var_prc[idx]->tally);
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     } /* end loop over idx */
-  } /* endif ncra || ncea */
+  } /* endif ncra || nces */
 
   /* Close input netCDF file */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.66 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.67 2013-12-02 01:05:56 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -662,7 +662,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
      nco_var_add_tll_ncflint() also fails as running average algorithm whenever
      running sum happens to equal missing_value (regardless if missing value is zero).
      NCO uses nco_var_add_tll_ncflint() only for ncflint
-     NCO uses nco_var_add_tll_ncra() only for ncra/ncea */
+     NCO uses nco_var_add_tll_ncra() only for ncra/nces */
   
   /* Addition is currently defined as op2:=op1+op2 where op1 != mss_val */
   

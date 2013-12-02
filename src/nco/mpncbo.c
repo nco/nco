@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.137 2013-11-06 17:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncbo.c,v 1.138 2013-12-02 01:05:56 zender Exp $ */
 
 /* mpncbo -- netCDF binary operator */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncbo.c,v 1.137 2013-11-06 17:51:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.137 $";
+  const char * const CVS_Id="$Id: mpncbo.c,v 1.138 2013-12-02 01:05:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.138 $";
   const char * const opt_sht_lst="3467ACcD:d:FhL:l:Oo:p:rRSt:v:X:xy:-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -759,10 +759,10 @@ main(int argc,char **argv)
   } /* prc_rnk != rnk_mgr */
 #endif /* !ENABLE_MPI */
   
-  /* ncbo() code has been similar to ncea() (and ncra()) wherever possible
+  /* ncbo() code has been similar to nces() (and ncra()) wherever possible
      Major differences occur where performance would otherwise suffer
      From now on, however, binary-file and binary-operation nature of ncbo()
-     is too different from ncea() paradigm to justify following ncea() style.
+     is too different from nces() paradigm to justify following nces() style.
      Instead, we adopt symmetric nomenclature (e.g., file_1, file_2), and 
      perform differences variable-by-variable so peak memory usage goes as
      Order(2*maximum variable size) rather than Order(3*maximum record size) or

@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/doc/man_end.txt,v 1.8 2012-07-09 05:22:43 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/doc/man_end.txt,v 1.9 2013-12-02 01:05:56 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
@@ -49,8 +49,7 @@ TeX-intensive portions.
 .BR ncap2 (1),
 .BR ncatted (1), 
 .BR ncbo (1), 
-.BR ncdiff (1), 
-.BR ncea (1), 
+.BR nces (1), 
 .BR ncecat (1), 
 .BR ncflint (1), 
 .BR ncks (1), 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.841 2013-12-02 01:05:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.842 2013-12-02 01:07:08 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -261,7 +261,7 @@ with examples of climate data analysis:
 
 <p>
 Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> 
-(<tt>nces</tt> and <tt>ncra</tt>) are misnamed because they perform
+(<tt>ncra</tt> and <tt>ncwa</tt>) are misnamed because they perform
 many non-linear operations as well, e.g., total, minimum, maximum, RMS.
 Moreover, <tt>ncap2</tt> implements a powerful domain language which
 handles arbitrarily complex operations.

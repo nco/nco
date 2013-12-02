@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.912 2013-12-02 00:13:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.913 2013-12-02 01:05:56 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -982,11 +982,11 @@ To minimize duplication of source code, multiple operators sometimes
 share the same underlying source.
 This is accomplished by symbolic links from a single underlying
 executable program to one or more invoked executable names.
-For example, @command{ncea} and @command{ncrcat} are symbolically linked  
+For example, @command{nces} and @command{ncrcat} are symbolically linked  
 to the @command{ncra} executable.
 The @command{ncra} executable behaves slightly differently based on its
 invocation name (i.e., @samp{argv[0]}), which can be 
-@command{ncea}, @command{ncra}, or @command{ncrcat}.
+@command{nces}, @command{ncra}, or @command{ncrcat}.
 Logically, these are three different operators that happen to share 
 the same executable.
 
@@ -1046,13 +1046,13 @@ the system libraries have been moved, renamed, or deleted since
 will fail with a message that they cannot find a dynamically loaded (aka
 @dfn{shared object} or @samp{.so}) library. 
 This will produce a distinctive error message, such as
-@samp{ld.so.1:@- /usr/local/bin/ncea:@- fatal:@- libsunmath.@-so.1:@- can't
+@samp{ld.so.1:@- /usr/local/bin/nces:@- fatal:@- libsunmath.@-so.1:@- can't
 open@- file:@- errno@-=2}.   
 If you received an error message like this, ask your system 
 administrator to diagnose whether the library is truly missing
 @footnote{The @command{ldd} command, if it is available on your system,
 will tell you where the executable is looking for each dynamically
-loaded library. Use, e.g., @code{ldd `which ncea`}.}, or whether you
+loaded library. Use, e.g., @code{ldd `which nces`}.}, or whether you
 simply need to alter your library search path.
 As a final remedy, you may re-compile and install @acronym{NCO} with all
 operators statically linked.  
@@ -1724,7 +1724,7 @@ operations from the command line.
 @section Averagers vs.@: Concatenators
 
 @html
-<a name="sym_ncea"></a> <!-- http://nco.sf.net/nco.html#sym_ncea -->
+<a name="sym_nces"></a> <!-- http://nco.sf.net/nco.html#sym_nces -->
 <a name="sym_ncrcat"></a> <!-- http://nco.sf.net/nco.html#sym_ncrcat -->
 @end html
 @cindex symbolic links
@@ -1735,21 +1735,21 @@ within a file, over the record dimension, over other dimensions, with or
 without weights and masks) and of concatenating (across files, along the
 record dimension, along other dimensions), there are currently no fewer
 than five operators which tackle these two purposes: @command{ncra},
-@command{ncea}, @command{ncwa}, @command{ncrcat}, and @command{ncecat}. 
+@command{nces}, @command{ncwa}, @command{ncrcat}, and @command{ncecat}. 
 These operators do share many capabilities @footnote{Currently
-@command{ncea} and @command{ncrcat} are symbolically linked to the
+@command{nces} and @command{ncrcat} are symbolically linked to the
 @command{ncra} executable, which behaves slightly differently based on
 its invocation name (i.e., @samp{argv[0]}). 
 These three operators share the same source code, but merely have
 different inner loops.}, but each has its unique specialty.
 Two of these operators, @command{ncrcat} and @command{ncecat}, are for
 concatenating hyperslabs across files. 
-The other two operators, @command{ncra} and @command{ncea}, are for
+The other two operators, @command{ncra} and @command{nces}, are for
 averaging hyperslabs across files 
 @footnote{The third averaging operator, @command{ncwa}, is the most
 sophisticated averager in @acronym{NCO}. 
 However, @command{ncwa} is in a different class than @command{ncra} and
-@command{ncea} because it can only operate on a single file per
+@command{nces} because it can only operate on a single file per
 invocation (as opposed to multiple files).   
 On that single file, however, @command{ncwa} provides a richer set of 
 averaging options---including weighting, masking, and broadcasting.}.  
@@ -1848,30 +1848,30 @@ To conserve system memory, use @command{ncrcat} where possible.
 <a name="avg"></a> <!-- http://nco.sf.net/nco.html#avg -->
 @end html
 @node Averaging, Interpolating, Concatenation, Averaging vs. Concatenating
-@subsection Averagers @command{ncea}, @command{ncra}, and @command{ncwa} 
-@cindex @command{ncea}
+@subsection Averagers @command{nces}, @command{ncra}, and @command{ncwa} 
+@cindex @command{nces}
 @cindex @command{ncra}
 @cindex @command{ncwa}
 
-The differences between the averagers @command{ncra} and @command{ncea}
+The differences between the averagers @command{ncra} and @command{nces}
 are analogous to the differences between the concatenators.
 @command{ncra} is designed for averaging record variables from at least
-one file, while @command{ncea} is designed for averaging fixed length
+one file, while @command{nces} is designed for averaging fixed length
 variables from multiple files.
 @command{ncra} performs a simple arithmetic average over the record
 dimension of all the input files, with each record having an equal
 weight in the average. 
-@command{ncea} performs a simple arithmetic average of all the input
+@command{nces} performs a simple arithmetic average of all the input
 files, with each file having an equal weight in the average. 
 Note that @command{ncra} cannot average fixed-length variables,
-but @command{ncea} can average both fixed-length and record variables.  
+but @command{nces} can average both fixed-length and record variables.  
 To conserve system memory, use @command{ncra} rather than
-@command{ncea} where possible (e.g., if each @var{input-file} is one
+@command{nces} where possible (e.g., if each @var{input-file} is one
 record long). 
-The file output from @command{ncea} will have the same dimensions
+The file output from @command{nces} will have the same dimensions
 (meaning dimension names as well as sizes) as the input hyperslabs  
-(@pxref{ncea netCDF Ensemble Averager}, for a complete description of 
-@command{ncea}).  
+(@pxref{nces netCDF Ensemble Statistics}, for a complete description of 
+@command{nces}).  
 The file output from @command{ncra} will have the same dimensions as
 the input hyperslabs except for the record dimension, which will have a   
 size @w{of 1} (@pxref{ncra netCDF Record Averager}, for a complete
@@ -2054,7 +2054,7 @@ amount of random access memory (@acronym{RAM}) in your computer.
 Many users of @acronym{NCO} work with files larger than @w{100 MB}.
 Files this large not only push the current edge of storage technology, 
 they present special problems for programs which attempt to access the  
-entire file at once, such as @command{ncea} and @command{ncecat}.
+entire file at once, such as @command{nces} and @command{ncecat}.
 @cindex swap space
 If you work with a @w{300 MB} files on a machine with only @w{32 MB} of
 memory then you will need large amounts of swap space (virtual memory on
@@ -2107,7 +2107,7 @@ When the @var{debug-level} is nonzero, the operators report their
 current status to the terminal through the @var{stderr} facility.
 Using @samp{-D} does not slow the operators down. 
 Choose a @var{debug-level} @w{between 1} @w{and 3} for most situations,
-e.g., @code{ncea -D 2 85.nc 86.nc 8586.nc}.
+e.g., @code{nces -D 2 85.nc 86.nc 8586.nc}.
 @w{A full} description of how to estimate the actual amount of memory the
 multi-file @acronym{NCO} operators consume is given in 
 @ref{Memory Requirements}. 
@@ -2159,7 +2159,7 @@ the exception of @command{ncap2}.
 @cindex multi-file operators
 The multi-file operators currently comprise the record operators,
 @command{ncra} and @command{ncrcat}, and the ensemble operators,
-@command{ncea} and @command{ncecat}. 
+@command{nces} and @command{ncecat}. 
 The record operators require @emph{much less} memory than the ensemble 
 operators. 
 This is because the record operators operate on one single record (i.e.,
@@ -2187,7 +2187,7 @@ The operators have the following memory requirements:
 @command{ncrcat} requires @math{MS <= VR}. 
 @command{ncecat} requires @math{MS <= VT}. 
 @command{ncra} requires @math{MS = 2FR + VR}. 
-@command{ncea} requires @math{MS = 2FT + VT}. 
+@command{nces} requires @math{MS = 2FT + VT}. 
 @command{ncbo} requires @math{MS <= 3VT} 
 (both input variables and the output variable).
 @command{ncflint} requires @math{MS <= 3VT}
@@ -2203,7 +2203,7 @@ to the memory requirements.
 
 Further note that some operators perform internal type-promotion on some
 variables prior to arithmetic (@pxref{Type Conversion}).
-For example, @command{ncra} and @command{ncea} both promote integer
+For example, @command{ncra} and @command{nces} both promote integer
 types to double-precision floating point prior to arithmetic, then 
 perform the arithmetic, then demote back to the original integer type
 after arithmetic.
@@ -2485,7 +2485,7 @@ library (@pxref{Selecting Output File Format}).
 @cindex @code{--omp_num_threads @var{thr_nbr}}
 @cindex @code{-t @var{thr_nbr}}
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{ncea}, @command{ncecat},
+Availability: @command{ncap2}, @command{ncbo}, @command{nces}, @command{ncecat},
 @command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncrcat},
 @command{ncwa}@*
 Short options: @samp{-t}@*
@@ -2706,7 +2706,7 @@ name that most suits their taste.
 @cindex @code{--path @var{input-path}}
 @cindex @var{input-path}
 @cartouche
-Availability (@code{-n}): @command{ncea}, @command{ncecat}, @command{ncra}, @command{ncrcat}@*
+Availability (@code{-n}): @command{nces}, @command{ncecat}, @command{ncra}, @command{ncrcat}@*
 Availability (@code{-p}): All operators@*
 Short options: @samp{-n}, @samp{-p}@*
 Long options: @samp{--nintap}, @samp{--pth}, @samp{--path}@*
@@ -2758,7 +2758,7 @@ the entire set of filenames
 @cindex multi-file operators
 @cindex files, multiple
 This option is only available with the @dfn{multi-file operators}:
-@command{ncra}, @command{ncrcat}, @command{ncea}, and @command{ncecat}.
+@command{ncra}, @command{ncrcat}, @command{nces}, and @command{ncecat}.
 By definition, multi-file operators are able to process an arbitrary
 number of @var{input-files}.
 This option is very useful for abbreviating lists of filenames
@@ -3367,7 +3367,7 @@ when your other preferred methods are not available locally.
 @cindex @code{--file_format}
 @cindex @code{--64bit}
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-3}, @samp{-4}, @samp{-6}, @samp{-7}@*
@@ -3619,19 +3619,19 @@ build time.
 @cindex @code{--union}
 @cartouche
 Options @code{--unn}@*
-Availability: @command{ncbo}, @command{ncea},
+Availability: @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @*
 Long options: @samp{--unn} and @samp{--union}@*
 Options @code{-g @var{grp}}@*
-Availability: @command{ncbo}, @command{ncea},
+Availability: @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-g}@*
 Long options: @samp{--grp} and @samp{--group}@*
 Options @code{-v @var{var}} and @code{-x}@*
-Availability: (@command{ncap2}), @command{ncbo}, @command{ncea},
+Availability: (@command{ncap2}), @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-v}, @samp{-x}@*
@@ -3990,7 +3990,7 @@ filename expansion (globbing).
 @cindex @code{--coords}
 @cindex @code{--crd}
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-C}, @samp{-c}@*
@@ -4029,7 +4029,7 @@ convention described in @ref{CF Conventions}.
 @cindex @code{--gpe @var{gpe_dsc}}
 @cartouche
 Options @code{-G @var{gpe_dsc}}@*
-Availability: @command{ncbo}, @command{ncecat}, @command{ncea},
+Availability: @command{ncbo}, @command{ncecat}, @command{nces},
 @command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-G}@*
@@ -4388,7 +4388,7 @@ Current valid @acronym{CF} versions are @samp{1.0}, @samp{1.1},
 @cindex @code{-F}
 @cindex @code{--fortran}
 @cartouche
-Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{nces}, @command{ncecat},
 @command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-F}@*
@@ -4451,7 +4451,7 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cartouche
-Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{nces}, @command{ncecat},
 @command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
@@ -4591,7 +4591,7 @@ This option may be specified more than once in a single command
 @cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],@var{stride}}
 @cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],@var{stride}}
 @cartouche
-Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{nces}, @command{ncecat},
 @command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
@@ -4852,7 +4852,7 @@ records.
 @cindex @code{--msa_usr_rdr}
 @cindex @code{--msa_user_order}
 @cartouche
-Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{nces}, @command{ncecat},
 @command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
 @command{ncrcat}@* 
 Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
@@ -5123,7 +5123,7 @@ values (@pxref{Hyperslabs}).
 @cindex @code{-X @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}
 @cindex @code{--auxiliary @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}
 @cartouche
-Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{nces}, @command{ncecat},
 @command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
 @command{ncrcat}@* 
 Short options: @samp{-X @var{lon_min},@var{lon_max},@var{lat_min},@var{lat_max}}@*
@@ -5266,7 +5266,7 @@ to avoid confusion.
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}
 @cartouche
-Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{nces}, @command{ncecat},
 @command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]}@*
@@ -5613,7 +5613,7 @@ Use @samp{--mrd} to override this.
 @cindex @code{missing_value}
 @cindex @code{_FillValue}
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 @end cartouche
@@ -5729,12 +5729,12 @@ valid or not.
 @item 
 Treatment of any data identified as missing in arithmetic operators.
 
-@cindex @command{ncea}
+@cindex @command{nces}
 @cindex @command{ncra}
 @cindex @command{ncwa}
 @cindex @command{ncbo}
 @cindex @command{ncflint}
-@acronym{NCO} averagers (@command{ncra}, @command{ncea}, @command{ncwa})
+@acronym{NCO} averagers (@command{ncra}, @command{nces}, @command{ncwa})
 do not count any element with the value @var{_FillValue} towards the
 average. 
 @command{ncbo} and @command{ncflint} define a @var{_FillValue} result  
@@ -5786,7 +5786,7 @@ important information from being lost.
 @cindex @code{--chunk_scalar}
 @cindex chunking
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: none@*
@@ -6008,7 +6008,7 @@ variables.
 @cindex compression
 @cindex deflation
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: @samp{-L}@*
@@ -6347,7 +6347,7 @@ This is accomplished with the @samp{--no_tmp_fl} switch
 @cindex @code{--hdf_upk}
 @cindex @code{--hdf_unpack}
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{ncea},
+Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 Long options: @samp{--hdf_upk}, @samp{--hdf_unpack}@*
@@ -6560,7 +6560,7 @@ Pack and unpack individual variables with @command{ncpdq} and the
 @cindex @code{--operation @var{op_typ}}
 @cindex @code{--op_typ @var{op_typ}}
 @cartouche
-Availability: @command{ncap2}, @command{ncra}, @command{ncea}, @command{ncwa}@*
+Availability: @command{ncap2}, @command{ncra}, @command{nces}, @command{ncwa}@*
 Short options: @samp{-y}@*
 Long options: @samp{--operation}, @samp{--op_typ}@*
 @end cartouche
@@ -6686,11 +6686,11 @@ the @var{missing value} (@pxref{Missing Values}) for the variable.
 Thus, for a variable with no @code{_FillValue} attribute,
 $\mssflg_{\idx}$~is always~1.
 All @acronym{NCO} arithmetic operators (@command{ncbo},
-@command{ncra}, @command{ncea}, @command{ncflint}, @command{ncwa}) treat  
+@command{ncra}, @command{nces}, @command{ncflint}, @command{ncwa}) treat  
 missing values analogously. 
 
 Besides (weighted) averaging, @command{ncwa}, @command{ncra}, and
-@command{ncea} also compute some common non-linear operations which may
+@command{nces} also compute some common non-linear operations which may
 be specified with the @samp{-y} switch (@pxref{Operation Types}).
 The other rank-reducing operations are simple variations of the generic
 weighted mean described above.
@@ -6777,7 +6777,7 @@ from the sum in the denominator does not necessarily remove one degree
 of freedom. 
 Therefore when @code{-y rmssdn} is requested and weights are specified,
 @command{ncwa} actually implements the @code{rms} procedure.
-@command{ncea} and @command{ncra}, which do not allow weights to be
+@command{nces} and @command{ncra}, which do not allow weights to be
 specified, always implement the @code{rmssdn} procedure when asked.
 
 @c 20130827: Fedora Core 19 (FC19) broke here with "./nco.texi:6394: Missing dollarsign inserted."
@@ -6854,7 +6854,7 @@ across multiple files, say @file{jan.nc}, @file{feb.nc},
 @file{march.nc}.  
 We can now find the three month maximium surface pressure at every point.
 @example
-ncea -y max -v prs_sfc jan.nc feb.nc march.nc out.nc
+nces -y max -v prs_sfc jan.nc feb.nc march.nc out.nc
 @end example
 
 @html
@@ -6954,10 +6954,10 @@ less required by the @command{ncbo} operation in the third step.
 @section Type Conversion
 @cindex type conversion
 @cartouche
-Availability (automatic type conversion): @command{ncap2}, @command{ncbo}, @command{ncea},
+Availability (automatic type conversion): @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncflint}, @command{ncra}, @command{ncwa}@* 
 Short options: None (it's @emph{automatic})@*
-Availability (manual type conversion): @command{ncea}, @command{ncra}, @command{ncwa}@* 
+Availability (manual type conversion): @command{nces}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 Long options: @samp{--dbl}, @samp{--flt}, @samp{--rth_dbl}, @samp{--rth_flt}@* 
 @end cartouche
@@ -7048,7 +7048,7 @@ arithmetic.}:
 @enumerate
 @item The requested operation is arithmetic.
 This is why type conversion is limited to the operators @command{ncap2}, 
-@command{ncbo}, @command{ncea}, @command{ncflint}, @command{ncra}, and
+@command{ncbo}, @command{nces}, @command{ncflint}, @command{ncra}, and
 @command{ncwa}.   
 @item The arithmetic operation could benefit from type conversion.
 Operations that could benefit include averaging, summation, or any
@@ -7549,7 +7549,7 @@ their results.
 The @samp{--dbl} and @samp{-flt} switches are only available with the
 @acronym{NCO} arithmetic operators that could potentially perform more
 than a few  single-precision floating point operations per result.
-These are @command{ncea}, @command{ncra}, and @command{ncwa}.
+These are @command{nces}, @command{ncra}, and @command{ncwa}.
 Each is capable of thousands to millions or more operations per result. 
 By contrast, the arithmetic operators @command{ncbo} and
 @command{ncflint} perform at most one floating point operation per
@@ -7682,7 +7682,7 @@ Note that the @samp{-h} switch also turns off writing the
 @cindex @code{--fl_lst_in}
 @cindex @code{--file_list}
 @cartouche
-Availability: @command{ncea}, @command{ncecat}, @command{ncra}, @command{ncrcat}@*
+Availability: @command{nces}, @command{ncecat}, @command{ncra}, @command{ncrcat}@*
 Short options: @samp{-H}@*
 Long options: @samp{--fl_lst_in}, @samp{--file_list}@*
 @end cartouche
@@ -7740,7 +7740,7 @@ may amount to many thousands of filenames in a metadata attribute.
 @cindex @code{lon_bnds}
 @cindex @code{msk_*}
 @cartouche
-Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{nces}, @command{ncecat},
 @command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@*
 Short options: None@*
 @end cartouche
@@ -7805,7 +7805,7 @@ host geophysical model and it makes no sense to change their values.
 @cindex non-coordinate grid properties
 Furthermore, the @dfn{size and rank-preserving arithmetic operators} try
 not to operate on certain grid properties.
-These operators are @command{ncap2}, @command{ncbo}, @command{ncea},
+These operators are @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncflint}, and @command{ncpdq} (when used for packing, not for
 permutation).  
 These operators do not operate, by default, on (i.e., add, subtract,
@@ -7991,7 +7991,7 @@ described in any detail in the sections below.
 * ncap2 netCDF Arithmetic Processor::
 * ncatted netCDF Attribute Editor::
 * ncbo netCDF Binary Operator::
-* ncea netCDF Ensemble Averager::
+* nces netCDF Ensemble Statistics::
 * ncecat netCDF Ensemble Concatenator::
 * ncflint netCDF File Interpolator::
 * ncks netCDF Kitchen Sink::
@@ -12049,7 +12049,7 @@ omitted in batch scripts.
 <a name="ncmultiply"></a> <!-- http://nco.sf.net/nco.html#ncmultiply -->
 <a name="ncdivide"></a> <!-- http://nco.sf.net/nco.html#ncdivide -->
 @end html
-@node ncbo netCDF Binary Operator, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operator Reference Manual
+@node ncbo netCDF Binary Operator, nces netCDF Ensemble Statistics, ncatted netCDF Attribute Editor, Operator Reference Manual
 @section @command{ncbo} netCDF Binary Operator
 @findex ncbo
 @findex ncdiff
@@ -12481,18 +12481,19 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 
 @page
 @html
+<a name="nces"></a> <!-- http://nco.sf.net/nco.html#nces -->
 <a name="ncea"></a> <!-- http://nco.sf.net/nco.html#ncea -->
 @end html
-@node ncea netCDF Ensemble Averager, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Operator Reference Manual
-@section @command{ncea} netCDF Ensemble Averager
+@node nces netCDF Ensemble Statistics, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Operator Reference Manual
+@section @command{nces} netCDF Ensemble Statistics
 @cindex averaging data
 @cindex ensemble average
-@findex ncea
+@findex nces
 
 @noindent
 SYNTAX
 @example
-ncea [-3] [-4] [-6] [-7] [-A] [-C] [-c]
+nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
@@ -12505,11 +12506,20 @@ ncea [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 @noindent
 DESCRIPTION
 
-@command{ncea} performs gridpoint arithmetic of variables across an
+@command{nces} performs gridpoint arithmetic of variables across an
 arbitrary number (an @dfn{ensemble}) of @var{input-files}, with each
 file receiving an equal weight in the arithmetic.
+@command{nces} was formerly (until @acroynym{NCO} version 4.3.9,
+released December, 2013) known as @command{ncea} (netCDF Ensemble
+Averager)@footnote{
+The old ncea command was deprecated in @acroynym{NCO} version 4.3.9,  
+released December, 2013.
+@acroynym{NCO} will attempt to maintain back-compatibility and work
+as expected with invocations of @command{ncea} for as long as possible.
+However, users are advised to replace @command{ncea} by @command{nces}
+in all future work.}.
 @cindex ensemble
-For example, @command{ncea} will average a set of files, weighting
+For example, @command{nces} will average a set of files, weighting
 each file evenly. 
 This is distinct from @command{ncra}, which averages only over the
 record dimension(s) (e.g., @var{time}), and weights each record in 
@@ -12520,10 +12530,10 @@ in each of the @var{input-files}, and all @var{input-files} must be
 the same size.
 @cindex record dimension
 @cindex hyperslab
-The only exception is that @command{ncea} allows files to differ in
+The only exception is that @command{nces} allows files to differ in
 the record dimension size if the requested record hyperslab
 (@pxref{Hyperslabs}) resolves to the same size for all files. 
-@command{ncea} recomputes the record dimension hyperslab limits for
+@command{nces} recomputes the record dimension hyperslab limits for
 each input file so that coordinate limits may be used to select equal
 length timeseries from unequal length files.
 @cindex @acronym{IPCC}
@@ -12534,7 +12544,7 @@ ensembles (e.g., the @acronym{CMIP3} @acronym{IPCC} @acronym{AR4}
 archive).   
 
 @cindex operation types
-@command{ncea} @emph{always averages} coordinate variables regardless of 
+@command{nces} @emph{always averages} coordinate variables regardless of 
 the arithmetic operation type performed on the non-coordinate variables. 
 (@pxref{Operation Types}). 
 @cindex record dimension
@@ -12546,7 +12556,7 @@ distinctions between the various averagers and concatenators.
 @cindex multi-file operators
 @cindex standard input
 @cindex @code{stdin}
-As a multi-file operator, @command{ncea} will read the list of
+As a multi-file operator, @command{nces} will read the list of
 @var{input-files} from @code{stdin} if they are not specified 
 as positional arguments on the command line 
 (@pxref{Large Numbers of Files}).
@@ -12559,12 +12569,12 @@ This may be to reduce statistical noise by combining the results of a
 large number of experiments, or it may simply be a step in a procedure 
 whose goal is to compute anomalies from a mean state. 
 In any case, when one desires to generate a file whose properties are
-the mean of all the input files, then @command{ncea} is the operator to 
+the mean of all the input files, then @command{nces} is the operator to 
 use. 
 
-@command{ncea} only allows coordinate variables to be processed by
+@command{nces} only allows coordinate variables to be processed by
 the linear average, minimum, and maximum operations.
-@command{ncea} will return the linear average of coordinates unless
+@command{nces} will return the linear average of coordinates unless
 extrema are explicitly requested.
 Other requested operations (e.g., square-root, RMS) are applied only
 to non-coordinate variables.
@@ -12574,6 +12584,7 @@ returned.
 @noindent
 @html
 <a name="xmp_ncea"></a> <!-- http://nco.sf.net/nco.html#xmp_ncea -->
+<a name="xmp_nces"></a> <!-- http://nco.sf.net/nco.html#xmp_nces -->
 @end html
 EXAMPLES
 
@@ -12587,9 +12598,9 @@ and we want to produce a single file containing the ensemble average
 Here the numeric filename suffix denotes the experiment number
 (@emph{not} the month):
 @example
-ncea 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
-ncea 85_0[1-5].nc 85.nc
-ncea -n 5,2,1 85_01.nc 85.nc
+nces 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
+nces 85_0[1-5].nc 85.nc
+nces -n 5,2,1 85_01.nc 85.nc
 @end example
 @noindent
 These three commands produce identical answers.
@@ -12604,7 +12615,7 @@ In the previous example, the user could have obtained the ensemble
 average values in a particular spatio-temporal region by adding a 
 hyperslab argument to the command, e.g.,
 @example
-ncea -d time,0,2 -d lat,-23.5,23.5 85_??.nc 85.nc
+nces -d time,0,2 -d lat,-23.5,23.5 85_??.nc 85.nc
 @end example
 @noindent
 In this case the output file would contain only three slices of data in
@@ -12617,7 +12628,7 @@ Additionally, only data inside the tropics is included.
 @html
 <a name="ncecat"></a> <!-- http://nco.sf.net/nco.html#ncecat -->
 @end html
-@node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, ncea netCDF Ensemble Averager, Operator Reference Manual
+@node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, nces netCDF Ensemble Statistics, Operator Reference Manual
 @section @command{ncecat} netCDF Ensemble Concatenator
 @cindex concatenation
 @cindex ensemble concatenation
@@ -16148,7 +16159,7 @@ This section illustrates how to calculate the global distribution of
 long-term average (@pxref{fgr:glb}).
 Key steps include: 
 @enumerate
-@item Average ensemble members of each model using @command{ncea} (@pxref{ncea netCDF Ensemble Averager})
+@item Average ensemble members of each model using @command{nces} (@pxref{nces netCDF Ensemble Statistics})
 @item Average the record dimension using @command{ncra} (@pxref{ncra netCDF Record Averager})
 @item Store results of each model as a distinct group in a single output file using @command{ncecat} (@pxref{ncrcat netCDF Record Concatenator}) with the @option{--gag} option
 @end enumerate
@@ -16197,7 +16208,7 @@ Key steps include:
 @item Change dimension order using @command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly});
 @item Annual average using @command{ncra} (@pxref{ncra netCDF Record Averager});
 @item Anomaly from long-term average using @command{ncbo} (@pxref{ncbo netCDF Binary Operator});
-@item Standard deviation using @command{ncbo} (@pxref{ncbo netCDF Binary Operator}) and @command{ncea} (@pxref{ncea netCDF Ensemble Averager});
+@item Standard deviation using @command{ncbo} (@pxref{ncbo netCDF Binary Operator}) and @command{nces} (@pxref{nces netCDF Ensemble Statistics});
 @item Rename variables using @command{ncrename} (@pxref{ncrename netCDF Renamer});
 @item Edit attributions using @command{ncatted} (@pxref{ncatted netCDF Attribute Editor});
 @item Linear regression using @command{ncap2} (@pxref{ncap2 netCDF Arithmetic Processor});

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.62 2013-11-25 01:07:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.63 2013-12-02 01:05:56 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -74,7 +74,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
   /* Purpose: Custom plugin wrapper for malloc()
      Top of nco_mmr.c explains usage of nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg()
      Test memory debugging infrastructure with, e.g.,
-     export NCO_MMR_DBG=1;ncea -O -D 3 -d time,0,2 -p ~ big_bug5.nc ~/big_avg.nc
+     export NCO_MMR_DBG=1;nces -O -D 3 -d time,0,2 -p ~ big_bug5.nc ~/big_avg.nc
      export NCO_MMR_DBG=1;ncrcat -O -D 3 -p ~ big_bug.nc big_bug.nc big_bug.nc big_bug.nc big_bug.nc ~/big_bug5.nc
      fxm: Infrastucture does not (yet) report requests made with nco_malloc_flg() and nco_malloc_dbg() */
 

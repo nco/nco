@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.96 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.97 2013-12-02 01:05:56 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -398,7 +398,7 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
      Multi-file operators which handle packing must call this routine prior
      to each read of a variable, in case that variable has been unpacked.
      NB: See also nco_inq_var_packing(), a light-overhead alternative to nco_pck_dsk_inq() */
-  /* ncea -O -D 3 -v pck ~/nco/data/in.nc ~/nco/data/foo.nc */
+  /* nces -O -D 3 -v pck ~/nco/data/in.nc ~/nco/data/foo.nc */
   
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */

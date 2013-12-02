@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.64 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.65 2013-12-02 01:05:56 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -281,7 +281,7 @@ nco_cnk_dsk_inq /* [fnc] Check whether variable is chunked on disk */
  const int var_id) /* I [id] Variable ID */
 {
   /* Purpose: Check whether variable is chunked on disk */
-  /* ncea -O -D 3 -v cnk ~/nco/data/in.nc ~/nco/data/foo.nc */
+  /* nces -O -D 3 -v cnk ~/nco/data/in.nc ~/nco/data/foo.nc */
   
   int srg_typ; /* [enm] Storage type */
   

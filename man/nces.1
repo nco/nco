@@ -1,12 +1,12 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/nces.1,v 1.1 2013-12-02 00:31:20 zender Exp $ -*-nroff-*-
-.\" Purpose: ROFF man page for ncea
+.\" $Header: /data/zender/nco_20150216/nco/man/nces.1,v 1.2 2013-12-02 01:05:56 zender Exp $ -*-nroff-*-
+.\" Purpose: ROFF man page for nces
 .\" Usage:
-.\" nroff -man ~/nco/man/ncea.1 | less
-.TH NCEA 1
+.\" nroff -man ~/nco/man/nces.1 | less
+.TH NCES 1
 .SH NAME
-ncea \- netCDF Ensemble Averager
+nces \- netCDF Ensemble Statistics
 .SH SYNTAX
-ncea [\-3] [\-4] [\-6] [\-7] [\-A] [\-\-bfr
+nces [\-3] [\-4] [\-6] [\-7] [\-A] [\-\-bfr
 .IR sz ] [\-C] [\-c] [\-D 
 .IR dbg_lvl ]
 [\-d 
@@ -41,7 +41,7 @@ ncea [\-3] [\-4] [\-6] [\-7] [\-A] [\-\-bfr
 .I output-file
 .SH DESCRIPTION
 .PP
-.B ncea
+.B nces
 performs gridpoint averages of variables across an arbitrary
 number (an 
 .IR ensemble )
@@ -59,7 +59,7 @@ Whereas
 .B ncra
 only performs averages over the record dimension
 (e.g., time), and weights each record in the record dimension evenly, 
-.B ncea
+.B nces
 averages entire files, and weights each file evenly.
 All dimensions, including the record dimension, are treated identically
 and preserved in the 
@@ -74,14 +74,14 @@ large number of experiments, or it may simply be a step in a procedure
 whose goal is to compute anomalies from a mean state. 
 In any case, when one desires to generate a file whose properties are
 the mean of all the input files, then 
-.B ncea
+.B nces
 is the operator to
 use. 
-.B ncea
+.B nces
 assumes coordinate variable are properties common to all of
 the experiments and so does not average them across files.
 Instead, 
-.B ncea
+.B nces
 copies the values of the coordinate variables from
 the first input file to the output file.
 .SH EXAMPLES
@@ -98,11 +98,11 @@ Here the numeric filename suffix denotes the experiment number
 .I not
 the month):
 .RS
-ncea 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
+nces 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
 .br
-ncea 85_0[1-5].nc 85.nc
+nces 85_0[1-5].nc 85.nc
 .br
-ncea \-n 5,2,1 85_01.nc 85.nc
+nces \-n 5,2,1 85_01.nc 85.nc
 .RE
 These three commands produce identical answers.
 The output file, 
@@ -116,7 +116,7 @@ In the previous example, the user could have obtained the ensemble
 average values in a particular spatio-temporal region by adding a 
 hyperslab argument to the command, e.g.,
 .RS
-ncea \-d time,0,2 \-d lat,\-23.5,23.5 85_??.nc 85.nc
+nces \-d time,0,2 \-d lat,\-23.5,23.5 85_??.nc 85.nc
 .RE
 In this case the output file would contain only three slices of data in
 the 
@@ -127,7 +127,7 @@ input files.
 Additionally, only data inside the tropics is included.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/nces.1,v 1.1 2013-12-02 00:31:20 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/nces.1,v 1.2 2013-12-02 01:05:56 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

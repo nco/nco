@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.72 2013-11-19 10:41:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.73 2013-12-02 01:05:56 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -127,7 +127,7 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
      Users have long been uncomfortable with not implicitly converting floats to doubles
      A new section of the manual that describes the advantages and disadvantages:
      http://nco.sf.net/nco.html#fxm
-     Implementing --dbl switch on ncwa, ncra, ncea (ncap2?) to force implicit conversion */
+     Implementing --dbl switch on ncwa, ncra, nces (ncap2?) to force implicit conversion */
   if(nco_rth_cnv_get() == nco_rth_flt_flt){
 
     /* Traditional NCO convention: promote, where necessary, anything but floats and doubles */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.162 2013-12-02 00:13:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.163 2013-12-02 01:05:56 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1028,7 +1028,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	 However, this will miss (false-negative) the case when no variables 
 	 use an N-D coordinate-like variable as a coordinate. 
 	 And this may hit (false-positive) the record coordinate (often "time")
-	 which should be averaged by ncra, though perhaps not by ncea.
+	 which should be averaged by ncra, though perhaps not by nces.
 	 "coordinate-like" variables that should be "fixed", and not
 	 differenced, interpolated, or ensemble-averaged, include those 
 	 satisfying these conditions:
@@ -1274,7 +1274,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
     However, this will miss (false-negative) the case when no variables 
     use an N-D coordinate-like variable as a coordinate. 
     And this may hit (false-positive) the record coordinate (often "time")
-    which should be averaged by ncra, though perhaps not by ncea.
+    which should be averaged by ncra, though perhaps not by nces.
     "coordinate-like" variables that should be "fixed", and not
     differenced, interpolated, or ensemble-averaged, include those 
     satisfying these conditions:
