@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1254 2013-10-22 03:03:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.1255 2013-12-02 01:05:56 zender Exp $
 
 # Purpose: TODO items for NCO
 
@@ -82,7 +82,7 @@ nco82. Make libnco namespace-safe by prefixing all library subroutines with nco_
 nco86. Extend stride/wraparound capability to all operators possible
 nco92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h foo.nc | m gives bad time_offset on LINUX not SUNMP (problem with LINUX adding record coordinate to open file?)
 nco99. Allow ncatted to dump file in ncatted format
-nco103. Implement trapezoidal rule option in ncra, ncea
+nco103. Implement trapezoidal rule option in ncra, nces
 nco105. Add easy-to-read tabular display option for file contents for ncks, i.e, allow ncks -s to print multiple variables in column format
 nco106. Add switch to keep degenerate dimensions with ncwa, remove them from ncra
 nco111. Investigate whether using ncwa to average files where variables of type 
@@ -119,7 +119,7 @@ nco158. Add policy for hyperslabbing single level values to User's Guide
         See explanatory notes in nco_lmt_evl().
 nco166. Document 'make test' so people know it exists and use it
 nco173. Add switch to ncra which allows user to remove degenerate time dimension from result
-nco174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
+nco174. Setup ncra,nces,ncwa to do standard deviations sdn with one call
 nco182. Add -L, --license switch to print license terms (as suggested by GNU coding style)
 nco190. Make typ_pck et al. use nc_type enum or something sane for default
 nco192. ncdiff sometimes subtracts files of incommensurate size without complaint
@@ -180,7 +180,7 @@ nco316. Change offending nco_malloc() to nco_malloc_flg() calls for #315
 nco317. Understand stack memory problem. ulimits? compiler switches?
 nco318. Solve stack memory problem and benchmark vs. ANSI code branch
 nco320. LaTeX-like hyphens in TeXInfo?
-nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea(?)
+nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/nces(?)
 nco322. Implement integer empowerment in var_scv_pwr() with, e.g., GSL
 nco323. Collect all past ANNOUNCE files and place in reverse chronological order in ANNOUNCE file
 nco324. Add release date to "Version Summary" section on homepage
@@ -391,10 +391,10 @@ nco799. Extend -n 3,4,1 NINTAP switch to handle regular expressions
 nco800. Extend -n 3,4,1 NINTAP switch to -n 3,4,1,offset to work with CCSM patterns
 nco803. prp: Link to UCSD proposal by Kraig Winters /data/zender/prp/prp_winters.pdf
 nco807. mpi: Merge ncra.c v.1.192-1.193 changes (per-file record limit checks) into mpncra.c
-nco808. ftr: Dave Allured request on 20070213 for ncea to resolve hyperslab indices for all dimensions on each file so this works:
-        ncea -d time,"2010-1-1 0:0:0","2020-12-31 0:0:0" run*.nc output.nc
-        ncea -O -d time,"2010-1-1 0:0:0","2020-12-31 0:0:0" ~/giss*.nc ~/output.nc
-	ncea -O -D 5 -v one_dmn_rec_var -d time,1.,5. -p ~/nco/data in.nc in.nc ~/foo.nc
+nco808. ftr: Dave Allured request on 20070213 for nces to resolve hyperslab indices for all dimensions on each file so this works:
+        nces -d time,"2010-1-1 0:0:0","2020-12-31 0:0:0" run*.nc output.nc
+        nces -O -d time,"2010-1-1 0:0:0","2020-12-31 0:0:0" ~/giss*.nc ~/output.nc
+	nces -O -D 5 -v one_dmn_rec_var -d time,1.,5. -p ~/nco/data in.nc in.nc ~/foo.nc
 nco809. Implement --quiet option to suppress WARNINGs and INFOs
 nco814. rgr: Add regression test for forgiving exclusion list handling
         ncks -O -D 2 -x -v not_present ~/nco/data/in.nc ~/foo.nc
@@ -516,7 +516,7 @@ nco941. ncra (now? when was regression?) tries to average NC_CHAR record variabl
   	ncra -O -v two_dmn_rec_var_sng ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 	20080723: HMB kludged ncra to work for NC_CHAR
 	What about NC_STRING? that seems to be "handled" by ignoring it in nco_var_cnf_typ()...
-	What about other operators, e.g., ncea?
+	What about other operators, e.g., nces?
 	Is better fix to never promote/demote to/from NC_CHAR? (like NC_STRING?)
 	That would move fix from ncra.c to nco_var_cnf_typ()
 	Would that break ncpdq packing to NC_CHAR?
@@ -590,7 +590,7 @@ nco1021. nco: use owner axes for printing CF-time in bounds attributes
 nco1023. nco: ncap2 overwrites arrays with scalars (and changes type!) without asking, e.g.,
 	 ncap2 -O -v -s 'one_dmn_rec_var=0' ~/nco/data/in.nc ~/foo.nc
 	 ncks -v one_dmn_rec_var -C -m -H ~/foo.nc
-nco222.  nco: Warn when ncea/ncra operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
+nco222.  nco: Warn when nces/ncra operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 nco1025. nco: ncrcat/ncecat warn/die when concatenating files with different scale factors
 nco1026. ncwa weighted average bug reported by Lori Sentman, then by Mark Flanner
 	 ncwa -O -C -w area -a lat -v area ~/nco/data/in.nc ~/foo.nc # 10
@@ -732,8 +732,8 @@ vg1. ncap
    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncap2 -O -D 1 -S ~/nco/data/ncap2_tst.nco ~/nco/data/in.nc ~/foo.nc > ~/foo 2>&1
 vg2. ncbo
    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncbo -t 2 -O -C -d lon,1 -p ${HOME}/nco/data -l /tmp in.nc in.nc ~/foo.nc > ~/foo 2>&1
-vg3. ncea
-   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncea -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
+vg3. nces
+   valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck nces -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -v one -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
 vg4. ncecat
    valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck ncecat -t 2 -O -C -D 3 -d lon,1 -n 3,4,1 -p ${HOME}/nco/data -l ${HOME}/nco/data h0001.nc ~/foo.nc > ~/foo 2>&1
 vg5. ncflint
@@ -777,8 +777,8 @@ Status 20050920:
    mpirun -np 3 /usr/bin/valgrind --leak-check=yes --show-reachable=yes --suppressions=${HOME}/nco/doc/valgrind.txt --tool=memcheck mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 1. mpncbo
    mpirun -np 3 ${MY_BIN_DIR}/mpncbo -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
-2. mpncea
-   mpirun -np 3 ${MY_BIN_DIR}/mpncea -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
+2. mpnces
+   mpirun -np 3 ${MY_BIN_DIR}/mpnces -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 3. mpncecat
    mpirun -np 3 ${MY_BIN_DIR}/mpncecat -O -D 3 -p ${HOME}/nco/data in.nc in.nc ~/foo.nc > ~/foo 2>&1
 4. mpncpdq

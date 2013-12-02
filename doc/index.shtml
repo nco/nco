@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.840 2013-11-11 04:57:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.841 2013-12-02 01:05:56 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -151,7 +151,7 @@ and
 <li>2013 Oct&nbsp;17: NCO 4.3.7 (HDF4, XML, <tt>ncrename</tt> groups)
 <li>2012 Oct&nbsp;02: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201310.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2013 Sep&nbsp;27: NCO 4.3.6 (<tt>--dbl</tt> default, <tt>ncdismember</tt>)
-<li>2013 Sep&nbsp;20: NCO 4.3.5 (<tt>ncea</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups)
+<li>2013 Sep&nbsp;20: NCO 4.3.5 (<tt>nces</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups)
 <li>2013 Aug&nbsp;01: NCO 4.3.4 (<tt>ncpdq</tt> bugfix, HDF unpacking)
 <li>2013 Jul&nbsp;24: NCO 4.3.3 (<tt>ncrename</tt>, <tt>ncwa</tt> groups, CDL, XML)
 <li>2013 Jul&nbsp;05: NCO 4.3.2 (<tt>ncflint</tt>, <tt>ncpdq</tt> groups)</li>
@@ -248,7 +248,7 @@ with examples of climate data analysis:
 <li><a href="./nco.html#ncap2"><tt>ncap2</tt></a> netCDF Arithmetic Processor (<a href="./nco.html#xmp_ncap">examples</a>)</li>
 <li><a href="./nco.html#ncatted"><tt>ncatted</tt></a> netCDF ATTribute EDitor (<a href="./nco.html#xmp_ncatted">examples</a>)</li>
 <li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>) (<a href="./nco.html#xmp_ncbo">examples</a>)</li>
-<li><a href="./nco.html#ncea"><tt>ncea</tt></a> netCDF Ensemble Averager (<a href="./nco.html#xmp_ncea">examples</a>)</li>
+<li><a href="./nco.html#nces"><tt>nces</tt></a> netCDF Ensemble Statistics (<a href="./nco.html#xmp_nces">examples</a>)</li>
 <li><a href="./nco.html#ncecat"><tt>ncecat</tt></a> netCDF Ensemble conCATenator (<a href="./nco.html#xmp_ncecat">examples</a>)</li>
 <li><a href="./nco.html#ncflint"><tt>ncflint</tt></a> netCDF FiLe INTerpolator (<a href="./nco.html#xmp_ncflint">examples</a>)</li>
 <li><a href="./nco.html#ncks"><tt>ncks</tt></a> netCDF Kitchen Sink (<a href="./nco.html#xmp_ncks">examples</a>)</li>
@@ -261,7 +261,7 @@ with examples of climate data analysis:
 
 <p>
 Note that the <a href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> 
-(<tt>ncea</tt> and <tt>ncra</tt>) are misnamed because they perform
+(<tt>nces</tt> and <tt>ncra</tt>) are misnamed because they perform
 many non-linear operations as well, e.g., total, minimum, maximum, RMS.
 Moreover, <tt>ncap2</tt> implements a powerful domain language which
 handles arbitrarily complex operations.
@@ -629,11 +629,11 @@ Multiple record dimension <a href="http://nco.sf.net/nco.html#mrd">support</a> w
 <li><b>NCO 4.3.6</b>:
 <tt>--flt</tt> default;
 <tt>ncpdq/ncecat</tt> leave only one record dimension;
-<tt>ncwa/ncea</tt> bugfixes;
+<tt>ncwa/nces</tt> bugfixes;
 <tt>ncdismember</tt></li>
 <li><b>NCO 4.3.5</b>: 
-<tt>ncea/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
-<tt>ncea/ncra/ncwa</tt> float&rightarrow;double coercion with <tt><a href="http://nco.sf.net/nco.html#dbl">--dbl</a></tt>;</li>
+<tt>nces/ncra/ncrcat</tt> groups with <tt>-g -G --unn</tt>;</li>
+<tt>nces/ncra/ncwa</tt> float&rightarrow;double coercion with <tt><a href="http://nco.sf.net/nco.html#dbl">--dbl</a></tt>;</li>
 <tt>ncwa -d</tt> <a href="#bug_ncwa_lmt">bugfix</a>
 <li><b>NCO 4.3.4</b>:
 HDF unpacking <tt>--hdf_upk</tt>;
@@ -672,7 +672,7 @@ Group <a href="http://nco.sf.net/nco.html#rx">wildcards</a>;
 Group <a href="http://nco.sf.net/nco.html#anchoring">anchoring and recursion</a>;
 Intersection/union <a href="http://nco.sf.net/nco.html#unn">modes</a>;
 <tt>ncrename</tt> global att. handling;
-<tt>ncea</tt> <a href="#bug_ncea_rec_var">bugfix</a>;
+<tt>nces</tt> <a href="#bug_nces_rec_var">bugfix</a>;
 <tt>ncra</tt> <a href="#bug_ncra_flg_bfr_nrm">bugfix</a></li>
 <li><b>NCO 4.2.3</b>:
 Group Path Editing (GPE);
@@ -706,7 +706,7 @@ MD5 digests;
 <tt>ncatted</tt> NaN support</li>
 <li><b>NCO 4.0.9</b>: 
 Fix over-zealous <tt>ncap2</tt> packing;
-Fix <tt>ncea -y ttl</tt>;
+Fix <tt>nces -y ttl</tt>;
 Fix/improve <tt>ncap2 print, array()</tt>;
 Warn when appending variables of suspicious record length;
 Warn when <tt>NC_MAX_ATTRS</tt> exceeded</li>
@@ -808,7 +808,7 @@ Improve IRIX&nbsp;6.5 support</li>
 <li><b>NCO 3.1.5</b>: New <tt>ncap2</tt> array and hyperslab features; change some WARNINGs to INFOs, add Pathscale and update PGI and Intel compiler support</li>
 <li><b>NCO 3.1.4</b>: Fix <tt>ncbo</tt> memory problem; report timer results</li>
 <li><b>NCO 3.1.3</b>: <tt>ncap2</tt> automatically <a href="http://nco.sf.net/nco.html#att_prp">propagates</a> attributes to new/derived variables; NCO handles record variables with zero records; <a href="http://nco.sf.net/nco.html#cnv_CF_crd">support</a> CF <tt>coordinates</tt> convention; <tt>ncwa -b</tt> <a href="http://nco.sf.net/nco.html#ncwa">retains</a> degenerate dimensions; build fixes for Cray T3E, Solaris, Cygwin.</li>
-<li><b>NCO 3.1.2</b>: <tt>ncap2</tt> control structures (conditionals, loops, etc.); keep non-processed data <a href="bug_pack_fix">packed</a> in output file; binary operators <tt>ncbo</tt> and <tt>ncflint</tt> work when only one variable has <tt>missing_value</tt> attribute; change <tt>ncra</tt> and <tt>ncea</tt> to always average coordinate variables</li>
+<li><b>NCO 3.1.2</b>: <tt>ncap2</tt> control structures (conditionals, loops, etc.); keep non-processed data <a href="bug_pack_fix">packed</a> in output file; binary operators <tt>ncbo</tt> and <tt>ncflint</tt> work when only one variable has <tt>missing_value</tt> attribute; change <tt>ncra</tt> and <tt>nces</tt> to always average coordinate variables</li>
 <li><b>NCO 3.1.1</b>: NCO builds (again) with C++ compilers; ncap2 development code; server-side extensions</li>
 <li><b>NCO 3.1.0</b>: MPI operators are bug-free; fix <t>./configure</t> for MPI and netCDF4; MRV algorithm speeds up <tt>ncwa</tt> 5&mdash;10 times; <tt>ncap</tt> random number generator <tt>rnd_nbr()</tt></li>
 <li><b>NCO 3.0.3</b>: Eliminate all critical read regions (accelerates all SMP operators); builds with netCDF4 alpha; read <t>NETCDF4_CLASSIC</t> (i.e., HDF) files automatically; write <t>NETCDF4</t> files <a href="http://nco.sf.net/nco.html#netcdf4">on request</a>; <a href="http://nco.sf.net#BM">benchmark results</a> quantify parallelism.</li>
@@ -821,7 +821,7 @@ Improve IRIX&nbsp;6.5 support</li>
 <li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax; 64-bit ABI for x86_64; <a href="http://www.debian.org">Debian</a> builds libnco_c++</li>
 <li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal</li>
 <li><b>NCO 2.9.4</b>: <tt>ncecat</tt> works on pure scalar files; change to <tt>cvs.sf.net</tt>; AIX GCC builds</li>
-<li><b>NCO 2.9.3</b>: <tt>ncra</tt> and <tt>ncea</tt> now <a name="bug_mss_val_zro_ncra">work correctly</a> when <tt>missing_value</tt> equals zero or any intermediate sums</li>
+<li><b>NCO 2.9.3</b>: <tt>ncra</tt> and <tt>nces</tt> now <a name="bug_mss_val_zro_ncra">work correctly</a> when <tt>missing_value</tt> equals zero or any intermediate sums</li>
 <li><b>NCO 2.9.2</b>: <tt>ncap</tt> <tt>S/V</tt>, <tt>S%V</tt>, and <tt>S^V</tt> <a href="#bug_ncap_cmt">operations fixed</a> (<tt>S</tt> = scalar, <tt>V</tt> = variable)</li>
 <li><b>NCO 2.9.1</b>: <tt>ncwa</tt> works again on packed <tt>NC_FLOAT</tt> data (<a href="#bug_pck_ncwa">broke when?</a>)</li>
 <li><b>NCO 2.9.0</b>: Complete <tt>ncap</tt> modulo operator (<tt>V%S</tt>) and generic exponentiation (<tt>V^S</tt>), scalar divided by variable (<tt>S/V</tt>); workaround stack memory problem with GCC extensions; fix <tt>make check</tt></li>
@@ -845,7 +845,7 @@ Improve IRIX&nbsp;6.5 support</li>
 <li><b>NCO 2.6.3</b>: Mac OS&nbsp;X builds work seamlessly; documentation fixed</li>
 <li><b>NCO 2.6.2</b>: Major improvements in autotools support; <tt>ncap</tt> supports user-defined dimensions</li>
 <li><b>NCO 2.6.1</b>: Minor fix to unpacking support</li>
-<li><b>NCO 2.6.0</b>: All arithmetic operators (<tt>ncap</tt>, <tt>ncdiff</tt>, <tt>ncea</tt>, <tt>ncflint</tt>, <tt>ncra</tt>) support unpacking</li>
+<li><b>NCO 2.6.0</b>: All arithmetic operators (<tt>ncap</tt>, <tt>ncdiff</tt>, <tt>nces</tt>, <tt>ncflint</tt>, <tt>ncra</tt>) support unpacking</li>
 <li><b>NCO 2.5.6</b>: Handle <tt>missing_value</tt> correctly for integer variables in <tt>ncra</tt>, merge <tt>autoconf</tt> build</li>
 <li><b>NCO 2.5.5</b>: Handle files without existing global &ldquo;<tt>History</tt>&rdquo; attribute correctly</li>
 <li><b>NCO 2.5.4</b>: Add support NEC-SX support; update Cray support; small build changes</li>
@@ -871,14 +871,14 @@ Improve IRIX&nbsp;6.5 support</li>
 <li><b>NCO 2.1.0</b>: <tt>ncap</tt> full lexer/parser operational</li>
 <li><b>NCO 2.0.3</b>: small fixes to 2.0.0 (e.g., <tt>ncks</tt> printing)</li>
 <li><b>NCO 2.0.2</b>: Add packing/unpacking capabilities based on <tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>
-<li><b>NCO 2.0.1</b>: Add user-configurable multi-threaded capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
+<li><b>NCO 2.0.1</b>: Add user-configurable multi-threaded capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>nces</tt>, and <tt>ncra</tt></li>
 <li><b>NCO 2.0.0</b>: (RPM available) <a href="./nco_news.shtml#20010507">20010507</a>: Switched all internal calls to netCDF&nbsp;3.x API</li>
 <li><b>NCO 1.2.2</b>: <a href="./nco_news.shtml#20010211">20010211</a>: Allow weights with
 <tt>ncwa</tt> in min/max/ttl operations; easier building with HDF4. 
 <tt>ncrename</tt> can now work on specific variables rather than whole file.
 <tt>ncks</tt> has <tt>-q</tt> option for cleaner printing</li>
 <li><b>NCO 1.2.1</b>: <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before arithmetic; fixed broken <tt>-v</tt> option</li>
-<li><b>NCO 1.2</b>: <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations to <tt>ncra/ncea</tt> and <tt>ncwa</tt>: min,max,total,rms,rmssdn,sqrt. Added <a href="http://opendap.org">DODS</a> compliance.</li>
+<li><b>NCO 1.2</b>: <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations to <tt>ncra/nces</tt> and <tt>ncwa</tt>: min,max,total,rms,rmssdn,sqrt. Added <a href="http://opendap.org">DODS</a> compliance.</li>
 <li><b>NCO 1.1.48</b>: <a href="./nco_news.shtml#20000515">20000515</a>: Potentially serious bugfix to <tt>ncdiff</tt>, recommend upgrade</li>
 <li><b>NCO 1.1.47</b>: <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier specifications of input files</li> 
 </ul>
@@ -1773,7 +1773,7 @@ to upgrade to NCO 4.0.7+ just to be safe.
 <a name="bug_thr_msa"></a>
 <li><i>Threading problems with MSA:</i>
 NCO version 3.9.5 has a nasty bug that causes threaded arithmetic
-operators, e.g., <tt>ncea</tt> to produce incorrect results under some
+operators, e.g., <tt>nces</tt> to produce incorrect results under some
 conditions. 
 The problem may occur whenever OpenMP is enabled and the operators 
 run on a multi-core CPU with more than one thread.
@@ -1871,10 +1871,10 @@ It exited successfully without altering the record variable.
 Fixed in version 4.2.5.
 </li>
 
-<!-- http://nco.sf.net#bug_ncea_rec_var -->
-<a name="bug_ncea_rec_var"></a>
-<li><i><tt>ncea</tt> bug with non-record files:</i>
-Versions 4.2.1&mdash;4.2.3 of <tt>ncea</tt> incorrectly referenced
+<!-- http://nco.sf.net#bug_nces_rec_var -->
+<a name="bug_nces_rec_var"></a>
+<li><i><tt>nces</tt> bug with non-record files:</i>
+Versions 4.2.1&mdash;4.2.3 of <tt>nces</tt> incorrectly referenced
 the record variable on files which do not contain it.
 This caused a segmentation violation and core dump.
 </li>
@@ -1943,8 +1943,8 @@ file, e.g., <tt>ncks -d 0,1,lat in4.nc out4.nc</tt>.
 Three workarounds that do not require NCO upgrades (or downgrades) are 
 to explicitly specify chunking with, e.g., 
 <tt>ncks --cnk_plc=all -d 0,1,lat in4.nc out4.nc</tt>, or, to use 
-<tt>ncea</tt> instead of <tt>ncks</tt> for hyperslabbing, e.g.,
-<tt>ncea -d 0,1,lat in4.nc out4.nc</tt> (<tt>ncea</tt> does a no-op
+<tt>nces</tt> instead of <tt>ncks</tt> for hyperslabbing, e.g.,
+<tt>nces -d 0,1,lat in4.nc out4.nc</tt> (<tt>nces</tt> does a no-op
 when there is only one input file), or to write to a netCDF3 file,
 <tt>ncks -3 -d 0,1,lat in4.nc out3.nc</tt>.
 </li>
@@ -2033,15 +2033,15 @@ Possible future implementations are discussed
 
 <!-- http://nco.sf.net#bug_mss_val_zro_ncra -->
 <a name="bug_mss_val_zro_ncra"></a>
-<li><i>Problems with <tt>ncra</tt> and <tt>ncea</tt> when <tt>missing_value</tt> = 0.0:</i>
-The algorithm <tt>ncra</tt> and <tt>ncea</tt> used to perform
+<li><i>Problems with <tt>ncra</tt> and <tt>nces</tt> when <tt>missing_value</tt> = 0.0:</i>
+The algorithm <tt>ncra</tt> and <tt>nces</tt> used to perform
 arithmetic in versions up to 2.9.2 breaks if <tt>missing_value</tt>
 is&nbsp;0.0. 
 Why, you ask?
 Running average (or total, etc.) algorithms must initialize the answer  
 to&nbsp;0.0.
 This is done since the sum accumulates in place as <tt>ncra</tt> and
-<tt>ncea</tt> proceeds across records and files.  
+<tt>nces</tt> proceeds across records and files.  
 (Normalizing this accumulation by the total number of records is the
 last step).
 The old algorithm compared both the current running average and the

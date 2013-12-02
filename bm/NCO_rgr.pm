@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.377 2013-12-02 00:19:44 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.378 2013-12-02 01:05:55 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -725,12 +725,12 @@ print "\n";
    
    
 ####################
-#### ncfe tests #### - OK !
+#### nces tests #### - OK !
 ####################
-    $opr_nm='ncfe';
+    $opr_nm='nces';
 ####################
     
-#ncfe #01	
+#nces #01	
 	
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var -d time,4 $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
@@ -740,7 +740,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncfe #02	
+#nces #02	
     
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
@@ -750,7 +750,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncfe #03	
+#nces #03	
     
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_flt -d time,0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v rec_var_flt_mss_val_flt %tmp_fl_00%";
@@ -760,7 +760,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncfe #04	
+#nces #04	
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl -d time,1 $in_pth_arg in.nc in.nc %tmp_fl_00%";
@@ -771,7 +771,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncfe #05	
+#nces #05	
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_arg in.nc %tmp_fl_00%";
@@ -782,7 +782,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncfe #06	
+#nces #06	
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
@@ -793,7 +793,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncfe #07	
+#nces #07	
 	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -C -d time,0,2 -d lon,0 -d lon,3 -v three_dmn_var_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
@@ -805,7 +805,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncfe #08	
+#nces #08	
 	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
     $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
@@ -820,7 +820,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncfe #09	
+#nces #09	
     
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v pck_7 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
@@ -830,7 +830,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncfe #10	
+#nces #10	
     
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg --hdf_upk -v pck_7 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
@@ -841,12 +841,12 @@ print "\n";
     $#tst_cmd=0; # Reset array
 	
 	
-#### Group tests	
+#### Group File tests	
 	if($HAVE_NETCDF4_H == 1){
 
 	
-#ncfe #11
-# same as #ncfe #01 , with group
+#nces #11
+# same as #nces #01 , with group
 	
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g4 -v one_dmn_rec_var %tmp_fl_00%";
@@ -857,9 +857,9 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 	
 	
-#ncfe #12
+#nces #12
 # 2 groups, each one with a record (part 1 )
-# ncra -Y ncfe -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
+# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
@@ -869,9 +869,9 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-#ncfe #13
+#nces #13
 # 2 groups, each one with a record (part 2 )
-# ncra -Y ncfe -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
+# ncra -Y nces -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
@@ -881,19 +881,12 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-    } # #### Group tests	
+    } # #### Group File tests	
 	
+     #### Group Ensemble tests 
+    if($HAVE_NETCDF4_H == 1){
 	
-####################
-#### ncge tests #### 
-####################
-    $opr_nm='ncge';  
-####################	
-
-     #### Group tests 
-	if($HAVE_NETCDF4_H == 1){
-	
-#ncge #01
+#nces #14
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g cesm -v tas1 %tmp_fl_00%";
@@ -903,7 +896,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncge #02
+#nces #14
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O --nsm_sfx=_avg $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g cesm_avg -v tas1 %tmp_fl_00%";
@@ -913,7 +906,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-#ncge #03
+#nces #15
 # ncra -Y ncge -h -O -G /gpe_grp mdl.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
@@ -924,7 +917,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncge #04
+#nces #16
 #ncra -Y ncge -O mdl.nc mdl2.nc out.nc
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g ecmwf -v tas1 %tmp_fl_00%";
@@ -934,11 +927,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-     } # #### Group tests	
-
-	
-	
-	
+     } # #### Group Ensemble tests	
     
 # print "paused - hit return to continue"; my $wait=<STDIN>;
     

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.671 2013-11-24 04:05:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.672 2013-12-02 01:05:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -550,11 +550,11 @@ CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
 MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
-MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
+MDL_BIN_SYM_LNK := ncdiff ncea nces ncrcat # Symbolic links
 ifeq (${MPI},Y)
  MDL_MPI_TRG := mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa # MPI binary targets
  MDL_MPI_TRG_SMP := ncbo ncecat ncflint ncpdq ncra ncwa # MPI binary targets
- MDL_MPI_SYM_LNK := mpncdiff mpncea mpncrcat # MPI Symbolic links
+ MDL_MPI_SYM_LNK := mpncdiff mpncea mpnces mpncrcat # MPI Symbolic links
  MDL_MPI_STB := ${MDL_MPI_TRG} ${MDL_MPI_SYM_LNK} # All MPI files in MY_BIN_DIR
  MDL_MPI_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_MPI_TRG}) # mpi_cln removes these files
  MDL_MPI_OBJ := $(addsuffix .o,$(addprefix ${MY_OBJ_DIR}/,${MDL_MPI_TRG})) # mpi_cln removes these files
@@ -1663,6 +1663,7 @@ ${MY_BIN_DIR}/mpncra:	${MY_OBJ_DIR}/mpncra.o lib
 	${MPICC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f mpncea; ln -s -f mpncra mpncea
+	cd ${MY_BIN_DIR}; rm -f mpnces; ln -s -f mpncra mpnces
 	cd ${MY_BIN_DIR}; rm -f mpncrcat; ln -s -f mpncra mpncrcat
 mpncwa:   ${MY_BIN_DIR}/mpncwa
 ${MY_BIN_DIR}/mpncwa:	${MY_OBJ_DIR}/mpncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
@@ -1700,6 +1701,7 @@ ${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o lib
 	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncea; ln -s -f ncra ncea
+	cd ${MY_BIN_DIR}; rm -f nces; ln -s -f ncra nces
 	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -s -f ncra ncrcat
 ncrename:   ${MY_BIN_DIR}/ncrename
 ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
@@ -1955,7 +1957,7 @@ src_cln:
 	rm -f ${MDL_NCAP}
 # Targets in /usr/local
 sys: ${MDL_BIN_TRG}
-	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} ncap2 /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ${HOME}/nco/src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
+	- cd ${MY_BIN_DIR};sudo /bin/cp -f ${MDL_BIN_TRG} ncap2 /usr/local/bin; cd /usr/local/bin; sudo rm -f ncdiff ncea nces ncrcat ncunpack; sudo ln -s -f ncbo ncdiff; sudo ln -s -f ncra ncea;  sudo ln -s -f ncra nces; sudo ln -s -f ncra ncrcat; sudo ln -s -f ncpdq ncunpack; sudo ln -s -f ncpdq ncpack; cd ${HOME}/nco/src/nco++; ${MAKE} -f Makefile.old OPTS=${OPTS} $@
 sys_cln:
 	- cd /usr/local/bin;rm -f ${MDL_BIN_TRG}
 

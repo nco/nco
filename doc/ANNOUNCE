@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.643 2013-11-26 00:42:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.644 2013-12-02 01:05:56 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -8,24 +8,24 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 We are pleased to report the birth of a new operator, nces.
 nces will debut at AGU (Friday 12/13 11:35 AM Moscone West 2010).  
 nces is for netCDF Ensemble Statistics.
-nces comprises the existing functionality of ncea and extends it by
+nces comprises the existing functionality of nces and extends it by
 allowing groups to be treated as an unlimited dimension of datasets.   
-nces is really ncea with a powerful new feature and a new name.
+nces is really nces with a powerful new feature and a new name.
 See below for more info on the feature. Regarding the name...
 
-We renamed ncea as nces to more accurately describe the operator.
+We renamed nces as nces to more accurately describe the operator.
 For historical reasons, NCO is full of misnamed operators:
 NCO itself is misnamed because the operators now work well on HDF (4
 and 5) files, not just netCDF files. We planned to change their name
 to SDO (Scientific Data Operators) but the name wouldn't stick.
-And the "averagers" (ncea, ncra, ncwa) are all misnamed because they
+And the "averagers" (nces, ncra, ncwa) are all misnamed because they
 all do more statistics (min/max/ttl/rms...) than just averages. 
-This feature addition is an opportune time to rename ncea as nces.  
+This feature addition is an opportune time to rename nces as nces.  
 
 We faced the same problem of back-compatibility when we renamed ncdiff
-to ncbo many years ago. We will use the same method. Invoking 'ncea'
+to ncbo many years ago. We will use the same method. Invoking 'nces'
 will continue to produce the same results so scripts will not break.
-Under the hood, 'ncea' will invoke 'nces --nsm_fl', just as 'ncdiff' 
+Under the hood, 'nces' will invoke 'nces --nsm_fl', just as 'ncdiff' 
 invokes 'ncbo --op_typ=subtract'. To cause nces to utilize the new
 group ensemble mode, invoke it with 'nces --nsm_grp'. This is similar
 to how ncecat has two modes, record aggregation (the default) and
@@ -48,7 +48,7 @@ Charlie
 
 NEW FEATURES:
 
-A. ncea is now nces or nces --nsm_fl, meaning ensembles of files.
+A. nces is now nces or nces --nsm_fl, meaning ensembles of files.
    Use nces --nsm_grp, for ensembles of groups, a new feature.
    The same input is valid in both modes and produces the same
    output unless group ensembles are present. Members of a group

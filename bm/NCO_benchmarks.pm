@@ -1,6 +1,6 @@
 package NCO_benchmarks;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.21 2013-10-22 03:12:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_benchmarks.pm,v 1.22 2013-12-02 01:05:55 zender Exp $
 
 # Purpose: library module supporting nco_bm.pl benchmark and regression tests
 # File contains BENCHMARK code (as opposed to the REGRESSION tests in "NCO_rgr.pm")
@@ -73,7 +73,7 @@ sub benchmarks{
 	}
 
 # The general format for the benchmarks is the same as for the regressions:
-# 	#################### begin ncea benchmark
+# 	#################### begin nces benchmark
 # 	$opr_nm='nco_name';
 # 	$dsc_sng = 'unique descriptor string for this benchmark';
 # 	####################
@@ -84,7 +84,7 @@ sub benchmarks{
 #	# named uniquely using the ones described in nco_bm.pl: 336-350 (foo...).
 #	# The last nco command is usually an ncks command that examines a single value generated
 #	# from the preceding chain of commands
-# 		$tst_cmd[0] = "ncea -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg stl_5km_00.nc $fl_out";
+# 		$tst_cmd[0] = "nces -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg stl_5km_00.nc $fl_out";
 # 		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 # 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon $fl_out $fl_out";
 # 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 $fl_out";
@@ -153,13 +153,13 @@ if ($dbg_lvl >= 1) {print "paused after ncap2 - hit return to continue"; $wait =
 
 if ($dbg_lvl >= 1) {print "paused - hit return to continue"; $wait = <STDIN>;}
 
-	#################### begin ncea benchmark
-	$opr_nm='ncea';
-	$dsc_sng = 'ncea averaging 2^5 files';
+	#################### begin nces benchmark
+	$opr_nm='nces';
+	$dsc_sng = 'nces averaging 2^5 files';
 	####################
 	if ($mpi_prc == 0 || ($mpi_prc > 0 && $opr_sng_mpi =~ /$opr_nm/)) {
 		if ($dbg_lvl > 0) {print "\nBenchmark: \$fl_fmt = [$fl_fmt], \$nco_D_flg = $nco_D_flg, \$omp_flg = [$omp_flg], \$dsc_sng = $dsc_sng, \$fl_cnt = [$fl_cnt], \n";}
-		$tst_cmd[0] = "ncea -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg stl_5km_00.nc %tmp_fl_00%";
+		$tst_cmd[0] = "nces -h -O $fl_fmt $nco_D_flg $omp_flg -n $fl_cnt,2,1 $in_pth_arg stl_5km_00.nc %tmp_fl_00%";
 		if($dbg_lvl > 2){print "entire cmd: $tst_cmd[0]\n";}
 		$tst_cmd[1] = "ncwa -h -O $fl_fmt $nco_D_flg $omp_flg -y sqrt -a lat,lon %tmp_fl_00% %tmp_fl_01%";
 		$tst_cmd[2] = "ncks -C -H -s '%f' -v d2_00 %tmp_fl_01%";

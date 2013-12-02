@@ -1,6 +1,6 @@
 package NCO_bm;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.85 2013-12-01 23:54:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_bm.pm,v 1.86 2013-12-02 01:05:55 zender Exp $
 
 # Purpose: Library for nco_bm.pl benchmark and regression tests
 # Module contains following functions:
@@ -78,7 +78,7 @@ sub bm_usg {
   Usage:
     nco_bm.pl (options) [list of operators to test from the following list]
 	
-ncap2 ncatted ncbo ncflint ncea ncecat
+ncap2 ncatted ncbo ncflint nces ncecat
 ncks ncpdq ncra ncrcat ncrename ncwa net      (default tests all)
 	
 where (options) are:
@@ -150,10 +150,10 @@ sub bm_ntl($$){
     my $dbg_lvl; # [flg] Debugging level
     ($bch_flg,$dbg_lvl)=@_;
 # Enumerate operators to test
-    @opr_lst_all = qw( ncap2 ncdiff ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa net ncge);
+    @opr_lst_all = qw( ncap2 ncdiff ncatted ncbo ncflint nces ncecat ncks ncpdq ncra ncrcat ncrename ncwa net);
     @opr_lst_mpi = qw( ncbo ncecat ncflint ncpdq ncra ncwa ncpdq ncra);
-    $opr_sng_mpi = "ncbo ncdiff ncecat ncflint ncea ncpdq ncra ncwa "; # ncpdq ncra MPI, but fail bench
-    $opr_rgr_mpi = "ncbo ncdiff ncecat ncflint ncea ncpdq ncra ncwa ncrcat"; # need all of them for regression
+    $opr_sng_mpi = "ncbo ncdiff ncecat ncflint nces ncpdq ncra ncwa "; # ncpdq ncra MPI, but fail bench
+    $opr_rgr_mpi = "ncbo ncdiff ncecat ncflint nces ncpdq ncra ncwa ncrcat"; # need all of them for regression
     
     if (scalar @ARGV > 0){@opr_lst=@ARGV;}else{@opr_lst=@opr_lst_all;}
     if (defined $ENV{'MY_BIN_DIR'} && $ENV{'MY_BIN_DIR'} ne ""){$MY_BIN_DIR=$ENV{'MY_BIN_DIR'};}
@@ -185,9 +185,8 @@ sub bm_ntl($$){
     my $dotlib = '';
     $dotlib = ".libs/lt-" if `head -1 $MY_BIN_DIR/ncatted` =~ m/sh/;
     $sym_link{ncdiff}=$dotlib . "ncbo";
-    $sym_link{ncea}=$dotlib . "ncra";
+    $sym_link{nces}=$dotlib . "ncra";
     $sym_link{ncrcat}=$dotlib . "ncra";
-	$sym_link{ncge}=$dotlib . "ncra";
     foreach(keys %sym_link) {
 	system("cd $MY_BIN_DIR && ln -s -f $sym_link{$_} $_ || (/bin/rm -f $_ && ln -s -f $sym_link{$_} $_)");
     }

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.58 2013-11-24 04:05:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.59 2013-12-02 01:05:56 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -140,7 +140,7 @@ nco/man/ncap.1		ncap man page
 nco/man/ncatted.1	ncatted man page
 nco/man/ncbo.1		ncbo man page
 nco/man/ncdiff.1	ncdiff man page
-nco/man/ncea.1		ncea man page
+nco/man/nces.1		nces man page
 nco/man/ncecat.1	ncecat man page
 nco/man/ncflint.1	ncflint man page
 nco/man/ncks.1		ncks man page
@@ -168,7 +168,7 @@ nco/src/nco/mpncbo.c		mpncbo main() MPI-enabled
 nco/src/nco/mpncecat.c		mpncecat main() MPI-enabled
 nco/src/nco/mpncflint.c		mpncflint main() MPI-enabled
 nco/src/nco/mpncpdq.c		mpncpdq main() MPI-enabled
-nco/src/nco/mpncra.c		mpncra/mpncea/mpncrcat main() MPI-enabled
+nco/src/nco/mpncra.c		mpncra/mpnces/mpncrcat main() MPI-enabled
 nco/src/nco/mpncwa.c		mpncwa main() MPI-enabled
 nco/src/nco/ncap.c		ncap main() MPI-enabled
 nco/src/nco/ncap.h
@@ -262,7 +262,7 @@ nco/src/nco/nco_var_scv.c
 nco/src/nco/nco_var_scv.h
 nco/src/nco/nco_var_utl.c
 nco/src/nco/nco_var_utl.h
-nco/src/nco/ncra.c		ncra/ncea/ncrcat main()
+nco/src/nco/ncra.c		ncra/nces/ncrcat main()
 nco/src/nco/ncrename.c		ncrename main()
 nco/src/nco/ncwa.c		ncwa main()
 
