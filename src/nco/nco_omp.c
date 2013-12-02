@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.61 2013-12-01 23:54:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.62 2013-12-02 00:13:21 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -134,7 +134,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
       /* Operators with higher maximum pre-set thread limit (NB: not all of these are threaded!) */
     case ncbo: 
     case ncatted: 
-    case ncea:
+    case ncfe:
     case ncflint: 
     case ncks: 
     case ncpdq: 

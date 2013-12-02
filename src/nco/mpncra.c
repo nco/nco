@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.143 2013-11-06 17:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.144 2013-12-02 00:13:21 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
    ncra -- netCDF running averager
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.143 2013-11-06 17:51:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.143 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.144 2013-12-02 00:13:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.144 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;
@@ -506,7 +506,7 @@ main(int argc,char **argv)
       break;
     case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);
-      if(nco_prg_id == ncra || nco_prg_id == ncea ) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+      if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -759,7 +759,7 @@ main(int argc,char **argv)
       /* Allocate space for only one record */
       var_prc_out[idx]->sz=var_prc[idx]->sz=var_prc[idx]->sz_rec;
     } /* endif */
-    if(nco_prg_id == ncra || nco_prg_id == ncea){
+    if(nco_prg_id == ncra || nco_prg_id == ncfe){
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long int));
       (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
       var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
@@ -802,7 +802,7 @@ main(int argc,char **argv)
   /* Perform various error-checks on input file */
   if(False) (void)nco_fl_cmp_err_chk();
   
-  if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncea jumps to else branch */
+  if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe jumps to else branch */
     /* Loop over each record in current file */
     if(nco_dbg_lvl >= nco_dbg_std && lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),nco_prg_nm_get(),fl_in,fl_idx);
     idx_rec=lmt_rec->srt;
@@ -943,7 +943,7 @@ main(int argc,char **argv)
     printf("DEBUG: End of first pass of ncra/ncrcat at node %d\n",prc_rnk);
     
     /* End of ncra, ncrcat section */
-  }else{ /* ncea */
+  }else{ /* ncfe */
     
     if(prc_rnk == rnk_mgr){ /* MPI manager code */
       /* Compensate for incrementing on each worker's first message */
@@ -962,7 +962,7 @@ main(int argc,char **argv)
 	if(msg_tag_typ == msg_tag_wrk_rqs){
 	  var_wrt_nbr++; /* [nbr] Number of variables written */
 	  /* Worker closed output file before sending msg_tag_wrk_rqs */
-	  /* TKN_WRT_FREE=True; ncea does not do file write here */
+	  /* TKN_WRT_FREE=True; ncfe does not do file write here */
 	  
 	  if(idx > nbr_var_prc-1){
 	    msg_bfr[0]=idx_all_wrk_ass; /* [enm] All variables already assigned */
@@ -1012,7 +1012,7 @@ main(int argc,char **argv)
 	} /* !idx_all_wrk_ass */
       } /* while(1) loop requesting work/token in Worker */
     } /* endif Worker */
-  } /* end else ncea */
+  } /* end else ncfe */
   
   if(nco_dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"\n");
   
@@ -1065,7 +1065,7 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */
     if(False) (void)nco_fl_cmp_err_chk();
     
-    if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncea jumps to else branch */
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe jumps to else branch */
       /* Loop over each record in current file */
       if(nco_dbg_lvl >= nco_dbg_std && lmt_rec->srt > lmt_rec->end) (void)fprintf(stdout,gettext("%s: WARNING %s (input file %d) is superfluous\n"),nco_prg_nm_get(),fl_in,fl_idx);
       for(idx_rec=lmt_rec->srt;idx_rec<=lmt_rec->end;idx_rec+=lmt_rec->srd){
@@ -1229,9 +1229,9 @@ main(int argc,char **argv)
       printf("DEBUG: prc_rnk %d at the end of ncra/rcat\n",prc_rnk);
 #endif /* !ENABLE_MPI */
       /* End of ncra, ncrcat section */
-    }else{ /* ncea */
+    }else{ /* ncfe */
 #ifdef ENABLE_MPI
-      if(prc_rnk != rnk_mgr){ /* Only Worker does the ncea processing */
+      if(prc_rnk != rnk_mgr){ /* Only Worker does the ncfe processing */
 	if(fl_idx == 0){
 	  continue;
 	}else{ /* a loop of idx = stored indices */
@@ -1266,7 +1266,7 @@ main(int argc,char **argv)
 	  } /* end else !fl_idx=0 */
 	} /* !Worker */
 #endif /* !ENABLE_MPI */
-      } /* end else ncea */
+      } /* end else ncfe */
       
       if(nco_dbg_lvl > nco_dbg_scl) (void)fprintf(stderr,"\n");
       
@@ -1280,7 +1280,7 @@ main(int argc,char **argv)
     printf("DEBUG: prc_rnk %d is out of file idx loop\n",prc_rnk); 
 #endif /* !ENABLE_MPI */
     /* Normalize, multiply, etc where necessary */
-    if(nco_prg_id == ncra || nco_prg_id == ncea){
+    if(nco_prg_id == ncra || nco_prg_id == ncfe){
 #ifdef ENABLE_MPI
       if(prc_rnk != rnk_mgr){ /* Only workers have indices of variables to process */
 	for(jdx=0;jdx<lcl_nbr_var;jdx++){
@@ -1347,7 +1347,7 @@ main(int argc,char **argv)
     }
     printf("DEBUG: Mgr shud prnt this too, prc_rnk %d\n",prc_rnk);
 #endif /* !ENABLE_MPI */
-  } /* !ncra/ncea */
+  } /* !ncra/ncfe */
 #ifdef ENABLE_MPI
   printf("DEBUG: After all processing; Before barrier, prc_rnk %d\n",prc_rnk);
   if(prc_rnk == rnk_mgr){ /* Only Manager */
@@ -1373,7 +1373,7 @@ main(int argc,char **argv)
     printf("DEBUG: prc_rnk %d waiting for msg from Mgr for final write\n",prc_rnk);
     MPI_Recv(msg_bfr,msg_bfr_lng,MPI_INT,prc_rnk-1,msg_tag_tkn_wrt_rsp,MPI_COMM_WORLD,&mpi_stt);
     printf("DEBUG: prc_rnk %d got token for final write to %d\n",prc_rnk, out_id);
-    if(nco_prg_id == ncra || nco_prg_id == ncea){
+    if(nco_prg_id == ncra || nco_prg_id == ncfe){
       /* Copy averages to output file and free averaging buffers */
       rcd=nco_fl_open(fl_out_tmp,NC_WRITE|NC_SHARE,&bfr_sz_hnt,&out_id);
       printf("DEBUG: prc_rnk %d opened output file for final write\n",prc_rnk);
@@ -1411,7 +1411,7 @@ main(int argc,char **argv)
   
 #else /* !ENABLE_MPI */
   /* Copy averages to output file and free averaging buffers */
-  if(nco_prg_id == ncra || nco_prg_id == ncea){
+  if(nco_prg_id == ncra || nco_prg_id == ncfe){
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Revert any arithmetic promotion but leave unpacked (for now) */
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);

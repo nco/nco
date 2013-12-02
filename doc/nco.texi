@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.911 2013-11-23 01:50:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.912 2013-12-02 00:13:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -274,7 +274,7 @@ notice identical to this one except for the removal of this paragraph
 @html
 <meta name="Author" content="Charlie Zender">
 <meta name="Keywords" content="NCO documentation, NCO User Guide,
-netCDF, operator, GCM, CCM, scientific data, ncbo, ncea, ncecat,
+netCDF, operator, GCM, CCM, scientific data, ncbo, ncfe, ncecat,
 ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @end html
 @html

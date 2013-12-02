@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.375 2013-12-01 23:54:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.376 2013-12-02 00:13:21 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -732,7 +732,7 @@ print "\n";
     
 #ncea #01	
 	
-    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var -d time,4 $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var -d time,4 $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="ensemble mean of int across two files";
     $tst_cmd[2]="5";
@@ -742,7 +742,7 @@ print "\n";
 	
 #ncea #02	
     
-    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
     $dsc_sng="ensemble sum of missing value across two files";
     $tst_cmd[2]="1.0e36";
@@ -752,7 +752,7 @@ print "\n";
 	
 #ncea #03	
     
-    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_flt -d time,0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_flt -d time,0 $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v rec_var_flt_mss_val_flt %tmp_fl_00%";
     $dsc_sng="ensemble mean with missing values across two files";
     $tst_cmd[2]="1.0e36";
@@ -763,7 +763,7 @@ print "\n";
 #ncea #04	
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
-    $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl -d time,1 $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v rec_var_flt_mss_val_dbl -d time,1 $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[2]="ncks -C -H -s '%e' -v rec_var_flt_mss_val_dbl %tmp_fl_00%";
     $dsc_sng="ensemble min of float across two files";
     $tst_cmd[3]="2";
@@ -774,7 +774,7 @@ print "\n";
 #ncea #05	
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
-    $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -C -v pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[2]="ncks -C -H -s '%e' -v pck %tmp_fl_00%";
     $dsc_sng="scale factor + add_offset packing/unpacking";
     $tst_cmd[3]="3";
@@ -785,7 +785,7 @@ print "\n";
 #ncea #06	
     
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
-    $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_int_mss_val_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[2]="ncks -C -H --no_blank -s '%d ' -v rec_var_int_mss_val_int %tmp_fl_00%";
     $dsc_sng="ensemble mean of integer with integer missing values across two files";
     $tst_cmd[3]="-999 2 3 4 5 6 7 8 -999 -999";
@@ -796,7 +796,7 @@ print "\n";
 #ncea #07	
 	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
-    $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C -d time,0,2 -d lon,0 -d lon,3 -v three_dmn_var_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -C -d time,0,2 -d lon,0 -d lon,3 -v three_dmn_var_dbl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[2]="ncwa $omp_flg -C -h -O $fl_fmt $nco_D_flg -y ttl -v three_dmn_var_dbl %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[3]="ncks -C -H -s '%3.f' -v three_dmn_var_dbl %tmp_fl_01%";
     $dsc_sng="ensemble mean of 3D variable across two files with MSA";
@@ -808,8 +808,8 @@ print "\n";
 #ncea #08	
 	
     $tst_cmd[0]="/bin/rm -f %tmp_fl_00%";
-    $tst_cmd[1]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
-    $tst_cmd[2]="ncra -Y ncea -t1 -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_01%";
+    $tst_cmd[1]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_00%";
+    $tst_cmd[2]="ncra -Y ncfe -t1 -h -O $fl_fmt $nco_D_flg -C $in_pth_arg lrg_bm.nc lrg_bm1.nc %tmp_fl_01%";
     $tst_cmd[3]="ncbo -C -h -O  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[4]="ncwa  -t1 -O -C %tmp_fl_02% %tmp_fl_03% 2>%tmp_fl_05%";
     $dsc_sng="Check op with OpenMP";
@@ -822,7 +822,7 @@ print "\n";
 	
 #ncea #09	
     
-    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -v pck_7 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v pck_7 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
     $dsc_sng="Ensemble mean of variable packed with netCDF convention across three files";
     $tst_cmd[2]="7";
@@ -832,7 +832,7 @@ print "\n";
 	
 #ncea #10	
     
-    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg --hdf_upk -v pck_7 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg --hdf_upk -v pck_7 $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
     $dsc_sng="Ensemble mean of variable packed with HDF convention across three files";
     $tst_cmd[2]="-8";
@@ -848,7 +848,7 @@ print "\n";
 #ncea #11
 # same as #ncea #01 , with group
 	
-    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp.nc in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g4 -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="(Groups) ensemble mean of int across two files";
     $tst_cmd[2]="5";
@@ -859,9 +859,9 @@ print "\n";
 	
 #ncea #12
 # 2 groups, each one with a record (part 1 )
-# ncra -Y ncea -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
+# ncra -Y ncfe -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
-    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g1 -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="(Groups) 2 groups ensemble mean of int across two files (part 1)";
     $tst_cmd[2]="5";
@@ -871,9 +871,9 @@ print "\n";
 
 #ncea #13
 # 2 groups, each one with a record (part 2 )
-# ncra -Y ncea -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
+# ncra -Y ncfe -h -O -g g25g1,g25g2 -v one_dmn_rec_var -d time,4  in_grp_3.nc in_grp_3.nc out.nc
 	
-    $tst_cmd[0]="ncra -Y ncea $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -g g25g1,g25g2  -v one_dmn_rec_var -d time,4 $in_pth_arg in_grp_3.nc in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%d' -g g25g2 -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="(Groups) 2 groups ensemble mean of int across two files (part 2)";
     $tst_cmd[2]="5";

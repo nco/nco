@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.437 2013-12-01 23:54:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.438 2013-12-02 00:13:21 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -520,7 +520,7 @@ nco_is_mfo /* [fnc] Query whether program is multi-file operator */
      ncbo and ncflint are not MFOs because they take a fixed number (two) of input files
      MFOs attempt to read input filenames from stdin when input filenames are not positional arguments */
   switch(nco_prg_id){
-  case ncea:
+  case ncfe:
   case ncecat: 
   case ncra:
   case ncrcat: 
@@ -560,7 +560,7 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
   switch(nco_prg_id){
   case ncap: 
   case ncbo:
-  case ncea:
+  case ncfe:
   case ncflint:
   case ncra:
   case ncwa:
@@ -597,13 +597,13 @@ nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmeti
      One use of nco_is_sz_rnk_prv_rth_opr() is to tell which operators should
      not process multidimensional coordinate values.
      For example, we want ncwa to act on coordinates that are reduced 
-     However, we do not want ncea, ncbo, or ncflint, for example, to load and process single or multi-dimensional coordinate variables.
+     However, we do not want ncfe, ncbo, or ncflint, for example, to load and process single or multi-dimensional coordinate variables.
      Nor do we want ncpdq to pack variables like gaussian weights, or area since that causes a significant loss of arithmetic precision when those are used as weights in re-inflated files.
      Such variables to these operators are best treated as "fixed" variables to be copied directly from the input to the output file. */ 
   switch(nco_prg_id){
   case ncap: 
   case ncbo:
-  case ncea:
+  case ncfe:
   case ncge:
   case ncflint:
     return True;
@@ -846,9 +846,9 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   else if(!strcmp(nm_out_tmp,"ncmultiply")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncsub")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncsubtract")){*prg_lcl=ncbo;}
-  /* ncea and acceptable synonyms (symbolic links): */
-  else if(!strcmp(nm_out_tmp,"ncea")){*prg_lcl=ncea;}
-  else if(!strcmp(nm_out_tmp,"mpncea")){*prg_lcl=ncea;}
+  /* ncfe and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncfe")){*prg_lcl=ncfe;}
+  else if(!strcmp(nm_out_tmp,"mpncfe")){*prg_lcl=ncfe;}
   /* ncecat and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncecat")){*prg_lcl=ncecat;}
   else if(!strcmp(nm_out_tmp,"mpncecat")){*prg_lcl=ncecat;}
@@ -921,7 +921,7 @@ nco_usg_prn(void)
   case ncra:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--mro] [--msa] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [--rec_apn] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
-  case ncea:
+  case ncfe:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--msa] [-n ...] [--no_tmp_fl] [--nsm_sfx] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
   case ncrcat:
@@ -1079,7 +1079,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--xml_spr_nmr")) (void)fprintf(stdout,"    --xml_spr_nmr sng\tSeparator for NcML numeric types\n");
   if(strstr(opt_sng,"[-y op_typ]")){
     if(prg_lcl == ncbo)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tBinary arithmetic operation: add,sbt,mlt,dvd (+,-,*,/)\n");
-    if(prg_lcl == ncra || prg_lcl == ncea || prg_lcl == ncwa)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
+    if(prg_lcl == ncra || prg_lcl == ncfe || prg_lcl == ncge || prg_lcl == ncwa)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
   }
   /* All operators have input files, no need to strstr(in.nc) */
   if(prg_lcl == ncbo || prg_lcl == ncflint){

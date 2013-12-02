@@ -1,5 +1,7 @@
 2013-12-01  Charlie Zender  <zender@uci.edu>
 
+	* Rename old ncea-mode to ncfe-mode (netCDF file ensemble)
+
 	* Rename old nces-mode to ncge-mode (netCDF group ensemble)
 
 2013-11-23  Charlie Zender  <zender@uci.edu>

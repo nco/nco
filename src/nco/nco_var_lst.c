@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.161 2013-12-01 23:54:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.162 2013-12-02 00:13:21 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -929,7 +929,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncbo:
       if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix_typ;
       break;
-    case ncea:
+    case ncfe:
       if(var[idx]->is_crd_var || var_typ_fnk) var_op_typ[idx]=fix_typ;
       break;
     case ncecat:
@@ -1089,7 +1089,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncbo:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING in order to perform a binary operation (e.g., subtraction)\n",nco_prg_nm_get());
       break;
-    case ncea:
+    case ncfe:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING\n",nco_prg_nm_get());
       break;
     case ncecat:
@@ -1181,7 +1181,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   case ncbo:
     if(var->is_crd_var || var_typ_fnk) var_op_typ=fix_typ;
     break;
-  case ncea:
+  case ncfe:
     if(var->is_crd_var || var_typ_fnk) var_op_typ=fix_typ;
     break;
   case ncecat:
