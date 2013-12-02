@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.913 2013-12-02 01:05:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.914 2013-12-02 17:43:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1430,7 +1430,7 @@ differences between these files and your own.
 * Temporary Output Files::
 * Appending Variables::
 * Simple Arithmetic and Interpolation::
-* Averaging vs. Concatenating::
+* Statistics vs. Concatenation::
 * Large Numbers of Files::
 * Large Datasets::
 * Memory Requirements::
@@ -1703,7 +1703,7 @@ same name but different sizes.
 @html
 <a name="bnr"></a> <!-- http://nco.sf.net/nco.html#bnr -->
 @end html
-@node Simple Arithmetic and Interpolation, Averaging vs. Concatenating, Appending Variables, Strategies
+@node Simple Arithmetic and Interpolation, Statistics vs. Concatenation, Appending Variables, Strategies
 @section Simple Arithmetic and Interpolation
 
 Users comfortable with @acronym{NCO} semantics may find it easier to
@@ -1718,42 +1718,45 @@ Sequences of these commands can accomplish simple but powerful
 operations from the command line.
 
 @html
+<a name="statisticians"></a> <!-- http://nco.sf.net/nco.html#statisticians -->
 <a name="averagers"></a> <!-- http://nco.sf.net/nco.html#averagers -->
 @end html
-@node Averaging vs. Concatenating, Large Numbers of Files, Simple Arithmetic and Interpolation, Strategies
-@section Averagers vs.@: Concatenators
+@node Statistics vs. Concatenation, Large Numbers of Files, Simple Arithmetic and Interpolation, Strategies
+@section Statistics vs.@: Concatenation
 
 @html
+<a name="sym_ncea"></a> <!-- http://nco.sf.net/nco.html#sym_ncea -->
 <a name="sym_nces"></a> <!-- http://nco.sf.net/nco.html#sym_nces -->
 <a name="sym_ncrcat"></a> <!-- http://nco.sf.net/nco.html#sym_ncrcat -->
 @end html
 @cindex symbolic links
 The most frequently used operators of @acronym{NCO} are probably the
-averagers and concatenators.
-Because there are so many permutations of averaging (e.g., across files,
-within a file, over the record dimension, over other dimensions, with or
-without weights and masks) and of concatenating (across files, along the
-record dimension, along other dimensions), there are currently no fewer
-than five operators which tackle these two purposes: @command{ncra},
-@command{nces}, @command{ncwa}, @command{ncrcat}, and @command{ncecat}. 
+@dfn{statisticians} (i.e., tools that do statistics) and concatenators.
+Because there are so many types of statistics like averaging (e.g.,
+across files, within a file, over the record dimension, over other
+dimensions, with or without weights and masks) and of concatenating
+(across files, along the record dimension, along other dimensions),
+there are currently no fewer than five operators which tackle these two
+purposes: @command{ncra}, @command{nces}, @command{ncwa},
+@command{ncrcat}, and @command{ncecat}.  
 These operators do share many capabilities @footnote{Currently
 @command{nces} and @command{ncrcat} are symbolically linked to the
 @command{ncra} executable, which behaves slightly differently based on
 its invocation name (i.e., @samp{argv[0]}). 
-These three operators share the same source code, but merely have
-different inner loops.}, but each has its unique specialty.
-Two of these operators, @command{ncrcat} and @command{ncecat}, are for
-concatenating hyperslabs across files. 
-The other two operators, @command{ncra} and @command{nces}, are for
-averaging hyperslabs across files 
+These three operators share the same source code, and merely have
+different inner loops.}, though each has its unique specialty.
+Two of these operators, @command{ncrcat} and @command{ncecat}, 
+concatenate hyperslabs across files. 
+The other two operators, @command{ncra} and @command{nces}, compute
+statistics across (and/or within) files 
 @footnote{The third averaging operator, @command{ncwa}, is the most
 sophisticated averager in @acronym{NCO}. 
 However, @command{ncwa} is in a different class than @command{ncra} and
-@command{nces} because it can only operate on a single file per
-invocation (as opposed to multiple files).   
+@command{nces} because it operates on a single file per invocation (as
+opposed to multiple files).    
 On that single file, however, @command{ncwa} provides a richer set of 
 averaging options---including weighting, masking, and broadcasting.}.  
-First, let's describe the concatenators, then the averagers. 
+First, let's describe the concatenators, then the statistics tools.
 
 @menu
 * Concatenation::
@@ -1764,7 +1767,7 @@ First, let's describe the concatenators, then the averagers.
 @html
 <a name="cnc"></a> <!-- http://nco.sf.net/nco.html#cnc -->
 @end html
-@node Concatenation, Averaging, Averaging vs. Concatenating, Averaging vs. Concatenating
+@node Concatenation, Averaging, Statistics vs. Concatenation, Statistics vs. Concatenation
 @subsection Concatenators @command{ncrcat} and @command{ncecat}
 @cindex @command{ncecat}
 @cindex @command{ncrcat}
@@ -1847,7 +1850,7 @@ To conserve system memory, use @command{ncrcat} where possible.
 @html
 <a name="avg"></a> <!-- http://nco.sf.net/nco.html#avg -->
 @end html
-@node Averaging, Interpolating, Concatenation, Averaging vs. Concatenating
+@node Averaging, Interpolating, Concatenation, Statistics vs. Concatenation
 @subsection Averagers @command{nces}, @command{ncra}, and @command{ncwa} 
 @cindex @command{nces}
 @cindex @command{ncra}
@@ -1880,7 +1883,7 @@ description of @command{ncra}).
 @html
 <a name="ntp"></a> <!-- http://nco.sf.net/nco.html#ntp -->
 @end html
-@node Interpolating,  , Averaging, Averaging vs. Concatenating
+@node Interpolating,  , Averaging, Statistics vs. Concatenation
 @subsection Interpolator @command{ncflint}
 @cindex @command{ncflint}
 
@@ -1895,7 +1898,7 @@ units.
 @html
 <a name="lrg"></a> <!-- http://nco.sf.net/nco.html#lrg -->
 @end html
-@node Large Numbers of Files, Large Datasets, Averaging vs. Concatenating, Strategies
+@node Large Numbers of Files, Large Datasets, Statistics vs. Concatenation, Strategies
 @section Large Numbers of Files
 @cindex files, numerous input
 @cindex @code{-n @var{loop}}
@@ -12497,7 +12500,7 @@ nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [-h] [--hdf] [--hdr_pad @var{nbr}] 
-[-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}] [--no_tmp_fl] 
+[-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}] [--no_tmp_fl] [--nsm_fl|grp] [--nsm_sfx sfx]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
@@ -12507,27 +12510,26 @@ nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
 DESCRIPTION
 
 @command{nces} performs gridpoint arithmetic of variables across an
-arbitrary number (an @dfn{ensemble}) of @var{input-files}, with each
-file receiving an equal weight in the arithmetic.
-@command{nces} was formerly (until @acroynym{NCO} version 4.3.9,
+arbitrary number (an @dfn{ensemble}) of @var{input-files} or of input
+groups, with each file (or group) receiving an equal weight.
+@command{nces} was formerly (until @acronym{NCO} version 4.3.9,
 released December, 2013) known as @command{ncea} (netCDF Ensemble
 Averager)@footnote{
-The old ncea command was deprecated in @acroynym{NCO} version 4.3.9,  
+The old ncea command was deprecated in @acronym{NCO} version 4.3.9,  
 released December, 2013.
-@acroynym{NCO} will attempt to maintain back-compatibility and work
+@acronym{NCO} will attempt to maintain back-compatibility and work
 as expected with invocations of @command{ncea} for as long as possible.
-However, users are advised to replace @command{ncea} by @command{nces}
-in all future work.}.
+Please replace @command{ncea} by @command{nces} in all future work.}.
 @cindex ensemble
-For example, @command{nces} will average a set of files, weighting
-each file evenly. 
-This is distinct from @command{ncra}, which averages only over the
-record dimension(s) (e.g., @var{time}), and weights each record in 
-each record dimension evenly,  
+For example, @command{nces} will average a set of files or groups,
+weighting each file or group evenly. 
+This is distinct from @command{ncra}, which performs statistics only
+over the record dimension(s) (e.g., @var{time}), and weights each record 
+in each record dimension evenly,  
 
 Variables in the @var{output-file} are the same size as the variable
-in each of the @var{input-files}, and all @var{input-files} must be
-the same size.
+in each input file or group, and each input file or group must be the
+same size. 
 @cindex record dimension
 @cindex hyperslab
 The only exception is that @command{nces} allows files to differ in
@@ -12551,8 +12553,8 @@ the arithmetic operation type performed on the non-coordinate variables.
 All dimensions, including the record dimension, are treated identically
 and preserved in the @var{output-file}.
 
-@xref{Averaging vs. Concatenating}, for a description of the
-distinctions between the various averagers and concatenators. 
+@xref{Statistics vs. Concatenation}, for a description of the
+distinctions between the statistics tools and concatenators. 
 @cindex multi-file operators
 @cindex standard input
 @cindex @code{stdin}
@@ -12751,8 +12753,8 @@ ncecat -G 85/ a.nc b.nc c.nc 8589.nc # Output groups 85/00, 85/01, 85/02
 
 With both @acronym{RAG} and @acronym{GAG} the @var{output-file} size is
 the sum of the sizes of the extracted variables in the input files. 
-@xref{Averaging vs. Concatenating}, for a description of the
-distinctions between the various averagers and concatenators. 
+@xref{Statistics vs. Concatenation}, for a description of the
+distinctions between the various statistics tools and concatenators. 
 @cindex multi-file operators
 @cindex standard input
 @cindex @code{stdin}
@@ -14731,8 +14733,8 @@ DESCRIPTION
 @cindex record dimension
 The record dimension is, by default, retained as a degenerate 
 @w{(size 1)} dimension in the output variables.
-@xref{Averaging vs. Concatenating}, for a description of the
-distinctions between the various averagers and concatenators. 
+@xref{Statistics vs. Concatenation}, for a description of the
+distinctions between the various statistics tools and concatenators. 
 @cindex multi-file operators
 @cindex standard input
 @cindex @code{stdin}
@@ -14844,8 +14846,8 @@ number of @var{input-files}.
 @cindex record dimension
 The final record dimension is by default the sum of the lengths of the 
 record dimensions in the input files.
-@xref{Averaging vs. Concatenating}, for a description of the
-distinctions between the various averagers and concatenators. 
+@xref{Statistics vs. Concatenation}, for a description of the
+distinctions between the various statistics tools and concatenators. 
 @cindex multi-file operators
 @cindex standard input
 @cindex @code{stdin}
@@ -15191,8 +15193,8 @@ DESCRIPTION
 
 @command{ncwa} averages variables in a single file over arbitrary
 dimensions, with options to specify weights, masks, and normalization.   
-@xref{Averaging vs. Concatenating}, for a description of the
-distinctions between the various averagers and concatenators. 
+@xref{Statistics vs. Concatenation}, for a description of the
+distinctions between the various statistics tools and concatenators. 
 The default behavior of @command{ncwa} is to arithmetically average
 every numerical variable over all dimensions and to produce a scalar 
 result for each. 

@@ -1,7 +1,7 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.145 2013-12-02 01:05:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncra.c,v 1.146 2013-12-02 17:43:32 zender Exp $ */
 
 /* This single source file may be called as three separate executables:
-   ncra -- netCDF running averager
+   ncra -- netCDF record averager
    nces -- netCDF ensemble statistics
    ncrcat -- netCDF record concatenator */
 
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncra.c,v 1.145 2013-12-02 01:05:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.145 $";
+  const char * const CVS_Id="$Id: mpncra.c,v 1.146 2013-12-02 17:43:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.146 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:P:rRSt:v:xY:y:-:";
   
   dmn_sct **dim;

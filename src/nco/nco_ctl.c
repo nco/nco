@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.439 2013-12-02 00:19:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.440 2013-12-02 17:43:32 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -931,7 +931,8 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--mro] [--msa] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [--rec_apn] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
   case ncfe:
-    opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--msa] [-n ...] [--no_tmp_fl] [--nsm_sfx] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
+  case ncge:
+    opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [-L lvl] [-l path] [--msa] [-n ...] [--no_tmp_fl] [--nsm_fl] [--nsm_grp] [--nsm_sfx] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
   case ncrcat:
     opt_sng=(char *)strdup("[-3] [-4] [-6] [-7] [-A] [--bfr sz] [-C] [-c] [--cnk_dmn nm,sz] [--cnk_map map] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [-H] [-h] [--hdr_pad nbr] [-L lvl] [-l path] [--md5_digest] [--msa] [-n ...] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [-R] [-r] [--ram_all] [--rec_apn] [-t thr_nbr] [--unn] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
@@ -949,7 +950,7 @@ nco_usg_prn(void)
   } /* end switch */
   
   /* We now have command-specific command line option string */
-  (void)fprintf(stdout,"%s Command line options cheatsheet (full details in manual, http://nco.sf.net/nco.html):\n",nco_prg_nm_get());
+  (void)fprintf(stdout,"%s Command line options cheatsheet (full details at http://nco.sf.net/nco.html#%s):\n",nco_prg_nm_get(),nco_prg_nm_get());
   (void)fprintf(stdout,"%s %s\n",nco_prg_nm_get(),opt_sng);
 
   if(strstr(opt_sng,"[-3]")) (void)fprintf(stdout,"-3, --3, --fl_fmt=classic\tOutput file in netCDF3 CLASSIC (32-bit offset) storage format\n");
@@ -1043,6 +1044,8 @@ nco_usg_prn(void)
   } /* end if -n */
   if(strstr(opt_sng,"--no_blank")) (void)fprintf(stdout,"    --no_blank\t\tPrint numeric missing values instead of blanks (underscores)\n");
   if(strstr(opt_sng,"--no_tmp_fl")) (void)fprintf(stdout,"    --no_tmp_fl\t\tDo not write output to temporary file\n");
+  if(strstr(opt_sng,"--nsm_fl")) (void)fprintf(stdout,"    --nsm_fl, --ensemble_file\tEnsembles comprise equally weighted files\n");
+  if(strstr(opt_sng,"--nsm_grp")) (void)fprintf(stdout,"    --nsm_grp, --ensemble_group\tEnsembles comprise equally weighted groups\n");
   if(strstr(opt_sng,"--nsm_sfx")) (void)fprintf(stdout,"    --nsm_sfx, --ensemble_suffix\tPlace ensemble output in group parent/parent+nsm_sfx\n");
   if(strstr(opt_sng,"[-o")) (void)fprintf(stdout,"-o, --output, --fl_out fl_out\tOutput file name (or use last positional argument)\n");
   if(strstr(opt_sng,"[-O]")) (void)fprintf(stdout,"-O, --ovr, --overwrite\tOverwrite existing output file, if any\n");
