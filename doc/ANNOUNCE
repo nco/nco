@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.646 2013-12-02 20:14:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.647 2013-12-02 21:02:32 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -34,7 +34,7 @@ respectively.
 
 This version also improves ncks support for XML (NcML) output.
 All output now validates without errors with the NcML 2.2 schema.  
-Happy NcML'ing!
+Happy NcML'ing! There is also a bugfix for NaNs in ncatted.
 
 Work on NCO 4.4.0 is underway. It focuses on stability and speed.  
 There will be some netCDF4 mop-up, including netCDF4 support for
@@ -72,7 +72,7 @@ A. ncea is now nces or nces --nsm_fl, meaning ensembles of files.
    nces --nsm_grp --nsm_sfx='_avg' mdl1.nc mdl2.nc mdl3.nc out.nc
    http://nco.sf.net/nco.html#nces
 
-A. Much improved XML/NcML standards compliance and flexibility.
+B. Much improved XML/NcML standards compliance and flexibility.
    Separators for XML now user-configurable with --xml_spr_chr and
    --xml_spr_nmr for character types (i.e., strings) and numeric
    types (i.e., numbers), respectively:
@@ -86,7 +86,11 @@ A. Much improved XML/NcML standards compliance and flexibility.
 
 BUG FIXES:
 
-A. Correct XML-mode issues, many reported by Aleksandar Jelenak 
+A. Fix ncatted so it does not treat zero as NaN when changing a
+   missing value (_FillValue) from NaN to something else. 
+   Problem reported by Jianfu Pan.
+
+B. Correct XML-mode issues, many reported by Aleksandar Jelenak 
    1. Print </variable> in metadata mode
    2. Adds type="typ_nm" attribute to non-string attribute elements
    3. Add separator="foo" element when separator is not whitespace
