@@ -43,8 +43,26 @@ netcdf buggy {
   string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";
   string att_var:string_att4 = "20130723: Arrays of NC_STRING are simply separated by commas.","If there are commas within a string, well, then, be careful. Did we \"jump the shark\"?","This array comprises three sentences.";
 
-  string string_var2;
+ string string_var2;
  string_var2:long_name = "string-type variable with default XML separator";
+
+ float nan_arr(lat);
+ nan_arr:long_name = "Intended for array representation of IEEE NaN";
+ nan_arr:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
+ nan_arr:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";
+ nan_arr:note3 = "20120625 netCDF ncgen on netCDF 4.1.1 on apparently chokes on variable/attribute values of nan";
+ nan_arr:note4 = "If your NCO build fails because your version of netCDF does not support nan, then cd to the directory that contains the file nco/data/in.cdl and run the command in note5 first and then try to build again";
+ nan_arr:note5 = "sed -e 's/nan;/1.0f;/' in.cdl > foo.cdl;ncgen -b -o in.nc foo.cdl";
+ nan_arr:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
+ nan_arr:_FillValue = nan;
+
+ float nan_scl;
+ nan_scl:long_name = "Intended for scalar representation of IEEE NaN";
+ nan_scl:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
+ nan_scl:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";
+ nan_scl:note3 = "20120625 netCDF ncgen on netCDF 4.1.1 on apparently chokes on variable/attribute values of nan";
+ nan_scl:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
+ nan_scl:_FillValue = nan;
 
   float lat_tm2(lat,tm2);
   float lat_tm3(lat,tm3);
@@ -77,6 +95,9 @@ netcdf buggy {
   tm2_tm3={1.,2.,3.},{4.,5.,6.};
 
   string_var2="20131121: This NC_STRING contains NCO's default XML string separator, *. And it contains multiple sequential copies of that separator, ***. Be sure ncks automatically switches to a different separator, aka the backup separator, the string obtained by removing the two spaces from this:\"* | *\". As of 20131121, ncks handles this correctly, yet toolsui breaks when trying to input the ncks-generated NcML. Appears to be a toolsui bug.";
+
+  nan_arr=0,nan;
+  nan_scl=nan;
 
    // 20130208: netCDF 4.2.1.1- fail as nc_get_var1_uint() returns -60 = NetCDF: Numeric conversion not representable on (valid) input values exceeding INT_MAX=2147483647. This was bug netCDF #PUX-602809 fixed in daily snapshot 20130210.
    uint_var=4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
