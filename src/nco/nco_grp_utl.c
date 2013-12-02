@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1090 2013-12-02 23:03:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1091 2013-12-02 23:26:01 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6252,7 +6252,10 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
   nco_bool flg_dmn_ins;    /* [flg] Is dimension already inserted in output array  */  
+
+#ifndef ENABLE_UDUNITS
   nco_bool flg_prn=False;
+#endif /* !ENABLE_UDUNITS */
 
   /* Used only by ncra */
   assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncfe || nco_prg_id_get() == ncge);
@@ -6262,8 +6265,8 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
-    /* Is variable (extract records regardless of variable is to be extracted or only if to be extracted ) */
-    if( flg_rec_all ? (var_trv.nco_typ == nco_obj_typ_var) :  (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr) ){
+    /* Is variable (extract records regardless of variable is to be extracted or only if to be extracted) */
+    if(flg_rec_all ? (var_trv.nco_typ == nco_obj_typ_var) : (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr)){
 
       /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
@@ -6325,7 +6328,6 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm_fll=(char *)strdup(ncd->nm_fll);
 
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
-
             
             trv_tbl->lmt_rec[trv_tbl->nbr_rec]->lmt_cln=cln_nil; 
             trv_tbl->lmt_rec[trv_tbl->nbr_rec]->origin=0.0;
@@ -6347,7 +6349,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
             trv_tbl->lmt_rec[trv_tbl->nbr_rec]->id=dmn_id;
 
 #ifndef ENABLE_UDUNITS
-            if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev && flg_prn== False){
+            if(nco_dbg_lvl_get() >= nco_dbg_vrb && nco_dbg_lvl_get() != nco_dbg_dev && flg_prn == False){
               if(trv_tbl->lmt_rec[trv_tbl->nbr_rec]->rbs_sng) (void)fprintf(stderr,"%s: WARNING Record coordinate %s has a \"units\" attribute but NCO was built without UDUnits. NCO is therefore unable to detect and correct for inter-file unit re-basing issues. See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",nco_prg_nm_get(),trv_tbl->lmt_rec[trv_tbl->nbr_rec]->nm,nco_prg_nm_get());
               flg_prn=True;
             }
