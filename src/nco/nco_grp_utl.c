@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1089 2013-12-02 20:14:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1090 2013-12-02 23:03:23 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6252,6 +6252,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   dmn_trv_sct *dmn_trv;    /* [sct] Unique dimension object */
 
   nco_bool flg_dmn_ins;    /* [flg] Is dimension already inserted in output array  */  
+  nco_bool flg_prn=False;
 
   /* Used only by ncra */
   assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat || nco_prg_id_get() == ncfe || nco_prg_id_get() == ncge);
