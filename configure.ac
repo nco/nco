@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.23 2013-11-21 00:51:52 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.24 2013-12-02 01:12:09 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -230,7 +230,7 @@ echo "################################"
 AC_CHECK_FILE([/opt/local/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include"], [])
 AC_CHECK_FILE([/opt/local/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib -lnetcdf"], [])
 
-# green planet
+# Greenplanet
 AC_CHECK_FILE([/sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/sopt/netcdf/netcdf411-gcc-serial/include"], [])
 AC_CHECK_FILE([/sopt/netcdf/netcdf411-gcc-serial/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/sopt/netcdf/netcdf411-gcc-serial/lib -lnetcdf"], [])
 

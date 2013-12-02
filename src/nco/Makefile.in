@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.147 2013-11-24 04:05:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco/Makefile.in,v 1.148 2013-12-02 01:12:47 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -789,7 +789,7 @@ nco_var_utl.c
 
 EXTRA_DIST = ${NCO_GETOPT_C}
 DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
-CLEANFILES = ncdiff ncea ncrcat mpncdiff mpncea mpncrcat
+CLEANFILES = ncdiff ncea nces ncrcat mpncdiff mpncea mpnces mpncrcat
 all: all-am
 
 .SUFFIXES:
@@ -1458,13 +1458,15 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && ln -s -f ncbo ncdiff || (rm -f ncdiff && ln -s -f ncbo ncdiff)
 	cd $(DESTDIR)$(bindir) && ln -s -f ncra ncea || (rm -f ncea && ln -s -f ncra ncea)
+	cd $(DESTDIR)$(bindir) && ln -s -f ncra nces || (rm -f nces && ln -s -f ncra nces)
 	cd $(DESTDIR)$(bindir) && ln -s -f ncra ncrcat || (rm -f ncrcat && ln -s -f ncra ncrcat)
 @ENABLE_MPI_TRUE@	cd $(DESTDIR)$(bindir) && ln -s -f mpncbo mpncdiff || (rm -f mpncdiff && ln -s -f mpncbo mpncdiff)
 @ENABLE_MPI_TRUE@	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncea || (rm -f mpncea && ln -s -f mpncra mpncea)
+@ENABLE_MPI_TRUE@	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpnces || (rm -f mpnces && ln -s -f mpncra mpnces)
 @ENABLE_MPI_TRUE@	cd $(DESTDIR)$(bindir) && ln -s -f mpncra mpncrcat || (rm -f mpncrcat && ln -s -f mpncra mpncrcat)
 
 uninstall-hook:
-	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat mpncdiff mpncea mpncrcat
+	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea nces ncrcat mpncdiff mpncea mpnces mpncrcat
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -17497,7 +17497,7 @@ if test "x$ac_cv_file__opt_local_lib_libnetcdf_a" = xyes; then :
 fi
 
 
-# green planet
+# Greenplanet
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h" >&5
 $as_echo_n "checking for /sopt/netcdf/netcdf411-gcc-serial/include/netcdf.h... " >&6; }
 if ${ac_cv_file__sopt_netcdf_netcdf411_gcc_serial_include_netcdf_h+:} false; then :
