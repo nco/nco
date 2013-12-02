@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.438 2013-12-02 00:13:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.439 2013-12-02 00:19:44 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -846,14 +846,19 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   else if(!strcmp(nm_out_tmp,"ncmultiply")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncsub")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out_tmp,"ncsubtract")){*prg_lcl=ncbo;}
-  /* ncfe and acceptable synonyms (symbolic links): */
-  else if(!strcmp(nm_out_tmp,"ncfe")){*prg_lcl=ncfe;}
-  else if(!strcmp(nm_out_tmp,"mpncfe")){*prg_lcl=ncfe;}
   /* ncecat and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncecat")){*prg_lcl=ncecat;}
   else if(!strcmp(nm_out_tmp,"mpncecat")){*prg_lcl=ncecat;}
+  /* ncfe and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncea")){*prg_lcl=ncfe;}
+  else if(!strcmp(nm_out_tmp,"mpncea")){*prg_lcl=ncfe;}
+  else if(!strcmp(nm_out_tmp,"nces")){*prg_lcl=ncfe;}
+  else if(!strcmp(nm_out_tmp,"mpnces")){*prg_lcl=ncfe;}
+  else if(!strcmp(nm_out_tmp,"ncfe")){*prg_lcl=ncfe;}
+  else if(!strcmp(nm_out_tmp,"mpncfe")){*prg_lcl=ncfe;}
   /* ncge and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncge")){*prg_lcl=ncge;}
+  else if(!strcmp(nm_out_tmp,"mpncge")){*prg_lcl=ncge;}
   /* ncflint and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncflint")){*prg_lcl=ncflint;}
   else if(!strcmp(nm_out_tmp,"mpncflint")){*prg_lcl=ncflint;}
@@ -865,6 +870,8 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   else if(!strcmp(nm_out_tmp,"ncpack")){*prg_lcl=ncpdq;}
   else if(!strcmp(nm_out_tmp,"ncunpack")){*prg_lcl=ncpdq;}
   /* ncra and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncrs")){*prg_lcl=ncra;}
+  else if(!strcmp(nm_out_tmp,"mpncrs")){*prg_lcl=ncra;}
   else if(!strcmp(nm_out_tmp,"ncra")){*prg_lcl=ncra;}
   else if(!strcmp(nm_out_tmp,"mpncra")){*prg_lcl=ncra;}
   /* ncrcat and acceptable synonyms (symbolic links): */
@@ -873,6 +880,8 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   /* ncrename and acceptable synonyms (symbolic links): */
   else if(!strcmp(nm_out_tmp,"ncrename")){*prg_lcl=ncrename;}
   /* ncwa and acceptable synonyms (symbolic links): */
+  else if(!strcmp(nm_out_tmp,"ncws")){*prg_lcl=ncwa;}
+  else if(!strcmp(nm_out_tmp,"mpncws")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"mpncwa")){*prg_lcl=ncwa;}
   else{
