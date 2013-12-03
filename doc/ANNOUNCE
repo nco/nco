@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.649 2013-12-03 00:51:02 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.650 2013-12-03 05:07:04 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -110,7 +110,7 @@ KNOWN ISSUES NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.3.7 built/tested with netCDF
+   These problems occur with NCO 4.4.0 built/tested with netCDF
    4.3.1-rc4 snapshot 20131119 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-

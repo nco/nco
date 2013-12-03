@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.180 2013-12-02 21:03:45 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.181 2013-12-03 05:07:04 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -782,6 +782,10 @@ variables:
 	one_dmn_rec_var_missing_value:long_name = "One dimensional record variable with missing data indicated by missing_value attribute only. No _FillValue attribute exists.";
 	one_dmn_rec_var_missing_value:missing_value = 1.0e36f;
 
+	float one_dmn_rec_var_mss_val(time);
+	one_dmn_rec_var_mss_val:long_name = "One dimensional record variable with all missing data.";
+	one_dmn_rec_var_mss_val:_FillValue = 1.0e36f;
+
 	float one_dmn_rec_var__FillValue(time);
 	one_dmn_rec_var__FillValue:long_name = "One dimensional record variable with missing data indicated by _FillValue attribute only. No missing_value attribute exists.";
 	one_dmn_rec_var__FillValue:_FillValue = 1.0e36f;
@@ -1155,6 +1159,7 @@ data:
 	one_dmn_rec_var_flt=1,2,3,4,5,6,7,8,9,10;
 	one_dmn_rec_var_dbl=1,2,3,4,5,6,7,8,9,10;
 	one_dmn_rec_var_missing_value=1,2,3,4,5,6,7,8,9,1.0e36;
+	one_dmn_rec_var_mss_val=1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36,1.0e36;
 	one_dmn_rec_var__FillValue=1,2,3,4,5,6,7,8,9,1.0e36;
 	one_dmn_rec_var_unsorted__FillValue=1.0e36,4,6,2,8,1,9,7,3,5;
 	one_dmn_rec_var_mdn=1,1,2,2,2,2,10,10,10,10;

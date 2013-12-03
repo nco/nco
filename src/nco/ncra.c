@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.468 2013-12-02 20:14:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.469 2013-12-03 05:07:04 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -165,8 +165,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.468 2013-12-02 20:14:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.468 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.469 2013-12-03 05:07:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.469 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -750,7 +750,7 @@ main(int argc,char **argv)
     if(nco_prg_id == ncge){
       /* Refresh ensembles */
       if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl);         
-    } else { /* ! ncge */
+    }else{ /* ! ncge */
       /* Variables may have different ID, missing_value, type, in each file */
       for(idx=0;idx<nbr_var_prc;idx++){
         /* Obtain variable GTT object using full variable name */
@@ -894,7 +894,7 @@ main(int argc,char **argv)
               /* Do not promote un-averagable types (NC_CHAR, NC_STRING)
               Stuff first record into output buffer regardless of nco_op_typ; ignore later records (rec_usd_cml > 1)
               Temporarily fixes TODO nco941 */
-              if(var_prc[idx]->type == NC_CHAR){
+              if(var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING){
                 if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
                 /* Convert char, short, long, int types to doubles before arithmetic
