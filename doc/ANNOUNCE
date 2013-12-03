@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.648 2013-12-03 00:28:01 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.649 2013-12-03 00:51:02 zender Exp $ -*-text-*-
 
-The netCDF Operators NCO version 4.3.9 are ready. 
+The netCDF Operators NCO version 4.4.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -48,7 +48,7 @@ Statistics, respectively).
 Enjoy,
 Charlie
 
-"New stuff" in 4.3.9 summary (full details always in ChangeLog):
+"New stuff" in 4.4.0 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 

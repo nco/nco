@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.843 2013-12-03 00:28:01 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.844 2013-12-03 00:51:02 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -146,7 +146,8 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
-<li>2013 Dec&nbsp;??: NCO 4.3.9 (new operator, <tt>nces</tt>) (<i>In progress</i>)
+<li>2013 Dec&nbsp;??: NCO 4.4.0 (<i>In progress</i>)
+<li>2013 Dec&nbsp;02: NCO 4.3.9 (new operator, <tt>nces</tt>)
 <li>2013 Nov&nbsp;06: NCO 4.3.8 (<tt>ncatted</tt> groups)
 <li>2013 Oct&nbsp;17: NCO 4.3.7 (HDF4, XML, <tt>ncrename</tt> groups)
 <li>2012 Oct&nbsp;02: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201310.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
@@ -610,15 +611,18 @@ Releases receive unique CVS tags and their tarballs are stored
 You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
-<li><b>NCO 4.4.0</b>: (<i>Future</i>) 
+<li><b>NCO 4.4.1</b>: (<i>Future</i>) 
 netCDF4 compound types?;
 Optimize diskless files?;</li>
-<li><b>NCO 4.3.9</b>: (<i>In Progress, features completed or being worked on include</i>)
-New operator <tt>nces</tt>;
+<li><b>NCO 4.4.0</b>: (<i>In Progress, features completed or being worked on include</i>)
 Group support for <tt>-x, ncwa -w -m</tt>;</li>
-<li><b>NCO 4.3.8</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.3.9</b>: (<i>Current Stable Release</i>)
+New operator <tt>nces</tt>;
+Full XML/NcML compliance;
+<tt>ncatted</tt> NaN bugfix;</li>
+<li><b>NCO 4.3.8</b>:
 <tt>ncatted</tt> group features;</li>
-<li><b>NCO 4.3.7</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.3.7</b>:
 HDF4 <a href="http://nco.sf.net/nco.html#hdf4">support</a>;
 XML/NcML data <a href="http://nco.sf.net/nco.html#xml">support</a>;
 Multiple record dimension <a href="http://nco.sf.net/nco.html#mrd">support</a> with <tt>ncpdq, ncecat --mrd</a></tt>;
