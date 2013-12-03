@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.647 2013-12-02 21:02:32 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.648 2013-12-03 00:28:01 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.3.9 are ready. 
 
@@ -6,11 +6,11 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 We are pleased to report the birth of the operator nces.
-nces will debut at AGU (Friday 12/13 11:35 AM Moscone West 2010).  
 nces is for netCDF Ensemble Statistics.
-nces comprises the existing functionality of ncea and extends it by
+nces includes the existing functionality of ncea and extends it by
 allowing groups to be treated as an unlimited dimension of datasets.   
 nces is really ncea with a powerful new feature and a new name.
+I will debut nces at AGU (Friday 12/13 11:35 AM Moscone West 2010).  
 See below for more info on the feature. Regarding the name...
 
 We renamed ncea as nces to more accurately describe the operator.
@@ -19,8 +19,9 @@ NCO itself is misnamed because the operators now work well on HDF (4
 and 5) files, not just netCDF files. We tried to change their name
 to SDO (Scientific Data Operators) but the new name didn't stick.
 And the "averagers" (ncea, ncra, ncwa) are all misnamed because they
-all do more statistics (min/max/ttl/rms...) than just averages. 
-This feature addition is an opportune time to rename ncea as nces.  
+all do many statistics (min/max/ttl/rms...) besides averages. 
+This feature addition is an opportune time to rename ncea as nces.
+ncea is now deprecated, though will remain supported for some time.
 
 We faced the same problem of back-compatibility when we renamed ncdiff
 to ncbo many years ago. We will use the same method. Invoking 'nces'
@@ -30,7 +31,7 @@ invokes 'ncbo --op_typ=subtract'. To cause nces to utilize the new
 group ensemble mode, invoke it with 'nces --nsm_grp'. This is similar
 to how ncecat has two modes, record aggregation (the default) and
 group aggregation, invoked with 'ncecat --rag' and 'ncecat --gag', 
-respectively.
+respectively. 
 
 This version also improves ncks support for XML (NcML) output.
 All output now validates without errors with the NcML 2.2 schema.  
@@ -39,7 +40,10 @@ Happy NcML'ing! There is also a bugfix for NaNs in ncatted.
 Work on NCO 4.4.0 is underway. It focuses on stability and speed.  
 There will be some netCDF4 mop-up, including netCDF4 support for
 various options (all -X, ncwa -w and -m), and, possibly, improved
-support for HDF4 files. 
+support for HDF4 files. Heads-up: Unless users report unforeseen
+difficulties transitioning from ncea to nces, NCO 4.4.0 will rename
+ncra as ncrs and ncwa as ncws (Record Statistics and Weighted
+Statistics, respectively). 
 
 Enjoy,
 Charlie
@@ -50,24 +54,25 @@ NEW FEATURES:
 
 A. ncea is now nces or nces --nsm_fl, meaning ensembles of files.
    Use nces --nsm_grp, for ensembles of groups, a new feature.
-   The same input is valid in both modes and produces the same
-   output unless group ensembles are present. Members of a group
-   ensemble are groups that share the same structure, parent group,
-   and nesting level. Their contents usually have different values
-   because they are realizations of replicated experiments.
-   In group ensemble mode nces computes the statistics across
-   the ensemble, which may span multiple input files. Files may
-   contain members of multiple ensembles. However, all ensembles
-   must have at least one member in the first input file.
+   The same input is valid in both modes. Members of a group ensemble
+   are groups that share the same structure, parent group, and nesting
+   level. Their contents usually have different values because they
+   are realizations of replicated experiments. 
+   In group-ensemble mode nces computes the statistics across
+   the ensemble of groups, which may span multiple input files. 
+   Files may contain members of multiple ensembles. However, all
+   ensembles must have at least one member in the first input file. 
    Group ensembles behave as a pseudo-record dimension, in that a
    group ensemble may comprise an arbitrary and extensible number of
    realizations in each file, and may be composed of multiple files.
    Output statistics are stored in the parent group by default.
-   If the ensemble members are /cesm/cesm_01 and /cesm/cesm_02,
-   then the computed statistic will be in /cesm in the output file. 
+   If the ensemble members are /cesm/01 and /cesm/02, then the
+   computed statistic will be in /cesm in the output file.
    The --nsm_sfx option instructs nces to instead store output in 
    a new child group of the parent created by attaching the suffix
    to the parent group's name, i.e., /cesm/cesm_avg:
+   nces          mdl1.nc mdl2.nc mdl3.nc out.nc # Same as ncea
+   nces --nsm_fl mdl1.nc mdl2.nc mdl3.nc out.nc # Same as ncea
    nces --nsm_grp                  mdl1.nc mdl2.nc mdl3.nc out.nc
    nces --nsm_grp --nsm_sfx='_avg' mdl1.nc mdl2.nc mdl3.nc out.nc
    http://nco.sf.net/nco.html#nces
@@ -76,8 +81,8 @@ B. Much improved XML/NcML standards compliance and flexibility.
    Separators for XML now user-configurable with --xml_spr_chr and
    --xml_spr_nmr for character types (i.e., strings) and numeric
    types (i.e., numbers), respectively:
-   ncks --xml_spr_chr="***" in.nc
-   ncks --xml_spr_nmr=", "  in.nc
+   ncks --xml_spr_chr='***' in.nc # Override default separator '*'
+   ncks --xml_spr_nmr=', '  in.nc # Override default separator ' '
    ncks dumps all netCDF3/netCDF4 groups and atomic types 
    (as usual with NCO, netCDF4 non-atomic types are ignored).
    Output validates without errors against NcML 2.2 schema. 
@@ -106,7 +111,7 @@ KNOWN ISSUES NOT YET FIXED:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.3.7 built/tested with netCDF
-   4.3.1-rc4 snapshot 20131106 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.3.1-rc4 snapshot 20131119 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
@@ -161,10 +166,11 @@ D. NOT YET FIXED (NCO problem)
 
    Demonstration:
    ncatted -D 5 -O -a new_string_att,att_var,c,sng,"list","of","str,ings" ~/nco/data/in_4.nc ~/foo.nc
+   ncks -m -C -v att_var ~/foo.nc
 
    20130724: Verified problem still exists
    TODO nco1102
-   Cause: NCO parsing of ncatted arguments is not yet sophisticated
+   Cause: NCO parsing of ncatted arguments is not sophisticated
    enough to handle arrays of NC_STRINGS with embedded delimiters.
 
 E. NOT YET FIXED

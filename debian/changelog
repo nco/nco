@@ -1,6 +1,6 @@
 nco (4.3.9-1) unstable; urgency=low
 
-  * new upstream version (nces, XML)
+  * new upstream version (nces, XML, ncatted NaN)
 
  -- Charlie Zender <zender@uci.edu>  Wed, 06 Dec 2013 12:24:55 -0700
 
