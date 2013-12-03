@@ -78,7 +78,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.110 2013-11-24 23:05:44 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.111 2013-12-03 23:15:59 zender Exp $";
   
  data:
   area=10.,10.;
@@ -373,5 +373,33 @@ netcdf in_grp {
   : hyphen_in_name- = "foo";
   : at_in_name@ = "foo";
  } // end g12
+
+ group: g13 { // Level 1
+    // Purpose: Test hidden attributes
+    // ncks -C -v var_cmp.? -m ~/nco/data/in_grp.nc
+  variables:
+
+    int var_cmp(lat);
+  var_cmp:purpose="Variable with compression. Original _DeflateLevel = 1";
+  var_cmp:_DeflateLevel = 1;
+
+    int var_cmp_0(lat);
+  var_cmp_0:purpose="Variable with compression. Original _DeflateLevel = 0";
+  var_cmp_0:_DeflateLevel = 0;
+    
+    int var_cmp_1(lat);
+  var_cmp_1:purpose="Variable with compression. Original _DeflateLevel = 1";
+  var_cmp_1:_DeflateLevel = 1;
+
+    int var_cmp_9(lat);
+  var_cmp_9:purpose="Variable with compression. Original _DeflateLevel = 9";
+  var_cmp_9:_DeflateLevel = 9;
+
+  data:
+    var_cmp=1,1;
+    var_cmp_0=1,1;
+    var_cmp_1=1,1;
+    var_cmp_9=1,1;
+  } // end g13
 
 } // end root group
