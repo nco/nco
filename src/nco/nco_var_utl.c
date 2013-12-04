@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.350 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.351 2013-12-04 22:56:43 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -990,7 +990,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->srd=(long *)NULL;
   var->undefined=False; /* [flg] Used by ncap parser */
   var->is_fix_var=True; /* Is this a fixed (non-processed) variable? */
-  var->dfl_lvl=0; /* [enm] Deflate level */
+  var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   var->shuffle=False; /* [flg] Turn on shuffle filter */
   /* Members related to packing */
   var->has_scl_fct=False; /* [flg] Valid scale_factor attribute exists */
@@ -1135,7 +1135,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
             if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var[idx]->id,deflate,shuffle,dfl_lvl_in);
           } /* endif */
           /* Overwrite HDF Lempel-Ziv compression level, if requested */
-          if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
+          if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var[idx]->id,(int)True,(int)True,dfl_lvl);
         } /* endif */
       } /* endif netCDF4 */
 
@@ -1670,7 +1670,7 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   (void)nco_pck_dsk_inq(nc_id,var);
 
   /* Set deflate and chunking to defaults */  
-  var->dfl_lvl=0; /* [enm] Deflate level */
+  var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   var->shuffle=False; /* [flg] Turn on shuffle filter */
 
   for(idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;

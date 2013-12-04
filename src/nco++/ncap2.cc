@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.180 2013-12-04 12:43:47 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.181 2013-12-04 22:56:43 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.180 2013-12-04 12:43:47 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.180 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.181 2013-12-04 22:56:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.181 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -178,7 +178,7 @@ main(int argc,char **argv)
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
-  int dfl_lvl=0; /* [enm] Deflate level */
+  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
@@ -1139,9 +1139,5 @@ ram_vars_add
     prs_arg->ncap_var_write(var1,true);
   }
 #endif
-
-
-
-
 
 } // end ram_vars_add()

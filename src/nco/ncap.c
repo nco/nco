@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.277 2013-11-06 17:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.278 2013-12-04 22:56:43 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.277 2013-11-06 17:51:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.277 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.278 2013-12-04 22:56:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.278 $";
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_sct **cnk=NULL_CEWI;
@@ -194,7 +194,7 @@ main(int argc,char **argv)
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
-  int dfl_lvl=0; /* [enm] Deflate level */
+  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
@@ -727,7 +727,7 @@ main(int argc,char **argv)
       } /* endif */
       (void)nco_def_var(out_id,var_ycc[idx]->nm,var_ycc[idx]->type,var_ycc[idx]->nbr_dim,var_ycc[idx]->dmn_id,&var_id);
       /* Set HDF Lempel-Ziv compression level, if requested */
-      if(dfl_lvl > 0 && var_ycc[idx]->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)True,(int)True,dfl_lvl);    
+      if(dfl_lvl >= 0 && var_ycc[idx]->nbr_dim > 0) (void)nco_def_var_deflate(out_id,var_id,(int)True,(int)True,dfl_lvl);    
       var_ycc[idx]->val.vp=nco_free(var_ycc[idx]->val.vp);
     } /* end loop over idx */
     (void)nco_enddef(out_id);

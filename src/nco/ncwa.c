@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.382 2013-11-12 23:50:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.383 2013-12-04 22:56:43 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.382 2013-11-12 23:50:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.382 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.383 2013-12-04 22:56:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.383 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -167,7 +167,7 @@ main(int argc,char **argv)
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
-  int dfl_lvl=0; /* [enm] Deflate level */
+  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int dmn_avg_nbr=0;
   int fl_idx=int_CEWI;
   int fl_nbr=0;

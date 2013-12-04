@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1092 2013-12-04 02:14:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1093 2013-12-04 22:56:43 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4216,7 +4216,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   (void)nco_pck_dsk_inq(grp_id,var);
 
   /* Set deflate and chunking to defaults */  
-  var->dfl_lvl=0; /* [enm] Deflate level */
+  var->dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   var->shuffle=False; /* [flg] Turn on shuffle filter */
 
   for(int idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
@@ -4719,7 +4719,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       /* Copy original deflation settings */
       if(deflate || shuffle) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
       /* Overwrite HDF Lempel-Ziv compression level, if requested */
-      if(dfl_lvl > 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+      if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
 
     /* NB: Copy/set chunking information in nco_cnk_sz_set(), not here! */

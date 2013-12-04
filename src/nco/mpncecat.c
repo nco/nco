@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.115 2013-11-06 17:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncecat.c,v 1.116 2013-12-04 22:56:43 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: mpncecat.c,v 1.115 2013-11-06 17:51:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.115 $";
+  const char * const CVS_Id="$Id: mpncecat.c,v 1.116 2013-12-04 22:56:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.116 $";
   const char * const opt_sht_lst="3467ACcD:d:FHhL:l:n:Oo:p:rRSt:u:v:X:x-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -127,7 +127,7 @@ main(int argc,char **argv)
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
-  int dfl_lvl=0; /* [enm] Deflate level */
+  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int fl_idx;
   int fl_nbr=0;
   int fl_in_fmt; /* [enm] Input file format */

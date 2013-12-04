@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.440 2013-12-02 00:13:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.441 2013-12-04 22:56:43 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -115,6 +115,16 @@ extern "C" {
      Normally using -1 for this ID is fine, but token makes meaning clearer
      NB: nc_inq() family returns -1 for missing record dimensions */
 #define NCO_REC_DMN_UNDEFINED -1
+
+  /* Valid netCDF4 deflation levels (dfl_lvl) range from 0..9 inclusive 
+     Variables with dfl_lvl == 0 return true for compression yet are not deflated
+     Calling deflation routine with dfl_lvl == 0 wastes time _unless_ user wishes 
+     to uncompress variable is currently deflated with dfl_lvl != 0.
+     Undefined dfl_lvl indicates user has not yet specified and intended dfl_lvl
+     This undefined value must be less than zero (and not equal to zero) so that
+     if(dfl_lvl >= 0) deflate(); only calls deflate() when user requests it. 
+     Setting dfl_lvl == 0 decompresses variable */
+#define NCO_DFL_LVL_UNDEFINED -1
 
   /* netcdf.h defines four NC_FORMAT tokens: NC_FORMAT_CLASSIC, ...
      The values are (currently) enumerated from one to four

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.918 2013-12-03 00:51:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.919 2013-12-04 22:56:43 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6460,7 +6460,7 @@ Most files originally written in @acronym{HDF} format use the
 This algorithm is incompatible with the netCDF packing algorithm 
 described above.   
 The unpacking component of the @acronym{HDF} algorithm (described
-@uref{http://www.hdfgroup.org/HDF5/doc/UG, here}) is
+@uref{http://www.hdfgroup.org/HDF5/doc/UG/UG_frame10Datasets.html, here}) is
 @tex
 $$
 \rm
@@ -6472,6 +6472,22 @@ $$
 @var{upk} = @var{scale_factor}*(@var{pck} - @var{add_offset})@*
 @sp 1
 @end ifnottex
+@ignore
+NB: HDF packing documentation is hard to follow
+MODIS HDF4 datasets definitely use the ``HDF algorithm''
+However, must discriminate between HDF4 and HDF5 packing.
+HDF4, or at least some HDF4 datasets implement the ``HDF algorithm'',
+aka linear scale_factor and add_offset in other order from netCDF.
+HDF5 only implements D-scaling, aka, decimal-scaling bit-packing.
+D-Scaling uses add_offset (i.e., minimum data value) and scale_factor
+(integer power of 10 by which the add_offset corrected data are divided
+before storage) to control D-scaling.
+
+@cindex scale-offset compression
+@cindex scale-offset filter
+@acronym{HDF} also calls this @dfn{scale-offset compression} and the
+@dfn{scale-offset filter}.
+@end ignore
 Confusingly, the (incompatible) netCDF and @acronym{HDF} algorithms both 
 store their parameters in attributes with the same names
 (@code{scale_factor} and @code{add_offset}).

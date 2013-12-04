@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.110 2013-11-06 17:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.111 2013-12-04 22:56:43 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.110 2013-11-06 17:51:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.110 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.111 2013-12-04 22:56:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.111 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_sct **cnk=NULL_CEWI;
@@ -145,7 +145,7 @@ main(int argc,char **argv)
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
-  int dfl_lvl=0; /* [enm] Deflate level */
+  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int dmn_out_idx; /* [idx] Index over output dimension list */
   int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */

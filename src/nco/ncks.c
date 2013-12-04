@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.678 2013-11-24 04:05:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.679 2013-12-04 22:56:43 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -157,8 +157,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.678 2013-11-24 04:05:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.678 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.679 2013-12-04 22:56:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.679 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -185,7 +185,7 @@ main(int argc,char **argv)
   int cnk_map=nco_cnk_map_nil; /* [enm] Chunking map */
   int cnk_nbr=0; /* [nbr] Number of chunk sizes */
   int cnk_plc=nco_cnk_plc_nil; /* [enm] Chunking policy */
-  int dfl_lvl=0; /* [enm] Deflate level */
+  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int dmn_nbr_fl;
   int dmn_rec_fl;
   int fl_in_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Input file format */

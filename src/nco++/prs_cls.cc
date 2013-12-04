@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.30 2013-10-22 03:03:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/prs_cls.cc,v 1.31 2013-12-04 22:56:43 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 /* prs_cls -- symbol table - class methods */
@@ -449,7 +449,7 @@ prs_cls::ncap_var_write_omp(
     
     var_out_id=var->id;
   } 
-  rcd=nco_inq_varid_flg(out_id,var->nm,&var_out_id);
+  nco_inq_varid_flg(out_id,var->nm,&var_out_id);
   
   // Only go into define mode if necessary
   if(!bdef || var->pck_ram ){  
@@ -463,17 +463,19 @@ prs_cls::ncap_var_write_omp(
     if(!bdef){
       (void)nco_def_var(out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
       
-      // set deflate, shuffle, chunking
-      if(var->nbr_dim > 0){
-	/* Set HDF Lempel-Ziv compression level, if requested */
-	if(dfl_lvl > 0) 
-	  (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,dfl_lvl);    
-	else if(var->dfl_lvl)
-	  (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,var->dfl_lvl);    
-	
-	/* Set chunk sizes, if requested */
-	// fxm: must first allow cnk_sz specification in ncap2.cc main()
-	//if(var->cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var->cnk_sz);
+      /* Set HDF Lempel-Ziv compression level, if requested */
+      int fl_fmt; /* [enm] Output file format */
+      (void)nco_inq_format(out_id,&fl_fmt);
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+	if(var->nbr_dim > 0){
+	  if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,dfl_lvl); else if(var->dfl_lvl) (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,var->dfl_lvl);    
+	  
+	  /* Set chunk sizes, if requested */
+	  // fxm: must first allow cnk_sz specification in ncap2.cc main()
+	  //if(var->cnk_sz && var->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var->cnk_sz);
+      } /* endif netCDF4 */
+
+
       } /* endif */
       
     } // bdef
@@ -564,18 +566,19 @@ void prs_cls::ncap_def_ntl_scn(void)
 	Nvar->var->nc_id=out_id;
 	Nvar->flg_stt=1;
 	
-        // Set deflation, shuffle, chunking 
-        if(var1->nbr_dim > 0){ 
-	  /* Set HDF Lempel-Ziv compression level, if requested */
-	  if(dfl_lvl > 0) 
-            (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,dfl_lvl);    
-          else if(var1->dfl_lvl)
-            (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,var1->dfl_lvl);    
-	  
-	  /* Set chunk sizes, if requested */
-	  // fxm: must first allow cnk_sz specification in ncap2.cc main()
-	  //if(var1->cnk_sz && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var1->cnk_sz);
-	} /* endif */
+	/* Set HDF Lempel-Ziv compression level, if requested */
+	int fl_fmt; /* [enm] Output file format */
+	int rcd; /* [rcd] Return code */
+	(void)nco_inq_format(out_id,&fl_fmt);
+	if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+	  if(var1->nbr_dim > 0){ 
+	    if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,dfl_lvl); else if(var1->dfl_lvl) (void)nco_def_var_deflate(out_id,var_id,var1->shuffle,(int)True,var1->dfl_lvl);    
+	    
+	    /* Set chunk sizes, if requested */
+	    // fxm: must first allow cnk_sz specification in ncap2.cc main()
+	    //if(var1->cnk_sz && var1->nbr_dim > 0) (void)nco_def_var_chunking(out_id,var_id,(int)NC_CHUNKED,var1->cnk_sz);
+	  } /* endif */
+	} /* endif netCDF4 */
 	
       } else { 
 	//deal with RAM only var        

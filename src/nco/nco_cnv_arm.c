@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.33 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.34 2013-12-04 22:56:43 zender Exp $ */
 
 /* Purpose: ARM conventions, e.g., http://www.arm.gov/data/time.stm */
 
@@ -138,7 +138,7 @@ nco_cnv_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   (void)nco_def_var(nc_id,time_sng,NC_DOUBLE,1,&time_dmn_id,&time_id);
 
   /* Set HDF Lempel-Ziv compression level, if requested */
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(nc_id,time_id,(int)True,(int)True,dfl_lvl);
+  if(dfl_lvl >= 0) (void)nco_def_var_deflate(nc_id,time_id,(int)True,(int)True,dfl_lvl);
 
   /* Add attributes for time variable */
   (void)nco_put_att(nc_id,time_id,units_sng,NC_CHAR,(long int)(strlen(att_units)+1UL),(const void *)att_units);
