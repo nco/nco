@@ -1,3 +1,9 @@
+2013-12-04 Pedro Vicente  <pvicente@uci.edu>
+
+	* Function that checks for invalid input dimensions
+
+        * ncks: Regression #72 Invalid dimension input
+
 2013-12-04  Charlie Zender  <zender@uci.edu>
 
 	* De-compressing netCDF4 files/variables to level 0 works

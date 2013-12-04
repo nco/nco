@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.419 2013-12-04 02:14:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.420 2013-12-04 23:26:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -594,6 +594,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
+ nco_bool **flg_dne,                  /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
@@ -704,9 +705,10 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
-nco_chk_in                            /* [fnc] Check input */
+nco_chk_dmn_in                        /* [fnc] Check input dimensions */
 (int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ nco_bool **flg_dne,                  /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 #ifdef __cplusplus
