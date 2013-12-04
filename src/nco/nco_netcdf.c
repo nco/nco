@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.211 2013-11-16 15:20:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.212 2013-12-04 23:59:47 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1079,7 +1079,10 @@ int nco_def_var_deflate
 {
   /* Purpose: Wrapper for nc_def_var_deflate() */
   int rcd;
-  rcd=nc_def_var_deflate(nc_id,var_id,shuffle,deflate,dfl_lvl);
+  int deflate_new;
+  /* 20131204: Turn-off deflate filter when dfl_lvl == 0 */
+  if(dfl_lvl == 0) deflate_new=0; else deflate_new=deflate;
+  rcd=nc_def_var_deflate(nc_id,var_id,shuffle,deflate_new,dfl_lvl);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_deflate()");
   return rcd;
 } /* end nco_def_var_deflate() */

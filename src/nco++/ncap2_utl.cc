@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.154 2013-10-22 03:03:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2_utl.cc,v 1.155 2013-12-04 23:59:47 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -47,7 +47,7 @@ ncap_att_get
  prs_cls *prs_arg)
 {
   int rcd;
-  int fl_id;
+  int fl_id=int_CEWI;
   long sz;
 
   char *ln_nm;
@@ -190,7 +190,7 @@ ncap_att_gnrl
   int rcd;
   int var_id; 
   int nbr_att;
-  int fl_id;
+  int fl_id=int_CEWI;
   char att_nm[NC_MAX_NAME]; 
   const char *tmp_att_nm;
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
