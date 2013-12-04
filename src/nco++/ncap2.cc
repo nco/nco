@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.179 2013-11-06 17:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.180 2013-12-04 12:43:47 hmb Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.179 2013-11-06 17:51:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.179 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.180 2013-12-04 12:43:47 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.180 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -698,19 +698,19 @@ main(int argc,char **argv)
   /* If we are appending (-A) then output file already contains dimensions/variables */
   if(FORCE_APPEND){
     int nbr_dmn_out=0;  
-    int nbr_var_fl=0;
     int nbr_xtr=0;
-    nm_id_sct *dmn_lst=NULL_CEWI;
-    nm_id_sct *xtr_lst=NULL_CEWI;
+    nm_id_sct *dmn_lst_out=NULL_CEWI;
+
     NcapVar *Nvar;
 
+    nbr_var_fl=0;
     var_sct *var_tmp;
 
     /* Form list of all dimensions in file */  
-    dmn_lst=nco_dmn_lst(out_id,&nbr_dmn_out);
+    dmn_lst_out=nco_dmn_lst(out_id,&nbr_dmn_out);
   
     //dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
-    for(idx=0;idx<nbr_dmn_out;idx++) dmn_out_vtr.push_back(nco_dmn_fll(out_id,dmn_lst[idx].id,dmn_lst[idx].nm));
+    for(idx=0;idx<nbr_dmn_out;idx++) dmn_out_vtr.push_back(nco_dmn_fll(out_id,dmn_lst_out[idx].id,dmn_lst_out[idx].nm));
 
     // Sort vector
     dmn_out_vtr.sort();
@@ -728,19 +728,19 @@ main(int argc,char **argv)
     rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
     /* Make list of all new variables in output_file */  
-    xtr_lst=nco_var_lst_mk(out_id,nbr_var_fl,(char**)NULL,False,False,&nbr_xtr);      
+    xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,(char**)NULL,False,False,&nbr_xtr);      
     for(idx=0;idx<nbr_var_fl;idx++){
-      var_tmp=prs_arg.ncap_var_init(xtr_lst[idx].nm,false);
+      var_tmp=prs_arg.ncap_var_init(xtr_lst_a[idx].nm,false);
       Nvar=new NcapVar(var_tmp); 
       Nvar->flg_stt=2;   
       prs_arg.var_vtr.push(Nvar);
       /* Copy output attributes into var_vtr */
-      ncap_att_gnrl(xtr_lst[idx].nm, xtr_lst[idx].nm,2,&prs_arg);        
+      ncap_att_gnrl(xtr_lst_a[idx].nm, xtr_lst_a[idx].nm,2,&prs_arg);        
     } /* end loop over variables */
 
     /* Free lists */
-    dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_out);
-    xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+    dmn_lst_out=nco_nm_id_lst_free(dmn_lst_out,nbr_dmn_out);
+    xtr_lst_a=nco_nm_id_lst_free(xtr_lst_a,nbr_xtr);
   } /* !FORCE_APPEND */
 
   if(fl_spt_usr == NULL_CEWI){
