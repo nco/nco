@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.418 2013-12-02 20:14:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.419 2013-12-04 02:14:05 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -702,6 +702,12 @@ void
 nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 file cases) */
 (const int nc_id,                     /* I [id] netCDF file ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_chk_in                            /* [fnc] Check input */
+(int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 #ifdef __cplusplus
 } /* end extern "C" */
