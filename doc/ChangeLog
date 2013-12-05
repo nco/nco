@@ -6,6 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
 	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
+	* Patch format string vulnerability to prevent FTBFS error when	compiling with -Werror=format-security
+	Patch provided by Orion Poplowski
+
 	* Turn-off deflate filter when dfl_lvl == 0
 
 	* Fix many ncap2 compiler warnings

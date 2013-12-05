@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.919 2013-12-04 22:56:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.920 2013-12-05 04:31:20 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4187,6 +4187,10 @@ ncks -G g2:-1 -g g1    -v v1 # /g1/v1    -> /g2/v1
 ncks -G g1:-1 -g g1/g2 -v v1 # /g1/g2/v1 -> /g1/g1/v1
 @end example
 
+@html
+<a name="mv"></a> <!-- http://nco.sf.net/nco.html#mv -->
+<a name="move"></a> <!-- http://nco.sf.net/nco.html#move -->
+@end html
 @cindex move groups
 @cindex groups, moving
 @cindex rename groups

@@ -1,5 +1,5 @@
 header {
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.203 2013-10-22 03:03:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncoGrammer.g,v 1.204 2013-12-05 04:31:20 zender Exp $ */
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
@@ -1293,7 +1293,7 @@ static std::vector<std::string> lpp_vtr;
         prn_sng=strdup(pstr->getText().c_str());
         (void)sng_ascii_trn(prn_sng);            
 
-        fprintf(stdout,prn_sng);
+        fprintf(stdout,"%s",prn_sng);
         prn_sng=(char*)nco_free(prn_sng);
       }    
     }

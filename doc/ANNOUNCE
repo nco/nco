@@ -1,49 +1,24 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.650 2013-12-03 05:07:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.651 2013-12-05 04:31:20 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-We are pleased to report the birth of the operator nces.
-nces is for netCDF Ensemble Statistics.
-nces includes the existing functionality of ncea and extends it by
-allowing groups to be treated as an unlimited dimension of datasets.   
-nces is really ncea with a powerful new feature and a new name.
-I will debut nces at AGU (Friday 12/13 11:35 AM Moscone West 2010).  
-See below for more info on the feature. Regarding the name...
+As indicated in the last release, NCO 4.4.0 renamed ncra as ncrs and
+ncwa as ncws (Record Statistics and Weighted Statistics,
+respectively).  This is to more accurately reflect their purpose.
+The same technique is used to guarantee backwards compatibility.
+That is, NCO installs by default with symbolic links from ncra->ncrs
+and ncwa->ncws so calling either operator by its old name still works,
+and calling either operator by its new name produces the same results.
+However, ncra and ncwa are deprecated and will eventually be removed.
+Please change your scripts/habits accordingly within a few years...
 
-We renamed ncea as nces to more accurately describe the operator.
-For historical reasons, NCO is full of misnamed operators:
-NCO itself is misnamed because the operators now work well on HDF (4
-and 5) files, not just netCDF files. We tried to change their name
-to SDO (Scientific Data Operators) but the new name didn't stick.
-And the "averagers" (ncea, ncra, ncwa) are all misnamed because they
-all do many statistics (min/max/ttl/rms...) besides averages. 
-This feature addition is an opportune time to rename ncea as nces.
-ncea is now deprecated, though will remain supported for some time.
-
-We faced the same problem of back-compatibility when we renamed ncdiff
-to ncbo many years ago. We will use the same method. Invoking 'nces'
-produces the same results as the old 'ncea' so scripts do not break. 
-Under the hood, 'ncea' invokes 'nces --nsm_fl', just as 'ncdiff' 
-invokes 'ncbo --op_typ=subtract'. To cause nces to utilize the new
-group ensemble mode, invoke it with 'nces --nsm_grp'. This is similar
-to how ncecat has two modes, record aggregation (the default) and
-group aggregation, invoked with 'ncecat --rag' and 'ncecat --gag', 
-respectively. 
-
-This version also improves ncks support for XML (NcML) output.
-All output now validates without errors with the NcML 2.2 schema.  
-Happy NcML'ing! There is also a bugfix for NaNs in ncatted.
-
-Work on NCO 4.4.0 is underway. It focuses on stability and speed.  
+Work on NCO 4.4.1 is underway. It focuses on stability and speed.  
 There will be some netCDF4 mop-up, including netCDF4 support for
 various options (all -X, ncwa -w and -m), and, possibly, improved
-support for HDF4 files. Heads-up: Unless users report unforeseen
-difficulties transitioning from ncea to nces, NCO 4.4.0 will rename
-ncra as ncrs and ncwa as ncws (Record Statistics and Weighted
-Statistics, respectively). 
+support for HDF4 files. 
 
 Enjoy,
 Charlie
@@ -52,59 +27,41 @@ Charlie
 
 NEW FEATURES:
 
-A. ncea is now nces or nces --nsm_fl, meaning ensembles of files.
-   Use nces --nsm_grp, for ensembles of groups, a new feature.
-   The same input is valid in both modes. Members of a group ensemble
-   are groups that share the same structure, parent group, and nesting
-   level. Their contents usually have different values because they
-   are realizations of replicated experiments. 
-   In group-ensemble mode nces computes the statistics across
-   the ensemble of groups, which may span multiple input files. 
-   Files may contain members of multiple ensembles. However, all
-   ensembles must have at least one member in the first input file. 
-   Group ensembles behave as a pseudo-record dimension, in that a
-   group ensemble may comprise an arbitrary and extensible number of
-   realizations in each file, and may be composed of multiple files.
-   Output statistics are stored in the parent group by default.
-   If the ensemble members are /cesm/01 and /cesm/02, then the
-   computed statistic will be in /cesm in the output file.
-   The --nsm_sfx option instructs nces to instead store output in 
-   a new child group of the parent created by attaching the suffix
-   to the parent group's name, i.e., /cesm/cesm_avg:
-   nces          mdl1.nc mdl2.nc mdl3.nc out.nc # Same as ncea
-   nces --nsm_fl mdl1.nc mdl2.nc mdl3.nc out.nc # Same as ncea
-   nces --nsm_grp                  mdl1.nc mdl2.nc mdl3.nc out.nc
-   nces --nsm_grp --nsm_sfx='_avg' mdl1.nc mdl2.nc mdl3.nc out.nc
-   http://nco.sf.net/nco.html#nces
+A. fxm
 
-B. Much improved XML/NcML standards compliance and flexibility.
-   Separators for XML now user-configurable with --xml_spr_chr and
-   --xml_spr_nmr for character types (i.e., strings) and numeric
-   types (i.e., numbers), respectively:
-   ncks --xml_spr_chr='***' in.nc # Override default separator '*'
-   ncks --xml_spr_nmr=', '  in.nc # Override default separator ' '
-   ncks dumps all netCDF3/netCDF4 groups and atomic types 
-   (as usual with NCO, netCDF4 non-atomic types are ignored).
-   Output validates without errors against NcML 2.2 schema. 
-   Java/NcML users please test and and give us feedback!
-   http://nco.sf.net/nco.html#xml
+A. fxm
+   NCO now employs hashing techniques to locate objects.
+   As a result NCO is much more efficient searching for objects.
+   Users should notice no difference. If you do, please let us know. 
+   It is possible that some use-cases on large, complex files will
+   show significant speed-ups.
+
+A. fxm
+   ncrename allows full group pathnames for new_name arguments.
+   Previously, ncrename allowed full group pathnames only for old_name 
+   and the syntax was
+   ncrename -v /path/to/old_name,new_name in.nc out.nc
+   and new_name was presumed to be on the same path as old_name.
+   The new feature means this now works:
+   ncrename -v /path/to/old_name,/path/to/new_name in.nc out.nc
+   This embodies no new functionality because the paths must be
+   identical! In other words, /path/to must lead to the same
+   location. If it did not, you would be both _moving_ and _renaming_
+   the variable, not just renaming it. 
+   _moving_ groups and variables is more arduous then renaming.
+   For more on renaming and moving, see
+   http://nco.sf.net/nco.html#rename
+   http://nco.sf.net/nco.html#move
 
 BUG FIXES:
 
-A. Fix ncatted so it does not treat zero as NaN when changing a
-   missing value (_FillValue) from NaN to something else. 
-   Problem reported by Jianfu Pan.
-
-B. Correct XML-mode issues, many reported by Aleksandar Jelenak 
-   1. Print </variable> in metadata mode
-   2. Adds type="typ_nm" attribute to non-string attribute elements
-   3. Add separator="foo" element when separator is not whitespace
-   4. Fix int64-type printing
-   5. Use NcML not CDL type names
-   6. Add hidden _Unsigned attribute for unsigned types
-   7. Add hidden _FillValue attribute for unsigned types
-   8. Do not print underscores for missing data in XML mode
-   9. Add shape="" to scalar variables (cough, cough)
+A. De-compressing netCDF4 files/variables by specifying deflation
+   level=0 works. This fixes a bug where previously NCO could set the  
+   deflation level of any variable to any level except zero.
+   
+A. Dimensions in hyperslabbing arguments are once again checked for 
+   validity prior to processing and invalid (i.e., non-existent)
+   dimensions once-again cause operators to abort.
 
 KNOWN ISSUES NOT YET FIXED:
 

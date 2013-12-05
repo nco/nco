@@ -705,7 +705,7 @@ int  ncoTree::statements(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 							prn_sng=strdup(pstr->getText().c_str());
 							(void)sng_ascii_trn(prn_sng);            
 							
-							fprintf(stdout,prn_sng);
+							fprintf(stdout,"%s",prn_sng);
 							prn_sng=(char*)nco_free(prn_sng);
 							}    
 							
