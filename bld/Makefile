@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.674 2013-12-03 00:51:02 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.675 2013-12-06 01:43:59 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -800,7 +800,7 @@ ${MY_DPN_DIR}/%.d : %.cc
 endif # endif AIX VA Compiler Collection
 # GNU Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
- CFLAGS := -Wall -Wunused
+ CFLAGS := -Wall -Werror=format-security -Wunused
 ifeq (${OPTS},O)
  CFLAGS += -O -g ${GCC_RCH_ARG}
 endif
@@ -972,8 +972,8 @@ ifeq (gcc,$(firstword ${CC}))
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
- CFLAGS += -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g
-# Compilation flags recommended by GSL that I like and use:
+ CFLAGS += -Werror=format-security -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g
+# Compilation flags recommended by GSL and others that I like and use:
 # -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
 # -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
 # -pedantic: Disallow non-ISO constructs (including type long long) (sometimes useful)
@@ -981,6 +981,7 @@ ifeq (gcc,$(firstword ${CC}))
 # -Wall: Warn about common programming problems
 # -Wcast-align: Warn if casting pointer to type of different size
 # -Wcast-qual: Warn if const qualifier removed from pointer
+# -Werror=format-security: Consider this specific warning as errors
 # -Werror: Consider warnings as errors
 # -Wmissing-prototypes: Warn if missing prototypes
 # -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
@@ -1244,7 +1245,7 @@ CXX := c++
 # NB: -D_POSIX_SOURCE breaks MACOSX build in nco_fl_utl.c, nco_mmr.c
 CC := cc -std=c99 -pedantic -D_BSD_SOURCE
 # -fno-common: Allows shared libraries to build
-CFLAGS := -Wall -fno-common
+CFLAGS := -Wall -Werror=format-security -fno-common
 CPP := ${CC}
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
@@ -1379,7 +1380,7 @@ endif # endif ABI
 endif # endif SGI64, SGIMP64
 ifeq (gcc,$(firstword ${CC}))
  LDFLAGS += ${GCC_LDFLAGS_SZ_SPC} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
- CFLAGS := ${GCC_ABI_FLG} -Wall
+ CFLAGS := ${GCC_ABI_FLG} -Wall -Werror=format-security
 ifeq (${OPTS},O)
  CFLAGS += -O2
 endif
