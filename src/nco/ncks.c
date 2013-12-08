@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.680 2013-12-04 23:26:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.681 2013-12-08 22:50:40 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -129,7 +129,7 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
-  nco_bool *flg_dne; /* [lst] Flag to check if input dimension -d "does not exist" */
+  nco_bool *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -158,8 +158,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.680 2013-12-04 23:26:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.680 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.681 2013-12-08 22:50:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.681 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -214,6 +214,8 @@ main(int argc,char **argv)
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  lmt_sct **lmt=NULL_CEWI;  /* [sct] User defined limits */
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -641,7 +643,7 @@ main(int argc,char **argv)
 
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);
-
+ 
   /* Get program info for regressions tests */
   if(GET_PRG_INFO) nco_get_prg_info();
 
@@ -660,18 +662,20 @@ main(int argc,char **argv)
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
-  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
- 
-   /* Check if all input -d dimensions were found */ 
+  (void)nco_bld_trv_tbl(in_id,trv_pth,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,lmt_arg,&lmt_nbr,&lmt,trv_tbl);
+
+  /* Check valid input (limits) */
+  if(lmt_nbr) (void)nco_chk_dmn_in(lmt_nbr,lmt,&flg_dne,trv_tbl);
+
+  /* Check if all input -d dimensions were found */ 
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
     /* Check this flag */
     if (flg_dne[lmt_idx] == True){
-      (void)fprintf(stdout,"%s: Invalid input dimensions ...exiting\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),lmt[lmt_idx]->nm);
       flg_dne=(nco_bool *)nco_free(flg_dne);
       nco_exit(EXIT_FAILURE);
     } /* Check this flag */
   } /* Check if all input -d dimensions were found */
-
 
   /* Get number of variables, dimensions, and global attributes in file */
   (void)trv_tbl_inq(&att_glb_nbr,&att_grp_nbr,&att_var_nbr,&dmn_nbr_fl,&dmn_rec_fl,&grp_dpt_fl,&grp_nbr_fl,&var_ntm_fl,&var_nbr_fl,trv_tbl);
@@ -974,6 +978,8 @@ main(int argc,char **argv)
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
     if(smr_sng) smr_sng=(char *)nco_free(smr_sng);
     flg_dne=(nco_bool *)nco_free(flg_dne);
+    for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
+    lmt=(lmt_sct **)nco_free(lmt);
   } /* !flg_cln */
 
   

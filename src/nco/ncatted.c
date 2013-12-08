@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.176 2013-12-04 23:26:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.177 2013-12-08 22:50:40 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -149,7 +149,6 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
-  nco_bool *flg_dne; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -163,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.176 2013-12-04 23:26:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.176 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.177 2013-12-08 22:50:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.177 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -374,13 +373,11 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT (Group Traversal Table) */
-  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,&flg_dne,trv_tbl);
+  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,NULL,NULL,NULL,NULL,trv_tbl);
 
   /* Timestamp end of metadata setup and disk layout */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
   ddra_info.tmr_flg=nco_tmr_rgl;
-
-
 
   /* Loop input names */
   for(int idx_aed=0;idx_aed<nbr_aed;idx_aed++){
@@ -394,8 +391,7 @@ main(int argc,char **argv)
       int var_lst_in_nbr; /* I [nbr] Number of variables in list */
       var_lst_in=nco_lst_prs_2D(aed_lst[idx_aed].var_nm,",",&var_lst_in_nbr);
       trv_tbl_init(&trv_tbl_rx); 
-      /* Construct GTT (Group Traversal Table) */
-      (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,var_lst_in,var_lst_in_nbr,False,False,False,False,&flg_dne,trv_tbl_rx);
+      (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,False,False,NULL,(int)0,var_lst_in,var_lst_in_nbr,False,False,False,NULL,NULL,NULL,NULL,trv_tbl_rx);
       /* Edit same attribute for all variables ... */
       (void)nco_aed_prc_var_xtr(nc_id,aed_lst[idx_aed],trv_tbl_rx);
       trv_tbl_free(trv_tbl_rx);
@@ -455,7 +451,6 @@ main(int argc,char **argv)
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
 
     trv_tbl_free(trv_tbl);
-    flg_dne=(nco_bool *)nco_free(flg_dne);
   } /* !flg_cln */
 
   /* End timer */ 

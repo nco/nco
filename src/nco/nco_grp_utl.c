@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1094 2013-12-04 23:26:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1095 2013-12-08 22:50:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6439,8 +6439,6 @@ void
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  char * const grp_pth,                /* I [sng] Absolute group path where to start build (root typically) */
- int lmt_nbr,                         /* I [nbr] number of dimensions with limits */
- CST_X_PTR_CST_PTR_CST_Y(char,lmt_arg), /* I [sng] List of user-specified dimension limits */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -6453,12 +6451,12 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */
- nco_bool **flg_dne,                  /* I/O [lst] Flag to check if input dimension -d "does not exist" */
+ CST_X_PTR_CST_PTR_CST_Y(char,lmt_arg), /* I [sng] List of user-specified dimension limits */
+ int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
+ lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-
-  lmt_sct **lmt=NULL_CEWI;  /* [sct] User defined limits */
 
   nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 
@@ -6507,21 +6505,13 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_bld_var_dmn(trv_tbl);
 
   /* Make uniform list of user-specified dimension limits */
-  if(lmt_nbr) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
- 
-  /* Check valid input (limits) */
-  (void)nco_chk_dmn_in(lmt_nbr,lmt,flg_dne,trv_tbl);
+  if(lmt_nbr) *lmt=nco_lmt_prs(*lmt_nbr,lmt_arg);
 
   /* Parse auxiliary coordinates */
-  if(aux_nbr) (void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
+  if(aux_nbr) (void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,lmt_nbr,lmt,trv_tbl); 
 
   /* Add dimension limits */
-  if(lmt_nbr) (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
-
-  if(lmt_nbr){
-    for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
-    lmt=(lmt_sct **)nco_free(lmt);
-  } /* !lmt_nbr */
+  if(lmt_nbr) (void)nco_bld_lmt(nc_id,MSA_USR_RDR,*lmt_nbr,*lmt,FORTRAN_IDX_CNV,trv_tbl);
 
   /* Hash traversal table for fastest access */
   (void)nco_trv_hsh_bld(trv_tbl);
@@ -6564,7 +6554,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 (const int nc_id,                     /* I [ID] netCDF file ID */
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
  int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ lmt_sct **lmt,                       /* I [sct] Limit array. Structure comming from nco_lmt_prs() */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {

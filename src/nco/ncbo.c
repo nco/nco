@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.269 2013-12-04 23:26:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.270 2013-12-08 22:50:40 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -108,7 +108,7 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_ddra=False; /* [flg] DDRA diagnostics */
-  nco_bool *flg_dne; /* [lst] Flag to check if input dimension -d "does not exist" */
+  nco_bool *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -129,11 +129,12 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+  char **grp_lst_in=NULL; /* [sng] User-specified list of groups */
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.269 2013-12-04 23:26:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.269 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.270 2013-12-08 22:50:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.270 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -183,12 +184,15 @@ main(int argc,char **argv)
   int nbr_rec_fl_2;   /* [nbr] Number of record dimensions in file */
   int grp_dpt_fl_1;   /* [nbr] Maximum group depth (root = 0) */
   int grp_dpt_fl_2;   /* [nbr] Maximum group depth (root = 0) */ 
+  int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int nbr_grp_fl_1;   /* [nbr] Number of groups in file */
   int nbr_grp_fl_2;   /* [nbr] Number of groups in file */
   int var_ntm_fl_1;   /* [nbr] Number of non-atomic variables in file */
   int var_ntm_fl_2;   /* [nbr] Number of non-atomic variables in file */
   int nbr_var_fl_1;   /* [nbr] Number of atomic-type variables in file */
   int nbr_var_fl_2;   /* [nbr] Number of atomic-type variables in file */
+  int nbr_gpe_nm;     /* [nbr] Number of GPE entries */ 
+  int nbr_cmn_nm;     /* [nbr] Number of common entries */
   int nco_op_typ=nco_op_nil; /* [enm] Operation type */
   int opt;
   int out_id;  
@@ -201,17 +205,14 @@ main(int argc,char **argv)
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
-  char **grp_lst_in=NULL; /* [sng] User-specified list of groups */
-  int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
-
   trv_tbl_sct *trv_tbl_1=NULL; /* [lst] Traversal table input file 1 */
   trv_tbl_sct *trv_tbl_2=NULL; /* [lst] Traversal table input file 2 */
 
   gpe_nm_sct *gpe_nm=NULL; /* [sct] GPE name duplicate check array */
-  int nbr_gpe_nm; /* [nbr] Number of GPE entries */ 
-
+  
   nco_cmn_t *cmn_lst=NULL; /* [sct] A list of common names */ 
-  int nbr_cmn_nm; /* [nbr] Number of common entries */
+  
+  lmt_sct **lmt=NULL_CEWI;  /* [sct] User defined limits */
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -529,8 +530,8 @@ main(int argc,char **argv)
   in_id_2=in_id_2_arr[0];
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id_1,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl_1);
-  (void)nco_bld_trv_tbl(in_id_2,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl_2);
+  (void)nco_bld_trv_tbl(in_id_1,trv_pth,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,lmt_arg,&lmt_nbr,&lmt,trv_tbl_1);
+  (void)nco_bld_trv_tbl(in_id_2,trv_pth,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,lmt_arg,&lmt_nbr,&lmt,trv_tbl_2);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att_1,&nbr_grp_att_1,&nbr_att_var_1,&nbr_dmn_fl_1,&nbr_rec_fl_1,&grp_dpt_fl_1,&nbr_grp_fl_1,&var_ntm_fl_1,&nbr_var_fl_1,trv_tbl_1);
@@ -631,6 +632,8 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_cmn_nm;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
     if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
     flg_dne=(nco_bool *)nco_free(flg_dne);
+    for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
+    lmt=(lmt_sct **)nco_free(lmt);
 
   } /* !flg_cln */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.184 2013-12-04 23:26:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.185 2013-12-08 22:50:40 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -82,7 +82,6 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_cln=False; /* [flg] Clean memory prior to exit */
-  nco_bool *flg_dne; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -101,8 +100,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.184 2013-12-04 23:26:00 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.184 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.185 2013-12-08 22:50:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.185 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -133,10 +132,10 @@ main(int argc,char **argv)
   rnm_sct *grp_rnm_lst=NULL_CEWI;
   rnm_sct *att_rnm_lst=NULL_CEWI;
 
-  trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
-
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
+
+  trv_tbl_sct *trv_tbl; /* [lst] Traversal table */
 
   static struct option opt_lng[] =
   { /* Structure ordered by short option key if possible */
@@ -337,7 +336,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
-  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,&flg_dne,trv_tbl);
+  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,False,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,NULL,(int)0,NULL,trv_tbl);
 
   /* Loop input variable names */
   for(int idx_var=0;idx_var<nbr_var_rnm;idx_var++){
@@ -622,7 +621,6 @@ main(int argc,char **argv)
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
     if(fl_lst_abb) fl_lst_abb=nco_sng_lst_free(fl_lst_abb,abb_arg_nbr);
     (void)trv_tbl_free(trv_tbl);
-    flg_dne=(nco_bool *)nco_free(flg_dne);
   } /* !flg_cln */
 
   /* End timer */ 
