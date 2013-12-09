@@ -1,10 +1,14 @@
+2013-12-09  Charlie Zender  <zender@uci.edu>
+
+	* Prepare to attack ncra/ncrcat MRO/DRN bug
+
 2013-12-09 Pedro Vicente  <pvicente@uci.edu>
 
-    * Enable hash table lookup 
+	* Enable hash table lookup
 
 2013-12-08 Pedro Vicente  <pvicente@uci.edu>
 
-    * ncrename: Regression #22 Allow input syntax of new name as full path
+	* ncrename: Regression #22 Allow input syntax of new name as full path
 
 2013-12-04  Charlie Zender  <zender@uci.edu>
 
@@ -25,7 +29,7 @@
 
 	* Function that checks for invalid input dimensions
 
-    * ncks: Regression #72 Invalid dimension input
+	* ncks: Regression #72 Invalid dimension input
 
 2013-12-04  Charlie Zender  <zender@uci.edu>
 

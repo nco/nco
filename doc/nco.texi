@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.920 2013-12-05 04:31:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.921 2013-12-09 21:33:28 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4695,8 +4695,8 @@ Long options:
 As of version 4.2.6 (March, 2013), @acronym{NCO} allows both
 Multi-File, Multi-Record operators (@command{ncra} and @command{ncrcat})
 to append their output directly to the end of an existing file.
-This feature useful when a target file is to be augmented, rather than
-constructed from scratch. 
+This feature may be used to augment a target file, rather than construct
+it from scratch. 
 For example, when a timeseries is concatenated from input data that
 becomes available in stages rather than all at once.
 This switch enables an optimization that significantly speeds writing
@@ -4746,6 +4746,7 @@ Hence, it is fast.
 We recommend users try to understand the safety trade-offs involved. 
 
 @html
+<a name="subcycle"></a> <!-- http://nco.sf.net/nco.html#subcycle -->
 <a name="duration"></a> <!-- http://nco.sf.net/nco.html#duration -->
 <a name="drn"></a> <!-- http://nco.sf.net/nco.html#drn -->
 <a name="mro"></a> <!-- http://nco.sf.net/nco.html#mro -->
@@ -4771,16 +4772,16 @@ Long options:
 As of version 4.2.1 (August, 2012), @acronym{NCO} allows both Multi-File,
 Multi-Record operators, @command{ncra} and @command{ncrcat}, to extract
 and operate on multiple groups of records. 
-These groups may be physically connected to @emph{sub-cycles} of a
-periodic nature, e.g., seasons of a year.
+These groups may be connected to physical @emph{sub-cycles} of a
+periodic nature, e.g., months of a year, or hours of a day. 
 Or they may be thought of as groups of a specifed duration.
 The feature and the terminology to describe it are new.
-For now, we call this the @dfn{duration feature}, sometimes abbreviated DRN.
+For now, we call this the @dfn{duration feature}, sometimes abbreviated @acronym{DRN}.
 
 The duration feature allows processing of groups of records
 separated by regular intervals of records.
 It is perhaps best illustrated by an extended example which describes
-how to solve the same problem both with and without the DRN feature.
+how to solve the same problem both with and without the @acronym{DRN} feature.
 
 The first task in climate data processing is often creating seasonal
 cycles. 
@@ -4804,28 +4805,32 @@ ncra -O clm06 clm07.nc clm08.nc clm_JJA.nc
 @noindent
 So far, nothing is unusual and this task can be performed by any
 @acronym{NCO} version. 
-The DRN feature makes obsolete the need for the shell loop used in
-@w{Step 1} above. 
+The @acronym{DRN} feature makes obsolete the need for the shell loop
+used in @w{Step 1} above. 
 
-The new DRN option aggregates more than one input record at a time
+The new @acronym{DRN} option aggregates more than one input record at a time
 before performing arithmetic operations, and, with an additional
 switch, allows us to archive those results in multiple record output
 (MRO) files.  
-This reduces the task of producing a the climatological summertime
+This reduces the task of producing the climatological summertime
 mean to one step:
 @example
 # Step 1: Compute climatological summertime mean
 ncra -O -F -d time,6,,12,3 -n 150,4,1 1850.nc clm_JJA.nc
 @end example
 @noindent
-The DRN option instructs @command{ncra} (or @command{ncrcat}) to process 
-files in groups of three records. 
+The @acronym{DRN} option instructs @command{ncra} (or @command{ncrcat})
+to process  files in groups of three records. 
+To better understand the meaning of each argument to the @samp{-d}
+hyperslab option, read it this way: ``for the time dimension start with
+the sixth record, continue without end, repeat the process every twelfth
+record, and define a sub-cycle as three consecutive records''. 
 
 A separate option, @samp{--mro}, instructs @command{ncra} to output 
 its results from each sub-group, and to produce a @dfn{Multi-Record Output}
 (MRO) file rather than a @dfn{Single-Record Output} (SRO) file.
 Unless @samp{--mro} is specified, @command{ncra} collects all the
-sub-groups together, and operates on their ensemble, producing a single
+sub-groups together, operates on their ensemble, and produces a single
 output record. 
 The addition of @samp{--mro} to the above example causes @command{ncra}
 to archive all (150) annual summertime means to one file:
@@ -4836,9 +4841,9 @@ ncra --mro -O -F -d time,6,,12,3 -n 150,4,1 1850.nc 1850_2009_JJA.nc
 ncra --mro -O -d time,,,12,12 -n 150,4,1 1850.nc 1850_2009.nc
 @end example
 @noindent
-These operations generated and required no intermediate files.
-This contrasts to the previous @acronym{NCO} methods, which require
-generating, averaging, then catenating 150 files. 
+These operations generate and require no intermediate files.
+This contrasts to previous @acronym{NCO} methods, which require
+generating, averaging, then catenating 150 files.  
 The @samp{--mro} option has no effect on, or rather is redundant for, 
 @command{ncrcat} since @command{ncrcat} always outputs all selected
 records.

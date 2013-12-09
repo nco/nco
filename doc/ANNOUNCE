@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.651 2013-12-05 04:31:20 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.652 2013-12-09 21:33:28 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -73,23 +73,7 @@ KNOWN ISSUES NOT YET FIXED:
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make all;make ncap2 # Old Makefile mechanism
 
-A. NOT YET FIXED
-   netCDF4 library fails when renaming dimension and variable using
-   that dimension, in either order. Works fine with netCDF3.
-   Hence coordinate renaming does not work with netCDF4 files.
-   Problem with netCDF4 library implementation.
-
-   Demonstration:
-   ncks -O -4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc
-   ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
-   ncks -m ~/foo.nc
-
-   20130724: Verified problem still exists
-   Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file
-   Workaround: Use ncrename twice; first rename the variable, then
-   rename the dimension.
-
-B. NOT YET FIXED (would require DAP protocol change?)
+A. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
    Metadata are returned successfully, data are not.
@@ -104,7 +88,7 @@ B. NOT YET FIXED (would require DAP protocol change?)
 
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-C. NOT YET FIXED (would require DAP protocol change)
+B. NOT YET FIXED (would require DAP protocol change)
    Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol
@@ -118,7 +102,7 @@ C. NOT YET FIXED (would require DAP protocol change)
    dimension is user-configurable, but still...), NUL-terminated
    strings so MD5 agreement fails 
 
-D. NOT YET FIXED (NCO problem)
+C. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
 
    Demonstration:
@@ -130,7 +114,7 @@ D. NOT YET FIXED (NCO problem)
    Cause: NCO parsing of ncatted arguments is not sophisticated
    enough to handle arrays of NC_STRINGS with embedded delimiters.
 
-E. NOT YET FIXED
+D. NOT YET FIXED
    Report correct chunking and compression information for HDF4 files
 
    Demonstration:
