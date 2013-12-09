@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.250 2013-12-02 20:14:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.251 2013-12-09 03:39:04 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -770,12 +770,6 @@ trv_tbl_mrk_nsm_mbr                    /* [fnc] Mark ensemble member flag in tab
  const char * const grp_nm_fll_prn,   /* I [sng] Parent group full name (key for ensemble) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
-#ifdef NCO_HSH_TRV_OBJ
-  trv_sct *trv_obj; /* [sct] GTT object structure */
-  HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
-  if(trv_obj) trv_obj->flg_nsm_mbr=True;
-  assert(0); 
-#else /* !NCO_HSH_TRV_OBJ */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
       trv_tbl->lst[uidx].flg_nsm_mbr=True;
@@ -783,7 +777,6 @@ trv_tbl_mrk_nsm_mbr                    /* [fnc] Mark ensemble member flag in tab
       if (flg_nsm_tpl) trv_tbl->lst[uidx].flg_nsm_tpl=True;
     }
   }
-#endif /* !NCO_HSH_TRV_OBJ */
 
   return;
 } /* end trv_tbl_mrk_nsm_mbr() */

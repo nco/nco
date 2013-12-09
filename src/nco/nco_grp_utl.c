@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1095 2013-12-08 22:50:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1096 2013-12-09 03:39:04 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6458,10 +6458,17 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 {
   /* Purpose: Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
 
+  /* NB: Sequence of calls is important:
+  1) nco_trv_hsh_bld() must be called after nco_grp_itr(), because other functions use the hash table 
+  */
+
   nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 
   /* Construct traversal table objects (groups,variables) */
   (void)nco_grp_itr(nc_id,(char *)NULL,grp_pth,trv_tbl);
+
+  /* Hash traversal table for fastest access */
+  (void)nco_trv_hsh_bld(trv_tbl);
 
   /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
@@ -6512,9 +6519,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Add dimension limits */
   if(lmt_nbr) (void)nco_bld_lmt(nc_id,MSA_USR_RDR,*lmt_nbr,*lmt,FORTRAN_IDX_CNV,trv_tbl);
-
-  /* Hash traversal table for fastest access */
-  (void)nco_trv_hsh_bld(trv_tbl);
 
   /* Build ensembles */
   if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,trv_tbl);
