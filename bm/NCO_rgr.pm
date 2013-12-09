@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.381 2013-12-08 22:50:40 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.382 2013-12-09 00:00:35 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2461,7 +2461,7 @@ print "\n";
     
 #ncpdq #5
 #three_dmn_var_dbl(time,lat,lon);
-#ncpdq -h -O -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3
+#ncpdq -h -O -C -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 in.nc
     
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -a lat,lon,time -v three_dmn_var_dbl -d time,0,3 -d time,9,9 -d lon,0,0 -d lon,3,3 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v three_dmn_var_dbl -d lat,0 -d lon,1 -d time,2 %tmp_fl_00%";
@@ -4678,7 +4678,21 @@ print "\n";
     $dsc_sng="Groups: Optional relative rename '.gfoo' to 'new_g1'";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    @tst_cmd=(); # really reset array.		
+    @tst_cmd=(); # really reset array.	
+
+	#################### Variables
+	
+#ncrename #22 (same as #13)
+#ncrename  -D 1 -O -v /g1/v1,/g1/new_v1 in_grp.nc out.nc
+#Absolute rename /g1/v1 to /g1/new_v1 
+
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v /g1/v1,/g1/new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks -m -g g1 -v new_v1  %tmp_fl_00% | grep /g1/new_v1";
+    $dsc_sng="Variables: Absolute rename '/g1/v1' to '/g1/new_v1' (input absolute name)";
+    $tst_cmd[2]="/g1/new_v1";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    @tst_cmd=(); # really reset array.			
 
 	
 } #### Group tests	

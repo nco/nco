@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.164 2013-12-02 20:48:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.165 2013-12-09 00:00:35 pvicente Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -1351,6 +1351,14 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
     } /* end if */
     
     lng_arg_1=comma_1_cp-rnm_arg[idx]; 
+
+    /* If new name is absolute path, get rid of it (ncrename does in place, same group, changes, so absolute path is redundant) */
+    char *abs_1_cp=strrchr(comma_1_cp,'/');
+    /* Found path separator in new name (string after ',' ) */
+    if (abs_1_cp){
+      comma_1_cp=strrchr(comma_1_cp,'/');
+    }
+
     lng_arg_2=rnm_arg[idx]+strlen(rnm_arg[idx])-comma_1_cp-1; 
     
     /* Exit if length of either argument is zero */
