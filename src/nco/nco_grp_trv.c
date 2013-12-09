@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.252 2013-12-09 04:45:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.253 2013-12-09 05:14:46 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -271,7 +271,7 @@ trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
 
-#ifdef NCO_HSH_TRV_OBJ
+#ifdef NCO_HSH_TRV_OBJ_
   trv_sct *trv_obj; /* [sct] GTT object structure */
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
   if(trv_obj) trv_obj->flg_xtr=True;
@@ -342,8 +342,8 @@ trv_tbl_srt                            /* [fnc] Sort traversal table */
 
 void                          
 trv_tbl_mch                            /* [fnc] Match 2 tables (find common objects) and export common objects  */
-(trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+(const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
  int * nbr_cmn_nm)                     /* I/O [nbr] Number of common names */
 {
@@ -358,7 +358,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
      
      Used in ncbo; ncbo performs binary operations on variables in file 1 and matching variables
      (those with the same name) in file 2 and stores results in file 3.
-     This function detects common absolute names in tables 1 and 2 and does ncbo binary operation */
+     This function detects common absolute names in tables 1 and 2 and does ncbo binary operation 
+     
+     NB: cosequential match algorithm requires alphabetical sorted full names. The table is sorted in nco_bld_trv_tbl() only for ncbo
+     */
   
   const char fnc_nm[]="trv_tbl_mch()"; /* [sng] Function name */
   
@@ -371,19 +374,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
 
-  /* Tables must be sorted */
-  (void)trv_tbl_srt(trv_tbl_1);
-  (void)trv_tbl_srt(trv_tbl_2);
-
-#ifdef NCO_HSH_TRV_OBJ
-  /* Rebuild hash table after traversal table re-ordering */
-  HASH_CLEAR(hh,trv_tbl_1->hsh);
-  HASH_CLEAR(hh,trv_tbl_2->hsh);
-  (void)nco_trv_hsh_bld(trv_tbl_1);
-  (void)nco_trv_hsh_bld(trv_tbl_2);
-#endif /* !NCO_HSH_TRV_OBJ */
-
-  if(nco_dbg_lvl_get() == nco_dbg_old){
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",nco_prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_1);
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",nco_prg_nm_get(),fnc_nm);

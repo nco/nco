@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.104 2013-12-09 04:45:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.105 2013-12-09 05:14:46 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -95,8 +95,8 @@ trv_tbl_inq_dpt                        /* [fnc] Return number of depth 1 groups 
 
 void                          
 trv_tbl_mch                            /* [fnc] Match 2 tables (find common objects) and export common objects  */
-(trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
- trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
+(const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
  int * nbr_cmn_nm);                    /* I/O [nbr] Number of common names entries */
 

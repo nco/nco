@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1097 2013-12-09 04:45:43 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1098 2013-12-09 05:14:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3394,7 +3394,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   int grp_id_1;                  /* [id] Group ID in input file */
   int grp_id_2;                  /* [id] Group ID in input file */
   int grp_out_id;                /* [id] Group ID in output file */ 
-  int nco_prg_id;                    /* [enm] Program ID */
+  int nco_prg_id;                /* [enm] Program ID */
   int var_id_1;                  /* [id] Variable ID in input file */
   int var_id_2;                  /* [id] Variable ID in input file */
   int var_out_id;                /* [id] Variable ID in output file */
@@ -6466,6 +6466,9 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Construct traversal table objects (groups,variables) */
   (void)nco_grp_itr(nc_id,(char *)NULL,grp_pth,trv_tbl);
+
+  /* ncbo co-sequential match algorithm requires alphabetical sorted full names. Do it here, to avoid rebuild the hash  */
+  if(nco_prg_id_get() == ncbo) (void)trv_tbl_srt(trv_tbl);
 
   /* Hash traversal table for fastest access */
   (void)nco_trv_hsh_bld(trv_tbl);
