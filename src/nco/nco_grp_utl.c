@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1098 2013-12-09 05:14:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1099 2013-12-09 06:09:59 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3852,7 +3852,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  const int nbr_cmn_nm,                 /* I [nbr] Number of common names entries */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
-  /* Purpose: fxm */
+  /* Purpose: Process common objects from a common mames list (ncbo only) */
  
   const char fnc_nm[]="nco_prc_cmn_nm()"; /* [sng] Function name */
 
@@ -3861,6 +3861,11 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 
   nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
   nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: INFO %s reports extracted objects:\n",nco_prg_nm_get(),fnc_nm);
+    trv_tbl_prn_flg_xtr(trv_tbl_1);
+  } /* endif dbg */
 
   /* Process objects in list */
   for(int idx=0;idx<nbr_cmn_nm;idx++){
@@ -6462,6 +6467,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   1) nco_trv_hsh_bld() must be called after nco_grp_itr(), because other functions use the hash table 
   */
 
+  const char fnc_nm[]="nco_bld_trv_tbl()"; /* [sng] Function name  */
+
   nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 
   /* Construct traversal table objects (groups,variables) */
@@ -6475,6 +6482,11 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: INFO %s reports extracted objects:\n",nco_prg_nm_get(),fnc_nm);
+    trv_tbl_prn_flg_xtr(trv_tbl);
+  } /* endif dbg */
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl(trv_tbl);
@@ -6525,6 +6537,11 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Build ensembles */
   if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,trv_tbl);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: INFO %s reports extracted objects:\n",nco_prg_nm_get(),fnc_nm);
+    trv_tbl_prn_flg_xtr(trv_tbl);
+  } /* endif dbg */
 
 } /* nco_bld_trv_tbl() */
 

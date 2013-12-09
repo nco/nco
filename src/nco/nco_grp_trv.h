@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.105 2013-12-09 05:14:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.106 2013-12-09 06:09:59 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -99,6 +99,10 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
  const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
  nco_cmn_t **cmn_lst,                  /* I/O [sct] List of common names */
  int * nbr_cmn_nm);                    /* I/O [nbr] Number of common names entries */
+
+void 
+trv_tbl_prn_flg_xtr                    /* [fnc] Print table items that have .flg_xtr  */
+(const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 void                          
 trv_tbl_cmn_nm_prt                     /* [fnc] Print list of common objects (same absolute path) */
