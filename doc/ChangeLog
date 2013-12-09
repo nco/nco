@@ -1,5 +1,8 @@
 2013-12-09  Charlie Zender  <zender@uci.edu>
 
+	* Revert one-line CVS version 1.59->1.60 change in nco_omp.c committed on
+	20131029 which caused many OpenMP-enabled operators to die when dbg_lvl > 2.
+
 	* Prepare to attack ncra/ncrcat MRO/DRN bug
 
 2013-12-09 Pedro Vicente  <pvicente@uci.edu>

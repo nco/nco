@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.652 2013-12-09 21:33:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.653 2013-12-09 21:58:33 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -62,6 +62,9 @@ A. De-compressing netCDF4 files/variables by specifying deflation
 A. Dimensions in hyperslabbing arguments are once again checked for 
    validity prior to processing and invalid (i.e., non-existent)
    dimensions once-again cause operators to abort.
+
+A. Fix one-line diagnostic bug that caused many OpenMP-enabled
+   operators to die when dbg_lvl > 2.
 
 KNOWN ISSUES NOT YET FIXED:
 
