@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.382 2013-12-09 00:00:35 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.383 2013-12-09 06:36:35 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -413,8 +413,9 @@ print "\n";
     $#tst_cmd=0; # Reset array - ok
 
 # ncbo #3    
+# ncbo -h -O --op_typ='-' -v mss_val_scl  in.nc in.nc out.nc
     
-    $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";;
+    $tst_cmd[0]="ncbo $omp_flg -h -O $fl_fmt $nco_D_flg --op_typ='-' -v mss_val_scl $in_pth_arg in.nc in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --no_blank -s '%g' -v mss_val_scl %tmp_fl_00%";
     $dsc_sng="difference scalar missing value";
     $tst_cmd[2]="1.0e36";
@@ -570,7 +571,7 @@ print "\n";
 # NCO 4.3.0: added support for groups; ncbo -g
 #   
 #ncbo #16
-# ncbo -O -y add -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc ~/nco/data/in_grp.nc out.nc
+# ncbo -O -y add -g g4 -v one_dmn_rec_var in_grp.nc in_grp.nc out.nc
 # ncks -C -H -s '%d'  -d time,0,0,1 -g g4 -v one_dmn_rec_var out.nc
 # /g4/one_dmn_rec_var
 # time[0]=1 one_dmn_rec_var[0]=2 

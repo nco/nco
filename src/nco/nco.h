@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.441 2013-12-04 22:56:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.442 2013-12-09 06:36:35 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -148,7 +148,7 @@ extern "C" {
 #define NCO_DBG_QUIET 0
 
   /* Find traversal table objects via hash table rather than bruit-force strcmp() search */
-  //#define NCO_HSH_TRV_OBJ 1
+  #define NCO_HSH_TRV_OBJ 1  
 
   /* NCO_MSS_VAL_SNG names attribute whose value is "skipped" by arithmetic, aka the missing value attribute
      Attribute name should be either "missing_value" or "_FillValue" */

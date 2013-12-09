@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.254 2013-12-09 06:09:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.255 2013-12-09 06:36:35 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -258,16 +258,17 @@ trv_tbl_fnd_var_nm_fll                /* [fnc] Check if "var_nm_fll" is in table
 } /* end trv_tbl_fnd_var_nm_fll() */
 
 trv_sct *                             /* O [sct] Table object */
-trv_tbl_var_nm_fll                    /* [fnc] Return object from full name key */
+trv_tbl_var_nm_fll                    /* [fnc] Return variable object from full name key */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 {
-  /* Purpose: Return object with given full name */
+  /* Purpose: Return variable object with given full name */
 
 #ifdef NCO_HSH_TRV_OBJ
   trv_sct *trv_obj; /* [sct] GTT object structure */
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
-  return trv_obj;
+  if (trv_obj && trv_obj->nco_typ == nco_obj_typ_var) return trv_obj;
+  return NULL;
 #else /* !NCO_HSH_TRV_OBJ */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) return &trv_tbl->lst[uidx];
@@ -283,7 +284,7 @@ trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
 
-#ifdef NCO_HSH_TRV_OBJ_
+#ifdef NCO_HSH_TRV_OBJ___
   trv_sct *trv_obj; /* [sct] GTT object structure */
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
   if(trv_obj) trv_obj->flg_xtr=True;
@@ -386,7 +387,7 @@ trv_tbl_mch                            /* [fnc] Match 2 tables (find common obje
 
   nco_bool flg_more_names_exist; /* [flg] Are there more names to process? */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+  if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 1\n",nco_prg_nm_get(),fnc_nm);
     (void)trv_tbl_prn(trv_tbl_1);
     (void)fprintf(stdout,"%s: INFO %s reports Sorted table 2\n",nco_prg_nm_get(),fnc_nm);
