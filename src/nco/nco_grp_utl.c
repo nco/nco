@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1099 2013-12-09 06:09:59 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1100 2013-12-09 22:25:12 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6550,13 +6550,13 @@ void
 nco_chk_dmn_in                        /* [fnc] Check input dimensions */
 (int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
- nco_bool **flg_dne,                  /* I/O [lst] Flag to check if input dimension -d "does not exist" */
+ nco_dmn_dne_t **dne_lst,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 { 
-  (*flg_dne)=(nco_bool *)nco_malloc(lmt_nbr*sizeof(nco_bool));
+  (*dne_lst)=(nco_dmn_dne_t *)nco_malloc(lmt_nbr*sizeof(nco_dmn_dne_t));
 
   /* Let's be pessimistic and assume an invalid user input */
-  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) (*flg_dne)[lmt_idx]=True; 
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) (*dne_lst)[lmt_idx].flg_dne=True; 
 
   /* Loop input name list */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
@@ -6567,11 +6567,11 @@ nco_chk_dmn_in                        /* [fnc] Check input dimensions */
       /* Match input relative name to dimension relative name */ 
       if(strcmp(lmt[lmt_idx]->nm,trv_tbl->lst_dmn[dmn_idx].nm) == 0){
         /* Found */
-        (*flg_dne)[lmt_idx]=False; 
+        (*dne_lst)[lmt_idx].flg_dne=False; 
       } /* Match input relative name to dimension relative name */ 
     } /* Dimension list */
   } /* Loop input name list */
-} /* nco_chk_in() */
+} /* nco_chk_dmn_in() */
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */

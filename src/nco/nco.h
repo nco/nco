@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.442 2013-12-09 06:36:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.443 2013-12-09 22:25:12 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -943,6 +943,12 @@ extern "C" {
     increasing, /* 1 */
     not_checked /* 2 */
   } monotonic_direction_enm;
+
+  /* Structure to check for valid input dimension  */
+  typedef struct {	
+    nco_bool flg_dne;           /* [flg] Flag to check if input dimension -d "does not exist" */
+    char *dim_nm;               /* [sng] Dimension name */    
+  } nco_dmn_dne_t;
   
   /* Initialize default value of each member of var_sct structure in var_dfl_set()
      Fill actual value of var_sct structure in nco_var_fll()

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.681 2013-12-08 22:50:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.682 2013-12-09 22:25:12 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -129,7 +129,7 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
-  nco_bool *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -158,8 +158,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.681 2013-12-08 22:50:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.681 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.682 2013-12-09 22:25:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.682 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -670,9 +670,9 @@ main(int argc,char **argv)
   /* Check if all input -d dimensions were found */ 
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
     /* Check this flag */
-    if (flg_dne[lmt_idx] == True){
+    if (flg_dne[lmt_idx].flg_dne == True){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),lmt[lmt_idx]->nm);
-      flg_dne=(nco_bool *)nco_free(flg_dne);
+      flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
       nco_exit(EXIT_FAILURE);
     } /* Check this flag */
   } /* Check if all input -d dimensions were found */
@@ -977,8 +977,8 @@ main(int argc,char **argv)
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
     if(smr_sng) smr_sng=(char *)nco_free(smr_sng);
-    flg_dne=(nco_bool *)nco_free(flg_dne);
-    for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
+    flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
+    for(idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
     lmt=(lmt_sct **)nco_free(lmt);
   } /* !flg_cln */
 

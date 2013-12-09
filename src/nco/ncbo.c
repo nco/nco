@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.270 2013-12-08 22:50:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.271 2013-12-09 22:25:12 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.270 2013-12-08 22:50:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.270 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.271 2013-12-09 22:25:12 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.271 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -632,7 +632,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_cmn_nm;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
     if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
     flg_dne=(nco_bool *)nco_free(flg_dne);
-    for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
+    for(idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
     lmt=(lmt_sct **)nco_free(lmt);
 
   } /* !flg_cln */
