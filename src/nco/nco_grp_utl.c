@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1100 2013-12-09 22:25:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1101 2013-12-09 22:57:27 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2005,19 +2005,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_nsm_tpl=False;            /* [flg] Group is, or variable is in, template member group */
   trv_tbl->lst[idx].nsm_nm=NULL;                  /* [sng] (ncge) Ensemble parent group name i.e., full path to ensemble parent */ 
 
-  /* Variable dimensions  */
-  for(int idx_dmn_var=0;idx_dmn_var<NC_MAX_DIMS;idx_dmn_var++){
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_nm_fll=NULL;
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_nm=NULL;
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].grp_nm_fll=NULL;
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].is_crd_var=nco_obj_typ_err;
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].crd=NULL;
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].ncd=NULL;
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;
-    /* Assume dimension is to keep on output */
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg=False;
-    trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;   
-  } /* end loop over dimensions */
+  /* Variable dimensions. For groups there are no variable dimensions  */
+  trv_tbl->lst[idx].var_dmn=NULL;
 
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
@@ -2101,7 +2090,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nsm_nm=NULL;
 
     /* Variable dimensions */
-    for(int idx_dmn_var=0;idx_dmn_var<NC_MAX_DIMS;idx_dmn_var++){
+    trv_tbl->lst[idx].var_dmn=(var_dmn_sct *)nco_malloc(nbr_dmn_var*sizeof(var_dmn_sct));
+
+    for(int idx_dmn_var=0;idx_dmn_var<nbr_dmn_var;idx_dmn_var++){
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_nm=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_nm_fll=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].grp_nm_fll=NULL;

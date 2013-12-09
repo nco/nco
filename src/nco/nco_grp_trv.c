@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.255 2013-12-09 06:36:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.256 2013-12-09 22:57:27 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -61,27 +61,34 @@ trv_tbl_free                           /* [fnc] GTT free memory */
 
     /* Dimensions */
     for(int dmn_idx=0;dmn_idx<tbl->lst[idx].nbr_dmn;dmn_idx++){
-      tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll);
-      tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
-      tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
 
-      /* Coordinate structure */ 
-      if(tbl->lst[idx].var_dmn[dmn_idx].crd){
-        tbl->lst[idx].var_dmn[dmn_idx].crd->crd_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->crd_nm_fll);
-        tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_nm_fll);
-        tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll);
-        tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_grp_nm_fll);
+      /* If dimensions exist (only for variables ) */
+      if (tbl->lst[idx].var_dmn){
+        tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll);
+        tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
+        tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
 
-        tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm);
+        /* Coordinate structure */ 
+        if(tbl->lst[idx].var_dmn[dmn_idx].crd){
+          tbl->lst[idx].var_dmn[dmn_idx].crd->crd_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->crd_nm_fll);
+          tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_nm_fll);
+          tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->crd_grp_nm_fll);
+          tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->dmn_grp_nm_fll);
 
-        for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
-          tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]);
-        }  
-        tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn);
-        tbl->lst[idx].var_dmn[dmn_idx].crd=(crd_sct *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd);
-      } /* Coordinate structure */ 
+          tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.dmn_nm);
 
-    } /* Dimensions */
+          for(int lmt_idx=0;lmt_idx<tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr;lmt_idx++){
+            tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]=nco_lmt_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]);
+          }  
+          tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn);
+          tbl->lst[idx].var_dmn[dmn_idx].crd=(crd_sct *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].crd);
+        } /* Coordinate structure */ 
+
+      } /* Dimensions */
+      
+      tbl->lst[idx].var_dmn=(var_dmn_sct *)nco_free(tbl->lst[idx].var_dmn);
+
+    } /* If dimensions exist (only for variables ) */
   } /* Object (group/variable) list */ 
 
   tbl->lst=(trv_sct *)nco_free(tbl->lst);
