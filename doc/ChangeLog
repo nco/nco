@@ -1,3 +1,7 @@
+2013-12-09 Pedro Vicente  <pvicente@uci.edu>
+
+    * Enable hash table lookup 
+
 2013-12-08 Pedro Vicente  <pvicente@uci.edu>
 
     * ncrename: Regression #22 Allow input syntax of new name as full path

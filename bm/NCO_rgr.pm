@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.383 2013-12-09 06:36:35 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.384 2013-12-09 21:04:16 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -663,6 +663,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 		
 
 # ncbo #21
+# ncbo -O -g g1 -v var1  in_grp_1.nc  in_grp_2.nc out.nc
 
     $dsc_sng="(Groups) Process different types -g g1 -v var1 in_grp_1.nc  in_grp_2.nc";
     $tst_cmd[0]="ncbo -O $fl_fmt $nco_D_flg  -g g1 -v var1 $in_pth_arg in_grp_1.nc  in_grp_2.nc %tmp_fl_00%";
