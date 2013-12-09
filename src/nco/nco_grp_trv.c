@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.251 2013-12-09 03:39:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.252 2013-12-09 04:45:43 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -268,7 +268,7 @@ trv_tbl_var_nm_fll                    /* [fnc] Return object from full name key 
 void
 trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,       /* I [sng] Variable name to find */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
 
 #ifdef NCO_HSH_TRV_OBJ
@@ -287,7 +287,7 @@ void
 trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,        /* I [sng] Variable name to find */
  prc_typ_enm typ_prc,                  /* I [enm] Processing type */
- const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(!strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)){
@@ -531,7 +531,7 @@ void
 nco_dmn_set_msa                       /* [fnc] Update dimension with hyperslabbed size */
 (const int dmn_id,                    /* I [id] Unique dimension ID */
  const long dmn_cnt,                  /* I [nbr] New dimension size */
- const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Search table dimension list and compared IDs */
   for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
@@ -544,7 +544,7 @@ nco_dmn_set_msa                       /* [fnc] Update dimension with hyperslabbe
 long                                  /* O [nbr] Hyperslabbed size */
 nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabbed size */
 (const int dmn_id,                    /* I [id] Unique dimension ID */
- const trv_tbl_sct *trv_tbl)          /* I/O [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   /* Search table dimension list and compare IDs */
   for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
@@ -765,10 +765,10 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
 
 void
 trv_tbl_mrk_nsm_mbr                    /* [fnc] Mark ensemble member flag in table for "var_nm_fll" */
-(const char * const var_nm_fll,       /* I [sng] Variable name to find */
- const nco_bool flg_nsm_tpl,          /* I [flg] Variable is template member */
- const char * const grp_nm_fll_prn,   /* I [sng] Parent group full name (key for ensemble) */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+(const char * const var_nm_fll,        /* I [sng] Variable name to find */
+ const nco_bool flg_nsm_tpl,           /* I [flg] Variable is template member */
+ const char * const grp_nm_fll_prn,    /* I [sng] Parent group full name (key for ensemble) */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
@@ -823,7 +823,7 @@ nco_lst_ins                            /* [fnc] Utility function to detect inser
 char *                                 /* O [sng] Full path with suffix */
 nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
 (const char * const grp_nm_fll_prn,    /* I [sng] Absolute group name of ensemble root */
- trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
   assert(trv_tbl->nsm_sfx);
 

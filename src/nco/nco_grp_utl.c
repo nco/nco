@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1096 2013-12-09 03:39:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1097 2013-12-09 04:45:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3382,8 +3382,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_sct * trv_1,                      /* I [sct] Table object */
  trv_sct * trv_2,                      /* I [sct] Table object */
- const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
@@ -3643,7 +3643,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
  trv_sct *trv_1,                       /* I/O [sct] Table object (nco_cpy_var_dfn_trv) */
- const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   char *grp_out_fll;             /* [sng] Group name */
@@ -3797,8 +3797,8 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
  trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
  nco_bool flg_tbl_1,                   /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
  nco_bool flg_grp_1,                   /* I [flg] Use table 1 as template for group creation on True, otherwise use table 2 */
- const trv_tbl_sct * const trv_tbl_1,  /* I [sct] GTT (Group Traversal Table) */
- const trv_tbl_sct * const trv_tbl_2,  /* I [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
  const nco_bool flg_dfn)               /* I [flg] Action type (True for define variables, False when write variables ) */
 {
   nco_bool rel_mch; /* [flg] A match was found */
@@ -4254,7 +4254,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
  const gpe_sct * const gpe,         /* I [sct] GPE structure */
  const char * const rec_dmn_nm_cst, /* I [sng] User-specified record dimension, if any, to create or fix in output file */
  trv_sct *var_trv,                  /* I/O [sct] Object to write (variable) trv_map_dmn_set() is O */
- const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl)       /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
   Routine was based on nco_cpy_var_dfn_lmt(), and differed trivially from it
@@ -5541,7 +5541,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 (const int grp_in_id,                 /* I [id] netCDF input group ID */
  const char * const rec_dmn_nm_cst,   /* I [sng] User-specified record dimension, if any, to create or fix in output file */
  trv_sct *var_trv,                    /* I/O [sct] Object to write (variable) trv_map_dmn_set() is O */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Update all GTT dimensions with hyperslabbed size */
 

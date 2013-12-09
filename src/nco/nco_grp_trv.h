@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.103 2013-12-02 20:14:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.104 2013-12-09 04:45:43 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -72,13 +72,13 @@ trv_tbl_var_nm_fll                     /* [fnc] Return object from full name key
 void
 trv_tbl_mrk_xtr                        /* [fnc] Mark extraction flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,        /* I [sng] Variable name to find */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 void
 trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in table for "var_nm_fll" */
 (const char * const var_nm_fll,        /* I [sng] Variable name to find */
  prc_typ_enm typ_prc,                  /* I [enm] Processing type */
- const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 void 
 trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of traversal table */
@@ -114,12 +114,12 @@ void
 nco_dmn_set_msa                       /* [fnc] Update dimension with hyperslabbed size */
 (const int dmn_id,                    /* I [id] Unique dimension ID */
  const long dmn_cnt,                  /* I [nbr] New dimension size */
- const trv_tbl_sct *trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 long                                  /* O hyperslabbed size */
 nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabbed size */
 (const int dmn_id,                    /* I [id] Unique dimension ID */
- const trv_tbl_sct *trv_tbl);         /* I/O [sct] GTT (Group Traversal Table) */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 void 
 nco_trv_hsh_bld                       /* Hash traversal table for fastest access */
@@ -146,10 +146,10 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
 
 void
 trv_tbl_mrk_nsm_mbr                    /* [fnc] Mark ensemble member flag in table for "var_nm_fll" */
-(const char * const var_nm_fll,       /* I [sng] Variable name to find */
- const nco_bool flg_nsm_tpl,          /* I [flg] Variable is template member */
- const char * const grp_nm_fll_prn,   /* I [sng] Parent group full name (key for ensemble) */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+(const char * const var_nm_fll,        /* I [sng] Variable name to find */
+ const nco_bool flg_nsm_tpl,           /* I [flg] Variable is template member */
+ const char * const grp_nm_fll_prn,    /* I [sng] Parent group full name (key for ensemble) */
+ trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 char *                                 /* O [sng] Full path  */
 nco_bld_nm_fll                         /* [fnc] Utility function to build a full path */
@@ -165,7 +165,7 @@ nco_lst_ins                            /* [fnc] Utility function to detect inser
 char *                                 /* O [sng] Full path with suffix */
 nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
 (const char * const grp_nm_fll_prn,    /* I [sng] Absolute group name of ensemble root */
- trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 
 #endif /* NCO_GRP_TRV_H */
