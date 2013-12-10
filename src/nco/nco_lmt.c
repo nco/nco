@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.202 2013-12-10 04:32:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.203 2013-12-10 05:28:26 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -791,7 +791,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 #endif /* _OPENMP */
     { /* begin OpenMP critical */
       /* Block is critical for identical in_id's
-      Block is thread-safe for distinct in_id's */
+	 Block is thread-safe for distinct in_id's */
       /* 20110221: replace nco_get_vara() with nc_get_vara_double() */
       /* Retrieve this coordinate */
       nc_get_vara_double(nc_id,dim.cid,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);

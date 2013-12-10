@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.474 2013-12-10 03:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.475 2013-12-10 05:28:26 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.474 2013-12-10 03:42:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.474 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.475 2013-12-10 05:28:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.475 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -175,6 +175,7 @@ main(int argc,char **argv)
   int fl_in_fmt; /* [enm] Input file format */
   int fl_nbr=0;
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
+  int flg_input_complete_nbr=0; /* [nbr] Number of record dimensions completed */
   int fll_md_old; /* [enm] Old fill mode */
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int idx=int_CEWI;
@@ -211,6 +212,7 @@ main(int argc,char **argv)
 
   nco_bool *REC_LST_DSR=NULL; /* [flg] Record is last desired from all input files */
   nco_bool *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
+  nco_bool *flg_input_complete; /* [flg] All requested records in record dimension have been read */
 
   nco_bool CNV_ARM;
   nco_bool CNV_CCM_CCSM_CF;
@@ -633,6 +635,7 @@ main(int argc,char **argv)
   (void)nco_bld_rec_dmn(in_id,FORTRAN_IDX_CNV,flg_rec_all,trv_tbl);  
 
   /* Allocate arrays for multi-records cases */
+  flg_input_complete=(nco_bool *)nco_malloc(trv_tbl->nbr_rec*sizeof(nco_bool));
   idx_rec_out=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
   rec_in_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
   rec_usd_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
@@ -640,6 +643,7 @@ main(int argc,char **argv)
 
   /* Initialize arrays for multi-records cases */
   for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+    flg_input_complete[idx_rec]=False;
     idx_rec_out[idx_rec]=0L;
     rec_in_cml[idx_rec]=0L;
     rec_usd_cml[idx_rec]=0L;
@@ -1145,14 +1149,20 @@ main(int argc,char **argv)
 
     /* Our data tanks are already full */
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){
-      /* Loop records */
       for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
-        if(trv_tbl->lmt_rec[idx_rec]->flg_input_complete){
-          /* NB: TODO nco1066 move input_complete break to precede record loop but remember to close open filehandles */
-          if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested records were found within the first %d input file%s, next file was opened then skipped, and remaining %d input file%s will not be opened\n",nco_prg_nm_get(),fl_idx,(fl_idx == 1) ? "" : "s",fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
-          break;
-        } /* endif superfluous */
-      } /* Loop records */
+	if(!flg_input_complete[idx_rec]){
+	  if((flg_input_complete[idx_rec]=trv_tbl->lmt_rec[idx_rec]->flg_input_complete)){
+	    /* NB: TODO nco1066 move input_complete break to precede record loop but remember to close open filehandles */
+	    /* 20131209: Rewritten so file skipped only once all record dimensions have flg_input_complete
+	       Warnings about superfluous files printed only once per dimension
+	       fxm: use flg_input_complete[idx_rec] to skip completed entries in main record dimension loop above */
+	    if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested records for record dimension #%d were found within the first %d input file%s, next file was opened then skipped, and remaining %d input file%s need not be opened\n",nco_prg_nm_get(),idx_rec,fl_idx,(fl_idx == 1) ? "" : "s",fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
+	    flg_input_complete_nbr++;
+	  } /* endif superfluous */
+	} /* endif not already known to be complete */
+      } /* end loop over record dimensions */
+      /* Once all record dimensions are complete, break-out of file loop */
+      if(flg_input_complete_nbr == trv_tbl->nbr_rec) break;
     } /* endif ncra || ncrcat */
 
   } /* end loop over fl_idx */
