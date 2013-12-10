@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.349 2013-12-08 22:50:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.350 2013-12-10 17:34:03 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -96,7 +96,6 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool RECORD_AGGREGATE=True; /* Option G */
   nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
-  nco_bool *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -125,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.349 2013-12-08 22:50:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.349 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.350 2013-12-10 17:34:03 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.350 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -198,7 +197,7 @@ main(int argc,char **argv)
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
 
-  lmt_sct **lmt=NULL_CEWI;  /* [sct] User defined limits */
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -534,7 +533,7 @@ main(int argc,char **argv)
     (void)nco_inq_format(in_id,&fl_in_fmt); 
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-    (void)nco_bld_trv_tbl(in_id,trv_pth,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,lmt_arg,&lmt_nbr_rgn,&lmt,trv_tbl);
+    (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
 
     /* Get number of variables, dimensions, and global attributes in file, file format */
     (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -737,7 +736,7 @@ main(int argc,char **argv)
       trv_tbl_init(&trv_tbl_gpr);
 
       /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-      (void)nco_bld_trv_tbl(in_id,trv_pth,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,lmt_arg,&lmt_nbr,&lmt,trv_tbl_gpr);
+      (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr_rgn,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl_gpr);
 
       /* Get number of variables, dimensions, and global attributes in file, file format */
       (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl_gpr);
@@ -902,9 +901,8 @@ main(int argc,char **argv)
       if(md5) md5=(md5_sct *)nco_md5_free(md5);
       /* Free traversal table */
       trv_tbl_free(trv_tbl);
-      flg_dne=(nco_bool *)nco_free(flg_dne);
-      for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
-      lmt=(lmt_sct **)nco_free(lmt);
+      for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
+      flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     } /* RECORD_AGGREGATE */
   } /* !flg_cln */
 

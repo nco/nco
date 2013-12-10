@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.424 2013-12-10 03:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.425 2013-12-10 17:34:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -580,6 +580,8 @@ void
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  char * const grp_pth,                /* I [sng] Absolute group path where to start build (root typically) */
+ int lmt_nbr,                         /* I [nbr] number of dimensions with limits */
+ CST_X_PTR_CST_PTR_CST_Y(char,lmt_arg), /* I [sng] List of user-specified dimension limits */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -592,9 +594,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
- CST_X_PTR_CST_PTR_CST_Y(char,lmt_arg), /* I [sng] List of user-specified dimension limits */
- int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
- lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
+ nco_dmn_dne_t **flg_dne,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
