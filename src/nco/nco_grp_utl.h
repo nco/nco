@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.423 2013-12-09 22:25:12 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.424 2013-12-10 03:42:53 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -608,7 +608,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 
 void 
-nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
+nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
 (const int nc_id,                   /* I [ID] netCDF file ID */
  var_sct *var_prc,                  /* I/O [sct] Variable */
  const char * const rec_nm_fll,     /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */

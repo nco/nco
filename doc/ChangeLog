@@ -1,5 +1,7 @@
 2013-12-09  Charlie Zender  <zender@uci.edu>
 
+	* Whitespace changes while debugging MRO/DRN bug
+
 	* Revert one-line CVS version 1.59->1.60 change in nco_omp.c committed on
 	20131029 which caused many OpenMP-enabled operators to die when dbg_lvl > 2.
 

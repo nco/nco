@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1101 2013-12-09 22:57:27 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1102 2013-12-10 03:42:53 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6455,8 +6455,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Purpose: Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
 
   /* NB: Sequence of calls is important:
-  1) nco_trv_hsh_bld() must be called after nco_grp_itr(), because other functions use the hash table 
-  */
+     1) nco_trv_hsh_bld() must be called after nco_grp_itr() because other functions use hash table */
 
   const char fnc_nm[]="nco_bld_trv_tbl()"; /* [sng] Function name  */
 
@@ -6465,10 +6464,10 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Construct traversal table objects (groups,variables) */
   (void)nco_grp_itr(nc_id,(char *)NULL,grp_pth,trv_tbl);
 
-  /* ncbo co-sequential match algorithm requires alphabetical sorted full names. Do it here, to avoid rebuild the hash  */
+  /* ncbo co-sequential match algorithm requires alphabetical sorted full names. Do it here, to avoid rebuilding hash table */
   if(nco_prg_id_get() == ncbo) (void)trv_tbl_srt(trv_tbl);
 
-  /* Hash traversal table for fastest access */
+  /* Hash traversal table for faster access */
   (void)nco_trv_hsh_bld(trv_tbl);
 
   /* Check -v and -g input names and create extraction list */
@@ -6926,7 +6925,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 } /* nco_bld_lmt() */
 
 void 
-nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
+nco_msa_var_get_lmn_trv             /* [fnc] Read a used defined limit */
 (const int nc_id,                   /* I [ID] netCDF file ID */
  var_sct *var_prc,                  /* I/O [sct] Variable */
  const char * const rec_nm_fll,     /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
@@ -6937,7 +6936,7 @@ nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
 
   int lmt_dmn_nbr;
 
-  nco_bool flg_lmt=False; /* [flg] Allocate a custom limit */
+  nco_bool flg_lmt=False; /* [flg] Allocate custom limit */
 
   trv_sct *var_trv;
 
@@ -6976,7 +6975,7 @@ nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
           /* Initialize NULL/invalid */
           (void)nco_lmt_init(var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]);
-          /* And set start,count,stride to match current record ...Jesuzz */
+          /* And set start, count, stride to match current record ... */
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->srt=idx_rec_crr_in;
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->end=idx_rec_crr_in;
           var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[0]->cnt=1;
@@ -7028,7 +7027,7 @@ nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
   /* Retrieve variable from disk into memory */
   (void)nco_msa_var_get_trv(nc_id,var_prc,trv_tbl);
 
-  /* Free the artificial limit and reset the number of limits */
+  /* Free artificial limit and reset number of limits */
   for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
     /* NB: Match current record must be done by name, since ID may differ for records across files */
     if(strcmp(var_trv->var_dmn[idx_dmn].dmn_nm_fll,rec_nm_fll) == 0){
@@ -7050,7 +7049,7 @@ nco_msa_var_get_elm_trv             /* [fnc] Read a used defined limit */
     } /* Match current record  */
   } /* Loop dimensions */
 
-} /* nco_msa_var_get_elm_trv() */
+} /* nco_msa_var_get_lmn_trv() */
 
 nco_bool                             /* O [flg] Skip variable  */
 nco_skp_var                          /* [fnc] Skip variable while doing record   */

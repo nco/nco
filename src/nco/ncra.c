@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.473 2013-12-09 21:33:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.474 2013-12-10 03:42:53 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -113,35 +113,6 @@ inline long max_lng(long a, long b){return (a > b) ? a : b;}
 int
 main(int argc,char **argv)
 {
-  nco_bool CNV_ARM;
-  nco_bool CNV_CCM_CCSM_CF;
-  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
-  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
-  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
-  nco_bool FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
-  nco_bool FLG_MRO=False; /* [flg] Multi-Record Output */
-  nco_bool FL_LST_IN_APPEND=True; /* Option H */
-  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
-  nco_bool FL_RTR_RMT_LCN;
-  nco_bool FORCE_APPEND=False; /* Option A */
-  nco_bool FORCE_OVERWRITE=False; /* Option O */
-  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
-  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
-  nco_bool HISTORY_APPEND=True; /* Option h */
-  nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
-  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
-  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
-  nco_bool REC_APN=False; /* [flg] Append records directly to output file */
-  nco_bool REC_FRS_GRP=False; /* [flg] Record is first in current group */
-  nco_bool *REC_LST_DSR=NULL; /* [flg] Record is last desired from all input files */
-  nco_bool REC_LST_GRP=False; /* [flg] Record is last in current group */
-  nco_bool REC_SRD_LST=False; /* [flg] Record belongs to last stride of current file */
-  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
-  nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
-  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
-  nco_bool flg_rec_all; /*[flg] Retrieve all records */
-  nco_bool *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
-
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
   char **grp_lst_in=NULL_CEWI;
@@ -166,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.473 2013-12-09 21:33:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.473 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.474 2013-12-10 03:42:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.474 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -237,6 +208,38 @@ main(int argc,char **argv)
   long rec_rmn_prv_drn=0L; /* [idx] Records remaining to be read in current duration group */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
+
+  nco_bool *REC_LST_DSR=NULL; /* [flg] Record is last desired from all input files */
+  nco_bool *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
+
+  nco_bool CNV_ARM;
+  nco_bool CNV_CCM_CCSM_CF;
+  nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
+  nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
+  nco_bool FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
+  nco_bool FLG_MRO=False; /* [flg] Multi-Record Output */
+  nco_bool FL_LST_IN_APPEND=True; /* Option H */
+  nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  nco_bool FL_RTR_RMT_LCN;
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=False; /* Option O */
+  nco_bool FORTRAN_IDX_CNV=False; /* Option F */
+  nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool REC_APN=False; /* [flg] Append records directly to output file */
+  nco_bool REC_FRS_GRP=False; /* [flg] Record is first in current group */
+  nco_bool REC_LST_GRP=False; /* [flg] Record is last in current group */
+  nco_bool REC_SRD_LST=False; /* [flg] Record belongs to last stride of current file */
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+  nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
+  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_rec_all; /*[flg] Retrieve all records */
+  nco_bool flg_skp1; /* [flg] Current record is not dimension of this variable */
+  nco_bool flg_skp2; /* [flg] Current record is not dimension of this variable */
 
   nco_int base_time_srt=nco_int_CEWI;
   nco_int base_time_crr=nco_int_CEWI;
@@ -822,7 +825,7 @@ main(int argc,char **argv)
 	     rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
 
 	     Flag juggling:
-	     REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with ncfe normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR. */
+	     REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with nces normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR. */
 
           /* Last stride in file has distinct index-augmenting behavior */
           if(idx_rec_crr_in >= trv_tbl->lmt_rec[idx_rec]->end) REC_SRD_LST=True; else REC_SRD_LST=False;
@@ -839,13 +842,13 @@ main(int argc,char **argv)
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,gettext("%s: INFO Record %ld of %s contributes to output record %ld\n"),nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,nco_dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,REC_FRS_GRP,REC_LST_DSR,md5,nbr_var_prc,nco_op_typ,FLG_BFR_NRM,FLG_MRO,out_id,nco_prg_id,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,var_out_id,idx_rec)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,base_time_crr,base_time_srt,nco_dbg_lvl,fl_in,fl_out,idx_rec_crr_in,idx_rec_out,rec_usd_cml,in_id_arr,REC_FRS_GRP,REC_LST_DSR,md5,nbr_var_prc,nco_op_typ,FLG_BFR_NRM,FLG_MRO,out_id,nco_prg_id,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,var_out_id,idx_rec,flg_skp1,flg_skp2)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 
             /* Skip variable if does not relate to current record */
-            nco_bool flg_skp=nco_skp_var(var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
-            if(flg_skp) continue;
+	    flg_skp1=nco_skp_var(var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
+            if(flg_skp1) continue;
 
             in_id=in_id_arr[omp_get_thread_num()];
             if(nco_dbg_lvl >= nco_dbg_var) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm_fll);
@@ -868,7 +871,7 @@ main(int argc,char **argv)
             var_prc_out[idx]->id=var_out_id;
 
             /* Retrieve variable from disk into memory. NB: Using version that updates hyperslab start indices with idx_rec_crr_in  */ 
-            (void)nco_msa_var_get_elm_trv(in_id,var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
+            (void)nco_msa_var_get_lmn_trv(in_id,var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
 
             if(nco_prg_id == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
@@ -920,8 +923,7 @@ main(int argc,char **argv)
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-              if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); 
-              else (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
+              if(var_prc_out[idx]->sz_rec > 1L) (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc_out[idx]->type);
               /* Perform MD5 digest of input and output data if requested */
               if(md5) (void)nco_md5_chk(md5,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),grp_out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
             } /* end if ncrcat */
@@ -947,8 +949,8 @@ main(int argc,char **argv)
             for(idx=0;idx<nbr_var_prc;idx++){
 
               /* Skip variable if does not relate to current record */
-              nco_bool flg_skp=nco_skp_var(var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
-              if(flg_skp) continue;
+	      flg_skp2=nco_skp_var(var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
+              if(flg_skp2) continue;
 
               /* Obtain variable GTT object using full variable name */
               var_trv=trv_tbl_var_nm_fll(var_prc_out[idx]->nm_fll,trv_tbl);
@@ -1167,17 +1169,17 @@ main(int argc,char **argv)
   } /* Duration argument warning */
 
   /* Normalize, multiply, etc where necessary: ncra and nces normalization blocks are identical, 
-  except ncra normalizes after every DRN records, while nces normalizes once, after all files.
-  Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
-  In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
-  FLG_BFR_NRM is always true here for ncfe and ncge */
+     except ncra normalizes after every DRN records, while nces normalizes once, after all files.
+     Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
+     In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
+     FLG_BFR_NRM is always true here for ncfe and ncge */
   if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True,(char *)NULL,(trv_tbl_sct *)NULL);
 
   /* Manually fix YYMMDD date which was mangled by averaging */
   if(CNV_CCM_CCSM_CF && nco_prg_id == ncra) (void)nco_cnv_ccm_ccsm_cf_date(grp_out_id,var_out,xtr_nbr);
 
   /* Add time variable to output file
-  NB: nco_cnv_arm_time_install() contains OpenMP critical region */
+     NB: nco_cnv_arm_time_install() contains OpenMP critical region */
   if(CNV_ARM && nco_prg_id == ncrcat) (void)nco_cnv_arm_time_install(grp_out_id,base_time_srt,dfl_lvl);
 
   /* Copy averages to output file for ncfe and ncge always and for ncra when trailing file(s) was/were superfluous */
@@ -1192,12 +1194,12 @@ main(int argc,char **argv)
 
         /* Check if suffix needed. Appends to default name */
         if(trv_tbl->nsm_sfx){
-          /* Just define (append) and forget a new name */
+          /* Define (append) then use and forget new name */
           char *nm_fll_sfx=nco_bld_nsm_sfx(var_trv->grp_nm_fll_prn,trv_tbl);
-          /* Use the new name */
+          /* Use new name */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
           nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
-        } else { /* Non suffix case */
+        }else{ /* Non suffix case */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->nsm_nm); else grp_out_fll=(char *)strdup(var_trv->nsm_nm);
         } /* !trv_tbl->nsm_sfx */
 
@@ -1286,7 +1288,7 @@ main(int argc,char **argv)
     rec_usd_cml=(long *)nco_free(rec_usd_cml);
     REC_LST_DSR=(nco_bool *)nco_free(REC_LST_DSR);
     flg_dne=(nco_bool *)nco_free(flg_dne);
-    for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
+    for(idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
     lmt=(lmt_sct **)nco_free(lmt);
 
   } /* !flg_cln */
