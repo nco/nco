@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.653 2013-12-09 21:58:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.654 2013-12-10 23:43:59 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -27,17 +27,7 @@ Charlie
 
 NEW FEATURES:
 
-A. fxm
-
-A. fxm
-   NCO now employs hashing techniques to locate objects.
-   As a result NCO is much more efficient searching for objects.
-   Users should notice no difference. If you do, please let us know. 
-   It is possible that some use-cases on large, complex files will
-   show significant speed-ups.
-
-A. fxm
-   ncrename allows full group pathnames for new_name arguments.
+A. ncrename allows full group pathnames for new_name arguments.
    Previously, ncrename allowed full group pathnames only for old_name 
    and the syntax was
    ncrename -v /path/to/old_name,new_name in.nc out.nc
@@ -53,6 +43,24 @@ A. fxm
    http://nco.sf.net/nco.html#rename
    http://nco.sf.net/nco.html#move
 
+A. Speed-up due to removing new static arrays from codebase.
+   Though not immediately visible to the user, memory access patterns
+   play a large role in determining NCO speed. Many static arrays were
+   introduced in developing NCO group-enabled features over the past
+   year. Most of these have been converted to dynamic arrays now.
+   This significantly accelerates NCO speed for many use cases,
+   including many netCDF3 cases (because NCO uses one code base for
+   all filetypes). If you've noticed and lamented NCO becoming more
+   sluggish over the past year, you may be pleasantly surprised
+   by NCO's new zippiness.
+
+A. fxm
+   NCO now employs hashing techniques to locate objects.
+   As a result NCO is much more efficient searching for objects.
+   Users will notice no difference. If you do, please let us know. 
+   It is possible that some use-cases on large, complex files will
+   show significant speed-ups.
+
 BUG FIXES:
 
 A. De-compressing netCDF4 files/variables by specifying deflation
@@ -65,6 +73,15 @@ A. Dimensions in hyperslabbing arguments are once again checked for
 
 A. Fix one-line diagnostic bug that caused many OpenMP-enabled
    operators to die when dbg_lvl > 2.
+
+A. Fix ncra/ncrcat bug where extra record used when superfluous input
+   files provided and stride places first index of superfluous files
+   beyond user-specified last index. An "important corner-case".
+   Problem reported by John.
+
+A. Fix ncra/ncrcat bug where no more files were read after all desired
+   records of the first record dimension were obtained (i.e., in cases
+   where multiple record dimensions exist in multiple files).
 
 KNOWN ISSUES NOT YET FIXED:
 
