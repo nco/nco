@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.200 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.201 2013-12-10 04:23:30 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -233,15 +233,15 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
  const nco_bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* Purpose: Create stand-alone limit structure just for given dimension
-  ncra.c calls nco_lmt_sct_mk() to generate record dimension limit structure
-
-  This is a complex routine fundamental to most of NCO
-  It is easy to make subtle errors when changing it
-  Please ask CSZ to review any significant patches to this routine */
-
+     ncra.c calls nco_lmt_sct_mk() to generate record dimension limit structure
+     
+     This is a complex routine fundamental to most of NCO
+     It is easy to make subtle errors when changing it
+     Please ask CSZ to review any significant patches to this routine */
+  
   int idx;
   int rcd; /* [rcd] Return code */
-
+  
   lmt_sct *lmt_dim;
 
   lmt_dim=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
@@ -300,20 +300,20 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
     lmt_dim->drn_sng=NULL;
     lmt_dim->mro_sng=NULL;
     /* Generate min and max strings to look as if user had specified them
-    Adjust accordingly if FORTRAN_IDX_CNV was requested for other dimensions
-    These sizes will later be decremented in nco_lmt_evl() where all information
-    is converted internally to C-based indexing representation.
-    Ultimately this problem arises because I want nco_lmt_evl() to think the
-    user always did specify this dimension's hyperslab.
-    Otherwise, problems arise when FORTRAN_IDX_CNV is specified by the user 
-    along with explicit hypersalbs for some dimensions excluding the record
-    dimension.
-    Then, when nco_lmt_sct_mk() creates the record dimension structure, it must
-    be created consistently with the FORTRAN_IDX_CNV flag for the other dimensions.
-    In order to do that, fill in max_sng, min_sng, and srd_sng
-    arguments with strings as if they had been read from keyboard.
-    An alternate solution is to add flag to lmt_sct indicating whether this
-    limit struct had been automatically generated and then act accordingly. */
+       Adjust accordingly if FORTRAN_IDX_CNV was requested for other dimensions
+       These sizes will later be decremented in nco_lmt_evl() where all information
+       is converted internally to C-based indexing representation.
+       Ultimately this problem arises because I want nco_lmt_evl() to think the
+       user always did specify this dimension's hyperslab.
+       Otherwise, problems arise when FORTRAN_IDX_CNV is specified by the user 
+       along with explicit hypersalbs for some dimensions excluding the record
+       dimension.
+       Then, when nco_lmt_sct_mk() creates the record dimension structure, it must
+       be created consistently with the FORTRAN_IDX_CNV flag for the other dimensions.
+       In order to do that, fill in max_sng, min_sng, and srd_sng
+       arguments with strings as if they had been read from keyboard.
+       An alternate solution is to add flag to lmt_sct indicating whether this
+       limit struct had been automatically generated and then act accordingly. */
     /* Decrement cnt to C-index value if necessary */
     if(!FORTRAN_IDX_CNV) cnt--; 
     if(cnt < 0L){
@@ -323,7 +323,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
       return False;
     } /* end if */
     /* cnt < 10 covers negative numbers and SIGFPE from log10(cnt==0) 
-    Adding 1 is required for cnt=10,100,1000... */
+       Adding 1 is required for cnt=10,100,1000... */
     if(cnt < 10L) max_sng_sz=1; else max_sng_sz=1+(int)ceil(log10((double)cnt));
     /* Add one for NUL terminator */
     lmt_dim->max_sng=(char *)nco_malloc(sizeof(char)*(max_sng_sz+1));
@@ -345,8 +345,8 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
  CST_X_PTR_CST_PTR_CST_Y(char,lmt_arg)) /* I [sng] List of user-specified dimension limits */
 {
   /* Purpose: Set name, min_sng, max_sng elements of comma separated list of names and ranges. 
-  Routine merely evaluates syntax of input expressions and does validate dimensions or
-  ranges against those present in input netCDF file. */
+     Routine merely evaluates syntax of input expressions and does validate dimensions or
+     ranges against those present in input netCDF file. */
 
   /* Valid syntax adheres to nm,[min_sng][,[max_sng][,[srd_sng][,[drn_sng]]]] */
 
@@ -403,12 +403,12 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
 
     /* Initialize structure */
     /* lmt strings that are not explicitly set by user remain NULL, i.e., 
-    specifying default setting will appear as if nothing at all was set.
-    Hopefully, in routines that follow, branch followed when dimension has
-    all default settings specified (e.g.,"-d foo,,,,") yields same answer
-    as branch for which no hyperslab along that dimension was set. */
+       specifying default setting will appear as if nothing at all was set.
+       Hopefully, in routines that follow, branch followed when dimension has
+       all default settings specified (e.g.,"-d foo,,,,") yields same answer
+       as branch for which no hyperslab along that dimension was set. */
     lmt[idx]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-
+    
     /* Initialize to NULL/invalid */
     (void)nco_lmt_init(lmt[idx]);
 
@@ -444,7 +444,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     lmt[idx]->rec_in_cml=0L;
 
     /* Free current pointer array to strings, leaving untouched the strings themselves
-    They will be free()'d with limit structures in nco_lmt_lst_free() */
+       They will be free()'d with limit structures in nco_lmt_lst_free() */
     arg_lst=(char **)nco_free(arg_lst);
   } /* End loop over lmt structure list */
 
@@ -701,7 +701,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     lmt.flg_mro=True;
   } /* !lmt.mro_sng */
 
-  /* In case flg_mro is set in ncra2.c by --mro */
+  /* In case flg_mro is set in ncra.c by --mro */
   if(lmt.flg_mro){
     if(nco_prg_id == ncrcat){
       (void)fprintf(stdout,"%s: INFO Specifying Multi-Record Output (MRO) option ('m', 'M', or --mro) is redundant. MRO is always true for ncrcat.\n",nco_prg_nm_get());
@@ -864,20 +864,20 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 
     /* Fail when... */
     if(
-      /* Following condition added 20000508, changes behavior of single point 
-      hyperslabs depending on whether hyperslab occurs in record dimension
-      during multi-file operator operation.
-      Altered behavior of single point hyperslabs so that single point
-      hyperslabs in the record coordinate (i.e., -d time,1.0,1.0) may be
-      treated differently than single point hyperslabs in other
-      coordinates. Multifile operators will skip files if single point
-      hyperslabs in record coordinate lay outside record coordinate
-      range of file. For non-record coordinates (and for all operators
-      besides ncra and ncrcat on record coordinates), single point
-      hyperslabs will choose the closest value rather than skip the file
-      (I believe). This should be verified. */
-      /* User specified single point, coordinate is not wrapped, and both extrema fall outside valid crd range */
-      (rec_dmn_and_mfo && (lmt.min_val == lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
+       /* Following condition added 20000508, changes behavior of single point 
+	  hyperslabs depending on whether hyperslab occurs in record dimension
+	  during multi-file operator operation.
+	  Altered behavior of single point hyperslabs so that single point
+	  hyperslabs in the record coordinate (i.e., -d time,1.0,1.0) may be
+	  treated differently than single point hyperslabs in other
+	  coordinates. Multifile operators will skip files if single point
+	  hyperslabs in record coordinate lay outside record coordinate
+	  range of file. For non-record coordinates (and for all operators
+	  besides ncra and ncrcat on record coordinates), single point
+	  hyperslabs will choose the closest value rather than skip the file
+	  (I believe). This should be verified. */
+       /* User specified single point, coordinate is not wrapped, and both extrema fall outside valid crd range */
+       (rec_dmn_and_mfo && (lmt.min_val == lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
       /* User did not specify single point, coordinate is not wrapped, and either extrema falls outside valid crd range */
       ((lmt.min_val < lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
       /* User did not specify single point, coordinate is wrapped, and both extrema fall outside valid crd range */
@@ -917,15 +917,15 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     }else{ /* min_val != max_val */
 
       /* Bracket specified extrema:
-      Should no coordinate values match the given criteria, flag the index with -1L
-      We defined the valid syntax such that single half range with -1L is not an error
-      This causes "-d lon,100.0,-100.0" to select [-180.0] when lon=[-180.0,-90.0,0.0,90.0] 
-      because one of the specified half-ranges is valid (there are coordinates < -100.0).
-      However, "-d lon,100.0,-200.0" should fail when lon=[-180.0,-90.0,0.0,90.0] because both 
-      of the specified half-ranges are invalid (no coordinate is > 100.0 or < -200.0).
-      -1L flags are replaced with correct indices (0L or dmn_sz-1L) following search loop block.
-      Overwriting -1L flags with 0L or dmn_sz-1L later is more heuristic than setting them = 0L here,
-      since 0L is valid search result. */
+	 Should no coordinate values match the given criteria, flag the index with -1L
+	 We defined the valid syntax such that single half range with -1L is not an error
+	 This causes "-d lon,100.0,-100.0" to select [-180.0] when lon=[-180.0,-90.0,0.0,90.0] 
+	 because one of the specified half-ranges is valid (there are coordinates < -100.0).
+	 However, "-d lon,100.0,-200.0" should fail when lon=[-180.0,-90.0,0.0,90.0] because both 
+	 of the specified half-ranges are invalid (no coordinate is > 100.0 or < -200.0).
+	 -1L flags are replaced with correct indices (0L or dmn_sz-1L) following search loop block.
+	 Overwriting -1L flags with 0L or dmn_sz-1L later is more heuristic than setting them = 0L here,
+	 since 0L is valid search result. */
       if(monotonic_direction == increasing){
         if(lmt.min_sng){
           /* Find index of smallest coordinate greater than min_val */
@@ -940,11 +940,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
           if(tmp_idx != -1L) lmt.max_idx=tmp_idx; else lmt.max_idx=-1L;
         } /* end if */
         /* 20110221: csz fix hyperslab bug TODO nco1007 triggered by
-        ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc
-        This returned all values but should have returned none
-        Algorithm was broken because, although valid min and max indices existed,
-        they contained the empty set. 
-        Now when this happens, set flg_no_data_err block */
+	   ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc
+	   This returned all values but should have returned none
+	   Algorithm was broken because, although valid min and max indices existed,
+	   they contained the empty set. 
+	   Now when this happens, set flg_no_data_err block */
         if( /* Points are not wrapped ... */
           (lmt.min_val < lmt.max_val) && 
           /* ... and valid indices were found for both bracketing points... */
@@ -974,8 +974,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       } /* end else monotonic_direction == decreasing */
 
       /* Case where both min_idx and max_idx = -1 was flagged as error above
-      Case of wrapped coordinate: Either, but not both, of min_idx or max_idx will be flagged with -1
-      See explanation above */
+	 Case of wrapped coordinate: Either, but not both, of min_idx or max_idx will be flagged with -1
+	 See explanation above */
       if(lmt.min_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.min_idx=0L;
       if(lmt.max_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.max_idx=dmn_sz-1L;
 
@@ -1024,20 +1024,20 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Convert limit strings to zero-based indicial offsets */
 
     /* Specifying stride alone, but not min or max, is legal, e.g., -d time,,,2
-    Thus is_usr_spc_lmt may be True, even though one or both of min_sng, max_sng is NULL
-    Furthermore, both min_sng and max_sng are artifically created by nco_lmt_sct_mk()
-    for record dimensions when the user does not explicitly specify limits.
-    In this case, min_sng_and max_sng are non-NULL though no limits were specified
-    In fact, min_sng and max_sng are set to the minimum and maximum string
-    values of the first file processed.
-    However, we can tell if these strings were artificially generated because 
-    nco_lmt_sct_mk() sets the is_usr_spc_lmt flag to False in such cases.
-    Subsequent files may have different numbers of records, but nco_lmt_sct_mk()
-    is only called once.
-    Thus we must update min_idx and max_idx here for each file
-    This causes min_idx and max_idx to be out of sync with min_sng and max_sng, 
-    which are only set in nco_lmt_sct_mk() for the first file.
-    In hindsight, artificially generating min_sng and max_sng may be bad idea */
+       Thus is_usr_spc_lmt may be True, even though one or both of min_sng, max_sng is NULL
+       Furthermore, both min_sng and max_sng are artifically created by nco_lmt_sct_mk()
+       for record dimensions when the user does not explicitly specify limits.
+       In this case, min_sng_and max_sng are non-NULL though no limits were specified
+       In fact, min_sng and max_sng are set to the minimum and maximum string
+       values of the first file processed.
+       However, we can tell if these strings were artificially generated because 
+       nco_lmt_sct_mk() sets the is_usr_spc_lmt flag to False in such cases.
+       Subsequent files may have different numbers of records, but nco_lmt_sct_mk()
+       is only called once.
+       Thus we must update min_idx and max_idx here for each file
+       This causes min_idx and max_idx to be out of sync with min_sng and max_sng, 
+       which are only set in nco_lmt_sct_mk() for the first file.
+       In hindsight, artificially generating min_sng and max_sng may be bad idea */
     /* Following logic is messy, but hard to simplify */
     if(lmt.min_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available--generate minimal dimension index */
@@ -1102,24 +1102,24 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Logic depends on whether this is record dimension in multi-file operator */
     if(!rec_dmn_and_mfo || !lmt.is_usr_spc_lmt){
       /* For non-record dimensions and for record dimensions where limit 
-      was automatically generated (to include whole file), starting
-      and ending indices are simply minimum and maximum indices already 
-      in structure */
+	 was automatically generated (to include whole file), starting
+	 and ending indices are simply minimum and maximum indices already 
+	 in structure */
       lmt.srt=lmt.min_idx;
       lmt.end=lmt.max_idx;
     }else{
       /* Initialize rec_skp_vld_prv to 0L on first call to nco_lmt_evl() 
-      This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
-      rec_skp_vld_prv is used only by multi-file operators
-      rec_skp_vld_prv counts records skipped at end of previous valid file
-      rec_usd_cml and rec_skp_ntl_spf are both zero only for first file */
+	 This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
+	 rec_skp_vld_prv is used only by multi-file operators
+	 rec_skp_vld_prv counts records skipped at end of previous valid file
+	 rec_usd_cml and rec_skp_ntl_spf are both zero only for first file */
       if(rec_usd_cml == 0L && lmt.rec_skp_ntl_spf == 0L) lmt.rec_skp_vld_prv=0L;
-
+      
       /* For record dimensions with user-specified limit, allow possibility 
-      that limit pertains to record dimension in a multi-file operator.
-      Then user-specified maximum index may exceed number of records in any one file
-      Thus lmt.srt does not necessarily equal lmt.min_idx and 
-      lmt.end does not necessarily equal lmt.max_idx */
+	 that limit pertains to record dimension in a multi-file operator.
+	 Then user-specified maximum index may exceed number of records in any one file
+	 Thus lmt.srt does not necessarily equal lmt.min_idx and 
+	 lmt.end does not necessarily equal lmt.max_idx */
       /* NB: Stride is officially supported for ncks (all dimensions) and for ncra and ncrcat (record dimension only) */
       if(lmt.srd != 1L && nco_prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for non-record dimension is only supported by ncks, use at your own risk...\n",nco_prg_nm_get());
 
@@ -1136,8 +1136,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         /* Are we past file containing end_max_lcl yet? */
         if(end_max_lcl < lmt.rec_in_cml){
           /* This and all subsequent files are superfluous because all requested records have already been read 
-          Optimize MFOs by checking "input complete" flag to jump out of file loop
-          Saves time because no other input files will be opened */
+	     Optimize MFOs by checking "input complete" flag to jump out of file loop
+	     Saves time because no other input files will be opened */
           lmt.flg_input_complete=True;
           flg_no_data_ok=True;
           goto no_data_ok;
@@ -1151,8 +1151,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         } /* endif srt_min_lcl in future file */
 
         /* Until records have been used, start index is srt_min_lcl adjusted for records contained in all previous files
-        Thereafter start index loses memory of/dependence on absolute start index, and only cares for how many records,
-        if any, were skipped since last valid record. This number, modulo stride, is new start index. */
+	   Thereafter start index loses memory of/dependence on absolute start index, and only cares for how many records,
+	   if any, were skipped since last valid record. This number, modulo stride, is new start index. */
         if(rec_usd_cml == 0L) lmt.srt=srt_min_lcl-lmt.rec_in_cml; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
 
         if(lmt.srt > dmn_sz-1L){
@@ -1172,7 +1172,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* end else limit arguments are hyperslab indices */
 
   /* NB: MFO record dimension never reaches this block if current file is superfluous
-  In that case code has already branched down to flg_data_ok or flg_data_err */
+     In that case code has already branched down to flg_data_ok or flg_data_err */
   if(rec_dmn_and_mfo){ 
     /* NB: This is---and must be---performed as integer arithmetic */ 
     cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
@@ -1185,8 +1185,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* !rec_dmn_and_mfo */      
 
   /* Compute cnt from srt, end, and srd
-  This is fine for multi-file record dimensions since those operators read-in one
-  record at a time and thus never actually use lmt.cnt for record dimension. */
+     This is fine for multi-file record dimensions since those operators read-in one
+     record at a time and thus never actually use lmt.cnt for record dimension. */
   if(lmt.srd == 1L){
     if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dmn_sz-lmt.srt+lmt.end+1L;
   }else{
@@ -1194,13 +1194,13 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* end else */
 
   /* NB: Degenerate cases of WRP && SRD exist for which dmn_cnt_2 == 0
-  This occurs when srd is large enough, or max_idx small enough, 
-  such that no values are selected in the second read. 
-  e.g., "-d lon,60,0,10" if sz(lon)=128 has dmn_cnt_2 == 0
-  Since netCDF library reports an error reading and writing cnt=0 dimensions, kludge is necessary
-  Syntax ensures that it is always the second read, not the first, which is obviated
-  Therefore we convert these degenerate cases into non-wrapped coordinates to be processed by single read 
-  For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx] */
+     This occurs when srd is large enough, or max_idx small enough, 
+     such that no values are selected in the second read. 
+     e.g., "-d lon,60,0,10" if sz(lon)=128 has dmn_cnt_2 == 0
+     Since netCDF library reports an error reading and writing cnt=0 dimensions, kludge is necessary
+     Syntax ensures that it is always the second read, not the first, which is obviated
+     Therefore we convert these degenerate cases into non-wrapped coordinates to be processed by single read 
+     For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx] */
   if(
     (lmt.srd != 1L) && /* SRD */
     (lmt.srt > lmt.end) && /* WRP */
@@ -1223,12 +1223,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* end if */
 
   /* Cases where domain brackets no data, in error, have counts set to zero here
-  This kludge allows codepaths for both WRP and out-of-domain to flow without goto statements
-  Out-of-domain errors will soon exit with error, while WRP conditions will proceed */
+     This kludge allows codepaths for both WRP and out-of-domain to flow without goto statements
+     Out-of-domain errors will soon exit with error, while WRP conditions will proceed */
   if(flg_no_data_err) lmt.cnt=0L;
 
   /* Exit when valid bracketed range contains no coordinates and that is not legal,
-  i.e., this is not a superfluous file in an MFO */
+     i.e., this is not a superfluous file in an MFO */
   if(lmt.cnt == 0){
     if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",nco_prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
     if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",nco_prg_nm_get(),lmt.nm); 
@@ -1236,15 +1236,15 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* end if */
 
   /* Coordinate-valued limits that bracket no values in current file jump here with goto
-  Index-valued limits with no values in current file flow here naturally */
+     Index-valued limits with no values in current file flow here naturally */
 no_data_ok: /* end goto */
   if(flg_no_data_ok){
     /* File is superfluous (contributes no data) to specified hyperslab
-    Set output parameters to well-defined state
-    This state must not cause ncra or ncrcat to retrieve any data
-    ncra and ncrcat use loops for the record dimension, so this is
-    accomplished by setting loop control values (lmt_rec.srt > lmt_rec.end)
-    that cause record loop always to be skipped (never entered) */
+       Set output parameters to well-defined state
+       This state must not cause ncra or ncrcat to retrieve any data
+       ncra and ncrcat use loops for the record dimension, so this is
+       accomplished by setting loop control values (lmt_rec.srt > lmt_rec.end)
+       that cause record loop always to be skipped (never entered) */
     lmt.srt=-1L;
     lmt.end=lmt.srt-1L;
     lmt.cnt=-1L;
@@ -1257,9 +1257,9 @@ no_data_ok: /* end goto */
   } /* endif */
 
   /* Accumulate count of records in all opened files, including this one
-  Increment here at end so this structure member includes records from current file 
-  only at end of this routine, where it can only be used diagnostically
-  NB: Location of this augmentation is important! Moving it would have side-effects! */
+     Increment here at end so this structure member includes records from current file 
+     only at end of this routine, where it can only be used diagnostically
+     NB: Location of this augmentation is important! Moving it would have side-effects! */
   lmt.rec_in_cml+=dmn_sz;
 
   /* Place contents of working structure in location of returned structure */
@@ -1438,7 +1438,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     lmt.flg_mro=True;
   } /* !lmt.mro_sng */
 
-  /* In case flg_mro is set in ncra2.c by --mro */
+  /* In case flg_mro is set in ncra.c by --mro */
   if(lmt.flg_mro){
     if(nco_prg_id == ncrcat){
       (void)fprintf(stdout,"%s: INFO Specifying Multi-Record Output (MRO) option ('m', 'M', or --mro) is redundant. MRO is always true for ncrcat.\n",nco_prg_nm_get());
@@ -1480,7 +1480,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   lmt.origin=0.0;
 
   /* If there is a coordinate variable */
-  if (is_crd){
+  if(is_crd){
 
     /* Get variable ID of coordinate. NOTE: using group ID */
     (void)nco_inq_varid(grp_id,lmt.nm,&dim.cid);
@@ -1498,13 +1498,12 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     } /* endif */
 
     /* ncra and ncrcat read the "calendar" attribute in main() 
-    Avoid multiple reads of calendar attritbute in multi-file operations */
+       Avoid multiple reads of calendar attribute in multi-file operations */
     if(!rec_dmn_and_mfo){
       if(cln_sng) lmt.lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt.lmt_cln=cln_nil;
     } /* endif */
     if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
   } /* End Needed only to read variable, if dimension is a coordinate variable */
-
 
   if((lmt.lmt_typ == lmt_crd_val) || (lmt.lmt_typ == lmt_udu_sng)){
     double *dmn_val_dp=NULL;
@@ -1528,7 +1527,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 #endif /* _OPENMP */
     { /* begin OpenMP critical */
       /* Block is critical for identical in_id's
-      Block is thread-safe for distinct in_id's */
+	 Block is thread-safe for distinct in_id's */
       /* 20110221: replace nco_get_vara() with nc_get_vara_double() */
       /* Retrieve this coordinate */
       int rcd;
@@ -1594,7 +1593,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       } /* !lmt.max_sng */
 
       /* Re-base coordinates as necessary in multi-file operatators (MFOs)
-      lmt.origin was calculated earlier in routine */
+	 lmt.origin was calculated earlier in routine */
       if(rec_dmn_and_mfo){ 
         if(lmt.min_sng) lmt.min_val-=lmt.origin;
         if(lmt.max_sng) lmt.max_val-=lmt.origin;   
@@ -1606,18 +1605,18 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
     /* Fail when... */
     if(
-      /* Following condition added 20000508, changes behavior of single point 
-      hyperslabs depending on whether hyperslab occurs in record dimension
-      during multi-file operator operation.
-      Altered behavior of single point hyperslabs so that single point
-      hyperslabs in the record coordinate (i.e., -d time,1.0,1.0) may be
-      treated differently than single point hyperslabs in other
-      coordinates. Multifile operators will skip files if single point
-      hyperslabs in record coordinate lay outside record coordinate
-      range of file. For non-record coordinates (and for all operators
-      besides ncra and ncrcat on record coordinates), single point
-      hyperslabs will choose the closest value rather than skip the file
-      (I believe). This should be verified. */
+       /* Following condition added 20000508, changes behavior of single point 
+	  hyperslabs depending on whether hyperslab occurs in record dimension
+	  during multi-file operator operation.
+	  Altered behavior of single point hyperslabs so that single point
+	  hyperslabs in the record coordinate (i.e., -d time,1.0,1.0) may be
+	  treated differently than single point hyperslabs in other
+	  coordinates. Multifile operators will skip files if single point
+	  hyperslabs in record coordinate lay outside record coordinate
+	  range of file. For non-record coordinates (and for all operators
+	  besides ncra and ncrcat on record coordinates), single point
+	  hyperslabs will choose the closest value rather than skip the file
+	  (I believe). This should be verified. */
       /* User specified single point, coordinate is not wrapped, and both extrema fall outside valid crd range */
       (rec_dmn_and_mfo && (lmt.min_val == lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
       /* User did not specify single point, coordinate is not wrapped, and either extrema falls outside valid crd range */
@@ -1659,15 +1658,15 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     }else{ /* min_val != max_val */
 
       /* Bracket specified extrema:
-      Should no coordinate values match the given criteria, flag the index with -1L
-      We defined the valid syntax such that single half range with -1L is not an error
-      This causes "-d lon,100.0,-100.0" to select [-180.0] when lon=[-180.0,-90.0,0.0,90.0] 
-      because one of the specified half-ranges is valid (there are coordinates < -100.0).
-      However, "-d lon,100.0,-200.0" should fail when lon=[-180.0,-90.0,0.0,90.0] because both 
-      of the specified half-ranges are invalid (no coordinate is > 100.0 or < -200.0).
-      -1L flags are replaced with correct indices (0L or dmn_sz-1L) following search loop block.
-      Overwriting -1L flags with 0L or dmn_sz-1L later is more heuristic than setting them = 0L here,
-      since 0L is valid search result. */
+	 Should no coordinate values match the given criteria, flag the index with -1L
+	 We defined the valid syntax such that single half range with -1L is not an error
+	 This causes "-d lon,100.0,-100.0" to select [-180.0] when lon=[-180.0,-90.0,0.0,90.0] 
+	 because one of the specified half-ranges is valid (there are coordinates < -100.0).
+	 However, "-d lon,100.0,-200.0" should fail when lon=[-180.0,-90.0,0.0,90.0] because both 
+	 of the specified half-ranges are invalid (no coordinate is > 100.0 or < -200.0).
+	 -1L flags are replaced with correct indices (0L or dmn_sz-1L) following search loop block.
+	 Overwriting -1L flags with 0L or dmn_sz-1L later is more heuristic than setting them = 0L here,
+	 since 0L is valid search result. */
       if(monotonic_direction == increasing){
         if(lmt.min_sng){
           /* Find index of smallest coordinate greater than min_val */
@@ -1682,17 +1681,17 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
           if(tmp_idx != -1L) lmt.max_idx=tmp_idx; else lmt.max_idx=-1L;
         } /* end if */
         /* 20110221: csz fix hyperslab bug TODO nco1007 triggered by
-        ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc
-        This returned all values but should have returned none
-        Algorithm was broken because, although valid min and max indices existed,
-        they contained the empty set. 
-        Now when this happens, set flg_no_data_err block */
+	   ncks -O -v lat -d lat,20.,20.001 ~/nco/data/in.nc ~/foo.nc
+	   This returned all values but should have returned none
+	   Algorithm was broken because, although valid min and max indices existed,
+	   they contained the empty set. 
+	   Now when this happens, set flg_no_data_err block */
         if( /* Points are not wrapped ... */
-          (lmt.min_val < lmt.max_val) && 
-          /* ... and valid indices were found for both bracketing points... */
-          (lmt.min_idx != -1L && lmt.max_idx != -1L) &&
-          /* ...and indices contain empty set, i.e., min_idx > max_idx for increasing data... */
-          lmt.min_idx > lmt.max_idx) flg_no_data_err=True;
+	   (lmt.min_val < lmt.max_val) && 
+	   /* ... and valid indices were found for both bracketing points... */
+	   (lmt.min_idx != -1L && lmt.max_idx != -1L) &&
+	   /* ...and indices contain empty set, i.e., min_idx > max_idx for increasing data... */
+	   lmt.min_idx > lmt.max_idx) flg_no_data_err=True;
         /* end if monotonic_direction == increasing */
       }else{ /* monotonic_direction == decreasing */
         if(lmt.min_sng){
@@ -1716,8 +1715,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       } /* end else monotonic_direction == decreasing */
 
       /* Case where both min_idx and max_idx = -1 was flagged as error above
-      Case of wrapped coordinate: Either, but not both, of min_idx or max_idx will be flagged with -1
-      See explanation above */
+	 Case of wrapped coordinate: Either, but not both, of min_idx or max_idx will be flagged with -1
+	 See explanation above */
       if(lmt.min_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.min_idx=0L;
       if(lmt.max_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.max_idx=dmn_sz-1L;
 
@@ -1766,20 +1765,20 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     /* Convert limit strings to zero-based indicial offsets */
 
     /* Specifying stride alone, but not min or max, is legal, e.g., -d time,,,2
-    Thus is_usr_spc_lmt may be True, even though one or both of min_sng, max_sng is NULL
-    Furthermore, both min_sng and max_sng are artifically created by nco_lmt_sct_mk()
-    for record dimensions when the user does not explicitly specify limits.
-    In this case, min_sng_and max_sng are non-NULL though no limits were specified
-    In fact, min_sng and max_sng are set to the minimum and maximum string
-    values of the first file processed.
-    However, we can tell if these strings were artificially generated because 
-    nco_lmt_sct_mk() sets the is_usr_spc_lmt flag to False in such cases.
-    Subsequent files may have different numbers of records, but nco_lmt_sct_mk()
-    is only called once.
-    Thus we must update min_idx and max_idx here for each file
-    This causes min_idx and max_idx to be out of sync with min_sng and max_sng, 
-    which are only set in nco_lmt_sct_mk() for the first file.
-    In hindsight, artificially generating min_sng and max_sng may be bad idea */
+       Thus is_usr_spc_lmt may be True, even though one or both of min_sng, max_sng is NULL
+       Furthermore, both min_sng and max_sng are artifically created by nco_lmt_sct_mk()
+       for record dimensions when the user does not explicitly specify limits.
+       In this case, min_sng_and max_sng are non-NULL though no limits were specified
+       In fact, min_sng and max_sng are set to the minimum and maximum string
+       values of the first file processed.
+       However, we can tell if these strings were artificially generated because 
+       nco_lmt_sct_mk() sets the is_usr_spc_lmt flag to False in such cases.
+       Subsequent files may have different numbers of records, but nco_lmt_sct_mk()
+       is only called once.
+       Thus we must update min_idx and max_idx here for each file
+       This causes min_idx and max_idx to be out of sync with min_sng and max_sng, 
+       which are only set in nco_lmt_sct_mk() for the first file.
+       In hindsight, artificially generating min_sng and max_sng may be bad idea */
     /* Following logic is messy, but hard to simplify */
     if(lmt.min_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available--generate minimal dimension index */
@@ -1848,24 +1847,24 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     /* Logic depends on whether this is record dimension in multi-file operator */
     if(!rec_dmn_and_mfo || !lmt.is_usr_spc_lmt){
       /* For non-record dimensions and for record dimensions where limit 
-      was automatically generated (to include whole file), starting
-      and ending indices are simply minimum and maximum indices already 
-      in structure */
+	 was automatically generated (to include whole file), starting
+	 and ending indices are simply minimum and maximum indices already 
+	 in structure */
       lmt.srt=lmt.min_idx;
       lmt.end=lmt.max_idx;
     }else{
       /* Initialize rec_skp_vld_prv to 0L on first call to nco_lmt_evl() 
-      This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
-      rec_skp_vld_prv is used only by multi-file operators
-      rec_skp_vld_prv counts records skipped at end of previous valid file
-      rec_usd_cml and rec_skp_ntl_spf are both zero only for first file */
+	 This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
+	 rec_skp_vld_prv is used only by multi-file operators
+	 rec_skp_vld_prv counts records skipped at end of previous valid file
+	 rec_usd_cml and rec_skp_ntl_spf are both zero only for first file */
       if(rec_usd_cml == 0L && lmt.rec_skp_ntl_spf == 0L) lmt.rec_skp_vld_prv=0L;
 
       /* For record dimensions with user-specified limit, allow possibility 
-      that limit pertains to record dimension in a multi-file operator.
-      Then user-specified maximum index may exceed number of records in any one file
-      Thus lmt.srt does not necessarily equal lmt.min_idx and 
-      lmt.end does not necessarily equal lmt.max_idx */
+	 that limit pertains to record dimension in a multi-file operator.
+	 Then user-specified maximum index may exceed number of records in any one file
+	 Thus lmt.srt does not necessarily equal lmt.min_idx and 
+	 lmt.end does not necessarily equal lmt.max_idx */
       /* NB: Stride is officially supported for ncks (all dimensions) and for ncra and ncrcat (record dimension only) */
       if(lmt.srd != 1L && nco_prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for non-record dimension is only supported by ncks, use at your own risk...\n",nco_prg_nm_get());
 
@@ -1882,8 +1881,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
         /* Are we past file containing end_max_lcl yet? */
         if(end_max_lcl < lmt.rec_in_cml){
           /* This and all subsequent files are superfluous because all requested records have already been read 
-          Optimize MFOs by checking "input complete" flag to jump out of file loop
-          Saves time because no other input files will be opened */
+	     Optimize MFOs by checking "input complete" flag to jump out of file loop
+	     Saves time because no other input files will be opened */
           lmt.flg_input_complete=True;
           flg_no_data_ok=True;
           goto no_data_ok;
@@ -1897,8 +1896,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
         } /* endif srt_min_lcl in future file */
 
         /* Until records have been used, start index is srt_min_lcl adjusted for records contained in all previous files
-        Thereafter start index loses memory of/dependence on absolute start index, and only cares for how many records,
-        if any, were skipped since last valid record. This number, modulo stride, is new start index. */
+	   Thereafter start index loses memory of/dependence on absolute start index, and only cares for how many records,
+	   if any, were skipped since last valid record. This number, modulo stride, is new start index. */
         if(rec_usd_cml == 0L) lmt.srt=srt_min_lcl-lmt.rec_in_cml; else lmt.srt=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd;
 
         if(lmt.srt > dmn_sz-1L){
@@ -1918,7 +1917,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   } /* end else limit arguments are hyperslab indices */
 
   /* NB: MFO record dimension never reaches this block if current file is superfluous
-  In that case code has already branched down to flg_data_ok or flg_data_err */
+     In that case code has already branched down to flg_data_ok or flg_data_err */
   if(rec_dmn_and_mfo){ 
     /* NB: This is---and must be---performed as integer arithmetic */ 
     cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
@@ -1931,8 +1930,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   } /* !rec_dmn_and_mfo */      
 
   /* Compute cnt from srt, end, and srd
-  This is fine for multi-file record dimensions since those operators read-in one
-  record at a time and thus never actually use lmt.cnt for record dimension. */
+     This is fine for multi-file record dimensions since those operators read-in one
+     record at a time and thus never actually use lmt.cnt for record dimension. */
   if(lmt.srd == 1L){
     if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dmn_sz-lmt.srt+lmt.end+1L;
   }else{
@@ -1940,13 +1939,13 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   } /* end else */
 
   /* NB: Degenerate cases of WRP && SRD exist for which dmn_cnt_2 == 0
-  This occurs when srd is large enough, or max_idx small enough, 
-  such that no values are selected in the second read. 
-  e.g., "-d lon,60,0,10" if sz(lon)=128 has dmn_cnt_2 == 0
-  Since netCDF library reports an error reading and writing cnt=0 dimensions, kludge is necessary
-  Syntax ensures that it is always the second read, not the first, which is obviated
-  Therefore we convert these degenerate cases into non-wrapped coordinates to be processed by single read 
-  For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx] */
+     This occurs when srd is large enough, or max_idx small enough, 
+     such that no values are selected in the second read. 
+     e.g., "-d lon,60,0,10" if sz(lon)=128 has dmn_cnt_2 == 0
+     Since netCDF library reports an error reading and writing cnt=0 dimensions, kludge is necessary
+     Syntax ensures that it is always the second read, not the first, which is obviated
+     Therefore we convert these degenerate cases into non-wrapped coordinates to be processed by single read 
+     For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx] */
   if(
     (lmt.srd != 1L) && /* SRD */
     (lmt.srt > lmt.end) && /* WRP */
@@ -1969,12 +1968,12 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   } /* end if */
 
   /* Cases where domain brackets no data, in error, have counts set to zero here
-  This kludge allows codepaths for both WRP and out-of-domain to flow without goto statements
-  Out-of-domain errors will soon exit with error, while WRP conditions will proceed */
+     This kludge allows codepaths for both WRP and out-of-domain to flow without goto statements
+     Out-of-domain errors will soon exit with error, while WRP conditions will proceed */
   if(flg_no_data_err) lmt.cnt=0L;
 
   /* Exit when valid bracketed range contains no coordinates and that is not legal,
-  i.e., this is not a superfluous file in an MFO */
+     i.e., this is not a superfluous file in an MFO */
   if(lmt.cnt == 0){
     if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",nco_prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
     if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",nco_prg_nm_get(),lmt.nm); 
@@ -1982,15 +1981,15 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   } /* end if */
 
   /* Coordinate-valued limits that bracket no values in current file jump here with goto
-  Index-valued limits with no values in current file flow here naturally */
+     Index-valued limits with no values in current file flow here naturally */
 no_data_ok: /* end goto */
   if(flg_no_data_ok){
     /* File is superfluous (contributes no data) to specified hyperslab
-    Set output parameters to well-defined state
-    This state must not cause ncra or ncrcat to retrieve any data
-    ncra and ncrcat use loops for the record dimension, so this is
-    accomplished by setting loop control values (lmt_rec.srt > lmt_rec.end)
-    that cause record loop always to be skipped (never entered) */
+       Set output parameters to well-defined state
+       This state must not cause ncra or ncrcat to retrieve any data
+       ncra and ncrcat use loops for the record dimension, so this is
+       accomplished by setting loop control values (lmt_rec.srt > lmt_rec.end)
+       that cause record loop always to be skipped (never entered) */
     lmt.srt=-1L;
     lmt.end=lmt.srt-1L;
     lmt.cnt=-1L;
@@ -2003,9 +2002,9 @@ no_data_ok: /* end goto */
   } /* endif */
 
   /* Accumulate count of records in all opened files, including this one
-  Increment here at end so this structure member includes records from current file 
-  only at end of this routine, where it can only be used diagnostically
-  NB: Location of this augmentation is important! Moving it would have side-effects! */
+     Increment here at end so this structure member includes records from current file 
+     only at end of this routine, where it can only be used diagnostically
+     NB: Location of this augmentation is important! Moving it would have side-effects! */
   lmt.rec_in_cml+=dmn_sz;
 
   /* Place contents of working structure in location of returned structure */
