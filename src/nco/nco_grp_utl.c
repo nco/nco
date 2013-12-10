@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1103 2013-12-10 17:34:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1104 2013-12-10 18:51:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2008,6 +2008,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   /* Variable dimensions. For groups there are no variable dimensions  */
   trv_tbl->lst[idx].var_dmn=NULL;
 
+  /* ncpdq dimension arrays  */
+  trv_tbl->lst[idx].dmn_idx_out_in=NULL;
+  trv_tbl->lst[idx].dmn_rvr_in=NULL;
+
   /* Iterate variables for this group */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){
 
@@ -2091,6 +2095,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
     /* Variable dimensions */
     trv_tbl->lst[idx].var_dmn=(var_dmn_sct *)nco_malloc(nbr_dmn_var*sizeof(var_dmn_sct));
+
+    trv_tbl->lst[idx].dmn_idx_out_in=NULL;
+    trv_tbl->lst[idx].dmn_rvr_in=NULL;
 
     for(int idx_dmn_var=0;idx_dmn_var<nbr_dmn_var;idx_dmn_var++){
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_nm=NULL;
@@ -4842,6 +4849,9 @@ nco_var_dmn_rdr_mtd_trv               /* [fnc] Determine and set new dimensional
 
     /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
     rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx_var_prc],var_prc_out[idx_var_prc],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in,dmn_rvr_rdr,dmn_rvr_in);
+
+    var_trv->dmn_idx_out_in=(int *)nco_malloc(var_trv->nbr_dmn*sizeof(int));
+    var_trv->dmn_rvr_in=(nco_bool *)nco_malloc(var_trv->nbr_dmn*sizeof(nco_bool));
 
     /* Transfer dimension structures to be re-ordered into GTT */
     for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){

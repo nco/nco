@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.445 2013-12-10 03:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.446 2013-12-10 18:51:38 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -840,8 +840,8 @@ extern "C" {
     /* Following are members only used by transformation operators (non-ncks)  */
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  
-    int dmn_idx_out_in[NC_MAX_DIMS];  /* [nbr] Dimension correspondence, output->input (ncpdq); output of nco_var_dmn_rdr_mtd() */
-    nco_bool dmn_rvr_in[NC_MAX_DIMS]; /* [flg] Reverse dimensions (ncpdq) */
+    int *dmn_idx_out_in;              /* [nbr] Dimension correspondence, output->input (ncpdq); output of nco_var_dmn_rdr_mtd() */
+    nco_bool *dmn_rvr_in;             /* [flg] Reverse dimensions (ncpdq) */
     nco_bool flg_rdr;                 /* [flg] Variable has dimensions to re-order (ncpdq) */ 
     char *rec_dmn_nm_out;             /* [sng] Record dimension name, re-ordered (ncpdq) (used as flag also for re-defined record dimension)*/
     char *grp_nm_fll_prn;             /* [sng] (ncge) Parent group full name */
