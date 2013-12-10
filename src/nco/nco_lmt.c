@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.201 2013-12-10 04:23:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.202 2013-12-10 04:32:36 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -37,7 +37,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->min_idx=-1;           /* [nbr] Index of minimum requested value in dimension */
   lmt->rec_dmn_sz=-1;        /* [nbr] Number of records in this file (multi-file record dimension only) */
   lmt->rec_in_cml=-1;        /* [nbr] Cumulative number of records in all files opened so far (multi-file record dimension only) */
-  lmt->idx_end_max_abs=-1;   /* [[nbr]] Maximum allowed index in record dimension (multi-file record dimension only) */
+  lmt->idx_end_max_abs=-1;   /* [nbr] Maximum allowed index in record dimension (multi-file record dimension only) */
   lmt->rec_skp_ntl_spf=-1;   /* [nbr] Records skipped in initial superfluous files (multi-file record dimension only) */
   lmt->rec_skp_vld_prv=-1;   /* [nbr] Records skipped since previous good one (multi-file record dimension only) */
   lmt->rec_rmn_prv_drn=-1;   /* [nbr] Records remaining-to-be-read to complete duration group from previous file (multi-file record dimension only) */
