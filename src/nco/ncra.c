@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.476 2013-12-10 17:34:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.477 2013-12-10 21:48:49 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.476 2013-12-10 17:34:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.476 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.477 2013-12-10 21:48:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.477 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -1292,6 +1292,7 @@ main(int argc,char **argv)
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
 
     (void)trv_tbl_free(trv_tbl);
+    if(flg_input_complete) flg_input_complete=(nco_bool *)nco_free(flg_input_complete);
     idx_rec_out=(long *)nco_free(idx_rec_out);
     rec_in_cml=(long *)nco_free(rec_in_cml);
     rec_usd_cml=(long *)nco_free(rec_usd_cml);

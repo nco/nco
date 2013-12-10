@@ -1,10 +1,13 @@
+2013-12-10  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up hash usage. Try different approaches prior to widespread implementation.
+
 2013-12-10 Pedro Vicente  <pvicente@uci.edu>
 
-	* Replaced static dimensions arrays with dynamic. Causes a one order of magnitude speedup.
-	
-	* Limit structures are now contained in the traversal table build function. Information about
-	valid limit names is exported to main programs.
+	* Replace static dimensions arrays with dynamic. Causes a one order-of-magnitude speedup.
 
+	* Limit structures are now contained in the traversal table build function
+	Information about valid limit names is exported to main programs
 
 2013-12-09  Charlie Zender  <zender@uci.edu>
 

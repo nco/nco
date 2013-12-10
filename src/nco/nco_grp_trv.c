@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.257 2013-12-10 18:51:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.258 2013-12-10 21:48:49 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -276,8 +276,8 @@ trv_tbl_var_nm_fll                    /* [fnc] Return variable object from full 
 #ifdef NCO_HSH_TRV_OBJ
   trv_sct *trv_obj; /* [sct] GTT object structure */
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
-  if (trv_obj && trv_obj->nco_typ == nco_obj_typ_var) return trv_obj;
-  return NULL;
+  if(trv_obj && trv_obj->nco_typ == nco_obj_typ_var) return trv_obj; else return NULL;
+  //  return trv_obj;
 #else /* !NCO_HSH_TRV_OBJ */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) return &trv_tbl->lst[uidx];
@@ -293,7 +293,7 @@ trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
 
-#ifdef NCO_HSH_TRV_OBJ___
+#ifdef NCO_HSH_TRV_OBJ
   trv_sct *trv_obj; /* [sct] GTT object structure */
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
   if(trv_obj) trv_obj->flg_xtr=True;
@@ -617,12 +617,14 @@ nco_trv_hsh_bld /* Hash traversal table for fastest access */
      trv_sct *trv_obj;
      HASH_FIND_STR(trv_tbl->hsh,nm_fll,trv_obj);
      return trv_obj;
+     fxm: this does not work yet!!! must check that trv_obj->obj_typ=nco_obj_typ_var!!! why???
      Input key argument (nm_fll field) is unchanged
      However, HASH_FIND_STR() macro treats key as (i.e., casts it to) unsigned bytes internally
      Hence  -Wcast_qual causes compiler complaint if key argument is const char * const nm_fll
      Potential workarounds:
      1. Eliminate -Wcast_qual from compiler settings
-        Verified this works
+        Verified that this does work
+	Unpalatable because it weakens static checking on rest of code
      2. Change function prototype to non-const key
         This eliminates compiler warnings at cost of introducing non-typesafe code paths
 	Move all hash-lookup functions into single file that does not get -Wcast_qual?
@@ -634,7 +636,7 @@ nco_trv_hsh_bld /* Hash traversal table for fastest access */
         HASH_FIND_STR(trv_tbl->hsh,hsh_key,trv_obj);
         if(hsh_key) hsh_key=(char *)nco_free(hsh_key); */
 
-  /* NB: Hash table must be NULL-initialized */
+  /* NB: Hash table MUST be NULL-initialized */
   trv_tbl->hsh=NULL;
 
   for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
@@ -650,7 +652,6 @@ nco_trv_hsh_bld /* Hash traversal table for fastest access */
   } /* end loop over trv_tbl */
 
 } /* end trv_tbl_hsh() */
-
 
 void 
 nco_nm_srt                             /* [fnc] Sort traversal table */
