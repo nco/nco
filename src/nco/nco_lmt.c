@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.203 2013-12-10 05:28:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.204 2013-12-10 23:19:54 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -631,18 +631,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   rec_dmn_id=-1; 
 
   if(fl_fmt == NC_FORMAT_NETCDF4){
-    /* Loop dimensions */
-    for(int idx_dmn=0;idx_dmn<nbr_dmn_ult;idx_dmn++){
-      /* Match ID found by name; name is the same for multi -file operators  */
-      if (lmt.id == dmn_ids_ult[idx_dmn]){
-        rec_dmn_id=dmn_ids_ult[idx_dmn];
-      } /* Match ID found by name  */
-    } /* Loop dimensions */
-
-    /* NetCDF3 case */
-  } else {
+    for(int idx_dmn=0;idx_dmn<nbr_dmn_ult;idx_dmn++)
+      /* fxm: check is broken, should match names not IDs; names never change */
+      if(lmt.id == dmn_ids_ult[idx_dmn]) rec_dmn_id=dmn_ids_ult[idx_dmn];
+  }else{
     rec_dmn_id=dmn_ids_ult[0];
-  } /* NetCDF3 case */
+  } /* !netCDF4 */
 
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
   if(lmt.is_rec_dmn && (nco_prg_id == ncra || nco_prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
@@ -718,17 +712,17 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   }else{
     /* min_sng and max_sng are not both NULL */
     /* Limit is coordinate value if string contains decimal point or is in exponential format 
-    Otherwise limit is interpreted as zero-based dimension offset */
+       Otherwise limit is interpreted as zero-based dimension offset */
     if(lmt.min_sng) min_lmt_typ=nco_lmt_typ(lmt.min_sng);
     if(lmt.max_sng) max_lmt_typ=nco_lmt_typ(lmt.max_sng);
 
     /* Copy lmt_typ from defined limit to undefined */
-    if(lmt.min_sng == NULL) min_lmt_typ=max_lmt_typ;
-    if(lmt.max_sng == NULL) max_lmt_typ=min_lmt_typ;
+    if(!lmt.min_sng) min_lmt_typ=max_lmt_typ;
+    if(!lmt.max_sng) max_lmt_typ=min_lmt_typ;
   } /* end else */
 
   /* Both min_lmt_typ and max_lmt_typ are now defined
-  Continue only if both limits are of the same type */
+     Continue only if both limits are of the same type */
   if(min_lmt_typ != max_lmt_typ){
     (void)fprintf(stdout,"%s: ERROR -d %s,%s,%s\n",nco_prg_nm_get(),lmt.nm,lmt.min_sng,lmt.max_sng);
     (void)fprintf(stdout,"Limits on dimension \"%s\" must be of same numeric type:\n",lmt.nm);
@@ -756,7 +750,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
 
-    /* ncra and ncrcat read the "calendar" attribute in main() 
+    /* ncra and ncrcat read "calendar" attribute in main() 
        Avoid multiple reads of calendar attribute in multi-file operations */
     if(!rec_dmn_and_mfo){
       if(cln_sng) lmt.lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt.lmt_cln=cln_nil;
@@ -1039,7 +1033,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
        which are only set in nco_lmt_sct_mk() for the first file.
        In hindsight, artificially generating min_sng and max_sng may be bad idea */
     /* Following logic is messy, but hard to simplify */
-    if(lmt.min_sng == NULL || !lmt.is_usr_spc_lmt){
+    if(!lmt.min_sng || !lmt.is_usr_spc_lmt){
       /* No user-specified value available--generate minimal dimension index */
       if(FORTRAN_IDX_CNV) lmt.min_idx=1L; else lmt.min_idx=0L;
     }else{
@@ -1047,7 +1041,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       lmt.min_idx=strtol(lmt.min_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.min_sng,"strtol",sng_cnv_rcd);
     } /* end if */
-    if(lmt.max_sng == NULL || !lmt.is_usr_spc_lmt){
+    if(!lmt.max_sng || !lmt.is_usr_spc_lmt){
       /* No user-specified value available---generate maximal dimension index */
       if(FORTRAN_IDX_CNV) lmt.max_idx=dmn_sz; else lmt.max_idx=dmn_sz-1L;
     }else{
@@ -1133,16 +1127,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         /* Maximum allowed index in record dimension */
         lmt.idx_end_max_abs=end_max_lcl;
 
-        /* Are we past file containing end_max_lcl yet? */
-        if(end_max_lcl < lmt.rec_in_cml){
-          /* This and all subsequent files are superfluous because all requested records have already been read 
-	     Optimize MFOs by checking "input complete" flag to jump out of file loop
-	     Saves time because no other input files will be opened */
-          lmt.flg_input_complete=True;
-          flg_no_data_ok=True;
-          goto no_data_ok;
-        } /* endif past end_max_lcl */
-
         /* Have we reached file containing srt_min_lcl yet? */
         if(srt_min_lcl > lmt.rec_in_cml+dmn_sz-1L){
           /* This and all previous files are superfluous because the starting record is in a subsequent file */
@@ -1162,6 +1146,32 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
         } /* endif */
 
         lmt.end=(end_max_lcl < lmt.rec_in_cml+dmn_sz) ? end_max_lcl-lmt.rec_in_cml : dmn_sz-1L;
+
+	/* If lmt.srt <= lmt.end then then there are (may be?) valid records in current file
+	   If lmt.srt > lmt.end then all desired data (for this dimension) were definitely read in previous file(s)
+	   This happens when user-specified lmt.max_idx is not desired (because min_idx+N*stride skips over it)
+	   Then we would first find out right here that all desired data have been read
+	   Test for end_max_lcl above does not catch this case because we are _in_ (not beyond) file with end_max_lcl */
+
+        /* Are we past file containing end_max_lcl yet? */
+        if(end_max_lcl < lmt.rec_in_cml){
+          /* This and all subsequent files are superfluous because all requested records have already been read 
+	     Optimize MFOs by checking "input complete" flag to jump out of file loop
+	     Saves time because no other input files will be opened */
+          lmt.flg_input_complete=True;
+          flg_no_data_ok=True;
+          goto no_data_ok;
+        } /* endif past end_max_lcl */
+        
+        if((end_max_lcl < lmt.rec_in_cml) || /* Are we past file containing end_max_lcl yet? */
+	   (lmt.srt > lmt.end)){ /* Does stride put first index beyond last possible index? */
+          /* This and all subsequent files are superfluous because all requested records have already been read 
+	     Optimize MFOs by checking "input complete" flag to jump out of file loop
+	     Saves time because no other input files will be opened */
+          lmt.flg_input_complete=True;
+          flg_no_data_ok=True;
+          goto no_data_ok;
+        } /* endif already past end_max_lcl or will stride over end_max_lcl */
 
       } /* end block hides scope of local internal variables */
 

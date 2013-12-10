@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.477 2013-12-10 21:48:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.478 2013-12-10 23:19:54 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.477 2013-12-10 21:48:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.477 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.478 2013-12-10 23:19:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.478 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -787,7 +787,7 @@ main(int argc,char **argv)
           /* Get group ID using record group full name */
           (void)nco_inq_grp_full_ncid(out_id,trv_tbl->lmt_rec[idx_rec]->nm_fll,&grp_out_id);
 
-          /* TO_DO: this assumes only 1 record in this group */
+          /* fxm: this assumes only one record dimension exists in this group */
           (void)nco_inq_dimid(grp_out_id,trv_tbl->lmt_rec[idx_rec]->nm,&rec_dmn_out_id);
           (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
         } /* !REC_APN */
@@ -1155,7 +1155,7 @@ main(int argc,char **argv)
 	    /* 20131209: Rewritten so file skipped only once all record dimensions have flg_input_complete
 	       Warnings about superfluous files printed only once per dimension
 	       fxm: use flg_input_complete[idx_rec] to skip completed entries in main record dimension loop above */
-	    if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested records for record dimension #%d were found within the first %d input file%s, next file was opened then skipped, and remaining %d input file%s need not be opened\n",nco_prg_nm_get(),idx_rec,fl_idx,(fl_idx == 1) ? "" : "s",fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
+	    if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: INFO All requested records for record dimension #%d (%s) were found within the first %d input file%s, next file was opened then skipped, and remaining %d input file%s need not be opened\n",nco_prg_nm_get(),idx_rec,trv_tbl->lmt_rec[idx_rec]->nm_fll,fl_idx,(fl_idx == 1) ? "" : "s",fl_nbr-fl_idx-1,(fl_nbr-fl_idx-1 == 1) ? "" : "s");
 	    flg_input_complete_nbr++;
 	  } /* endif superfluous */
 	} /* endif not already known to be complete */
