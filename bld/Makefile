@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.675 2013-12-06 01:43:59 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.676 2013-12-11 06:57:02 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1020,14 +1020,16 @@ endif
 ifeq (${OPTS},X)
 # 20090715: https://wiki.ubuntu.com/CompilerFlags
 # -D_FORTIFY_SOURCE=2 : Compile-time libc checks, run-time buffer/memory checks
+#                     : NB: _FORTIFY_SOURCE macro requires -O switch
 # -fstack-protector : Enable run-time stack overflow verification
 # -Wformat-security : Warn about misuse of format strings
 # -Wl,-z,relro : Read-only relocation table area in final ELF
  CPPFLAGS += -D_FORTIFY_SOURCE=2
  CFLAGS += -g -fstack-protector -Wformat-security -Wl,-z,relro
 # 20090715: -Werror triggers known nc_put_var?_string() and nco_def_var_chunking() errors
-# CFLAGS += -g -O -pg -fno-inline -Werror
- CFLAGS += -g -O -pg -fno-inline
+# CFLAGS += -g -pg -fno-inline -Werror
+# CFLAGS += -g -O -pg -fno-inline
+ CFLAGS += -g -pg -fno-inline
  LDFLAGS += -pg
 # LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
 endif

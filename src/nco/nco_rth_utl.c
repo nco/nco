@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.62 2013-12-11 01:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.63 2013-12-11 06:57:02 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -39,8 +39,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
  const int nbr_var_prc, /* I [nbr] Number of processed variables */
  X_CST_PTR_CST_PTR_Y(var_sct,var_prc), /* I [sct] Variables in input file */
  X_CST_PTR_CST_PTR_Y(var_sct,var_prc_out), /* I/O [sct] Variables in output file */
- const nco_bool flg_nrm, /* I [flg] This record needs normalization */
- const char * const rec_nm_fll,      /* I [sng] Full name of record being done in loop (trv_tbl->lmt_rec[idx_rec]->nm_fll ) */
+ const char * const rec_nm_fll, /* I [sng] Full name of record dimension */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
   /* Purpose: Normalize appropriate ncra/nces operation (avg, min, max, ttl, ...) on operands
@@ -59,7 +58,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc_cpy;idx++){
 
-    /* Skip variables that do contain current record dimension */
+    /* In normalizations over record dimension, only normalize those variables that contain current record dimension */
     if(rec_nm_fll){
       nco_bool flg_skp=nco_skp_var(var_prc[idx],rec_nm_fll,trv_tbl);
       if(flg_skp) continue;
@@ -77,7 +76,6 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
       case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
       case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
         (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-
         break;
       case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
         (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);

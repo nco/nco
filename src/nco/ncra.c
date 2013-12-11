@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.479 2013-12-11 01:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.480 2013-12-11 06:57:02 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.479 2013-12-11 01:18:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.479 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.480 2013-12-11 06:57:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.480 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -873,7 +873,7 @@ main(int argc,char **argv)
             /* Store the output variable ID */
             var_prc_out[idx]->id=var_out_id;
 
-            /* Retrieve variable from disk into memory. NB: Using version that updates hyperslab start indices with idx_rec_crr_in  */ 
+            /* Retrieve variable from disk into memory. NB: Using version that updates hyperslab start indices with idx_rec_crr_in */
             (void)nco_msa_var_get_lmn_trv(in_id,var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
 
             if(nco_prg_id == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
@@ -902,7 +902,7 @@ main(int argc,char **argv)
 
               if(var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING){
 		/* Do not promote un-averagable types (NC_CHAR, NC_STRING)
-		   Stuff their first record into output buffer regardless of nco_op_typ, and ignore their later records (rec_usd_cml > 1)
+		   Stuff their first record into output buffer regardless of nco_op_typ, and ignore later records (rec_usd_cml > 1)
 		   Temporarily fixes TODO nco941 */
                 if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
@@ -934,8 +934,8 @@ main(int argc,char **argv)
             /* Warn if record coordinate, if any, is not monotonic */
             if(nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
             /* Convert missing_value, if any, back to unpacked type
-	       Otherwise missing_value will be double-promoted when next record read 
-	       Do not convert after last record otherwise normalization fails 
+	       Otherwise missing_value will be double-promoted when next record read
+	       Do not convert after last record otherwise normalization fails
 	       due to wrong missing_value type (needs promoted type, not unpacked type) */
             if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk && !REC_LST_DSR[idx_rec]) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
             /* Free current input buffer */
@@ -944,14 +944,21 @@ main(int argc,char **argv)
 
           if(nco_prg_id == ncra && ((FLG_MRO && REC_LST_GRP) || REC_LST_DSR[idx_rec])){
             /* Normalize, multiply, etc where necessary: ncra and nces normalization blocks are identical, 
-	       except ncra normalizes after every drn records, while nces normalizes once, after files loop. */
-            (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
+	       except ncra normalizes after every drn records, while nces normalizes once, after files loop. 
+	       20131210: nco_cnv_mss_val_typ() can cause type of var_prc to be out-of-sync with var_prc_out
+	       nco_cnv_mss_val_typ() above works correctly for case of packing/unpacking, not for rth_dbl
+	       Options:
+	       1. Avoid nco_cnv_mss_val_typ() above if rth_dbl is invoked. Keep it for packing.
+	       2. In nco_opr_nrm() below, use mss_val from var_prc_out not var_prc
+	       Problem is var_prc[idx]->mss_val is typ_upk while var_prc_out is type, so normalization
+	       sets missing var_prc_out value to var_prc[idx]->mss_val read as type */
+            (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
             FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
 
             /* Copy averages to output file */
             for(idx=0;idx<nbr_var_prc;idx++){
 
-              /* Skip variable if does not relate to current record */
+              /* Skip variables that do not contain current record dimension */
 	      flg_skp2=nco_skp_var(var_prc[idx],trv_tbl->lmt_rec[idx_rec]->nm_fll,trv_tbl);
               if(flg_skp2) continue;
 
@@ -1182,7 +1189,7 @@ main(int argc,char **argv)
      Occassionally last input file(s) is/are superfluous so REC_LST_DSR never set
      In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
      FLG_BFR_NRM is always true here for ncfe and ncge */
-  if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,True,(char *)NULL,(trv_tbl_sct *)NULL);
+  if(FLG_BFR_NRM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,(char *)NULL,(trv_tbl_sct *)NULL);
 
   /* Manually fix YYMMDD date which was mangled by averaging */
   if(CNV_CCM_CCSM_CF && nco_prg_id == ncra) (void)nco_cnv_ccm_ccsm_cf_date(grp_out_id,var_out,xtr_nbr);

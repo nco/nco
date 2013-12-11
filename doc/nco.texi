@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.921 2013-12-09 21:33:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.922 2013-12-11 06:57:02 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7574,7 +7574,7 @@ For larger @var{n}, users should promote floats with the @samp{--dbl}
 option if they want to preserve more than four significant digits in
 their results. 
 
-The @samp{--dbl} and @samp{-flt} switches are only available with the
+The @samp{--dbl} and @samp{--flt} switches are only available with the
 @acronym{NCO} arithmetic operators that could potentially perform more
 than a few  single-precision floating point operations per result.
 These are @command{nces}, @command{ncra}, and @command{ncwa}.
