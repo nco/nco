@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.478 2013-12-10 23:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.479 2013-12-11 01:18:25 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.478 2013-12-10 23:19:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.478 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.479 2013-12-11 01:18:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.479 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -900,10 +900,10 @@ main(int argc,char **argv)
                 (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
               } /* end if flg_rth_ntl */
 
-              /* Do not promote un-averagable types (NC_CHAR, NC_STRING)
-		 Stuff first record into output buffer regardless of nco_op_typ; ignore later records (rec_usd_cml > 1)
-		 Temporarily fixes TODO nco941 */
               if(var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING){
+		/* Do not promote un-averagable types (NC_CHAR, NC_STRING)
+		   Stuff their first record into output buffer regardless of nco_op_typ, and ignore their later records (rec_usd_cml > 1)
+		   Temporarily fixes TODO nco941 */
                 if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
                 /* Convert char, short, long, int types to doubles before arithmetic
@@ -1146,7 +1146,7 @@ main(int argc,char **argv)
 
     if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
 
-    /* Our data tanks are already full */
+    /* Are all our data tanks already full? */
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){
       for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
 	if(!flg_input_complete[idx_rec]){

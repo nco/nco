@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.61 2013-12-02 01:05:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.62 2013-12-11 01:18:25 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -59,17 +59,15 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc_cpy;idx++){
 
-    /* Skip variable if does not relate to current record */
-    if (rec_nm_fll){
+    /* Skip variables that do contain current record dimension */
+    if(rec_nm_fll){
       nco_bool flg_skp=nco_skp_var(var_prc[idx],rec_nm_fll,trv_tbl);
-      if (flg_skp){
-        continue;
-      }
-    }
+      if(flg_skp) continue;
+    } /* !rec_nm_fll */
 
     if(var_prc[idx]->is_crd_var){
       /* Return linear averages of coordinates unless computing extrema
-      Prevent coordinate variables from encountering nco_var_nrm_sdn() */
+	 Prevent coordinate variables from encountering nco_var_nrm_sdn() */
       (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
     }else{ /* !var_prc[idx]->is_crd_var */
       switch(nco_op_typ_cpy){
@@ -152,7 +150,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
     if(idx_rec == 0) (void)nco_var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else (void)nco_var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
   case nco_op_ttl: /* Total */
-    /* NB: copying input to output on first loop for nco_op_ttl, in similar manner to nco_op_[max/min], can work
+    /* NB: Copying input to output on first loop for nco_op_ttl, in similar manner to nco_op_[max/min], can work
        However, copying with nco_var_copy() would not change the tally variable, leaving it equal to zero
        Then an extra step would be necessary to set tally equal to one where missing values were not present
        Otherwise, e.g., ensemble averages of one file would never have non-zero tallies
