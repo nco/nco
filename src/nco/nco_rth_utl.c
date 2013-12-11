@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.63 2013-12-11 06:57:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.64 2013-12-11 07:06:03 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -67,7 +67,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
     if(var_prc[idx]->is_crd_var){
       /* Return linear averages of coordinates unless computing extrema
 	 Prevent coordinate variables from encountering nco_var_nrm_sdn() */
-      (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+      (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
     }else{ /* !var_prc[idx]->is_crd_var */
       switch(nco_op_typ_cpy){
       case nco_op_avg: /* Normalize sum by tally to create mean */
@@ -75,16 +75,16 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
       case nco_op_sqravg: /* Normalize sum by tally to create mean */
       case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
       case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
-        (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+        (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
         break;
       case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
-        (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+        (void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
         break;
       case nco_op_min: /* Minimum is already in buffer, do nothing */
       case nco_op_max: /* Maximum is already in buffer, do nothing */
         break;
       case nco_op_ttl: /* Total is already in buffer, stuff missing values into elements with zero tally */
-        (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+        (void)nco_var_tll_zro_mss_val(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
         break;
       default:
         break;
@@ -94,7 +94,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
       case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
       case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
       case nco_op_sqrt: /* Take root of mean to create root mean */
-        (void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
+        (void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
         break;
       case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
         (void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);

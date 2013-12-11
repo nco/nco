@@ -1,6 +1,8 @@
 2013-12-10  Charlie Zender  <zender@uci.edu>
 
-	* Whitespace changes prior to attacking ncra mss_val/MRO bug
+	* Tentative fix to mss_val/MRO bug: use mss_val from var_prc_out not var_prc in nco_opr_nrm()
+
+	* Whitespace changes while attacking ncra mss_val/MRO bug
 
 	* Fix ncra/ncrcat bug where extra record used when superfluous input files provided
 	and stride places first index of superfluous files beyond user-specified last index.
