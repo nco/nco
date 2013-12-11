@@ -1,3 +1,15 @@
+2013-12-11  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.4.0 release procedure:
+ 	Changes since nco-4_3_9: hash, dyn. grp mmr, ncra.c fixes
+	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
+	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
+
+	* Stop writing global attributes twice in ncra.c
+
+	* Re-enable history attribute in ncra.c
+
 2013-12-10  Charlie Zender  <zender@uci.edu>
 
 	* Tentative fix to mss_val/MRO bug: use mss_val from var_prc_out not var_prc in nco_opr_nrm()
@@ -36,12 +48,6 @@
 	* ncrename: Regression #22 Allow input syntax of new name as full path
 
 2013-12-04  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.0 release procedure:
- 	Changes since nco-4_3_9: fxm
-	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
-	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
 	* Patch ncap2 format string vulnerability to prevent FTBFS error with -Werror=format-security
 	Patch provided by Orion Poplowski

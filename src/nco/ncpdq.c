@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.378 2013-12-10 17:34:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.379 2013-12-11 23:11:34 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.378 2013-12-10 17:34:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.378 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.379 2013-12-11 23:11:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.379 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -548,7 +548,7 @@ main(int argc,char **argv)
     for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       trv_sct var_trv=trv_tbl->lst[idx_tbl];
       /* Is variable to extract  */
-      if (var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
         /* Loop variable dimensions */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
 
@@ -562,21 +562,18 @@ main(int argc,char **argv)
             if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
               optarg_lcl=(char *)strdup(dmn_rdr_lst_in[idx_rdr]+1);         
               flg_is_rvr=True;
-            } /* Does it have a '-' ? */  
+            } /* !flg_is_rvr */  
 
             /* Compare with dimension name */
-            if (optarg_lcl && strcmp(optarg_lcl,var_trv.var_dmn[idx_dmn].dmn_nm) == 0) {
-              /* Increment number of matches */
-              dmn_rdr_nbr_trv++;
-            } /* Compare with dimension name */
+            if(optarg_lcl && !strcmp(optarg_lcl,var_trv.var_dmn[idx_dmn].dmn_nm)) dmn_rdr_nbr_trv++;
 
-            if (flg_is_rvr){
+            if(flg_is_rvr){
               assert(optarg_lcl);
               dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=True;
               optarg_lcl=(char *)nco_free(optarg_lcl); 
-            } else {
+            }else{
               dmn_rvr_rdr[idx_dmn_rdr_nbr_trv]=False;
-            }
+            } /* !flg_is_rvr */
             idx_dmn_rdr_nbr_trv++;
 
           } /* Loop input -a names */
@@ -591,10 +588,9 @@ main(int argc,char **argv)
         optarg_lcl=dmn_rdr_lst_in[idx_rdr];
         dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
         optarg_lcl=(char *)nco_free(optarg_lcl);
-      }
+      } /* endif */
     } /* Strip all '-'  */
   } /* Create reversed dimension list */
-
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);

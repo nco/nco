@@ -1,9 +1,14 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.654 2013-12-10 23:43:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.655 2013-12-11 23:11:33 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
+
+This release focuses on stability and speed. 
+There are no major new features.
+See below for bugfixes include ncra and ncrcat use-cases involving
+strides with superfluous files and/or multi-record output (MRO).
 
 As indicated in the last release, NCO 4.4.0 renamed ncra as ncrs and
 ncwa as ncws (Record Statistics and Weighted Statistics,
@@ -82,6 +87,17 @@ A. Fix ncra/ncrcat bug where extra record used when superfluous input
 A. Fix ncra/ncrcat bug where no more files were read after all desired
    records of the first record dimension were obtained (i.e., in cases
    where multiple record dimensions exist in multiple files).
+
+A. Versions 4.3.6--4.3.9 of ncra could treat missing values
+   incorrectly during double-precision arithmetic. A symptom was that
+   missing values could be replaced by strange numbers like, well,
+   infinity or zero. This mainly affects ncra in MRO (multi-record
+   ouput) mode, and the symptoms should be noticeable. 
+   The workaround is to run the affected versions of ncra using the
+   --flt switch, so that single-precision floating point numbers are
+   not promoted. The solution is to upgrade to NCO 4.4.0.
+   Problem reported by Andrew Friedman.
+   http://nco.sf.net#bug_ncra_mss_val
 
 KNOWN ISSUES NOT YET FIXED:
 

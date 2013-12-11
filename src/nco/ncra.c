@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.480 2013-12-11 06:57:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.481 2013-12-11 23:11:34 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.480 2013-12-11 06:57:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.480 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.481 2013-12-11 23:11:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.481 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -686,19 +686,15 @@ main(int argc,char **argv)
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
-  /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
+  /* Define dimensions, extracted groups, variables, and attributes in output file */
+  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   /* Add input file list global attribute */
   if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
-
-  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-
-  /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Turn off default filling behavior to enhance efficiency */
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
