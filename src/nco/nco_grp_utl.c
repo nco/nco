@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1104 2013-12-10 18:51:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1105 2013-12-12 06:59:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -472,14 +472,15 @@ nco_trv_rx_search /* [fnc] Search for pattern matches in traversal table */
      NB: This function only writes True to the match flag, it never writes False.
      Input flags are assumed to be stateful, and may contain Trues from previous calls */
 
-  char *sng2mch; /* [sng] String to match to regular expression */
-  const char sls_chr='/'; /* [chr] Slash character */
-
   int mch_nbr=0;
+
 #ifndef NCO_HAVE_REGEX_FUNCTIONALITY
   (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),rx_sng);
   nco_exit(EXIT_FAILURE);
 #else /* NCO_HAVE_REGEX_FUNCTIONALITY */
+  char *sng2mch; /* [sng] String to match to regular expression */
+  const char sls_chr='/'; /* [chr] Slash character */
+
   int err_id;
   int flg_cmp; /* Comparison flags */
   int flg_exe; /* Execution flages */
@@ -6467,10 +6468,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   Notes:
 
   1) Sequence of calls is important: nco_trv_hsh_bld() must be called after nco_grp_itr() because other functions use hash table 
-  2) Dimension limit structures are handled internannly in this function and not exported 
+  2) Dimension limit structures are handled internaly in this function and not exported 
   */
-
-  const char fnc_nm[]="nco_bld_trv_tbl()"; /* [sng] Function name  */
 
   nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 
@@ -8189,3 +8188,21 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
   }
 
 } /* nco_nsm_ncr() */
+
+void
+nco_chk_dmn                           /* [fnc] Check valid dimension names */
+(const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
+ nco_dmn_dne_t * flg_dne)             /* I [lst] Flag to check if input dimension -d "does not exist" */
+{
+  /* Check if all input -d dimensions were found */ 
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+    /* Check this flag */
+    if (flg_dne[lmt_idx].flg_dne == True){
+      (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),flg_dne[lmt_idx].dim_nm);
+      flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
+      nco_exit(EXIT_FAILURE);
+    } /* Check this flag */
+  } /* Check if all input -d dimensions were found */
+} /* nco_chk_dmn() */
+
+  
