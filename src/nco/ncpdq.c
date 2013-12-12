@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.379 2013-12-11 23:11:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.380 2013-12-12 21:12:40 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.379 2013-12-11 23:11:34 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.379 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.380 2013-12-12 21:12:40 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.380 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -535,6 +535,9 @@ main(int argc,char **argv)
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
+
+  /* Check if all input -d dimensions were found */ 
+  (void)nco_chk_dmn(lmt_nbr,flg_dne);     
 
   /* Create reversed dimension list */
   if(dmn_rdr_nbr_in > 0){

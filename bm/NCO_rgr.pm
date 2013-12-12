@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.384 2013-12-09 21:04:16 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.385 2013-12-12 21:12:40 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2390,12 +2390,12 @@ print "\n";
     $#tst_cmd=0; # Reset array 	
 
 #ncks #72
-# ncks -v lat -d lot,0,1,1 in_grp.nc
+# ncks -v lat -d latitude,0,1,1 in_grp.nc
 
-    $dsc_sng="(Groups) Invalid dimension input -v lat -d lot,0,1,1 in_grp.nc";
-    $tst_cmd[0]="ncks $nco_D_flg -v lat -d lot,0,1,1 $in_pth_arg in_grp.nc";
+    $dsc_sng="(Groups) Invalid dimension input -v lat -d latitude,0,1,1 in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -v lat -d latitude,0,1,1 $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks: ERROR dimension lot is not in input file";
+    $tst_cmd[1]="ncks: ERROR dimension latitude is not in input file";
     $tst_cmd[2]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
      $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
