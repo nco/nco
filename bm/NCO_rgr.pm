@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.385 2013-12-12 21:12:40 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.386 2013-12-16 23:11:08 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4369,7 +4369,7 @@ print "\n";
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
-    $dsc_sng="(Groups) Weights and groups (test 1)";
+    $dsc_sng="(Groups) Weights and groups (relative weight name test 1)";
     $tst_cmd[2]="lev = 241.667";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -4384,15 +4384,44 @@ print "\n";
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g19 -v lev %tmp_fl_00%";
-    $dsc_sng="(Groups) Weights and groups (test 2)";
+    $dsc_sng="(Groups) Weights and groups (relative weight name test 2)";
     $tst_cmd[2]="lev = 230.769";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
+#ncwa #51 Use -w /g8/lev_wgt
+# ncwa -h -O -v lev -a lev -w /g8/lev_wgt in_grp_3.nc out.nc
+# lev = 230.769 lev_wgt=10,2,1; /g19/lev
+# lev = 241.667 lev_wgt=9,2,1;  /g8/lev
+
+    
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w /g8/lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
+    $dsc_sng="(Groups) Weights and groups (absolute weight name -w /g8/lev_wgt test 1)";
+    $tst_cmd[2]="lev = 241.667";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+	
+#ncwa #52 Use -w /g8/lev_wgt
+# ncwa -h -O -v lev -a lev -w /g19/lev_wgt in_grp_3.nc out.nc
+# lev = 230.769 lev_wgt=10,2,1; /g19/lev
+# lev = 241.667 lev_wgt=9,2,1;  /g8/lev
+
+    
+    $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w /g8/lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -g g19 -v lev %tmp_fl_00%";
+    $dsc_sng="(Groups) Weights and groups (relative weight name -w /g19/lev_wgt test 2)";
+    $tst_cmd[2]="lev = 241.667";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
+	
+	
 	
 #NEW 4.3.7	
-#ncwa #51
+#ncwa #53
 # ncwa  -h -O -a time -b  -v time  in_grp.nc out.nc
 # ncks out.nc | grep 'time dimension 0'
 

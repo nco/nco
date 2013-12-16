@@ -1,3 +1,9 @@
+2013-12-16 Pedro Vicente  <pvicente@uci.edu>
+
+	* ncwa weights/masks names can be absolute names (start with '/').
+	
+	* Add regressions #51, #52 for ncwa weights/masks names with absolute names.
+
 2013-12-16  Charlie Zender  <zender@uci.edu>
 
 	* Clarify ncrename coordinate documentation

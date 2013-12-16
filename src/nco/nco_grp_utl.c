@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1105 2013-12-12 06:59:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1106 2013-12-16 23:11:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -7100,78 +7100,108 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
 
 } /* nco_skp_var() */
 
-var_sct *                             /* O [sct] Variable (weight) */  
+var_sct *                             /* O [sct] Variable (weight/mask) */  
 nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variable */
 (const int nc_id,                     /* I [id] netCDF file ID */
- const char * const wgt_nm,           /* I [sng] Weight variable name (relative) */
+ const char * const wgt_nm,           /* I [sng] Weight variable name (relative or absolute) */
  const var_sct * const var,           /* I [sct] Variable that needs the weight/mask variable */
  const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */
 {
   /* Purpose: Return the variable (weight or mask) that is in scope of variable that needs the weight/mask variable */
 
-  /* NB: currently detect same group only */
-
   int nbr_wgt=0;     /* [nbr] Number of weight/mask variables in file */
   int grp_id;        /* [ID] Group ID */
   int var_id;        /* [ID] Variable ID */
-  int idx_wgt;
+  int idx_wgt;       /* [nbr] Weight array counter */
 
-  trv_sct **wgt_trv=NULL; /* [sct] Weight/mask list */
+  /* Detect if the weight variable name is relative or absolute */
 
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (!strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm))) nbr_wgt++;
+  /* If first character is '/' then assume absolute path */
 
-  /* Fill-in variable structure list for all weights */
-  wgt_trv=(trv_sct **)nco_malloc(nbr_wgt*sizeof(trv_sct *));
+  if ('/' == wgt_nm[0]){
 
-  idx_wgt=0;
+    /* Obtain variable GTT object using full variable name */
+    trv_sct *wgt_trv=trv_tbl_var_nm_fll(wgt_nm,trv_tbl);
 
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+    var_sct *wgt_var;
 
-    /* Filter by name  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (!strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm))){
-      wgt_trv[idx_wgt]=&trv_tbl->lst[tbl_idx]; 
-      idx_wgt++;
-    } /* Filter variables  */
-  } /* Loop table */
+    /* Obtain group ID from API using full group name */
+    (void)nco_inq_grp_full_ncid(nc_id,wgt_trv->grp_nm_fll,&grp_id);
 
-  /* Loop table */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    /* Get variable ID */
+    (void)nco_inq_varid(grp_id,wgt_trv->nm,&var_id);
 
-    /* Find the variable that needs the weight  */
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var 
-      && trv_tbl->lst[idx_var].flg_xtr
-      && (strcmp(trv_tbl->lst[idx_var].nm_fll,var->nm_fll) == 0)){
-        trv_sct var_trv=trv_tbl->lst[idx_var];  
+    /* Transfer from table to local variable  */
+    wgt_var=nco_var_fll_trv(grp_id,var_id,wgt_trv,trv_tbl);
 
-        /* Loop over weights */
-        for(idx_wgt=0;idx_wgt<nbr_wgt;idx_wgt++){
-          /* Same group  */ 
-          if(!strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){ 
-            var_sct *wgt;
+    /* Retrieve variable NB: using GTT version, that "knows" all the limits  */
+    (void)nco_msa_var_get_trv(nc_id,wgt_var,trv_tbl);
 
-            /* Obtain group ID from API using full group name */
-            (void)nco_inq_grp_full_ncid(nc_id,wgt_trv[idx_wgt]->grp_nm_fll,&grp_id);
+    return wgt_var;
 
-            /* Get variable ID */
-            (void)nco_inq_varid(grp_id,wgt_trv[idx_wgt]->nm,&var_id);
 
-            /* Transfer from table to local variable  */
-            wgt=nco_var_fll_trv(grp_id,var_id,wgt_trv[idx_wgt],trv_tbl);
+    /* Relative name; search all names in table */
+  } else {
 
-            /* Retrieve variable NB: using GTT version, that "knows" all the limits  */
-            (void)nco_msa_var_get_trv(nc_id,wgt,trv_tbl);
+    trv_sct **wgt_trv=NULL; /* [sct] Weight/mask list */
 
-            wgt_trv=(trv_sct **)nco_free(wgt_trv);
+    /* Loop table */
+    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+      if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (!strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm))) nbr_wgt++;
+    }
 
-            return wgt;
+    /* Fill-in variable structure list for all weights */
+    wgt_trv=(trv_sct **)nco_malloc(nbr_wgt*sizeof(trv_sct *));
 
-          }  /* Same group  */ 
-        } /* Loop over weights */
-    } /* Filter variables  */
-  } /* Loop table */
+    idx_wgt=0;
+
+    /* Loop table */
+    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
+
+      /* Filter by name  */
+      if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (!strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm))){
+        wgt_trv[idx_wgt]=&trv_tbl->lst[tbl_idx]; 
+        idx_wgt++;
+      } /* Filter variables  */
+    } /* Loop table */
+
+    /* Loop table */
+    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+
+      /* Find the variable that needs the weight  */
+      if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var 
+        && trv_tbl->lst[idx_var].flg_xtr
+        && (strcmp(trv_tbl->lst[idx_var].nm_fll,var->nm_fll) == 0)){
+          trv_sct var_trv=trv_tbl->lst[idx_var];  
+
+          /* Loop over weights */
+          for(idx_wgt=0;idx_wgt<nbr_wgt;idx_wgt++){
+            /* Same group  */ 
+            if(!strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){ 
+              var_sct *wgt_var;
+
+              /* Obtain group ID from API using full group name */
+              (void)nco_inq_grp_full_ncid(nc_id,wgt_trv[idx_wgt]->grp_nm_fll,&grp_id);
+
+              /* Get variable ID */
+              (void)nco_inq_varid(grp_id,wgt_trv[idx_wgt]->nm,&var_id);
+
+              /* Transfer from table to local variable  */
+              wgt_var=nco_var_fll_trv(grp_id,var_id,wgt_trv[idx_wgt],trv_tbl);
+
+              /* Retrieve variable NB: using GTT version, that "knows" all the limits  */
+              (void)nco_msa_var_get_trv(nc_id,wgt_var,trv_tbl);
+
+              wgt_trv=(trv_sct **)nco_free(wgt_trv);
+
+              return wgt_var;
+
+            }  /* Same group  */ 
+          } /* Loop over weights */
+      } /* Filter variables  */
+    } /* Loop table */
+
+  }
 
   return NULL;
 
