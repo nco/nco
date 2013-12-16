@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.676 2013-12-11 06:57:02 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.677 2013-12-16 23:08:09 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -2099,6 +2099,15 @@ endif
 %_lex.c : %_lex.l
 	${LEX} ${LFLAGS} $<
 	mv lex.${NCO_YY_PFX}.c $(basename $<).c
+
+# Target-specific variable values syntax TARGET ... : VARIABLE-ASSIGNMENT
+# Rules begin in leftmost column else interpreted as commands
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSD))
+ifeq (gcc,$(firstword ${CC}))
+${MY_OBJ_DIR}/nco_grp_trv.o : CFLAGS := $(filter-out -Wcast-qual,${CFLAGS})
+${MY_OBJ_DIR}/nco_grp_trv.o : CXXFLAGS := $(filter-out -Wcast-qual,${CXXFLAGS})
+endif # endif GCC
+endif # endif LINUX
 
 # ncap, and only ncap, requires AIX system C++ library
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))

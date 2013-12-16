@@ -1,8 +1,14 @@
+2013-12-16  Charlie Zender  <zender@uci.edu>
+
+	* Clarify ncrename coordinate documentation
+
+	* Use target-specific rule to filter-out -Wcast-qual on files with uthash in prototypes
+
 2013-12-12 Pedro Vicente  <pvicente@uci.edu>
 
-	* Dimensions in hyperslabbing arguments are once again checked for 
-   validity prior to processing and invalid (i.e., non-existent)
-   dimensions once-again cause operators to abort.
+	* Dimensions in hyperslabbing arguments are once again checked for
+	validity prior to processing and invalid (i.e., non-existent)
+	dimensions once-again cause operators to abort. 
 
 2013-12-11  Charlie Zender  <zender@uci.edu>
 

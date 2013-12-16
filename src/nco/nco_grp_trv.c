@@ -1,13 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.258 2013-12-10 21:48:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.259 2013-12-16 23:08:10 zender Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
 /* Copyright (C) 2011--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
-
-/* Testing:
-   ncks -D 1 ~/nco/data/in_grp.nc */
 
 /* This file contains the API for low level group data structures:
    Group Traversal Table (GTT): functions prefixed with "trv_tbl_"
@@ -625,6 +622,15 @@ nco_trv_hsh_bld /* Hash traversal table for fastest access */
      1. Eliminate -Wcast_qual from compiler settings
         Verified that this does work
 	Unpalatable because it weakens static checking on rest of code
+	Use GNU Make Target-specific variables to restrict lax flags to files with hash prototypes, e.g.,
+	# Target-specific variable values syntax TARGET ... : VARIABLE-ASSIGNMENT
+	# Rules begin in leftmost column else interpreted as commands
+	ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSD))
+	ifeq (gcc,$(firstword ${CC}))
+	${MY_OBJ_DIR}/nco_grp_trv.o : CFLAGS := $(filter-out -Wcast-qual,${CFLAGS})
+	${MY_OBJ_DIR}/nco_grp_trv.o : CXXFLAGS := $(filter-out -Wcast-qual,${CXXFLAGS})
+	endif # endif GCC
+	endif # endif LINUX
      2. Change function prototype to non-const key
         This eliminates compiler warnings at cost of introducing non-typesafe code paths
 	Move all hash-lookup functions into single file that does not get -Wcast_qual?
