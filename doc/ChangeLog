@@ -14,7 +14,7 @@
 
 	* Dimensions in hyperslabbing arguments are once again checked for
 	validity prior to processing and invalid (i.e., non-existent)
-	dimensions once-again cause operators to abort. 
+	dimensions once-again cause operators to abort.
 
 2013-12-11  Charlie Zender  <zender@uci.edu>
 
