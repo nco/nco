@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.923 2013-12-16 23:08:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.924 2013-12-17 21:34:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1222,9 +1222,12 @@ But it can read @acronym{HDF4} files, perform manipulations and
 calculations, and then write the results in netCDF format.
 As of this writing (October, 2013) the user must tell @acronym{NCO} 
 that an input file is @acronym{HDF4} format by using the @samp{--hdf4} 
-switch introduced in @acronym{NCO} 4.3.7.
+switch introduced in @acronym{NCO} 4.3.7
+@footnote{
 Eventually we hope to make @acronym{HDF4}-detection automatic and to
 therefore deprecate this switch.
+This will require new support features in the underlying libraries not
+expected before netCDF version 4.3.2 (2014?).}.
 
 Converting @acronym{HDF4} files to netCDF:
 Since @acronym{NCO} reads @acronym{HDF4} files natively, it is now easy  
@@ -1234,6 +1237,13 @@ ncks --hdf4 fl.hdf fl.nc      # Convert HDF4->netCDF4
 ncks --hdf4 -L 1 fl.hdf fl.nc # Convert HDF4->netCDF4 with compression
 @end example
 This produces a netCDF4 file not a netCDF3 file.
+This procedure is the most efficient and accurate way to convert
+@acronym{HDF4} data to a netCDF format.
+It suffices when the data will only be processed by @acronym{NCO}, or
+other netCDF4-aware tools. 
+However, many tools are not fully netCDF4-aware, and so conversion to
+netCDF3 may be desirable.
+
 Obtaining a netCDF3 file from an @acronym{HDF4} file can be easy or
 arduous, depending whether the input contains any netCDF4 atomic types
 (e.g., unsigned bytes, 64-bit integers):
@@ -15085,6 +15095,19 @@ period will be included as part of the new name).
 The OPTIONS and EXAMPLES show how to select specific variables
 whose attributes are to be renamed.
 
+Although @command{ncrename} supports full pathnames for both
+@var{old_name} and @var{new_name}, this is really ``window dressing''.
+The full-path to @var{new_name} must be identical to the full-path to 
+@var{old_name} in all classes of objects (attributes, variables,
+dimensions, or groups).
+In other words, @command{ncrename} can change only the local names
+of objects, it cannot change the location of the object in the group
+hierarchy within the file.
+Hence using a full-path in @var{new_name} is redundant. 
+The object name is the terminal path component of @var{new_name} and
+this object must already exist in the group specified by the 
+@var{old_name} path.
+
 @cindex data safety
 @cindex safeguards
 @cindex temporary output files
@@ -15158,6 +15181,9 @@ The old and new names of the group are specified with @samp{-g}
 (or @samp{--grp}, @samp{--group}) by the associated @var{old_name}
 and @var{new_name} values.  
 This option may be specified more than once.
+This functionality is only available in @acronym{NCO} version 4.3.7
+(October, 2013) or later, and only when built on netCDF library version
+4.3.1-rc1 (August, 2013) or later. 
  
 @item -v @var{old_name},@var{new_name}
 Variable renaming. 
@@ -15187,11 +15213,22 @@ variable @code{u}, and no other variables in netCDF @file{in.nc}.
 ncrename -a u@@long_name,largo_nombre in.nc
 @end example
  
-Rename group @code{g8} to @code{g20} in netCDF @file{in.nc}. 
+Rename the group @code{g8} to @code{g20} in netCDF4 file
+@file{in_grp.nc}:   
 @example
 ncrename -g g8,g20 in_grp.nc
 @end example
  
+Rename the variable @code{/g1/lon} to @code{longitude} in netCDF4
+@file{in_grp.nc}:
+@example
+ncrename -v /g1/lon,longitude in_grp.nc
+ncrename -v /g1/lon,/g1/longitude in_grp.nc # Alternate
+@end example
+ 
+@html
+<a name="ncrename_crd"></a> <!-- http://nco.sf.net/nco.html#ncrename_crd -->
+@end html
 @cindex coordinate variables
 @command{ncrename} does not automatically attach dimensions to variables of
 the same name.
@@ -15206,10 +15243,26 @@ ncrename -d lon,longitude -v lon,longitude in.nc
 Unfortunately, the netCDF4 library has a longstanding bug (all versions
 until 4.3.1-rc5 released in December, 2013) that causes @acronym{NCO} to
 crash when performing this operation. 
-Renaming variables and dimensions in netCDF4 files with earlier versions
-of netCDF must be done in two separate @command{ncrename} invocations
-(e.g., first rename the variable, then the dimension) to avoid
-triggering this bug.
+Simultaneously renaming variables and dimensions in netCDF4 files with
+earlier versions of netCDF is impossible; it must instead be done in two
+separate @command{ncrename} invocations (e.g., first rename the
+variable, then the dimension) to avoid triggering the libary bug.
+
+A related bug causes unintended side-effects with @command{ncrename} 
+also built with all versions of the netCDF4 library until 4.3.1-rc5
+released in December, 2013):
+Renaming of @emph{either} a dimension @emph{or} its assosiated
+coordinate variable but not both (which fails as above) in a netCDF4
+file inadvertently @emph{does} rename both:
+@example
+# Demonstate bug in netCDF4/HDF5 library prior to netCDF-4.3.1-rc5
+ncks -O -h -m -M -4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc
+ncrename -O -v lat_T42,lat ~/foo.nc ~/foo2.nc # Also renames dimension
+ncrename -O -d lat_T42,lat ~/foo.nc ~/foo2.nc # Also renames variable
+@end example
+To avoid this faulty behavior, either build @acronym{NCO} with netCDF
+version 4.3.1-rc5 or later, or convert the file to netCDF3 first,
+then rename as intended, then convert back.
 
 @cindex global attributes
 @cindex attributes, global

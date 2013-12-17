@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.847 2013-12-11 23:11:33 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.848 2013-12-17 21:34:29 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -147,7 +147,7 @@ and
 
 <ul>
 <li>2013 Dec&nbsp;??: NCO 4.4.0 (<i>In progress</i>)
-<li>2013 Dec&nbsp;13: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201213.pdf">Talk</a> at Fall AGU, San Francisco, California</li> (<i>Coming Soon</i>)
+<li>2013 Dec&nbsp;13: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201213.pdf">Talk</a> at Fall AGU, San Francisco, California</li>
 <li>2013 Dec&nbsp;02: NCO 4.3.9 (new operator, <tt>nces</tt>)
 <li>2013 Nov&nbsp;06: NCO 4.3.8 (<tt>ncatted</tt> groups)
 <li>2013 Oct&nbsp;17: NCO 4.3.7 (HDF4, XML, <tt>ncrename</tt> groups)

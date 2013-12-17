@@ -1,8 +1,12 @@
-2013-12-16 Pedro Vicente  <pvicente@uci.edu>
+2013-12-17  Charlie Zender  <zender@uci.edu>
 
-	* ncwa weights/masks names can be absolute names (start with '/').
-	
-	* Add regressions #51, #52 for ncwa weights/masks names with absolute names.
+	* Better document ncrename behavior with coordinates and groups
+
+2013-12-16  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncwa weights/masks names can be absolute names (start with '/')
+
+	* Add regressions #51, #52 for ncwa weights/masks names with absolute names
 
 2013-12-16  Charlie Zender  <zender@uci.edu>
 
@@ -10,10 +14,10 @@
 
 	* Use target-specific rule to filter-out -Wcast-qual on files with uthash in prototypes
 
-2013-12-12 Pedro Vicente  <pvicente@uci.edu>
+2013-12-12  Pedro Vicente  <pvicente@uci.edu>
 
 	* Dimensions in hyperslabbing arguments are once again checked for
-	validity prior to processing and invalid (i.e., non-existent)
+	validity prior to processing and invalid (i.e., non-existant)
 	dimensions once-again cause operators to abort.
 
 2013-12-11  Charlie Zender  <zender@uci.edu>
@@ -39,7 +43,7 @@
 
 	* Clean-up hash usage. Try different approaches prior to widespread implementation.
 
-2013-12-10 Pedro Vicente  <pvicente@uci.edu>
+2013-12-10  Pedro Vicente  <pvicente@uci.edu>
 
 	* Replace static dimensions arrays with dynamic. Causes a one order-of-magnitude speedup.
 
@@ -57,11 +61,11 @@
 
 	* Prepare to attack ncra/ncrcat MRO/DRN bug
 
-2013-12-09 Pedro Vicente  <pvicente@uci.edu>
+2013-12-09  Pedro Vicente  <pvicente@uci.edu>
 
 	* Enable hash table lookup
 
-2013-12-08 Pedro Vicente  <pvicente@uci.edu>
+2013-12-08  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncrename: Regression #22 Allow input syntax of new name as full path
 
@@ -168,7 +172,7 @@
 
 	* XML mode use xml_typ_nm() instead of cdl_typ_nm()
 
-2013-11-15 Pedro Vicente  <pvicente@uci.edu>
+2013-11-15  Pedro Vicente  <pvicente@uci.edu>
 
 	* nces: Regression #3 file ensemble with GPE
 
@@ -192,7 +196,7 @@
 
 	* XML print </variable> in metadata mode
 
-2013-11-13 Pedro Vicente  <pvicente@uci.edu>
+2013-11-13  Pedro Vicente  <pvicente@uci.edu>
 
 	* nces: Regression #1, #2. 1 file ensembles, with --nsm_sfx
 
@@ -212,7 +216,7 @@
 
 	* Add -7 synonym switch for fl_fmt=netcdf4_classic
 
-2013-10-31 Pedro Vicente  <pvicente@uci.edu>
+2013-10-31  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncatted: Regressions #6 to 11. Groups, for single variable, all
 	variables, wildcard variables, group attributes, relative and
@@ -224,7 +228,7 @@
 
 	* Add missing --op_typ/--operation switches to ncra.c
 
-2013-10-23 Pedro Vicente  <pvicente@uci.edu>
+2013-10-23  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add option to configure --enable-openmp (default yes), disable with --disable-openmp
 
@@ -280,7 +284,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.3.7 release"
 	cvs tag -c nco-4_3_7;cvs tag -c nco-4_3_7-1
 
-2013-10-16 Pedro Vicente  <pvicente@uci.edu>
+2013-10-16  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncrename regressions #1 to #21: attributes, dimensions, variables, groups.
 
@@ -398,7 +402,7 @@
 
 	* Add mdl.cdl
 
-2013-09-26 Pedro Vicente  <pvicente@uci.edu>
+2013-09-26  Pedro Vicente  <pvicente@uci.edu>
 
 	* ncwa: Add support for weights and masks per group. Regressions #49, #50
 
@@ -406,7 +410,7 @@
 
 	* Document ncdismember and CF-compliance checker
 
-2013-09-24 Pedro Vicente  <pvicente@uci.edu>
+2013-09-24  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncwa test #29 Weights and hyperslabs
 
@@ -416,7 +420,7 @@
 
 	* Add --flt option to ncra.c (had forgotten it before)
 
-2013-09-23 Pedro Vicente  <pvicente@uci.edu>
+2013-09-23  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncra test #29 Group with 2 record dimensions made with ncecat, reverted to 1 record with ncpdq
 
@@ -458,7 +462,7 @@
 
 	* Write random walk description of precision degradation
 
-2013-09-18 Pedro Vicente  <pvicente@uci.edu>
+2013-09-18  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncra regressions #27,28 2 records to process in 2 groups (do record and variables in group)
 
@@ -466,7 +470,7 @@
 
 	* Add --flt and --rth_flt switches for symmetry to --dbl and --rth_dbl
 
-2013-09-17 Pedro Vicente  <pvicente@uci.edu>
+2013-09-17  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncra regressions #25,26 2 records to process in 2 groups (do record in group only)
 
@@ -481,7 +485,7 @@
 
 	* Finish documentation on type conversion, precision, and --dbl
 
-2013-09-11 Pedro Vicente  <pvicente@uci.edu>
+2013-09-11  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncra regression #24 (records, group case)
 
@@ -507,7 +511,7 @@
 	by Lori Sentman, Mark Flanner, and Gary Strand.
 	Proof is in ~/netcdf_examples/bugs/ncwa_3528514/tst_gavg_nco.sh
 
-2013-09-07 Pedro Vicente  <pvicente@uci.edu>
+2013-09-07  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncks regression #70, #71 (limits, group case)
 
@@ -517,7 +521,7 @@
 
 	* Add new global variable nco_rth_cnv for Arithmetic Convention
 
-2013-09-05 Pedro Vicente  <pvicente@uci.edu>
+2013-09-05  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncrcat regression #22 (group case)
 
@@ -529,7 +533,7 @@
 
 	* ncra.c whitespace changes
 
-2013-09-04 Pedro Vicente  <pvicente@uci.edu>
+2013-09-04  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncra regression #23 (group case)
 
@@ -541,11 +545,11 @@
 
 	* nco_xtr_mk() correctly matches variable names that are proper subsets of ancestor group names
 
-2013-08-28 Pedro Vicente  <pvicente@uci.edu>
+2013-08-28  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncra testing
 
-2013-08-27 Pedro Vicente  <pvicente@uci.edu>
+2013-08-27  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncwa test #41 Retain degenerate dimensions (one variable)
 
@@ -672,7 +676,7 @@
 
 	* Rewrite MD5 infrastructure the right way, i.e., like GPE: use/pass dynamic structures
 
-2013-07-24 Pedro Vicente  <pvicente@uci.edu>
+2013-07-24  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncwa testing
 
@@ -716,7 +720,7 @@
 
 	* Add ncrename stubs and docs for libnetcdf version of nc_rename_grp()
 
-2013-07-22 Pedro Vicente  <pvicente@uci.edu>
+2013-07-22  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_dmn_trv_msa() Update dimension with hyperslabed size
 
@@ -743,7 +747,7 @@
         Fill value is average of nearest neigbours in input, but if neighbour was
 	just been filled then its value is NOT used in the calculation of the average.
 
-2013-07-18 Pedro Vicente  <pvicente@uci.edu>
+2013-07-18  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_dmn_avg_tbl() Transfer averaged dimensions information into GTT (-a for ncwa)
 
@@ -805,7 +809,7 @@
 
 	* CDL mode works for non-char variables for attributes, dies for float attributes
 
-2013-07-15 Pedro Vicente  <pvicente@uci.edu>
+2013-07-15  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncwa testing
 
@@ -853,7 +857,7 @@
 	* First version of group-recursive printer nco_grp_prn()
 	Routine is cornerstone of more flexible print output formatting
 
-2013-07-06 Pedro Vicente  <pvicente@uci.edu>
+2013-07-06  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncpdq testing
 
@@ -872,23 +876,23 @@
 
 	* Implement --union, --intersection, GRP_VAR_UNN in ncflint, ncpdq
 
-2013-07-04 Pedro Vicente  <pvicente@uci.edu>
+2013-07-04  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncpdq testing
 
 	* Add ncpdq test #39 (Groups) Re-order 2D variable with record (no -C, MSA)
 
-2013-07-03 Pedro Vicente  <pvicente@uci.edu>
+2013-07-03  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #38 (Groups) Re-order 2D variable with record (-C, MSA)
 
-2013-07-02 Pedro Vicente  <pvicente@uci.edu>
+2013-07-02  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncpdq testing
 	* Add ncpdq test #36 (Groups) Re-order 2D variable with record (-C, no MSA)
 	* Add ncpdq test #37 (Groups) Re-order 2D variable with record (no -C, no MSA)
 
-2013-07-01 Pedro Vicente  <pvicente@uci.edu>
+2013-07-01  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add in_grp_3.cdl group data for ncpdq testing
 
@@ -901,17 +905,17 @@
 
 	* Add -G, --gpe, --unn to ncpdq documentation
 
-2013-06-28 Pedro Vicente  <pvicente@uci.edu>
+2013-06-28  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_lst_dmn_mk_trv() Build Name-ID array from input dimension names
 
 	* nco_var_dmn_scp() Variable has dimensions in scope of GTT dimension
 
-2013-06-27 Pedro Vicente  <pvicente@uci.edu>
+2013-06-27  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #24 Re-order several variables
 
-2013-06-27 Pedro Vicente  <pvicente@uci.edu>
+2013-06-27  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add group use case for ncpdq in in_grp_3.cdl.
 
@@ -935,18 +939,18 @@
 
 	* Add nco_prc_stt_get() and nco_prc_stm_get() to poll /proc/PID/stat and /proc/PID/statm
 
-2013-06-23 Pedro Vicente  <pvicente@uci.edu>
+2013-06-23  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_var_dmn_rdr_mtd_trv() Determine and set new dimensionality in metadata of each re-ordered variable
 
 	* nco_var_dmn_rdr_val_trv() Change dimension ordering of variable values
 
-2013-06-22 Pedro Vicente  <pvicente@uci.edu>
+2013-06-22  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #24 Reverse/Re-order 4D variable -a lev,time,-lon,-lat -v four_dmn_rec_var (MSA)
 	* Add ncpdq test #25 Re-order all variables -a lat,time (MSA)
 
-2013-06-21 Pedro Vicente  <pvicente@uci.edu>
+2013-06-21  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #19 Reverse/Re-order 3D variable -a -lat,-time -v three_dmn_var_dbl
 	* Add ncpdq test #20 Re-order several variables -a lat,time -v ty,three_dmn_rec_var (no MSA) Test 1
@@ -954,7 +958,7 @@
 	* Add ncpdq test #22 Re-order several variables -a lat,time -v ty,three_dmn_rec_var (MSA) Test 1
 	* Add ncpdq test #23 Re-order several variables -a lat,time -v ty,three_dmn_rec_var (MSA) Test 2
 
-2013-06-19 Pedro Vicente  <pvicente@uci.edu>
+2013-06-19  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #6 Re-order 3D variable with MSA -C -a lat,lon,time -v three_dmn_var_dbl
 	* Add ncpdq test #7 Re-order 3D variable with MSA (stride) -a lat,lon,time -v three_dmn_var_dbl
@@ -963,14 +967,14 @@
 
 	* Fix /proc/self/stat read types and add human-readable sizes for failed memory requests
 
-2013-06-18 Pedro Vicente  <pvicente@uci.edu>
+2013-06-18  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #13  Re-order 2D variable with record (-C, no MSA) -v two_dmn_rec_var -C -a lev,time
 	* Add ncpdq test #14  Re-order 2D variable with record (no -C, no MSA) -v two_dmn_rec_var -a lev,time
 	* Add ncpdq test #15  Re-order 2D variable with record (-C, MSA) -v two_dmn_rec_var -a lev,time
 	* Add ncpdq test #16  Re-order 2D variable with record (no -C, MSA) -v two_dmn_rec_var -a lev,time
 
-2013-06-17 Pedro Vicente  <pvicente@uci.edu>
+2013-06-17  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncpdq test #10  Re-order 2D variable (no -C, no MSA) -v two_dmn_var -a lev,lat
 	* Add ncpdq test #11  Re-order 2D variable (-C, MSA) -v two_dmn_var -a lev,lat -d lat,1,1 -d lev,1,1
@@ -1000,27 +1004,27 @@
 
 	* Tidy/fix ncflint OpenMP build. Tidy ncpdq.
 
-2013-05-29 Pedro Vicente  <pvicente@uci.edu>
+2013-05-29  Pedro Vicente  <pvicente@uci.edu>
 
         * Add data/in_1.cdl, data/in_2.cdl CDL files to test 2 input file operators
 
-2013-05-15 Pedro Vicente  <pvicente@uci.edu>
+2013-05-15  Pedro Vicente  <pvicente@uci.edu>
 
         * nco_cpy_fix_var_trv() Copy fixed variables from input to output file
 
-2013-05-08 Pedro Vicente  <pvicente@uci.edu>
+2013-05-08  Pedro Vicente  <pvicente@uci.edu>
 
         * nco_var_trv() Fill-in variable structure for a named GTT variable
 
-2013-05-09 Pedro Vicente  <pvicente@uci.edu>
+2013-05-09  Pedro Vicente  <pvicente@uci.edu>
 
         * ncflint test #6,7 --fix_rec_crd
 
-2013-05-08 Pedro Vicente  <pvicente@uci.edu>
+2013-05-08  Pedro Vicente  <pvicente@uci.edu>
 
         * trv_tbl_mrk_typ() Mark output netCDF type in GTT
 
-2013-05-07 Pedro Vicente  <pvicente@uci.edu>
+2013-05-07  Pedro Vicente  <pvicente@uci.edu>
 
         * ncflint test #5 Group weight 1D variable
 
@@ -1030,11 +1034,11 @@
 
 	* Document new ncflint, ncbo capabilities
 
-2013-05-06 Pedro Vicente  <pvicente@uci.edu>
+2013-05-06  Pedro Vicente  <pvicente@uci.edu>
 
         * nco_fll_var_trv() Fill-in variable structure list for all extracted variables
 
-2013-05-03 Pedro Vicente  <pvicente@uci.edu>
+2013-05-03  Pedro Vicente  <pvicente@uci.edu>
 
         * nco_bld_aux_crd() Parse auxiliary coordinates
 
@@ -1073,13 +1077,13 @@
 
 	* ncecat: Tidy OpenMP
 
-2013-04-24  Pedro Vicente  <pvicente@uci.edu>
+2013-04-24   Pedro Vicente  <pvicente@uci.edu>
 
         * trv_tbl_mrk_prc_fix() Mark fixed/processed flag in table
 
         * ncecat test #6,7,8 Concatenate variables/groups: 1D,2D variables
 
-2013-04-23  Pedro Vicente  <pvicente@uci.edu>
+2013-04-23   Pedro Vicente  <pvicente@uci.edu>
 
         * ncecat test #4,5 Concatenate variables/groups: scalars
 

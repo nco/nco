@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.655 2013-12-11 23:11:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.656 2013-12-17 21:34:29 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -6,7 +6,10 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release focuses on stability and speed. 
-There are no major new features.
+It also addresses previous omissions so that full path names are
+accepted by all appropriate options, such as the ncwa weights and
+masks (-w and -m), and ncks auxiliary coordinates (-X).
+There are no major new features. 
 See below for bugfixes include ncra and ncrcat use-cases involving
 strides with superfluous files and/or multi-record output (MRO).
 
@@ -58,6 +61,14 @@ A. Speed-up due to removing new static arrays from codebase.
    all filetypes). If you've noticed and lamented NCO becoming more
    sluggish over the past year, you may be pleasantly surprised
    by NCO's new zippiness.
+
+A. ncrename behavior. The underlying netCDF4/HDF5 library on which NCO
+   depends has important features and bugfixes in netCDF-4.3.1-rc5,
+   now available. Users who build NCO on that version or later gain
+   access to group renaming, and to fixes in renaming coordinates.
+   These features and fixes are described here:
+   http://nco.sf.net/nco.html#ncrename_crd
+   http://nco.sf.net/nco.html#ncrename
 
 A. fxm
    NCO now employs hashing techniques to locate objects.
@@ -162,6 +173,22 @@ D. NOT YET FIXED
    Cause: some libnetCDF library functions fail on HDF4 file inquiries.
    Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file
    Tracking tickets NCF-272, NCF-273
+
+[E. FIXED in netCDF 4.3.1-rc5 ... please upgrade] 
+   netCDF4 library fails when renaming dimension and variable using
+   that dimension, in either order. Works fine with netCDF3.
+   Hence coordinate renaming does not work with netCDF4 files.
+   Problem with netCDF4 library implementation.
+
+   Demonstration:
+   ncks -O -4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc
+   ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
+   ncks -m ~/foo.nc
+
+   20130724: FIXED in netCDF 4.3.1-rc5 in 201212. Will be in netCDF 4.3.1.
+   Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file 
+   Workaround: Use ncrename twice; first rename the variable, then
+   rename the dimension. 
 
 "Sticky" reminders:
 

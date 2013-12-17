@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.351 2013-12-12 21:12:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.352 2013-12-17 21:34:29 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.351 2013-12-12 21:12:40 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.351 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.352 2013-12-17 21:34:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.352 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -686,7 +686,7 @@ main(int argc,char **argv)
 	   Two versions of HDF-EOS exist: HDF-EOS2 for HDF4, and HDF-EOS5 for HDF5 */
         if(strncmp(fl_in+sfx_fst,".nc",sfx_lng) && /* netCDF standard suffix */
 	   strncmp(fl_in+sfx_fst,".H5",sfx_lng) && /* HDF5 suffix used by ICESat GLAS, e.g., GLAH05_633_2103_001_1107_3_01_0001.H5 */
-	   strncmp(fl_in+sfx_fst,".h5",sfx_lng)){ /* HDF5 suffix used by BUV, MEaSUREs Ozone, SBUV, e.g., BUV-Nimbus04_L3zm_v01-00-2012m0203t144121.h5, MSO3L3zm5_v01-02-2013m0907t142428.h5 */
+	   strncmp(fl_in+sfx_fst,".h5",sfx_lng)){ /* HDF5 suffix used by BUV, ICESat GLAS, MABEL, MEaSUREs Ozone, SBUV, e.g., BUV-Nimbus04_L3zm_v01-00-2012m0203t144121.h5, GLAH13_633_2103_001_1317_0_01_0001.h5, mabel_l2_20130927t201800_008_1.h5, MSO3L3zm5_v01-02-2013m0907t142428.h5 */
 	  sfx_lng=4L;
 	  sfx_fst=fl_in_lng-sfx_lng;
 	  if(strncmp(fl_in+sfx_fst,".cdf",sfx_lng) && /* netCDF old-fashioned suffix */
