@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.48 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.49 2013-12-18 18:53:34 zender Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -43,7 +43,7 @@ nco_find_lat_lon
   int idx;
   int nvars=0;
   int rcd=NC_NOERR;
-  int ret=0;
+  int crd_nbr=0;
   int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
   int var_att_nbr; /* [nbr] Number of attributes */
   int var_dmn_nbr; /* [nbr] Number of dimensions */
@@ -53,22 +53,22 @@ nco_find_lat_lon
   nc_type var_typ; /* [enm] variable type */
 
   /* Make sure CF tag exists. Currently require CF-1.0 value */
-  if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.0")){
+  if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.")){
     if(nco_dbg_lvl_get() >= nco_dbg_dev)
-    (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or not equal to \"CF-1.0\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.0 metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or is present but not of the form \"CF-1.X\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.X metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
   } /* !CF */
 
   /* Get number of variables */
   rcd=nco_inq_nvars(nc_id,&nvars);
 
   /* For each variable, see if standard name is latitude or longitude */
-  for(idx=0;idx<nvars && ret<2;idx++){
+  for(idx=0;idx<nvars && crd_nbr<2;idx++){
     nco_inq_var(nc_id,idx,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
     lenp=0;
     if(!nco_inq_attlen_flg(nc_id,idx,"standard_name",&lenp)){
       NCO_GET_ATT_CHAR(nc_id,idx,"standard_name",value);
       value[lenp]='\0';
-      if(strcmp(value,"latitude") == 0){
+      if(!strcmp(value,"latitude")){
         strcpy(var_nm_lat,var_nm);
         *lat_id=idx;
 
@@ -83,25 +83,23 @@ nco_find_lat_lon
 
         /* Assign type; assumed same for both lat and lon */
         *crd_typ=var_typ;
-        ret++;
-      } /* end if var is lattitude */
+        crd_nbr++;
+      } /* endif latitude */
 
-      if(strcmp(value,"longitude") == 0){
+      if(!strcmp(value,"longitude")){
         strcpy(var_nm_lon,var_nm);
         *lon_id=idx;
-        ret++;
-      } /* end if var is longitude */
+        crd_nbr++;
+      } /* endif longitude */
 
-    } /* end if standard_name */
+    } /* endif standard_name */
 
   } /* end loop over vars */
 
-
-  if(ret != 2){
+  if(crd_nbr != 2){
     if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"nco_find_lat_lon() unable to identify lat/lon auxiliary coordinate variables.\n");
     return False;
-  } else return True;
-
+  }else return True;
 
 } /* end nco_find_lat_lon() */
 
@@ -196,9 +194,7 @@ nco_aux_evl
   /* Obtain lat/lon variable names */
   has_lat_lon=nco_find_lat_lon(in_id,var_nm_lat,var_nm_lon,&units,&lat_id,&lon_id,&crd_typ);
 
-  if (has_lat_lon == False){
-    return NULL;
-  }
+  if(!has_lat_lon) return NULL;
 
   /* Obtain dimension information of lat/lon coordinates */
   rcd+=nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
@@ -345,7 +341,7 @@ nco_aux_prs
   
   if(bnd_bx_sng_tmp) bnd_bx_sng_tmp=(char *)nco_free(bnd_bx_sng_tmp);
   
-  if(strcmp(units,"radians") == 0){
+  if(!strcmp(units,"radians")){
     /* WIN32 math.h does not define M_PI */
 #ifndef M_PI
 # define M_PI		3.14159265358979323846
