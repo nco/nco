@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.204 2013-12-10 23:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.205 2013-12-18 19:54:59 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -509,7 +509,7 @@ nco_lmt_get_udu_att /* Returns specified attribute otherwise NULL */
 } /* end nco_lmt_get_udu_att() */
 
 void
-nco_prt_lmt                    /* [fnc] Print limit information */
+nco_prn_lmt                    /* [fnc] Print limit information */
 (lmt_sct lmt,                  /* I [sct] Limit structure */
  int min_lmt_typ,              /* I [nbr] Limit type */
  nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */
@@ -1276,7 +1276,7 @@ no_data_ok: /* end goto */
   *lmt_ptr=lmt;
 
   if(nco_dbg_lvl_get() == nco_dbg_old){
-    (void)nco_prt_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
+    (void)nco_prn_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 
   if(lmt.srt > lmt.end && !flg_no_data_ok){
@@ -2021,7 +2021,7 @@ no_data_ok: /* end goto */
   *lmt_ptr=lmt;
 
   if(nco_dbg_lvl_get() == nco_dbg_old){
-    (void)nco_prt_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
+    (void)nco_prn_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 
   if(lmt.srt > lmt.end && !flg_no_data_ok){

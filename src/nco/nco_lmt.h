@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.66 2013-06-08 06:31:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.67 2013-12-18 19:54:59 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -110,7 +110,7 @@ nco_lmt_typ /* [fnc] Determine limit type */
 (char *sng);/* I [ptr] Pointer to limit string */
 
 void
-nco_prt_lmt                    /* [fnc] Print limit information */
+nco_prn_lmt                    /* [fnc] Print limit information */
 (lmt_sct lmt,                  /* I [sct] Limit structure */
  int min_lmt_typ,              /* I [nbr] Limit type */
  nco_bool FORTRAN_IDX_CNV,     /* I [flg] Hyperslab indices obey Fortran convention */

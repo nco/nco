@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.426 2013-12-12 06:59:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.427 2013-12-18 19:54:59 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -130,7 +130,7 @@ nco_get_sng_pth_sct                   /* [fnc] Get string path structure  */
  sng_pth_sct ***str_pth_lst);         /* I/O [sct] List of path components  */  
 
 void
-nco_prt_grp_nm_fll                   /* [fnc] Debug function to print group full name from ID */
+nco_prn_grp_nm_fll                   /* [fnc] Debug function to print group full name from ID */
 (const int grp_id);                  /* I [ID] Group ID */
 
 nco_bool                             /* O [flg] All user-specified names are in file */
@@ -190,7 +190,7 @@ nco_xtr_lst_prn                        /* [fnc] Print name-ID structure list */
  const int nm_id_nbr);                 /* I [nbr] Number of name-ID structures in list */
 
 void                          
-nco_prt_dmn                           /* [fnc] Print dimensions for a group  */
+nco_prn_dmn                           /* [fnc] Print dimensions for a group  */
 (const int nc_id,                     /* I [ID] File ID */
  const char * const grp_nm_fll);      /* I [sng] Full name of group */
 
@@ -264,7 +264,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 void                          
-nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
+nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
 (const int nc_id,                    /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 
@@ -573,7 +573,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
  trv_tbl_sct * trv_tbl);              /* I/O [sct] GTT (Group Traversal Table) */
 
 void
-nco_prt_tbl_lmt                       /* [fnc] Print table limits */
+nco_prn_tbl_lmt                       /* [fnc] Print table limits */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void

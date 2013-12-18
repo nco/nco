@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1109 2013-12-18 01:09:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1110 2013-12-18 19:54:58 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -96,6 +96,7 @@ nco_def_grp_full                      /* [fnc] Ensure all components of group pa
  int * const grp_out_id)              /* O [ID] Deepest group ID */
 {
   /* Purpose: Ensure all components of full path name exist and return ID of deepest group */
+
   char *grp_pth=NULL; /* [sng] Full group path */
   char *grp_pth_dpl=NULL; /* [sng] Full group path memory duplicate */
   char *sls_ptr; /* [sng] Pointer to slash */
@@ -124,9 +125,7 @@ nco_def_grp_full                      /* [fnc] Ensure all components of group pa
     grp_id_prn=*grp_out_id;
     
     /* If current group is not defined, define it */
-    if(nco_inq_ncid_flg(grp_id_prn,grp_pth,grp_out_id)){
-      nco_def_grp(grp_id_prn,grp_pth,grp_out_id);
-    }
+    if(nco_inq_ncid_flg(grp_id_prn,grp_pth,grp_out_id)) nco_def_grp(grp_id_prn,grp_pth,grp_out_id);
 
     /* Point to next group, if any */
     if(sls_ptr) grp_pth=sls_ptr+1; else break;
@@ -259,7 +258,7 @@ nco_grp_stk_free                      /* [fnc] Free group stack */
 } /* end nco_grp_stk_free() */
 
 void
-nco_prt_grp_nm_fll                    /* [fnc] Debug function to print group full name from ID */
+nco_prn_grp_nm_fll                    /* [fnc] Debug function to print group full name from ID */
 (const int grp_id)                    /* I [ID] Group ID */
 {
   size_t grp_nm_lng;
@@ -273,7 +272,7 @@ nco_prt_grp_nm_fll                    /* [fnc] Debug function to print group ful
   grp_nm_fll=(char*)nco_free(grp_nm_fll);
 #endif
 
-} /* nco_inq_prt_nm_fll() */
+} /* nco_prn_grp_nm_fll() */
 
 int                                  /* [rcd] Return code */
 nco_grp_dfn                          /* [fnc] Define groups in output file */
@@ -344,8 +343,7 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"Looking '/' in \"%s\"...",nm_fll);
 
   ptr_chr=strchr(nm_fll,'/');
-  while (ptr_chr!=NULL)
-  {
+  while(ptr_chr){
     psn_chr=ptr_chr-nm_fll;
 
     if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout," ::found at %d",psn_chr);
@@ -353,7 +351,7 @@ nco_get_sls_chr_cnt                   /* [fnc] Get number of slash characterrs i
     ptr_chr=strchr(ptr_chr+1,'/');
 
     nbr_sls_chr++;
-  }
+  } /* end while */
 
   if(nco_dbg_lvl_get()== nco_dbg_old) (void)fprintf(stdout,"\n");
   return nbr_sls_chr;
@@ -893,9 +891,7 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
       trv_sct var_trv=trv_tbl->lst[idx_var]; 
 
       /* If variable is coordinate variable then mark it for extraction ...simple */
-      if(var_trv.is_crd_var){
-        trv_tbl->lst[idx_var].flg_xtr=True;
-      }
+      if(var_trv.is_crd_var) trv_tbl->lst[idx_var].flg_xtr=True;
 
     } /* Filter variables  */
   } /* Loop table */
@@ -924,7 +920,6 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
     trv_sct trv=trv_tbl->lst[uidx];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)nco_xtr_cf_prv_add(nc_id,&trv,cf_nm,trv_tbl);
   } /* end loop over table */
-
 
   /* Print extraction list in debug mode */
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
@@ -1029,8 +1024,6 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
 
   return;
 } /* nco_xtr_cf_prv_add() */
-
-
 
 nm_id_sct *                           /* O [sct] Extraction list */  
 nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_sct from traversal table */
@@ -1184,8 +1177,6 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
           } /* end strcmp() */
         } /* end loop over idx_dmn */
-
-
       } /* End loop over idx_var_dim: list dimensions for variable */
     } /* end nco_obj_typ_var */
   } /* end uidx  */
@@ -1193,21 +1184,21 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 } /* end nco_xtr_crd_ass_cdf_add */
 
 void
-nco_get_prg_info(void)                 /* [fnc] Get program info */
+nco_get_prg_info(void) /* [fnc] Get program info */
 {
-  /* fxm: this routine is a kludge for Perl in nco_bm.pl and should be eliminated at first opportunity */
-  int ret=10;
+  /* fxm: routine is a kludge for Perl in nco_bm.pl and should be eliminated at first opportunity */
+  int rcd=10;
 #ifndef HAVE_NETCDF4_H 
-  ret=20;
+  rcd=20;
 #else /* HAVE_NETCDF4_H */
 #ifdef ENABLE_NETCDF4 
-  ret=30;
+  rcd=30;
 #else /* HAVE_NETCDF4_H */
-  ret=40;
+  rcd=40;
 #endif /* ENABLE_NETCDF4 */
 #endif /* HAVE_NETCDF4_H */
 
-  exit(ret);
+  exit(rcd);
 } /* end nco_get_prg_info() */
 
 void 
@@ -1216,10 +1207,7 @@ nco_xtr_lst_prn                            /* [fnc] Print name-ID structure list
  const int nm_id_nbr)                  /* I [nbr] Number of name-ID structures in list */
 {
   (void)fprintf(stdout,"%s: INFO List: %d extraction variables\n",nco_prg_nm_get(),nm_id_nbr); 
-  for(int idx=0;idx<nm_id_nbr;idx++){
-    nm_id_sct nm_id=nm_id_lst[idx];
-    (void)fprintf(stdout,"[%d] %s\n",idx,nm_id.nm); 
-  } 
+  for(int idx=0;idx<nm_id_nbr;idx++) (void)fprintf(stdout,"[%d] %s\n",idx,nm_id_lst[idx].nm); 
 } /* end nco_xtr_lst_prn() */
 
 void
@@ -1456,7 +1444,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         trv_tbl->lst[grp_idx].flg_xtr=False;
         if(!strcmp(trv_tbl->lst[grp_idx].grp_nm_fll,sls_sng)){
           /* Manually mark root group as extracted because matching algorithm below fails for root group 
-          (it looks for "//" in variable names) */
+	     (it looks for "//" in variable names) */
           trv_tbl->lst[grp_idx].flg_xtr=True;
           continue;
         } /* endif root group */
@@ -1483,7 +1471,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
     } /* end loop over grp_idx */
 
     /* Extraction flag for groups was set in nco_xtr_grp_mrk() 
-    This loop defines those groups in output file and copies their metadata */
+       This loop defines those groups in output file and copies their metadata */
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
       trv_sct grp_trv=trv_tbl->lst[uidx];
 
@@ -1494,29 +1482,28 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         (void)nco_inq_grp_full_ncid(nc_id,grp_trv.grp_nm_fll,&grp_id);
 
         /* ncge case */ 
-        if(nco_prg_id_get() == ncge ){ 
+        if(nco_prg_id_get() == ncge){
 
-          /* Is ensemble parent group */
           if(grp_trv.flg_nsm_prn){
-            /* Check if suffix needed. Appends to default name (e.g /cesm + _avg) */
+	    /* Ensemble parent groups */
             if(trv_tbl->nsm_sfx){
-              /* Just define (append) and forget a new name */
+              /* Define new name by appending suffix (e.g., /cesm + _avg) */
               char *nm_fll_sfx=nco_bld_nsm_sfx(grp_trv.grp_nm_fll_prn,trv_tbl);
-              /* Use the new name */
+              /* Use then delete new name */
               if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
               nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
-            }else {
+            }else{
               if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll_prn); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll_prn);
-            } /* ! Suffix */
-            /* If group is an ensemble member, do not create it in the same location as input */
-          } else if (grp_trv.flg_nsm_mbr){
+            } /* !nsm_sfx */
+          }else if(grp_trv.flg_nsm_mbr){
+            /* If group is ensemble member, do not create it in same location as input */
             continue;
-          } else {
+          }else{
             /* Regular group */
             if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
-          } /* ! Ensemble parent group */
+          } /* !flg_nsm_prn */
 
-        }else {
+        }else{
           /* Non ncge case: Edit group name for output */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,grp_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(grp_trv.grp_nm_fll);
         } /* !ncge */
@@ -1550,25 +1537,23 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
       /* ncge */
       if(nco_prg_id_get() == ncge){
-        /* If variable is an ensemble member, do not create it in the same location as input */
-        if (var_trv.flg_nsm_mbr == True){
-          
-          /* Check if suffix needed. Appends to default name */
+        /* If variable is in an ensemble member, do not create it in same location as input */
+        if(var_trv.flg_nsm_mbr){
           if(trv_tbl->nsm_sfx){
-            /* Just define (append) and forget a new name */
+	    /* Define new name by appending suffix (e.g., /cesm + _avg) */
             char *nm_fll_sfx=nco_bld_nsm_sfx(var_trv.grp_nm_fll_prn,trv_tbl);
-            /* Use the new name */
+	    /* Use then delete new name */
             if(gpe) grp_out_fll=nco_gpe_evl(gpe,nm_fll_sfx); else grp_out_fll=(char *)strdup(nm_fll_sfx);
             nm_fll_sfx=(char *)nco_free(nm_fll_sfx);
-          } else { /* Non suffix case */
+          }else{ /* Non suffix case */
             if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.nsm_nm); else grp_out_fll=(char *)strdup(var_trv.nsm_nm);
           } /* !trv_tbl->nsm_sfx */
 
         }else{
           /* Edit group name for output */
           if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
-        } /* ! ensemble member  */
-      }else {
+        } /* !flg_nsm_mbr  */
+      }else{
         /* Edit group name for output */
         if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv.grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv.grp_nm_fll);
       } /* !ncge */
@@ -1580,10 +1565,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(nco_prg_id_get() == ncge){
         /* Is requested variable in output file? */
         int rcd=nco_inq_varid_flg(grp_out_id,var_trv.nm,&var_out_id);
-        /* Yes, get out of dodge... this is just to avoid GPE failure on duplicate definition */
-        if (rcd == 0){
-          continue;
-        }
+        /* Yes, get out of dodge... avoid GPE failure on duplicate definition */
+        if(rcd == 0) continue;
       } /* ncge */
 
       /* Detect duplicate GPE names in advance, then exit with helpful error */
@@ -1724,9 +1707,9 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 
         if(nco_dbg_lvl_get() >= nco_dbg_vrb){
           (void)fprintf(stdout,"%s: INFO %s writing variable <%s> from ",nco_prg_nm_get(),fnc_nm,trv.nm_fll);        
-          (void)nco_prt_grp_nm_fll(grp_id_in);
+          (void)nco_prn_grp_nm_fll(grp_id_in);
           (void)fprintf(stdout," to ");   
-          (void)nco_prt_grp_nm_fll(grp_id_out);
+          (void)nco_prn_grp_nm_fll(grp_id_out);
           (void)fprintf(stdout,"\n");
         } /* endif dbg */
 
@@ -1744,7 +1727,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
 } /* end nco_xtr_wrt() */
 
 void                          
-nco_prt_dmn /* [fnc] Print dimensions for a group  */
+nco_prn_dmn /* [fnc] Print dimensions for a group  */
 (const int nc_id, /* I [ID] File ID */
  const char * const grp_nm_fll) /* I [sng] Full name of group */
 {
@@ -1791,7 +1774,7 @@ nco_prt_dmn /* [fnc] Print dimensions for a group  */
     if(!is_rec_dim) (void)fprintf(stdout," #%d dimension: '%s'(%li)\n",dmn_ids[dnm_idx],dmn_nm,dmn_sz);
 
   } /* end dnm_idx dimensions */
-} /* end nco_prt_dmn() */
+} /* end nco_prn_dmn() */
 
 void                          
 nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all variables */
@@ -1874,7 +1857,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
           (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with duplicate dimensions\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
           (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Please use netCDF version at least 4.3.0.\n",nco_prg_nm_get());
-          (void)nco_prt_trv_tbl(nc_id,trv_tbl);
+          (void)nco_prn_trv_tbl(nc_id,trv_tbl);
           nco_exit(EXIT_FAILURE);
         }
 
@@ -2432,7 +2415,7 @@ prt_lmt                             /* [fnc] Print limit  */
 
 
 void                          
-nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
+nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
 (const int nc_id,                    /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] GTT (Group Traversal Table) */
 {
@@ -2453,7 +2436,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
         trv.nm_fll,trv.nbr_grp,trv.nbr_dmn,trv.nbr_rec,trv.nbr_att,trv.nbr_var); 
 
       /* Print dimensions for group */
-      (void)nco_prt_dmn(nc_id,trv.nm_fll);
+      (void)nco_prn_dmn(nc_id,trv.nm_fll);
 
       nbr_dmn+=trv.nbr_dmn;
 
@@ -2574,7 +2557,7 @@ nco_prt_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
 
   assert(nbr_crd_var == nbr_crd);
 
-} /* nco_prt_trv_tbl() */
+} /* nco_prn_trv_tbl() */
 
 
 void                          
@@ -3343,9 +3326,9 @@ nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variab
 
       if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: INFO writing fixed variable <%s> from ",nco_prg_nm_get(),var_trv.nm_fll);        
-        (void)nco_prt_grp_nm_fll(grp_id_in);
+        (void)nco_prn_grp_nm_fll(grp_id_in);
         (void)fprintf(stdout," to ");   
-        (void)nco_prt_grp_nm_fll(grp_id_out);
+        (void)nco_prn_grp_nm_fll(grp_id_out);
         (void)fprintf(stdout,"\n");
       } /* endif dbg */       
 
@@ -4486,7 +4469,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
       if(nco_dbg_lvl_get() == nco_dbg_old){
         (void)fprintf(stdout,"%s: DEBUG %s need to define dimension '%s' in ",nco_prg_nm_get(),fnc_nm,dmn_nm);
-        (void)nco_prt_grp_nm_fll(grp_dmn_out_id);
+        (void)nco_prn_grp_nm_fll(grp_dmn_out_id);
         (void)fprintf(stdout,"\n");
       } /* endif dbg */
 
@@ -6386,10 +6369,10 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 } /* nco_bld_rec_dmn() */
 
 void
-nco_prt_tbl_lmt                       /* [fnc] Print table limits */
+nco_prn_tbl_lmt                       /* [fnc] Print table limits */
 (trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
-  const char fnc_nm[]="nco_prt_tbl_lmt()"; /* [sng] Function name  */
+  const char fnc_nm[]="nco_prn_tbl_lmt()"; /* [sng] Function name  */
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -6440,8 +6423,7 @@ nco_prt_tbl_lmt                       /* [fnc] Print table limits */
     } /* Is variable */
   } /* Loop table */
 
-} /* nco_prt_tbl_lmt() */
-
+} /* nco_prn_tbl_lmt() */
 
 void
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
@@ -6464,13 +6446,11 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  nco_dmn_dne_t **flg_dne,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
-  /* Purpose: Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) 
+  /* Purpose: Construct GTT, Group Traversal Table (groups, variables, dimensions, limits) 
 
-  Notes:
-
-  1) Sequence of calls is important: nco_trv_hsh_bld() must be called after nco_grp_itr() because other functions use hash table 
-  2) Dimension limit structures are handled internaly in this function and not exported 
-  */
+     1) Call sequence is important: 
+     nco_trv_hsh_bld() must be called after nco_grp_itr() because other functions use hash table 
+     2) Dimension limit structures are handled internaly in this function and not exported */
 
   nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 
@@ -6548,7 +6528,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   } /* !lmt_nbr */
 
 } /* nco_bld_trv_tbl() */
-
 
 void
 nco_chk_dmn_in                        /* [fnc] Check input dimensions */

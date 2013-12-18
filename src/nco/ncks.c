@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.684 2013-12-12 06:59:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.685 2013-12-18 19:54:58 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -157,8 +157,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.684 2013-12-12 06:59:54 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.684 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.685 2013-12-18 19:54:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.685 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -682,7 +682,7 @@ main(int argc,char **argv)
 
   /* Process --get_grp_info option if requested */ 
   if(GET_GRP_INFO){ 
-    nco_prt_trv_tbl(in_id,trv_tbl);
+    nco_prn_trv_tbl(in_id,trv_tbl);
     goto close_and_free; 
   } /* end GET_GRP_INFO */
 
