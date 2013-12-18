@@ -6,7 +6,7 @@
 
 	* ncwa weights/masks names can be absolute names (start with '/')
 
-	* Add regressions #51, #52 for ncwa weights/masks names with absolute names
+	* Add regressions #52, #53 for ncwa weights/masks names with absolute names
 
 2013-12-16  Charlie Zender  <zender@uci.edu>
 
