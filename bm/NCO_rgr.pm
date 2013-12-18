@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.388 2013-12-18 01:09:46 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.389 2013-12-18 17:29:06 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2342,8 +2342,6 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			      
-     
-    
     
 #ncks #69
 # Test -X
@@ -2360,7 +2358,6 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
-
 
    
 #ncks #70
@@ -2404,10 +2401,23 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
+#ncks #73
+# ncks -v lat -d latitude,0,1,1 in_grp.nc
+
+    $dsc_sng="(Groups) Copy/print metadata-only leaf group";
+    $tst_cmd[0]="ncks $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks --cdl -g g8g1g1g1 %tmp_fl_00%| grep answer";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]=":answer = \"Twerking\" ;";
+    $tst_cmd[2]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+     $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 		
 
    } #### Group tests	
-	
-	
     
 #####################
 #### ncpdq tests #### -OK !

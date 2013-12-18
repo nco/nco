@@ -1,5 +1,7 @@
 2013-12-17  Charlie Zender  <zender@uci.edu>
 
+	* Regression test for copy/print metadata-only leaf group
+
 	* Better document ncrename behavior with coordinates and groups
 
 2013-12-16  Pedro Vicente  <pvicente@uci.edu>
