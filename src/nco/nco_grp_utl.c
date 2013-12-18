@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1108 2013-12-17 23:45:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1109 2013-12-18 01:09:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5955,8 +5955,9 @@ nco_dmn_avg_mk                         /* [fnc] Build dimensions to average(ncwa
     if(strpbrk(usr_sng,".*^$\\[]()<>+?|{}")){
       /* ... and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
-
-
+      /* fxm 20131217 TODO */ 
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) is not implemented for -a option.\n",nco_prg_nm_get()); 
+      nco_exit(EXIT_FAILURE); 
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
       (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) was not built into this NCO executable, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",nco_prg_nm_get(),usr_sng);
       nco_exit(EXIT_FAILURE);
