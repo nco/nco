@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1110 2013-12-18 19:54:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1111 2013-12-18 21:02:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3158,12 +3158,18 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
       aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr);
 
-      if(nco_dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: DEBUG %s variable [%d]<%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,idx_var,trv_tbl->lst[idx_var].nm_fll,aux_idx_nbr);     
-      }
-
       if(aux_idx_nbr > 0){
         assert(aux);
+
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,
+            trv_tbl->lst[idx_var].nm_fll,aux_idx_nbr); 
+          for(int idx_aux=0;idx_aux<aux_idx_nbr;idx_aux++){
+            (void)fprintf(stdout,"%s: DEBUG %s limit[%d] in <%s> (srt=%ld,end=%ld,cnt=%ld)\n",nco_prg_nm_get(),fnc_nm,
+              idx_aux,aux[idx_aux]->nm,aux[idx_aux]->srt,aux[idx_aux]->end,aux[idx_aux]->cnt); 
+          }
+        }
+
         (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
         int lmt_nbr_new=*lmt_nbr+aux_idx_nbr;
         int aux_idx=0;
@@ -3175,6 +3181,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
     } /* Filter variables */ 
   } /* Loop table */
+
+  return;
 } /* nco_bld_aux_crd() */
 
 var_sct **                            /* O [sct] Variable list */  
