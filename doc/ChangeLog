@@ -1,10 +1,14 @@
+2013-12-19  Charlie Zender  <zender@uci.edu>
+
+	* Print metadata only groups in all desired cases
+
 2013-12-18  Charlie Zender  <zender@uci.edu>
 
 	* Print only extracted groups for prn_flg->trd in old format
 
 	* Print group closing braces for prn_flg->trd in new format
 
-	* Print metadata-only groups in most cases.
+	* Print metadata-only groups when all ancestors have extracted variables
 
 	* Rely on nco_xtr_grp_mrk() and remove duplicate code from nco_xtr_mk()
 

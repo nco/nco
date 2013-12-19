@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1115 2013-12-19 06:38:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1116 2013-12-19 18:02:42 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1337,10 +1337,14 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
      Could be performed before or after writing variables
      Used to be part of nco_xtr_dfn()
      However, ncks print functions need group extraction flag set for printing
-     As of 20130716 we isolate this flag-setting from actual copying still done in nco_xtr_dfn() */
+     As of 20130716 we isolate this flag-setting in nco_xtr_grp_mrk()
+     Actual group copying still done in nco_xtr_dfn() */
 
   const char sls_sng[]="/"; /* [sng] Slash string */
   
+  unsigned int grp_idx;
+  unsigned int obj_idx;
+
   /* Goal here is to annotate which groups will appear in output
      Need to know in order to efficiently copy their metadata
      Definition of flags in extraction table is operational
@@ -1352,19 +1356,19 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
      For instance, the exclusion flag (-x) is ambiguous for groups
      Also identification of associated coordinates and auxiliary coordinates occurs after nco_xtr_mk()
      Associated and auxiliary coordinates may be in distant groups
-     Hence no better place than nco_xtr_dfn() to finally identify ancestor groups */
+     Hence no better place than nco_xtr_grp_mrk() to finally identify ancestor groups */
   
   /* Set extraction flag for groups if ancestors of extracted variables */
-  for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
+  for(grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
     /* For each group ... */
     if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp){
       char *sbs_srt; /* [sng] Location of user-string match start in object path */
       char *grp_fll_sls=NULL; /* [sng] Full group name with slash appended */
       /* Metadata-only containing groups already have flg_mlg set in nco_xtr_mk()
 	 Variable ancestry may not affect such groups, especially if they are leaf groups
-	 Hence extraction flag is true if matching groups contain only metadata */
+	 Set extraction flag to True (then continue) iff matching groups contain only metadata
+	 Otherwise set initialize extraction flag to False and overwrite later based on descendent variables */
       if((trv_tbl->lst[grp_idx].flg_xtr=(!trv_tbl->lst[grp_idx].flg_xcl && trv_tbl->lst[grp_idx].flg_mtd))) continue;
-      /* Otherwise initialize extraction flag to False and overwrite later iff ... */
       if(!strcmp(trv_tbl->lst[grp_idx].grp_nm_fll,sls_sng)){
 	/* Manually mark root group as extracted because matching algorithm below fails for root group 
 	   (it looks for "//" in variable names) */
@@ -1392,6 +1396,35 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
       if(grp_fll_sls) grp_fll_sls=(char *)nco_free(grp_fll_sls);
     } /* endif group */
   } /* end loop over grp_idx */
+
+  /* Current status of flg_xtr for groups is that it has been set 
+     1. For all user-specified groups
+     2. For default (non user-specified) groups
+     3. For metadata-only groups that do not conflict with the above
+     What is lacking here is extraction flags for ancestors of all extracted groups
+     Ancestor flags have been set in nco_xtr_mk() but must be discarded and reset
+     for same reasons that group flags in nco_xtr_mk() are unreliable for final list.
+     This loop ensures groups are marked for extraction if any descendents are marked
+     Mainly (only?) this catches ancestors of metadata only groups
+     This loop is not necessary for _copying_ files because nco_xtr_dfn() algorithm handles ancestors
+     This loop _is_ necessary for _printing_ files because nco_grp_prn() algorithm does not handle ancestors
+     Set extraction flag for groups if ancestors of extracted groups */
+  for(grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
+    /* For each group that is not yet on extraction list ... */
+    if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp && !trv_tbl->lst[grp_idx].flg_xtr){
+      /* Search for its path as a component of an extracted group path */
+      for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
+	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp && trv_tbl->lst[obj_idx].flg_xtr){
+	  if(strstr(trv_tbl->lst[obj_idx].nm_fll,trv_tbl->lst[grp_idx].nm_fll)){
+	    trv_tbl->lst[grp_idx].flg_ncs=True;
+	    trv_tbl->lst[grp_idx].flg_xtr=True;
+	    continue;
+	  } /* endif current group is ancestor of extracted group */
+	} /* endif extracted group */
+      } /* end loop over obj_idx */
+    } /* endif group */
+  } /* end loop over grp_idx */
+
 } /* end nco_xtr_grp_mrk() */
 
 void

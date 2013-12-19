@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.391 2013-12-19 05:56:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.392 2013-12-19 18:02:42 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2401,11 +2401,11 @@ print "\n";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --cdl -g g8g1g1g1 %tmp_fl_00% | grep answer";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]=":answer = \"Twerking\" ;";
-    $tst_cmd[2]="SS_OK";   
+    $tst_cmd[2]="            :answer = \"Twerking\" ;";
+    $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
-     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
-     $tst_cmd[2]="SS_OK";        
+     $tst_cmd[2]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+     $tst_cmd[3]="SS_OK";        
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
