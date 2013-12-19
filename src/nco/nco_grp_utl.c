@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1112 2013-12-19 02:36:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1113 2013-12-19 05:56:26 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -756,6 +756,8 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                 if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
                   trv_tbl->lst[tbl_idx].flg_mch=True;
                   trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
+		  /* Does matching group contain only metadata? */
+		  if(trv_tbl->lst[tbl_idx].nbr_att && !trv_tbl->lst[tbl_idx].nbr_var) trv_tbl->lst[tbl_idx].flg_mtd=True;
                 } /* end flags */
               }  /* !nco_obj_typ_var */
               /* Set flags for groups and variables associated with this object */
@@ -796,7 +798,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   } /* itr_idx */
 
   /* Compute intersection of groups and variables if necessary
-  Intersection criteria flag, flg_nsx, is satisfied by default. Unset later when necessary. */
+     Intersection criteria flag, flg_nsx, is satisfied by default. Unset later when necessary. */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++) trv_tbl->lst[obj_idx].flg_nsx=True;
 
   /* Union is same as intersection if either variable or group list is empty, otherwise check intersection criteria */
@@ -817,8 +819,16 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
     } /* end loop over obj_idx */
   } /* flg_unn */
 
+  /* Does default group contain only metadata? */
+  for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
+    if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
+      if(trv_tbl->lst[obj_idx].flg_mch || trv_tbl->lst[obj_idx].flg_dfl)
+	if(trv_tbl->lst[obj_idx].nbr_att && !trv_tbl->lst[obj_idx].nbr_var) 
+	  trv_tbl->lst[obj_idx].flg_mtd=True;
+
   /* Combine previous flags into initial extraction flag */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
+
     /* Extract object if ... */
     if(
       (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch) || /* ...union mode object matches user-specified string... */
@@ -858,13 +868,26 @@ void
 nco_xtr_xcl                           /* [fnc] Convert extraction list to exclusion list */
 (trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
-  /* Purpose: Convert extraction list to exclusion list */
+  /* Purpose: Convert extraction list to exclusion list
+     NB: Exclusion is ambiguous for groups
+     Consider, e.g., ncks -x -v /g1/v1 
+     Should that exclude g1 completely? what about other variables like /g1/v2?
+     Hence, the exclusion flag should not always be used to permanant exclude groups
+     On the other hand, there are some uses where the exclusion flag should exclude groups
+     Consider, e.g., ncks -x -g g1
+     In this case g1 and all descendents should be excluded
+     Given that, here is how this routine and NCO actually uses flg_xcl:
+     For variables, -x sets the exclusion flag and is "permanent", i.e., removes variable from extraction list
+     For groups, -x sets the exclusion flag but is not "permanent"---it does not group from extraction list
+     Instead it is used to help determine whether group should be excluded for metadata-only containing groups 
+     Group extraction is reset and done from scratch (except for flg_xcl/flg_mtd) in nco_xtr_grp_mrk() */
 
   const char fnc_nm[]="nco_xtr_xcl()"; /* [sng] Function name */
 
-  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
-    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var) 
-      trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr;
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    trv_tbl->lst[uidx].flg_xtr=!trv_tbl->lst[uidx].flg_xtr; /* Toggle extraction flag */
+    trv_tbl->lst[uidx].flg_xcl=!trv_tbl->lst[uidx].flg_xcl; /* Mark that this object was explicitly excluded */
+  } /* end for */
 
   /* Print extraction list in debug mode */
   if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
@@ -1059,9 +1082,9 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
       (void)nco_inq_varid(grp_id_in,trv_tbl->lst[uidx].nm,&var_id);
 
       /* 20130213: Necessary to allow MM3->MM4 and MM4->MM3 workarounds
-      Store in/out group IDs as determined in nco_xtr_dfn() 
-      In MM3/4 cases, either grp_in_id or grp_out_id are always root
-      Other is always root unless GPE is used */
+	 Store in/out group IDs as determined in nco_xtr_dfn() 
+	 In MM3/4 cases, either grp_in_id or grp_out_id are always root
+	 Other is always root unless GPE is used */
       xtr_lst[nbr_tbl].grp_id_in=grp_id_in;
       xtr_lst[nbr_tbl].grp_id_out=grp_id_out;
       xtr_lst[nbr_tbl].id=var_id;
@@ -1338,8 +1361,11 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
     if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp){
       char *sbs_srt; /* [sng] Location of user-string match start in object path */
       char *grp_fll_sls=NULL; /* [sng] Full group name with slash appended */
-      /* Initialize extraction flag to False and overwrite later iff ... */
-      trv_tbl->lst[grp_idx].flg_xtr=False;
+      /* Metadata-only containing groups already have flg_mlg set in nco_xtr_mk()
+	 Variable ancestry may not affect such groups, especially if they are leaf groups
+	 Hence extraction flag is true if matching groups contain only metadata */
+      if((trv_tbl->lst[grp_idx].flg_xtr=(!trv_tbl->lst[grp_idx].flg_xcl && trv_tbl->lst[grp_idx].flg_mtd))) continue;
+      /* Otherwise initialize extraction flag to False and overwrite later iff ... */
       if(!strcmp(trv_tbl->lst[grp_idx].grp_nm_fll,sls_sng)){
 	/* Manually mark root group as extracted because matching algorithm below fails for root group 
 	   (it looks for "//" in variable names) */
@@ -1391,7 +1417,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
      rec_dmn_nm, if any, is name requested for (netCDF3) sole record dimension */
 
   const char fnc_nm[]="nco_xtr_dfn()"; /* [sng] Function name */
-  const char sls_sng[]="/"; /* [sng] Slash string */
 
   char *grp_out_fll; /* [sng] Group name */
 
@@ -1417,58 +1442,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
   /* Isolate extra complexity of copying group metadata */
   if(CPY_GRP_METADATA){
-    /* Block can be performed before or after writing variables
-       Perhaps it should be turned into an explicit function call */
-
-    /* Goal here is to annotate which groups will appear in output
-       Need to know in order to efficiently copy their metadata
-       Definition of flags in extraction table is operational
-       Could create a new flag just for this
-       Instead, we re-purpose the extraction flag, flg_xtr, for groups
-       Could re-purpose flg_ncs too with same effect
-       nco_xtr_mk() sets flg_xtr for groups, like variables, that match user-specified strings
-       Later processing makes flg_xtr for groups unreliable
-       For instance, the exclusion flag (-x) is ambiguous for groups
-       Also identification of associated coordinates and auxiliary coordinates occurs after nco_xtr_mk()
-       Associated and auxiliary coordinates may be in distant groups
-       Hence no better place than nco_xtr_dfn() to finally identify ancestor groups */
-
-    /* Set extraction flag for groups if ancestors of extracted variables */
-    for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
-      /* For each group ... */
-      if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp){
-        char *sbs_srt; /* [sng] Location of user-string match start in object path */
-        char *grp_fll_sls=NULL; /* [sng] Full group name with slash appended */
-        /* Initialize extraction flag to False and overwrite later iff ... */
-        trv_tbl->lst[grp_idx].flg_xtr=False;
-        if(!strcmp(trv_tbl->lst[grp_idx].grp_nm_fll,sls_sng)){
-          /* Manually mark root group as extracted because matching algorithm below fails for root group 
-	     (it looks for "//" in variable names) */
-          trv_tbl->lst[grp_idx].flg_xtr=True;
-          continue;
-        } /* endif root group */
-        grp_fll_sls=(char *)strdup(trv_tbl->lst[grp_idx].grp_nm_fll);
-        grp_fll_sls=(char *)nco_realloc(grp_fll_sls,(strlen(grp_fll_sls)+2L)*sizeof(char));
-        strcat(grp_fll_sls,sls_sng);
-        /* ... loop through ... */
-        for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-          /* ... all variables to be extracted ... */
-          if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_var].flg_xtr){
-            /* ... finds that full path to current group is contained in an extracted variable path ... */
-            if((sbs_srt=strstr(trv_tbl->lst[idx_var].nm_fll,grp_fll_sls))){
-              /* ... and _begins_ a full group path of that variable ... */
-              if(sbs_srt == trv_tbl->lst[idx_var].nm_fll){
-                /* ... and mark _only_ those groups for extraction... */
-                trv_tbl->lst[grp_idx].flg_xtr=True;
-                continue;
-              } /* endif */
-            } /* endif full group path */
-          } /* endif extracted variable */
-        } /* end loop over idx_var */
-        if(grp_fll_sls) grp_fll_sls=(char *)nco_free(grp_fll_sls);
-      } /* endif group */
-    } /* end loop over grp_idx */
-
     /* Extraction flag for groups was set in nco_xtr_grp_mrk() 
        This loop defines those groups in output file and copies their metadata */
     for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
@@ -1959,6 +1932,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_dfl=False;                /* [flg] Object meets default subsetting criteria */
   trv_tbl->lst[idx].flg_gcv=False;                /* [flg] Group contains matched variable */
   trv_tbl->lst[idx].flg_mch=False;                /* [flg] Object matches user-specified strings */
+  trv_tbl->lst[idx].flg_mtd=False;                /* [flg] Group contains only metadata */
   trv_tbl->lst[idx].flg_ncs=False;                /* [flg] Group is ancestor of specified group or variable */
   trv_tbl->lst[idx].flg_nsx=False;                /* [flg] Object matches intersection criteria */
   trv_tbl->lst[idx].flg_rcr=False;                /* [flg] Extract group recursively */
@@ -2047,6 +2021,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_dfl=False; 
     trv_tbl->lst[idx].flg_gcv=False; 
     trv_tbl->lst[idx].flg_mch=False; 
+    trv_tbl->lst[idx].flg_mtd=False; 
     trv_tbl->lst[idx].flg_ncs=False; 
     trv_tbl->lst[idx].flg_nsx=False; 
     trv_tbl->lst[idx].flg_rcr=False; 

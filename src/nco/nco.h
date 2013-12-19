@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.446 2013-12-10 18:51:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.447 2013-12-19 05:56:26 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -829,6 +829,7 @@ extern "C" {
     nco_bool flg_dfl;                 /* [flg] Object meets default subsetting criteria */
     nco_bool flg_gcv;                 /* [flg] Group contains matched variable */
     nco_bool flg_mch;                 /* [flg] Object matches user-specified strings */
+    nco_bool flg_mtd;                 /* [flg] Group contains only metadata */
     nco_bool flg_ncs;                 /* [flg] Group is ancestor of specified group or variable */
     nco_bool flg_nsx;                 /* [flg] Object matches intersection criteria */
     nco_bool flg_rcr;                 /* [flg] Extract group recursively */

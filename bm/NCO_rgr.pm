@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.390 2013-12-19 02:36:44 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.391 2013-12-19 05:56:26 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1995,7 +1995,7 @@ print "\n";
 #ncks #52    
 
     $dsc_sng="(Groups) Check --fix_rec_dmn (netCDF4 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg  --fix_rec_dmn time -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --fix_rec_dmn time -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate is time'";
     $tst_cmd[2]="Coordinate is time";
@@ -2010,7 +2010,7 @@ print "\n";
 #ncks #53    
     
     $dsc_sng="--fix_rec_dmn with MM3 workaround (netCDF3->netCDF3 file)";
-    $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg --fix_rec_dmn time -v one,two,one_dmn_rec_var,two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $nco_D_flg --fix_rec_dmn time -v one,two,one_dmn_rec_var,two_dmn_rec_var $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate is time'";
     $tst_cmd[2]="Coordinate is time";
     $tst_cmd[3]="SS_OK";   
@@ -2020,7 +2020,7 @@ print "\n";
     if(0){
 	# NB: does not actually test3 code for reasons explained in header of nco_use_mm3_workaround()
 	$dsc_sng="(Groups) --fix_rec_dmn with MM3 workaround (netCDF4->netCDF3 file)";
-	$tst_cmd[0]="ncks -O -3 $fl_fmt $nco_D_flg --fix_rec_dmn time -v /g10/two_dmn_rec_var,/g10/three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+	$tst_cmd[0]="ncks -O -3 $nco_D_flg --fix_rec_dmn time -v /g10/two_dmn_rec_var,/g10/three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
 	if($HAVE_NETCDF4_H == 1){
 	    $tst_cmd[1]="ncks -C -m -v time %tmp_fl_00% | egrep -o -w 'Coordinate dimension'";
 	    $tst_cmd[2]="Record coordinate dimension";
@@ -2080,9 +2080,9 @@ print "\n";
 # Map:Chunksize Equals Dimension Size [default] Explicitly specify chunksizes for particular dimensions with ‘--cnk_dmn’ option.
 
     $dsc_sng="(Groups) Chunking --cnk_plc=cnk_g3d --cnk_dmn time,2";
-    $tst_cmd[0]="ncks $nco_D_flg  -O -4  --cnk_plc=cnk_g3d --cnk_dmn time,2  -v three_dmn_rec_var  $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks $nco_D_flg -O -4 --cnk_plc=cnk_g3d --cnk_dmn time,2 -v three_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     if($HAVE_NETCDF4_H == 1){
-    $tst_cmd[1]="ncks -C -m -v three_dmn_rec_var %tmp_fl_00% | grep  'three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate is /time)'";
+    $tst_cmd[1]="ncks -C -m -v three_dmn_rec_var %tmp_fl_00% | grep 'three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate is /time)'";
     $tst_cmd[2]="three_dmn_rec_var dimension 0: /time, size = 10 NC_DOUBLE, chunksize = 2 (Record coordinate is /time)";
     $tst_cmd[3]="SS_OK";   
     }elsif($HAVE_NETCDF4_H == 0){
@@ -2091,7 +2091,6 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			 
- 
     
 # 
 # Limit/MSA tests
@@ -2104,7 +2103,7 @@ print "\n";
 # time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3 
 #
     $dsc_sng="(Groups) MSA --dmn time,1,3,2 --dmn lev,1,1,1";
-    $tst_cmd[0]="ncks $nco_D_flg  -H -C --dmn time,1,3,2 --dmn lev,1,1,1  -v two_dmn_rec_var  $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -H -C --dmn time,1,3,2 --dmn lev,1,1,1 -v two_dmn_rec_var $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[3]=4 lev[1]=500 two_dmn_rec_var[10]=2.3";
     $tst_cmd[2]="SS_OK";   
@@ -2124,7 +2123,7 @@ print "\n";
 #time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3 
 
     $dsc_sng="(Groups) MSA --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1";
-    $tst_cmd[0]="ncks $nco_D_flg  -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1 -v two_dmn_rec_var  $in_pth_arg in_grp.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -H -C --dmn time,1,1,1 --dmn time,3,3,1 --dmn lev,0,0,1 --dmn lev,2,2,1 -v two_dmn_rec_var $in_pth_arg in_grp.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[3]=4 lev[2]=1000 two_dmn_rec_var[11]=3";
     $tst_cmd[2]="SS_OK";   
@@ -2142,7 +2141,7 @@ print "\n";
 #lon2[3] lon2_var[3]=3 
 
     $dsc_sng="(Groups) MSA -d lon2,1,3,2 -v lon2_var";
-    $tst_cmd[0]="ncks $nco_D_flg  -H -d lon2,1,3,2 -v lon2_var  $in_pth_arg in_grp_3.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -H -d lon2,1,3,2 -v lon2_var $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
@@ -2160,7 +2159,7 @@ print "\n";
 #lon2[3] lon2_var[3]=3 
 
     $dsc_sng="(Groups) MSA -d lon2,1,3,2 -v lon2_var";
-    $tst_cmd[0]="ncks $nco_D_flg  -d lon2,1,1,1 -d lon2,3,3,1  -v lon2_var  $in_pth_arg in_grp_3.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -d lon2,1,1,1 -d lon2,3,3,1 -v lon2_var $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="lon2[3] lon2_var[3]=3";
     $tst_cmd[2]="SS_OK";   
@@ -2171,10 +2170,9 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
     
-
 #ncks #60
 # This test tests both limits and extraction of associated CF variables
-# ncks -H  -v gds_var -d gds_crd,1,1,1  in_grp.nc  
+# ncks -H -v gds_var -d gds_crd,1,1,1 in_grp.nc  
 #/g7/g7g1/gds_var
 #gds_var[1]=273.2 
 #/g7/gds_crd
@@ -2196,7 +2194,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
   
-  
 #ncks #61
 # This test tests both limits printing of coordinates that are in ancestor groups
 # ncks -H  -v gds_var -d gds_crd,1,1,1  in_grp.nc   
@@ -2216,7 +2213,6 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
-    
     
 #ncks #62
 # Test "parallel" scope 
@@ -2241,7 +2237,6 @@ print "\n";
 # Test "parallel" scope 
 #ncks: INFO nco_bld_var_dmn() reports variable </g16/g16g1/lon1_var> with dimension coordinate [0]/g16/g16g1/lon1
 
-
     $dsc_sng="(Groups) Parallel scope MSA -g g16g1 -v lon1_var -d lon1,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g1 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
@@ -2254,11 +2249,9 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			  
 
-    
 #ncks #64
 # Test "parallel" scope 
 #ncks: INFO nco_bld_var_dmn() reports variable </g16/g16g2/lon1_var> with dimension coordinate [0]/g16/g16g2/lon1
-
 
     $dsc_sng="(Groups) Parallel scope MSA -g g16g2 -v lon1_var -d lon1,1,1,1";
     $tst_cmd[0]="ncks $nco_D_flg -H -g g16g2 -v lon1_var -d lon1,1,1,1 $in_pth_arg in_grp_3.nc";
@@ -2312,7 +2305,7 @@ print "\n";
     $#tst_cmd=0; # Reset array 			      
          
 #ncks #67
-# Test "out of scope " coordinate
+# Test "out of scope" coordinate
 # ncks  -H  -v lon3_var  in_grp.nc
 
     $dsc_sng="(Groups) Out of scope coordinate -v lon3_var";
@@ -2347,7 +2340,7 @@ print "\n";
 # Test -X
 # ncks -O -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc 
 
-    $dsc_sng="(Groups) Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc ";
+    $dsc_sng="(Groups) Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[9] gds_crd[1]=1 gds_3dvar[73]=282.2 meter";
@@ -2359,7 +2352,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
 
-   
 #ncks #70
 # ncks  -h -O  -C -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc
 
@@ -2406,7 +2398,7 @@ print "\n";
 # ncks --cdl -g g8g1g1g1 ~/foo.nc | grep answer
 
     $dsc_sng="(Groups) Copy/print metadata-only leaf group";
-    $tst_cmd[0]="ncks $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --cdl -g g8g1g1g1 %tmp_fl_00% | grep answer";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]=":answer = \"Twerking\" ;";
