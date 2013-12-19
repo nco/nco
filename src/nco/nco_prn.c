@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.198 2013-12-19 06:17:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.199 2013-12-19 06:38:03 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -2116,7 +2116,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   if(prn_flg->xml && grp_dpt == 0) (void)fprintf(stdout,"</netcdf>\n"); 
   if(prn_flg->xml && grp_dpt != 0) (void)fprintf(stdout,"%*s</group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
-  if(prn_flg->cdl) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nco_gpe_evl(prn_flg->gpe,grp_nm_fll));
+  if(prn_flg->cdl || prn_flg->trd) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nco_gpe_evl(prn_flg->gpe,grp_nm_fll));
 
   return rcd;
 } /* end nco_grp_prn() */

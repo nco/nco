@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1114 2013-12-19 06:17:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1115 2013-12-19 06:38:03 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -443,7 +443,7 @@ nco_prn_att_trv /* [fnc] Traverse tree to print all group and global attributes 
 
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.nco_typ == nco_obj_typ_grp){
+    if(trv.nco_typ == nco_obj_typ_grp && trv.flg_xtr){
       /* Obtain group ID from netCDF API using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,trv.nm_fll,&grp_id);
 
@@ -756,8 +756,6 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                 if(flg_pth_srt_bnd && flg_pth_end_bnd && flg_ncr_mch_crr && flg_rcr_mch_crr){
                   trv_tbl->lst[tbl_idx].flg_mch=True;
                   trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
-		  /* Does matching group contain only metadata? */
-		  if(!trv_tbl->lst[tbl_idx].nbr_var) trv_tbl->lst[tbl_idx].flg_mtd=True;
                 } /* end flags */
               }  /* !nco_obj_typ_var */
               /* Set flags for groups and variables associated with this object */
@@ -819,7 +817,8 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
     } /* end loop over obj_idx */
   } /* flg_unn */
 
-  /* Does default group contain only metadata? */
+  /* Does matched or default group contain only metadata? 
+     Flag used in nco_xtr_mrk_grp() to preserve metadata-only groups on extraction list */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
     if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
       if(trv_tbl->lst[obj_idx].flg_mch || trv_tbl->lst[obj_idx].flg_dfl)
