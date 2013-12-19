@@ -1,5 +1,11 @@
 2013-12-19  Charlie Zender  <zender@uci.edu>
 
+	* Document "group" option to ncatted
+
+	* Tweak ncdismember to append specified CF Convention to each dataset
+
+	* Add dsm.cdl to test ncdismember in ICESat-2 and Mable-like cases
+
 	* Print metadata only groups in all desired cases
 
 2013-12-18  Charlie Zender  <zender@uci.edu>

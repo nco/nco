@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.924 2013-12-17 21:34:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.925 2013-12-19 19:07:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -63,7 +63,7 @@ cd ~/nco/doc;scp -p nco_*.png dust.ess.uci.edu:/var/www/html/nco;cd -
 # 20130801 Copy nco.texi to Ubuntu machine for quick build-tests
 scp ~/nco/doc/nco.texi givre.ess.uci.edu:nco/doc
 
-NB: @cindex references in footnotes propagate to PDF file, but not to
+NB: @cindex references in footnotes propagate to PDF file, not to
     HTML files, bug-report sent to makeinfo people 20040229
 
 Producing HTML, makeinfo vs. texi2html:
@@ -115,7 +115,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.0
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 16 December 2013
+@set update-date 19 December 2013
 @set update-month December 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1609,7 +1609,7 @@ However, as of 20130328, the behavior of the @samp{--create_ram} and
 @samp{--open_ram} examples has not been thoroughly tested.
 
 The @acronym{NCO} authors have seen compelling use cases for utilizing
-the @acronym{RAM} switches, but not (yet) for combining them with
+the @acronym{RAM} switches, though not (yet) for combining them with
 @samp{--no_tmp_fl}. 
 @acronym{NCO} implements both options because they are largely
 independent of eachother.
@@ -1724,7 +1724,7 @@ addition, subtraction, multiplication, division, and broadcasting.
 It even does group broadcasting.
 @command{ncflint} (@pxref{ncflint netCDF File Interpolator}) does
 file addition, subtraction, multiplication and interpolation. 
-Sequences of these commands can accomplish simple but powerful
+Sequences of these commands can accomplish simple yet powerful
 operations from the command line.
 
 @html
@@ -2477,7 +2477,7 @@ at a future date.
 This optimization exploits the netCDF library @code{nc__enddef()}
 function, which behaves differently with different versions of netCDF.
 It will improve speed of future metadata expansion with @code{CLASSIC}
-and @code{64bit} netCDF files, but not necessarily with @code{NETCDF4} 
+and @code{64bit} netCDF files, though not necessarily with @code{NETCDF4} 
 files, i.e., those created by the netCDF interface to the @acronym{HDF5}
 library (@pxref{Selecting Output File Format}).
 
@@ -2757,7 +2757,7 @@ The shell passes valid filenames which match the expansion to
 The third method uses the @samp{-p @var{input-path}} argument to specify 
 the directory where all the input files reside.
 @acronym{NCO} prepends @var{input-path} (e.g.,
-@file{/data/usrname/model}) to all @var{input-files} (but not to
+@file{/data/usrname/model}) to all @var{input-files} (though not to
 @var{output-file}).  
 Thus, using @samp{-p}, the path to any number of input files need only
 be specified once.
@@ -2897,7 +2897,7 @@ with @samp{-o @var{fl_out}} near the beginning of an argument list.
 @cindex linkers
 Compilers and linkers are usually invoked this way.
 
-Users should specify @var{fl_out} using either but not both methods.
+Users should specify @var{fl_out} using either (not both) method.
 If @var{fl_out} is specified twice (once with the switch and once as
 the last positional argument), then the positional argument takes
 precedence. 
@@ -3807,7 +3807,7 @@ from any group named @file{g1} or descendent @file{g1}.
 The second command extracts @file{v1} from any root group
 named @file{g1} and any descendent groups as well.
 The third and fourth commands are equivalent ways of extracting
-@file{v1} only from the root group named @file{g1} (but not its
+@file{v1} only from the root group named @file{g1} (not its
 descendents). 
 The fifth and sixth commands are equivalent ways of extracting the 
 variable @file{v1} only from the root group named @file{g1}.
@@ -4293,7 +4293,7 @@ cat > ~/ncdismember << 'EOF'
 fl_in="${HOME}/nco/data/mdl.nc" # [sng] Input file to dismember/check
 drc_out="${DATA}/nco/tmp" # [sng] Output directory
 flg_cf='0' # [flg] Perform CF-compliance check
-cf_vrs='auto' # [sng] Perform compliance-check on this CF version (e.g., '1.1')
+cf_vrs='1.5' # [sng] Perform compliance-check on this CF version (e.g., '1.5', 'auto')
 
 # Command line argument option parsing
 if [ -n "${1}" ]; then
@@ -4317,7 +4317,8 @@ echo "Dismembering file ${fl_in} into following files:"
 for grp_in in ${grp_lf} ; do
     grp_out=`echo ${grp_in} | sed 's/\///' | sed 's/\//./g'`
     echo "${drc_out}/${grp_out}.nc"
-    ncks -O -G : -g ${grp_in} -3 ${fl_in} ${drc_out}/${grp_out}.nc
+    ncks -O --hdr_pad=40 -G : -g ${grp_in} -3 ${fl_in} ${drc_out}/${grp_out}.nc
+    ncatted -h -a Conventions,global,c,c,"CF-${cf_vrs}" ${drc_out}/${grp_out}.nc
     if [ ${flg_cf} = 'cf' ]; then
        cfchecker -c ${cf_vrs} ${drc_out}/${grp_out}.nc
     fi # !flg_cf
@@ -4543,8 +4544,8 @@ specification indicate offsets from the end (Python also uses this
 convention). 
 Previously, for example, @samp{-d time,-2,-1} caused a domain error. 
 Now it means select the second-to-last and penultimate timesteps.
-Negative integers work for @var{min} and @var{max} indices but not for
-@var{stride}. 
+Negative integers work for @var{min} and @var{max} indices, though not
+for @var{stride}. 
 @example
 # Last two indices of lon dimension
 ncks -F -d lon,1,-2 in.nc out.nc
@@ -5953,7 +5954,7 @@ Mnemonic: @emph{PR}o@emph{D}uct@*
 @end table
 @noindent
 It is possible to combine the above chunking map algorithms with
-user-specified per-dimension (but not per-variable) chunksizes that
+user-specified per-dimension (though not per-variable) chunksizes that 
 override specific chunksizes determined by the maps above. 
 The user specifies the per-dimension chunksizes with the (equivalent) 
 long options @samp{--cnk_dmn} or @samp{--chunk_dimension}).
@@ -6633,8 +6634,7 @@ longitude.
 The only rank-reduction which makes sense for coordinate variables
 is averaging.
 Hence @acronym{NCO} implements the operation type requested with
-@samp{-y} on all non-coordinate variables, but not on coorniate
-variables. 
+@samp{-y} on all non-coordinate variables, not on coordinate variables.  
 When an operation requires a coordinate variable to be reduced in
 rank, i.e., from one dimension to a scalar or from one dimension to
 a degenerate (single value) array, then @acronym{NCO} 
@@ -11666,7 +11666,7 @@ To master @command{ncatted} one must understand the meaning of the
 structure that describes the attribute modification, @var{att_dsc} 
 specified by the required option @samp{-a} or @samp{--attribute}. 
 Each @var{att_dsc} contains five elements, which makes using
-@command{ncatted} somewhat complicated, but powerful.
+@command{ncatted} somewhat complicated, yet powerful.
 The @var{att_dsc} argument structure contains five arguments in the
 following order:@* 
 
@@ -11679,13 +11679,14 @@ Attribute name.
 Example: @code{units}
 @item var_nm
 Variable name. 
+Example: @code{pressure}, @code{'^H2O'}.
 @cindex extended regular expressions
 @cindex regular expressions
 @cindex pattern matching
 @cindex wildcards
 Regular expressions (@pxref{Subsetting Files}) are accepted and will 
 select any matching variable names.
-Example: @code{pressure}, @code{'^H2O'}.
+The names @code{global} and @code{group} have special meaning.
 @item mode
 Edit mode abbreviation. 
 Example: @code{a}. 
@@ -11706,8 +11707,9 @@ appearance.
 
 The value of @var{att_nm} is the name of the attribute you want to
 edit. 
-This meaning of this should be clear to all users of the
-@command{ncatted} operator. 
+This meaning of this should be clear to all @command{ncatted} users.
+Recall, as mentioned above, that @var{var_nm} may be specified as a
+regular expression. 
 If @var{att_nm} is omitted (i.e., left blank) and @dfn{Delete} mode is 
 selected, then all attributes associated with the specified variable
 will be deleted. 
@@ -11719,18 +11721,20 @@ attribute (named @var{att_nm}) that you want to edit.
 There are three very important and useful exceptions to this rule.
 The value of @var{var_nm} can also be used to direct @command{ncatted}
 to edit global attributes, or to repeat the editing operation for every 
-variable in a file.
+group or variable in a file.
 @w{A value} of @var{var_nm} of ``global'' indicates that @var{att_nm}
-refers to a global attribute, rather than a particular variable's
-attribute. 
+refers to a global (i.e., root-level) attribute, rather than to a
+particular variable's attribute. 
 This is the method @command{ncatted} supports for editing global
 attributes.
-If @var{var_nm} is left blank, on the other hand, then @command{ncatted} 
+@w{A value} of @var{var_nm} of ``group'' indicates that @var{att_nm}
+refers to all groups, rather than to a particular variable's or group's
+attribute.  
+The operation will proceed to edit group metadata for every group.
+Finally, if @var{var_nm} is left blank, then @command{ncatted} 
 attempts to perform the editing operation on every variable in the file.
 This option may be convenient to use if you decide to change the
 conventions you use for describing the data.
-Finally, as mentioned above, @var{var_nm} may be specified as a regular
-expression. 
 
 @html
 <a name="mode"></a> <!-- http://nco.sf.net/nco.html#mode -->
@@ -12284,7 +12288,7 @@ $\rm{file}_1 - \rm{file}_2 = -(\rm{file}_2-\rm{file}_1)$.
 Broadcasting a variable means creating data in non-existing dimensions
 by copying data in existing dimensions.
 For example, a two dimensional variable in @var{file_2} can be
-subtracted from a four, three, or two (but not one or zero)
+subtracted from a four, three, or two (not one or zero)
 dimensional variable (of the same name) in @code{file_1}. 
 @cindex anomalies
 This functionality allows the user to compute anomalies from the mean.
@@ -12317,8 +12321,8 @@ all
 to a size @w{of 1} (making it a @dfn{degenerate} dimension), but does
 not remove it, while, unless @samp{-b} is given, @command{ncwa} removes
 all averaged dimensions.
-In other words, by default @command{ncra} changes variable size but not 
-rank, while, @command{ncwa} changes both variable size and rank.}.   
+In other words, by default @command{ncra} changes variable size though
+not rank, while, @command{ncwa} changes both variable size and rank.}.   
 In this case the input files to @command{ncbo}, @var{file_1} and
 @var{file_2}, will have unequally sized @code{time} dimensions which
 causes @command{ncbo} to fail.
@@ -13109,7 +13113,7 @@ This behavior is hardcoded.
 
 By default @command{ncflint} interpolates or multiplies record
 coordinate variables (e.g., time is often stored as a record coordinate) 
-but not other coordinate variables (e.g., latitude and longitude). 
+not other coordinate variables (e.g., latitude and longitude). 
 This is because @command{ncflint} is often used to time-interpolate
 between existing files, but is rarely used to spatially interpolate.
 Sometimes however, users wish to multiply entire files by a constant
@@ -13368,7 +13372,7 @@ coordinate dimensions, if any, from @var{input-file} to
 }.
 
 Since there can only be one record dimension in a file, the record
-dimension must have the same name (but not necessarily the same size) in 
+dimension must have the same name (though not necessarily the same size) in 
 both files if a record dimension variable is to be appended. 
 If the record dimensions are of differing sizes, the record dimension of
 @var{output-file} will become the greater of the two record dimension
@@ -14054,7 +14058,7 @@ Without any variables to extract, the append (@samp{-A}) command
 @html
 <a name="xmp_att_glb_cpy"></a> <!-- http://nco.sf.net/nco.html#xmp_att_var_cpy -->
 @end html
-Copy/append metadata (but not data) from variables in one file to
+Copy/append metadata (not data) from variables in one file to
 variables in a second file.
 When copying/subsetting/appending files (as opposed to printing them),
 the copying of data, variable metadata, and global/group metadata are
@@ -14245,8 +14249,8 @@ ncpdq [-3] [-4] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 @noindent
 DESCRIPTION
 
-@command{ncpdq} performs one of two distinct functions, packing or
-dimension permutation, but not both, when invoked.
+@command{ncpdq} performs one (not both) of two distinct functions:
+packing or dimension permutation.
 @command{ncpdq} is optimized to perform these actions in a parallel
 fashion with a minimum of time and memory.
 The @dfn{pdq} may stand for ``Permute Dimensions Quickly'', 
@@ -14551,8 +14555,8 @@ This refined map specifies the final (output) dimensionality.
 Third, we translate the output dimensionality into one-dimensional  
 memory offsets for each datum according to the @w{C language} convention 
 for multi-dimensional array storage.
-Dimension reversal changes the ordering of data, but not the
-dimensionality, and so is part of the third step. 
+Dimension reversal changes the ordering of data, though not the
+rank or dimensionality, and so is part of the third step. 
 
 Dimensions $\rdr$ disjoint from $\dmnvct$ play no role in re-ordering.
 The first step taken to re-order a variable is to determine $\shrvct$. 
@@ -15165,7 +15169,7 @@ that @var{att_nm} refers to a global or group attribute, and not to a
 variable named @code{global}.
 In other words, a @var{var_nm} of @code{global} is syntactically
 equivalent to a @var{var_nm} that is empty.
-The @var{var_name@@att_name} syntax is accepted, but not required,
+The @var{var_name@@att_name} syntax is accepted, though not required,
 for the @var{new_name}.
 
 @item -d @var{old_name},@var{new_name}
@@ -15251,8 +15255,8 @@ variable, then the dimension) to avoid triggering the libary bug.
 A related bug causes unintended side-effects with @command{ncrename} 
 also built with all versions of the netCDF4 library until 4.3.1-rc5
 released in December, 2013):
-Renaming of @emph{either} a dimension @emph{or} its assosiated
-coordinate variable but not both (which fails as above) in a netCDF4
+Renaming @emph{either} a dimension @emph{or} its assosiated
+coordinate variable (not both, which would fail as above) in a netCDF4 
 file inadvertently @emph{does} rename both:
 @example
 # Demonstate bug in netCDF4/HDF5 library prior to netCDF-4.3.1-rc5
@@ -16788,7 +16792,7 @@ Template: $@{scn@}_$@{mdl@}_$@{run@}_$@{var@}_$@{yyyymm@}_$@{yyyymm@}.nc
 ln -s -f tas_A1.nc sresa1b_ukmo_hadcm3_run1_tas_200101_209911.nc
 area_msk_ukmo_hadcm3.nc
 
-Level I: Add all variables (but not standardized in time)
+Level I: Add all variables (not standardized in time)
          to file containing msk_rgn and area
 Template: $@{scn@}_$@{mdl@}_$@{run@}_$@{yyyymm@}_$@{yyyymm@}.nc
 

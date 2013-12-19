@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.59 2013-12-02 01:05:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.60 2013-12-19 19:07:58 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -81,7 +81,10 @@ nco/data/in_grp_2.cdl 	CDL file to test ncbo functionality on groups
 nco/data/in_1.cdl 	CDL file to test 2 input file operators
 nco/data/in_2.cdl 	CDL file to test 2 input file operators
 nco/data/cmip5.cdl 	CDL file to test ncbo functionality on groups
-nco/data/obs.cdl 	CDL file to test ncbo functionality on groups
+nco/data/dsm.cdl 	CDL file to test ncdismember
+nco/data/mdl.cdl 	CDL file to test ensemble operations
+nco/data/mdl2.cdl 	CDL file to test ensemble operations
+nco/data/obs.cdl 	CDL file to test group broadcasting
 nco/data/in_rec_zero.cdl 	CDL file to test zero-record files
 nco/data/ncap.in	Sample ncap input script
 nco/data/netcdf4.nco	Sample input script for netCDF4-enabled ncap2
