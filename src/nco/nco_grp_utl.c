@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1116 2013-12-19 18:02:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1117 2013-12-19 18:16:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3141,6 +3141,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
  lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
+ const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_bld_aux_crd()"; /* [sng] Function name */
@@ -6524,7 +6525,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(lmt_nbr) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
 
   /* Parse auxiliary coordinates */
-  if(aux_nbr) (void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
+  if(aux_nbr) (void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl); 
 
   /* Add dimension limits */
   if(lmt_nbr) (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
@@ -6609,6 +6610,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
   /* Step 1) Find the total numbers of limit matches for a dimension and/or a coordinate variable */
 
+  const char fnc_nm[]="nco_bld_lmt()"; /* [sng] Function name  */
+
   /* Loop table step 1 */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
@@ -6628,6 +6631,11 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
           /* Match input relative name to dimension relative name */ 
           if(strcmp(lmt[lmt_idx]->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
 
+            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s <%s:%s> limit<%s>\n",nco_prg_nm_get(),fnc_nm,
+                var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,lmt[lmt_idx]->nm);
+            }
+
             /*  The limits have to be separated to */
 
             /* a) case where the dimension has coordinate variables */
@@ -6635,6 +6643,11 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
               /* Increment number of dimension limits for this dimension */
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr++;
+
+              if(nco_dbg_lvl_get() >= nco_dbg_dev){
+                (void)fprintf(stdout,"%s: DEBUG %s <%s:%s> %d limits\n",nco_prg_nm_get(),fnc_nm,
+                  var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,var_trv.var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr);
+              }
 
               /* b) case of dimension only (there is no coordinate variable for this dimension */
             }else{
