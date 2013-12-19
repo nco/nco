@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.197 2013-12-17 21:34:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.198 2013-12-19 06:17:42 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -2107,7 +2107,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 	if(!strcmp(trv_tbl->lst[obj_idx].grp_nm_fll,sub_grp_nm_fll))
 	  break;
     
-    /* Is sub-group to be extracted? */
+    /* Is sub-group to be extracted? If so, recurse */
     if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
 
     /* Free constructed name */

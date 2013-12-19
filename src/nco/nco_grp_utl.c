@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1113 2013-12-19 05:56:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1114 2013-12-19 06:17:41 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -757,7 +757,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                   trv_tbl->lst[tbl_idx].flg_mch=True;
                   trv_tbl->lst[tbl_idx].flg_rcr=flg_rcr_mch_grp;
 		  /* Does matching group contain only metadata? */
-		  if(trv_tbl->lst[tbl_idx].nbr_att && !trv_tbl->lst[tbl_idx].nbr_var) trv_tbl->lst[tbl_idx].flg_mtd=True;
+		  if(!trv_tbl->lst[tbl_idx].nbr_var) trv_tbl->lst[tbl_idx].flg_mtd=True;
                 } /* end flags */
               }  /* !nco_obj_typ_var */
               /* Set flags for groups and variables associated with this object */
@@ -823,7 +823,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
     if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
       if(trv_tbl->lst[obj_idx].flg_mch || trv_tbl->lst[obj_idx].flg_dfl)
-	if(trv_tbl->lst[obj_idx].nbr_att && !trv_tbl->lst[obj_idx].nbr_var) 
+	if(!trv_tbl->lst[obj_idx].nbr_var) 
 	  trv_tbl->lst[obj_idx].flg_mtd=True;
 
   /* Combine previous flags into initial extraction flag */

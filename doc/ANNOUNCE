@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.657 2013-12-19 05:56:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.658 2013-12-19 06:17:41 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -109,6 +109,9 @@ A. Versions 4.3.6--4.3.9 of ncra could treat missing values
    not promoted. The solution is to upgrade to NCO 4.4.0.
    Problem reported by Andrew Friedman.
    http://nco.sf.net#bug_ncra_mss_val
+
+A. Versions through 4.3.9 would not always copy/print groups that
+   contain only metadata (i.e., attributes but not variables). Fixed.
 
 KNOWN ISSUES NOT YET FIXED:
 

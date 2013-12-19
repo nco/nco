@@ -1,5 +1,7 @@
 2013-12-18  Charlie Zender  <zender@uci.edu>
 
+	* Print metadata-only groups in most cases.
+
 	* Rely on nco_xtr_grp_mrk() and remove duplicate code from nco_xtr_mk()
 
 	* Copy metadata-only groups. Introduce flg_mtd and use flg_xcl to handle group exclusion.
