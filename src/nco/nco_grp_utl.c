@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1111 2013-12-18 21:02:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1112 2013-12-19 02:36:44 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -363,7 +363,7 @@ nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (pa
 (char * const nm_fll,                 /* I [sng] Full name  */ 
  sng_pth_sct ***str_pth_lst)          /* I/O [sct] List of path components  */    
 {
-  /* Purpose: Break a full path name into components separated by the slash character (netCDF4 path separator) 
+  /* Purpose: Break full path name into components separated by slash character (netCDF4 path separator) 
   
   strtok()
   A sequence of calls to this function split str into tokens, which are sequences of contiguous characters 
@@ -403,8 +403,7 @@ nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (pa
 
   ptr_chr=strchr(nm_fll,'/');
 
-  while (ptr_chr!=NULL)
-  {
+  while(ptr_chr){
     if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"#%s ",ptr_chr_tok);
 
     psn_chr=ptr_chr-nm_fll;
@@ -415,13 +414,13 @@ nco_get_sng_pth_sct                   /* [fnc] Get full name token structure (pa
     (*str_pth_lst)[nbr_sls_chr]->nm=strdup(ptr_chr_tok);
     (*str_pth_lst)[nbr_sls_chr]->psn=psn_chr;
 
-    /* The point where the last token was found is kept internally by the function */
-    ptr_chr_tok = strtok (NULL, "/");
+    /* Point where last token was found is kept internally by function */
+    ptr_chr_tok=strtok(NULL,"/");
 
     ptr_chr=strchr(ptr_chr+1,'/');
 
     nbr_sls_chr++;   
-  }
+  } /* end while */
 
   if(nco_dbg_lvl_get() == nco_dbg_old)(void)fprintf(stdout,"\n");
 
@@ -1419,20 +1418,20 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   /* Isolate extra complexity of copying group metadata */
   if(CPY_GRP_METADATA){
     /* Block can be performed before or after writing variables
-    Perhaps it should be turned into an explicit function call */
+       Perhaps it should be turned into an explicit function call */
 
     /* Goal here is to annotate which groups will appear in output
-    Need to know in order to efficiently copy their metadata
-    Definition of flags in extraction table is operational
-    Could create a new flag just for this
-    Instead, we re-purpose the extraction flag, flg_xtr, for groups
-    Could re-purpose flg_ncs too with same effect
-    nco_xtr_mk() sets flg_xtr for groups, like variables, that match user-specified strings
-    Later processing makes flg_xtr for groups unreliable
-    For instance, the exclusion flag (-x) is ambiguous for groups
-    Also identification of associated coordinates and auxiliary coordinates occurs after nco_xtr_mk()
-    Associated and auxiliary coordinates may be in distant groups
-    Hence no better place than nco_xtr_dfn() to finally identify ancestor groups */
+       Need to know in order to efficiently copy their metadata
+       Definition of flags in extraction table is operational
+       Could create a new flag just for this
+       Instead, we re-purpose the extraction flag, flg_xtr, for groups
+       Could re-purpose flg_ncs too with same effect
+       nco_xtr_mk() sets flg_xtr for groups, like variables, that match user-specified strings
+       Later processing makes flg_xtr for groups unreliable
+       For instance, the exclusion flag (-x) is ambiguous for groups
+       Also identification of associated coordinates and auxiliary coordinates occurs after nco_xtr_mk()
+       Associated and auxiliary coordinates may be in distant groups
+       Hence no better place than nco_xtr_dfn() to finally identify ancestor groups */
 
     /* Set extraction flag for groups if ancestors of extracted variables */
     for(unsigned grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){

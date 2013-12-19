@@ -78,7 +78,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.112 2013-12-18 17:29:06 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.113 2013-12-19 02:36:44 zender Exp $";
   
  data:
   area=10.,10.;
@@ -214,7 +214,7 @@ netcdf in_grp {
   group: g8g1 { // Level 2
     group: g8g1g1 { // Level 3
       group: g8g1g1g1 { // Level 4
-	  :mtd_grp = "Group metadata from g8g1g1g1, a leaf-group with no variables, to test whether metadata-only leaf groups are copied";
+	  :mtd_grp = "Group metadata from g8g1g1g1, a leaf-group with no variables, to test whether metadata-only leaf groups are copied and/or printed";
 	  :answer = "Twerking";
 	} // end g8g1g1g1
       } // end g8g1g1
