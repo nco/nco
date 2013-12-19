@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1118 2013-12-19 21:08:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1119 2013-12-19 21:13:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3176,7 +3176,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       float gds_crd(gds_crd);
       gds_crd:coordinates = "lat_gds lon_gds";
 
-      Befor groups traversal, nco_aux_evl() was called in ncks main;
+      Before groups traversal, nco_aux_evl() was called in ncks main;
       nco_find_lat_lon(), exports the lat/lon variable names internally, and nco_get_dmn_info()
       obtains the associated dimension; for this use case:
 
@@ -3189,8 +3189,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       for the variable and that the variable is a coordinate variable.
       */
 
-      nco_bool flg_dmn=False;
-      nco_bool flg_crd=False;
+      nco_bool flg_dmn=False; /* [flg] Dimension exists for this variable */
+      nco_bool flg_crd=False; /* [flg] Handle -C cases */
 
       if (EXTRACT_ASSOCIATED_COORDINATES == False) flg_crd=True;
       if (var_trv.is_crd_var) flg_crd=True;
