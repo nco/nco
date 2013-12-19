@@ -11,7 +11,6 @@ SUBDIRS += ncra
 SUBDIRS += ncrename
 SUBDIRS += ncwa
 SUBDIRS += ncrcat
-SUBDIRS += nces
 SUBDIRS += libnco_c++
 SUBDIRS += tst_nco_c++
 SUBDIRS += ncap2
