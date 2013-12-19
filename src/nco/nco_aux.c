@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.49 2013-12-18 18:53:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.50 2013-12-19 21:08:03 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -139,7 +139,8 @@ nco_aux_evl
 (int in_id, 
  int aux_nbr, 
  char *aux_arg[],
- int *lmt_nbr)
+ int *lmt_nbr,
+ char *nm_dmn) /* O [sng] Dimension name */ 
 {
   /* Purpose: Create lmt structure of slabs of continguous cells that
      match rectangular region specified by -X arguments.
@@ -293,7 +294,9 @@ nco_aux_evl
         cll_idx_min=-1;
       } /* end if one or more consecutive matching cells */
     } /* end loop over cells */
-    if(nco_dbg_lvl_get() > nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",nco_prg_nm_get(),fnc_nm,lon_min,var_nm_lon,lon_max,lat_min,var_nm_lat,lat_max,cll_grp_nbr,cll_nbr_ttl); 
+    if(nco_dbg_lvl_get() > nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev){
+      (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",nco_prg_nm_get(),fnc_nm,lon_min,var_nm_lon,lon_max,lat_min,var_nm_lat,lat_max,cll_grp_nbr,cll_nbr_ttl); 
+    }
   } /* end loop over user supplied -X options */
 
   /* Free allocated memory */
@@ -310,6 +313,10 @@ nco_aux_evl
   } /* end if */
 
   lmt=(lmt_sct **)nco_realloc(lmt,(*lmt_nbr)*sizeof(lmt_sct *));
+
+  /* Export dimension name */
+  strcpy(nm_dmn,dmn_nm);
+
   return lmt;
 } /* end nco_aux_evl() */
 

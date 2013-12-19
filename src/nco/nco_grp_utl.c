@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1117 2013-12-19 18:16:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1118 2013-12-19 21:08:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3156,41 +3156,78 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     /* Filter variables to extract */ 
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-      lmt_sct **aux=NULL_CEWI; /* Auxiliary coordinate limits */
+      lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
+      char dmn_nm[NC_MAX_NAME];  /* Dimension name */
 
       /* Obtain group ID where variable is located using full group name */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
 
       aux_idx_nbr=0;
 
-      aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr);
+      aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr,dmn_nm);
 
-      if(aux_idx_nbr > 0){
-        assert(aux);
+      /* Use case 
 
-        if(nco_dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,
-            trv_tbl->lst[idx_var].nm_fll,aux_idx_nbr); 
-          for(int idx_aux=0;idx_aux<aux_idx_nbr;idx_aux++){
-            (void)fprintf(stdout,"%s: DEBUG %s limit[%d] in <%s> (srt=%ld,end=%ld,cnt=%ld)\n",nco_prg_nm_get(),fnc_nm,
-              idx_aux,aux[idx_aux]->nm,aux[idx_aux]->srt,aux[idx_aux]->end,aux[idx_aux]->cnt); 
-          }
+      ncks  -X 0.,1.,-30.,-29.  -v gds_3dvar in.nc
+
+      float gds_3dvar(time,gds_crd);
+      gds_3dvar:coordinates = "lat_gds lon_gds";
+
+      float gds_crd(gds_crd);
+      gds_crd:coordinates = "lat_gds lon_gds";
+
+      Befor groups traversal, nco_aux_evl() was called in ncks main;
+      nco_find_lat_lon(), exports the lat/lon variable names internally, and nco_get_dmn_info()
+      obtains the associated dimension; for this use case:
+
+      lat/lon variable names = "lat_gds lon_gds"
+      associated dimension = "gds_crd"
+
+      In this version nco_aux_evl() is called in a traversal table loop; changes introduced
+      in nco_aux_evl() are the export of the associated dimension ("gds_crd") in the last parameter;
+      then two extra conditions need to be met to assign the limits: that this dimension exists 
+      for the variable and that the variable is a coordinate variable.
+      */
+
+      nco_bool flg_dmn=False;
+      nco_bool flg_crd=False;
+
+      if (EXTRACT_ASSOCIATED_COORDINATES == False) flg_crd=True;
+      if (var_trv.is_crd_var) flg_crd=True;
+
+      /* Loop variable dimensions */
+      for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
+        /* Match the exported dimension from nco_aux_evl() */
+        if (strcmp(dmn_nm,var_trv.var_dmn[idx_dmn].dmn_nm) == 0){
+          flg_dmn=True;
         }
-
-        (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
-        int lmt_nbr_new=*lmt_nbr+aux_idx_nbr;
-        int aux_idx=0;
-        for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
-        *lmt_nbr=lmt_nbr_new;
-
-        aux=(lmt_sct **)nco_free(aux); 
       }
 
+      if(aux_idx_nbr > 0 &&    /* Found limits */
+        flg_dmn &&             /* ... in a dimension exported from nco_aux_evl() */
+        flg_crd ){             /* ... and is a coordinate variable or -C option was set */
+          assert(aux);
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,
+              trv_tbl->lst[idx_var].nm_fll,aux_idx_nbr); 
+          }
+
+          (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+          int lmt_nbr_new=*lmt_nbr+aux_idx_nbr;
+          int aux_idx=0;
+          for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
+          *lmt_nbr=lmt_nbr_new;
+
+          aux=(lmt_sct **)nco_free(aux); 
+
+      } /* Found limits */
     } /* Filter variables */ 
   } /* Loop table */
 
   return;
 } /* nco_bld_aux_crd() */
+
 
 var_sct **                            /* O [sct] Variable list */  
 nco_fll_var_trv                       /* [fnc] Fill-in variable structure list for all extracted variables */

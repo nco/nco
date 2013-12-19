@@ -1,3 +1,7 @@
+2013-12-19  Pedro Vicente  <pvicente@uci.edu>
+
+	* Fixed -X bug, where extra array elements were being printed.
+
 2013-12-19  Charlie Zender  <zender@uci.edu>
 
 	* Document "group" option to ncatted
