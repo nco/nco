@@ -1,7 +1,3 @@
-2013-12-20  Pedro Vicente  <pvicente@uci.edu>
-
-	* ncks. Extract only the most in scope associated coordinate variable to a variable.
-
 2013-12-19  Pedro Vicente  <pvicente@uci.edu>
 
 	* Fixed -X bug, where extra array elements were being printed.

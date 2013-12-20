@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1120 2013-12-20 07:09:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1121 2013-12-20 07:17:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1187,13 +1187,6 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
                 /* Mark it for extraction */
                 (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
-
-                /* 20131219: new behavior; allow only 1 associated coordinate, the most in scope */
-                /* Since the innermost (in scope) variable was already found, return */
-
-                /* Free allocated */
-                if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-                return;
 
               } /* If variable is on list, mark it for extraction */
 
