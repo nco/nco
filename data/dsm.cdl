@@ -47,6 +47,22 @@ netcdf dsm {
 
   } // g4
 
+  group: g5 {
+    :metadata = "g5 group contains one dimension, one variable (in-between) data and one subgroup";
+  dimensions:
+    lat=2;
+  variables:
+    float one_arr(lat);
+    group: g5g1 {
+      :metadata = "g5g1 group contains one variable that depends on an inherited dimension";
+    variables:
+      float one_arr(lat);
+    data:
+      one_arr=1,1;
+    } // g5g1
+
+  } // g5
+
   group: cesm {
 
   group: cesm_01 {

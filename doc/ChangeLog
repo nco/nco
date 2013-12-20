@@ -1,10 +1,12 @@
 2013-12-19  Pedro Vicente  <pvicente@uci.edu>
 
 	* Fixed -X bug, where extra array elements were being printed.
-	
+
 	* Add use case for -X in scope variables, in in_grp_3.cdl.
 
 2013-12-19  Charlie Zender  <zender@uci.edu>
+
+	* ncdismember now flattens all (not just leaf) groups, uses root.nc
 
 	* Document "group" option to ncatted
 
@@ -12,7 +14,7 @@
 
 	* Add dsm.cdl to test ncdismember in ICESat-2 and Mable-like cases
 
-	* Print metadata only groups in all desired cases
+	* Print metadata-only groups in all desired cases
 
 2013-12-18  Charlie Zender  <zender@uci.edu>
 

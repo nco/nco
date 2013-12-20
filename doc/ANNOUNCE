@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.659 2013-12-19 19:07:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.660 2013-12-20 06:56:43 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -69,6 +69,19 @@ A. ncrename behavior. The underlying netCDF4/HDF5 library on which NCO
    These features and fixes are described here:
    http://nco.sf.net/nco.html#ncrename_crd
    http://nco.sf.net/nco.html#ncrename
+
+A. ncdismember flattens all groups in a file, not only leaf groups. 
+   Previously ncdismember disaggregated only leaf groups.
+   Hierarchical files may contain data and/or metadata at all levels. 
+   The new behavior disaggregates all groups with data/metadata. 
+   ncdismember is especially useful for checking CF-compliance using
+   the separately installed 'cfchecker' utility.
+   Usage:
+   ncdismember ~/nco/data/dsm.nc ${DATA}/nco/tmp cf 1.5
+   ncdismember automatically appends the CF Conventions attribute to
+   all disaggregated files that do not already contain it.
+   This considerably reduces CF Warning and Error counts.
+   http://nco.sf.net/nco.html#ncdismember
 
 A. fxm
    NCO now employs hashing techniques to locate objects.
