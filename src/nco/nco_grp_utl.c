@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1119 2013-12-19 21:13:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1120 2013-12-20 07:09:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1113,8 +1113,11 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
   long dmn_sz;                 /* [nbr] Dimension size */  
 
+  /* Loop table */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct var_trv=trv_tbl->lst[uidx];
+
+    /* Filter variables to extract */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
       /* Obtain group ID using full group name */
@@ -1154,7 +1157,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         /* Obtain dimension IDs */
         (void)nco_inq_dimids(grp_id,&nbr_dmn_grp,dmn_id_grp,flg_prn);
 
-        /* List dimensions */
+        /* Loop dimensions visible to group  */
         for(int idx_dmn=0;idx_dmn<nbr_dmn_grp;idx_dmn++){
 
           /* Get dimension info */
@@ -1178,8 +1181,22 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
             ptr_chr=strrchr(dmn_nm_fll,sls_chr);
             psn_chr=ptr_chr-dmn_nm_fll;
             while(ptr_chr){
-              /* If variable is on list, mark it for extraction */
-              if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)) (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
+
+              /* If variable is on list */
+              if(trv_tbl_fnd_var_nm_fll(dmn_nm_fll,trv_tbl)){
+
+                /* Mark it for extraction */
+                (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
+
+                /* 20131219: new behavior; allow only 1 associated coordinate, the most in scope */
+                /* Since the innermost (in scope) variable was already found, return */
+
+                /* Free allocated */
+                if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+                return;
+
+              } /* If variable is on list, mark it for extraction */
+
               dmn_nm_fll[psn_chr]='\0';
               ptr_chr=strrchr(dmn_nm_fll,sls_chr);
               if(ptr_chr){
@@ -1196,11 +1213,11 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
             /* Free allocated */
             if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
 
-          } /* end strcmp() */
-        } /* end loop over idx_dmn */
-      } /* End loop over idx_var_dim: list dimensions for variable */
-    } /* end nco_obj_typ_var */
-  } /* end uidx  */
+          } /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
+        }  /* Loop dimensions visible to group  */
+      } /* Loop over dimensions of variable */
+    } /* Filter variables to extract */
+  } /* Loop table */
   return;
 } /* end nco_xtr_crd_ass_cdf_add */
 
