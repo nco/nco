@@ -1,36 +1,33 @@
 // -*-C++-*-
 
-// Purpose: CDL file to generate netCDF test file for NCO
+// Purpose: CDL file to generate HDF4 test file for NCO
 
 // Usage:
-// netCDF4: ncgen arguments depend on version:
-// "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
-// "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
-// /usr/local/bin/ncgen -k netCDF-4 -b -o in_4.nc in.cdl
-// /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in.cdl
+// /usr/bin/hncgen -b -o hdf.hdf hdf.cdl
+// /usr/bin/hncgen -b -o ~/nco/data/hdf.hdf ~/nco/data/hdf.cdl
 
 // URL: 
-// http://dust.ess.uci.edu/nco/in.nc
+// http://dust.ess.uci.edu/nco/hdf.nc
 // http://dust.ess.uci.edu/nco/in_4.nc
-// http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc
+// http://thredds-test.ucar.edu/thredds/dodsC/testdods/hdf.nc
 // http://thredds-test.ucar.edu/thredds/dodsC/testdods/in_4.nc
 
 // netCDF3:
-// ncgen -b -o in.nc in.cdl
-// ncgen -b -o ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.cdl
-// scp ~/nco/data/in.cdl ~/nco/data/in_4.nc dust.ess.uci.edu:nco/data
-// scp ~/nco/data/in.nc ~/nco/data/in_4.nc dust.ess.uci.edu:/var/www/html/nco
-// scp ~/nco/data/in.nc ~/nco/data/in_4.nc dust.ess.uci.edu:/var/www/html/dodsdata
-// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/in.nc
-// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0001.nc
-// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0002.nc
-// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0003.nc
-// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0004.nc
-// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/in.nc
-// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0001.nc
-// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0002.nc
-// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0003.nc
-// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0004.nc
+// ncgen -b -o hdf.nc hdf.cdl
+// ncgen -b -o ${HOME}/nco/data/hdf.nc ${HOME}/nco/data/hdf.cdl
+// scp ~/nco/data/hdf.cdl ~/nco/data/in_4.nc dust.ess.uci.edu:nco/data
+// scp ~/nco/data/hdf.nc ~/nco/data/in_4.nc dust.ess.uci.edu:/var/www/html/nco
+// scp ~/nco/data/hdf.nc ~/nco/data/in_4.nc dust.ess.uci.edu:/var/www/html/dodsdata
+// mswrite -t 365 ~/nco/data/hdf.nc /ZENDER/tmp/hdf.nc
+// mswrite -t 365 ~/nco/data/hdf.nc /ZENDER/tmp/h0001.nc
+// mswrite -t 365 ~/nco/data/hdf.nc /ZENDER/tmp/h0002.nc
+// mswrite -t 365 ~/nco/data/hdf.nc /ZENDER/tmp/h0003.nc
+// mswrite -t 365 ~/nco/data/hdf.nc /ZENDER/tmp/h0004.nc
+// msrcp -period 365 ~/nco/data/hdf.nc mss:/ZENDER/tmp/hdf.nc
+// msrcp -period 365 ~/nco/data/hdf.nc mss:/ZENDER/tmp/h0001.nc
+// msrcp -period 365 ~/nco/data/hdf.nc mss:/ZENDER/tmp/h0002.nc
+// msrcp -period 365 ~/nco/data/hdf.nc mss:/ZENDER/tmp/h0003.nc
+// msrcp -period 365 ~/nco/data/hdf.nc mss:/ZENDER/tmp/h0004.nc
 
 // WARNING: Changing values of variables below, especially coordinate variables, affects outcome of nco_tst.pl test script
 // Other programs, e.g., ~/f/fff.F90, ~/c++/ccc.cc, ~/c/c.c may also break
@@ -49,7 +46,7 @@
 // roulee:/data/zender/tmp/netcdf-4.2.1/nc_test/ref_tst_diskless2.cdl
 
 // NCL usage:
-// id_in=addfile("/home/zender/nco/data/in.nc","r")
+// id_in=addfile("/home/zender/nco/data/hdf.nc","r")
 // print(id_in)
 // list_filevars(id_in)
 
@@ -60,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.182 2013-12-22 21:10:00 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/hdf.cdl,v 1.1 2013-12-22 21:10:00 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -496,6 +493,7 @@ variables:
 	char fl_nm_rec(time,char_dmn_lng80);
 	fl_nm_rec:long_name = "A record variable of file names";
 	fl_nm_rec:units = "[sng]";
+        fl_nm_rec:NB = "20131222: HDF4 ncgen fails on this variable: /usr/bin/hncgen -b -o ~/in.hdf ~/nco/data/in.cdl produces error message that \"string won't fit in this variable\"";
 
 	char date_rec(time,char_dmn_lng26);
 	date_rec:long_name = "A record variable of date strings";
@@ -1167,7 +1165,7 @@ data:
 	one_dmn_rec_var_mdn=1,1,2,2,2,2,10,10,10,10;
 	one_dmn_rec_var_mdn__FillValue=1,-999,2,2,-999,-999,10,10,10,-999;
 	RDM=1,9,36,84,126,126,84,36,9,1;
-	one_dmn_rec_var_sng="Hello Worl";
+	//	one_dmn_rec_var_sng="Hello Worl";
 	one_dmn_var=1.,10.;
 	one_dmn_int_val_one=1,1;
 	one_dmn_int_val_two=2,2;
@@ -1360,16 +1358,16 @@ data:
 	fl_nm_arr="/data/zender/dstccm04/dstccm04_8589_01.nc",
 		"/data/zender/dstccm04/dstccm04_8589_02.nc",
 		"/data/zender/dstccm04/dstccm04_8589_03.nc";
-	fl_nm_rec="/data/zender/dstccm04/dstccm04_8589_01.nc",
-	  "/data/zender/dstccm04/dstccm04_8589_02.nc",
-	  "/data/zender/dstccm04/dstccm04_8589_03.nc",
-	  "/data/zender/dstccm04/dstccm04_8589_04.nc",
-	  "/data/zender/dstccm04/dstccm04_8589_05.nc",
-	  "/data/zender/dstccm04/dstccm04_8589_06.nc",
-	  "/data/zender/dstccm04/dstccm04_8589_07.nc",
-	  "/data/zender/dstccm04/dstccm04_8589_08.nc",
-	  "/data/zender/dstccm04/dstccm04_8589_09.nc",
-	  "/data/zender/dstccm04/dstccm04_8589_10.nc";
+//	fl_nm_rec="/data/zender/dstccm04/dstccm04_8589_01.nc",
+//	  "/data/zender/dstccm04/dstccm04_8589_02.nc",
+//	  "/data/zender/dstccm04/dstccm04_8589_03.nc",
+//	  "/data/zender/dstccm04/dstccm04_8589_04.nc",
+//	  "/data/zender/dstccm04/dstccm04_8589_05.nc",
+//	  "/data/zender/dstccm04/dstccm04_8589_06.nc",
+//	  "/data/zender/dstccm04/dstccm04_8589_07.nc",
+//	  "/data/zender/dstccm04/dstccm04_8589_08.nc",
+//	  "/data/zender/dstccm04/dstccm04_8589_09.nc",
+//	  "/data/zender/dstccm04/dstccm04_8589_10.nc";
 	date_rec="2010-11-01T00:00:00.000000",
 	  "2010-11-01T01:00:00.000000",
 	  "2010-11-01T02:00:00.000000",
