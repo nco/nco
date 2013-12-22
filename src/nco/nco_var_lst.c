@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.163 2013-12-02 01:05:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.164 2013-12-22 20:36:28 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -898,13 +898,13 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   for(idx=0;idx<nbr_var;idx++){
 
     /* ncge case */
-    if (nco_prg_id == ncge){
+    if(nco_prg_id == ncge){
       /* Mark all variables as fixed and later detect ensemble variable in table to mark as processed */
       var_op_typ[idx]=fix_typ;
     }else{
       /* Initialize operation type to processed. Change to fixed where warranted later. */
       var_op_typ[idx]=prc_typ;
-    } /* ! ncge case */
+    } /* !ncge case */
 
     var_nm=var[idx]->nm;
     var_typ=var[idx]->type;
@@ -952,7 +952,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var[idx]->nm_fll,trv_tbl);
       /* If variable is template, mark as processed */
-      if (var_trv->flg_nsm_tpl && var_trv->nco_typ == nco_obj_typ_var){
+      if(var_trv->flg_nsm_tpl && var_trv->nco_typ == nco_obj_typ_var){
         assert(var_trv->flg_nsm_mbr == True);
         var_op_typ[idx]=prc_typ;
       }
@@ -1087,16 +1087,16 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       /* Do nothing */
       break;
     case ncbo:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING in order to perform a binary operation (e.g., subtraction)\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR or NC_STRING in order to perform a binary operation (e.g., subtraction)\n",nco_prg_nm_get());
       break;
     case ncfe:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR, or NC_STRING\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR or NC_STRING\n",nco_prg_nm_get());
       break;
     case ncecat:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable\n",nco_prg_nm_get());
       break;
     case ncflint:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that is not NC_CHAR, or NC_STRING\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that is not NC_CHAR or NC_STRING\n",nco_prg_nm_get());
       break;
     case ncks:
       /* Do nothing */
@@ -1105,7 +1105,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that shares at least one dimension with the re-order list\n",nco_prg_nm_get());
       break;
     case ncra:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_CHAR, or NC_STRING\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_CHAR or NC_STRING\n",nco_prg_nm_get());
       break;
     case ncrcat:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable which to concatenate\n",nco_prg_nm_get());

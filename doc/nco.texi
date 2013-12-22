@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.926 2013-12-20 06:56:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.927 2013-12-22 20:36:28 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1782,8 +1782,8 @@ First, let's describe the concatenators, then the statistics tools.
 @cindex @command{ncecat}
 @cindex @command{ncrcat}
 
-Joining independent files together along a record dimension is called
-@dfn{concatenation}.    
+Joining together independent files along a common record dimension is
+called @dfn{concatenation}.    
 @command{ncrcat} is designed for concatenating record variables, while
 @command{ncecat} is designed for concatenating fixed length variables.
 Consider five files, @file{85.nc}, @file{86.nc}, 
@@ -1815,8 +1815,8 @@ dimension of the same name and a new record dimension (named
 Consider five realizations, @file{85a.nc}, @file{85b.nc}, 
 @w{@dots{} @file{85e.nc}} of 1985 predictions from the same climate
 model. 
-Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations
-together into the single file, @file{85_ens.nc}. 
+Then @code{ncecat 85?.nc 85_ens.nc} glues together the individual
+realizations into the single file, @file{85_ens.nc}. 
 If an input variable was dimensioned [@code{lat},@code{lon}], it will
 have dimensions [@code{record},@code{lat},@code{lon}] in the output file.
 @w{A restriction} of @command{ncecat} is that the hyperslabs of the
@@ -4841,8 +4841,8 @@ record, and define a sub-cycle as three consecutive records''.
 A separate option, @samp{--mro}, instructs @command{ncra} to output 
 its results from each sub-group, and to produce a @dfn{Multi-Record Output}
 (MRO) file rather than a @dfn{Single-Record Output} (SRO) file.
-Unless @samp{--mro} is specified, @command{ncra} collects all the
-sub-groups together, operates on their ensemble, and produces a single
+Unless @samp{--mro} is specified, @command{ncra} collects together all
+the sub-groups, operates on their ensemble, and produces a single
 output record. 
 The addition of @samp{--mro} to the above example causes @command{ncra}
 to archive all (150) annual summertime means to one file:
@@ -7809,8 +7809,7 @@ format @var{time} since @var{base_time}, e.g., the @code{units}
 attribute of @code{time} might be 
 @samp{days since 1992-10-8 15:15:42.5 -6:00}. 
 @w{A problem} with this format occurs when using @command{ncrcat} to
-concatenate multiple files together, each with a different
-@var{base_time}. 
+concatenate multiple files, each with a different @var{base_time}. 
 That is, any @code{time} values from files following the first file to
 be concatenated should be corrected to the @var{base_time} offset
 specified in the @code{units} attribute of @code{time} from the first
@@ -9094,8 +9093,7 @@ print(three_dmn_var_dbl);
 The convention within this document is that methods can be used as 
 functions. 
 However, functions are not and cannot be used as methods.
-Methods can be daisy changed together and their syntax is cleaner than
-functions. 
+Methods can be daisy-chained d and their syntax is cleaner than functions. 
 Method names are reserved words and CANNOT be used as variable names.  
 The command @code{ncap2 -f} shows the complete list of methods available
 on your build. 
@@ -9106,7 +9104,7 @@ n2=sin(theta)^2 + cos(theta)^2
 n2=theta.sin().pow(2) + theta.cos()^2
 @end example
 
-This statement chains methods together to convert three_dmn_var_sht to
+This statement chains together methods to convert three_dmn_var_sht to
 type double, average it, then convert this back to type short: 
 @example
 three_avg=three_dmn_var_sht.double().avg().short();
@@ -10796,7 +10794,7 @@ First, the commands may be placed in a script which is executed, e.g.,
 @file{tst.nco}. 
 Second, the commands may be individually specified with multiple
 @samp{-s} arguments to the same @command{ncap2} invocation.
-Third, the commands may be chained together into a single @samp{-s}
+Third, the commands may be chained into a single @samp{-s}
 argument to @command{ncap2}.
 Assuming the file @file{tst.nco} contains the commands
 @code{a=3;b=4;c=sqrt(a^2+b^2);}, then the following @command{ncap2}
@@ -11659,8 +11657,7 @@ e.g., 1.0e36, differs between two machines then netCDF files produced
 on those machines will have incompatible missing values.
 This allows @command{ncatted} to change the missing values in files from 
 different machines to a single value so that the files may then be 
-concatenated together, e.g., by @command{ncrcat}, without losing any
-information.   
+concatenated, e.g., by @command{ncrcat}, without losing information.   
 @xref{Missing Values}, for more information.
 
 To master @command{ncatted} one must understand the meaning of the
@@ -11668,8 +11665,7 @@ structure that describes the attribute modification, @var{att_dsc}
 specified by the required option @samp{-a} or @samp{--attribute}. 
 Each @var{att_dsc} contains five elements, which makes using
 @command{ncatted} somewhat complicated, yet powerful.
-The @var{att_dsc} argument structure contains five arguments in the
-following order:@* 
+The @var{att_dsc} fields are in the following order:@* 
 
 @var{att_dsc} = @var{att_nm}, @var{var_nm}, @var{mode}, @var{att_type},
 @var{att_val}@*
@@ -11723,12 +11719,12 @@ There are three very important and useful exceptions to this rule.
 The value of @var{var_nm} can also be used to direct @command{ncatted}
 to edit global attributes, or to repeat the editing operation for every 
 group or variable in a file.
-@w{A value} of @var{var_nm} of ``global'' indicates that @var{att_nm}
+@w{A value} of @var{var_nm} of @code{global} indicates that @var{att_nm}
 refers to a global (i.e., root-level) attribute, rather than to a
 particular variable's attribute. 
 This is the method @command{ncatted} supports for editing global
 attributes.
-@w{A value} of @var{var_nm} of ``group'' indicates that @var{att_nm}
+@w{A value} of @var{var_nm} of @code{group} indicates that @var{att_nm}
 refers to all groups, rather than to a particular variable's or group's
 attribute.  
 The operation will proceed to edit group metadata for every group.
@@ -12484,7 +12480,7 @@ each month's data from the five-year mean:
 ncbo 8501_8912.nc 8589.nc t_anm_8501_8912.nc
 @end example
 @noindent
-Now use @command{ncks} to group the five January anomalies together in
+Now use @command{ncks} to group together the five January anomalies in
 one file, and use @command{ncra} to create the average anomaly for all
 five Januarys. 
 These commands are embedded in a shell loop so they are repeated for all
@@ -12784,8 +12780,8 @@ copied from the first input file to the @var{output-file}.
 All @var{input-files} must contain all extracted variables (or else
 there would be "gaps" in the output file).
 
-A new record dimension is the glue which binds the input file data
-together. 
+A new record dimension is the glue which binds together the input file
+data.
 The new record dimension is defined in the root group of the output file
 so it is visible to all sub-groups.
 Its name is, by default, ``record''.
@@ -12889,8 +12885,8 @@ metadata via the @samp{-M} switch (or its long option equivalents,
 Consider five realizations, @file{85a.nc}, @file{85b.nc}, 
 @w{@dots{} @file{85e.nc}} of 1985 predictions from the same climate
 model. 
-Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations 
-together into the single file, @file{85_ens.nc}. 
+Then @code{ncecat 85?.nc 85_ens.nc} glues together the individual
+realizations into the single file, @file{85_ens.nc}. 
 If an input variable was dimensioned [@code{lat},@code{lon}], it will
 by default have dimensions [@code{record},@code{lat},@code{lon}] in
 the output file. 
@@ -13063,7 +13059,7 @@ interpolation option @w{with @samp{-i}} (or with the @samp{--ntp} or
 This is the inverse of the first method in the following sense: 
 When the user specifies the weights directly, @command{ncflint} has no
 work to do besides multiplying the input values by their respective
-weights and adding the results together to produce the output values.  
+weights and adding together the results to produce the output values.  
 It makes sense to use this when the weights are known 
 @emph{@w{a priori}}.
 

@@ -1,7 +1,11 @@
+2013-12-22  Charlie Zender  <zender@uci.edu>
+
+	* Fix/change --nsm_fl, --nsm_grp to not expect arguments
+
 2013-12-19  Pedro Vicente  <pvicente@uci.edu>
 
-	* Fixed -X bug, where extra array elements were being printed.
-	
+	* Fix -X bug, where extra array elements were being printed.
+
 	* Add use case for -X in scope variables, in in_grp_3.cdl.
 
 2013-12-19  Charlie Zender  <zender@uci.edu>

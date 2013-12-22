@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1121 2013-12-20 07:17:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1122 2013-12-22 20:36:28 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -899,8 +899,8 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 (trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Add all coordinates to extraction list
-  Find all coordinates (variables with same names and sizes as dimensions) and
-  ensure they are marked for extraction */
+     Find all coordinates (variables with same names and sizes as dimensions) and
+     ensure they are marked for extraction */
 
   const char fnc_nm[]="nco_xtr_crd_add()"; /* [sng] Function name */
 
