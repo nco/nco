@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.447 2013-12-19 05:56:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.448 2013-12-22 22:43:02 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -265,6 +265,29 @@ extern "C" {
 #endif
 #ifndef NC_FORMAT_NETCDF4_CLASSIC
 # define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
+#endif
+
+  /* Seven compatibility tokens introduced 20131222 in netCDF 4.3.1-rc7 netcdf.h */
+#ifndef NC_FORMAT_NC3
+# define NC_FORMAT_NC3     (1)
+#endif
+#ifndef NC_FORMAT_NC_HDF5
+# define NC_FORMAT_NC_HDF5 (2) /*cdf 4 subset of HDF5 */
+#endif
+#ifndef NC_FORMAT_NC_HDF4
+# define NC_FORMAT_NC_HDF4 (3) /* netcdf 4 subset of HDF4 */
+#endif
+#ifndef NC_FORMAT_PNETCDF
+# define NC_FORMAT_PNETCDF (4)
+#endif
+#ifndef NC_FORMAT_DAP2
+# define NC_FORMAT_DAP2    (5)
+#endif
+#ifndef NC_FORMAT_DAP4
+# define NC_FORMAT_DAP4    (6)
+#endif
+#ifndef NC_FORMAT_UNDEFINED
+# define NC_FORMAT_UNDEFINED (0)
 #endif
 
   /* Backwards-compatibility error codes for netCDF4

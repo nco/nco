@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.103 2013-11-16 15:20:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.104 2013-12-22 22:43:02 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -197,9 +197,14 @@ int nco_close(const int nc_id);
 int nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * const att_glb_nbr,int * const rec_dmn_id);
 #if NEED_NC_INQ_FORMAT
 /* Stub for nc_inq_format(), which appeared in netCDF 3.6.1 or 3.6.2 */
-int nc_inq_format(int nc_id, int * const fl_fmt);
+int nc_inq_format(int nc_id,int * const fl_fmt);
 #endif /* !NEED_NC_INQ_FORMAT */
 int nco_inq_format(const int nc_id,int * const fl_fmt);
+#if NEED_NC_INQ_FORMAT_EXTENDED
+/* 20131222: Stub for nc_inq_format_extended(), which appeared in netCDF 4.3.1-rc7 */
+int nc_inq_format_extended(int nc_id,int * const fl_fmt,int * const mode);
+#endif /* !NEED_NC_INQ_FORMAT_EXTENDED */
+int nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode);
 int nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_inq_ndims(const int nc_id,int * const dmn_nbr_fl);

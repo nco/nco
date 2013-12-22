@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.212 2013-12-04 23:59:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.213 2013-12-22 22:43:02 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -674,6 +674,29 @@ nco_inq_format(const int nc_id,int * const fl_fmt)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format()");
   return rcd;
 } /* end nco_inq_format() */
+
+#ifdef NEED_NC_INQ_FORMAT_EXTENDED
+int nc_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
+{
+  /* Purpose: 20131222: Stub for nc_inq_format_extended(), which appeared in netCDF 4.3.1-rc7
+     Forward compatibility prototype required for systems with netCDF < 4.3.1 */
+  int rcd=NC_NOERR;
+  *fl_fmt=NC_FORMAT_UNDEFINED; /* [enm] Output file format */
+  *mode=0; /* [enm] Output file format */
+  return NC_NOERR+0*nc_id; /* CEWI */
+} /* end nc_inq_format_extended() */
+#endif /* !NEED_NC_INQ_FORMAT_EXTENDED */
+int
+nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
+{
+  /* Purpose: Wrapper for nc_inq_format_extended() */
+  int rcd=NC_NOERR;
+  /* NB: 20131222: Function nc_inq_format_extended(int ncid,int *formatp,int *mode) appeared in netCDF 4.3.1-rc7
+     Forward compatibility prototype required for systems with netCDF < 4.3.1 */
+  rcd=nc_inq_format_extended(nc_id,fl_fmt,mode);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format_extended()");
+  return rcd;
+} /* end nco_inq_format_extended() */
 
 #ifdef HAVE_NETCDF4_H
 int

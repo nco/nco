@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.351 2013-12-04 22:56:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.352 2013-12-22 22:43:02 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1461,13 +1461,13 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
   } /* endif err */
 
   /* 20100923: Any need to refresh storage properties (shuffle,deflate,dfl_lvl,cnk_sz) here?
-  Certainly they can change between files, that alone is not reason to refresh them
-  Unlike missing values, storage properties in input are transparent to arithmetic
-  The netCDF/HDF5 I/O layer handles all this transparently
-  Moreover, output storage properties must be set just after variable definition, long before nco_var_mtd_refresh()
-  So storage properties of variable in current file cannot affect arithmetic, nor output
-  Hence there is no reason to track current storage properties in var_sct
-  However, if that ever changes, here are hooks to do so */
+     Certainly they can change between files, that alone is not reason to refresh them
+     Unlike missing values, storage properties in input are transparent to arithmetic
+     The netCDF/HDF5 I/O layer handles all this transparently
+     Moreover, output storage properties must be set just after variable definition, long before nco_var_mtd_refresh()
+     So storage properties of variable in current file cannot affect arithmetic, nor output
+     Hence there is no reason to track current storage properties in var_sct
+     However, if that ever changes, here are hooks to do so */
   if(False && var->nbr_dim > 0){
     int deflate; /* [flg] Turn on deflate filter */
     int srg_typ; /* [enm] Storage type */
@@ -1483,9 +1483,9 @@ nco_var_mtd_refresh /* [fnc] Update variable metadata (dmn_nbr, ID, mss_val, typ
 
 #if 0
   /* PJR requested warning to be added when multiple file operators worked on 
-  variables with missing_value since so many things could go wrong
-  Now un-necessary since multi-file packing ostensibly works
-  Leave code here in case we find it does not work */
+     variables with missing_value since so many things could go wrong
+     Now un-necessary since multi-file packing ostensibly works
+     Leave code here in case we find it does not work */
   if(nco_is_rth_opr(nco_prg_id_get()) && var->pck_dsk){
     if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"NCO_MSS_VAL_SNG\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...\n",nco_prg_nm_get(),var_nm);
   } /* endif variable is packed */

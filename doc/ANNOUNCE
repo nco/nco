@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.660 2013-12-20 06:56:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.661 2013-12-22 22:43:02 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -181,8 +181,16 @@ D. NOT YET FIXED
    Report correct chunking and compression information for HDF4 files
 
    Demonstration:
-   ncdump -h -s MOP01-20121231-L1V3.34.10.hdf
-   ncks -m MOP01-20121231-L1V3.34.10.hdf
+   ncdump -h -s MOD10CM.A2007001.005.2007108111758.hdf
+   ncks -m MOD10CM.A2007001.005.2007108111758.hdf
+
+   20131222: Verified problem still exists
+
+   Cause: some libnetCDF library functions fail on HDF4 file inquiries.
+   Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file
+   Tracking tickets NCF-272, NCF-273
+
+[E. FIXED in netCDF 4
 
    20131007: Verified problem still exists
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.678 2013-12-19 19:07:57 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.679 2013-12-22 22:43:02 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -1800,7 +1800,7 @@ ${MY_DAT_DIR}/buggy.nc: ${MY_DAT_DIR}/buggy.cdl
 dap:	data
 	-cd ~/nco/data; scp in.nc in.cdl dust.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/var/www/html/dodsdata; scp in.nc in.cdl esmf.ess.uci.edu:/data/dodsdata
 data:	dat
-dat:	${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/dsm.nc ${MY_DAT_DIR}/mdl.nc ${MY_DAT_DIR}/mdl2.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_rec_zero.nc
+dat:	${MY_DAT_DIR}/cmip5.nc ${MY_DAT_DIR}/obs.nc ${MY_DAT_DIR}/dsm.nc ${MY_DAT_DIR}/hdf.hdf ${MY_DAT_DIR}/mdl.nc ${MY_DAT_DIR}/mdl2.nc ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/in_grp.nc ${MY_DAT_DIR}/in_4.nc ${MY_DAT_DIR}/in_grp_1.nc ${MY_DAT_DIR}/in_grp_2.nc ${MY_DAT_DIR}/in_grp_3.nc ${MY_DAT_DIR}/in_rec_zero.nc
 	-for fl in ${MDL_DAT_STB}; do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	ncgen -b -o $@ $<
@@ -1826,6 +1826,8 @@ ${MY_DAT_DIR}/dsm.nc: ${MY_DAT_DIR}/dsm.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/obs.nc: ${MY_DAT_DIR}/obs.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
+${MY_DAT_DIR}/hdf.hdf: ${MY_DAT_DIR}/hdf.cdl
+	-hncgen -b -o $@ $<
 ${MY_DAT_DIR}/mdl.nc: ${MY_DAT_DIR}/mdl.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/mdl2.nc: ${MY_DAT_DIR}/mdl2.cdl
@@ -2071,7 +2073,7 @@ dbg:
 distclean: dst_cln
 dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
-	cd ${MY_DAT_DIR}; rm -f buggy.nc cmip5.nc dsm.nc obs.nc mdl.nc mdl2.nc in.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_rec_zero.nc *~
+	cd ${MY_DAT_DIR}; rm -f buggy.nc cmip5.nc dsm.nc obs.nc hdf.hdf mdl.nc mdl2.nc in.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_rec_zero.nc *~
 tags: 
 	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
 

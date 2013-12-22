@@ -57,7 +57,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/hdf.cdl,v 1.1 2013-12-22 21:10:00 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/hdf.cdl,v 1.2 2013-12-22 22:43:02 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -490,10 +490,10 @@ variables:
 	fl_nm_arr:long_name = "Variable that contains a short array of file names";
 	fl_nm_arr:units = "[sng]";
 
-	char fl_nm_rec(time,char_dmn_lng80);
-	fl_nm_rec:long_name = "A record variable of file names";
-	fl_nm_rec:units = "[sng]";
-        fl_nm_rec:NB = "20131222: HDF4 ncgen fails on this variable: /usr/bin/hncgen -b -o ~/in.hdf ~/nco/data/in.cdl produces error message that \"string won't fit in this variable\"";
+	//	char fl_nm_rec(time,char_dmn_lng80);
+	//	fl_nm_rec:long_name = "A record variable of file names";
+	//fl_nm_rec:units = "[sng]";
+        //fl_nm_rec:NB = "20131222: HDF4 ncgen fails on this variable: /usr/bin/hncgen -b -o ~/in.hdf ~/nco/data/in.cdl produces error message that \"string won't fit in this variable\"";
 
 	char date_rec(time,char_dmn_lng26);
 	date_rec:long_name = "A record variable of date strings";
@@ -926,9 +926,9 @@ variables:
         rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_dbl_pck_lng:add_offset = 5.;
 
-	char one_dmn_rec_var_sng(time);
-	one_dmn_rec_var_sng:long_name = "one dimensional record variable of string";
-        one_dmn_rec_var_sng:NB = "20131222: HDF4 ncgen fails on this variable: /usr/bin/hncgen -b -o ~/in.hdf ~/nco/data/in.cdl produces error message that \"string won't fit in this variable\"";
+	//	char one_dmn_rec_var_sng(time);
+	//	one_dmn_rec_var_sng:long_name = "one dimensional record variable of string";
+	//        one_dmn_rec_var_sng:NB = "20131222: HDF4 ncgen fails on this variable: /usr/bin/hncgen -b -o ~/in.hdf ~/nco/data/in.cdl produces error message that \"string won't fit in this variable\"";
 
 	float time_lon(time,lon);
 	time_lon:long_name = "Record variable of longitude coordinate";

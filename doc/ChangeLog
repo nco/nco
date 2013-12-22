@@ -1,5 +1,9 @@
 2013-12-22  Charlie Zender  <zender@uci.edu>
 
+	* Add nco_inq_format_extended() stubs
+
+	* Add hdf.cdl to generate HDF4 files for testing
+
 	* Fix/change --nsm_fl, --nsm_grp to not expect arguments
 
 2013-12-19  Pedro Vicente  <pvicente@uci.edu>
