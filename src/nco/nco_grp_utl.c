@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1124 2013-12-23 06:18:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1125 2013-12-23 07:32:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6512,9 +6512,31 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 {
   /* Purpose: Construct GTT, Group Traversal Table (groups, variables, dimensions, limits) 
 
-     1) Call sequence is important: 
-     nco_trv_hsh_bld() must be called after nco_grp_itr() because other functions use hash table 
-     2) Dimension limit structures are handled internaly in this function and not exported */
+  Notes:
+  * Dimension limit structures are handled internaly in this function and not exported
+  * Call sequence is important: 
+  1) nco_trv_hsh_bld() must be called after nco_grp_itr() because other functions use hash table 
+  2) nco_grp_itr() must be first, main iterator function. Then
+  nco_bld_dmn_ids_trv()
+  nco_bld_crd_rec_var_trv()
+  nco_bld_crd_var_trv()
+  nco_has_crd_dmn_scp()
+  nco_bld_var_dmn()
+  complete structures for the traversal table to be completed.
+  Then, user options functions are called:
+  nco_xtr_mk()
+  nco_xtr_xcl()
+  nco_xtr_crd_add()
+  nco_xtr_crd_ass_add()
+  nco_xtr_cf_add()
+  Limits related function must be called in order:
+  nco_lmt_prs()
+  nco_bld_aux_crd()
+  nco_chk_dmn_in()
+  Two functions called for specific operators are:
+  ncbo: trv_tbl_srt()
+  nces nco_bld_nsm() 
+  */
 
   nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 

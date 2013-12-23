@@ -1,3 +1,7 @@
+2013-12-22  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncks regression #74: -c option, extract all coordinate variables
+
 2013-12-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.0 release procedure:
