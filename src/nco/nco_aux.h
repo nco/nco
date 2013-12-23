@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.17 2013-12-19 21:08:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.18 2013-12-23 08:14:08 pvicente Exp $ */
 
 /* Purpose: Sub-set cell-based grids using auxiliary coordinate variable */
 
@@ -63,6 +63,14 @@ nco_aux_prs
  float *lon_max, 
  float *lat_min, 
  float *lat_max);
+
+lmt_sct **
+nco_aux_evl_trv
+(int in_id, 
+ int aux_nbr, 
+ char *aux_arg[],
+ int *lmt_nbr,
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */

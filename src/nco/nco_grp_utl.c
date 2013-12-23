@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1125 2013-12-23 07:32:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1126 2013-12-23 08:14:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1189,6 +1189,12 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
                 /* Mark it for extraction */
                 (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
+#if 0
+                /* TODO 8516. nco: subsetting should exclude ancestor out-of-scope coordinates */
+
+                if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
+                return;
+#endif
 
               } /* If variable is on list, mark it for extraction */
 
@@ -3161,6 +3167,11 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   int aux_idx_nbr;
   int grp_id;
 
+#ifndef USE_AUX_EVL_TRV 
+  /* Replacement for nco_aux_evl(), that does the table loop internally, called below
+  TODO Make ncks -X arguments (for auxiliary coordinates) group-compatible.
+  */
+
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
@@ -3236,6 +3247,27 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       } /* Found limits */
     } /* Filter variables */ 
   } /* Loop table */
+
+#else /* USE_AUX_EVL_TRV */
+
+  lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
+  aux=nco_aux_evl_trv(nc_id,aux_nbr,aux_arg,&aux_idx_nbr,trv_tbl);
+
+  /* Found limits */
+  if(aux_idx_nbr > 0){
+
+    (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
+    int lmt_nbr_new=*lmt_nbr+aux_idx_nbr;
+    int aux_idx=0;
+    for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
+    *lmt_nbr=lmt_nbr_new;
+
+    aux=(lmt_sct **)nco_free(aux); 
+
+  } /* Found limits */
+
+
+#endif /* USE_AUX_EVL_TRV */
 
   return;
 } /* nco_bld_aux_crd() */
