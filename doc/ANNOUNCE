@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.661 2013-12-22 22:43:02 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.662 2013-12-23 05:25:08 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -124,7 +124,12 @@ A. Versions 4.3.6--4.3.9 of ncra could treat missing values
    http://nco.sf.net#bug_ncra_mss_val
 
 A. Versions through 4.3.9 would not always copy/print groups that
-   contain only metadata (i.e., contain no variables). Fixed.
+   contain _only_ metadata (i.e., contain no variables). Fixed.
+
+A. The -c switch, which instructs NCO to extract all coordinate
+   variables, was broken in versions 4.3.fxm-4.3.9. Now fixed.
+   
+A. The -X switch 
 
 KNOWN ISSUES NOT YET FIXED:
 
@@ -190,17 +195,10 @@ D. NOT YET FIXED
    Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file
    Tracking tickets NCF-272, NCF-273
 
-[E. FIXED in netCDF 4
-
-   20131007: Verified problem still exists
-
-   Cause: some libnetCDF library functions fail on HDF4 file inquiries.
-   Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file
-   Tracking tickets NCF-272, NCF-273
-
-[E. FIXED in netCDF 4.3.1-rc5 ... please upgrade] 
+E. [FIXED in netCDF 4.3.1-rc5 ... please upgrade] 
    netCDF4 library fails when renaming dimension and variable using
    that dimension, in either order. Works fine with netCDF3.
+   Also library causes var rename to imply dimension rename, and visa versa.
    Hence coordinate renaming does not work with netCDF4 files.
    Problem with netCDF4 library implementation.
 
@@ -211,8 +209,8 @@ D. NOT YET FIXED
 
    20130724: FIXED in netCDF 4.3.1-rc5 in 201212. Will be in netCDF 4.3.1.
    Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file 
-   Workaround: Use ncrename twice; first rename the variable, then
-   rename the dimension. 
+   Workaround: Use ncrename twice; first rename the variable, then rename the dimension. 
+   More Info: http://nco.sf.net/nco.html#ncrename_crd
 
 "Sticky" reminders:
 

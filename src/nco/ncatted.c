@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.178 2013-12-10 17:34:03 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.179 2013-12-23 05:25:08 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.178 2013-12-10 17:34:03 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.178 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.179 2013-12-23 05:25:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.179 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -260,7 +260,7 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
-      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
+      if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

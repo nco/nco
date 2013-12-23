@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.448 2013-12-22 22:43:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.449 2013-12-23 05:25:08 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -175,10 +175,11 @@ extern "C" {
   char *nco_prg_nm_get(void);
   int nco_prg_id_get(void);
   unsigned short nco_dbg_lvl_get(void);
-  unsigned short nco_hdf_cnv_get(void);
+  unsigned short nco_fmt_xtn_get(void);
   unsigned short nco_mrd_cnv_get(void);
   unsigned short nco_rth_cnv_get(void);
   unsigned short nco_upk_cnv_get(void);
+  void nco_fmt_xtn_set(unsigned short nco_fmt_xtn_arg);
 
 #ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
   
@@ -193,8 +194,9 @@ extern "C" {
   unsigned short nco_dbg_lvl=0; /* [enm] Debugging level */
   unsigned short nco_dbg_lvl_get(void){return nco_dbg_lvl;} /* [enm] Debugging level */
 
-  unsigned short nco_hdf_cnv=0; /* [enm] HDF convention */
-  unsigned short nco_hdf_cnv_get(void){return nco_hdf_cnv;} /* [enm] HDF convention */
+  unsigned short nco_fmt_xtn=0; /* [enm] Extended file format */
+  unsigned short nco_fmt_xtn_get(void){return nco_fmt_xtn;} /* [enm] Extended file format */
+  void nco_fmt_xtn_set(unsigned short nco_fmt_xtn_arg){nco_fmt_xtn=nco_fmt_xtn_arg;} /* [enm] Extended file format */
 
   unsigned short nco_mrd_cnv=0; /* [enm] Multiple Record Dimension convention */
   unsigned short nco_mrd_cnv_get(void){return nco_mrd_cnv;} /* [enm] Multiple Record Dimension convention */
@@ -268,6 +270,11 @@ extern "C" {
 #endif
 
   /* Seven compatibility tokens introduced 20131222 in netCDF 4.3.1-rc7 netcdf.h */
+#ifndef NC_FORMAT_UNDEFINED
+# define NC_FORMAT_UNDEFINED (0)
+#else
+# define NC_HAVE_INQ_FORMAT_EXTENDED
+#endif
 #ifndef NC_FORMAT_NC3
 # define NC_FORMAT_NC3     (1)
 #endif
@@ -285,9 +292,6 @@ extern "C" {
 #endif
 #ifndef NC_FORMAT_DAP4
 # define NC_FORMAT_DAP4    (6)
-#endif
-#ifndef NC_FORMAT_UNDEFINED
-# define NC_FORMAT_UNDEFINED (0)
 #endif
 
   /* Backwards-compatibility error codes for netCDF4
@@ -461,12 +465,16 @@ extern "C" {
     nco_obj_typ_nonatomic_var /*  2, Variable of non-atomic type (vlen, opaque, enum, compound, user-defined) */
   } nco_obj_typ;
   
-  enum nco_hdf_cnv{ /* [enm] HDF convention */
-    /* This currently could be implemented as a flag rather than an enum
-       General case may need more than binary option so use enum */
-    nco_hdf_nil, /* 0 No special treatment */
-    nco_hdf4 /* 1 Treat file as HDF4 */
-  }; /* end nco_hdf_cnv */
+  enum nco_fmt_xtn{ /* [enm] Extended or underlying filetype */
+    /* 20131222: Tokens defined as of netCDF 4.3.1-rc7 */
+    nco_fmt_xtn_nil=NC_FORMAT_UNDEFINED, /* 0 Undefined (more precisely, not yet defined) */
+    nco_fmt_xtn_nc3=NC_FORMAT_NC3, /* 1 netCDF3 */
+    nco_fmt_xtn_hdf5=NC_FORMAT_NC_HDF5, /* 2 HDF5 */
+    nco_fmt_xtn_hdf4=NC_FORMAT_NC_HDF4, /* 3 HDF4 */
+    nco_fmt_xtn_pnetcdf=NC_FORMAT_PNETCDF, /* 4 PnetCDF */
+    nco_fmt_xtn_dap2=NC_FORMAT_DAP2, /* 5 DAP2 */
+    nco_fmt_xtn_dap4=NC_FORMAT_DAP4, /* 6 DAP4 */
+  }; /* end nco_fmt_xtn */
 
   enum nco_mrd_cnv{ /* [enm] Multiple Record Dimension convention: for ncecat and ncpdq */
     /* This currently could be implemented as a flag rather than an enum

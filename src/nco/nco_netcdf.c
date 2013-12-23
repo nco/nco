@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.213 2013-12-22 22:43:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.214 2013-12-23 05:25:08 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -7,6 +7,7 @@
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
+
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
@@ -393,6 +394,7 @@ const char * /* O [sng] String describing file format */
 nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
 (const int fl_fmt) /* I [enm] netCDF file format */
 {
+  /* Purpose: Convert netCDF file format enum to string */
   switch(fl_fmt){
   case NC_FORMAT_CLASSIC:
     return "NC_FORMAT_CLASSIC";
@@ -408,6 +410,33 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_fmt_sng() */
+
+const char * /* O [sng] String describing extended file format */
+nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
+(const int fl_fmt_xtn) /* I [enm] netCDF extended file format */
+{
+  /* Purpose: Convert netCDF extended file format enum to string */
+  switch(fl_fmt_xtn){
+  case NC_FORMAT_NC3:
+    return "NC_FORMAT_NC3";
+  case NC_FORMAT_NC_HDF5:
+    return "NC_FORMAT_HDF5";
+  case NC_FORMAT_NC_HDF4:
+    return "NC_FORMAT_HDF4";
+  case NC_FORMAT_PNETCDF:
+    return "NC_FORMAT_PNETCDF";
+  case NC_FORMAT_DAP2:
+    return "NC_FORMAT_DAP2";
+  case NC_FORMAT_DAP4:
+    return "NC_FORMAT_DAP4";
+  case NC_FORMAT_UNDEFINED:
+    return "NC_FORMAT_UNDEFINED";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_fmt_xtn_sng() */
 
 void
 nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(nc_type) case */
@@ -662,7 +691,7 @@ int nc_inq_format(int nc_id, int * const fl_fmt)
   *fl_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   return NC_NOERR+0*nc_id; /* CEWI */
 } /* end nc_inq_format() */
-#endif /* !NEED_NC_INQ_FORMAT */
+#endif /* !NEED_NC_INQ_FORMAT */o
 int
 nco_inq_format(const int nc_id,int * const fl_fmt)
 {
@@ -675,7 +704,7 @@ nco_inq_format(const int nc_id,int * const fl_fmt)
   return rcd;
 } /* end nco_inq_format() */
 
-#ifdef NEED_NC_INQ_FORMAT_EXTENDED
+#ifndef NC_HAVE_INQ_FORMAT_EXTENDED
 int nc_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
 {
   /* Purpose: 20131222: Stub for nc_inq_format_extended(), which appeared in netCDF 4.3.1-rc7
@@ -685,7 +714,7 @@ int nc_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
   *mode=0; /* [enm] Output file format */
   return NC_NOERR+0*nc_id; /* CEWI */
 } /* end nc_inq_format_extended() */
-#endif /* !NEED_NC_INQ_FORMAT_EXTENDED */
+#endif /* !NC_HAVE_INQ_FORMAT_EXTENDED */
 int
 nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
 {

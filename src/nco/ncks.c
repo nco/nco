@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.685 2013-12-18 19:54:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.686 2013-12-23 05:25:08 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -157,8 +157,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.685 2013-12-18 19:54:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.685 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.686 2013-12-23 05:25:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.686 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -417,7 +417,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
       if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
       if(!strcmp(opt_crr,"get_prg_info")) GET_PRG_INFO=True;
-      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
+      if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

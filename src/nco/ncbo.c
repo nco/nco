@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.273 2013-12-12 22:12:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.274 2013-12-23 05:25:08 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.273 2013-12-12 22:12:38 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.273 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.274 2013-12-23 05:25:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.274 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -353,7 +353,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"ddra") || !strcmp(opt_crr,"mdl_cmp")) ddra_info.flg_ddra=flg_ddra=True; /* [flg] DDRA diagnostics */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
-      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
+      if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdf_upk") || !strcmp(opt_crr,"hdf_unpack")) nco_upk_cnv=nco_upk_HDF; /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);

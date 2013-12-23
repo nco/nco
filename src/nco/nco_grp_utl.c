@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1122 2013-12-22 20:36:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1123 2013-12-23 05:25:08 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4271,7 +4271,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
   for(int idx=0;idx<var->nbr_dim;idx++) var->cnk_sz[idx]=(size_t)0L;
 
   /* Read deflate levels and chunking (if any) */  
-  if((nco_hdf_cnv_get() != nco_hdf4) && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
+  if((nco_fmt_xtn_get() != nco_fmt_xtn_hdf4) && (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC)){
     int deflate; /* [enm] Deflate filter is on */
     int srg_typ; /* [enm] Storage type */
     (void)nco_inq_var_deflate(grp_id,var->id,&var->shuffle,&deflate,&var->dfl_lvl);    

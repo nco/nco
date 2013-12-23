@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.352 2013-12-17 21:34:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.353 2013-12-23 05:25:08 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.352 2013-12-17 21:34:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.352 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.353 2013-12-23 05:25:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.353 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -342,7 +342,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"gag") || !strcmp(opt_crr,"aggregate_group")) GROUP_AGGREGATE=True; /* [flg] Aggregate files into groups not records */
-      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
+      if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);

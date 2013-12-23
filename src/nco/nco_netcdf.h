@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.104 2013-12-22 22:43:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.105 2013-12-23 05:25:08 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -80,6 +80,12 @@
 #endif
 #ifndef NC_NOCHECKSUM
 # define NC_NOCHECKSUM 0
+#endif
+/* Compatibility token introduced 20131222 in netCDF 4.3.1-rc7 netcdf.h */
+#ifndef NC_FORMAT_UNDEFINED
+# define NC_FORMAT_UNDEFINED (0)
+#else
+# define NC_HAVE_INQ_FORMAT_EXTENDED
 #endif
 
 /* Some netCDF3 stubs for netCDF4 routines need netCDF4-only return codes
@@ -168,6 +174,10 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 const char * /* O [sng] String describing file format */
 nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
 (const int fl_fmt); /* I [enm] netCDF file format */
+
+const char * /* O [sng] String describing extended file format */
+nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
+(const int fl_fmt_xtn); /* I [enm] netCDF extended file format */
 /* End Utility Routines */
 
 #if 0
@@ -200,10 +210,10 @@ int nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * 
 int nc_inq_format(int nc_id,int * const fl_fmt);
 #endif /* !NEED_NC_INQ_FORMAT */
 int nco_inq_format(const int nc_id,int * const fl_fmt);
-#if NEED_NC_INQ_FORMAT_EXTENDED
+#ifndef NC_HAVE_INQ_FORMAT_EXTENDED
 /* 20131222: Stub for nc_inq_format_extended(), which appeared in netCDF 4.3.1-rc7 */
 int nc_inq_format_extended(int nc_id,int * const fl_fmt,int * const mode);
-#endif /* !NEED_NC_INQ_FORMAT_EXTENDED */
+#endif /* !NC_HAVE_INQ_FORMAT_EXTENDED */
 int nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode);
 int nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id);

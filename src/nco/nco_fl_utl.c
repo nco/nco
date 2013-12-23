@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.229 2013-12-04 22:56:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.230 2013-12-23 05:25:08 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1323,8 +1323,12 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 {
   /* Purpose: Open file using appropriate buffer size hints and verbosity
      ncks -O -D 3 --bfr_sz=8192 ~/nco/data/in.nc ~/foo.nc */
+  const char fnc_nm[]="nco_fl_open()"; /* [sng] Function name */
 
   int rcd=NC_NOERR; /* [rcd] Return code */
+  int fl_fmt_xtn_prv; /* I [enm] Previous extended file format */
+  int fl_fmt_xtn_crr; /* I [enm] Current  extended file format */
+  int mode; /* I [enm] Mode flag for nc_inq_format_extended() call */
 
   nco_bool flg_rqs_vrb_mpl; /* [flg] Sufficiently verbose implicit request */
   nco_bool flg_rqs_vrb_xpl; /* [flg] Sufficiently verbose explicit request */
@@ -1338,21 +1342,30 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   flg_rqs_vrb_mpl = ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_var) ? True : False;
 
   /* Is request explicit and sufficiently verbose? */
-  flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_fl ) ? True : False;
+  flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_fl)  ? True : False;
 
   /* Print implicit or explicit buffer request depending on debugging level */
-  if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer of default size\n",nco_prg_nm_get()); 
-  if(flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO nc__open() will request file buffer size = %lu bytes\n",nco_prg_nm_get(),(unsigned long)*bfr_sz_hnt); 
+  if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer of default size\n",nco_prg_nm_get(),fnc_nm); 
+  if(flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer size = %lu bytes\n",nco_prg_nm_get(),fnc_nm,(unsigned long)*bfr_sz_hnt); 
 
   /* Pass local copy of size hint otherwise user-specified value is overwritten on first call */
   rcd=nco__open(fl_nm,md_open,&bfr_sz_hnt_lcl,nc_id);
   
   /* Print results using same verbosity criteria
      NB: bfr_sz_hnt_lcl is never NULL because nco__open() always returns a valid size */
-  if(flg_rqs_vrb_mpl || flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO nc__open() opened file with buffer size = %lu bytes\n",nco_prg_nm_get(),(unsigned long)bfr_sz_hnt_lcl);
+  if(flg_rqs_vrb_mpl || flg_rqs_vrb_xpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() opened file with buffer size = %lu bytes\n",nco_prg_nm_get(),fnc_nm,(unsigned long)bfr_sz_hnt_lcl);
+
+  /* 20131222: Update underlying file-type using new nc_inq_format_extended() function */
+  fl_fmt_xtn_prv=nco_fmt_xtn_get();
+  rcd+=nco_inq_format_extended(*nc_id,&fl_fmt_xtn_crr,&mode);
+  /* Complain if set value of extended type does not match current type */
+  if((fl_fmt_xtn_prv != nco_fmt_xtn_nil) && (fl_fmt_xtn_prv != fl_fmt_xtn_crr)) (void)fprintf(stderr,"%s: WARNING %s reports current extended filetype = %s does not equal previous extended filetype = %s\n",nco_prg_nm_get(),fnc_nm,nco_fmt_xtn_sng(fl_fmt_xtn_crr),nco_fmt_xtn_sng(fl_fmt_xtn_prv));
+  /* If user did not set filetype manually, override it with actual filetype */
+  if(!fl_fmt_xtn_prv) nco_fmt_xtn_set(fl_fmt_xtn_crr);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Extended filetype of %s is %s, mode = %d\n",nco_prg_nm_get(),fl_nm,nco_fmt_xtn_sng(fl_fmt_xtn_crr),mode);
 
   return rcd;
-} /* end nco_fl_open */
+} /* end nco_fl_open() */
 
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */

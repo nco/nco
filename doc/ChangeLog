@@ -1,10 +1,20 @@
 2013-12-22  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.0 release procedure:
+ 	Changes since nco-4_3_9: hash, dyn. grp mmr, ncra.c fixes
+	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
+	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
+
+	* Eliminate need for --hdf4 switch if linked to netCDF 4.3.1-rc7+
+
+	* Change from nco_hdf_cnv to nco_fmt_xtn enum/tokens
+
 	* Add nco_inq_format_extended() stubs
 
 	* Add hdf.cdl to generate HDF4 files for testing
 
-	* Fix/change --nsm_fl, --nsm_grp to not expect arguments
+	* Fix/change --nsm_fl, --nsm_grp switches to not expect arguments
 
 2013-12-19  Pedro Vicente  <pvicente@uci.edu>
 
@@ -61,12 +71,6 @@
 	dimensions once-again cause operators to abort.
 
 2013-12-11  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.0 release procedure:
- 	Changes since nco-4_3_9: hash, dyn. grp mmr, ncra.c fixes
-	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
-	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
 	* Stop writing global attributes twice in ncra.c
 

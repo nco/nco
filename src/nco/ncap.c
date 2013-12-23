@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.278 2013-12-04 22:56:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.279 2013-12-23 05:25:08 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -128,8 +128,8 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.278 2013-12-04 22:56:43 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.278 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.279 2013-12-23 05:25:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.279 $";
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   cnk_sct **cnk=NULL_CEWI;
@@ -373,7 +373,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
-      if(!strcmp(opt_crr,"hdf4")) nco_hdf_cnv=nco_hdf4; /* [enm] Treat file as HDF4 */
+      if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdf_upk") || !strcmp(opt_crr,"hdf_unpack")) nco_upk_cnv=nco_upk_HDF; /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
