@@ -6,6 +6,8 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
 	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
+	* ncks ~/nco/data/hdf.hdf now works!
+
 	* Document new HDF4 capabilities
 
 	* Eliminate need for --hdf4 switch if linked to netCDF 4.3.1-rc7+
