@@ -60,7 +60,7 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "History global attribute.\nAttributes like this often have embedded newlines to enhance legibility.\nSuch newlines should serve as linebreaks on the screen, hence,\nfriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings\nwhere each embedded delimiter marks a linebreak.\nOtherwise it would be harder for humans to read the CDL.";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.183 2013-12-23 06:13:22 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.184 2013-12-23 06:22:19 zender Exp $";
 
 	int date_int(date_dmn);
 	date_int:long_name = "Date (as array of ints: YYYY,MM,DD,HH,MM)";
@@ -797,7 +797,7 @@ variables:
 
 	float one_dmn_rec_var_mss_val_arr(time);
 	one_dmn_rec_var_mss_val_arr:long_name = "One dimensional record variable with missing data indicated by a _FillValue attribute that is an array. This can be tested with ncrcat. 20120905: ncgen chokes on _FillValue arrays and produces this error: _FillValue: must be a single (possibly compound) value. Deprecate the array for normal use since it prevents ncgen from completing. Uncommment following line when testing for compatibility with software changes.";
-//	one_dmn_rec_var_mss_val_arr:_FillValue = 1,2,3;
+//	one_dmn_rec_var_mss_val_arr:_FillValue = 1.0f,2.0f,3.0f;
 	one_dmn_rec_var_mss_val_arr:_FillValue = 1.0f;
 
 	int RDM(time);
