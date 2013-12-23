@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.686 2013-12-23 05:25:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.687 2013-12-23 17:24:41 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -157,8 +157,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.686 2013-12-23 05:25:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.686 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.687 2013-12-23 17:24:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.687 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -540,7 +540,7 @@ main(int argc,char **argv)
       break;
     case 'G': /* Apply Group Path Editing (GPE) to output group */
       gpe=nco_gpe_prs_arg(optarg);
-      fl_out_fmt=NC_FORMAT_NETCDF4; 
+      /*      fl_out_fmt=NC_FORMAT_NETCDF4; */
       break;
     case 'g': /* Copy group argument for later processing */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -736,7 +736,7 @@ main(int argc,char **argv)
     
   if(gpe){
     if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Group Path Edit (GPE) feature enabled\n",nco_prg_nm_get());
-    if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
+    if(fl_out && fl_out_fmt != NC_FORMAT_NETCDF4 && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups or netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE...).\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
   if(fl_out){

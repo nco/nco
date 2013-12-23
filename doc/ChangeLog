@@ -1,3 +1,7 @@
+2013-12-23  Charlie Zender  <zender@uci.edu>
+
+	* Add HINT before exit() on NC_EBADTYPE
+
 2013-12-22  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncks regression #74: -c option, extract all coordinate variables

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.214 2013-12-23 05:25:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.215 2013-12-23 17:24:41 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -32,6 +32,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 #endif /* !NCO_ABORT_ON_ERROR */
 
   switch(rcd){
+  case NC_EBADTYPE: (void)fprintf(stdout,"ERROR NC_BADTYPE Not a netCDF data type\nHINT: NC_EBADTYPE errors can occur when NCO tries to write netCDF4 features to a netCDF3 file. Features that cannot be defined in a netCDF3 file, and that thus will trigger this error, include groups and netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE). The workaround is to remove all netCDF4 features before attempting the conversion, or to just give up and write a netCDF4 output file instead of a netCDF3 output file.\n"); break;
   case NC_EINVAL: (void)fprintf(stdout,"ERROR NC_EINVAL Invalid argument\nHINT: NC_EINVAL errors can occur for at least two reasons. The first is when NCO operators attempt to open netCDF4 files using the diskless option, usually invoked with --diskless_all, --ram_all, or --open_ram.  Is your input file netCDF4 format?  (http://nco.sf.net/nco.html#fmt_inq shows how to tell.) If so then omitting the diskless option may solve this problem. The second is when HDF4-enabled NCO attempts to directly write to an HDF4 file. The way that the operators ncrename and ncatted are formulated causes them to trigger this problem. We are working to solve this (fxm TODO nco1104). Please let us know if it affects you. For now the workaround is to convert the HDF4 file to netCDF4 first, then use ncrename or ncatted.\n"); break;
   case NC_ELATEFILL: /* netcdf.h replaced NC_EFILLVALUE by NC_ELATEFILL after about netCDF ~4.2.1 */
     (void)fprintf(stdout,"ERROR NC_ELATEFILL (formerly NC_EFILLVALUE) Attempt to define fill value when data already exists\nHINT: NC_ELATEFILL errors can occur when ncap2 attempts to define a variable with a _FillValue attribute in a netCDF4 file.  We believe this is an NCO bug (fxm TODO nco1089) and are working to fix it. Does your output file need to be netCDF4 or netCDF4_classic format? If so, then wait for us to fix the bug. If not, change the output format to netCDF3 (e.g., with -3 option) as a temporary workaround. This file can then successfully be converted to netCDF4 (e.g., with ncks -4 in.nc out.nc).\n"); break;
