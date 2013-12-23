@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.662 2013-12-23 05:25:08 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.663 2013-12-23 05:57:35 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -82,6 +82,16 @@ A. ncdismember flattens all groups in a file, not only leaf groups.
    all disaggregated files that do not already contain it.
    This considerably reduces CF Warning and Error counts.
    http://nco.sf.net/nco.html#ncdismember
+
+A. HDF4 behavior: Thanks to recent improvements in netCDF, 
+   NCO more gracefully handles HDF4 files. When compiled with netCDF
+   version 4.3.1-rc7 (20131222) or later, NCO no longer needs the
+   --hdf4 switch. NCO uses netCDF to determine automatically whether
+   the underlying file is HDF4, then takes appropriate precautions to 
+   avoid calls not supported by the netCDF4 subset of HDF4.
+   ncks fl.hdf
+   ncks fl.hdf fl.nc
+   http://nco.sf.net/nco.html#hdf4
 
 A. fxm
    NCO now employs hashing techniques to locate objects.

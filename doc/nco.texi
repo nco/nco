@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.927 2013-12-22 20:36:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.928 2013-12-23 05:57:35 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1220,14 +1220,23 @@ files and writing them as netCDF4/@acronym{HDF5} files.
 can only write netCDF3/netCDF4/@acronym{HDF5} files. 
 But it can read @acronym{HDF4} files, perform manipulations and
 calculations, and then write the results in netCDF format.
-As of this writing (October, 2013) the user must tell @acronym{NCO} 
-that an input file is @acronym{HDF4} format by using the @samp{--hdf4} 
-switch introduced in @acronym{NCO} 4.3.7
-@footnote{
-Eventually we hope to make @acronym{HDF4}-detection automatic and to
-therefore deprecate this switch.
-This will require new support features in the underlying libraries not
-expected before netCDF version 4.3.2 (2014?).}.
+@acronym{NCO} versions 4.3.6 and earlier do not support @acronym{HDF4}. 
+@acronym{NCO} versions 4.3.7--4.3.9 (October--December, 2013)
+were released before netCDF support for @acronym{HDF4} was complete.
+As a result the user must tell these versions of @acronym{NCO} that an
+input file is @acronym{HDF4} format by using the @samp{--hdf4} switch.
+
+When compiled with netCDF version 4.3.1-rc7 (20131222) or later, 
+@acronym{NCO} versions 4.4.0 (January, 2014) and later more gracefully 
+handle @acronym{HDF4} files.
+In particular, the @samp{--hdf4} switch is obsolete. 
+Current versions of @acronym{NCO} use netCDF to determine automatically
+whether the underlying file is @acronym{HDF4}, and then take appropriate
+precautions to avoid calls not yet supported by the netCDF4 subset
+@acronym{HDF4}. 
+The @samp{--hdf4} switch is supported (for backwards compatibility) yet
+redundant (i.e., does no harm) with current versions of @acronym{NCO}
+and netCDF. 
 
 Converting @acronym{HDF4} files to netCDF:
 Since @acronym{NCO} reads @acronym{HDF4} files natively, it is now easy  
@@ -1235,6 +1244,8 @@ to convert @acronym{HDF4} files to netCDF4 files directly, e.g.,
 @example
 ncks --hdf4 fl.hdf fl.nc      # Convert HDF4->netCDF4
 ncks --hdf4 -L 1 fl.hdf fl.nc # Convert HDF4->netCDF4 with compression
+ncks fl.hdf fl.nc      # Convert HDF4->netCDF4 (NCO 4.4.0+, netCDF 4.3.1+)
+ncks -L 1 fl.hdf fl.nc # Convert HDF4->netCDF4 (NCO 4.4.0+, netCDF 4.3.1+)
 @end example
 This produces a netCDF4 file not a netCDF3 file.
 This procedure is the most efficient and accurate way to convert
@@ -1250,6 +1261,8 @@ arduous, depending whether the input contains any netCDF4 atomic types
 @example
 ncks --hdf4 -3 fl.hdf fl.nc      # HDF4->netCDF3
 ncks --hdf4 -7 -L 1 fl.hdf fl.nc # HDF4->netCDF4 classic with compression
+ncks -3 fl.hdf fl.nc      # HDF4->netCDF3 (NCO 4.4.0+, netCDF 4.3.1+)
+ncks -7 -L 1 fl.hdf fl.nc # HDF4->netCDF4 (NCO 4.4.0+, netCDF 4.3.1+)
 @end example
 These commands work only if the input has no netCDF4 atomic types.
 Many @acronym{HDF4} producers (@acronym{NASA}!) love to use netCDF4
