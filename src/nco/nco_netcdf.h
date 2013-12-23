@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.105 2013-12-23 05:25:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.106 2013-12-23 05:28:44 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -81,11 +81,30 @@
 #ifndef NC_NOCHECKSUM
 # define NC_NOCHECKSUM 0
 #endif
-/* Compatibility token introduced 20131222 in netCDF 4.3.1-rc7 netcdf.h */
+
+  /* Seven compatibility tokens introduced 20131222 in netCDF 4.3.1-rc7 netcdf.h */
 #ifndef NC_FORMAT_UNDEFINED
 # define NC_FORMAT_UNDEFINED (0)
 #else
 # define NC_HAVE_INQ_FORMAT_EXTENDED
+#endif
+#ifndef NC_FORMAT_NC3
+# define NC_FORMAT_NC3     (1)
+#endif
+#ifndef NC_FORMAT_NC_HDF5
+# define NC_FORMAT_NC_HDF5 (2) /*cdf 4 subset of HDF5 */
+#endif
+#ifndef NC_FORMAT_NC_HDF4
+# define NC_FORMAT_NC_HDF4 (3) /* netcdf 4 subset of HDF4 */
+#endif
+#ifndef NC_FORMAT_PNETCDF
+# define NC_FORMAT_PNETCDF (4)
+#endif
+#ifndef NC_FORMAT_DAP2
+# define NC_FORMAT_DAP2    (5)
+#endif
+#ifndef NC_FORMAT_DAP4
+# define NC_FORMAT_DAP4    (6)
 #endif
 
 /* Some netCDF3 stubs for netCDF4 routines need netCDF4-only return codes

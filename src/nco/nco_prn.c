@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.199 2013-12-19 06:38:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.200 2013-12-23 05:25:08 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1010,7 +1010,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   (void)nco_inq_var(grp_id,var_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,&nbr_att);
 
   /* Storage properties */
-  if(nco_hdf_cnv_get() != nco_hdf4){
+  if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4){
     (void)nco_inq_var_chunking(grp_id,var_id,&srg_typ,cnk_sz);
     (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
   } /* endif */
@@ -1048,8 +1048,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   /* Print header for variable */
   if(prn_flg->new_fmt && !prn_flg->xml) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
   if(prn_flg->xml) prn_ndn=prn_flg->sxn_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
-  if(prn_flg->trd && (nco_hdf_cnv_get() == nco_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? HDF4_UNKNOWN, compressed? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
-  if(prn_flg->trd && (nco_hdf_cnv_get() != nco_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
+  if(prn_flg->trd && (nco_fmt_xtn_get() == nco_fmt_xtn_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? HDF4_UNKNOWN, compressed? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
+  if(prn_flg->trd && (nco_fmt_xtn_get() != nco_fmt_xtn_hdf4)) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, chunked? %s, compressed? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(srg_typ == NC_CHUNKED) ? "yes" : "no",(deflate) ? "yes" : "no",(packing) ? "yes" : "no");
 
   if(prn_flg->xml) (void)fprintf(stdout,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,xml_typ_nm(var_typ));
 
@@ -1080,11 +1080,11 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     (void)strcat(sz_sng,sng_foo);
 
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) var_sz*=dmn_sz[dmn_idx];
-    if(nco_hdf_cnv_get() != nco_hdf4) (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
+    if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4) (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 
     if(prn_flg->trd){
-      if((nco_hdf_cnv_get() != nco_hdf4) && deflate) (void)fprintf(stdout,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
-      if(nco_hdf_cnv_get() == nco_hdf4) (void)fprintf(stdout,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
+      if((nco_fmt_xtn_get() != nco_fmt_xtn_hdf4) && deflate) (void)fprintf(stdout,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
+      if(nco_fmt_xtn_get() == nco_fmt_xtn_hdf4) (void)fprintf(stdout,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
       (void)fprintf(stdout,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
     } /* !prn_flg->trd */
 
