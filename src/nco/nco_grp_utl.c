@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1123 2013-12-23 05:25:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1124 2013-12-23 06:18:03 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -912,7 +912,9 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
       trv_sct var_trv=trv_tbl->lst[idx_var]; 
 
       /* If variable is coordinate variable then mark it for extraction ...simple */
-      if(var_trv.is_crd_var) trv_tbl->lst[idx_var].flg_xtr=True;
+      if(var_trv.is_crd_var){
+        trv_tbl->lst[idx_var].flg_xtr=True;
+      }
 
     } /* Filter variables  */
   } /* Loop table */
@@ -6521,6 +6523,21 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Construct traversal table objects (groups,variables) */
   (void)nco_grp_itr(nc_id,(char *)NULL,grp_pth,trv_tbl);
 
+  /* Build dimension information for all variables (match dimension IDs) */
+  (void)nco_bld_dmn_ids_trv(nc_id,trv_tbl);
+
+  /* Build "is_crd_var" and "is_rec_var" members for all variables */
+  (void)nco_bld_crd_rec_var_trv(trv_tbl);
+
+  /* Build GTT "crd_sct" coordinate variable structure */
+  (void)nco_bld_crd_var_trv(trv_tbl);
+
+  /* Variables in dimension's scope? */
+  (void)nco_has_crd_dmn_scp(trv_tbl);
+
+  /* Assign variables' dimensions to either coordinates or dimension structs */
+  (void)nco_bld_var_dmn(trv_tbl);
+
   /* ncbo co-sequential match algorithm requires alphabetical sorted full names. Do it here, to avoid rebuilding hash table */
   if(nco_prg_id_get() == ncbo) (void)trv_tbl_srt(trv_tbl);
 
@@ -6552,21 +6569,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Mark extracted groups */
   (void)nco_xtr_grp_mrk(trv_tbl);
-
-  /* Build dimension information for all variables (match dimension IDs) */
-  (void)nco_bld_dmn_ids_trv(nc_id,trv_tbl);
-
-  /* Build "is_crd_var" and "is_rec_var" members for all variables */
-  (void)nco_bld_crd_rec_var_trv(trv_tbl);
-
-  /* Build GTT "crd_sct" coordinate variable structure */
-  (void)nco_bld_crd_var_trv(trv_tbl);
-
-  /* Variables in dimension's scope? */
-  (void)nco_has_crd_dmn_scp(trv_tbl);
-
-  /* Assign variables' dimensions to either coordinates or dimension structs */
-  (void)nco_bld_var_dmn(trv_tbl);
 
   /* Make uniform list of user-specified dimension limits */
   if(lmt_nbr) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
