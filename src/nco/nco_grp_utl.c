@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1126 2013-12-23 08:14:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1127 2013-12-23 09:01:19 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1189,14 +1189,13 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
                 /* Mark it for extraction */
                 (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
-#if 0
-                /* TODO 8516. nco: subsetting should exclude ancestor out-of-scope coordinates */
 
-                if(dmn_nm_fll) dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-                return;
-#endif
+                /* Subsetting should exclude ancestor out-of-scope coordinates, add only the most in scope (usually in same group) */
+                break;
 
               } /* If variable is on list, mark it for extraction */
+
+              /* This code is never executed, just kept here in case there is need to all *all* in scope coordinates */
 
               dmn_nm_fll[psn_chr]='\0';
               ptr_chr=strrchr(dmn_nm_fll,sls_chr);
