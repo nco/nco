@@ -573,5 +573,28 @@ netcdf in_grp_3 {
 	 gw_lat = 0.1, 0.9, 0.9 ;
 	 gw_lon = 1, 1, 1 ;
 	} // end g26
+	
+    group: g27 { //test flatenning with paralell variables: ncks -3 -G : -g /g27g1/
+		group: g27g1 {
+		dimensions:
+		delta_time_start=1;
+		variables:
+		float delta_time_start(delta_time_start);
+		data:
+		delta_time_start=1;
+		}
+		
+		group: g27g2 {
+		dimensions:
+		delta_time_start=1;
+		variables:
+		float delta_time_start(delta_time_start);
+		data:
+		delta_time_start=1;
+	
+		}
+	
+	} // end g27
+	
 
 } // end root group
