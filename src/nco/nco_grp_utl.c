@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1131 2013-12-24 21:41:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1132 2013-12-24 22:46:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6566,6 +6566,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   nces nco_bld_nsm() 
   */
 
+  const char fnc_nm[]="nco_bld_trv_tbl()"; /* [sng] Function name  */
+
   nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 
   lmt_sct **lmt=NULL_CEWI;  /* [sct] User defined limits */
@@ -6640,6 +6642,12 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
     lmt=(lmt_sct **)nco_free(lmt);
   } /* !lmt_nbr */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: INFO %s reports extracted objects:\n",nco_prg_nm_get(),fnc_nm);
+    trv_tbl_prn_flg_xtr(trv_tbl);
+  } /* endif dbg */
+
 
 } /* nco_bld_trv_tbl() */
 
