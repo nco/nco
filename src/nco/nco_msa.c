@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.229 2013-12-24 03:00:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.230 2013-12-24 03:15:28 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1170,6 +1170,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 
 
+  int fl_fmt;                      /* [enm] Output file format */
   int nbr_dim;                     /* [nbr] Number of dimensions */
   int nbr_dmn_in;                  /* [nbr] Number of dimensions */
   int nbr_dmn_out;                 /* [nbr] Number of dimensions */
@@ -1261,6 +1262,16 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   /* After MSA we have size to write */
   var_sz=vara.sz;
+
+  /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
+  if(nco_prg_id_get() == ncks){
+    /* File format needed for decision tree and to enable netCDF4 features */
+    (void)nco_inq_format(out_id,&fl_fmt);
+    if(fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_out)){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Will attempt to autoconvert variable %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,nco_typ_sng(var_typ_out),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
+      var_typ_out=nco_typ_nc4_nc3(var_typ_out);
+    } /* !autoconvert */
+  } /* !ncks */
 
   /* Write variable */
   (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ_out);

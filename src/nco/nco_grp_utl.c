@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1129 2013-12-24 03:00:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1130 2013-12-24 03:15:27 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4314,10 +4314,10 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
 
   /* Get enm_prc_typ from GTT */  
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-    if(strcmp(var->nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
-      if(trv_tbl->lst[uidx].enm_prc_typ == prc_typ) {
+    if(!strcmp(var->nm_fll,trv_tbl->lst[uidx].nm_fll)){
+      if(trv_tbl->lst[uidx].enm_prc_typ == prc_typ){
         var->is_fix_var=0;
-      } else if(trv_tbl->lst[uidx].enm_prc_typ == fix_typ) {
+      }else if(trv_tbl->lst[uidx].enm_prc_typ == fix_typ){
         var->is_fix_var=1;
       } 
       break;
@@ -4778,7 +4778,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   }else{ /* !ncwa */
 
-    /* Allow ncks to autoconvert if netCDF3 output does not support input atomic type ... */
+    /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
     if(nco_prg_id == ncks && fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_out)){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Will attempt to autoconvert variable %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,nco_typ_sng(var_typ_out),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
       var_typ_out=nco_typ_nc4_nc3(var_typ_out);
