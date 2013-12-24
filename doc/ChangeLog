@@ -1,5 +1,7 @@
 2013-12-23  Charlie Zender  <zender@uci.edu>
 
+	* Clean-up nco_cpy_var_dfn_trv() before implementing autoconvert feature
+
 	* NCO 4.4.0 release procedure:
  	Changes since nco-4_3_9: hash, dyn. grp mmr, ncra.c fixes, hdf4
 	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1

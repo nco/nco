@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1127 2013-12-23 09:01:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1128 2013-12-24 01:54:48 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1586,11 +1586,11 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(nco_prg_id_get() == ncge){
         /* Is requested variable in output file? */
         int rcd=nco_inq_varid_flg(grp_out_id,var_trv.nm,&var_out_id);
-        /* Yes, get out of dodge... avoid GPE failure on duplicate definition */
+        /* Yes, get outta' Dodge... avoid GPE failure on duplicate definition */
         if(rcd == 0) continue;
       } /* ncge */
 
-      /* Detect duplicate GPE names in advance, then exit with helpful error */
+      /* Detect duplicate GPE names in advance, then exit() with helpful error */
       if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
 
       /* Define variable in output file */
@@ -4339,20 +4339,19 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
  trv_tbl_sct * const trv_tbl)       /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Purpose: Copy variable metadata from input netCDF file to output netCDF file
-  Routine was based on nco_cpy_var_dfn_lmt(), and differed trivially from it
-  Now merged into one call that always takes limit information?
-  Routine truncates dimensions in variable definition in output file according to user-specified limits
-  Routine copies variable-by-variable
-  20130126: csz 
-  Behavior until today required rec_dmn_nm even if not changing it
-  As of today, rec_dmn_nm passed only when user-specified
-  Otherwise, re-use old record dimension name
-  20130222: csz
-  Same routine is called with or without limits
-  Routine works with GTT instead of plain names */
-
+     Routine was based on nco_cpy_var_dfn_lmt(), and differed trivially from it
+     Routine truncates dimensions in variable definition in output file according to user-specified limits
+     Routine copies variable-by-variable
+     20130126: csz 
+     Behavior until today required rec_dmn_nm even if not changing it
+     As of today, rec_dmn_nm passed only when user-specified
+     Otherwise, re-use old record dimension name
+     20130222: csz
+     Same routine is called with or without limits
+     Routine works with GTT instead of plain names */
+  
   const char fnc_nm[]="nco_cpy_var_dfn_trv()"; /* [sng] Function name */
-
+  
   char var_nm[NC_MAX_NAME+1];            /* [sng] Variable name (local copy of object name) */ 
   char *rec_dmn_nm=NULL;                 /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL;             /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
@@ -4409,8 +4408,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   strcpy(var_nm,var_trv->nm);       
 
   /* Recall:
-  1. Dimensions must be defined before variables
-  2. Variables must be defined before attributes */
+     1. Dimensions must be defined before variables
+     2. Variables must be defined before attributes */
 
   /* Get output group ID */
   (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
@@ -4450,7 +4449,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* Does user want a record dimension to receive special handling? */
   if(rec_dmn_nm_cst){
     /* Create (and later free()) local copy to preserve const-ness of passed value
-    For simplicity, work with canonical name rec_dmn_nm */
+       For simplicity, work with canonical name rec_dmn_nm */
     rec_dmn_nm_mlc=strdup(rec_dmn_nm_cst);
     /* Parse rec_dmn_nm argument */
     if(!strncmp("fix_",rec_dmn_nm_mlc,(size_t)4)){
@@ -4475,7 +4474,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* ncks */
     if(nco_prg_id == ncks){
       /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
-      rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
+	 rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
       int rec_dmn_id_dmy;
       rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
       if(rcd != NC_NOERR){
@@ -4569,9 +4568,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } /* endif dbg */
 
       /* Here begins a complex tree to decide a simple, binary output:
-      Will current input dimension be defined as an output record dimension or as a fixed dimension?
-      Decision tree outputs flag DFN_CRR_DMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
-      Otherwise would repeat netCDF action code too many times */
+	 Will current input dimension be defined as an output record dimension or as a fixed dimension?
+	 Decision tree outputs flag DFN_CRR_DMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
+	 Otherwise would repeat netCDF action code too many times */
 
       /* Is dimension unlimited in input file? Handy unique dimension has all this info */
       CRR_DMN_IS_REC_IN_INPUT=dmn_trv->is_rec_dmn;
@@ -4589,30 +4588,30 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
             if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
           }else{ /* !FIX_REC_DMN */
             /* ... otherwise we are in the --mk_rec_dmn case where things get complicated ... 
-            This dimension can be a record dimension only if it would not conflict with the requested 
-            record dimension being defined a record dimension, and that depends on file format. Uggh.
-            1. netCDF3 API allows only one record-dimension so conflicts are possible
-            2. netCDF4 API permits any number of unlimited dimensions so conflicts are impossible */
+	       This dimension can be a record dimension only if it would not conflict with the requested 
+	       record dimension being defined a record dimension, and that depends on file format. Uggh.
+	       1. netCDF3 API allows only one record-dimension so conflicts are possible
+	       2. netCDF4 API permits any number of unlimited dimensions so conflicts are impossible */
             if(fl_fmt == NC_FORMAT_NETCDF4){
               /* ... no conflicts possible so define dimension in output same as in input ... */
               if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             }else{ /* !netCDF4 */
               /* ... output file adheres to netCDF3 API so there can be only one record dimension.
-              In other words, define all other dimensions as fixed, non-record dimensions, even
-              if they are a record dimension in the input file ... */
+		 In other words, define all other dimensions as fixed, non-record dimensions, even
+		 if they are a record dimension in the input file ... */
               if(CRR_DMN_IS_REC_IN_INPUT) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as fixed (non-record) in output file even though it is a record dimension in the input file. This is necessary to satisfy user request that %s be the record dimension in the output file which adheres to the netCDF3 API that permits only one record dimension.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,rec_dmn_nm);
               DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
             } /* !netCDF4 */
 
             /* Impose special cases to limit production of excessive additional record dimensions
-            How might excessive additional record dimensions be produced?
-            ncpdq reorders try to preserve the "record" property of record variables
-            ncpdq tries to define as a record dimension whichever dimension ends up first in a record variable, and, in netCDF4 files, this becomes an additional record dimension unless the original record dimension is changed to a fixed dimension (as must be done in netCDF3 files).
-            ncecat (in record aggregate mode) defines a new leading record dimension
-            In netCDF4 files this becomes an additional record dimension unless the original record dimension is changed to a fixed dimension (as must be done in netCDF3 files).
-            Easier if ncpdq and ncecat do not increase number of record dimensions in a variable
-            So NCO defaults to prevent production of additional record dimensions by ncecat, ncpdq
-            User can override this with --mrd (multiple record dimension) switch */
+	       How might excessive additional record dimensions be produced?
+	       ncpdq reorders try to preserve the "record" property of record variables
+	       ncpdq tries to define as a record dimension whichever dimension ends up first in a record variable, and, in netCDF4 files, this becomes an additional record dimension unless the original record dimension is changed to a fixed dimension (as must be done in netCDF3 files).
+	       ncecat (in record aggregate mode) defines a new leading record dimension
+	       In netCDF4 files this becomes an additional record dimension unless the original record dimension is changed to a fixed dimension (as must be done in netCDF3 files).
+	       Easier if ncpdq and ncecat do not increase number of record dimensions in a variable
+	       So NCO defaults to prevent production of additional record dimensions by ncecat, ncpdq
+	       User can override this with --mrd (multiple record dimension) switch */
 
             /* Undefine dimension as record if current dimension (e.g., name "time") is also record */
             if(nco_prg_id == ncecat || nco_prg_id == ncpdq)
@@ -4664,17 +4663,12 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
             if(dmn_trv->is_rec_dmn) dmn_cnt=NC_UNLIMITED;
             break;
           } /* Compare ID */
-        } /* Degenerate dimensions */
+        } /* !Degenerate */
         if(var_trv->var_dmn[idx_dmn].flg_rdd){
           found_dim=True;
-          /* If dimension was to be record keep it that way */
-          if(DFN_CRR_DMN_AS_REC_IN_OUTPUT){
-            dmn_cnt=NC_UNLIMITED;
-          } else {
-            /* Otherwise define the degenerate size of 1 */
-            dmn_cnt=1;
-          }
-        }
+          /* If dimension was to be record keep it that way, otherwise define degenerate size of 1 */
+          if(DFN_CRR_DMN_AS_REC_IN_OUTPUT) dmn_cnt=NC_UNLIMITED; else dmn_cnt=1;
+        } 
         if(!found_dim){
           DEFINE_DIM[idx_dmn]=False;
           nbr_dmn_var_out--;    
@@ -4694,7 +4688,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     } /* end if dimension is not yet defined */
 
-    /* Die informatively if record dimension is not first dimension */
+    /* Die informatively if record dimension is not first dimension in netCDF3 output */
     if(idx_dmn > 0 && dmn_out_id[idx_dmn] == rec_dmn_out_id && fl_fmt != NC_FORMAT_NETCDF4 && DEFINE_DIM[idx_dmn]){
       (void)fprintf(stdout,"%s: ERROR User defined the output record dimension to be \"%s\". Yet in the variable \"%s\" this is dimension number %d. The output file adheres to the netCDF3 API which only supports the record dimension as the first (i.e., least rapidly varying) dimension. Consider using ncpdq to permute the location of the record dimension in the output file.\n",nco_prg_nm_get(),rec_dmn_nm,var_nm,idx_dmn+1);  
       nco_exit(EXIT_FAILURE);
@@ -4721,9 +4715,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
     /* Insert extra "record" dimension in dimension array if...  
-    ...is ncecat and
-    ...user requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially and
-    ...variable is processing type */
+       ...is ncecat and
+       ...user requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially and
+       ...variable is processing type */
 
     /* Temporary store for old IDs */
     int dmn_tmp_id[NC_MAX_DIMS];
@@ -4738,7 +4732,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Loop dimensions */
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) dmn_out_id[idx_dmn+1]=dmn_tmp_id[idx_dmn];
-
   } /* !ncecat */
 
   /* netCDF type in output variable (usually same as input) */ 
@@ -4770,7 +4763,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* Special case for ncwa */
   if(nco_prg_id == ncwa){
 
-    int dmn_ids_out[NC_MAX_DIMS];  /* [id] Dimension IDs array for output variable (ncwa can skip some dimensions, rearranje) */
+    int dmn_ids_out[NC_MAX_DIMS];  /* [id] Dimension IDs array for output variable (ncwa can skip some dimensions, rearrange) */
 
     int idx_dmn_def=0;
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
