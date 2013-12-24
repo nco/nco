@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.484 2013-12-23 05:25:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.485 2013-12-24 21:23:15 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.484 2013-12-23 05:25:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.484 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.485 2013-12-24 21:23:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.485 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -187,6 +187,7 @@ main(int argc,char **argv)
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int dmn_rec_fl;
   int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
   int nco_pck_plc=nco_pck_plc_nil; /* [enm] Default packing is none */
   int opt;
@@ -629,7 +630,7 @@ main(int argc,char **argv)
   if(nco_prg_id == ncge && nsm_sfx) trv_tbl->nsm_sfx=nsm_sfx;
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
-  (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
+  (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,&dmn_rec_fl,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
 
   flg_rec_all= (nco_prg_id == ncra || nco_prg_id == ncrcat) ? False : True;
 
