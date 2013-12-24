@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.73 2013-12-02 01:05:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.74 2013-12-24 03:00:20 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -1251,7 +1251,7 @@ nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit co
 
 nco_bool /* O [flg] Input is signed type */
 nco_typ_sgn /* [fnc] Identify signed types */
-(nc_type typ_in) /* I [enm] Type to check for signedness */
+(const nc_type typ_in) /* I [enm] Type to check for signedness */
 {
   nco_bool flg_sgn=True; /* CEWI */
 
@@ -1278,6 +1278,62 @@ nco_typ_sgn /* [fnc] Identify signed types */
   return flg_sgn;
 } /* end nco_typ_sgn */
 
+nco_bool /* O [flg] Input is netCDF3 atomic type */
+nco_typ_nc3 /* [fnc] Identify netCDF3 atomic types */
+(nc_type typ_in) /* I [enm] Type to check netCDF3 compliance */
+{
+  nco_bool flg_nc3=True; /* CEWI */
+
+  switch(typ_in){
+  case NC_FLOAT: 
+  case NC_DOUBLE: 
+  case NC_INT: 
+  case NC_SHORT: 
+  case NC_BYTE: 
+  case NC_CHAR: 
+    flg_nc3=True;
+    break;       
+  case NC_STRING: 
+  case NC_INT64: 
+  case NC_UBYTE: 
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_UINT64:
+    flg_nc3=False;
+    break;
+  case NC_NAT: 
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  return flg_nc3;
+} /* end nco_typ_nc3 */
+
+nc_type /* O [enm] netCDF3 type */
+nco_typ_nc4_nc3 /* [fnc] Convert netCDF4 to netCDF3 atomic type */
+(const nc_type typ_nc4) /* I [enm] netCDF4 type */
+{
+  /* Purpose: Perform intelligent type conversion from netCDF4->3 type */
+
+  /* Already netCDF3 type */
+  if(nco_typ_nc3(typ_nc4)) return typ_nc4;
+
+  switch(typ_nc4){
+  case NC_UBYTE:
+    return NC_SHORT;
+    break;
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_INT64:
+  case NC_UINT64:
+    return NC_INT;
+    break;
+  case NC_STRING: 
+    return NC_CHAR;
+    break;
+  case NC_NAT:
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  return typ_nc4;
+} /* end nco_typ_nc4_nc3 */
 
 nc_type /* O [enm] Return Highest type */
 ncap_typ_hgh /* [fnc] Return Highest type */
@@ -1367,7 +1423,7 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
 
-  /* Purpose: Perform intelligent type conversion with the netCDF3/4 types */
+  /* Purpose: Perform intelligent type conversion with netCDF3/4 types */
   nc_type typ_hgh;
 
   typ_hgh=ncap_typ_hgh(var_1->type,var_2->type);
@@ -1418,5 +1474,3 @@ ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if n
   } /* endif */
 
 } /* end ncap_var_scv_cnf_typ_hgh_prc() */
-
-

@@ -34,7 +34,7 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp, bool bd)
   tp=(T*)var->val.vp;  
   mp=new map_srt<T>[sz];          
 
-  // initalize array
+  // initialize array
   for(idx=0 ; idx<sz; idx++){
     mp[idx]._imp=idx;
     mp[idx]._V=tp[idx];

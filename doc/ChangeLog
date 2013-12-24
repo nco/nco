@@ -1,5 +1,7 @@
 2013-12-23  Charlie Zender  <zender@uci.edu>
 
+	* Add autoconvert stubs to nco_xtr_dfn() and nco_cpy_var_val_mlt_lmt_trv()
+
 	* Clean-up nco_cpy_var_dfn_trv() before implementing autoconvert feature
 
 	* NCO 4.4.0 release procedure:

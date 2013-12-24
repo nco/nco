@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1128 2013-12-24 01:54:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1129 2013-12-24 03:00:20 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3385,7 +3385,7 @@ nco_var_trv                           /* [fnc] Fill-in variable structure list f
 } /* nco_var_trv() */
 
 void
-nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variables from input to output file */
+nco_cpy_fix_var_trv                   /* [fnc] Copy fixed variables from input to output file */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int out_id,                    /* I [ID] netCDF output file ID */
  const gpe_sct * const gpe,           /* I [sng] GPE structure */
@@ -3703,7 +3703,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 } /* nco_prc_cmn() */
 
 void                          
-nco_cpy_fix                            /* [fnc] Copy processing type fixed object (ncbo only) */
+nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
  int cnk_map,                          /* I [enm] Chunking map */
@@ -3760,7 +3760,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
   /* Allocate variable structure and fill with metadata */
   var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1,trv_tbl_1);     
 
-  var_prc_out= nco_var_dpl(var_prc_1);
+  var_prc_out=nco_var_dpl(var_prc_1);
   (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
 
   if(prc_typ_1 != fix_typ){
@@ -3771,8 +3771,8 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     return;
   } /* endif */
 
-  /* Define mode */
   if(flg_dfn){  
+    /* Define mode */
     nco_bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
     PCK_ATT_CPY=nco_pck_cpy_att(nco_prg_id,nco_pck_plc_nil,var_prc_1);
@@ -3792,7 +3792,8 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     /* Copy variable's attributes */
     (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); 
 
-  }else{ /* Write mode */
+  }else{ /* !flg_dfn */
+    /* Write mode */
 
     /* Get group ID */
     (void)nco_inq_grp_full_ncid(nc_out_id,grp_out_fll,&grp_out_id);
@@ -3803,7 +3804,7 @@ nco_cpy_fix                            /* [fnc] Copy processing type fixed objec
     /* Copy non-processed variable */
     (void)nco_cpy_var_val_mlt_lmt_trv(grp_id_1,grp_out_id,(FILE *)NULL,md5,trv_1); 
   
-  } /* Write mode */
+  } /* !flg_dfn */
 
   /* Free allocated variable structures */
   var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
@@ -4471,7 +4472,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   /* Is requested record dimension in input file? */
   if(rec_dmn_nm){
 
-    /* ncks */
     if(nco_prg_id == ncks){
       /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
 	 rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
@@ -4778,7 +4778,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   }else{ /* !ncwa */
 
-    /* Finally... define variable in output file */
+    /* Allow ncks to autoconvert if netCDF3 output does not support input atomic type ... */
+    if(nco_prg_id == ncks && fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_out)){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Will attempt to autoconvert variable %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,nco_typ_sng(var_typ_out),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
+      var_typ_out=nco_typ_nc4_nc3(var_typ_out);
+    } /* !autoconvert */
     (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var_out,dmn_out_id,&var_out_id);
 
   } /* !ncwa */
@@ -8248,7 +8252,7 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
         /* Loop over members (variables) of old ensemble (NB: Assumption, same number of variables for new ensembles) */
         for(int idx_mbr=0;idx_mbr<trv_tbl->nsm[idx_nsm].mbr_var_nbr;idx_mbr++){
 
-          /* Obtain variable GTT object for the member variable in ensemble */ 
+          /* Obtain variable GTT object for the member variable in ensemble */
           var_trv=trv_tbl_var_nm_fll(trv_tbl->nsm[idx_nsm].var_mbr_fll[idx_mbr],trv_tbl);
 
           /* Match relative name  */

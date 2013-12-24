@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.228 2013-11-22 04:40:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.229 2013-12-24 03:00:20 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1162,12 +1162,11 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
  const trv_sct * const var_trv)     /* I [sct] Object to write (variable) */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
-  Routine truncates dimensions in variable definition in output file according to user-specified limits.
-  Routine copies variable-by-variable, old-style, used only by ncks 
+     Routine truncates dimensions in variable definition in output file according to user-specified limits
+     Routine copies variable-by-variable, old-style, used only by ncks 
 
-  "GTT" changes from the original nco_cpy_var_val_mlt_lmt():
-   Object to write (variable) is passed as parameter
-  */
+     "GTT" changes from the original nco_cpy_var_val_mlt_lmt():
+     Object to write (variable) is passed as parameter */
 
   char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 
 
@@ -1182,7 +1181,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 
   long var_sz=1L;                  /* [nbr] Variable size */
 
-  nc_type var_typ;                 /* [nbr] Variable type  */
+  nc_type var_typ_in;              /* [nbr] Variable type input */
+  nc_type var_typ_out;             /* [nbr] Variable type output */
 
   var_sct vara;                    /* [sct] Variable structure, to hold basic data in_id, var_id, nctype for recusive routine */
 
@@ -1201,8 +1201,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   (void)nco_inq_varid(out_id,var_nm,&var_out_id);
 
   /* Get type and number of dimensions for variable */
-  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ,&nbr_dmn_out,(int *)NULL,(int *)NULL);
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ_out,&nbr_dmn_out,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ_in,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
     (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",nco_prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out,var_nm,var_nm,var_nm);
     nco_exit(EXIT_FAILURE);
@@ -1212,21 +1212,21 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   /* Deal with scalar variables */
   if(nbr_dim == 0){
     var_sz=1L;
-    void_ptr=nco_malloc(nco_typ_lng(var_typ));
+    void_ptr=nco_malloc(nco_typ_lng(var_typ_in));
 
     /* Read */
-    (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ);
+    (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ_in);
 
     /* Write */
-    (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ);
+    (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ_out);
 
     /* Perform MD5 digest of input and output data if requested */
     if(md5)
       if(md5->dgs)
-	(void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ),out_id,(long *)NULL,(long *)NULL,void_ptr);
+	(void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ_in),out_id,(long *)NULL,(long *)NULL,void_ptr);
 
     /* Write unformatted binary data */
-    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ_in,void_ptr);
 
     /* Done */
     (void)nco_free(void_ptr);
@@ -1244,44 +1244,40 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
 
-  /* Loop dimensions */
   for(int dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
-
     /* Store in arrays */
     dmn_map_cnt[dmn_idx]=lmt_msa[dmn_idx]->dmn_cnt;
     dmn_map_srt[dmn_idx]=0L;
-  } /* End loop dimensions */
+  } /* end loop over dmn_idx */
 
-
-  /* Initalize variable structure with in_id, var_in_id, nctype, etc., so recursive routine can read data */
+  /* Initialize variable structure with in_id, var_in_id, nctype, etc., so recursive routine can read data */
   vara.nm=var_nm;
   vara.id=var_in_id;
   vara.nc_id=in_id;
-  vara.type=var_typ;
+  vara.type=var_typ_in;
 
   /* Call super-dooper recursive routine */
   void_ptr=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,&vara);
 
-  /* After MSA, we have the size to write */
+  /* After MSA we have size to write */
   var_sz=vara.sz;
 
   /* Write variable */
-  (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ);
+  (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ_out);
 
   /* Perform MD5 digest of input and output data if requested */
   if(md5)
     if(md5->dgs)
-      (void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
+      (void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ_out),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
 
   /* Write unformatted binary data */
-  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ,void_ptr);
+  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ_out,void_ptr);
 
   /* Free */
   (void)nco_free(void_ptr);
   (void)nco_free(dmn_map_cnt);
   (void)nco_free(dmn_map_srt);
 
-  /* Free  */
   (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
   lmt=(lmt_sct **)nco_free(lmt);
 

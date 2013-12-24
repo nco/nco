@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.428 2013-12-19 18:16:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.429 2013-12-24 03:00:20 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -334,7 +334,7 @@ nco_var_trv                           /* [fnc] Fill-in variable structure list f
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 void
-nco_cpy_fix_var_trv                   /* [fnc] Copy processing type fixed variables from input to output file */
+nco_cpy_fix_var_trv                   /* [fnc] Copy fixed variables from input to output file */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int out_id,                    /* I [ID] netCDF output file ID */
  const gpe_sct * const gpe,           /* I [sng] GPE structure */
@@ -367,7 +367,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
  const nco_bool flg_dfn);              /* I [flg] Action type (True for define variables, False when write variables ) */
 
 void                          
-nco_cpy_fix                            /* [fnc] Copy processing type fixed object (ncbo only) */
+nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
  int cnk_map,                          /* I [enm] Chunking map */

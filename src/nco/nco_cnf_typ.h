@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.40 2013-07-16 18:39:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.41 2013-12-24 03:00:20 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -78,12 +78,10 @@ nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit co
 (const nc_type typ_new, /* I [enm] Type to convert scv_old to */
  scv_sct * const scv_old); /* I/O [sct] Scalar value to convert */
 
-
 nc_type /* O [enm] Return Highest type */
 ncap_typ_hgh /* [fnc] Promote variable to higher common precision */
 (nc_type typ_1,  /* I [enm] type */
  nc_type typ_2); /* I [enm] type */
-
 
 nc_type /* O [enm] Highest precision of input variables */
 ncap_var_retype /* [fnc] Promote variable to higher common precision */
@@ -102,7 +100,15 @@ ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if n
 
 nco_bool /* O [flg] Input is signed type */
 nco_typ_sgn /* [fnc] Identify signed types */
-(nc_type typ_in); /* I [enm] Type to check for signedness */
+(const nc_type typ_in); /* I [enm] Type to check for signedness */
+
+nco_bool /* O [flg] Input is netCDF3 atomic type */
+nco_typ_nc3 /* [fnc] Identify netCDF3 atomic types */
+(const nc_type typ_in); /* I [enm] Type to check netCDF3 compliance */
+
+nc_type /* O [enm] netCDF3 type */
+nco_typ_nc4_nc3 /* [fnc] Convert netCDF4 to netCDF3 atomic type */
+(const nc_type typ_nc4); /* I [enm] netCDF4 type */
 
 #ifdef __cplusplus
 } /* end extern "C" */
