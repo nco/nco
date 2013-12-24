@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1130 2013-12-24 03:15:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1131 2013-12-24 21:41:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1195,7 +1195,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
               } /* If variable is on list, mark it for extraction */
 
-              /* This code is never executed, just kept here in case there is need to all *all* in scope coordinates */
+              /* This code is never executed, just kept here in case there is need to add *all* in scope coordinates */
 
               dmn_nm_fll[psn_chr]='\0';
               ptr_chr=strrchr(dmn_nm_fll,sls_chr);

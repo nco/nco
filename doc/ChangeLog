@@ -1,3 +1,7 @@
+2013-12-22  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncks regression #74: -c option, extract all coordinate variables
+
 2013-12-23  Charlie Zender  <zender@uci.edu>
 
 	* Add autoconvert stubs to nco_xtr_dfn() and nco_cpy_var_val_mlt_lmt_trv()
@@ -14,7 +18,7 @@
 
 2013-12-22  Pedro Vicente  <pvicente@uci.edu>
 
-	* Add ncks regression #74: -c option, extract all coordinate variables
+	* Add ncks regression #75, #76: Default datasets (no options)
 
 2013-12-22  Charlie Zender  <zender@uci.edu>
 
