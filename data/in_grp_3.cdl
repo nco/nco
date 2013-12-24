@@ -577,11 +577,11 @@ netcdf in_grp_3 {
     group: g27 { //test flatenning with paralell variables: ncks -3 -G : -g /g27g1/
 		group: g27g1 {
 		dimensions:
-		delta_time_start=1;
+		delta_time_start=2;
 		variables:
 		float delta_time_start(delta_time_start);
 		data:
-		delta_time_start=1;
+		delta_time_start=1,2;
 		}
 		
 		group: g27g2 {

@@ -1,6 +1,8 @@
 2013-12-24  Pedro Vicente  <pvicente@uci.edu>
 
-	* Add ncks regression #75, #76: Default datasets (no options)
+	* Add ncks regressions #75, #76: Default datasets (no options)
+	
+	* Add ncks regression #77: test flatenning with paralell variables( -3 -G : -g )
 
 2013-12-23  Charlie Zender  <zender@uci.edu>
 
