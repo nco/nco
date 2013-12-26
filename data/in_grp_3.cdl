@@ -590,11 +590,25 @@ netcdf in_grp_3 {
 		variables:
 		float delta_time_start(delta_time_start);
 		data:
-		delta_time_start=1;
-	
-		}
-	
+		delta_time_start=1;	
+		}	
 	} // end g27
+	
+	
+	 group: g28 { //test CF extraction ( "delta_time_stop" has a CF attribute to "delta_time_start")
+		dimensions:
+		delta_time_start=1;
+		variables:
+		float delta_time_start(delta_time_start);
+		float delta_time_stop(delta_time_start);
+		delta_time_stop:coordinates = "delta_time_start";
+		data:
+		delta_time_start=1;	
+		delta_time_stop=1;
+	} // end g28
+	
+	
+	
 	
 
 } // end root group

@@ -1,3 +1,7 @@
+2013-12-25  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncks regression #78: CF extraction of in scope variables
+
 2013-12-25  Charlie Zender  <zender@uci.edu>
 
 	* Replace harmless continue with more efficient break

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1136 2013-12-26 07:51:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1137 2013-12-26 10:32:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -941,7 +941,10 @@ nco_xtr_cf_add                        /* [fnc] Add to extraction list variables 
   /* Search for and add CF-compliant bounds and coordinates to extraction list */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     trv_sct trv=trv_tbl->lst[uidx];
-    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)nco_xtr_cf_prv_add(nc_id,&trv,cf_nm,trv_tbl);
+    /* Filter extracted variables */
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      (void)nco_xtr_cf_prv_add(nc_id,&trv,cf_nm,trv_tbl);
+    } /* Filter extracted variables */
   } /* end loop over table */
 
   /* Print extraction list in debug mode */
@@ -958,8 +961,8 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   /* Detect associated coordinates specified by CF "bounds" or "coordinates" convention for single variable
-     Private routine called by nco_xtr_cf_add()
-     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
+  Private routine called by nco_xtr_cf_add()
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */ 
 
   char **cf_lst; /* [sng] 1D array of list elements */
 
@@ -1010,27 +1013,57 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
       att_val[att_sz]='\0';
 
       /* Split list into separate coordinate names
-	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+      Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
       cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
       /* ...for each coordinate in CF convention attribute, i.e., "bounds" or "coordinate"... */
       for(int idx_cf=0;idx_cf<nbr_cf;idx_cf++){
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;
 
-        nco_bool flg_cf_fnd=False; /* [flg] Used to print an error message that CF variable was not found */
+        char *cf_lst_var_nm_fll;  /* [sng] Built full name of 'CF' variable to find */
+        const char sls_chr='/';   /* [chr] Slash character */
+        const char sls_sng[]="/"; /* [sng] Slash string */
+        char *ptr_chr;            /* [sng] Pointer to character '/' in full name */
+        int psn_chr;              /* [nbr] Position of character '/' in in full name */
 
-        /* Does CF-variable actually exist in input file, at least by its short name?. Find them all... */
-        for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
-          trv_sct trv=trv_tbl->lst[uidx];
-          if(trv.nco_typ == nco_obj_typ_var && !strcmp(trv.nm,cf_lst_var)){
-            /* Mark variable for extraction */
-            trv_tbl->lst[uidx].flg_cf=True;
-            trv_tbl->lst[uidx].flg_xtr=True;
-            flg_cf_fnd=True;
-          }
-        } /* end loop over uidx */
+        /* Construct full name of 'CF' variable to find using the full group name where variable resides */
+        cf_lst_var_nm_fll=(char *)nco_malloc(strlen(var_trv->grp_nm_fll)+strlen(cf_lst_var)+2L);
+        strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
+        if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcat(cf_lst_var_nm_fll,sls_sng);
+        strcat(cf_lst_var_nm_fll,cf_lst_var);
 
-        if(!flg_cf_fnd) (void)fprintf(stderr,"%s: WARNING Variable %s, specified in \"%s\" attribute of variable %s, is not present in input file\n",nco_prg_nm_get(),cf_lst[idx_cf],cf_nm,var_trv->nm_fll);
+        /* Find last occurence of '/' */
+        ptr_chr=strrchr(cf_lst_var_nm_fll,sls_chr);
+        psn_chr=ptr_chr-cf_lst_var_nm_fll;
+        while(ptr_chr){
+
+          /* If variable is on list */
+          if(trv_tbl_fnd_var_nm_fll(cf_lst_var_nm_fll,trv_tbl)){
+
+            /* Mark it for extraction */
+            (void)trv_tbl_mrk_xtr(cf_lst_var_nm_fll,trv_tbl);
+
+            /* Exclude ancestor out-of-scope variables, add only the most in scope (usually in same group) */
+            break;
+
+          } /* If variable is on list, mark it for extraction */
+
+          cf_lst_var_nm_fll[psn_chr]='\0';
+          ptr_chr=strrchr(cf_lst_var_nm_fll,sls_chr);
+          /* Re-add variable name to shortened path */
+          if(ptr_chr){
+            psn_chr=ptr_chr-cf_lst_var_nm_fll;
+            cf_lst_var_nm_fll[psn_chr]='\0';
+            if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcat(cf_lst_var_nm_fll,sls_sng);
+            strcat(cf_lst_var_nm_fll,cf_lst_var);
+            ptr_chr=strrchr(cf_lst_var_nm_fll,sls_chr);
+            psn_chr=ptr_chr-cf_lst_var_nm_fll;
+          } /* !ptr_chr */
+        } /* end while */
+
+        /* Free allocated */
+        if(cf_lst_var_nm_fll) cf_lst_var_nm_fll=(char *)nco_free(cf_lst_var_nm_fll);
+    
       } /* end loop over idx_cf */
 
       /* Free allocated memory */
@@ -1138,11 +1171,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
         (void)nco_inq_dim(grp_id,dmn_id_var[idx_var_dim],dmn_nm_var,&dmn_sz);
 
         char dmn_nm_grp[NC_MAX_NAME];    /* [sng] Dimension name for *group*  */ 
-        const char sls_chr='/'; /* [chr] Slash character */
-        const char sls_sng[]="/"; /* [sng] Slash string */
-        char *ptr_chr; /* [sng] Pointer to character '/' in full name */
-        int psn_chr; /* [nbr] Position of character '/' in in full name */
-
+        
         const int flg_prn=1;         /* [flg] Dimensions in all parent groups will also be retrieved */ 
 
         int dmn_id_grp[NC_MAX_DIMS]; /* [id] Dimensions IDs array */
@@ -1162,7 +1191,11 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
 
           /* Does dimension match requested variable name (i.e., is it a coordinate variable?) */ 
           if(!strcmp(dmn_nm_grp,dmn_nm_var)){
-            char *dmn_nm_fll;
+            char *dmn_nm_fll;         /* [sng] Built dimension full name */
+            const char sls_chr='/';   /* [chr] Slash character */
+            const char sls_sng[]="/"; /* [sng] Slash string */
+            char *ptr_chr;            /* [sng] Pointer to character '/' in full name */
+            int psn_chr;              /* [nbr] Position of character '/' in in full name */
 
             /* Construct full (dimension/coordinate) name using the full group name where original variable resides */
             dmn_nm_fll=(char *)nco_malloc(strlen(var_trv.grp_nm_fll)+strlen(dmn_nm_grp)+2L);
@@ -1189,8 +1222,6 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
                 break;
 
               } /* If variable is on list, mark it for extraction */
-
-              /* This code is never executed, just kept here in case there is need to add *all* in scope coordinates */
 
               dmn_nm_fll[psn_chr]='\0';
               ptr_chr=strrchr(dmn_nm_fll,sls_chr);
