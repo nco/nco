@@ -14,7 +14,7 @@ netcdf mdl {
       :Realization = "1";
 
     dimensions:
-      time=4;
+      time=unlimited;
     variables:
       float tas1(time);
 	  float tas2(time);
@@ -32,7 +32,7 @@ netcdf mdl {
       :Realization = "2";
       
     dimensions:
-      time=4;
+      time=unlimited;
     variables:
       float tas1(time);
 	  float tas2(time);
@@ -54,7 +54,7 @@ netcdf mdl {
       :Realization = "1";
       
     dimensions:
-      time=4;
+      time=unlimited;
     variables:
       float tas1(time);
 	  float tas2(time);
@@ -72,7 +72,7 @@ netcdf mdl {
       :Realization = "2";
       
     dimensions:
-      time=4;
+      time=unlimited;
     variables:
       float tas1(time);
 	  float tas2(time);
