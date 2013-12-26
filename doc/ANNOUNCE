@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.664 2013-12-23 17:24:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.665 2013-12-26 06:55:16 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -140,6 +140,10 @@ A. The -c switch, which instructs NCO to extract all coordinate
    variables, was broken in versions 4.3.fxm-4.3.9. Now fixed.
    
 A. The -X switch fxm
+
+A. Sometime the "coordinates" and "bounds" CF attributes caused
+   incorrect matches to out-of-scope variables in hierarchical
+   files. Fixed. fxm
 
 KNOWN ISSUES NOT YET FIXED:
 

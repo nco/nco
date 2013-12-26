@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1134 2013-12-26 04:24:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1135 2013-12-26 06:55:16 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1010,7 +1010,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
       att_val[att_sz]='\0';
 
       /* Split list into separate coordinate names
-      Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+	 Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
       cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
       /* ...for each coordinate in CF convention attribute, i.e., "bounds" or "coordinate"... */
       for(int idx_cf=0;idx_cf<nbr_cf;idx_cf++){
@@ -1023,7 +1023,6 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
         for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
           trv_sct trv=trv_tbl->lst[uidx];
           if(trv.nco_typ == nco_obj_typ_var && !strcmp(trv.nm,cf_lst_var)){
-
             /* Mark variable for extraction */
             trv_tbl->lst[uidx].flg_cf=True;
             trv_tbl->lst[uidx].flg_xtr=True;
@@ -1031,11 +1030,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
           }
         } /* end loop over uidx */
 
-        /* CF not found ? */
-        if(!flg_cf_fnd){     
-          (void)fprintf(stderr,"%s: WARNING Variable %s, specified in \"%s\" attribute of variable %s, is not present in input file\n",
-            nco_prg_nm_get(),cf_lst[idx_cf],cf_nm,var_trv->nm_fll);
-        } /* CF not found ? */
+        if(!flg_cf_fnd) (void)fprintf(stderr,"%s: WARNING Variable %s, specified in \"%s\" attribute of variable %s, is not present in input file\n",nco_prg_nm_get(),cf_lst[idx_cf],cf_nm,var_trv->nm_fll);
       } /* end loop over idx_cf */
 
       /* Free allocated memory */
@@ -1381,7 +1376,7 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
     if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp){
       char *sbs_srt; /* [sng] Location of user-string match start in object path */
       char *grp_fll_sls=NULL; /* [sng] Full group name with slash appended */
-      /* Metadata-only containing groups already have flg_mlg set in nco_xtr_mk()
+      /* Metadata-only containing groups already have flg_mtd set in nco_xtr_mk()
 	 Variable ancestry may not affect such groups, especially if they are leaf groups
 	 Set extraction flag to True (then continue) iff matching groups contain only metadata
 	 Otherwise set initialize extraction flag to False and overwrite later based on descendent variables */
