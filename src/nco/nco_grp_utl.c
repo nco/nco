@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1132 2013-12-24 22:46:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1133 2013-12-26 02:01:15 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1405,10 +1405,10 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
 	    if(sbs_srt == trv_tbl->lst[idx_var].nm_fll){
 	      /* ... and mark _only_ those groups for extraction... */
 	      trv_tbl->lst[grp_idx].flg_xtr=True;
-	      continue;
+	      break;
 	    } /* endif */
 	  } /* endif full group path */
-	} /* endif extracted variable */
+	} /* endif extracted variable */ 
       } /* end loop over idx_var */
       if(grp_fll_sls) grp_fll_sls=(char *)nco_free(grp_fll_sls);
     } /* endif group */

@@ -32,9 +32,9 @@
 // list_filevars(id_in)
 // ncks --get_file_info  ~/nco/data/in_grp.nc
 
-//NOTE: Must be tested with 
-//ncks --lbr
-//Linked to netCDF library version 4.1.1, compiled Nov  7 2011 11:35:16
+// NB: Must be tested with 
+// ncks --lbr
+// Linked to netCDF library version 4.1.1, compiled Nov  7 2011 11:35:16
 
 netcdf in_grp {
 
@@ -78,7 +78,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.114 2013-12-23 18:12:15 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.115 2013-12-26 02:01:15 zender Exp $";
   
  data:
   area=10.,10.;

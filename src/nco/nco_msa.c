@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.230 2013-12-24 03:15:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.231 2013-12-26 02:01:15 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1270,6 +1270,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     if(fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_out)){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Will attempt to autoconvert variable %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,nco_typ_sng(var_typ_out),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
       var_typ_out=nco_typ_nc4_nc3(var_typ_out);
+      /* fxm: inser autoconvert logic here */
     } /* !autoconvert */
   } /* !ncks */
 
