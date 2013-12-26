@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1135 2013-12-26 06:55:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1136 2013-12-26 07:51:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3162,6 +3162,9 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   int aux_idx_nbr;
   int grp_id;
 
+#if 0
+#define USE_AUX_EVL_TRV
+#endif
 #ifndef USE_AUX_EVL_TRV 
   /* Replacement for nco_aux_evl(), that does the table loop internally, called below
   TODO Make ncks -X arguments (for auxiliary coordinates) group-compatible.
@@ -3182,7 +3185,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
       aux_idx_nbr=0;
 
-      aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr,dmn_nm);
+      aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr,&var_trv,dmn_nm);
 
       /* Use case 
 

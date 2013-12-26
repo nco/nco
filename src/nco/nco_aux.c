@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.51 2013-12-23 08:14:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.52 2013-12-26 07:51:06 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -92,6 +92,11 @@ nco_find_lat_lon
         crd_nbr++;
       } /* endif longitude */
 
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",nco_prg_nm_get(),fnc_nm,
+          var_nm); 
+      }
+
     } /* endif standard_name */
 
   } /* end loop over vars */
@@ -140,7 +145,8 @@ nco_aux_evl
  int aux_nbr, 
  char *aux_arg[],
  int *lmt_nbr,
- char *nm_dmn) /* O [sng] Dimension name */ 
+ const trv_sct * const var_trv,   /* I [sct] Variable object */
+ char *nm_dmn)                     /* O [sng] Dimension name */ 
 {
   /* Purpose: Create lmt structure of slabs of continguous cells that
      match rectangular region specified by -X arguments.
@@ -201,6 +207,11 @@ nco_aux_evl
   rcd+=nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_aux_evl() unable get past nco_get_dmn_info()\n");
+
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s variable <%s> has lat/lon variable names <%s><%s>\n",nco_prg_nm_get(),fnc_nm,
+      var_trv->nm_fll,var_nm_lat,var_nm_lon); 
+  }
 
   /* Load latitude/longitude variables needed to search for region matches */
   lat.type=crd_typ;
@@ -440,6 +451,11 @@ nco_aux_evl_trv
       rcd+=nco_get_dmn_info(grp_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
 
       if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_aux_evl() unable get past nco_get_dmn_info()\n");
+    
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s group <%s> has lat/lon variable names <%s><%s>\n",nco_prg_nm_get(),fnc_nm,
+          var_trv.grp_nm_fll,var_nm_lat,var_nm_lon); 
+      }
 
       /* Load latitude/longitude variables needed to search for region matches */
       lat.type=crd_typ;

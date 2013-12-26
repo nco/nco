@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.18 2013-12-23 08:14:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.19 2013-12-26 07:51:06 pvicente Exp $ */
 
 /* Purpose: Sub-set cell-based grids using auxiliary coordinate variable */
 
@@ -35,7 +35,8 @@ nco_aux_evl
  int aux_nbr, 
  char *aux_arg[],
  int *lmt_nbr,
- char *nm_dmn); /* O [sng] Dimension name */ 
+ const trv_sct * const var_trv, /* I [sct] Variable object */
+ char *nm_dmn);                 /* O [sng] Dimension name */ 
 
 nco_bool
 nco_find_lat_lon
