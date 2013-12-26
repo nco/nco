@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.449 2013-12-23 05:25:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.450 2013-12-26 04:24:29 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -784,7 +784,7 @@ extern "C" {
     char *dmn_nm_fll;       /* [sng] Full name of dimension for *this* coordinate  */  
     char *crd_grp_nm_fll;   /* [sng] Full group name where coordinate is located */
     char *dmn_grp_nm_fll;   /* [sng] Full group name where dimension of *this* coordinate is located */
-    char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension and coordinate */
+    char *nm;               /* [sng] Name of dimension and coordinate */
     nco_bool is_rec_dmn;    /* [flg] Is a record dimension? */
     size_t sz;              /* [nbr] Size of coordinate */
     nc_type var_typ;        /* [enm] NetCDF type  */  
@@ -797,7 +797,7 @@ extern "C" {
   typedef struct{ 
     char *grp_nm_fll;        /* [sng] Full group name where dimension was defined */
     char *nm_fll;            /* [sng] Dimension fully qualified name (path) */
-    char nm[NC_MAX_NAME+1L]; /* [sng] Dimension name */
+    char *nm;                /* [sng] Dimension name */
     nco_bool is_rec_dmn;     /* [flg] Is a record dimension? */
     size_t sz;               /* [nbr] Size of dimension */   
     int crd_nbr;             /* [nbr] Number of coordinate structures */
@@ -847,7 +847,7 @@ extern "C" {
     nc_type var_typ;                  /* [enm] (For variables only) NetCDF type  */  
     size_t nm_fll_lng;                /* [sng] Length of full name */
     char *grp_nm_fll;                 /* [sng] Full group name (for groups, same as nm_fll) */
-    char nm[NC_MAX_NAME+1L];          /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
+    char *nm;                         /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
     size_t nm_lng;                    /* [sng] Length of short name */
     int grp_dpt;                      /* [nbr] Depth of group (root = 0) */
     int nbr_att;                      /* [nbr] Number of attributes */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1133 2013-12-26 02:01:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1134 2013-12-26 04:24:29 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1970,7 +1970,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   /* Add this element (a group) to table */
   trv_tbl->lst[idx].nco_typ=nco_obj_typ_grp;          /* [enm] netCDF4 object type: group or variable */
 
-  strcpy(trv_tbl->lst[idx].nm,grp_nm);            /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
+  trv_tbl->lst[idx].nm=strdup(grp_nm);            /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
   trv_tbl->lst[idx].nm_lng=strlen(grp_nm);        /* [sng] Length of short name */
   trv_tbl->lst[idx].grp_nm_fll=strdup(grp_nm_fll);/* [sng] Full group name (for groups, same as nm_fll) */
   trv_tbl->lst[idx].nm_fll=strdup(grp_nm_fll);    /* [sng] Fully qualified name (path) */
@@ -2059,7 +2059,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     /* Add this element, a variable, to table. NB: nbr_var, nbr_grp, flg_rcr not valid here */
     trv_tbl->lst[idx].nco_typ=obj_typ;
 
-    strcpy(trv_tbl->lst[idx].nm,var_nm);
+    trv_tbl->lst[idx].nm=strdup(var_nm); 
     trv_tbl->lst[idx].nm_lng=strlen(var_nm);
     trv_tbl->lst[idx].grp_nm_fll=strdup(grp_nm_fll);
     trv_tbl->lst[idx].nm_fll=strdup(var_nm_fll);
@@ -2186,7 +2186,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     strcat(dmn_nm_fll,dmn_nm);
 
     /* Store object */
-    strcpy(trv_tbl->lst_dmn[idx].nm,dmn_nm);            
+    trv_tbl->lst_dmn[idx].nm=strdup(dmn_nm); 
     trv_tbl->lst_dmn[idx].grp_nm_fll=strdup(grp_nm_fll); 
     trv_tbl->lst_dmn[idx].nm_fll=strdup(dmn_nm_fll);    
     trv_tbl->lst_dmn[idx].sz=dmn_sz;                            
@@ -2381,7 +2381,7 @@ nco_bld_crd_var_trv                   /* [fnc] Build GTT "crd_sct" coordinate va
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->dmn_grp_nm_fll=strdup(dmn_trv.grp_nm_fll);
 
             /* Store relative name (same for dimension and variable) */
-            strcpy(trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->nm,var_trv.nm);
+            trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->nm=strdup(var_trv.nm);
 
             /* Is a record dimension(variable) if the dimennsion is a record dimension */
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->is_rec_dmn=dmn_trv.is_rec_dmn;
@@ -2917,7 +2917,8 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->dmn_nm_fll=(char *)strdup(crd->dmn_nm_fll);
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->crd_grp_nm_fll=(char *)strdup(crd->crd_grp_nm_fll);
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->dmn_grp_nm_fll=(char *)strdup(crd->dmn_grp_nm_fll);
-            strcpy(trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->nm,crd->nm);
+            trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->nm=(char *)strdup(crd->nm);
+
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->is_rec_dmn=crd->is_rec_dmn;
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->sz=crd->sz;
             trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].crd->var_typ=crd->var_typ;
