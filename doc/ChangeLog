@@ -1,6 +1,12 @@
+2013-12-27  Charlie Zender  <zender@uci.edu>
+
+	* nco_msa_cpy_var_val_mlt_lmt_trv() use nco_var_cnf_typ() to autoconvert netCDF4->netCDF3
+
+	* nco_msa_cpy_var_val_mlt_lmt_trv() use one code path for scalars and arrays
+
 2013-12-25  Pedro Vicente  <pvicente@uci.edu>
 
-	* Add ncks regression #78: CF extraction of in scope variables
+	* Add ncks regression #78: CF extraction of in-scope variables
 
 2013-12-25  Charlie Zender  <zender@uci.edu>
 

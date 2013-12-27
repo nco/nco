@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.231 2013-12-26 02:01:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.232 2013-12-27 22:25:41 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1177,17 +1177,15 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   int var_in_id;                   /* [nbr] Variable ID */
   int var_out_id;                  /* [nbr] Variable ID */
 
-  long *dmn_map_cnt;               /* [nbr] Contiguous vector of lengths of hyperslab on disk */
-  long *dmn_map_srt;               /* [nbr] Contiguous vector of indices to start of hyperslab on disk */
-
-  long var_sz=1L;                  /* [nbr] Variable size */
+  long *dmn_map_cnt=NULL;          /* [nbr] Contiguous vector of lengths of hyperslab on disk */
+  long *dmn_map_srt=NULL;          /* [nbr] Contiguous vector of indices to start of hyperslab on disk */
 
   nc_type var_typ_in;              /* [nbr] Variable type input */
   nc_type var_typ_out;             /* [nbr] Variable type output */
 
-  var_sct vara;                    /* [sct] Variable structure, to hold basic data in_id, var_id, nctype for recusive routine */
-
-  void *void_ptr;                  /* [nbr] Pointer to data */
+  var_sct var_in;                  /* [sct] Variable structure, to hold basic data in_id, var_id, nctype for recusive routine */
+  var_sct var_out;                 /* [sct] Variable structure */
+  var_sct *var_out_ptr;            /* [sct] Variable structure, used for nco_var_cnf_typ() */
 
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI;         /* [sct] Auxiliary Limit used in MSA */
@@ -1202,96 +1200,85 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   (void)nco_inq_varid(out_id,var_nm,&var_out_id);
 
   /* Get type and number of dimensions for variable */
-  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ_out,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_typ_in,&nbr_dmn_in,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_typ_out,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
     (void)fprintf(stderr,"%s: ERROR attempt to write %d-dimensional input variable %s to %d-dimensional space in output file\nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. The ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. See how at http://nco.sf.net/nco.html#ncwa\nIf you wish to completely replace the existing output file definition and values of the variable %s by those in the input file, then first remove %s from the output file using, e.g., ncks -x -v %s. See more on subsetting at http://nco.sf.net/nco.html#sbs",nco_prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out,var_nm,var_nm,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
   nbr_dim=nbr_dmn_out;
 
-  /* Deal with scalar variables */
+  /* Initialize variable structure with minimal info. for nco_msa_rcr_clc() and possibly nco_var_cnf_typ() */
+  var_in.nm=var_nm;
+  var_in.id=var_in_id;
+  var_in.nc_id=in_id;
+  var_in.type=var_typ_in;
+  var_in.has_mss_val=False;
+
+  /* Scalar */
   if(nbr_dim == 0){
-    var_sz=1L;
-    void_ptr=nco_malloc(nco_typ_lng(var_typ_in));
+    var_in.sz=1L;
+    var_in.val.vp=nco_malloc(nco_typ_lng(var_typ_in));
+    (void)nco_get_var1(in_id,var_in_id,0L,var_in.val.vp,var_typ_in);
+    var_out=var_in;
+  } /* !Scalar */
 
-    /* Read */
-    (void)nco_get_var1(in_id,var_in_id,0L,void_ptr,var_typ_in);
+  /* Array */
+  if(nbr_dim > 0){
+    /* Allocate local MSA */
+    lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
+    lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
+    
+    /* Copy from table to local MSA */
+    (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
+    
+    /* Dimension vectors */
+    dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
+    dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
+    
+    for(int dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+      /* Store in arrays */
+      dmn_map_cnt[dmn_idx]=lmt_msa[dmn_idx]->dmn_cnt;
+      dmn_map_srt[dmn_idx]=0L;
+    } /* end loop over dmn_idx */
 
-    /* Write */
-    (void)nco_put_var1(out_id,var_out_id,0L,void_ptr,var_typ_out);
-
-    /* Perform MD5 digest of input and output data if requested */
-    if(md5)
-      if(md5->dgs)
-	(void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ_in),out_id,(long *)NULL,(long *)NULL,void_ptr);
-
-    /* Write unformatted binary data */
-    if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ_in,void_ptr);
-
-    /* Done */
-    (void)nco_free(void_ptr);
-    return;
-  } /* End Deal with scalar variables */
-
-  /* Allocate local MSA */
-  lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_msa_sct *));
-  lmt=(lmt_sct **)nco_malloc(var_trv->nbr_dmn*sizeof(lmt_sct *));
-
-   /* Copy from table to local MSA */
-  (void)nco_cpy_msa_lmt(var_trv,&lmt_msa);
-  
-  /* Dimension vectors */
-  dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
-  dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
-
-  for(int dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
-    /* Store in arrays */
-    dmn_map_cnt[dmn_idx]=lmt_msa[dmn_idx]->dmn_cnt;
-    dmn_map_srt[dmn_idx]=0L;
-  } /* end loop over dmn_idx */
-
-  /* Initialize variable structure with in_id, var_in_id, nctype, etc., so recursive routine can read data */
-  vara.nm=var_nm;
-  vara.id=var_in_id;
-  vara.nc_id=in_id;
-  vara.type=var_typ_in;
-
-  /* Call super-dooper recursive routine */
-  void_ptr=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,&vara);
-
-  /* After MSA we have size to write */
-  var_sz=vara.sz;
+    /* Call super-dooper recursive routine (this sets var_in.sz) */
+    var_in.val.vp=nco_msa_rcr_clc((int)0,nbr_dim,lmt,lmt_msa,&var_in);
+    var_out=var_in;
+  } /* !Array */
 
   /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
   if(nco_prg_id_get() == ncks){
     /* File format needed for decision tree and to enable netCDF4 features */
     (void)nco_inq_format(out_id,&fl_fmt);
-    if(fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_out)){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Will attempt to autoconvert variable %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,nco_typ_sng(var_typ_out),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
-      var_typ_out=nco_typ_nc4_nc3(var_typ_out);
-      /* fxm: inser autoconvert logic here */
+    if(fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_in)){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Autoconverting variable %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,nco_typ_sng(var_typ_in),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
+      var_typ_out=nco_typ_nc4_nc3(var_typ_in);
+      var_out_ptr=nco_var_cnf_typ(var_typ_out,&var_in);
+      var_out=*var_out_ptr;
     } /* !autoconvert */
   } /* !ncks */
 
-  /* Write variable */
-  (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,void_ptr,var_typ_out);
+  /* Write */
+  if(nbr_dim == 0) (void)nco_put_var1(out_id,var_out_id,0L,var_out.val.vp,var_typ_out); else (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp,var_typ_out);
 
   /* Perform MD5 digest of input and output data if requested */
   if(md5)
     if(md5->dgs)
-      (void)nco_md5_chk(md5,var_nm,var_sz*nco_typ_lng(var_typ_out),out_id,dmn_map_srt,dmn_map_cnt,void_ptr);
+      (void)nco_md5_chk(md5,var_nm,var_out.sz*nco_typ_lng(var_typ_out),out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp);
 
   /* Write unformatted binary data */
-  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_typ_out,void_ptr);
+  if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_out.sz,var_typ_in,var_out.val.vp);
 
   /* Free */
-  (void)nco_free(void_ptr);
-  (void)nco_free(dmn_map_cnt);
-  (void)nco_free(dmn_map_srt);
+  if(var_out.val.vp) var_out.val.vp=(void *)nco_free(var_out.val.vp);
+  if(dmn_map_cnt) dmn_map_cnt=(long *)nco_free(dmn_map_cnt);
+  if(dmn_map_srt) dmn_map_srt=(long *)nco_free(dmn_map_srt);
 
-  (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
-  lmt=(lmt_sct **)nco_free(lmt);
+  if(lmt){
+    (void)nco_lmt_msa_free(var_trv->nbr_dmn,lmt_msa);
+    lmt=(lmt_sct **)nco_free(lmt);
+  } /* endif */
 
   return;
 } /* end nco_cpy_var_val_mlt_lmt_trv() */
