@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.53 2013-12-27 06:21:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.54 2013-12-27 06:47:49 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -145,7 +145,6 @@ nco_aux_evl
  int aux_nbr, 
  char *aux_arg[],
  int *lmt_nbr,
- const trv_sct * const var_trv,   /* I [sct] Variable object */
  char *nm_dmn)                     /* O [sng] Dimension name */ 
 {
   /* Purpose: Create lmt structure of slabs of continguous cells that
@@ -207,11 +206,6 @@ nco_aux_evl
   rcd+=nco_get_dmn_info(in_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_aux_evl() unable get past nco_get_dmn_info()\n");
-
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s variable <%s> has lat/lon variable names <%s><%s>\n",nco_prg_nm_get(),fnc_nm,
-      var_trv->nm_fll,var_nm_lat,var_nm_lon); 
-  }
 
   /* Load latitude/longitude variables needed to search for region matches */
   lat.type=crd_typ;
@@ -372,13 +366,14 @@ nco_aux_prs
 } /* nco_aux_prs */
 
 
-lmt_sct **                      /* O [nbr] Dimension limits */
+lmt_sct **                      /* O [lst] Auxiliary coordinate limits */
 nco_aux_evl_trv
 (const int nc_id,               /* I [ID] netCDF file ID */
  const trv_sct * const var_trv, /* I [sct] Variable object */
  int aux_nbr,                   /* I [sng] Number of auxiliary coordinates */
  char *aux_arg[],               /* I [sng] Auxiliary coordinates */
- int *lmt_nbr)                  /* I/O [nbr] Number of dimension limits */
+ int *aux_lmt_nbr)              /* I/O [nbr] Number of coordinate limits */
 {
 
+  return NULL;
 } /* nco_aux_evl_trv */
