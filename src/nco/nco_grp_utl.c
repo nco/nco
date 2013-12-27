@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1137 2013-12-26 10:32:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1138 2013-12-27 06:21:49 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1043,7 +1043,7 @@ nco_xtr_cf_prv_add                    /* [fnc] Add specified CF-compliant coordi
             /* Mark it for extraction */
             (void)trv_tbl_mrk_xtr(cf_lst_var_nm_fll,trv_tbl);
 
-            /* Exclude ancestor out-of-scope variables, add only the most in scope (usually in same group) */
+            /* Exclude ancestor with lower scope (closer to root) variables, add only the most in scope (usually in same group) */
             break;
 
           } /* If variable is on list, mark it for extraction */
@@ -1218,7 +1218,7 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
                 /* Mark it for extraction */
                 (void)trv_tbl_mrk_xtr(dmn_nm_fll,trv_tbl);
 
-                /* Subsetting should exclude ancestor out-of-scope coordinates, add only the most in scope (usually in same group) */
+                /* Subsetting should exclude ancestor with lower scope (closer to root) coordinates, add only the most in scope (usually in same group) */
                 break;
 
               } /* If variable is on list, mark it for extraction */
@@ -3193,14 +3193,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   int aux_idx_nbr;
   int grp_id;
 
-#if 0
-#define USE_AUX_EVL_TRV
-#endif
 #ifndef USE_AUX_EVL_TRV 
-  /* Replacement for nco_aux_evl(), that does the table loop internally, called below
-  TODO Make ncks -X arguments (for auxiliary coordinates) group-compatible.
-  */
-
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     trv_sct var_trv=trv_tbl->lst[idx_var];
@@ -3279,21 +3272,10 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
 #else /* USE_AUX_EVL_TRV */
 
-  lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
-  aux=nco_aux_evl_trv(nc_id,aux_nbr,aux_arg,&aux_idx_nbr,trv_tbl);
-
-  /* Found limits */
-  if(aux_idx_nbr > 0){
-
-    (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
-    int lmt_nbr_new=*lmt_nbr+aux_idx_nbr;
-    int aux_idx=0;
-    for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
-    *lmt_nbr=lmt_nbr_new;
-
-    aux=(lmt_sct **)nco_free(aux); 
-
-  } /* Found limits */
+  /* 
+  1) Traverse table
+  2) Select each variable to extract
+  3) Look for associated in scope only associated variables */
 
 
 #endif /* USE_AUX_EVL_TRV */
