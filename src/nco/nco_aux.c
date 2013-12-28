@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.57 2013-12-28 04:24:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.58 2013-12-28 04:44:04 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -382,7 +382,6 @@ nco_aux_evl_trv
   Uses latitude/longitude centers rather than cell_bounds to detect matches
   Code assumes units are degrees if they are not radians */
 
-
   const char fnc_nm[]="nco_aux_evl_trv()";
 
   char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
@@ -434,6 +433,69 @@ nco_aux_evl_trv
         Assumes that units and types for latitude and longitude are identical
         Caller responsible for memory management for variable names
         Memory for unit strings must be freed by caller */
+
+        /* nco_find_lat_lon() For each variable, see if standard name is latitude or longitude */
+
+        char var_nm[NC_MAX_NAME+1];
+        char value[NC_MAX_NAME+1];
+        char var_nm_lat[NC_MAX_NAME+1]; 
+        char var_nm_lon[NC_MAX_NAME+1];
+        char *units;
+
+        int rcd=NC_NOERR;
+        int crd_nbr=0;
+        int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
+        int var_att_nbr;                /* [nbr] Number of attributes */
+        int var_dmn_nbr;                /* [nbr] Number of dimensions */
+        int lat_id;
+        int lon_id;
+
+        long lenp;
+
+        nc_type var_typ; /* [enm] variable type */
+        nc_type crd_typ;
+
+        /* Obtain group ID from netCDF API using full group name */
+        (void)nco_inq_grp_full_ncid(nc_id,var_cf_trv.grp_nm_fll,&grp_id);
+
+        /* Obtain variable ID */
+        (void)nco_inq_varid(grp_id,var_cf_trv.nm,&var_id);
+
+        nco_inq_var(grp_id,var_id,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
+        lenp=0;
+        if(!nco_inq_attlen_flg(grp_id,var_id,"standard_name",&lenp)){
+          NCO_GET_ATT_CHAR(grp_id,var_id,"standard_name",value);
+          value[lenp]='\0';
+          if(!strcmp(value,"latitude")){
+            strcpy(var_nm_lat,var_nm);
+            lat_id=var_id;
+
+            /* Get units; assume same for both lat and lon */
+            rcd=nco_inq_attlen(grp_id,var_id,"units",&lenp);
+            if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
+            units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
+            NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
+            units[lenp]='\0';
+
+            if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
+
+            /* Assign type; assumed same for both lat and lon */
+            crd_typ=var_typ;
+            crd_nbr++;
+          } /* endif latitude */
+
+          if(!strcmp(value,"longitude")){
+            strcpy(var_nm_lon,var_nm);
+            lon_id=var_id;
+            crd_nbr++;
+          } /* endif longitude */
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",nco_prg_nm_get(),fnc_nm,
+              var_nm); 
+          }
+
+        } /* endif standard_name */
 
 
 
