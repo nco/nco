@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.56 2013-12-28 04:10:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.57 2013-12-28 04:24:06 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -375,14 +375,13 @@ nco_aux_evl_trv
  const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
  int *aux_lmt_nbr)                   /* I/O [nbr] Number of coordinate limits */
 {
+  /* Purpose: Create lmt structure of slabs of continguous cells that
+  match rectangular region specified by -X arguments.
+  Intended for use with non-monotonic grids
+  Requires CF-1.0 conventions
+  Uses latitude/longitude centers rather than cell_bounds to detect matches
+  Code assumes units are degrees if they are not radians */
 
-  /* Find auxiliary coordinate variables that map to latitude/longitude 
-  Find variables with standard_name = "latitude" and "longitude"
-  Return true if both latitude and longitude standard names are found
-  Also return needed information about these auxiliary coordinates
-  Assumes that units and types for latitude and longitude are identical
-  Caller responsible for memory management for variable names
-  Memory for unit strings must be freed by caller */
 
   const char fnc_nm[]="nco_aux_evl_trv()";
 
@@ -423,12 +422,24 @@ nco_aux_evl_trv
 
     /* Loop table */
     for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-      /* Filter variables */
-      trv_sct cf_trv=trv_tbl->lst[idx_var];
+
+      /* Filter variables with lower scope (lower group depth) */
+      trv_sct var_cf_trv=trv_tbl->lst[idx_var];
+      if(var_cf_trv.nco_typ == nco_obj_typ_var && var_cf_trv.grp_dpt <= var_trv->grp_dpt){
+
+        /* Find auxiliary coordinate variables that map to latitude/longitude 
+        Find variables with standard_name = "latitude" and "longitude"
+        Return true if both latitude and longitude standard names are found
+        Also return needed information about these auxiliary coordinates
+        Assumes that units and types for latitude and longitude are identical
+        Caller responsible for memory management for variable names
+        Memory for unit strings must be freed by caller */
 
 
+
+
+      } /* Filter variables with lower scope (lower group depth) */
     } /* Loop table */
-
   } /* Loop attributes */
 
   return NULL;
