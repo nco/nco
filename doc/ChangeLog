@@ -1,5 +1,7 @@
 2013-12-27  Charlie Zender  <zender@uci.edu>
 
+	* Correctly handle output filenames that contain whitespace
+
 	* ncdismember: Works with group names that contain whitespace
 
 	* CDL-mode: print terminal group name comments in CDL-valid syntax to protect whitespace

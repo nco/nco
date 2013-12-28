@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.230 2013-12-23 05:25:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.231 2013-12-28 06:37:40 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -219,11 +219,13 @@ nco_fl_cp /* [fnc] Copy first file to second */
  const char * const fl_dst) /* I [sng] Name of destination file */
 {
   /* Purpose: Copy first file to second */
-  char *cp_cmd;
+  char *cmd_cp;
+  char *fl_dst_cdl;
+  char *fl_src_cdl;
 #ifdef _MSC_VER
-  const char cp_cmd_fmt[]="copy %s %s";
+  const char cmd_cp_fmt[]="copy %s %s";
 #else /* !_MSC_VER */
-  const char cp_cmd_fmt[]="cp %s %s";
+  const char cmd_cp_fmt[]="cp %s %s";
 #endif /* !_MSC_VER */
 
   int rcd;
@@ -235,17 +237,25 @@ nco_fl_cp /* [fnc] Copy first file to second */
     return;
   } /* end if */
 
+  /* 20131227 Allow for whitespace characters in fl_dst 
+     Assume CDL translation results in acceptable name for shell commands */
+  fl_src_cdl=nm2sng_cdl(fl_src);
+  fl_dst_cdl=nm2sng_cdl(fl_dst);
+
   /* Construct and execute copy command */
-  cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Copying %s to %s...",nco_prg_nm_get(),fl_src,fl_dst);
-  (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
-  rcd=system(cp_cmd);
+  cmd_cp=(char *)nco_malloc((strlen(cmd_cp_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: Copying %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
+  (void)sprintf(cmd_cp,cmd_cp_fmt,fl_src_cdl,fl_dst_cdl);
+  rcd=system(cmd_cp);
   if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR nco_fl_cp() is unable to execute cp command \"%s\"\n",nco_prg_nm_get(),cp_cmd);
+    (void)fprintf(stdout,"%s: ERROR nco_fl_cp() is unable to execute cp command \"%s\"\n",nco_prg_nm_get(),cmd_cp);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  cp_cmd=(char *)nco_free(cp_cmd);
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+
+  cmd_cp=(char *)nco_free(cmd_cp);
+  if(fl_dst_cdl) fl_dst_cdl=(char *)nco_free(fl_dst_cdl);
+  if(fl_src_cdl) fl_src_cdl=(char *)nco_free(fl_src_cdl);
 } /* end nco_fl_cp() */
 
 #ifdef _MSC_VER
@@ -1137,6 +1147,9 @@ nco_fl_mv /* [fnc] Move first file to second */
 {
   /* Purpose: Move first file to second */
   char *cmd_mv;
+  char *fl_dst_cdl;
+  char *fl_src_cdl;
+
 #ifdef _MSC_VER
   const char cmd_mv_fmt[]="move %s %s";
 #else /* !_MSC_VER */
@@ -1152,17 +1165,25 @@ nco_fl_mv /* [fnc] Move first file to second */
     return;
   } /* end if */
 
-  /* Construct and execute copy command */
-  cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src)+strlen(fl_dst)-fmt_chr_nbr+1UL)*sizeof(char));
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_src,fl_dst);
-  (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src,fl_dst);
+  /* 20131227 Allow for whitespace characters in fl_dst 
+     Assume CDL translation results in acceptable name for shell commands */
+  fl_src_cdl=nm2sng_cdl(fl_src);
+  fl_dst_cdl=nm2sng_cdl(fl_dst);
+
+  /* Construct and execute move command */
+  cmd_mv=(char *)nco_malloc((strlen(cmd_mv_fmt)+strlen(fl_src_cdl)+strlen(fl_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",nco_prg_nm_get(),fl_src_cdl,fl_dst_cdl);
+  (void)sprintf(cmd_mv,cmd_mv_fmt,fl_src_cdl,fl_dst_cdl);
   rcd_sys=system(cmd_mv);
   if(rcd_sys == -1){
     (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",nco_prg_nm_get(),cmd_mv);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  cmd_mv=(char *)nco_free(cmd_mv);
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+
+  cmd_mv=(char *)nco_free(cmd_mv);
+  if(fl_dst_cdl) fl_dst_cdl=(char *)nco_free(fl_dst_cdl);
+  if(fl_src_cdl) fl_src_cdl=(char *)nco_free(fl_src_cdl);
 } /* end nco_fl_mv() */
 
 char * /* O [sng] Name of file to retrieve */
@@ -1298,7 +1319,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       sng=(char *)nco_free(sng);
     } /* end else */
 
-    /* Windows uses backslash for path separator; escape the character */
+    /* Windows uses backslash for path separator; escape that character */
     if(is_url) (void)strcat(fl_nm,"/"); else (void)strcat(fl_nm,"\\");
    
 #else /* !_MSC_VER */

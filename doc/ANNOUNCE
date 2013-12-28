@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.665 2013-12-26 06:55:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.666 2013-12-28 06:37:40 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -93,6 +93,10 @@ A. HDF4 behavior: Thanks to recent improvements in netCDF,
    ncks fl.hdf fl.nc
    http://nco.sf.net/nco.html#hdf4
 
+A. NCO autoconverts HDF4 and HDF5 atomic-types (e.g., NC_UBYTE, 
+   NC_STRING) to netCDF3 atomic types (e.g., NC_SHORT, NC_CHAR) when  
+   necessary, i.e., when the output file is netCDF3.
+
 A. fxm
    NCO now employs hashing techniques to locate objects.
    As a result NCO is much more efficient searching for objects.
@@ -143,7 +147,12 @@ A. The -X switch fxm
 
 A. Sometime the "coordinates" and "bounds" CF attributes caused
    incorrect matches to out-of-scope variables in hierarchical
-   files. Fixed. fxm
+   files. Fixed.
+
+A. NCO correctly handles output filenames that contain whitespace. 
+   Previously, NCO would complain when moving the temporary to the
+   final output file (the workaround was to use --no_tmp_fl).
+   Now fixed. fxm
 
 KNOWN ISSUES NOT YET FIXED:
 
