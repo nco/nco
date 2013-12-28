@@ -1,6 +1,8 @@
 2013-12-27  Charlie Zender  <zender@uci.edu>
 
-	* CDL-mode: print terminal group name comments in CDL-valid syntax so whitespace is protected
+	* ncdismember: Works with group names that contain whitespace
+
+	* CDL-mode: print terminal group name comments in CDL-valid syntax to protect whitespace
 
 	* Fix diagnostic INFO message for mk_rec_dmn/fix_rec_dmn in nco_cpy_var_dfn_trv(), nco_dmn_msa_tbl()
 

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.928 2013-12-23 05:57:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.929 2013-12-28 05:19:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4324,14 +4324,15 @@ fi # !$4
 
 mkdir -p ${drc_out}
 cd ${drc_out}
-grp_lst=`ncks --cdl -m ${fl_in} | grep '// group' | awk '{print $4}' | sort`
+grp_lst=`ncks --cdl -m ${fl_in} | grep '// group' | awk '{$1=$2=$3="";sub(/^  */,"",$0);print}' | sort`
 echo "Dismembering file ${fl_in} into following files:"
+IFS=$'\n' # Change Inter-Field-Separator from <Space><Tab><Newline> to just <Newline>
 for grp_in in ${grp_lst} ; do
     grp_out=`echo ${grp_in} | sed 's/\///' | sed 's/\//./g'`
     if [ "${grp_out}" = '' ]; then grp_out='root' ; fi
     echo "${drc_out}/${grp_out}.nc"
     arg=`echo ${fl_in} | awk '{if(match(tolower($1),".hdf")) arg="--hdf4"; print arg}'`
-    ncks -O -h ${arg} --hdr_pad=40 -G : -g ${grp_in}/ -3 ${fl_in} ${drc_out}/${grp_out}.nc
+    ncks -O -h ${arg} --no_tmp_fl --hdr_pad=40 -G : -g ${grp_in}/ -3 ${fl_in} ${drc_out}/${grp_out}.nc
     ncatted -h -a Conventions,global,c,c,"CF-${cf_vrs}" ${drc_out}/${grp_out}.nc
     if [ ${flg_cf} = 'cf' ]; then
        cfchecker -c ${cf_vrs} ${drc_out}/${grp_out}.nc
