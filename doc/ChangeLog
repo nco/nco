@@ -1,5 +1,8 @@
 2013-12-27  Charlie Zender  <zender@uci.edu>
 
+	* Failed attempt to convert NC_STRING to NC_CHAR variables
+	Would require implementing (possibly thousands of) dummy dimensions
+
 	* Correctly handle output filenames that contain whitespace
 
 	* ncdismember: Works with group names that contain whitespace

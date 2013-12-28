@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.233 2013-12-28 00:28:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.234 2013-12-28 07:33:10 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1190,6 +1190,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI;         /* [sct] Auxiliary Limit used in MSA */
 
+  nco_bool flg_write=True;
+
   assert(nco_obj_typ_var == var_trv->nco_typ);
 
   /* Local copy of object name */ 
@@ -1254,13 +1256,41 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     if(fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_in)){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting variable %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,nco_typ_sng(var_typ_in),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
       var_typ_out=nco_typ_nc4_nc3(var_typ_in);
-      var_out_ptr=nco_var_cnf_typ(var_typ_out,&var_in);
-      var_out=*var_out_ptr;
+
+      if(var_typ_in == NC_STRING && var_typ_out == NC_CHAR){
+	/* Special case for string conversion:
+	   20131227: Currently limited to translating string variables that contain only one string
+	   Too many other limits on string translation to list them all :)
+	   This only handles plain strings */
+	if(var_out.sz > 1L){
+	  (void)fprintf(stdout,"%s: ERROR Unable to autoconvert. String variable %s contains %li strings.\n",nco_prg_nm_get(),var_nm,var_out.sz);
+	  nco_exit(EXIT_FAILURE);
+	} /* endif err */
+
+	var_out=var_in;
+	var_out.sz=strlen(var_out.val.sngp[0]);
+	nbr_dim++;
+	if(nbr_dim == 1){
+	  dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
+	  dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
+	} /* nbr_dim != 1 */
+	dmn_map_cnt[0]=var_out.sz;
+	dmn_map_srt[0]=0L;
+	(void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.sngp[0],var_typ_out);
+	(void)cast_nctype_void(var_typ_out,&var_out.val);
+	flg_write=False;
+      }else{ /* !NC_STRING */
+	var_out_ptr=nco_var_cnf_typ(var_typ_out,&var_in);
+	var_out=*var_out_ptr;
+      } /* !NC_STRING */
+      
     } /* !autoconvert */
   } /* !ncks */
 
   /* Write */
-  if(nbr_dim == 0) (void)nco_put_var1(out_id,var_out_id,0L,var_out.val.vp,var_typ_out); else (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp,var_typ_out);
+  if(flg_write){
+    if(nbr_dim == 0) (void)nco_put_var1(out_id,var_out_id,0L,var_out.val.vp,var_typ_out); else (void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp,var_typ_out);
+  } /* !flg_write */
 
   /* Perform MD5 digest of input and output data if requested */
   if(md5)

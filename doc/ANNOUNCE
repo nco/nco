@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.666 2013-12-28 06:37:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.667 2013-12-28 07:33:10 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -145,14 +145,14 @@ A. The -c switch, which instructs NCO to extract all coordinate
    
 A. The -X switch fxm
 
-A. Sometime the "coordinates" and "bounds" CF attributes caused
+A. Sometimes the "coordinates" and "bounds" CF attributes caused 
    incorrect matches to out-of-scope variables in hierarchical
    files. Fixed.
 
 A. NCO correctly handles output filenames that contain whitespace. 
    Previously, NCO would complain when moving the temporary to the
    final output file (the workaround was to use --no_tmp_fl).
-   Now fixed. fxm
+   Now fixed.
 
 KNOWN ISSUES NOT YET FIXED:
 
