@@ -1,5 +1,7 @@
 2013-12-27  Charlie Zender  <zender@uci.edu>
 
+	* Autoconvert: fix when converting _FillValue, and restore defaults. MODIS works!
+
 	* nco_att_cpy() autoconverts all netCDF4->netCDF3 types when appropriate in ncks
 
 	* nco_msa_cpy_var_val_mlt_lmt_trv() use nco_var_cnf_typ() to autoconvert netCDF4->netCDF3

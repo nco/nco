@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.166 2013-12-28 00:28:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.167 2013-12-28 03:47:24 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -338,6 +338,8 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
   nc_type att_typ_in;
   nc_type att_typ_out;
 
+  nco_bool flg_autoconvert;
+
   if(var_in_id == NC_GLOBAL){
     (void)nco_inq_natts(in_id,&nbr_att);
     if(nbr_att > NC_MAX_ATTRS) (void)fprintf(stdout,"%s: WARNING Number of global attributes is %d which exceeds number permitted by netCDF NC_MAX_ATTRS = %d\n",nco_prg_nm_get(),nbr_att,NC_MAX_ATTRS);
@@ -351,6 +353,11 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
   for(idx=0;idx<nbr_att;idx++){
     (void)nco_inq_attname(in_id,var_in_id,idx,att_nm);
     (void)nco_inq_att(in_id,var_in_id,att_nm,&att_typ_in,&att_sz);
+
+    /* Reset default behavior */
+    flg_autoconvert=False;
+    att_typ_out=att_typ_in;
+
     /* Look for same attribute in output variable in output file */
     rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,&att_typ_in,(long *)NULL);
 
@@ -387,16 +394,18 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     /* File format needed for autoconversion */
     (void)nco_inq_format(out_id,&fl_fmt);
 
+    /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
+    if(nco_prg_id_get() == ncks && fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(att_typ_in)){
+      att_typ_out=nco_typ_nc4_nc3(att_typ_in);
+      flg_autoconvert=True;
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting variable %s attribute %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,att_nm,nco_typ_sng(att_typ_in),nco_typ_sng(att_typ_out));
+    } /* !flg_autoconvert */
+
     if(strcmp(att_nm,nco_mss_val_sng_get())){
-      /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
-      if(nco_prg_id_get() == ncks && fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(att_typ_in)){
+      if(flg_autoconvert){
 	var_sct att_var; /* [sct] Variable structure */
 	var_sct *att_var_ptr=NULL; /* [sct] Variable structure */
 
-	att_typ_out=nco_typ_nc4_nc3(att_typ_in);
-
-	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting variable %s attribute %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,att_nm,nco_typ_sng(att_typ_in),nco_typ_sng(att_typ_out));
-	
 	/* Initialize variable structure with minimal info. for nco_var_cnf_typ() */
 	att_var.nm=att_nm;
 	att_var.type=att_typ_in;
@@ -406,9 +415,8 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
         (void)nco_get_att(in_id,var_in_id,att_nm,att_var.val.vp,att_typ_in);
 
 	if(att_typ_in == NC_STRING && att_typ_out == NC_CHAR){
-	  /* Special case for string conversion
-	     Duplicate first string of existing attribute
-	     netCDF3 output attribute can only hold one string, so we will delete the rest */
+	  /* Special case for string conversion:
+	     Keep first string of existing attribute (netCDF3 output attribute can only hold one string) */
 	  att_var.sz=att_sz=strlen(att_var.val.sngp[0]);
 	  rcd=nco_put_att(out_id,var_out_id,att_nm,att_typ_out,att_sz,att_var.val.sngp[0]);
 	  (void)cast_nctype_void(att_typ_out,&att_var.val);
@@ -418,7 +426,6 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 	  rcd=nco_put_att(out_id,var_out_id,att_nm,att_typ_out,att_sz,att_var_ptr->val.vp);
 	  if(att_var_ptr->val.vp) att_var_ptr->val.vp=nco_free(att_var_ptr->val.vp);
 	} /* !NC_STRING */
-
       }else{
 	/* Copy all attributes except _FillValue with fast library routine */
 	(void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
@@ -452,8 +459,10 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       aed.id=out_id; /* Variable ID or NC_GLOBAL ( = -1) for global attribute */
       aed.sz=att_sz; /* Number of elements in attribute */
 
-      /* Do not convert global attributes or PCK_ATT_CPY */  
-      if(PCK_ATT_CPY || var_out_id==NC_GLOBAL) att_typ_out=att_typ_in; else (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
+      if(!flg_autoconvert){
+	/* Do not convert global attributes or PCK_ATT_CPY */  
+	if(PCK_ATT_CPY || var_out_id==NC_GLOBAL) att_typ_out=att_typ_in; else (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
+      } /* flg_autoconvert */
 
       if(att_typ_out==att_typ_in){
         aed.type=att_typ_out; /* Type of attribute */
