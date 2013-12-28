@@ -1,5 +1,7 @@
 2013-12-27  Charlie Zender  <zender@uci.edu>
 
+	* nco_att_cpy() autoconverts all netCDF4->netCDF3 types when appropriate in ncks
+
 	* nco_msa_cpy_var_val_mlt_lmt_trv() use nco_var_cnf_typ() to autoconvert netCDF4->netCDF3
 
 	* nco_msa_cpy_var_val_mlt_lmt_trv() use one code path for scalars and arrays

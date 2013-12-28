@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.232 2013-12-27 22:25:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.233 2013-12-28 00:28:44 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1183,7 +1183,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   nc_type var_typ_in;              /* [nbr] Variable type input */
   nc_type var_typ_out;             /* [nbr] Variable type output */
 
-  var_sct var_in;                  /* [sct] Variable structure, to hold basic data in_id, var_id, nctype for recusive routine */
+  var_sct var_in;                  /* [sct] Variable structure */
   var_sct var_out;                 /* [sct] Variable structure */
   var_sct *var_out_ptr;            /* [sct] Variable structure, used for nco_var_cnf_typ() */
 
@@ -1252,7 +1252,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     /* File format needed for decision tree and to enable netCDF4 features */
     (void)nco_inq_format(out_id,&fl_fmt);
     if(fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_in)){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING Autoconverting variable %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,nco_typ_sng(var_typ_in),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting variable %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,nco_typ_sng(var_typ_in),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
       var_typ_out=nco_typ_nc4_nc3(var_typ_in);
       var_out_ptr=nco_var_cnf_typ(var_typ_out,&var_in);
       var_out=*var_out_ptr;
