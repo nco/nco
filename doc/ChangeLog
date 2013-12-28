@@ -1,5 +1,7 @@
 2013-12-27  Charlie Zender  <zender@uci.edu>
 
+	* CDL-mode: print terminal group name comments in CDL-valid syntax so whitespace is protected
+
 	* Fix diagnostic INFO message for mk_rec_dmn/fix_rec_dmn in nco_cpy_var_dfn_trv(), nco_dmn_msa_tbl()
 
 	* Autoconvert: fix when converting _FillValue, and restore defaults. MODIS works!

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1143 2013-12-28 04:10:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1144 2013-12-28 04:29:28 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4221,7 +4221,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     (void)nco_inq_var_chunking(grp_id,var->id,&srg_typ,var->cnk_sz);   
   } /* endif */
 
-  /* Get enm_prc_typ from GTT */  
+  /* Get enm_prc_typ from GTT */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
     if(!strcmp(var->nm_fll,trv_tbl->lst[uidx].nm_fll)){
       if(trv_tbl->lst[uidx].enm_prc_typ == prc_typ){
