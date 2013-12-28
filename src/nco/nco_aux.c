@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.54 2013-12-27 06:47:49 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.55 2013-12-28 01:34:36 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -374,6 +374,52 @@ nco_aux_evl_trv
  char *aux_arg[],               /* I [sng] Auxiliary coordinates */
  int *aux_lmt_nbr)              /* I/O [nbr] Number of coordinate limits */
 {
+
+  /* Find auxiliary coordinate variables that map to latitude/longitude 
+  Find variables with standard_name = "latitude" and "longitude"
+  Return true if both latitude and longitude standard names are found
+  Also return needed information about these auxiliary coordinates
+  Assumes that units and types for latitude and longitude are identical
+  Caller responsible for memory management for variable names
+  Memory for unit strings must be freed by caller */
+
+  const char fnc_nm[]="nco_aux_evl_trv()";
+
+  char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
+  char value[NC_MAX_NAME];  /* [sng] Attribute value */
+
+  int grp_id;               /* [id] Group ID */
+  int nbr_att;              /* [nbr] Number of attributes */
+  int var_id;               /* [id] Variable ID */
+
+  assert(var_trv->nco_typ == nco_obj_typ_var);
+
+  /* Obtain group ID from netCDF API using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
+
+  /* Obtain variable ID */
+  (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
+
+  /* Find number of attributes */
+  (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
+
+  assert(nbr_att == var_trv->nbr_att);
+
+  /* Loop attributes */
+  for(int idx_att=0;idx_att<nbr_att;idx_att++){
+
+    /* Get attribute name */
+    (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
+
+    /* Make sure CF tag exists. Currently require CF-1.0 value */
+    if(NCO_GET_ATT_CHAR(grp_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.")){
+      if(nco_dbg_lvl_get() >= nco_dbg_dev)
+        (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or is present but not of the form \"CF-1.X\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.X metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
+    } /* !CF */
+
+
+
+  } /* Loop attributes */
 
   return NULL;
 } /* nco_aux_evl_trv */
