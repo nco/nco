@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.55 2013-12-28 01:34:36 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.56 2013-12-28 04:10:55 pvicente Exp $ */
 
 /* Copyright (C) 1995--2013 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -366,13 +366,14 @@ nco_aux_prs
 } /* nco_aux_prs */
 
 
-lmt_sct **                      /* O [lst] Auxiliary coordinate limits */
+lmt_sct **                           /* O [lst] Auxiliary coordinate limits */
 nco_aux_evl_trv
-(const int nc_id,               /* I [ID] netCDF file ID */
- const trv_sct * const var_trv, /* I [sct] Variable object */
- int aux_nbr,                   /* I [sng] Number of auxiliary coordinates */
- char *aux_arg[],               /* I [sng] Auxiliary coordinates */
- int *aux_lmt_nbr)              /* I/O [nbr] Number of coordinate limits */
+(const int nc_id,                    /* I [ID] netCDF file ID */
+ const trv_sct * const var_trv,      /* I [sct] Variable object */
+ int aux_nbr,                        /* I [sng] Number of auxiliary coordinates */
+ char *aux_arg[],                    /* I [sng] Auxiliary coordinates */
+ const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
+ int *aux_lmt_nbr)                   /* I/O [nbr] Number of coordinate limits */
 {
 
   /* Find auxiliary coordinate variables that map to latitude/longitude 
@@ -418,6 +419,15 @@ nco_aux_evl_trv
     } /* !CF */
 
 
+    /* Look for in scope only associated variables */
+
+    /* Loop table */
+    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+      /* Filter variables */
+      trv_sct cf_trv=trv_tbl->lst[idx_var];
+
+
+    } /* Loop table */
 
   } /* Loop attributes */
 

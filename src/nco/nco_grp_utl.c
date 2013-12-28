@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1142 2013-12-28 03:58:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1143 2013-12-28 04:10:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8270,7 +8270,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   const char fnc_nm[]="nco_bld_aux_crd()"; /* [sng] Function name */
 
 
-#if 0 
+#if 0
 #define USE_AUX_EVL_TRV
 #endif
 #ifndef USE_AUX_EVL_TRV 
@@ -8357,7 +8357,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   /* 
   1) Traverse table
   2) Select each variable to extract
-  3) Look for associated in scope only associated variables in nco_aux_evl_trv() */
+  3) Look for in scope only associated variables in nco_aux_evl_trv() */
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -8371,7 +8371,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
       aux_lmt_nbr=0;
 
-      aux=nco_aux_evl_trv(nc_id,&var_trv,aux_nbr,aux_arg,&aux_lmt_nbr);
+      aux=nco_aux_evl_trv(nc_id,&var_trv,aux_nbr,aux_arg,trv_tbl,&aux_lmt_nbr);
 
       /* Found limits */
       if(aux_lmt_nbr > 0 ){  
