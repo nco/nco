@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1141 2013-12-28 00:28:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1142 2013-12-28 03:58:47 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4489,7 +4489,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
         if(!strcmp(dmn_nm,rec_dmn_nm)){
           /* ... then honor user's request to define it as a fixed or record dimension ... */
-          if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",nco_prg_nm_get(),fnc_nm,rec_dmn_nm);
+          if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as %s dimension in output file per user request\n",nco_prg_nm_get(),fnc_nm,rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record");
           if(FIX_REC_DMN) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=True;
         }else{ /* strcmp() */
           if(FIX_REC_DMN){
@@ -5670,7 +5670,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
         /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
         if(!strcmp(dmn_nm,rec_dmn_nm)){
           /* ... then honor user's request to define it as a fixed or record dimension ... */
-          if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as record dimension in output file per user request\n",nco_prg_nm_get(),fnc_nm,rec_dmn_nm);
+          if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining dimension %s as %s dimension in output file per user request\n",nco_prg_nm_get(),fnc_nm,rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record");
           if(FIX_REC_DMN) DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=True;
         }else{ /* strcmp() */
           if(FIX_REC_DMN){
