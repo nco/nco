@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.931 2013-12-29 06:35:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.932 2013-12-29 07:49:31 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4286,7 +4286,7 @@ cat > ~/ncdismember << 'EOF'
 # Purpose: Dismember netCDF4/HDF5 hierarchical files. CF-check them.
 # Place each group of input file in separate netCDF3 output file
 # Described in NCO User Guide at http://nco.sf.net/nco.html#dismember
-# Requirements: NCO 4.3.x, UNIX shell utilities awk, grep, sed, sort
+# Requirements: NCO 4.3.x+, UNIX shell utilities awk, grep, sed
 # Optional: CFchecker command https://bitbucket.org/mde_/cfchecker
 
 # Usage:
@@ -4306,7 +4306,7 @@ cat > ~/ncdismember << 'EOF'
 fl_in="${HOME}/nco/data/mdl.nc" # [sng] Input file to dismember/check
 drc_out="${DATA}/nco/tmp" # [sng] Output directory
 flg_cf='0' # [flg] Perform CF-compliance check
-cf_vrs='1.5' # [sng] Perform compliance-check on this CF version (e.g., '1.5', 'auto')
+cf_vrs='1.5' # [sng] Compliance-check this CF version (e.g., '1.5')
 
 # Command line argument option parsing
 if [ -n "${1}" ]; then
@@ -4324,16 +4324,19 @@ fi # !$4
 
 mkdir -p ${drc_out}
 cd ${drc_out}
-grp_lst=`ncks --cdl -m ${fl_in} | grep '// group' | awk '{$1=$2=$3="";sub(/^  */,"",$0);print}' | sort`
+grp_lst=`ncks --cdl -m ${fl_in} | grep '// group' | awk '{$1=$2=$3="";sub(/^  */,"",$0);print}'`
 echo "Dismembering file ${fl_in} into following files:"
 IFS=$'\n' # Change Internal-Field-Separator from <Space><Tab><Newline> to just <Newline>
 for grp_in in ${grp_lst} ; do
     grp_out=`echo ${grp_in} | sed 's/\///' | sed 's/\//./g'`
     if [ "${grp_out}" = '' ]; then grp_out='root' ; fi
+    # File suffixes .hdf and .HDF signify HDF4. Tell older NCO/netCDF with --hdf4 switch.
     arg=`echo ${fl_in} | awk '{if(match(tolower($1),".hdf$")) arg="--hdf4"; print arg}'`
+    # Flatten to netCDF3, no history, no temporary file, extra padding for ncatted
     ncks -O -h ${arg} --no_tmp_fl --hdr_pad=40 -G : -g ${grp_in}/ -3 ${fl_in} ${drc_out}/${grp_out}.nc
-    ncatted -h -a Conventions,global,c,c,"CF-${cf_vrs}" ${drc_out}/${grp_out}.nc
     if [ ${flg_cf} = 'cf' ]; then
+       # cfchecker always needs Conventions <= 1.5
+       ncatted -h -a Conventions,global,o,c,"CF-${cf_vrs}" ${drc_out}/${grp_out}.nc
        cfchecker -c ${cf_vrs} ${drc_out}/${grp_out}.nc
     fi # !flg_cf
 done

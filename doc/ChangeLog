@@ -1,5 +1,15 @@
 2013-12-28  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.0 release procedure:
+ 	Changes since nco-4_3_9: hash, dyn. grp mmr, ncra.c fixes, hdf4
+	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
+	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
+
+	* Add HINT for NC_ECANTWRITE
+
+	* ncdismember overwrite Conventions with version used by cfchecker
+
 	* ncdismember match .hdf only as filename suffix for --hdf4 switch
 
 	* Refine nco_xtr_grp_mrk() to check that marked groups match
@@ -45,12 +55,6 @@
 	* Add autoconvert stubs to nco_xtr_dfn() and nco_cpy_var_val_mlt_lmt_trv()
 
 	* Clean-up nco_cpy_var_dfn_trv() before implementing autoconvert feature
-
-	* NCO 4.4.0 release procedure:
- 	Changes since nco-4_3_9: hash, dyn. grp mmr, ncra.c fixes, hdf4
-	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
-	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
 	* Add HINT before exit() on NC_EBADTYPE
 
