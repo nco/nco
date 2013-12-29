@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1146 2013-12-29 00:01:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1147 2013-12-29 20:01:57 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4323,6 +4323,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   nco_bool CRR_DMN_IS_REC_IN_INPUT;      /* [flg] Current dimension of variable is record dimension of variable in input file/group */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
+  nco_bool FIX_ALL_REC_DMN=False;        /* [flg] Fix all record dimensions */
   nco_bool FIX_REC_DMN=False;            /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
   nco_bool NEED_TO_DEFINE_DIM;           /* [flg] Dimension needs to be defined in *this* group */  
   nco_bool DEFINE_DIM[NC_MAX_DIMS];      /* [flg] Defined dimension (always True, except for ncwa)  */  
@@ -4384,7 +4385,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
        For simplicity, work with canonical name rec_dmn_nm */
     rec_dmn_nm_mlc=strdup(rec_dmn_nm_cst);
     /* Parse rec_dmn_nm argument */
-    if(!strncmp("fix_",rec_dmn_nm_mlc,(size_t)4)){
+    if(!strcmp("fix_all",rec_dmn_nm_mlc)){
+      FIX_ALL_REC_DMN=True;
+      FIX_REC_DMN=True;
+      rec_dmn_nm=rec_dmn_nm_mlc+4;
+    }else if(!strncmp("fix_",rec_dmn_nm_mlc,(size_t)4)){
       FIX_REC_DMN=True; /* [flg] Fix record dimension */
       rec_dmn_nm=rec_dmn_nm_mlc+4;
     }else{
@@ -4404,22 +4409,24 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   if(rec_dmn_nm){
 
     if(nco_prg_id == ncks){
-      /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
-	 rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
-      int rec_dmn_id_dmy;
-      rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
-      if(rcd != NC_NOERR){
-        (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
-        nco_exit(EXIT_FAILURE);
-      } /* endif */
-
-      /* Does variable contain requested record dimension? */
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-        if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
-          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
-          break;
-        } /* endif */
-      } /* end loop over idx_dmn */
+      if(!FIX_ALL_REC_DMN){
+	int rec_dmn_id_dmy;
+	/* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
+	   rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
+	rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
+	if(rcd != NC_NOERR){
+	  (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
+	  nco_exit(EXIT_FAILURE);
+	} /* endif */
+	
+	/* Does variable contain requested record dimension? */
+	for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+	  if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
+	    if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+	    break;
+	  } /* endif */
+	} /* end loop over idx_dmn */
+      } /* FIX_ALL_REC_DMN */
 
     }else if(nco_prg_id == ncecat){
       /* Is dimension already defined in output? If not, define it */
@@ -4506,8 +4513,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       /* Is dimension unlimited in input file? Handy unique dimension has all this info */
       CRR_DMN_IS_REC_IN_INPUT=dmn_trv->is_rec_dmn;
 
-      /* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
-      if(rec_dmn_nm){
+      if(FIX_ALL_REC_DMN){
+	DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+	if(CRR_DMN_IS_REC_IN_INPUT && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining all input record dimensions, including this one, %s, as fixed dimensions in output file per user request\n",nco_prg_nm_get(),fnc_nm,dmn_nm);
+      }else if(rec_dmn_nm){
+	/* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
         /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
         if(!strcmp(dmn_nm,rec_dmn_nm)){
           /* ... then honor user's request to define it as a fixed or record dimension ... */
@@ -4555,7 +4565,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       }else{ /* !rec_dmn_nm */
         /* ... no user-specified record dimension so define dimension in output same as in input ... */
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-      } /* !rec_dmn_nm */ 
+      } /* !rec_dmn_nm && !FIX_ALL_REC_DMN */ 
 
       /* At long last ... */
 
@@ -5580,6 +5590,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
   nco_bool CRR_DMN_IS_REC_IN_INPUT;      /* [flg] Current dimension of variable is record dimension of variable in input file/group */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT; /* [flg] Define current dimension as record dimension in output file */
+  nco_bool FIX_ALL_REC_DMN=False;        /* [flg] Fix all record dimensions */
   nco_bool FIX_REC_DMN=False;            /* [flg] Fix record dimension (opposite of MK_REC_DMN) */
   nco_bool NEED_TO_DEFINE_DIM;           /* [flg] Dimension needs to be defined in *this* group */  
 
@@ -5613,10 +5624,14 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   /* Does user want a record dimension to receive special handling? */
   if(rec_dmn_nm_cst){
     /* Create (and later free()) local copy to preserve const-ness of passed value
-    For simplicity, work with canonical name rec_dmn_nm */
+       For simplicity, work with canonical name rec_dmn_nm */
     rec_dmn_nm_mlc=strdup(rec_dmn_nm_cst);
     /* Parse rec_dmn_nm argument */
-    if(!strncmp("fix_",rec_dmn_nm_mlc,(size_t)4)){
+    if(!strcmp("fix_all",rec_dmn_nm_mlc)){
+      FIX_ALL_REC_DMN=True;
+      FIX_REC_DMN=True;
+      rec_dmn_nm=rec_dmn_nm_mlc+4;
+    }else if(!strncmp("fix_",rec_dmn_nm_mlc,(size_t)4)){
       FIX_REC_DMN=True; /* [flg] Fix record dimension */
       rec_dmn_nm=rec_dmn_nm_mlc+4;
     }else{
@@ -5640,23 +5655,25 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
     /* ncks */
     if(nco_prg_id == ncks){
-      /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
-      rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
-      int rec_dmn_id_dmy;
-      rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
-      if(rcd != NC_NOERR){
-        (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
-        nco_exit(EXIT_FAILURE);
-      } /* endif */
-
-      /* Does variable contain requested record dimension? */
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-        if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
-          if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
-          break;
-        } /* endif */
-      } /* end loop over idx_dmn */
-
+      if(!FIX_ALL_REC_DMN){
+	int rec_dmn_id_dmy;
+	/* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
+	   rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
+	rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
+	if(rcd != NC_NOERR){
+	  (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
+	  nco_exit(EXIT_FAILURE);
+	} /* endif */
+	
+	/* Does variable contain requested record dimension? */
+	for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+	  if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
+	    if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+	    break;
+	  } /* endif */
+	} /* end loop over idx_dmn */
+      } /* FIX_ALL_REC_DMN */
+      
       /* ncecat */
     }else if(nco_prg_id == ncecat){
 
@@ -5682,15 +5699,18 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
     if(NEED_TO_DEFINE_DIM){
 
       /* Here begins a complex tree to decide a simple, binary output:
-      Will current input dimension be defined as an output record dimension or as a fixed dimension?
-      Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
-      Otherwise would repeat netCDF action code too many times */
+	 Will current input dimension be defined as an output record dimension or as a fixed dimension?
+	 Decision tree outputs flag DFN_CRR_CMN_AS_REC_IN_OUTPUT that controls subsequent netCDF actions
+	 Otherwise would repeat netCDF action code too many times */
 
       /* Is dimension unlimited in input file? Handy unique dimension has all this info */
       CRR_DMN_IS_REC_IN_INPUT=dmn_trv->is_rec_dmn;
 
-      /* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
-      if(rec_dmn_nm){
+      if(FIX_ALL_REC_DMN){
+	DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
+	if(CRR_DMN_IS_REC_IN_INPUT && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining all input record dimensions, including this one, %s, as fixed dimensions in output file per user request\n",nco_prg_nm_get(),fnc_nm,dmn_nm);
+      }else if(rec_dmn_nm){
+	/* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
         /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
         if(!strcmp(dmn_nm,rec_dmn_nm)){
           /* ... then honor user's request to define it as a fixed or record dimension ... */
@@ -5722,7 +5742,7 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
       }else{ /* !rec_dmn_nm */
         /* ... no user-specified record dimension so define dimension in output same as in input ... */
         if(CRR_DMN_IS_REC_IN_INPUT) DFN_CRR_DMN_AS_REC_IN_OUTPUT=True; else DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-      } /* !rec_dmn_nm */ 
+      } /* !rec_dmn_nm && !FIX_ALL_REC_DMN */ 
 
       /* At long last ... */
 

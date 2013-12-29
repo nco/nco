@@ -1,3 +1,9 @@
+2013-12-29  Charlie Zender  <zender@uci.edu>
+
+	* ncks: --fix_rec_dmn=all fixes all record dimensions
+
+	* ncdismember put groups in per-file directory, call cfchecker in batch mode
+
 2013-12-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.0 release procedure:

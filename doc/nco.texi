@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.932 2013-12-29 07:49:31 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.933 2013-12-29 20:01:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -115,7 +115,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.0
 @set copyright-years 1995--2013
 @set update-year 2013
-@set update-date 19 December 2013
+@set update-date 29 December 2013
 @set update-month December 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -4322,24 +4322,33 @@ if [ -n "${4}" ]; then
     cf_vrs=${4}
 fi # !$4
 
+# Prepare output directory
+echo "NCO dismembering file ${fl_in}"
+fl_stb=$(basename ${fl_in})
+drc_out=${drc_out}/${fl_stb}
 mkdir -p ${drc_out}
 cd ${drc_out}
+# Obtain group list
 grp_lst=`ncks --cdl -m ${fl_in} | grep '// group' | awk '{$1=$2=$3="";sub(/^  */,"",$0);print}'`
-echo "Dismembering file ${fl_in} into following files:"
-IFS=$'\n' # Change Internal-Field-Separator from <Space><Tab><Newline> to just <Newline>
+IFS=$'\n' # Change Internal-Field-Separator from <Space><Tab><Newline> to <Newline>
 for grp_in in ${grp_lst} ; do
+    # Replace slashes by dots for output group filenames
     grp_out=`echo ${grp_in} | sed 's/\///' | sed 's/\//./g'`
     if [ "${grp_out}" = '' ]; then grp_out='root' ; fi
-    # File suffixes .hdf and .HDF signify HDF4. Tell older NCO/netCDF with --hdf4 switch.
-    arg=`echo ${fl_in} | awk '{if(match(tolower($1),".hdf$")) arg="--hdf4"; print arg}'`
-    # Flatten to netCDF3, no history, no temporary file, extra padding for ncatted
-    ncks -O -h ${arg} --no_tmp_fl --hdr_pad=40 -G : -g ${grp_in}/ -3 ${fl_in} ${drc_out}/${grp_out}.nc
+    # Tell older NCO/netCDF if HDF4 with --hdf4 switch (signified by .hdf/.HDF suffix)
+    hdf4=`echo ${fl_in} | awk '{if(match(tolower($1),".hdf$")) hdf4="--hdf4"; print hdf4}'`
+    # Flatten to netCDF3, anchor, no history, no temporary file, padding, HDF4 flag
+    ncks -O -3 -G : -g ${grp_in}/ -h --no_tmp_fl --hdr_pad=40 ${hdf4} ${fl_in} ${drc_out}/${grp_out}.nc
     if [ ${flg_cf} = 'cf' ]; then
-       # cfchecker always needs Conventions <= 1.5
+       # cfchecker needs Conventions <= 1.5
        ncatted -h -a Conventions,global,o,c,"CF-${cf_vrs}" ${drc_out}/${grp_out}.nc
-       cfchecker -c ${cf_vrs} ${drc_out}/${grp_out}.nc
+    else # !flg_cf
+       echo ${drc_out}/${grp_out}.nc
     fi # !flg_cf
 done
+if [ ${flg_cf} = 'cf' ]; then
+       cfchecker -c ${cf_vrs} *.nc
+fi # !flg_cf
 EOF
 chmod 755 ~/ncdismember # Make command executable
 /bin/mv -f ~/ncdismember ~/sh # Store in location on $PATH, e.g., /usr/local/bin

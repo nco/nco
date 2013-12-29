@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.25 2013-12-03 00:51:02 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.26 2013-12-29 20:01:57 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -218,7 +218,6 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
-
 echo "#################################"
 echo "#  Test for netCDF             #"
 echo "################################"
@@ -291,7 +290,6 @@ if test "x${enable_netcdf4}" = 'xyes'; then
     CPPFLAGS="`${NETCDF_CONFIG} --cflags` ${CPPFLAGS}";
 fi
 
-
 # ENABLE_NETCDF4 refers to presence of netCDF4-enabled library
 # ENABLE_NETCDF4 implies HAVE_NETCDF4_H
 # The converse is not true! Some distributions (e.g., Debian stable)
@@ -302,7 +300,6 @@ if test "x${header_defines_nc_chunked}" = 'xyes' ; then
     AC_MSG_NOTICE([netcdf.h contains netCDF4 definitions])
 fi
 
-
 if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" = 'xyes') ; then
     AC_CHECK_LIB([netcdf],[nc_def_var_chunking],[LIBS="-lnetcdf ${LIBS}"
 	    AC_DEFINE([ENABLE_NETCDF4],[1],[Define to 1 if libnetcdf.a contains netCDF4 functions])
@@ -311,7 +308,6 @@ if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" =
 	    AC_MSG_NOTICE([Bad news: Simple program does not compile and link with netCDF4 library])
 	    ])
 fi
-
 
 # OpenMP
 AC_OPENMP
@@ -323,8 +319,6 @@ if ((test "${enable_openmp}" != 'no') && (test "${enable_netcdf4}" = 'xyes')); t
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP
-
-
 
 # Begin DAP support
 echo "Beginning generic tests for DAP support"
@@ -458,14 +452,12 @@ AC_CHECK_PROGS(HAVE_ANTLR,[runantlr antlr],no,${PATH},[])
 
 #echo "DEBUG: HAVE_ANTLR  = ${HAVE_ANTLR}"
 
-# issue a message if the antlr library was found or not
+# Issue message if Antlr library was found
 if test "${HAVE_ANTLR}" != 'no' ; then
     AC_MSG_NOTICE([antlr library was found])
 else
     AC_MSG_NOTICE([antlr library was not found, disabling ncap2 build])
 fi
-
-
 
 if test "x${HAVE_ANTLR}" = 'xyes'; then
 # 20070228: Avoid CHECK_LIB on C++ libraries (requires too-complex link-test scripts)
@@ -664,7 +656,6 @@ if test "${enable_udunits2}" != 'no'; then
 		CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
     elif test "${NETCDF_INC}"; then
 		nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
-
     else
 
 		# NO UDUNITS2_PATH section
