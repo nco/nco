@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1145 2013-12-28 07:33:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1146 2013-12-29 00:01:16 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -818,7 +818,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
   } /* flg_unn */
 
   /* Does matched or default group contain only metadata? 
-     Flag used in nco_xtr_mrk_grp() to preserve metadata-only groups on extraction list */
+     Flag used in nco_xtr_grp_mrk() to preserve metadata-only groups on extraction list */
   for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
     if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp)
       if(trv_tbl->lst[obj_idx].flg_mch || trv_tbl->lst[obj_idx].flg_dfl)
@@ -1384,7 +1384,13 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
      Actual group copying still done in nco_xtr_dfn() */
 
   const char sls_sng[]="/"; /* [sng] Slash string */
-  
+
+  char *grp_fll_sls; /* [sng] Full group name with slash appended */
+  char *sbs_srt; /* [sng] Location of user-string match start in object path */
+
+  nco_bool flg_pth_srt_bnd; /* [flg] String begins at path component boundary */
+  nco_bool flg_pth_end_bnd; /* [flg] String ends   at path component boundary */
+
   unsigned int grp_idx;
   unsigned int obj_idx;
 
@@ -1405,8 +1411,6 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
   for(grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
     /* For each group ... */
     if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp){
-      char *sbs_srt; /* [sng] Location of user-string match start in object path */
-      char *grp_fll_sls=NULL; /* [sng] Full group name with slash appended */
       /* Metadata-only containing groups already have flg_mtd set in nco_xtr_mk()
 	 Variable ancestry may not affect such groups, especially if they are leaf groups
 	 Set extraction flag to True (then continue) iff matching groups contain only metadata
@@ -1418,8 +1422,8 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
 	trv_tbl->lst[grp_idx].flg_xtr=True;
 	continue;
       } /* endif root group */
-      grp_fll_sls=(char *)strdup(trv_tbl->lst[grp_idx].grp_nm_fll);
-      grp_fll_sls=(char *)nco_realloc(grp_fll_sls,(strlen(grp_fll_sls)+2L)*sizeof(char));
+      grp_fll_sls=(char *)strdup(trv_tbl->lst[grp_idx].nm_fll);
+      grp_fll_sls=(char *)nco_realloc(grp_fll_sls,(trv_tbl->lst[grp_idx].nm_fll_lng+2L)*sizeof(char));
       strcat(grp_fll_sls,sls_sng);
       /* ... loop through ... */
       for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -1427,8 +1431,13 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
 	if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_var].flg_xtr){
 	  /* ... finds that full path to current group is contained in an extracted variable path ... */
 	  if((sbs_srt=strstr(trv_tbl->lst[idx_var].nm_fll,grp_fll_sls))){
+	    flg_pth_srt_bnd=False;
+	    flg_pth_end_bnd=False;
 	    /* ... and _begins_ a full group path of that variable ... */
-	    if(sbs_srt == trv_tbl->lst[idx_var].nm_fll){
+	    if(sbs_srt == trv_tbl->lst[idx_var].nm_fll) flg_pth_srt_bnd=True;
+	    /* Match ends on path component boundary, directly on a slash, because we added slash before matching */
+	    flg_pth_end_bnd=True;
+	    if(flg_pth_srt_bnd && flg_pth_end_bnd){
 	      /* ... and mark _only_ those groups for extraction... */
 	      trv_tbl->lst[grp_idx].flg_xtr=True;
 	      break;
@@ -1452,19 +1461,32 @@ nco_xtr_grp_mrk                      /* [fnc] Mark extracted groups */
      This loop is not necessary for _copying_ files because nco_xtr_dfn() algorithm handles ancestors
      This loop _is_ necessary for _printing_ files because nco_grp_prn() algorithm does not handle ancestors
      Set extraction flag for groups if ancestors of extracted groups */
+
   for(grp_idx=0;grp_idx<trv_tbl->nbr;grp_idx++){
     /* For each group that is not yet on extraction list ... */
     if(trv_tbl->lst[grp_idx].nco_typ == nco_obj_typ_grp && !trv_tbl->lst[grp_idx].flg_xtr){
+      grp_fll_sls=(char *)strdup(trv_tbl->lst[grp_idx].nm_fll);
+      grp_fll_sls=(char *)nco_realloc(grp_fll_sls,(trv_tbl->lst[grp_idx].nm_fll_lng+2L)*sizeof(char));
+      strcat(grp_fll_sls,sls_sng);
       /* Search for its path as a component of an extracted group path */
       for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
 	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_grp && trv_tbl->lst[obj_idx].flg_xtr){
-	  if(strstr(trv_tbl->lst[obj_idx].nm_fll,trv_tbl->lst[grp_idx].nm_fll)){
-	    trv_tbl->lst[grp_idx].flg_ncs=True;
-	    trv_tbl->lst[grp_idx].flg_xtr=True;
-	    continue;
-	  } /* endif current group is ancestor of extracted group */
+	  if((sbs_srt=strstr(trv_tbl->lst[obj_idx].nm_fll,grp_fll_sls))){
+	    flg_pth_srt_bnd=False;
+	    flg_pth_end_bnd=False;
+	    /* Ancestor groups must match start of extracted group */
+	    if(sbs_srt == trv_tbl->lst[obj_idx].nm_fll) flg_pth_srt_bnd=True;
+	    /* Match ends on path component boundary, directly on a slash, because we added slash before matching */
+	    flg_pth_end_bnd=True;
+	    if(flg_pth_srt_bnd && flg_pth_end_bnd){
+	      trv_tbl->lst[grp_idx].flg_ncs=True;
+	      trv_tbl->lst[grp_idx].flg_xtr=True;
+	      continue;
+	    } /* endif current group is ancestor of extracted group */
+	  } /* endif current group may be ancestor of extracted group */
 	} /* endif extracted group */
       } /* end loop over obj_idx */
+      if(grp_fll_sls) grp_fll_sls=(char *)nco_free(grp_fll_sls);
     } /* endif group */
   } /* end loop over grp_idx */
 
@@ -4688,11 +4710,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   }else{ /* !ncwa */
 
     /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
-    if(nco_prg_id == ncks && fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_out)){
-      /* fxm: need dummy dimension for NC_CHAR array length? */
-      /*      if(var_typ_out == NC_STRING) nbr_dmn_var_out++;*/
-      var_typ_out=nco_typ_nc4_nc3(var_typ_out);
-    } /* !autoconvert */
+    if(nco_prg_id == ncks && fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_out)) var_typ_out=nco_typ_nc4_nc3(var_typ_out);
+    /* fxm TODO nco1106 too complicated--need phony dimensions for NC_CHAR array length */
+    /*      if(var_typ_out == NC_STRING) nbr_dmn_var_out++; */ 
 
     (void)nco_def_var(grp_out_id,var_nm,var_typ_out,nbr_dmn_var_out,dmn_out_id,&var_out_id);
 
@@ -6483,7 +6503,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   lmt_sct **lmt=NULL_CEWI;  /* [sct] User defined limits */
 
-  /* Construct traversal table objects (groups,variables) */
+  /* Construct traversal table objects (groups, variables) */
   (void)nco_grp_itr(nc_id,(char *)NULL,grp_pth,trv_tbl);
 
   /* Build dimension information for all variables (match dimension IDs) */

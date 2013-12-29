@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.234 2013-12-28 07:33:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.235 2013-12-29 00:01:16 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -1168,6 +1168,8 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
      "GTT" changes from the original nco_cpy_var_val_mlt_lmt():
      Object to write (variable) is passed as parameter */
 
+  const char fnc_nm[]="nco_cpy_var_val_mlt_lmt_trv()"; /* [sng] Function name  */
+
   char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name (local copy of object name) */ 
 
   int fl_fmt;                      /* [enm] Output file format */
@@ -1263,7 +1265,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 	   Too many other limits on string translation to list them all :)
 	   This only handles plain strings */
 	if(var_out.sz > 1L){
-	  (void)fprintf(stdout,"%s: ERROR Unable to autoconvert. String variable %s contains %li strings.\n",nco_prg_nm_get(),var_nm,var_out.sz);
+	  (void)fprintf(stdout,"%s: ERROR Unable to autoconvert. %s reports string variable %s contains %li strings. Autoconversion of variables is currently limited to translating string variables that contain only one string. And even that it does incorrectly because each string is typically a distinct size, meaning a distinct phony dimension needs to be created for every string.\n",nco_prg_nm_get(),fnc_nm,var_nm,var_out.sz);
 	  nco_exit(EXIT_FAILURE);
 	} /* endif err */
 
@@ -1274,7 +1276,9 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 	  dmn_map_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
 	  dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
 	} /* nbr_dim != 1 */
-	dmn_map_cnt[0]=var_out.sz;
+	// Following line would be correct were an adequately sized phony dimension declared and ready to accept this many characters
+	// dmn_map_cnt[0]=var_out.sz;
+	dmn_map_cnt[0]=1L;
 	dmn_map_srt[0]=0L;
 	(void)nco_put_vara(out_id,var_out_id,dmn_map_srt,dmn_map_cnt,var_out.val.sngp[0],var_typ_out);
 	(void)cast_nctype_void(var_typ_out,&var_out.val);
