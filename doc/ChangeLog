@@ -1,5 +1,7 @@
 2013-12-28  Charlie Zender  <zender@uci.edu>
 
+	* ncdismember match .hdf only as filename suffix for --hdf4 switch
+
 	* Refine nco_xtr_grp_mrk() to check that marked groups match
 	beginning/end of path boundaries. nco_xtr_mk() already does this.
 

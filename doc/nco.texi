@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.930 2013-12-28 06:37:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.931 2013-12-29 06:35:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4330,8 +4330,7 @@ IFS=$'\n' # Change Internal-Field-Separator from <Space><Tab><Newline> to just <
 for grp_in in ${grp_lst} ; do
     grp_out=`echo ${grp_in} | sed 's/\///' | sed 's/\//./g'`
     if [ "${grp_out}" = '' ]; then grp_out='root' ; fi
-    echo "${drc_out}/${grp_out}.nc"
-    arg=`echo ${fl_in} | awk '{if(match(tolower($1),".hdf")) arg="--hdf4"; print arg}'`
+    arg=`echo ${fl_in} | awk '{if(match(tolower($1),".hdf$")) arg="--hdf4"; print arg}'`
     ncks -O -h ${arg} --no_tmp_fl --hdr_pad=40 -G : -g ${grp_in}/ -3 ${fl_in} ${drc_out}/${grp_out}.nc
     ncatted -h -a Conventions,global,c,c,"CF-${cf_vrs}" ${drc_out}/${grp_out}.nc
     if [ ${flg_cf} = 'cf' ]; then
