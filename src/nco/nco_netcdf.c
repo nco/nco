@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.223 2013-12-30 22:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.224 2013-12-30 22:18:28 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1279,7 +1279,8 @@ nco_inq_var_fill
   }else{ /* !netCDF4 */
     if(fll_nil) *fll_nil=0;
     /* fxm: implement netCDF3-compatible function which returns real fill values based on variable type */
-    if(fll_val) rcd=7373;
+    if(fll_val) assert(0);
+    rcd=7373;
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_fill()");
   return rcd;
@@ -1881,7 +1882,7 @@ int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const 
 int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){if(shuffle) *shuffle=0;if(deflate) *deflate=0;if(dfl_lvl) *dfl_lvl=0;return 1;}
 int nc_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ){if(ndn_typ) *ndn_typ=0;return 1;}
 int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){if(chk_typ) *chk_typ=NC_NOCHECKSUM;return 1;}
-int nc_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val){if(fll_nil) *fll_nil=0;if(fll_val) *fll_val=0;return 7373;}
+int nc_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val){if(fll_nil) *fll_nil=0;if(fll_val) assert(0);return 1;}
 #endif /* HAVE_NETCDF4_H */
 #if !defined(HAVE_NETCDF4_H) 
 /* Stubs thus present a fake library for manipulating netCDF3 files with the netCDF4 API
