@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.668 2013-12-30 07:16:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.669 2013-12-30 07:26:56 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -103,7 +103,11 @@ A. ncdismember just plain works in most real world cases.
    HDF4 input) and bugfixes (allowing whitespace in group and
    filenames, scoping rules for CF conventions) make ncdismember
    more reliable and friendly for both dismembering files and for 
-   CF-compliance checks. 
+   CF-compliance checks. Now most HDF4 and HDF5 datasets can be
+   checked for CF-compliance with a one-line command.
+   Example compliance checks of common NASA datasets are at
+   http://dust.ess.uci.edu/diwg/*.txt
+   http://nco.sf.net/nco.html#ncdismember
 
 A. ncks now accepts the "all" argument to the --fix_rec_dmn option.
    ncks --fix_rec_dmn=all converts all record dimensions to fixed
