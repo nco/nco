@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.202 2013-12-30 06:49:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.203 2013-12-30 22:49:26 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1215,10 +1215,10 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
 
     sz_sng[0]='\0';
     for(dmn_idx=0;dmn_idx<nbr_dim-1;dmn_idx++){
-      (void)sprintf(sng_foo,"%li*",dmn_sz[dmn_idx]);
+      (void)sprintf(sng_foo,"%li*",(long)dmn_sz[dmn_idx]);
       (void)strcat(sz_sng,sng_foo);
     } /* end loop over dim */
-    (void)sprintf(sng_foo,"%li*sizeof(%s)",dmn_sz[dmn_idx],nco_typ_sng(var_typ));
+    (void)sprintf(sng_foo,"%li*sizeof(%s)",(long)dmn_sz[dmn_idx],nco_typ_sng(var_typ));
     (void)strcat(sz_sng,sng_foo);
 
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) var_sz*=dmn_sz[dmn_idx];
@@ -1246,22 +1246,14 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   if(prn_flg->trd){
     for(dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
 
-      /* Define a "unsigned long" type instead of "size_t" for output, since %zu is only available for C99, using %lu common C89 version */
-      unsigned long cnk_sz_lon=(unsigned long)cnk_sz[dmn_idx];
-
+      /* Casting from "size_t" to "unsigned long" necessary since %zu format only available in C99 */
       /* Coordinate dimension */
       if(var_trv->var_dmn[dmn_idx].is_crd_var){
 
         crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
 
         /* NOTE: Use hyperslabbed sizes for dimension size */
-        if(srg_typ == NC_CHUNKED){
-          (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li %s, chunksize = %lu (",
-            prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->lmt_msa.dmn_cnt,nco_typ_sng(crd->var_typ),cnk_sz_lon);
-        }else{
-          (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li %s (",
-            prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->lmt_msa.dmn_cnt,nco_typ_sng(crd->var_typ));
-        }
+        if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li %s, chunksize = %lu (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->lmt_msa.dmn_cnt,nco_typ_sng(crd->var_typ),(unsigned long)cnk_sz[dmn_idx]); else (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li %s (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(crd->dmn_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->dmn_nm_fll,crd->lmt_msa.dmn_cnt,nco_typ_sng(crd->var_typ));
 
         (void)fprintf(stdout,"%soordinate is %s)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record c" : "C",(!strcmp(crd->crd_grp_nm_fll,var_trv->grp_nm_fll)) ? crd->nm : crd->crd_nm_fll);
 
@@ -1271,11 +1263,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
         dmn_trv_sct *dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
 
         /* NOTE: Use hyperslabbed sizes for dimension size */
-        if(srg_typ == NC_CHUNKED){
-          (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li, chunksize = %lu (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(dmn_trv->grp_nm_fll,var_trv->grp_nm_fll)) ? dmn_trv->nm : dmn_trv->nm_fll,dmn_trv->lmt_msa.dmn_cnt,cnk_sz_lon);
-        }else{
-          (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(dmn_trv->grp_nm_fll,var_trv->grp_nm_fll)) ? dmn_trv->nm : dmn_trv->nm_fll,dmn_trv->lmt_msa.dmn_cnt);
-        }
+        if(srg_typ == NC_CHUNKED) (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li, chunksize = %lu (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(dmn_trv->grp_nm_fll,var_trv->grp_nm_fll)) ? dmn_trv->nm : dmn_trv->nm_fll,dmn_trv->lmt_msa.dmn_cnt,(unsigned long)cnk_sz[dmn_idx]); else (void)fprintf(stdout,"%*s%s dimension %i: %s, size = %li (",prn_ndn,spc_sng,var_trv->nm,dmn_idx,(!strcmp(dmn_trv->grp_nm_fll,var_trv->grp_nm_fll)) ? dmn_trv->nm : dmn_trv->nm_fll,dmn_trv->lmt_msa.dmn_cnt);
         (void)fprintf(stdout,"%son-coordinate dimension)",(CRR_DMN_IS_REC_IN_INPUT[dmn_idx]) ? "Record n" : "N");
 
       } /* end non-coordinate dimension */

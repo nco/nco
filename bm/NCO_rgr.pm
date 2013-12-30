@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.396 2013-12-26 10:32:22 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.397 2013-12-30 22:49:26 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3816,7 +3816,6 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
-		
 
 # ncra #29 Generate a file with 2 records
 # ncecat -O  -g g25g1 in_grp_3.nc in1.nc -> generate "record"
@@ -3832,8 +3831,6 @@ print "\n";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
-
-	   
 
 #ncra #30
 #Operate files containing same variable in different orders
@@ -3853,10 +3850,6 @@ print "\n";
     $#tst_cmd=0; # Reset array 		
 
    } #### Group tests	
-	
-
-
-	
 	
 #print "paused - hit return to continue"; my $wait=<STDIN>;
 #print "<<<STOP>>>- hit return to continue"; my $wait=<STDIN>;
