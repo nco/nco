@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.667 2013-12-28 07:33:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.668 2013-12-30 07:16:30 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -97,6 +97,33 @@ A. NCO autoconverts HDF4 and HDF5 atomic-types (e.g., NC_UBYTE,
    NC_STRING) to netCDF3 atomic types (e.g., NC_SHORT, NC_CHAR) when  
    necessary, i.e., when the output file is netCDF3.
 
+A. ncdismember just plain works in most real world cases.
+   Taken together, NCO's new features (autoconversion to netCDF3
+   atomic types, fixing multiple record dimensions, autosensing
+   HDF4 input) and bugfixes (allowing whitespace in group and
+   filenames, scoping rules for CF conventions) make ncdismember
+   more reliable and friendly for both dismembering files and for 
+   CF-compliance checks. 
+
+A. ncks now accepts the "all" argument to the --fix_rec_dmn option.
+   ncks --fix_rec_dmn=all converts all record dimensions to fixed
+   dimensions in the output file. Previously, --fix_rec_dmn only
+   allowed one option, the single record dimension to be fixed.
+   Now it is simple to fix all record dimensions simultaneously.
+   This is useful (and nearly mandatory) when flattening netCDF4
+   files that have multiple record dimensions per group into netCDF3
+   files (which may have at most one record dimension).
+   ncks --fix_rec_dmn=all in.nc out.nc   
+   ncks -G : -3 --fix_rec_dmn=all in.nc out.nc   
+   http://nco.sf.net/nco.html#fix_rec_dmn
+
+A. ncks now prints hidden (aka special) attributes when given the
+   --hdn or --hidden option. This is equivalent to ncdump -s.
+   Hidden attributes include: _Format, _DeflateLevel, _Shuffle,
+   _Storage, _ChunkSizes, _Endianness, _Fletcher32, and _NOFILL. 
+   Previously ncks ignored all these attributes in CDL/XML modes.
+   Now it prints these attributes as appropriate. 
+
 A. fxm
    NCO now employs hashing techniques to locate objects.
    As a result NCO is much more efficient searching for objects.
@@ -140,9 +167,6 @@ A. Versions 4.3.6--4.3.9 of ncra could treat missing values
 A. Versions through 4.3.9 would not always copy/print groups that
    contain _only_ metadata (i.e., contain no variables). Fixed.
 
-A. The -c switch, which instructs NCO to extract all coordinate
-   variables, was broken in versions 4.3.fxm-4.3.9. Now fixed.
-   
 A. The -X switch fxm
 
 A. Sometimes the "coordinates" and "bounds" CF attributes caused 
