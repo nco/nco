@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.107 2013-12-30 06:49:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.108 2013-12-30 22:01:58 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -75,6 +75,12 @@
 #ifndef NC_ENDIAN_NATIVE
 # define NC_ENDIAN_NATIVE 0
 #endif
+#ifndef NC_ENDIAN_LITTLE
+# define NC_ENDIAN_LITTLE 1
+#endif
+#ifndef NC_ENDIAN_BIG
+# define NC_ENDIAN_BIG    2
+#endif
 #ifndef NC_CONTIGUOUS
 # define NC_CONTIGUOUS (1)
 #endif
@@ -110,6 +116,9 @@
 /* Some netCDF3 stubs for netCDF4 routines need netCDF4-only return codes
    These netCDF4 tokens are never defined in netCDF3-only netcdf.h */
 #ifndef HAVE_NETCDF4_H
+# ifndef NC_ECANTWRITE
+#  define NC_ECANTWRITE    (-103)    /**< Can't write. */
+# endif
 # ifndef NC_EBADGRPID
 #  define NC_EBADGRPID (-116)    /**< Bad group ID. */
 # endif
