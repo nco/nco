@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.689 2013-12-28 03:47:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.690 2013-12-30 06:49:43 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -107,6 +107,7 @@ main(int argc,char **argv)
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool PRN_CDL=False; /* [flg] Print CDL */
+  nco_bool PRN_HDN=False; /* [flg] Print hidden attributes */
   nco_bool PRN_SRM=False; /* [flg] Print ncStream */
   nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
   nco_bool PRN_XML_LOCATION=True; /* [flg] Print XML location tag */
@@ -157,8 +158,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.689 2013-12-28 03:47:23 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.689 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.690 2013-12-30 06:49:43 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.690 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -234,6 +235,8 @@ main(int argc,char **argv)
       {"cmp",no_argument,0,0},
       {"compiler",no_argument,0,0},
       {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
+      {"hdn",no_argument,0,0}, /* [flg] Print hidden attributes */
+      {"hidden",no_argument,0,0}, /* [flg] Print hidden attributes */
       {"lbr",no_argument,0,0},
       {"library",no_argument,0,0},
       {"mpi_implementation",no_argument,0,0},
@@ -418,6 +421,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
       if(!strcmp(opt_crr,"get_prg_info")) GET_PRG_INFO=True;
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
+      if(!strcmp(opt_crr,"hdn") || !strcmp(opt_crr,"hidden")) PRN_HDN=True; /* [flg] Print hidden attributes */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -812,6 +816,7 @@ main(int argc,char **argv)
     prn_flg.trd=!(PRN_CDL || PRN_XML);
     if((prn_flg.cdl || prn_flg.xml) && nco_dbg_lvl >= nco_dbg_std) prn_flg.nfo_xtr=True; else prn_flg.nfo_xtr=False;
     prn_flg.new_fmt=(PRN_CDL || PRN_SRM || PRN_XML || PRN_NEW_FMT);
+    prn_flg.hdn=PRN_HDN;
     /* CDL must print filename stub */
     if(prn_flg.cdl || prn_flg.xml){
       fl_in_dpl=strdup(fl_in);

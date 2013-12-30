@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.451 2013-12-26 06:55:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.452 2013-12-30 06:49:43 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -231,6 +231,15 @@ extern "C" {
 /* Three compatibility tokens new to netCDF4 netcdf.h: */
 #ifndef NC_NETCDF4
 # define NC_NETCDF4     (0x1000) /* Use netCDF-4/HDF5 format */
+#endif
+#ifndef NC_ENDIAN_NATIVE
+# define NC_ENDIAN_NATIVE 0
+#endif
+#ifndef NC_ENDIAN_LITTLE
+# define NC_ENDIAN_LITTLE 1
+#endif
+#ifndef NC_ENDIAN_BIG
+# define NC_ENDIAN_BIG    2
 #endif
 #ifndef NC_CHUNKED
 # define NC_CHUNKED (0)
@@ -716,6 +725,7 @@ extern "C" {
     nco_bool srm; /* [flg] Print ncStream */
     nco_bool trd; /* [flg] Print traditional NCO format */
     nco_bool xml; /* [flg] Print XML (NcML) */
+    nco_bool hdn; /* [flg] Print hidden attributes */
     nco_bool xml_lcn; /* [flg] Print XML location tag */
     nco_bool nfo_xtr; /* [flg] Print extra information in CDL/XML mode */
     nco_bool new_fmt; /* [flg] Print in new format */

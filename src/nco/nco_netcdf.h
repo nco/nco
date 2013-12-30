@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.106 2013-12-23 05:28:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.107 2013-12-30 06:49:43 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -72,8 +72,8 @@
 #ifndef NC_FORMAT_NETCDF4_CLASSIC
 # define NC_FORMAT_NETCDF4_CLASSIC  (4) /* create netcdf-4 files, with NC_CLASSIC_MODEL. */
 #endif
-#ifndef NC_CHUNKED
-# define NC_CHUNKED (0)
+#ifndef NC_ENDIAN_NATIVE
+# define NC_ENDIAN_NATIVE 0
 #endif
 #ifndef NC_CONTIGUOUS
 # define NC_CONTIGUOUS (1)
@@ -194,9 +194,17 @@ const char * /* O [sng] String describing file format */
 nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
 (const int fl_fmt); /* I [enm] netCDF file format */
 
+const char * /* O [sng] String describing file format for hidden attributes */
+nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden attributes */
+(const int fl_fmt); /* I [enm] netCDF file format */
+
 const char * /* O [sng] String describing extended file format */
 nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 (const int fl_fmt_xtn); /* I [enm] netCDF extended file format */
+
+const char * /* O [sng] String describing endianness for hidden attributes */
+nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attributes */
+(const int flg_ndn); /* I [enm] netCDF endianness */
 /* End Utility Routines */
 
 #if 0
@@ -281,6 +289,8 @@ int nco_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const
 int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * const var_typ,int * const dmn_nbr,int * const dmn_id,int * const nbr_att);
 int nco_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
 int nco_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle,int * const deflate,int * const dfl_lvl);
+int nco_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ);
+int nco_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val);
 int nco_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
 int nco_inq_var_packing(const int nc_id,const int var_id,int * const packing);
 int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);
@@ -338,6 +348,8 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
   int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
   int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl);
+  int nc_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ);
+  int nc_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val);
   int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
 #endif /* HAVE_NETCDF4_H */
 #ifndef HAVE_NETCDF4_H

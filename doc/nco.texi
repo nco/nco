@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.933 2013-12-29 20:01:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.934 2013-12-30 06:49:43 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4290,10 +4290,11 @@ cat > ~/ncdismember << 'EOF'
 # Optional: CFchecker command https://bitbucket.org/mde_/cfchecker
 
 # Usage:
-# ncdismember <fl_in> <drc_out> [flg_cf] [cf_vrs]
+# ncdismember <fl_in> <drc_out> [flg_cf] [cf_vrs] [opt]
 # where fl_in is input file/URL to dismember, drc_out is output directory,
 # CF-compliance check is performed when optional third argument is 'cf',
-# and optional fourth argument cf_vrs is CF version to check
+# Optional fourth argument cf_vrs is CF version to check
+# Optional fifth argument opt passes straight through to ncks
 # chmod a+x ~/sh/ncdismember
 # ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp
 # ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp
@@ -4301,26 +4302,21 @@ cat > ~/ncdismember << 'EOF'
 # ncdismember http://thredds-test.ucar.edu/thredds/dodsC/testdods/foo.nc /data/zender/nco/tmp
 # ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf
 # ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf 1.3
+# ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf 1.5 --fix_rec_dmn=all
 
 # Command line argument defaults
 fl_in="${HOME}/nco/data/mdl.nc" # [sng] Input file to dismember/check
 drc_out="${DATA}/nco/tmp" # [sng] Output directory
 flg_cf='0' # [flg] Perform CF-compliance check
 cf_vrs='1.5' # [sng] Compliance-check this CF version (e.g., '1.5')
+opt='' # [flg] Additional ncks options (e.g., '--fix_rec_dmn=all')
 
 # Command line argument option parsing
-if [ -n "${1}" ]; then
-    fl_in=${1}
-fi # !$1
-if [ -n "${2}" ]; then
-    drc_out=${2}
-fi # !$2
-if [ -n "${3}" ]; then
-    flg_cf=${3}
-fi # !$3
-if [ -n "${4}" ]; then
-    cf_vrs=${4}
-fi # !$4
+if [ -n "${1}" ]; then fl_in=${1}; fi
+if [ -n "${2}" ]; then drc_out=${2};  fi
+if [ -n "${3}" ]; then flg_cf=${3}; fi
+if [ -n "${4}" ]; then cf_vrs=${4}; fi
+if [ -n "${5}" ]; then opt=${5}; fi
 
 # Prepare output directory
 echo "NCO dismembering file ${fl_in}"
@@ -4337,8 +4333,8 @@ for grp_in in ${grp_lst} ; do
     if [ "${grp_out}" = '' ]; then grp_out='root' ; fi
     # Tell older NCO/netCDF if HDF4 with --hdf4 switch (signified by .hdf/.HDF suffix)
     hdf4=`echo ${fl_in} | awk '{if(match(tolower($1),".hdf$")) hdf4="--hdf4"; print hdf4}'`
-    # Flatten to netCDF3, anchor, no history, no temporary file, padding, HDF4 flag
-    ncks -O -3 -G : -g ${grp_in}/ -h --no_tmp_fl --hdr_pad=40 ${hdf4} ${fl_in} ${drc_out}/${grp_out}.nc
+    # Flatten to netCDF3, anchor, no history, no temporary file, padding, HDF4 flag, options
+    ncks -O -3 -G : -g ${grp_in}/ -h --no_tmp_fl --hdr_pad=40 ${hdf4} ${opt} ${fl_in} ${drc_out}/${grp_out}.nc
     if [ ${flg_cf} = 'cf' ]; then
        # cfchecker needs Conventions <= 1.5
        ncatted -h -a Conventions,global,o,c,"CF-${cf_vrs}" ${drc_out}/${grp_out}.nc
@@ -4347,34 +4343,41 @@ for grp_in in ${grp_lst} ; do
     fi # !flg_cf
 done
 if [ ${flg_cf} = 'cf' ]; then
-       cfchecker -c ${cf_vrs} *.nc
+    echo "CFchecker reports CF-compliance of each group in flat netCDF3 format"
+    cfchecker -c ${cf_vrs} *.nc
 fi # !flg_cf
 EOF
 chmod 755 ~/ncdismember # Make command executable
 /bin/mv -f ~/ncdismember ~/sh # Store in location on $PATH, e.g., /usr/local/bin
 
-zender@roulee:~$ ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp
-Dismembering file /home/zender/nco/data/mdl.nc into following files:
-/data/zender/nco/tmp/cesm.cesm_01.nc
-/data/zender/nco/tmp/cesm.cesm_02.nc
-/data/zender/nco/tmp/ecmwf.ecmwf_01.nc
-/data/zender/nco/tmp/ecmwf.ecmwf_02.nc
+zender@roulee:~$ ncdismember ~/nco/data/mdl.nc ${DATA}/nco/tmp
+NCO dismembering file /home/zender/nco/data/mdl.nc
+/data/zender/nco/tmp/mdl.nc/cesm.cesm_01.nc
+/data/zender/nco/tmp/mdl.nc/cesm.cesm_02.nc
+/data/zender/nco/tmp/mdl.nc/cesm.nc
+/data/zender/nco/tmp/mdl.nc/ecmwf.ecmwf_01.nc
+/data/zender/nco/tmp/mdl.nc/ecmwf.ecmwf_02.nc
+/data/zender/nco/tmp/mdl.nc/ecmwf.nc
+/data/zender/nco/tmp/mdl.nc/root.nc
 @end verbatim
 @end example
-An operator could be written to dismember all groups with a single
-invocation, but the point is dismembering without loss of information 
-is possible now with this simple script.
+A (potentially more portable) binary executable could be written to
+dismember all groups with a single invocation, yet dismembering without
+loss of information is possible now with this simple script on all 
+platforms with UNIXy utilities.
 Note that all dimensions inherited by groups in the input file are
 correctly placed by @command{ncdismember} into the flat files.
 Moreover, each output file preserves the group metadata of all ancestor
 groups, including the global metadata from the input file.
-As written, the script fails on groups that contain netCDF4 features
-because the user requests (with the @samp{-3} option) that output be
-netCDF3 classic format.  
-Naturally groups containing netCDF4-only atomic-types (such as
-@code{NC_STRING} and @code{NC_UINT64}) should be dismembered into flat
-netCDF4 files, not flat netCDF3 files (compliance-checkers may complain
-about netCDF4 filetypes, atomic types, or both).
+As written, the script could fail on groups that contain advanced
+netCDF4 features because the user requests (with the @samp{-3} option)
+that output be netCDF3 classic format.  
+However, @command{ncks} detects many format incompatibilities in advance
+and works around them.
+For example, @command{ncks} autoconverts netCDF4-only atomic-types (such
+as @code{NC_STRING} and @code{NC_UBYTE}) to corresponding netCDF3
+atomic types (@code{NC_CHAR} and @code{NC_SHORT}) when the output format
+is netCDF3. 
 
 @cindex @acronym{CF} compliance checker
 @findex cfchecker
@@ -4394,21 +4397,21 @@ Forschungszentrum J@"ulich and distributed at
 @example
 @verbatim
 zender@roulee:~$ ncdismember ~/nco/data/mdl.nc /data/zender/nco/tmp cf
-Dismembering file /home/zender/nco/data/mdl.nc into following files:
-/data/zender/nco/tmp/cesm.cesm_01.nc
+NCO dismembering file /home/zender/nco/data/mdl.nc
+CFchecker reports CF-compliance of each group in flat netCDF3 format
 WARNING: Using the default (non-CF) Udunits database
-/data/zender/nco/tmp/cesm.cesm_01.nc: 
-INFO: INIT:	running CFchecker version 1.5.15
-INFO: INIT:	checking compliance with convention CF-1.5
-INFO: INIT:	using standard name table version: 25, last modified: 2013-07-05T05:40:30Z
-INFO: INIT:	using area type table version: 2, date: 10 July 2013
-INFO: 2.4:	no axis information found in dimension variables, not checking dimension order
-WARNING: 3:	variable "tas" contains neither long_name nor standard_name attribute
-INFO: 3.1:	variable "tas" does not contain units attribute
+cesm.cesm_01.nc: 
+INFO: INIT:     running CFchecker version 1.5.15
+INFO: INIT:     checking compliance with convention CF-1.5
+INFO: INIT:     using standard name table version: 25, last modified: 2013-07-05T05:40:30Z
+INFO: INIT:     using area type table version: 2, date: 10 July 2013
+INFO: 2.4:      no axis information found in dimension variables, not checking dimension order
+WARNING: 3:     variable "tas1" contains neither long_name nor standard_name attribute
+WARNING: 3:     variable "tas2" contains neither long_name nor standard_name attribute
+INFO: 3.1:      variable "tas1" does not contain units attribute
+INFO: 3.1:      variable "tas2" does not contain units attribute
 --------------------------------------------------
-total files: 1, OK: 0, with warnings: 1, with errors: 0
-/data/zender/nco/tmp/cesm.cesm_02.nc
-WARNING: Using the default (non-CF) Udunits database
+cesm.cesm_02.nc: 
 ...
 @end verbatim
 @end example

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.218 2013-12-29 07:49:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.219 2013-12-30 06:49:43 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -414,6 +414,28 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
   return (char *)NULL;
 } /* end nco_fmt_sng() */
 
+const char * /* O [sng] String describing file format for hidden attributes */
+nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden attributes */
+(const int fl_fmt) /* I [enm] netCDF file format */
+{
+  /* Purpose: Convert netCDF file format enum to string for hidden attributes
+     20131229: String values obtained from ncgen man page */
+  switch(fl_fmt){
+  case NC_FORMAT_CLASSIC:
+    return "classic";
+  case NC_FORMAT_64BIT:
+    return "64-bit offset";
+  case NC_FORMAT_NETCDF4:
+    return "netCDF-4";
+  case NC_FORMAT_NETCDF4_CLASSIC:
+    return "netCDF-4 classic model";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_fmt_hdn_sng() */
+
 const char * /* O [sng] String describing extended file format */
 nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 (const int fl_fmt_xtn) /* I [enm] netCDF extended file format */
@@ -440,6 +462,25 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_fmt_xtn_sng() */
+
+const char * /* O [sng] String describing endianness for hidden attributes */
+nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attributes */
+(const int flg_ndn) /* I [enm] netCDF endianness */
+{
+  /* Purpose: Convert netCDF endianness enum to string for hidden attributes */
+  switch(flg_ndn){
+  case NC_ENDIAN_NATIVE:
+    return "classic";
+  case NC_ENDIAN_LITTLE:
+    return "little";
+  case NC_ENDIAN_BIG:
+    return "big";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_ndn_sng() */
 
 void
 nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(nc_type) case */
@@ -694,7 +735,7 @@ int nc_inq_format(int nc_id, int * const fl_fmt)
   *fl_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   return NC_NOERR+0*nc_id; /* CEWI */
 } /* end nc_inq_format() */
-#endif /* !NEED_NC_INQ_FORMAT */o
+#endif /* !NEED_NC_INQ_FORMAT */
 int
 nco_inq_format(const int nc_id,int * const fl_fmt)
 {
@@ -1198,6 +1239,51 @@ nco_inq_var_deflate
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_deflate()");
   return rcd;
 } /* end nco_inq_var_deflate() */
+
+int
+nco_inq_var_endian
+(const int nc_id, /* I [ID] netCDF ID */
+ const int var_id, /* I [ID] Variable ID */
+ int * const ndn_typ) /* O [enm] Endianness */
+{
+  /* Purpose: Wrapper for nc_inq_var_endian() */
+  /* NB: netCDF endian inquire function only works on netCDF4 files
+     NCO wrapper works on netCDF3 and netCDF4 files */
+  int rcd;
+  int fl_fmt; /* [enm] Input file format */
+  rcd=nco_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    rcd=nc_inq_var_endian(nc_id,var_id,ndn_typ);
+  }else{ /* !netCDF4 */
+    if(ndn_typ) *ndn_typ=NC_ENDIAN_NATIVE;
+  } /* !netCDF4 */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_endian()");
+  return rcd;
+} /* end nco_inq_var_endian() */
+
+int
+nco_inq_var_fill
+(const int nc_id, /* I [ID] netCDF ID */
+ const int var_id, /* I [ID] Variable ID */
+ int * const fll_nil, /* O [enm] NO_FILL */
+ void * const fll_val) /* O [enm] Fill value */
+{
+  /* Purpose: Wrapper for nc_inq_var_fill() */
+  /* NB: netCDF fill inquire function only works on netCDF4 files
+     NCO wrapper works on netCDF3 and netCDF4 files */
+  int rcd;
+  int fl_fmt; /* [enm] Input file format */
+  rcd=nco_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    rcd=nc_inq_var_fill(nc_id,var_id,fll_nil,fll_val);
+  }else{ /* !netCDF4 */
+    if(fll_nil) *fll_nil=0;
+    /* fxm: implement netCDF3-compatible function which returns real fill values based on variable type */
+    if(fll_val) rcd=7373;
+  } /* !netCDF4 */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_fill()");
+  return rcd;
+} /* end nco_inq_var_fill() */
 
 int
 nco_inq_var_fletcher32

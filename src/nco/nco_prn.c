@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.201 2013-12-28 04:29:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.202 2013-12-30 06:49:43 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -44,9 +44,11 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   float val_flt;
 
+  int att_nbr_ttl;
+  int dmn_nbr=0;
   int grp_id_prn;
   int idx;
-  int nbr_att;
+  int att_nbr_vsb;
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_prn;
@@ -58,6 +60,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   long sng_lng; /* [nbr] Length of NC_CHAR string */
   long sng_lngm1; /* [nbr] Length minus one of NC_CHAR string */
   
+  nc_type var_typ;
+
   nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
 
   nco_string sng_val; /* [sng] Current string */
@@ -65,37 +69,175 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   prn_ndn=prn_flg->ndn;
   if(var_id == NC_GLOBAL){
     /* Get number of global attributes in group */
-    (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
+    (void)nco_inq(grp_id,(int *)NULL,(int *)NULL,&att_nbr_vsb,(int *)NULL);
     /* Which group is this? */
     rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
     if(rcd == NC_ENOGRP) (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Global"); else (void)strcpy(src_sng,(prn_flg->cdl) ? "" : "Group");
     if(prn_flg->cdl) prn_ndn+=prn_flg->sxn_fst;
   }else{
     /* Get name and number of attributes for variable */
-    (void)nco_inq_var(grp_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
+    (void)nco_inq_var(grp_id,var_id,src_sng,&var_typ,&dmn_nbr,(int *)NULL,&att_nbr_vsb);
     if(prn_flg->cdl) prn_ndn+=2*prn_flg->var_fst;
     if(prn_flg->xml) prn_ndn+=prn_flg->sxn_fst;
     if(prn_flg->new_fmt && prn_flg->trd) prn_ndn+=prn_flg->var_fst;
   } /* end else */
 
   /* Allocate space for attribute names and types */
-  if(nbr_att > 0) att=(att_sct *)nco_malloc(nbr_att*sizeof(att_sct));
+  att_nbr_ttl=att_nbr_vsb;
+  if(att_nbr_vsb > 0) att=(att_sct *)nco_malloc(att_nbr_ttl*sizeof(att_sct));
     
+  if(prn_flg->hdn){
+    char *val_hdn_sng=NULL;
+    int chk_typ; /* [enm] Checksum type [0..9] */
+    int deflate; /* [flg] Deflation is on */
+    int dfl_lvl; /* [enm] Deflate level [0..9] */
+    int fl_fmt; /* I [enm] File format */
+    int flg_ndn=NC_ENDIAN_NATIVE; /* [enm] _Endianness */
+    int fll_nil; /* [flg] NO_FILL */
+    int shuffle; /* [flg] Shuffling is on */
+    int srg_typ; /* [enm] Storage type */
+    size_t cnk_sz[NC_MAX_DIMS]; /* [nbr] Chunk sizes */
+    if(var_id == NC_GLOBAL){
+      /* _Format */
+      if(!prn_flg->xml){
+	rcd=nco_inq_grp_parent_flg(grp_id,&grp_id_prn);
+	if(rcd == NC_ENOGRP){
+	  /* _Format only and always printed for root group */
+	  idx=att_nbr_ttl++;
+	  att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	  att[idx].nm=(char *)strdup("_Format");
+	  att[idx].type=NC_CHAR;
+	  rcd=nco_inq_format(grp_id,&fl_fmt);
+	  val_hdn_sng=strdup(nco_fmt_hdn_sng(fl_fmt));
+	  att_sz=att[idx].sz=strlen(val_hdn_sng);
+	  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	  strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
+	  if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+	} /* !rcd */	
+      } /* !xml */
+    }else{
+      if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4){
+	/* _NOFILL */
+	rcd=nco_inq_var_fill(grp_id,var_id,&fll_nil,(int *)NULL);
+	if(fll_nil){
+	  /* Print _NOFILL for variables that are not pre-filled */
+	  idx=att_nbr_ttl++;
+	  att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	  att[idx].nm=(char *)strdup("_NOFILL");
+	  att[idx].type=NC_INT;
+	  att_sz=att[idx].sz=1L;
+	  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	  att[idx].val.ip[0]=fll_nil;
+	} /* !fll_nil */
+	/* _Storage */
+	rcd=nco_inq_var_chunking(grp_id,var_id,&srg_typ,cnk_sz);
+	if(!prn_flg->xml){
+	  if(dmn_nbr > 0){
+	    /* Print _Storage for arrays */
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_Storage");
+	    att[idx].type=NC_CHAR;
+	    val_hdn_sng= (srg_typ == NC_CONTIGUOUS) ? (char *)strdup("contiguous") : (char *)strdup("chunked");
+	    att_sz=att[idx].sz=strlen(val_hdn_sng);
+	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	    strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
+	    if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+	  } /* !dmn_nbr */	
+	} /* !xml */
+	/* _ChunkSizes */
+	if(srg_typ == NC_CHUNKED){
+	  /* Print _ChunkSizes for chunked arrays */
+	  idx=att_nbr_ttl++;
+	  att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	  att[idx].nm= (prn_flg->xml) ? (char *)strdup("_ChunkSize") : (char *)strdup("_ChunkSizes");
+	  att[idx].type=NC_INT;
+	  att_sz=att[idx].sz=dmn_nbr;
+	  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	  for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) att[idx].val.ip[dmn_idx]=cnk_sz[dmn_idx];
+	} /* srg_typ != NC_CHUNKED */
+	/* _DeflateLevel */
+	if(!prn_flg->xml){
+	  rcd=nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
+	  if(deflate){
+	    /* Print _DeflateLevel for deflated variables */
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_DeflateLevel");
+	    att[idx].type=NC_INT;
+	    att_sz=att[idx].sz=1L;
+	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	    att[idx].val.ip[0]=dfl_lvl;
+	  } /* !deflate */
+	} /* !xml */
+	/* _Shuffle */
+	if(!prn_flg->xml){
+	  if(shuffle){
+	    /* Print _Shuffle for shuffled variables */
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_Shuffle");
+	    att[idx].type=NC_CHAR;
+	    val_hdn_sng=strdup("true");
+	    att_sz=att[idx].sz=strlen(val_hdn_sng);
+	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	    strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
+	    if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+	  } /* !shuffle */
+	} /* !xml */
+	/* _Fletcher32 */
+	if(!prn_flg->xml){
+	  rcd=nco_inq_var_fletcher32(grp_id,var_id,&chk_typ);
+	  if(chk_typ){
+	    /* Print _Fletcher32 for checksummed variables */
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_Fletcher32");
+	    att[idx].type=NC_CHAR;
+	    val_hdn_sng=strdup("true");
+	    att_sz=att[idx].sz=strlen(val_hdn_sng);
+	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	    strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
+	    if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+	  } /* !chk_typ */
+	} /* !xml */
+	/* _Endianness */
+	if(!prn_flg->xml){
+	  if((var_typ == NC_USHORT) || (var_typ == NC_SHORT) || (var_typ == NC_UINT) || (var_typ == NC_INT) || (var_typ == NC_UINT64) || (var_typ == NC_INT64)){
+	    /* _Endianness variable attribute always printed for integer types */
+	    idx=att_nbr_ttl++;
+	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
+	    att[idx].nm=(char *)strdup("_Endianness");
+	    att[idx].type=NC_CHAR;
+	    rcd+=nco_inq_var_endian(grp_id,var_id,&flg_ndn);
+	    val_hdn_sng=strdup(nco_ndn_sng(flg_ndn));
+	    att_sz=att[idx].sz=strlen(val_hdn_sng);
+	    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+	    strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
+	    if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+	  } /* !INT */
+	} /* !xml */
+      } /* !HDF4 */
+    } /* !NC_GLOBAL */
+  } /* !hdn */
+
   /* Get attributes' names, types, lengths, and values */
-  for(idx=0;idx<nbr_att;idx++){
+  for(idx=0;idx<att_nbr_ttl;idx++){
 
-    att[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
-    (void)nco_inq_attname(grp_id,var_id,idx,att[idx].nm);
-    (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
-
+    if(idx <= att_nbr_vsb-1){
+      /* Visible attributes get standard treatment */
+      att[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
+      (void)nco_inq_attname(grp_id,var_id,idx,att[idx].nm);
+      (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
+      /* Allocate enough space to hold attribute */
+      att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng(att[idx].type));
+      (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+    } /* idx == att_nbr */
+    
     /* Copy value to avoid indirection in loop over att_sz */
     att_sz=att[idx].sz;
     att_szm1=att_sz-1L;
 
-    /* Allocate enough space to hold attribute */
-    att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
-    (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
-    
     if(prn_flg->cdl){
       nm_cdl=nm2sng_cdl(att[idx].nm);
       (void)fprintf(stdout,"%*s%s%s:%s = ",prn_ndn,spc_sng,(att[idx].type == NC_STRING) ? "string " : "",src_sng,nm_cdl); 
@@ -273,7 +415,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   if(!prn_flg->new_fmt && !prn_flg->xml) (void)fprintf(stdout,"\n");
   (void)fflush(stdout);
   
-  /* Print any hidden attributes */
+  /* Print additional hidden attributes */
   if(prn_flg->xml && var_id != NC_GLOBAL){
     /* _FillValue, _Netcdf4Dimid, _Unsigned:
        _FillValue: No documentation. Seems like a kludge.
@@ -296,13 +438,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   } /* !xml */
 
   /* Free space holding attribute values */
-  for(idx=0;idx<nbr_att;idx++){
+  for(idx=0;idx<att_nbr_ttl;idx++){
     att[idx].val.vp=nco_free(att[idx].val.vp);
     att[idx].nm=(char *)nco_free(att[idx].nm);
   } /* end loop over attributes */
 
   /* Free rest of space allocated for attribute information */
-  if(nbr_att > 0) att=(att_sct *)nco_free(att);
+  if(att_nbr_ttl > 0) att=(att_sct *)nco_free(att);
 
 } /* end nco_prn_att() */
 
@@ -2065,8 +2207,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   } /* end loop over var_idx */
 
   /* Print attribute information for group */
-  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA && !prn_flg->xml) (void)fprintf(stdout,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(prn_flg->cdl) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
-  if(nbr_att > 0 && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
+  if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA && !prn_flg->xml) (void)fprintf(stdout,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(prn_flg->cdl) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
+  if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
 
   /* Print data for group */
   if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA && !prn_flg->xml){

@@ -1,6 +1,8 @@
 2013-12-29  Charlie Zender  <zender@uci.edu>
 
-	* ncks: --fix_rec_dmn=all fixes all record dimensions
+	* Print hidden attributes with --hdn, --hidden
+
+	* ncks --fix_rec_dmn=all fixes all record dimensions
 
 	* ncdismember put groups in per-file directory, call cfchecker in batch mode
 
