@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.397 2013-12-30 22:49:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.398 2013-12-30 23:16:26 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3450,7 +3450,6 @@ print "\n";
 #### Group tests	
 	if($HAVE_NETCDF4_H == 1){
 	
-	
 #ncrcat #22	
 # same as ncrcat #02 with group
 
@@ -3461,8 +3460,6 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
-	
-	
 	
 #ncrcat #23	
 # 2 groups each one with a record (part 1)
@@ -3501,10 +3498,35 @@ print "\n";
     $#tst_cmd=0; # Reset array	
 	
 	} #### Group tests	
+	
+# ncrcat #26
+# Detect input_complete when stride skips user-specified idx_end_max
+# ncrcat -O -C -v time -d time,0,10,9,1 -p ~/nco/data in.nc in.nc ~/foo.nc
+# ncks -C -H -s '%g, ' -v time ~/foo.nc
+    $dsc_sng="Detect input_complete when stride skips user-specified idx_end_max";
+    $tst_cmd[0]="ncra -Y ncrcat -h -O $fl_fmt $nco_D_flg -C -v time -d time,0,10,9,1 $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g, ' -v time %tmp_fl_00%";
+    $tst_cmd[2]="1, 10,";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 		
 
-	
-	
-	
+# ncrcat #27
+# Another detect input_complete when stride skips user-specified idx_end_max
+# ncks -O -C -v time -d time,0,2 ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -C -v time -d time,3,5 ~/nco/data/in.nc ~/foo2.nc
+# ncra -Y ncrcat -D 3 -O -C -v time -d time,0,3,2,1 -p ~ foo1.nc foo2.nc ~/foo.nc
+# ncks -C -H -s '%g, ' -v time ~/foo.nc
+    $dsc_sng="Another detect input_complete when stride skips user-specified idx_end_max";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C -v time -d time,0,2 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -v time -d time,3,5 $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncra -Y ncrcat -h -O $fl_fmt $nco_D_flg -C -v time -d time,0,3,2,1 %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -H -s '%g, ' -v time %tmp_fl_02%";
+    $tst_cmd[4]="1, 3,";
+    $tst_cmd[5]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 		
+
 #    } else { print "NB: Current mpncrcat test skipped because it hangs fxm TODO nco593.\n";}
     
 ####################
@@ -3851,6 +3873,18 @@ print "\n";
 
    } #### Group tests	
 	
+# ncra #31
+# Treatment of missing values with MRO and rth_dbl
+# ncra -O -F -C -v one_dmn_rec_var_mss_val --mro -d time,1,2 ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H -s '%g' ~/foo.nc
+    $dsc_sng="Treatment of missing values with MRO and rth_dbl";
+    $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -C -F -v one_dmn_rec_var_mss_val --mro -d time,1,2 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H -s '%g' -v one_dmn_rec_var_mss_val %tmp_fl_00%";
+    $tst_cmd[2]="__";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 		
+
 #print "paused - hit return to continue"; my $wait=<STDIN>;
 #print "<<<STOP>>>- hit return to continue"; my $wait=<STDIN>;
     

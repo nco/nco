@@ -1,3 +1,9 @@
+2013-12-30  Charlie Zender  <zender@uci.edu>
+
+	* Add regressions tests for ncra/ncrcat issues fixed at AGU
+	including incorrect treatment of missing values with MRO, and
+	detection of input_complete when stride skips user-specified idx_end_max
+
 2013-12-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.0 release procedure:
