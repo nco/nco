@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.669 2013-12-30 07:26:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.670 2013-12-31 05:14:01 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -110,7 +110,8 @@ A. ncdismember just plain works in most real world cases.
    http://nco.sf.net/nco.html#ncdismember
 
 A. ncks now accepts the "all" argument to the --fix_rec_dmn option.
-   ncks --fix_rec_dmn=all converts all record dimensions to fixed
+   ncks --fix_rec_dmn=all 
+converts all record dimensions to fixed
    dimensions in the output file. Previously, --fix_rec_dmn only
    allowed one option, the single record dimension to be fixed.
    Now it is simple to fix all record dimensions simultaneously.
@@ -127,6 +128,7 @@ A. ncks now prints hidden (aka special) attributes when given the
    _Storage, _ChunkSizes, _Endianness, _Fletcher32, and _NOFILL. 
    Previously ncks ignored all these attributes in CDL/XML modes.
    Now it prints these attributes as appropriate. 
+   http://nco.sf.net/nco.html#
 
 A. fxm
    NCO now employs hashing techniques to locate objects.

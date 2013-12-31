@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.46 2013-10-22 03:03:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.47 2013-12-31 05:14:01 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
-/* Copyright (C) 1995--2013 Charlie Zender
+/* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

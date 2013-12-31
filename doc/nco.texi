@@ -7,13 +7,13 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.935 2013-12-30 07:16:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.936 2013-12-31 05:14:01 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2013 Charlie Zender
+Copyright (C) 1995--2014 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
@@ -113,9 +113,9 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 4.4.0
 @set doc-edition 4.4.0
-@set copyright-years 1995--2013
+@set copyright-years 1995--2014
 @set update-year 2013
-@set update-date 29 December 2013
+@set update-date 30 December 2013
 @set update-month December 2013
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1215,16 +1215,27 @@ support
 @footnote{The procedure for doing this is documented at
 @uref{http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html}.},
 @acronym{NCO} automatically supports reading @acronym{HDF4} 
-files and writing them as netCDF4/@acronym{HDF5} files.
-@acronym{NCO} can only write throught the netCDF @acronym{API}, which
+files and writing them as netCDF3/netCDF4/@acronym{HDF5} files.
+@acronym{NCO} can only write through the netCDF @acronym{API}, which
 can only write netCDF3/netCDF4/@acronym{HDF5} files. 
-But it can read @acronym{HDF4} files, perform manipulations and
-calculations, and then write the results in netCDF format.
-@acronym{NCO} versions 4.3.6 and earlier do not support @acronym{HDF4}. 
+So @acronym{NCO} can @emph{read} @acronym{HDF4} files, perform
+manipulations and calculations, and then @emph{write} the results in
+netCDF format. 
+
+Full support for these features is forthcoming, yet support as of
+December, 2013 is quite functional.
+For best results install @acronym{NCO} versions 4.4.0 or later on top of
+netCDF versions 4.3.1-rc7 or later. 
+Getting to this point has been an iterative effort where Unidata
+improved netCDF library capabilities in response to our requests.
+@acronym{NCO} versions 4.3.6 and earlier do not explicitly support
+@acronym{HDF4}, yet should work with @acronym{HDF4} if compiled with 
+a version of netCDF (4.3.2 or later?) that does not unexpectedly die
+when probing @acronym{HDF4} files with standard netCDF calls.
 @acronym{NCO} versions 4.3.7--4.3.9 (October--December, 2013)
-were released before netCDF support for @acronym{HDF4} was complete.
-As a result the user must tell these versions of @acronym{NCO} that an
-input file is @acronym{HDF4} format by using the @samp{--hdf4} switch.
+use a special flag to workaround netCDF @acronym{HDF4} issues.
+The user must tell these versions of @acronym{NCO} that an input file is
+@acronym{HDF4} format by using the @samp{--hdf4} switch. 
 
 When compiled with netCDF version 4.3.1-rc7 (20131222) or later, 
 @acronym{NCO} versions 4.4.0 (January, 2014) and later more gracefully 
@@ -4103,18 +4114,23 @@ Hence, @samp{-G :-1} is the same as @samp{-G @@1}.
 This is simply a way of making the @var{lvl_nbr} argument
 positive-definite. 
 
+@html
+<a name="flatten"></a> <!-- http://nco.sf.net/nco.html#flatten -->
+<a name="delete"></a> <!-- http://nco.sf.net/nco.html#delete -->
+<a name="truncate"></a> <!-- http://nco.sf.net/nco.html#truncate -->
+@end html
 @cindex @code{@@} (separator character)
 @cindex @code{:} (separator character)
-@cindex deletion (groups)
-@cindex truncation (groups)
-@cindex flattening (groups)
-@acronym{GPE} has three editing modes: Deletion, Truncation, and
-Flattening.
+@cindex delete (groups)
+@cindex truncate (groups)
+@cindex flatten (groups)
+@acronym{GPE} has three editing modes: Delete, Truncate, and
+Flatten.
 Select one of @acronym{GPE}'s three editing modes by supplying a
-@var{lvl_nbr} that is positive, negative, or zero for Deletion-, 
-Truncation- and Flattening-mode, respectively. 
+@var{lvl_nbr} that is positive, negative, or zero for Delete-, 
+Truncate- and Flatten-mode, respectively. 
 
-In Deletion-mode, @var{lvl_nbr} is a positive integer which specifies
+In Delete-mode, @var{lvl_nbr} is a positive integer which specifies
 the maximum number of group path components (i.e., groups) that
 @acronym{GPE} will try to delete from the head of @var{grp_pth}. 
 For example @math{@var{lvl_nbr} = 3} changes the input path
@@ -4128,7 +4144,7 @@ components to delete.
 It deletes as many as possible, without complaint, and then begins to
 flatten the file (which will fail if namespace conflicts arise).
 
-In Truncation-mode, @var{lvl_nbr} is a negative integer which specifies
+In Truncate-mode, @var{lvl_nbr} is a negative integer which specifies
 the maximum number of group path components (i.e., groups) that
 @acronym{GPE} will try to truncate from the tail of @var{grp_pth}. 
 For example @math{@var{lvl_nbr} = -3} changes the input path
@@ -4137,7 +4153,7 @@ Input paths with @var{lvl_nbr} or fewer components (groups)
 are completely erased and the output path commences from the root  
 level. 
 
-In Flattening-mode, indicated by the separator character alone
+In Flatten-mode, indicated by the separator character alone
 or with @math{@var{lvl_nbr} = 0}, @acronym{GPE} removes the entire group
 path from the input file and constructs the output path beginning at the
 root level.  
@@ -4147,8 +4163,8 @@ input path @file{/g1/g2/g3/g4/g5} to the output path @file{/} whereas
 path @file{/g1} for all variables.
 
 Subsequent to the alteration of the input path by the specified
-editing mode, if any, @acronym{GPE} prepends (in Deletion Mode)
-or Appends (in Truncation-mode) any specifed @var{grp_pth} to the output
+editing mode, if any, @acronym{GPE} prepends (in Delete Mode)
+or Appends (in Truncate-mode) any specifed @var{grp_pth} to the output
 path. 
 For example @code{-G g2} changes the input paths @file{/} and @file{/g1}
 to @file{/g2} and @file{/g1/g2}, respectively.
@@ -4179,7 +4195,7 @@ ncks -G o1       -v v1 # /g?/v1 -> /o1/g?/v1
 ncks -G o1 -g g1 -v v1 # /g1/v1 -> /o1/g1/v1
 ncks -G g1 -g /  -v v1 # /v1    -> /g1/v1
 ncks -G g1/g2    -v v1 # /g?/v1 -> /g1/g2/g?/v1
-# Deletion-mode: Delete from and Prepend to path head
+# Delete-mode: Delete from and Prepend to path head
 # Syntax: -G [ppn]:lvl_nbr = # of levels to delete
 ncks -G :1    -g g1    -v v1 # /g1/v1    -> /v1
 ncks -G :1    -g g1/g1 -v v1 # /g1/g1/v1 -> /g1/v1
@@ -4190,7 +4206,7 @@ ncks -G g2:2  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
 ncks -G g2:1  -g /     -v v1 # /v1       -> /g2/v1
 ncks -G g2:1           -v v1 # /v1       -> /g2/v1
 ncks -G g2:1  -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/g1/v1
-# Flattening-mode: Remove all input path components
+# Flatten-mode: Remove all input path components
 # Syntax: -G [apn]: colon without numerical argument
 ncks -G :            -v v1 # /g?/v1    -> /v1
 ncks -G :   -g g1    -v v1 # /g1/v1    -> /v1
@@ -4198,7 +4214,7 @@ ncks -G :   -g g1/g1 -v v1 # /g1/g1/v1 -> /v1
 ncks -G g2:          -v v1 # /g?/v1    -> /g2/v1
 ncks -G g2:                # /g?/v?    -> /g2/v?
 ncks -G g2: -g g1/g1 -v v1 # /g1/g1/v1 -> /g2/v1
-# Truncation-mode: Truncate from and Append to path tail
+# Truncate-mode: Truncate from and Append to path tail
 # Syntax: -G [apn]:-lvl_nbr = # of levels to truncate
 # NB: -G [apn]:-lvl_nbr is equivalent to -G [apn]@@lvl_nbr
 ncks -G :-1   -g g1    -v v1 # /g1/v1    -> /v1
@@ -4257,7 +4273,7 @@ The @option{-3} switch
 @footnote{Note that the @option{-3} switch should appear @emph{after} the
 @option{-G} and @option{-g} switches. 
 This is due to an artifact of the @acronym{GPE} implementation which we
-will hopefully remove in the future.}
+wish to remove in the future.}
 specifies the output dataset should be in netCDF3
 format, the @option{-G :} switch flattens all extracted groups, and the
 @option{-g cesm} switch extracts only the @code{cesm} group and leaves
@@ -13307,28 +13323,29 @@ The nickname ``kitchen sink'' is a catch-all because @command{ncks}
 combines most features of @command{ncdump} and @command{nccopy} with
 extra features to extract, hyperslab, multi-slab, sub-set, and translate  
 into one versatile utility. 
-@command{ncks} extracts a subset of the data from @var{input-file} and
-writes it in flat binary format to @file{binary-file}, and writes (or
-pastes) it in netCDF format to @var{output-file}. 
+@command{ncks} extracts (a subset of the) data from @var{input-file} and 
+and writes (or pastes) it in netCDF format to @var{output-file}, and 
+optionally writes it in flat binary format to @file{binary-file}, and
+optionally prints it to screen.
 
-@command{ncks} will also print netCDF data in @acronym{ASCII},
-@acronym{CDL}, or @acronym{NcML} text formats @code{stdout}, like
-@command{ncdump}.
+@command{ncks} prints netCDF input data in @acronym{ASCII},
+@acronym{CDL}, or @acronym{NcML} text formats @code{stdout}, like (an
+extended version of) @command{ncdump}.
 By default @command{ncks} prints data in a tabular format intended to be
 easy to search for the data you want, one datum per screen line, with
 all dimension subscripts and coordinate values (if any) preceding the
 datum. 
 Option @samp{-s} (or long options @samp{--sng_fmt} and @samp{--string}) 
-lets the user format the data using C-style format strings, while option
-@samp{--cdl} outputs @acronym{CDL} and option @samp{--xml} outputs
-@acronym{NcML}. 
+permits the user to format data using C-style format strings, while
+option @samp{--cdl} outputs @acronym{CDL} and option @samp{--xml}
+outputs @acronym{NcML}. 
 @command{ncks} exposes many flexible controls over printed output,
 including @acronym{CDL} and @acronym{NcML}.
 
 Options @samp{-5}, @samp{-a}, @samp{--cdl}, @samp{-F} , @samp{-H},
-@samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q}, @samp{-q}, @samp{-s},
-@samp{-u}, @samp{--xml} (and their long option counterparts) control the
-formatted appearance of the data. 
+@samp{--hdn}, @samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q}, @samp{-q},
+@samp{-s}, @samp{-u}, @samp{--xml} (and their long option counterparts)
+control the formatted appearance of the data.
 
 @cindex global attributes
 @cindex attributes, global
@@ -13488,6 +13505,46 @@ The decision was made that starting with @acronym{NCO} version 4.2.5
 fix regardless of the netCDF file type.
 This keeps the code simple, and is symmetric with the syntax for
 @code{--mk_rec_dmn}, described next.
+
+As of @acronym{NCO} version 4.4.0 (January, 2014), the argument
+@code{all} may be given to @samp{--fix_rec_dmn} to convert @emph{all} 
+record dimensions to fixed dimensions in the output file. 
+Previously, @samp{--fix_rec_dmn} only allowed one option, the name of a
+single record dimension to be fixed. 
+Now it is simple to simultaneously fix all record dimensions.
+This is useful (and nearly mandatory) when flattening netCDF4 files that
+have multiple record dimensions per group into netCDF3 files (which are
+limited to at most one record dimension) (@pxref{Group Path Editing}). 
+
+@html
+<a name="hdn"></a> <!-- http://nco.sf.net/nco.html#hdn -->
+<a name="hidden"></a> <!-- http://nco.sf.net/nco.html#hidden -->
+@end html
+@cindex hidden attributes
+@cindex special attributes
+@cindex @code{--hdn}
+@cindex @code{--hidden}
+@cindex @code{_Format}
+@cindex @code{_DeflateLevel}
+@cindex @code{_Shuffle}
+@cindex @code{_Storage}
+@cindex @code{_ChunkSizes}
+@cindex @code{_Endianness}
+@cindex @code{_Fletcher32}
+@cindex @code{_NOFILL}
+As of @acronym{NCO} version 4.4.0 (January, 2014), the @samp{--hdn}
+or @samp{--hidden} options print hidden (aka special) attributes.
+This is equivalent to @samp{ncdump -s}.
+Hidden attributes include: @code{_Format}, @code{_DeflateLevel},
+@code{_Shuffle}, @code{_Storage}, @code{_ChunkSizes},
+@code{_Endianness}, @code{_Fletcher32}, and @code{_NOFILL}. 
+Previously @command{ncks} ignored all these attributes in
+@acronym{CDL}/@acronym{XML} modes. 
+Now it prints these attributes as appropriate. 
+Users are referred to the
+@uref{http://www.unidata.ucar.edu/software/netcdf/docs, Unidata netCDF Documentation},
+or the man pages for @command{ncgen} or @command{ncdump}, for
+detailed descriptions of the meanings of these attributes. 
 
 @html
 <a name="cdl"></a> <!-- http://nco.sf.net/nco.html#cdl -->

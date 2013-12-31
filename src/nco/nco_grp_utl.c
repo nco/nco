@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1147 2013-12-29 20:01:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1148 2013-12-31 05:14:01 zender Exp $ */
 
 /* Purpose: Group utilities */
 
-/* Copyright (C) 2011--2013 Charlie Zender
+/* Copyright (C) 2011--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

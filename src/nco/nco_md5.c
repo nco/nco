@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.20 2013-10-22 03:03:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_md5.c,v 1.21 2013-12-31 05:14:02 zender Exp $ */
 
 /* Purpose: NCO utilities for MD5 digests */
 
-/* Copyright (C) 2012--2013 Charlie Zender
+/* Copyright (C) 2012--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 
@@ -197,7 +197,7 @@ nco_md5_chk_ram /* [fnc] Perform MD5 digest on hyperslab in RAM */
   L. Peter Deutsch
   ghost@aladdin.com
 */
-/* $Id: nco_md5.c,v 1.20 2013-10-22 03:03:46 zender Exp $ */
+/* $Id: nco_md5.c,v 1.21 2013-12-31 05:14:02 zender Exp $ */
 /*
   Independent implementation of MD5 (RFC 1321).
   

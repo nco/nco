@@ -1,8 +1,8 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.19 2013-01-13 06:07:49 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.20 2013-12-31 05:14:02 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF attribute routines
 
-/* Copyright (C) 2001--2013 Charlie Zender
+/* Copyright (C) 2001--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

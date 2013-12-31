@@ -1,9 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.26 2013-12-29 20:01:57 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.27 2013-12-31 05:14:01 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
 
-# Copyright (C) 2003--2013 Charlie Zender
+# Copyright (C) 2003--2014 Charlie Zender
 # License: GNU General Public License (GPL) Version 3
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 

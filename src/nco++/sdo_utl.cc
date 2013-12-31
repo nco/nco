@@ -1,8 +1,8 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.cc,v 1.5 2013-10-22 03:03:55 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco++/sdo_utl.cc,v 1.6 2013-12-31 05:14:02 zender Exp $ 
 
 // Purpose: Implementation (declaration) of SDO stand-alone utilities 
 
-/* Copyright (C) 1997--2013 Charlie Zender
+/* Copyright (C) 1997--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
    See http://www.gnu.org/copyleft/gpl.html for full license text */
 

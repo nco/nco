@@ -1,16 +1,24 @@
 2013-12-30  Charlie Zender  <zender@uci.edu>
 
-	* Add regressions tests for ncra/ncrcat issues fixed at AGU
-	including incorrect treatment of missing values with MRO, and
-	detection of input_complete when stride skips user-specified idx_end_max
-
-2013-12-29  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.4.0 release procedure:
  	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn
 	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
 	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
+
+	* Document --hdn, autoconversion, --fix_rec_dmn changes
+
+	* Update copyright year to 2014
+
+	* Verified snapshot passes tests on Yellowstone
+
+	* NCO snapshot fails all ncra on tephra/netCDF3-only. No obvious valgrind issues.
+
+	* Add regressions tests for ncra/ncrcat issues fixed at AGU
+	including incorrect treatment of missing values with MRO, and
+	detection of input_complete when stride skips user-specified idx_end_max
+
+2013-12-29  Charlie Zender  <zender@uci.edu>
 
 	* Print hidden attributes with --hdn, --hidden
 
