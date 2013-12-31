@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.851 2013-12-30 07:16:30 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.852 2013-12-31 21:11:56 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -613,13 +613,15 @@ You can also retrieve the source of tagged versions directly
 <a name="#Source">with CVS</a>.
 <ul>
 <li><b>NCO 4.4.1</b>: (<i>Future</i>) 
+extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.4.0</b>: (<i>In Progress, features completed or being worked on include</i>)
 Optimizations;
+<tt>ncdimember</tt> awesomeness;
 <tt>ncks --hdn</tt>;
 <tt>ncks --fix_rec_dmn=all</tt>;
-<tt>ncks</tt> autoconversion;
+<tt>ncks</tt> <a href="http://nco.sf.net/nco.html#autoconv">autoconversion</a>;
 <tt>ncrename</tt> output path;
 <tt>ncra --mro</tt> <a href="#bug_ncra_mro_mss_val">bugfix</a>;
 <tt>ncra/ncrcat</tt> stride bugfix;

@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.937 2013-12-31 19:50:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.938 2013-12-31 21:11:56 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3511,22 +3511,24 @@ or metadata processing rather than requiring a separate step.
 Producing (netCDF3) @code{CLASSIC} or @code{64BIT} files from
 @code{NETCDF4_CLASSIC} files will always work. 
 
-Because of the dearth of support for netCDF4 amongst tools and user
-communities (including the @acronym{CF} conventions), it is often useful
-to down-convert netCDF4 to netCDF3 for certain applications.
-Until @acronym{NCO} version 4.4.0 (January, 2014), producing netCDF3
-files from @code{NETCDF4} files only worked if the input files did not 
-contain netCDF4-specific features. 
-As of @acronym{NCO} version 4.4.0, @command{ncks} supports
-@dfn{autoconversion} of many netCDF4 features to their closest
-netCDF3-compatible representations when users down-convert down-convert
-netCDF4 to netCDF3. 
-
 @html
 <a name="autoconversion"></a> <!-- http://nco.sf.net/nco.html#autoconversion -->
 <a name="autocnv"></a> <!-- http://nco.sf.net/nco.html#autocnv -->
 @end html
 @unnumberedsubsec Autoconversion
+Because of the dearth of support for netCDF4 amongst tools and user
+communities (including the @acronym{CF} conventions), it is often useful
+to convert netCDF4 to netCDF3 for certain applications.
+Until @acronym{NCO} version 4.4.0 (January, 2014), producing netCDF3
+files from @code{NETCDF4} files only worked if the input files did not 
+contain netCDF4-specific features. 
+As of @acronym{NCO} version 4.4.0, @command{ncks} supports
+@dfn{autoconversion} of many netCDF4 features to their closest
+netCDF3-compatible representations.
+Since converting netCDF4 to netCDF3 results in loss of features, a more 
+precise terminology for what we call autoconversion is automatic
+down-conversion.
+
 @acronym{NCO} employs three algorithms to downconvert netCDF4 to netCDF3:
 @enumerate
 @item 
@@ -3538,29 +3540,71 @@ Autoconversion of atomic types:
 @code{NC_INT}. 
 @code{NC_STRING} is converted to @code{NC_CHAR}.
 All numeric conversions work for attributes and variables of any rank.
+Two numeric types (@code{NC_UBYTE} and @code{NC_USHORT}) are
+@emph{promoted} to types with greater range. 
+This extra range is often not used so promotion perhaps conveys
+the wrong impression.
+However, there is no truncation of values or loss of data with 
+promotion, so the extra storage space required is worthwhile.
+Three numeric types (@code{NC_UINT}, @code{NC_UINT64} and
+@code{NC_INT64}) are @emph{demoted}.
+Since the input range is larger than the output range, demotion can
+result in numeric truncation and thus loss of data. 
+In such cases, it would possible to convert the data to floating point
+values instead. 
+If this feature interests you, please be the squeaky wheel and let us
+know.
+
 String conversions (to @code{NC_CHAR}) work for all attributes, but
 not for variables.
-This means that @code{NC_STRING} attributes will be correctly converted
-to and stored as @code{NC_CHAR} in the netCDF3 output file, and that
-@code{NC_STRING} variables will not be correctly converted.
+This is because attributes are at most one-dimensional and may be of any
+size whereas variables require gridded dimensions that usually do not
+fit the ragged sizes of text strings.
+Hence scalar @code{NC_STRING} attributes are correctly converted to and
+stored as @code{NC_CHAR} attributes in the netCDF3 output file, but
+@code{NC_STRING} variables are not correctly converted. 
 If this limitation annoys or enrages you, please let us know by being
 the squeaky wheel.
 
 @item
-@cindex @code{--fix_rec_dmn @var{dim}}
-Converting multiple record dimensions to fixed-size dimensions.
-fxm.
+@cindex @code{--fix_rec_dmn all}
+Convert multiple record dimensions to fixed-size dimensions.
+Many netCDF4 and @acronym{HDF5} datasets have multiple unlimited
+dimensions.
+Since a netCDF3 file may have at most one unlimited dimension, all but
+possibly one unlimited dimension from the input file must be converted
+to fixed-length dimensions prior to storing netCDF4 input as netCDF3
+output.
+By invoking @code{--fix_rec_dmn all} the user ensures the output file
+will adhere to netCDF3 conventions and the user need not know the names
+of the specific record dimensions to fix.
 
 @item
 @cindex flattening
 Flattening (removal) of groups.
-fxm.
+Many netCDF4 and @acronym{HDF5} datasets have group hierarchies.
+Since a netCDF3 file may not have any groups, groups in the input file
+must be removed.
+This is also called ``flattening'' the hierarchical file.
+See @ref{Group Path Editing} for a description of the @acronym{GPE}
+option @samp{-G :} to flatten files.
 @end enumerate
 
+Putting the three algorithms together, one sees that the recipe to 
+convert netCDF4 to netCDF4 becomes increasingly complex as the netCDF4
+features in the input file become more elaborate:
 @example
-ncks -3 in.nc4 out.nc3 # Convert netCDF4 -> netCDF3
+# Convert file with netCDF4 atomic types
+ncks -3 in.nc4 out.nc3
+# Convert file with multiple record dimensions + netCDF4 atomic types
+ncks -3 --fix_rec_dmn=all in.nc4 out.nc3
+# Convert file with groups, multiple record dimensions + netCDF4 atomic types
+ncks -3 -G : --fix_rec_dmn=all in.nc4 out.nc3
 @end example
-
+Future versions of @acronym{NCO} may automatically invoke the record
+dimension fixation and group flattening when converting to netCDF3
+(rather than requiring it be specified manually).
+If this feature would interest you, please let us know.
 
 @html
 <a name="fmt_inq"></a> <!-- http://nco.sf.net/nco.html#fmt_inq -->

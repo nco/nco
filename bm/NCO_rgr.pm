@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.398 2013-12-30 23:16:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.399 2013-12-31 21:11:56 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2411,7 +2411,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-	
 #ncks #74
 # ncks -O -c in_grp.nc out.nc
 
@@ -2447,31 +2446,26 @@ print "\n";
 
 #ncks #77	
 #ncks -O -3 -G : -g /g27g1/ in_grp_3.nc out.nc
-	
     
-	$dsc_sng="(Groups) Test flatenning with paralell variables( -3 -G : -g)";
+    $dsc_sng="(Groups) Test flatenning with parallel variables (-3 -G : -g)";
     $tst_cmd[0]="ncks -O -3 -G : -g /g27g1/  $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks  -m -v delta_time_start %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -v delta_time_start %tmp_fl_00%";
     $tst_cmd[2]="delta_time_start dimension 0: delta_time_start, size = 2 NC_FLOAT (Coordinate is delta_time_start)";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
-	
 
 #ncks #78	
 #ncks -O -3 -G : -g g28 -v delta_time_stop  in_grp_3.nc out.nc	
 # simpler case of ncks -O -D 2 -3 -G : -g /altimetry/${DATA}/hdf/mabel_l2_20130927t201800_008_1.h5 ~/foo_mabel.nc
     
-	$dsc_sng="(Groups) Test CF extraction with flatenning ( -3 -G : -g)";
+    $dsc_sng="(Groups) Test CF extraction with flattening (-3 -G : -g)";
     $tst_cmd[0]="ncks -O -3 -G : -g g28 -v delta_time_stop  $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks  -m -v delta_time_start %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -v delta_time_start %tmp_fl_00%";
     $tst_cmd[2]="delta_time_start dimension 0: delta_time_start, size = 1 NC_FLOAT (Coordinate is delta_time_start)";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
-
-
-	
 
    } #### Group tests	
     
@@ -4369,7 +4363,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 	
-	
 #### Group tests	
 	if($HAVE_NETCDF4_H == 1){	
 	
@@ -4391,14 +4384,12 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-
 #ncwa #44
 #NEW NCO 4.3.3
 #same as #ncwa #27
 # ncwa -h -O -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon in_grp_3.nc out.nc
 # ncks -C -H --no_blank -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,3 out.nc
 
-    
 # will fail SS - ncks not the last cmd
     push(@tst_cmd, "ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y max -g g19g3 -v three_dmn_var_dbl -a lat,lon $in_pth_arg in_grp_3.nc %tmp_fl_00%");
     push(@tst_cmd, "ncks -C -H --no_blank -s '%f' -g g19g3 -v three_dmn_var_dbl -d time,3 %tmp_fl_00%");
@@ -4431,7 +4422,6 @@ print "\n";
 #same as #ncwa #33
 # ncwa -h -O -y rms -w lat_wgt -g g20g1 -v lat_cpy  in_grp_3.nc out.nc
 # ncks -C -H -s '%f' -g g20g1  -v lat_cpy out.nc
-
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y rms -w lat_wgt -g g20g1 -v lat_cpy $in_pth_arg in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H -s '%f' -g g20g1  -v lat_cpy %tmp_fl_00%";;
@@ -4444,7 +4434,6 @@ print "\n";
 #ncwa #48
 #NEW NCO 4.3.6
 #ncwa -O -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 in_grp_3.nc out.nc
-
     
     $tst_cmd[0]="ncwa $omp_flg -O $fl_fmt $nco_D_flg -w gw_lat -d lat,1,2 -d lon,0,1 -a lat,lon -g g26 $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -v a %tmp_fl_00%";;
@@ -4458,7 +4447,6 @@ print "\n";
 # ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc out.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
-
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
@@ -4468,13 +4456,11 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-	
 #ncwa #50
 # ncwa -h -O -v lev -a lev -w lev_wgt in_grp_3.nc out.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
 
-    
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g19 -v lev %tmp_fl_00%";
     $dsc_sng="(Groups) Weights and groups (relative weight name test 2)";
@@ -4488,7 +4474,6 @@ print "\n";
 # ncwa  -h -O -a time -b  -v time  in_grp.nc out.nc
 # ncks out.nc | grep 'time dimension 0'
 
-    
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -a time -b  -v time $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks %tmp_fl_00% | grep 'time dimension 0:'";
     $dsc_sng="(Groups) -b degenerate a record dimension";
@@ -4497,13 +4482,11 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 	
-
 #NEW 4.4.0	
 #ncwa #52 Use -w /g8/lev_wgt
 # ncwa -h -O -v lev -a lev -w /g8/lev_wgt in_grp_3.nc out.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
-
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w /g8/lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
@@ -4518,7 +4501,6 @@ print "\n";
 # ncwa -h -O -v lev -a lev -w /g19/lev_wgt in_grp_3.nc out.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
-
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a lev -w /g8/lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g19 -v lev %tmp_fl_00%";
@@ -4533,7 +4515,6 @@ print "\n";
 # ncwa -h -O -v lev -a /g8/lev -w /g8/lev_wgt in_grp_3.nc out.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
-
     
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -v lev -a /g8/lev -w /g8/lev_wgt $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -g g8 -v lev %tmp_fl_00%";
@@ -4544,8 +4525,6 @@ print "\n";
     $#tst_cmd=0; # Reset array		
 	
 	} #### Group tests	
-	
-	
     
 ####################
 #### ncrename tests #### OK!

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.671 2013-12-31 19:50:02 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.672 2013-12-31 21:11:56 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -102,6 +102,8 @@ A. HDF4 behavior: Thanks to recent improvements in netCDF,
 A. NCO autoconverts HDF4 and HDF5 atomic-types (e.g., NC_UBYTE, 
    NC_STRING) to netCDF3 atomic types (e.g., NC_SHORT, NC_CHAR) when  
    necessary, i.e., when the output file is netCDF3.
+   ncks -3 fl.hdf fl.nc
+   http://nco.sf.net/nco.html#autocnv
 
 A. ncdismember just plain works in most real world cases.
    Taken together, NCO's new features (autoconversion to netCDF3
@@ -114,6 +116,7 @@ A. ncdismember just plain works in most real world cases.
    Example compliance checks of common NASA datasets are at
    http://dust.ess.uci.edu/diwg/*.txt
    http://nco.sf.net/nco.html#ncdismember
+   http://nco.sf.net/nco.html#autocnv
 
 A. ncks now accepts the "all" argument to the --fix_rec_dmn option.
    ncks --fix_rec_dmn=all 
@@ -127,6 +130,7 @@ A. ncks now accepts the "all" argument to the --fix_rec_dmn option.
    ncks --fix_rec_dmn=all in.nc out.nc   
    ncks -G : -3 --fix_rec_dmn=all in.nc out.nc   
    http://nco.sf.net/nco.html#fix_rec_dmn
+   http://nco.sf.net/nco.html#autocnv
 
 A. ncks now prints hidden (aka special) attributes when given the
    --hdn or --hidden option. This is equivalent to ncdump -s.
@@ -134,14 +138,18 @@ A. ncks now prints hidden (aka special) attributes when given the
    _Storage, _ChunkSizes, _Endianness, _Fletcher32, and _NOFILL. 
    Previously ncks ignored all these attributes in CDL/XML modes.
    Now it prints these attributes as appropriate. 
-   http://nco.sf.net/nco.html#
+   http://nco.sf.net/nco.html#hdn
 
-A. fxm
-   NCO now employs hashing techniques to locate objects.
-   As a result NCO is much more efficient searching for objects.
-   Users will notice no difference. If you do, please let us know. 
-   It is possible that some use-cases on large, complex files will
-   show significant speed-ups.
+A. ncwa weight and mask (-w and -m) arguments may now be full path
+   names to variables nested within a group hierarchy.
+   ncwa -a lev -w /g8/lev_wgt in.nc out.nc
+   ncwa -a lev -w /g8/lev_wgt in.nc out.nc
+   http://nco.sf.net/nco.html#ncwa
+
+A. The -X option for auxiliary coordinates now works fully when
+   latitude and longitude coordinates are nested in group hierarchies.
+   http://nco.sf.net/nco.html#aux
+   fxm verify
 
 BUG FIXES:
 
@@ -179,8 +187,6 @@ A. Versions 4.3.6--4.3.9 of ncra could treat missing values
 A. Versions through 4.3.9 would not always copy/print groups that
    contain _only_ metadata (i.e., contain no variables). Fixed.
 
-A. The -X switch fxm
-
 A. Sometimes the "coordinates" and "bounds" CF attributes caused 
    incorrect matches to out-of-scope variables in hierarchical files. 
    Fixed.
@@ -189,6 +195,11 @@ A. NCO correctly handles output filenames that contain whitespace.
    Previously, NCO would complain when moving the temporary to the
    final output file (the workaround was to use --no_tmp_fl).
    Fixed.
+
+A. ncks XML/NcML no longer creates a _FillValue attribute for unsigned 
+   types. It did so in NCO 4.3.7--4.3.9 because Unidata toolsUI does
+   so, but apparently this is a bug not a feature so NCO no longer
+   emulates it. 
 
 KNOWN ISSUES NOT YET FIXED:
 
@@ -241,8 +252,8 @@ C. NOT YET FIXED (NCO problem)
    Cause: NCO parsing of ncatted arguments is not sophisticated
    enough to handle arrays of NC_STRINGS with embedded delimiters.
 
-D. NOT YET FIXED
-   Report correct chunking and compression information for HDF4 files
+D. NOT YET FIXED (netCDF library problem)
+   Probe hidden attributes (chunking, compression) of HDF4 files
 
    Demonstration:
    ncdump -h -s ~/nco/data/hdf.hdf # (dies)

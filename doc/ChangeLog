@@ -1,6 +1,6 @@
 2013-12-31  Charlie Zender  <zender@uci.edu>
 
-	* Do not emulate toolsUI 4.3 _FillValue behavior for unsigned types (present in NCO 4.3.7-4.3.9)
+	* XML mode deprecate emulation of toolsUI 4.3 _FillValue behavior for unsigned types (present in NCO 4.3.7-4.3.9)
 
 2013-12-30  Charlie Zender  <zender@uci.edu>
 
@@ -10,7 +10,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
 	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
-	* Document --hdn, autoconversion, --fix_rec_dmn changes
+	* ncks document --hdn, autoconversion, --fix_rec_dmn changes
 
 	* Update copyright year to 2014
 
