@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.670 2013-12-31 05:14:01 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.671 2013-12-31 19:50:02 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -9,9 +9,16 @@ This release focuses on stability and speed.
 It also addresses previous omissions so that full path names are
 accepted by all appropriate options, such as the ncwa weights and
 masks (-w and -m), and ncks auxiliary coordinates (-X).
-There are no major new features. 
 See below for bugfixes include ncra and ncrcat use-cases involving
 strides with superfluous files and/or multi-record output (MRO).
+
+Other significant new features include major improvements to
+conversion of HDF4, HDF5, and netCDF4 files to netCDF3 and netCDF4
+files. Most of this work is an offshoot of writing an NCO and
+CFchecker-based solution to the problem of checking CF-compliance
+for of datasets in HDF4, HDF5, and netCDF4 formats. The solution
+is a script called ncdismember that now works well with most
+NASA stewarded datasets I've thrown at it.
 
 As indicated in the last release, NCO 4.4.0 renamed ncra as ncrs and
 ncwa as ncws (Record Statistics and Weighted Statistics,
@@ -25,8 +32,7 @@ Please change your scripts/habits accordingly within a few years...
 
 Work on NCO 4.4.1 is underway. It focuses on stability and speed.  
 There will be some netCDF4 mop-up, including netCDF4 support for
-various options (all -X, ncwa -w and -m), and, possibly, improved
-support for HDF4 files. 
+various options, and, possibly, improved support for HDF4 files. 
 
 Enjoy,
 Charlie
@@ -111,9 +117,9 @@ A. ncdismember just plain works in most real world cases.
 
 A. ncks now accepts the "all" argument to the --fix_rec_dmn option.
    ncks --fix_rec_dmn=all 
-converts all record dimensions to fixed
-   dimensions in the output file. Previously, --fix_rec_dmn only
-   allowed one option, the single record dimension to be fixed.
+   converts all record dimensions to fixed dimensions in the output
+   file. Previously, --fix_rec_dmn only accepted the name of the
+   single record dimension to be fixed. 
    Now it is simple to fix all record dimensions simultaneously.
    This is useful (and nearly mandatory) when flattening netCDF4
    files that have multiple record dimensions per group into netCDF3
@@ -176,13 +182,13 @@ A. Versions through 4.3.9 would not always copy/print groups that
 A. The -X switch fxm
 
 A. Sometimes the "coordinates" and "bounds" CF attributes caused 
-   incorrect matches to out-of-scope variables in hierarchical
-   files. Fixed.
+   incorrect matches to out-of-scope variables in hierarchical files. 
+   Fixed.
 
 A. NCO correctly handles output filenames that contain whitespace. 
    Previously, NCO would complain when moving the temporary to the
    final output file (the workaround was to use --no_tmp_fl).
-   Now fixed.
+   Fixed.
 
 KNOWN ISSUES NOT YET FIXED:
 
@@ -239,10 +245,10 @@ D. NOT YET FIXED
    Report correct chunking and compression information for HDF4 files
 
    Demonstration:
-   ncdump -h -s MOD10CM.A2007001.005.2007108111758.hdf
-   ncks -m MOD10CM.A2007001.005.2007108111758.hdf
+   ncdump -h -s ~/nco/data/hdf.hdf # (dies)
+   ncks -m ~/nco/data/hdf.hdf # (works by avoiding fatal calls)
 
-   20131222: Verified problem still exists
+   20131230: Verified problem still exists
 
    Cause: some libnetCDF library functions fail on HDF4 file inquiries.
    Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file

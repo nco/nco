@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.204 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.205 2013-12-31 19:50:02 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -422,6 +422,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
        Set to -1 for unsigned types: ubyte, ushort, uint, 
        Set to -2 for unsigned types: uint64
        How will kludge work when unsigned variable already has _FillValue?
+       20131231 Based on netCDFJava VKJ-807633 discussion, this is a bug, an artifact of HDF5
+       Do not emulate toolsUI _FillValue behavior for unsigned types
 
        _Netcdf4Dimid: https://bugtracking.unidata.ucar.edu/browse/NCF-244
        "Netcdf4Dimid is an artifact stored in the HDF5 dataset of a dimension scale variable to record dimids when nc_enddef() detects that the coordinate variables have a different creation order than the corresponding dimensions. In that case, the documentation says: If this attribute is present on any dimension scale, it must be present on all dimension scales in the file."
@@ -434,7 +436,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     nc_type var_type;
     (void)nco_inq_vartype(grp_id,var_id,&var_type);
     if(nco_xml_typ_rqr_nsg_att(var_type)) (void)fprintf(stdout,"%*s<attribute name=\"_Unsigned\" value=\"true\" />\n",prn_ndn,spc_sng);
-    if(nco_xml_typ_rqr_flv_att(var_type) && !has_fll_val) (void)fprintf(stdout,"%*s<attribute name=\"_FillValue\" type=\"%s\" value=\"%d\" />\n",prn_ndn,spc_sng,xml_typ_nm(var_type),(var_type == NC_UINT64) ? -2 : -1);
+    /* 20131231: Emulate toolsUI 4.3 _FillValue behavior for unsigned types (present in NCO 4.3.7-4.3.9, deprecated in 4.4.0 */
+    // if(nco_xml_typ_rqr_flv_att(var_type) && !has_fll_val) (void)fprintf(stdout,"%*s<attribute name=\"_FillValue\" type=\"%s\" value=\"%d\" />\n",prn_ndn,spc_sng,xml_typ_nm(var_type),(var_type == NC_UINT64) ? -2 : -1);
   } /* !xml */
 
   /* Free space holding attribute values */

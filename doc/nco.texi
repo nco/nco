@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.936 2013-12-31 05:14:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.937 2013-12-31 19:50:02 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1251,53 +1251,49 @@ and netCDF.
 
 Converting @acronym{HDF4} files to netCDF:
 Since @acronym{NCO} reads @acronym{HDF4} files natively, it is now easy  
-to convert @acronym{HDF4} files to netCDF4 files directly, e.g.,
+to convert @acronym{HDF4} files to netCDF files directly, e.g.,
 @example
-ncks --hdf4 fl.hdf fl.nc      # Convert HDF4->netCDF4
-ncks --hdf4 -L 1 fl.hdf fl.nc # Convert HDF4->netCDF4 with compression
-ncks fl.hdf fl.nc      # Convert HDF4->netCDF4 (NCO 4.4.0+, netCDF 4.3.1+)
-ncks -L 1 fl.hdf fl.nc # Convert HDF4->netCDF4 (NCO 4.4.0+, netCDF 4.3.1+)
+ncks        fl.hdf fl.nc # Convert HDF4->netCDF4 (NCO 4.4.0+, netCDF 4.3.1+)
+ncks --hdf4 fl.hdf fl.nc # Convert HDF4->netCDF4 (NCO 4.3.7-4.3.9)
 @end example
-This produces a netCDF4 file not a netCDF3 file.
-This procedure is the most efficient and accurate way to convert
-@acronym{HDF4} data to a netCDF format.
+The most efficient and accurate way to convert @acronym{HDF4} data to
+netCDF format is to convert to netCDF4 using @acronym{NCO} as above.
 It suffices when the data will only be processed by @acronym{NCO}, or
 other netCDF4-aware tools. 
 However, many tools are not fully netCDF4-aware, and so conversion to
 netCDF3 may be desirable.
 
-Obtaining a netCDF3 file from an @acronym{HDF4} file can be easy or
-arduous, depending whether the input contains any netCDF4 atomic types
-(e.g., unsigned bytes, 64-bit integers):
+Obtaining a netCDF3 file from an @acronym{HDF4} is now easy, even though
+the @acronym{HDF4} file may contain netCDF4 atomic types (e.g., unsigned
+bytes, 64-bit integers): 
 @example
-ncks --hdf4 -3 fl.hdf fl.nc      # HDF4->netCDF3
-ncks --hdf4 -7 -L 1 fl.hdf fl.nc # HDF4->netCDF4 classic with compression
 ncks -3 fl.hdf fl.nc      # HDF4->netCDF3 (NCO 4.4.0+, netCDF 4.3.1+)
 ncks -7 -L 1 fl.hdf fl.nc # HDF4->netCDF4 (NCO 4.4.0+, netCDF 4.3.1+)
+ncks --hdf4 -3 fl.hdf fl.nc # HDF4->netCDF3 (netCDF 4.3.0-)
+ncks --hdf4 -7 fl.hdf fl.nc # HDF4->netCDF4 classic (netCDF 4.3.0-)
 @end example
-These commands work only if the input has no netCDF4 atomic types.
-Many @acronym{HDF4} producers (@acronym{NASA}!) love to use netCDF4
-types, e.g., unsigned bytes. 
-So to get a netCDF3 file from an HDF4 file that @emph{does} contain
-netCDF4 atomic types, one must first convert to netCDF4 then use a
-tool like @command{ncap2} to convert any netCDF4 types to netCDF3
-types. 
-No one wants to do that. 
-Instead we recommend the @command{ncl_convert2nc} tool to convert
-@acronym{HDF} to netCDF3 when both these are true: @w{1. You} must have
-netCDF3 and @w{2. the} @acronym{HDF} file contains netCDF4 atomic
-types. 
-Otherwise use @command{ncks} which is faster and more space-efficient.
-Moreover, @command{ncl_convert2nc} automatically converts netCDF4 types
-to netCDF3  types, yet it will not produce full netCDF4 files.
-In contrast, @command{ncks} happily converts @acronym{HDF} straight to
-netCDF4 files with netCDF4 types. 
+As of @acronym{NCO} version 4.4.0 (January, 2014), these commands work
+with netCDF4 atomic types
+@footnote{
+Prior to @acronym{NCO} version 4.4.0 (January, 2014), we recommend the
+@command{ncl_convert2nc} tool to convert @acronym{HDF} to netCDF3 when
+both these are true: @w{1. You} must have netCDF3 and @w{2. the}
+@acronym{HDF} file contains netCDF4 atomic types. 
+More recent versions of @acronym{NCO} handle this problem fine, so we
+no longer recommend @command{ncl_convert2nc} because @command{ncks}
+is faster and more space-efficient.
+Both automatically convert netCDF4 types to netCDF3 types, yet
+@command{ncl_convert2nc} cannot produce full netCDF4 files.
+In contrast, @command{ncks} will happily convert @acronym{HDF} straight
+to netCDF4 files with netCDF4 types. 
 Hence @command{ncks} can and does preserve the variable types.
 Unsigned bytes stay unsigned bytes. 
 64-bit integers stay 64-bit integers. 
 Strings stay strings. 
 Hence, @command{ncks} conversions often result in smaller files than
-@command{ncl_convert2nc} conversions.
+@command{ncl_convert2nc} conversions.}.  
+Many @acronym{HDF4} producers (@acronym{NASA}!) love to use netCDF4
+types, e.g., unsigned bytes. 
 
 @cindex @acronym{RPM}
 @cindex Debian
@@ -3439,19 +3435,19 @@ The @code{NETCDF4_CLASSIC} format refers to netCDF4 files created with
 the @code{NC_CLASSIC_MODEL} mask.
 Such files use @acronym{HDF5} as the back-end storage format (unlike
 netCDF3), though they incorporate only netCDF3 features.
-Hence @code{NETCDF4_CLASSIC} files are perfectly readable by
-applications which use only the netCDF3 @acronym{API}.
+Hence @code{NETCDF4_CLASSIC} files are entirely readable by applications 
+that use only the netCDF3 @acronym{API} (though the applications must be
+linked with the netCDF4 library).
 @acronym{NCO} must be built with @w{netCDF4} to write files in the new
 @code{NETCDF4} and @code{NETCDF4_CLASSIC} formats, and to read files in
 these formats. 
-Datasets in the default @code{CLASSIC} or the newer @code{64BIT} formats
+Datasets in the default @code{CLASSIC} or the newer @code{64BIT} formats 
 have maximum backwards-compatibility with older applications. 
-@acronym{NCO} has deep support for @code{NETCDF4} formats, yet many
-applications do not. 
+@acronym{NCO} has deep support for @code{NETCDF4} formats.
 If performance or disk-space as important as backwards compatibility,
 then use @code{NETCDF4_CLASSIC} instead of @code{CLASSIC} format files. 
 As of 2014, @acronym{NCO} support for the @code{NETCDF4} format is
-complete and the most powerful and disk/@acronym{RAM} efficient
+nearly complete and the most powerful and disk/@acronym{RAM} efficient 
 workflows will utilize this format.
 
 As mentioned above, all operators write use the input file format for
@@ -3479,6 +3475,16 @@ Operators given the @samp{-3} (or @samp{--3}) switch without arguments
 will (attempt to) produce netCDF3 @code{CLASSIC} output, even from
 netCDF4 input files.  
 
+Note that @code{NETCDF4} and @code{NETCDF4_CLASSIC} are the same
+binary format. 
+The latter simply causes a writing application to fail if it attempts to 
+write a @code{NETCDF4} file that cannot be completely read by the
+netCDF3 library. 
+Conversely, @code{NETCDF4_CLASSIC} indicates to a reading application
+that all of the file contents are readable with the netCDF3 library. 
+@acronym{NCO} has supported reading/writing basic @code{NETCDF4} and
+@code{NETCDF4_CLASSIC} files since October, 2005.
+
 @html
 <a name="3to4"></a> <!-- http://nco.sf.net/nco.html#3to4 -->
 <a name="4to3"></a> <!-- http://nco.sf.net/nco.html#4to3 -->
@@ -3504,20 +3510,57 @@ Of course since most operators support these switches, the
 or metadata processing rather than requiring a separate step.
 Producing (netCDF3) @code{CLASSIC} or @code{64BIT} files from
 @code{NETCDF4_CLASSIC} files will always work. 
-However, producing netCDF3 files from @code{NETCDF4} files will only
-work if the output files are not required to contain netCDF4-specific
-features.
 
-Note that @code{NETCDF4} and @code{NETCDF4_CLASSIC} are the same
-binary format. 
-The latter simply causes a writing application to fail if it attempts to 
-write a @code{NETCDF4} file that cannot be completely read by the
-netCDF3 library. 
-Conversely, @code{NETCDF4_CLASSIC} indicates to a reading application
-that all of the file contents are readable with the netCDF3 library. 
-As of October, 2005, @acronym{NCO} writes no netCDF4-specific data
-structures and so always succeeds at writing @code{NETCDF4_CLASSIC}  
-files.
+Because of the dearth of support for netCDF4 amongst tools and user
+communities (including the @acronym{CF} conventions), it is often useful
+to down-convert netCDF4 to netCDF3 for certain applications.
+Until @acronym{NCO} version 4.4.0 (January, 2014), producing netCDF3
+files from @code{NETCDF4} files only worked if the input files did not 
+contain netCDF4-specific features. 
+As of @acronym{NCO} version 4.4.0, @command{ncks} supports
+@dfn{autoconversion} of many netCDF4 features to their closest
+netCDF3-compatible representations when users down-convert down-convert
+netCDF4 to netCDF3. 
+
+@html
+<a name="autoconversion"></a> <!-- http://nco.sf.net/nco.html#autoconversion -->
+<a name="autocnv"></a> <!-- http://nco.sf.net/nco.html#autocnv -->
+@end html
+@unnumberedsubsec Autoconversion
+@acronym{NCO} employs three algorithms to downconvert netCDF4 to netCDF3:
+@enumerate
+@item 
+@cindex autoconversion
+Autoconversion of atomic types:
+@code{NC_UBYTE} is promoted to @code{NC_SHORT}, 
+@code{NC_USHORT} is promoted to @code{NC_INT}, and the three types
+@code{NC_UINT}, @code{NC_UINT64}, and @code{NC_INT64} are demoted to
+@code{NC_INT}. 
+@code{NC_STRING} is converted to @code{NC_CHAR}.
+All numeric conversions work for attributes and variables of any rank.
+String conversions (to @code{NC_CHAR}) work for all attributes, but
+not for variables.
+This means that @code{NC_STRING} attributes will be correctly converted
+to and stored as @code{NC_CHAR} in the netCDF3 output file, and that
+@code{NC_STRING} variables will not be correctly converted.
+If this limitation annoys or enrages you, please let us know by being
+the squeaky wheel.
+
+@item
+@cindex @code{--fix_rec_dmn @var{dim}}
+Converting multiple record dimensions to fixed-size dimensions.
+fxm.
+
+@item
+@cindex flattening
+Flattening (removal) of groups.
+fxm.
+@end enumerate
+
+@example
+ncks -3 in.nc4 out.nc3 # Convert netCDF4 -> netCDF3
+@end example
+
 
 @html
 <a name="fmt_inq"></a> <!-- http://nco.sf.net/nco.html#fmt_inq -->
@@ -14707,28 +14750,36 @@ datasets use the same packing convention prior to intercomparison.
 @cindex @command{ncl_convert2nc}
 @cindex @acronym{NCL}
 @example
-# One-step procedure: Works with NCO 4.3.7 and later
+# One-step procedure: For NCO 4.4.0+, netCDF 4.3.1+
 # 1. Convert, unpack, and repack HDF file into netCDF file
-ncpdq --hdf4 --hdf_upk -P xst_new modis.hdf modis.nc # HDF4 files
-ncpdq --hdf_upk -P xst_new modis.h5 modis.nc # HDF5 files
+ncpdq --hdf_upk -P xst_new modis.hdf modis.nc # HDF4 files
+ncpdq --hdf_upk -P xst_new modis.h5  modis.nc # HDF5 files
 
-# Two-step procedure: Necessary with NCO 4.3.6 and earlier
+# One-step procedure: For NCO 4.3.7--4.3.9
+# 1. Convert, unpack, and repack HDF file into netCDF file
+ncpdq --hdf4 --hdf_upk -P xst_new modis.hdf modis.nc # HDF4
+ncpdq        --hdf_upk -P xst_new modis.h5  modis.nc # HDF5
+
+# Two-step procedure: For NCO 4.3.6 and earlier
 # 1. Convert HDF file to netCDF file
 ncl_convert2nc modis.hdf
 # 2. Unpack using HDF convention and repack using netCDF convention
 ncpdq --hdf_upk -P xst_new modis.nc modis.nc
 @end example
-The @samp{--hdf4} switch is a precaution necessary because of flaws
-in the netCDF library versions 4.3.1 and earlier.
-Hopefully the need for this switch will disappear with netCDF 4.3.2,
-which will allow @acronym{NCO} to automatically detect and treat 
-@acronym{HDF4} files.
+@acronym{NCO} now
+@footnote{
+Prior to @acronym{NCO} 4.4.0 and netCDF 4.3.1-rc7 (January, 2013),
+@acronym{NCO} requires the @samp{--hdf4} switch to correctly read
+HDF4 input files.
+For example, @samp{ncpdq --hdf4 --hdf_upk -P xst_new modis.hdf modis.nc}.
+That switch is now obsolete, though harmless for backwards compatibility.
 Prior to version 4.3.7 (October, 2013), @acronym{NCO} lacked the
 software necessary to workaround netCDF library flaws handling
 @acronym{HDF4} files, and thus @acronym{NCO} failed to convert
 @acronym{HDF4} files to netCDF files.
 In those cases, use the @command{ncl_convert2nc} command distributed
-with @acronym{NCL} to convert @acronym{HDF4} files to netCDF.
+with @acronym{NCL} to convert @acronym{HDF4} files to netCDF.}
+automatically detects @acronym{HDF4} files.  
 In this case it produces an output file @file{modis.nc} which preserves
 the @acronym{HDF} packing used in the input file.
 The @command{ncpdq} command first unpacks all packed variables using the

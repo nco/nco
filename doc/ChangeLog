@@ -1,3 +1,7 @@
+2013-12-31  Charlie Zender  <zender@uci.edu>
+
+	* Do not emulate toolsUI 4.3 _FillValue behavior for unsigned types (present in NCO 4.3.7-4.3.9)
+
 2013-12-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.0 release procedure:
@@ -6391,20 +6395,20 @@
 	simple cases (only gcc/g++ compilers, etc).  Original Makefile renamed
 	to Makefile.old. Tested under --enable-nco++=yes (default) &
 	--enable-nco++=no.  Added more logic as per CZ request on 3.15 - now
-	checks for runantlr, libantlr, antlr headers, 
+	checks for runantlr, libantlr, antlr headers,
 
 2006-03-13  Harry Mangalam  <hjm@tacgi.com>
 
-	* all but 1 benchmark work server-side.  When trying to execute the ncrcat 
+	* all but 1 benchmark work server-side.  When trying to execute the ncrcat
 	bench, the serverside fails when doing the ncwa command.  It uses
 	a very large amount of mem (~1.3G when it dies - de to an apache
 	limitation?)  Daniel and I are giving up for now - marked as TODO 692.
-	
+
 	* failing regressions tested and some resolved to bad handling by
 	benchmark script. Remaining ones are marked in the failure
 	message. Only new one is TODO691 - looks like a problem with
 	ncatted returning mysteriously null values. Total of 3 regressions
-	failing - 2 ncap, 1 ncatted. 
+	failing - 2 ncap, 1 ncatted.
 
 2006-03-09  Harry Mangalam  <hjm@tacgi.com>
 
@@ -6425,19 +6429,19 @@
 
 	* Remove bogus const prototype on return value of nco_typ_fmt_sng()
 	Apparently gcc 4.0.3 actually pays attention to intended
-	const-ness of return values in these situations 
+	const-ness of return values in these situations
 
 	* Fix TODO nco687 so unequal missing values are formatted
 	correctly in warning messages. This should help debug nco686.
 
 2006-03-09  Harry Mangalam  <hjm@tacgi.com>
 
-	* nco_bm_benchmarks.pl converted to NCO_benchmarks.pm with a good 
+	* nco_bm_benchmarks.pl converted to NCO_benchmarks.pm with a good
         bit of namespace cleanup.  There are still some inexplicable explicit
         declarations that are needed but only about 2-3.
 
 	* both benchmark and regression code support both serverside and
-	clientside execution.  There are still some remaining conflicts, 
+	clientside execution.  There are still some remaining conflicts,
 	but most benchmarks and most regressions run identically.
 
 	* the go() routine was rewritten to be a bit more coherent.  Again,
@@ -6445,7 +6449,7 @@
 
 	* Daniel's ss code changes have tracked the benchmarking code, so both
 	sides work with each other.  There are some unfortuneately primitive
-	hacks to get them working together, but while it's ugly (perl writes 
+	hacks to get them working together, but while it's ugly (perl writes
 	data to file and executes python to pick it up, it's simpler than
 	bringing swig into the picture.
 
@@ -6470,7 +6474,7 @@
 
 	* Change argument bool's to nco_bool's throughout libnco and frontends
 	NB: I may have missed non-front-end bools in libnco.
-	
+
 	* ncap2 now compiles, links, and runs when libnco built with g++
 
 	* Change ncap2 argument bool's to nco_bool's which are typedef's to int's
@@ -6501,7 +6505,7 @@
 
 2006-02-16  Harry Mangalam  <hjm@tacgi.com>
 
-	* Corrected BM code to account for error strings being eval'ed as 0 
+	* Corrected BM code to account for error strings being eval'ed as 0
           when compared as numeric and a number of other error-checking
           improvements.
 
@@ -6557,7 +6561,7 @@
 2006-01-30  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_1_1
-	Changes since nco-3_1_0: 
+	Changes since nco-3_1_0:
 	C++ builds work again, ssdap, nco++, 4.0-alpha11-compatible
 
 	* Changed copyright to 2006
@@ -6579,17 +6583,17 @@
 	* Added integration example to ncwa in manual
 
 2006-01-04  Harry Mangalam  <hjm@tacgi.com>
-	
+
  	* Fixes to the BM code to force the retrieval of DAP-requested files and
-          a variable ($prsrv_fl) to allow a regression test to maintain files if 
+          a variable ($prsrv_fl) to allow a regression test to maintain files if
 	  a previously downloaded file is needed for a successive test.
 
 	* noted in the TODO as well, but there is a difference between the
           opendap code running on sand (which passes all server-side
 	  regression tests) and the code running on hiperstore, which
 	  fails a number of them, many with OpenDAP errors emitted from
-	  the lib.  Still figuring this out. 
-	
+	  the lib.  Still figuring this out.
+
 	* mods to nco_fl_utl.c: in nco_fl_mk_lcl() to make ncatted and ncrename
 	  fail gracefully when asked to DAP-retrieve a file on which to operate.
 
@@ -6598,8 +6602,8 @@
 	* Add xbitmap icon to homepage
 
 2005-12-19  Harry Mangalam  <hjm@tacgi.com>
-	
-	* mod bm code to make a new dir for dap data and explicitly delete 
+
+	* mod bm code to make a new dir for dap data and explicitly delete
 	  everything in it for each new DAP test to force the network transfer.
 
 2005-12-13  Charlie Zender  <zender@uci.edu>
@@ -6616,7 +6620,7 @@
 
 	* C++-compatibility tweaks to nco_lmt.c, nco_omp.c, and configure.in
 	Current code causes g++ ICE TODO nco662
-	
+
 2005-12-09  Charlie Zender  <zender@uci.edu>
 
 	* Strip -std=c99 from CC and CFLAGS if CC is gcc* in order to support
@@ -6637,18 +6641,18 @@
 	make non_ncap UDUNITS=N
 	This NCO passes all regression tests
 	ncap and UDUNITS linkage remain C++ problems and prevent closing TODO nco656
-	
+
 	* Hacked nco_malloc_*() to remove errno references with G++
 	Presence triggers G++ error: undefined reference to `__errno_location()'
 	This is TODO nco659
-	
+
 	* Set #define YYDEBUG 0 in ncap_yacc.y so C++ compiles ncap_yacc.c
 
-	* Fix type conversions in nco_mss_val_cnf() 
+	* Fix type conversions in nco_mss_val_cnf()
 	This fixed a latent bug that was probably never expressed
 
-	* Explicitly coerce pointers in implicit conversions to make C++ happy in  
-	nco_cmp_chr(), nco_cmp_int(), ncpdq.c 
+	* Explicitly coerce pointers in implicit conversions to make C++ happy in
+	nco_cmp_chr(), nco_cmp_int(), ncpdq.c
 
 	* Correct const-ness of string list arguments with prototypes in
 	nco_prs_rnm_lst(), nco_fl_nm_prs()
@@ -6658,7 +6662,7 @@
 2005-12-02  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_1_0
-	Changes since nco-3_0_3: 
+	Changes since nco-3_0_3:
 	MPI ZKB, configure netcdf4/mpi, ncwa MRV, ncap rnd_nbr(), netcdf4-alpha10
 
 	* Preparing for NCO 3.1.0 release
@@ -6667,11 +6671,11 @@
 
 	* Changed ncap.c to allow MACOSX to use erf, erfc, gamma
 
-	* changed configure.in to accept a more flexible OS/arch string to 
+	* changed configure.in to accept a more flexible OS/arch string to
 	be able to set AMD64 (reason for previous failing the erf() tests in
 	ncap).
-	
-	* changed the ncap benchmark scripts to correct syntax errors and change 
+
+	* changed the ncap benchmark scripts to correct syntax errors and change
 	dimensions to correspond to the casting dimension order.
 
 2005-11-29  Charlie Zender  <zender@uci.edu>
@@ -6689,7 +6693,7 @@
 	in netCDF4 configure to appear in library, possible hardware dependency
 
 2005-11-28  Harry Mangalam  <hjm@tacgi.com>
-	
+
 	* Spiffing configure/makefiles to make sure that netcdf4 works as
 	expected; adding dependencies into configure rather than requiring the
 	full set to be run at the commandline.  Still a question about  the
@@ -6759,25 +6763,25 @@
 
 	* back on track with updating Makefiles the right way(c)
 
-	* updated MANIFEST to include new bm scripts and the breakup of 
+	* updated MANIFEST to include new bm scripts and the breakup of
         nco_bm.pl.
 
 2005-11-09  Charlie Zender  <zender@uci.edu>
 
 	* Omit -lstdc++ from AIX xl* DAP builds
 
-	* Add CVS Header and -*-makefile-*- to all Makefile.am's 
+	* Add CVS Header and -*-makefile-*- to all Makefile.am's
 	This automatically invokes Emacs Makefile-mode syntax/highlighting
 
 2005-10-31  Harry Mangalam  <hjm@tacgi.com>
 
 	* Changes to mk_bm_plots to scriptify the last of CZ's requests
 
-	* Changes to configure/make to straighten out build protocols 
+	* Changes to configure/make to straighten out build protocols
 	for netcdf4 (NETCDF4_ROOT to be defined, needs to be named
 	libnetcdf4, not libnetcdf).  Automatic paths for -I, -L based
-	on the NETCDF4_ROOT) 
-  
+	on the NETCDF4_ROOT)
+
 2005-10-28  Harry Mangalam  <hjm@tacgi.com>
 
 	* Changes to the configure/make chain to start to resolve
@@ -6787,7 +6791,7 @@
 	and also MPI on Linux (x86,AMD64).  Suports Rich Lowry's
 	mpich2 debs (no additional flags) and MPICH2 from src if
 	given MPICH_ROOT.
-  
+
 	* added checks for -lf95, more error checking
 
 2005-10-27  Charlie Zender  <zender@uci.edu>
@@ -6830,8 +6834,8 @@
 	in nco_netcdf.c wrapper functions for libnetcdf.a library
 
 	* Support netCDF4 NC_UBYTE,NC_USHORT,NC_UINT,NC_INT64,NC_UINT64
-	in metadata and some structures. Still need to add read/write and 
-	conversion/promotion functions. 
+	in metadata and some structures. Still need to add read/write and
+	conversion/promotion functions.
 
 2005-10-22  Charlie Zender  <zender@uci.edu>
 
@@ -6852,7 +6856,7 @@
 	* configure[.in], Makefile[.in], src/nco/Makefile[.in] in good enough
 	shape to commit.  Still some shakiness, but time to check clean checkouts
 	on other platforms.  Now supports --enable-mpi, --enable-netcdf4
-	
+
 	* configure supports MacOSX build (detects OSX and deletes POSIX flag).
 
 2005-10-21  Charlie Zender  <zender@uci.edu>
@@ -6862,7 +6866,7 @@
 	* Verfied that parallelizing use of in_id in SMP code allows
 	parallel read access to file data with nco_get_var*() in ncra.
 	Hence, removed last critical read region from libnco.a
-	SMP on other (non-ncra) operators temporarily broken until 
+	SMP on other (non-ncra) operators temporarily broken until
 	I parallelize their front end use of in_id.
 
 	* Re-wrote nco_omp_ini() logic to use stubs outside of #ifdefs
@@ -6944,12 +6948,12 @@
 
 2005-10-12  Harry Mangalam  <hjm@tacgi.com>
 
-   * added --enable-netcdf4 to configure, configure.in to find the bits
-     necessary (libhdf5, libhdf_hl) to build the netcdf4 version of NCOs
-     (TODO bld52)
+	* added --enable-netcdf4 to configure, configure.in to find the bits
+	necessary (libhdf5, libhdf_hl) to build the netcdf4 version of NCOs
+	(TODO bld52)
 
 	* mods to mk_bm_plot.pl to zero time axis (TODO bld56), compute
-	  regression and place on plots (TODO bld57), 
+	  regression and place on plots (TODO bld57),
 
 2005-10-08  Charlie Zender  <zender@uci.edu>
 
@@ -6992,7 +6996,7 @@
 		into dust for testing (hmangalm@esmf -> hjm@dust)
 
 	* Fixed file tests broken in nco_bm.pl re-org.
-	
+
 	* Fixed udp reporting as per ditto.
 
 2005-09-27  Charlie Zender  <zender@uci.edu>
@@ -7033,18 +7037,18 @@
 	Replaced naked constants with following compile-time tokens/enums:
 	mgr_id,WORK_ALLOC,WORK_REQUEST,TOKEN_ALLOC,TOKEN_REQUEST,TOKEN_RESULT,
 	NO_MORE_WORK,TOKEN_WAIT,TOKEN_ALLOC
-	
+
 	* Create new header nco_mpi.h for all MPI-specific header information
-	Currently this header is only accessed by main() MPI programs 
+	Currently this header is only accessed by main() MPI programs
 	Hence it is not (yet) part of libnco.a
 	Header assumes its inclusion is already conditional on ENABLE_MPI
-	This is currently a header mostly for pre-processor tokens 
-	with few odd file scope constants needed by MPI routines 
+	This is currently a header mostly for pre-processor tokens
+	with few odd file scope constants needed by MPI routines
 	There are no functions yet
 	Adding functions would require creating a corresponding *.c file
 	Adding *.c file requires including it in libnco.a or separately linking
 	MPI executables to it, i.e., slightly complicating the build procedure.
-	I'm not yet sure I want _any_ MPI link dependencies in libnco.a 
+	I'm not yet sure I want _any_ MPI link dependencies in libnco.a
 	Cross-platform link weirdness (e.g., AIX) makes this something to avoid
 	as long as possible
 
@@ -7073,23 +7077,23 @@
 2005-09-17  Charlie Zender  <zender@uci.edu>
 
 	* SMP mpncpdq fails ncpdq regression test 4. This is TODO nco598.
-	
+
 	* Add mpi_cln target to bld/Makefile to remove MPI executables
-	This makes it simple to build/erase all MPI_FAKE executables	
+	This makes it simple to build/erase all MPI_FAKE executables
 
 	* Yesterday's MPI_FAKE mpncea fix broke MPI mpncea regression test 1
 	Today's fix works with SMP and MPI mpncea/mpncra/mpncrcat
 	Testing shows this fix does nothing about ncrcat hanging TODO nco593
-	
+
 	* Add $HOME/nco/bm to Perl @INC so nco_bm.pl runs from directories
 	(e.g., bld) from which bm is ../bm
 
 	* Verify icc 9.0-compiled NCO works in UP/SMP/MPI modes
 
-	* Add '/' to $prefix so nco_bm.pl works when executables in $MY_BIN_DIR 
+	* Add '/' to $prefix so nco_bm.pl works when executables in $MY_BIN_DIR
 	NB: nco_bm.pl does not run for me unless $MY_BIN_DIR is defined
 	Probably same for other bld/Makefile users.
-	
+
 2005-09-16  Harry Mangalam  <hjm@tacgi.com>
 
 	* added --mpi_fake (aka -mpi_fke aka --fake_mpi)  to allow running of
@@ -7100,7 +7104,7 @@
 2005-09-16  Charlie Zender  <zender@uci.edu>
 
 	* Move mpncra.c nco_var_srt_zero() from MPI to common code so
-	UP/SMP executables zero start vectors. Fixes mpncea bug TODO nco594. 
+	UP/SMP executables zero start vectors. Fixes mpncea bug TODO nco594.
 
 2005-09-16  Harry Mangalam  <hjm@tacgi.com>
 
@@ -7126,18 +7130,18 @@
 
 	* the only thing that definitely does not work at this point is the
 	MD5 checking due to some particulary hairy namespace problems.
-	
-	* the MPI versions of the checks have not been tested yet either, 
+
+	* the MPI versions of the checks have not been tested yet either,
 	altho the commandlines it generates are correct.
 
-	* I belive it is up to date with the latest regression tests and 
+	* I belive it is up to date with the latest regression tests and
 	benchmarks.  The relevant bits were diffed against the current code
 	and they appear to be in sync.
 
 2005-09-15  Charlie Zender  <zender@uci.edu>
 
 	* Port ncwa 20050608 bugfix for DO_CONFORM_[MSK,WGT] to mpncwa
-	
+
 	* mpncea hangs on ncea regression test 4 (on sand with LAM) TODO nco597
 
 	* Use fake end scopes to correct Emacs indentation in mpncra.c, mpncpdq.c
