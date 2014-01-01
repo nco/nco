@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.23 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.24 2014-01-01 01:00:10 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -89,6 +89,16 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
  CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
  const int cnk_nbr); /* I [nbr] Number of dimensions with user-specified chunking */
 
+void
+nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_set()) */
+(const int grp_id, /* I [id] netCDF group ID in output file */
+ int * const cnk_map_ptr, /* I/O [enm] Chunking map */
+ int * const cnk_plc_ptr, /* I/O [enm] Chunking policy */
+ const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ const int cnk_nbr, /* I [nbr] Number of dimensions with user-specified chunking */
+ const trv_sct * const var_trv); /* I [sct] Variable Object */
+
 int /* O [enm] Chunking map */
 nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
 (const char *nco_cnk_map_sng); /* [sng] User-specified chunking map */
@@ -117,18 +127,6 @@ nco_bool /* O [flg] NCO will attempt to chunk variable */
 nco_is_chunkable /* [fnc] Will NCO attempt to chunk variable? */
 (const nc_type nc_typ_in); /* I [enm] Type of input variable */
 #endif /* endif 0 */
-
-
-void
-nco_cnk_sz_set_trv                     /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_set() ) */
-(const int grp_id,                     /* I [id] netCDF group ID in output file */
- int * const cnk_map_ptr,              /* I/O [enm] Chunking map */
- int * const cnk_plc_ptr,              /* I/O [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
- const trv_sct * const var_trv);        /* I [sct] Variable Object */
-
 
 #ifdef __cplusplus
 } /* end extern "C" */

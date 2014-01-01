@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.205 2013-12-31 19:50:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.206 2014-01-01 01:00:10 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -45,10 +45,11 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   float val_flt;
 
   int att_nbr_ttl;
+  int att_nbr_vsb;
   int dmn_nbr=0;
+  int fl_fmt; /* I [enm] File format */
   int grp_id_prn;
   int idx;
-  int att_nbr_vsb;
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_prn;
@@ -62,7 +63,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   
   nc_type var_typ;
 
-  nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
+  //nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
 
   nco_string sng_val; /* [sng] Current string */
 
@@ -86,12 +87,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   att_nbr_ttl=att_nbr_vsb;
   if(att_nbr_vsb > 0) att=(att_sct *)nco_malloc(att_nbr_ttl*sizeof(att_sct));
     
-  if(prn_flg->hdn){
+  rcd=nco_inq_format(grp_id,&fl_fmt);
+
+  if(prn_flg->hdn && ((fl_fmt == NC_FORMAT_NETCDF4) || (fl_fmt == NC_FORMAT_NETCDF4_CLASSIC))){
     char *val_hdn_sng=NULL;
     int chk_typ; /* [enm] Checksum type [0..9] */
     int deflate; /* [flg] Deflation is on */
     int dfl_lvl; /* [enm] Deflate level [0..9] */
-    int fl_fmt; /* I [enm] File format */
     int flg_ndn=NC_ENDIAN_NATIVE; /* [enm] _Endianness */
     int fll_nil; /* [flg] NO_FILL */
     int shuffle; /* [flg] Shuffling is on */
@@ -107,7 +109,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	  att[idx].nm=(char *)strdup("_Format");
 	  att[idx].type=NC_CHAR;
-	  rcd=nco_inq_format(grp_id,&fl_fmt);
 	  val_hdn_sng=strdup(nco_fmt_hdn_sng(fl_fmt));
 	  att_sz=att[idx].sz=strlen(val_hdn_sng);
 	  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
@@ -219,7 +220,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* !xml */
       } /* !HDF4 */
     } /* !NC_GLOBAL */
-  } /* !hdn */
+  } /* !hdn, NC_FORMAT_NETCDF4, NC_FORMAT_NETCDF4_CLASSIC */
 
   /* Get attributes' names, types, lengths, and values */
   for(idx=0;idx<att_nbr_ttl;idx++){
@@ -291,7 +292,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)fprintf(stdout," value=\"");
 
       /* XML-mode if dataset defines its own _FillValue for this variable? */
-      if(!(int)strcasecmp(att[idx].nm,nco_mss_val_sng_get())) has_fll_val=True;
+      // if(!(int)strcasecmp(att[idx].nm,nco_mss_val_sng_get())) has_fll_val=True;
     } /* !xml */
     
     /* Typecast pointer to values before access */

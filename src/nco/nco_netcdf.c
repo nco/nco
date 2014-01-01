@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.225 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.226 2014-01-01 01:00:10 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1278,9 +1278,10 @@ nco_inq_var_fill
     rcd=nc_inq_var_fill(nc_id,var_id,fll_nil,fll_val);
   }else{ /* !netCDF4 */
     if(fll_nil) *fll_nil=0;
-    /* fxm: implement netCDF3-compatible function which returns real fill values based on variable type */
+    /* fxm: implement netCDF3-compatible function which returns real fill values based on variable type
+       This could be based on nco_mss_val_get() */
     if(fll_val) assert(0);
-    rcd=7373;
+    rcd=NC_NOERR;
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_fill()");
   return rcd;

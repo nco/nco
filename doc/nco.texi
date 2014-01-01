@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.938 2013-12-31 21:11:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.939 2014-01-01 01:00:10 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1126,7 +1126,7 @@ In 2004, Unidata and @acronym{THG} began a project to implement
 the @acronym{HDF5} features necessary to support the netCDF API.
 @acronym{NCO} version 3.0.3 added support for reading/writing
 netCDF4-formatted @acronym{HDF5} files in October, 2005.
-See @ref{Selecting Output File Format} for more details.
+See @ref{File Formats and Conversion} for more details.
 
 HDF support for netCDF was completed with HDF5 version 
 @w{version 1.8} in 2007. 
@@ -1202,7 +1202,7 @@ If you feed @acronym{NCO} netCDF3 files, it produces netCDF3 output.
 If you feed @acronym{NCO} netCDF4 files, it produces netCDF4 output.
 Use the handy-dandy @samp{-4} switch to request netCDF4 output from 
 netCDF3 input, i.e., to convert netCDF3 to netCDF4.
-See @ref{Selecting Output File Format} for more details.
+See @ref{File Formats and Conversion} for more details.
 
 @html
 <a name="hdf4"></a> <!-- http://nco.sf.net/nco.html#hdf4 -->
@@ -2415,7 +2415,7 @@ feature is automatic and cannot be controlled by the user.
 * Specifying Output Files::
 * Remote storage::
 * Retaining Retrieved Files::
-* Selecting Output File Format::
+* File Formats and Conversion::
 * Large File Support::
 * Subsetting Files::
 * Subsetting Coordinate Variables::
@@ -2499,7 +2499,7 @@ function, which behaves differently with different versions of netCDF.
 It will improve speed of future metadata expansion with @code{CLASSIC}
 and @code{64bit} netCDF files, though not necessarily with @code{NETCDF4} 
 files, i.e., those created by the netCDF interface to the @acronym{HDF5}
-library (@pxref{Selecting Output File Format}).
+library (@pxref{File Formats and Conversion}).
 
 @html
 <a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
@@ -3304,7 +3304,7 @@ large files stored at remote locations.
 @html
 <a name="rtn"></a> <!-- http://nco.sf.net/nco.html#rtn -->
 @end html
-@node Retaining Retrieved Files, Selecting Output File Format, Remote storage, Common features
+@node Retaining Retrieved Files, File Formats and Conversion, Remote storage, Common features
 @section Retaining Retrieved Files
 @cindex file deletion
 @cindex file removal
@@ -3378,8 +3378,8 @@ when your other preferred methods are not available locally.
 <a name="64bit"></a> <!-- http://nco.sf.net/nco.html#64bit -->
 <a name="netcdf4"></a> <!-- http://nco.sf.net/nco.html#netcdf4 -->
 @end html
-@node Selecting Output File Format, Large File Support, Retaining Retrieved Files, Common features
-@section Selecting Output File Format
+@node File Formats and Conversion, Large File Support, Retaining Retrieved Files, Common features
+@section File Formats and Conversion
 @cindex @acronym{HDF}
 @cindex netCDF2
 @cindex netCDF3
@@ -3419,6 +3419,15 @@ formats.
 these switches so they always write the output netCDF file in the same
 format as the input netCDF file.) 
 
+@menu
+* File Formats::
+* Determining File Format::
+* File Conversion::
+* Autoconversion::
+@end menu
+
+@node File Formats, Determining File Format, File Formats and Conversion, File Formats and Conversion
+@subsection File Formats
 netCDF supports four types of files: @code{CLASSIC}, @code{64BIT},
 @code{NETCDF4}, and @code{NETCDF4_CLASSIC}, 
 The @code{CLASSIC} format is the traditional 32-bit offset written by
@@ -3486,11 +3495,122 @@ that all of the file contents are readable with the netCDF3 library.
 @code{NETCDF4_CLASSIC} files since October, 2005.
 
 @html
+<a name="fmt_inq"></a> <!-- http://nco.sf.net/nco.html#fmt_inq -->
+@end html
+@node Determining File Format, File Conversion, File Formats, File Formats and Conversion
+@subsection Determining File Format
+Input files often end with the generic @code{.nc} suffix that leaves
+(perhaps by intention) the internal file format ambiguous.
+There are at least three ways to discover the internal format of a
+netCDF-supported file.
+These methods determine whether it is a classic (32-bit offset) or newer
+64-bit offset netCDF3 format, or is a netCDF4 format. 
+Each method returns the information using slightly different terminology 
+that becomes easier to understand with practice.
+
+First, examine the first line of global metadata output by @samp{ncks -M}:  
+@cindex netCDF3 classic file format
+@cindex netCDF4 classic file format
+@cindex netCDF4 file format
+@cindex 32-bit offset file format
+@cindex 64-bit offset file format
+@cindex @command{ncks} 
+@cindex @code{-M}
+@example
+% ncks -M foo_3c.nc
+Summary of foo_3c.nc: filetype = NC_FORMAT_CLASSIC, 0 groups ...
+% ncks -M foo_364.nc
+Summary of foo_364.nc: filetype = NC_FORMAT_64BIT, 0 groups ...
+% ncks -M foo_4c.nc
+Summary of foo_4c.nc: filetype = NC_FORMAT_NETCDF4_CLASSIC, 0 groups ...
+% ncks -M foo_4.nc
+Summary of foo_4.nc: filetype = NC_FORMAT_NETCDF4, 0 groups ...
+@end example
+This method requires a netCDF4-enabled @acronym{NCO} version 3.9.0+
+(i.e., from 2007 or later).
+@cindex extended file format
+@cindex underlying file format
+@cindex @code{NC_FORMAT_NC3}
+@cindex @code{NC_FORMAT_NC_HDF5}
+@cindex @code{NC_FORMAT_NC_HDF4}
+@cindex @code{NC_FORMAT_PNETCDF}
+@cindex @code{NC_FORMAT_DAP2}
+@cindex @code{NC_FORMAT_DAP4}
+As of @acronym{NCO} version 4.4.0 (January, 2014), @command{ncks} will
+also print the extended or underlying format of the input file.
+The extended filetype will be one of the six underlying formats that
+are accessible through the netCDF @acronym{API}.
+These formats are
+@code{NC_FORMAT_NC3} (classic and 64-bit versions of netCDF3 formats),
+@code{NC_FORMAT_NC_HDF5} (classic and extended versions of netCDF4, and
+``pure'' HDF5 format),
+@code{NC_FORMAT_NC_HDF4} (HDF4 format),
+@code{NC_FORMAT_PNETCDF} (PnetCDF format),
+@code{NC_FORMAT_DAP2} (accessed via DAP2 protocol), and
+@code{NC_FORMAT_DAP4} (accessed via DAP2 protocol).
+For example,
+@example
+% ncks -D 2 -M hdf.hdf
+Summary of hdf.hdf: filetype = NC_FORMAT_NETCDF4 (representation of \
+  extended/underlying filetype NC_FORMAT_HDF4), 0 groups ...
+% ncks -D 2 -M http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc
+Summary of http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc: \
+  filetype = NC_FORMAT_CLASSIC (representation of extended/underlying \
+  filetype NC_FORMAT_DAP2), 0 groups  
+% ncks -D 2 -M foo_4.nc
+Summary of foo_4.nc: filetype = NC_FORMAT_NETCDF4 (representation of \
+  extended/underlying filetype NC_FORMAT_HDF5), 0 groups  
+@end example
+The extended filetype determines some of the capabilities that netCDF
+has to alter the file.
+
+Second, query the file with @samp{ncdump -k}:
+@cindex @command{ncdump} 
+@example
+% ncdump -k foo_3c.nc
+classic
+% ncdump -k foo_364.nc
+64-bit-offset
+% ncdump -k foo_4c.nc
+netCDF-4 classic model
+% ncdump -k foo_4.nc
+netCDF-4
+@end example
+This method requires a netCDF4-enabled @acronym{netCDF} 3.6.2+
+(i.e., from 2007 or later).
+
+The third option uses the POSIX-standard @command{od} (octal dump)
+command:   
+@cindex @command{od} 
+@cindex octal dump
+@example
+% od -An -c -N4 foo_3c.nc
+   C   D   F 001
+% od -An -c -N4 foo_364.nc
+   C   D   F 002
+% od -An -c -N4 foo_4c.nc
+ 211   H   D   F
+% od -An -c -N4 foo_4.nc
+ 211   H   D   F
+@end example
+This option works without @acronym{NCO} and @command{ncdump}.
+Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
+(classic) and 64-bit netCDF3 formats, respectively, while values of
+@samp{211 H D F} indicate either of the newer netCDF4 file formats.
+
+@html
 <a name="3to4"></a> <!-- http://nco.sf.net/nco.html#3to4 -->
 <a name="4to3"></a> <!-- http://nco.sf.net/nco.html#4to3 -->
 @end html
-These examples demonstrate converting a file from any netCDF format
-into any other netCDF format (subject to limits of the format): 
+@node File Conversion, Autoconversion, Determining File Format, File Formats and Conversion
+@subsection File Conversion
+Let us demonstrate converting a file from any netCDF-supported
+input format into any netCDF output format (subject to limits of the
+output format).  
+Here the input file @file{in.nc} may be in any of these formats:
+netCDF3 (classic and 64bit), netCDF4 (classic and extended), HDF4, HDF5,
+HDF-EOS (version 2 or 5), and DAP. 
+The switch determines the output format written in the comment:
 @example
 ncks --fl_fmt=classic in.nc foo_3c.nc # netCDF3 classic
 ncks --fl_fmt=64bit in.nc foo_364.nc # netCDF3 64bit
@@ -3515,37 +3635,39 @@ Producing (netCDF3) @code{CLASSIC} or @code{64BIT} files from
 <a name="autoconversion"></a> <!-- http://nco.sf.net/nco.html#autoconversion -->
 <a name="autocnv"></a> <!-- http://nco.sf.net/nco.html#autocnv -->
 @end html
-@unnumberedsubsec Autoconversion
+@node Autoconversion,  , File Conversion, File Formats and Conversion
+@subsection Autoconversion
 Because of the dearth of support for netCDF4 amongst tools and user
 communities (including the @acronym{CF} conventions), it is often useful
 to convert netCDF4 to netCDF3 for certain applications.
 Until @acronym{NCO} version 4.4.0 (January, 2014), producing netCDF3
-files from @code{NETCDF4} files only worked if the input files did not 
-contain netCDF4-specific features. 
+files from netCDF4 files only worked if the input files contained no 
+netCDF4-specific features (e.g., atomic types, multiple record
+dimensions, or groups). 
 As of @acronym{NCO} version 4.4.0, @command{ncks} supports
 @dfn{autoconversion} of many netCDF4 features to their closest
 netCDF3-compatible representations.
-Since converting netCDF4 to netCDF3 results in loss of features, a more 
-precise terminology for what we call autoconversion is automatic
-down-conversion.
+Since converting netCDF4 to netCDF3 results in loss of features, 
+``automatic down-conversion'' may be a more precise description of what  
+we term autoconversion.
 
 @acronym{NCO} employs three algorithms to downconvert netCDF4 to netCDF3:
 @enumerate
 @item 
 @cindex autoconversion
 Autoconversion of atomic types:
-@code{NC_UBYTE} is promoted to @code{NC_SHORT}, 
-@code{NC_USHORT} is promoted to @code{NC_INT}, and the three types
-@code{NC_UINT}, @code{NC_UINT64}, and @code{NC_INT64} are demoted to
-@code{NC_INT}. 
-@code{NC_STRING} is converted to @code{NC_CHAR}.
+Autoconversion automatically promotes @code{NC_UBYTE} to @code{NC_SHORT}, 
+and @code{NC_USHORT} to @code{NC_INT}.
+It automatically demotes the three types @code{NC_UINT},
+@code{NC_UINT64}, and @code{NC_INT64} to @code{NC_INT}. 
+And it converts @code{NC_STRING} to @code{NC_CHAR}.
 All numeric conversions work for attributes and variables of any rank.
 Two numeric types (@code{NC_UBYTE} and @code{NC_USHORT}) are
-@emph{promoted} to types with greater range. 
+@emph{promoted} to types with greater range (and greater storage). 
 This extra range is often not used so promotion perhaps conveys
 the wrong impression.
-However, there is no truncation of values or loss of data with 
-promotion, so the extra storage space required is worthwhile.
+However, promotion never truncates values or loses data (this perhaps
+justifies the extra storage).
 Three numeric types (@code{NC_UINT}, @code{NC_UINT64} and
 @code{NC_INT64}) are @emph{demoted}.
 Since the input range is larger than the output range, demotion can
@@ -3578,6 +3700,8 @@ output.
 By invoking @code{--fix_rec_dmn all} the user ensures the output file
 will adhere to netCDF3 conventions and the user need not know the names
 of the specific record dimensions to fix.
+See @ref{ncks netCDF Kitchen Sink} for a description of the
+@samp{--fix_rec_dmn} option. 
 
 @item
 @cindex flattening
@@ -3607,78 +3731,9 @@ dimension fixation and group flattening when converting to netCDF3
 If this feature would interest you, please let us know.
 
 @html
-<a name="fmt_inq"></a> <!-- http://nco.sf.net/nco.html#fmt_inq -->
-@end html
-There are at least three ways to discover the format of a netCDF file,
-i.e., whether it is a classic (32-bit offset) or newer 64-bit offset
-netCDF3 format, or is netCDF4 format. 
-Each method returns the information using slightly different terminology 
-that becomes easier to understand with practice.
-
-First, examine the end of the first line of global metadata output by
-@samp{ncks -M}: 
-@cindex netCDF3 classic file format
-@cindex netCDF4 classic file format
-@cindex netCDF4 file format
-@cindex 32-bit offset file format
-@cindex 64-bit offset file format
-@cindex @command{ncks} 
-@cindex @code{-M}
-@example
-% ncks -M foo_3c.nc
-Opened file foo_3c.nc: dimensions = 23, variables = 296, 
-global atts. = 5, type = NC_FORMAT_CLASSIC 
-% ncks -M foo_364.nc
-Opened file foo_364.nc: dimensions = 23, variables = 296, 
-global atts. = 5, type = NC_FORMAT_64BIT
-% ncks -M foo_4c.nc
-Opened file foo_4c.nc: dimensions = 23, variables = 296, 
-global atts. = 5, type = NC_FORMAT_NETCDF4_CLASSIC
-% ncks -M foo_4.nc
-Opened file foo_4.nc: dimensions = 23, variables = 296, 
-global atts. = 5, type = NC_FORMAT_NETCDF4
-@end example
-This method requires a netCDF4-enabled @acronym{NCO} version 3.9.0+
-(i.e., from 2007 or later).
-
-Second, query the file with @samp{ncdump -k}:
-@cindex @command{ncdump} 
-@example
-% ncdump -k foo_3.nc
-classic
-% ncdump -k foo_364.nc
-64-bit-offset
-% ncdump -k foo_4c.nc
-netCDF-4 classic model
-% ncdump -k foo_4.nc
-netCDF-4
-@end example
-This method requires a netCDF4-enabled @acronym{netCDF} 3.6.2+
-(i.e., from 2007 or later).
-
-The third option uses the POSIX-standard @command{od} (octal dump)
-command:   
-@cindex @command{od} 
-@cindex octal dump
-@example
-% od -An -c -N4 foo_3c.nc
-   C   D   F 001
-% od -An -c -N4 foo_364.nc
-   C   D   F 002
-% od -An -c -N4 foo_4c.nc
- 211   H   D   F
-% od -An -c -N4 foo_4.nc
- 211   H   D   F
-@end example
-This option works without @acronym{NCO} and @command{ncdump}.
-Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
-(classic) and 64-bit netCDF3 formats, respectively, while values of
-@samp{211 H D F} indicate the newer netCDF4 file format.
-
-@html
 <a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
 @end html
-@node Large File Support, Subsetting Files, Selecting Output File Format, Common features
+@node Large File Support, Subsetting Files, File Formats and Conversion, Common features
 @section Large File Support
 @cindex LFS
 @cindex Large File Support
@@ -3698,9 +3753,9 @@ We recommend that users ignore LFS support which is difficult to
 configure and is implemented in @acronym{NCO} only to support netCDF
 versions prior @w{to 3.6}.  
 This obviates the need for configuring explicit LFS support in
-applications (such as @acronym{NCO}) which now support 64-bit files   
+applications (such as @acronym{NCO}) that now support 64-bit files   
 directly through the netCDF interface.
-See @ref{Selecting Output File Format} for instructions on accessing 
+See @ref{File Formats and Conversion} for instructions on accessing 
 the different file formats, including 64-bit files, supported by the
 modern netCDF interface. 
 
@@ -5957,7 +6012,10 @@ support a plethora of chunksize options.
 Chunking can significantly accelerate or degrade read/write access
 to large datasets.
 Dataset chunking issues are described in detail
-@uref{http://www.hdfgroup.org/HDF5/doc/H5.user/Chunking.html,here}.
+@uref{http://www.hdfgroup.org/HDF5/doc/H5.user/Chunking.html,here},
+@uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_why_it_matters,here},
+and
+@uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes,here}.
 
 @cindex chunking policy
 @cindex chunking map

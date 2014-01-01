@@ -1,5 +1,9 @@
 2013-12-31  Charlie Zender  <zender@uci.edu>
 
+	* Prevent printing hidden attributes on netCDF3 files
+
+	* Fix error when new nco_inq_var_fill() stub used on netCDF3 files
+
 	* XML mode deprecate emulation of toolsUI 4.3 _FillValue behavior for unsigned types (present in NCO 4.3.7-4.3.9)
 
 2013-12-30  Charlie Zender  <zender@uci.edu>

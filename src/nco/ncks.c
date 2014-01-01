@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.691 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.692 2014-01-01 01:00:10 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -152,14 +152,15 @@ main(int argc,char **argv)
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
   char *smr_sng=NULL; /* [sng] File summary string */
+  char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char *spr_chr=NULL; /* [sng] Separator for XML character types */
   char *spr_nmr=NULL; /* [sng] Separator for XML numeric types */
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.691 2013-12-31 05:14:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.691 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.692 2014-01-01 01:00:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.692 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct **cnk=NULL_CEWI;
@@ -860,14 +861,14 @@ main(int argc,char **argv)
       prn_flg.PRN_DMN_VAR_NM=True;
       prn_flg.PRN_MSS_VAL_BLANK=True;
     } /* endif */
-    if(prn_flg.xml){
-      prn_flg.PRN_MSS_VAL_BLANK=False;
-    } /* endif */
+    if(prn_flg.xml) prn_flg.PRN_MSS_VAL_BLANK=False;
 
     /* File summary */
     if(PRN_GLB_METADATA){
       prn_flg.smr_sng=smr_sng=(char *)nco_malloc(300*sizeof(char)); /* [sng] File summary string */
-      (void)sprintf(smr_sng,"Summary of %s: filetype = %s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)",fl_in,nco_fmt_sng(fl_in_fmt),grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
+      smr_xtn_sng=(char *)nco_malloc(300*sizeof(char)); /* [sng] File extended summary string */
+      if(nco_dbg_lvl > nco_dbg_std) (void)sprintf(smr_xtn_sng," (representation of extended/underlying filetype %s)",nco_fmt_xtn_sng(nco_fmt_xtn_get())); else smr_xtn_sng[0]='\0';
+      (void)sprintf(smr_sng,"Summary of %s: filetype = %s%s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)",fl_in,nco_fmt_sng(fl_in_fmt),smr_xtn_sng,grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
       if(!prn_flg.cdl && !prn_flg.xml && !prn_flg.srm) (void)fprintf(stdout,"%s\n\n",smr_sng);
     } /* endif summary */
 
@@ -971,10 +972,10 @@ main(int argc,char **argv)
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
     if(smr_sng) smr_sng=(char *)nco_free(smr_sng);
+    if(smr_xtn_sng) smr_xtn_sng=(char *)nco_free(smr_xtn_sng);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
     flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
   } /* !flg_cln */
-
   
   /* End timer */ 
   ddra_info.tmr_flg=nco_tmr_end; /* [enm] Timer flag */
