@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.61 2014-01-02 18:16:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.62 2014-01-02 20:28:35 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -429,10 +429,22 @@ nco_aux_evl_trv
 
     /* Loop table */
     for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-
-      /* Filter variables with lower scope (lower group depth) */
       trv_sct var_cf_trv=trv_tbl->lst[idx_var];
-      if(var_cf_trv.nco_typ == nco_obj_typ_var && var_cf_trv.grp_dpt <= var_trv->grp_dpt){
+
+      nco_bool flg_scp; /* [flg] In scope */
+
+      flg_scp=False;
+
+      /* Filter variables  */
+      if(var_cf_trv.nco_typ == nco_obj_typ_var){
+
+        /* Is current variable in scope of parameter variable  */
+        flg_scp=nco_var_scp(&var_cf_trv,var_trv);
+
+      } /* Filter variables  */
+
+      /* In scope */
+      if(flg_scp){
 
         /* Find auxiliary coordinate variables that map to latitude/longitude 
         Find variables with standard_name = "latitude" and "longitude"
@@ -652,7 +664,7 @@ nco_aux_evl_trv
 
 
         } /* "latitude" and "longitude" were found */
-      } /* Filter variables with lower scope (lower group depth) */
+      } /* In scope */
     } /* Loop table */
   } /* Loop attributes */
 
