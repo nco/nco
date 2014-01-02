@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.59 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.60 2014-01-02 17:20:55 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -386,10 +386,14 @@ nco_aux_evl_trv
 
   char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
   char value[NC_MAX_NAME];  /* [sng] Attribute value */
+  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
 
   int grp_id;               /* [id] Group ID */
-  int nbr_att;              /* [nbr] Number of attributes */
   int var_id;               /* [id] Variable ID */
+  int dmn_id=int_CEWI;      /* [id] Dimension ID */
+  int nbr_att;              /* [nbr] Number of attributes */
+
+  long dmn_sz=0;            /* [nbr] Dimension size */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
@@ -497,7 +501,15 @@ nco_aux_evl_trv
 
         } /* endif standard_name */
 
+        /* "latitude" or "longitude" were found */
+        if (crd_nbr){
 
+          /* Obtain dimension information of lat/lon coordinates */
+          rcd+=nco_get_dmn_info(grp_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
+
+          if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_aux_evl() unable get past nco_get_dmn_info()\n");
+
+        } /* "latitude" or "longitude" were found */
 
 
       } /* Filter variables with lower scope (lower group depth) */
