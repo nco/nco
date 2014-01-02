@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.109 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.110 2014-01-02 19:51:13 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -258,6 +258,8 @@ int nco_inq_nvars(const int nc_id,int * const var_nbr_fl);
 int nco_inq_natts(const int nc_id,int * const att_glb_nbr);
 int nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id);
 int nco_inq_unlimdim_flg(const int nc_id,int * const rec_dmn_id);
+int nco_get_chunk_cache(size_t * const sz_byt,size_t * const cnk_nbr_hsh,float * const pmp_fvr_frc);
+int nco_set_chunk_cache(const size_t sz_byt,const size_t cnk_nbr_hsh,const float pmp_fvr_frc);
 /* End File routines */
 
 /* Begin Group routines (_grp) */
@@ -360,6 +362,8 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ);
   int nc_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val);
   int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
+  int nc_get_chunk_cache(size_t * const sz_byt,size_t * const cnk_nbr_hsh,float * const pmp_fvr_frc);
+  int nc_set_chunk_cache(const size_t sz_byt,const size_t cnk_nbr_hsh,const float pmp_fvr_frc);
 #endif /* HAVE_NETCDF4_H */
 #ifndef HAVE_NETCDF4_H
   int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp);

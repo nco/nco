@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.226 2014-01-01 01:00:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.227 2014-01-02 19:51:13 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -844,6 +844,31 @@ nco_inq_unlimdim_flg(const int nc_id,int * const rec_dmn_id)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdim_flg()");
   return rcd;
 } /* end nco_inq_unlimdim_flg() */
+
+int nco_get_chunk_cache
+(size_t * const sz_byt, /* [B] Raw data chunk cache size */
+ size_t * const cnk_nbr_hsh, /* [nbr] Chunk slots in raw data chunk cache hash table */
+ float * const pmp_fvr_frc) /* [frc] Preemption favor fraction */
+{
+  /* Purpose: Wrapper for nc_get_chunk_cache() */
+  int rcd;
+  rcd=nc_get_chunk_cache(sz_byt,cnk_nbr_hsh,pmp_fvr_frc);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_chunk_cache()");
+  return rcd;
+} /* end nco_get_chunk_cache() */
+
+int nco_set_chunk_cache
+(const size_t sz_byt, /* [B] Raw data chunk cache size */
+ const size_t cnk_nbr_hsh, /* [nbr] Chunk slots in raw data chunk cache hash table */
+ const float pmp_fvr_frc) /* [frc] Preemption favor fraction */
+{
+  /* Purpose: Wrapper for nc_set_chunk_cache() */
+  int rcd;
+  rcd=nc_set_chunk_cache(sz_byt,cnk_nbr_hsh,pmp_fvr_frc);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_set_chunk_cache()");
+  return rcd;
+} /* end nco_set_chunk_cache() */
+
 /* End File routines */
 
 /* Begin Group routines (_grp) */
@@ -1153,7 +1178,7 @@ int nco_def_var_chunking
   int rcd;
   /* NB: 20090713: netCDF4 API for nc_def_var_chunking() changed ~200906 
      Before that a weak netCDF4 prototype did not make cnk_sz const
-     After I notified them of this, Unidata changed prototype to 
+     After I notified Unidata of this, they changed prototype to 
      const size_t * const cnk_sz
      This API change may cause confusion/differences when compiling
      NCO with netCDF4 versions pre- and post-200906, e.g., 
@@ -1884,6 +1909,8 @@ int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int
 int nc_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ){if(ndn_typ) *ndn_typ=0;return 1;}
 int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){if(chk_typ) *chk_typ=NC_NOCHECKSUM;return 1;}
 int nc_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val){if(fll_nil) *fll_nil=0;if(fll_val) assert(0);return 1;}
+int nc_get_chunk_cache(size_t * const sz_byt,size_t * const cnk_nbr_hsh,float * const pmp_fvr_frc){if(sz_byt) *sz_byt=0L;if(cnk_nbr_hsh) *cnk_nbr_hsh=0L;if(pmp_fvr_frc) *pmp_fvr_frc=0.0f;return 1;}
+int nc_set_chunk_cache(const size_t sz_byt,const size_t cnk_nbr_hsh,const float pmp_fvr_frc){return 1;}
 #endif /* HAVE_NETCDF4_H */
 #if !defined(HAVE_NETCDF4_H) 
 /* Stubs thus present a fake library for manipulating netCDF3 files with the netCDF4 API
