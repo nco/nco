@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.62 2014-01-02 20:28:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.63 2014-01-02 21:47:08 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -421,251 +421,48 @@ nco_aux_evl_trv
     } /* !CF */
 
 
-    /* Look for in scope only associated variables */
+    /* Find auxiliary coordinate variables that map to latitude/longitude 
+    Find variables with standard_name = "latitude" and "longitude"
+    Return true if both latitude and longitude standard names are found
+    Also return needed information about these auxiliary coordinates
+    Assumes that units and types for latitude and longitude are identical
+    Caller responsible for memory management for variable names
+    Memory for unit strings must be freed by caller */
 
-    int crd_nbr;  /* [nbr] Counter for finding both "latitude" and "longitude" values in "standard_name" attribute */
+    /* nco_find_lat_lon() For each variable, see if standard name is latitude or longitude */
 
-    crd_nbr=0;
+    char var_nm[NC_MAX_NAME+1];
+    char value[NC_MAX_NAME+1];
+    char var_nm_lat[NC_MAX_NAME+1]; 
+    char var_nm_lon[NC_MAX_NAME+1];
+    char *units;
 
-    /* Loop table */
-    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-      trv_sct var_cf_trv=trv_tbl->lst[idx_var];
+    int rcd=NC_NOERR;
 
-      nco_bool flg_scp; /* [flg] In scope */
+    int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
+    int var_att_nbr;                /* [nbr] Number of attributes */
+    int var_dmn_nbr;                /* [nbr] Number of dimensions */
 
-      flg_scp=False;
+    nc_type var_typ; /* [enm] variable type */
 
-      /* Filter variables  */
-      if(var_cf_trv.nco_typ == nco_obj_typ_var){
+    long lenp;
 
-        /* Is current variable in scope of parameter variable  */
-        flg_scp=nco_var_scp(&var_cf_trv,var_trv);
-
-      } /* Filter variables  */
-
-      /* In scope */
-      if(flg_scp){
-
-        /* Find auxiliary coordinate variables that map to latitude/longitude 
-        Find variables with standard_name = "latitude" and "longitude"
-        Return true if both latitude and longitude standard names are found
-        Also return needed information about these auxiliary coordinates
-        Assumes that units and types for latitude and longitude are identical
-        Caller responsible for memory management for variable names
-        Memory for unit strings must be freed by caller */
-
-        /* nco_find_lat_lon() For each variable, see if standard name is latitude or longitude */
-
-        char var_nm[NC_MAX_NAME+1];
-        char value[NC_MAX_NAME+1];
-        char var_nm_lat[NC_MAX_NAME+1]; 
-        char var_nm_lon[NC_MAX_NAME+1];
-        char *units;
-
-        int rcd=NC_NOERR;
-        
-        int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
-        int var_att_nbr;                /* [nbr] Number of attributes */
-        int var_dmn_nbr;                /* [nbr] Number of dimensions */
-        int lat_id;
-        int lon_id;
-
-        long lenp;
-
-        nc_type var_typ; /* [enm] variable type */
-        nc_type crd_typ;
-
-        /* Obtain group ID from netCDF API using full group name */
-        (void)nco_inq_grp_full_ncid(nc_id,var_cf_trv.grp_nm_fll,&grp_id);
-
-        /* Obtain variable ID */
-        (void)nco_inq_varid(grp_id,var_cf_trv.nm,&var_id);
-
-        nco_inq_var(grp_id,var_id,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
-        lenp=0;
-        if(!nco_inq_attlen_flg(grp_id,var_id,"standard_name",&lenp)){
-          NCO_GET_ATT_CHAR(grp_id,var_id,"standard_name",value);
-          value[lenp]='\0';
-          if(!strcmp(value,"latitude")){
-            strcpy(var_nm_lat,var_nm);
-            lat_id=var_id;
-
-            /* Get units; assume same for both lat and lon */
-            rcd=nco_inq_attlen(grp_id,var_id,"units",&lenp);
-            if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
-            units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
-            NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
-            units[lenp]='\0';
-
-            if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
-
-            /* Assign type; assumed same for both lat and lon */
-            crd_typ=var_typ;
-            crd_nbr++;
-          } /* endif latitude */
-
-          if(!strcmp(value,"longitude")){
-            strcpy(var_nm_lon,var_nm);
-            lon_id=var_id;
-            crd_nbr++;
-          } /* endif longitude */
-        } /* endif standard_name */
-
-        /* "latitude" and "longitude" were found */
-        if (crd_nbr == 2){
-
-          /* Obtain dimension information of lat/lon coordinates */
-          rcd+=nco_get_dmn_info(grp_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
-
-          if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_aux_evl() unable get past nco_get_dmn_info()\n");
-
-          if(nco_dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",nco_prg_nm_get(),fnc_nm,
-              var_nm); 
-          }
-
-          char cll_idx_sng[100]; /* Buffer for user-assigned limit names */
-
-          void *vp_lat; /* [dgr] Latitude coordinate array, float or double */
-          void *vp_lon; /* [dgr] Longitude coordinate array, float or double */
-
-          lmt_sct **lmt=NULL; /* [sct] List of returned lmt structures */
-
-          float lat_min; /* [dgr] Lower left latitude of bounding rectangle */
-          float lat_max; /* [dgr] Upper right longitude of bounding rectangle */
-          float lon_min; /* [dgr] Lower left longitude of bounding rectangle */
-          float lon_max; /* [dgr] Upper right latitude of bounding rectangle */
-
-          double lat_crr; /* [dgr] Current cell latitude */
-          double lon_crr; /* [dgr] Current cell longitude */
-
-          int aux_idx; /* [idx] Index over user -X options */
-          int cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
-          int cll_idx; /* [idx] Cell index */
-          int cll_idx_min=-1; /* [idx] Minimum index of cell in consecutive cell set */
-          int cll_nbr_cns=0; /* [nbr] Number of consecutive cells within current group */
-          int cll_nbr_ttl=0; /* [nbr] Total number of cells within this bounding box */
-
-          dmn_sct lat;
-          dmn_sct lon;
+    (void)nco_inq_var(grp_id,var_id,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
+    if(!nco_inq_attlen_flg(grp_id,var_id,"standard_name",&lenp)){
+      NCO_GET_ATT_CHAR(grp_id,var_id,"standard_name",value);
+      value[lenp]='\0';
+      if(!strcmp(value,"latitude")){
 
 
-          /* Load latitude/longitude variables needed to search for region matches */
-          lat.type=crd_typ;
-          lat.sz=dmn_sz;
-          lat.srt=0L;
-          vp_lat=(void *)nco_malloc(dmn_sz*nco_typ_lng(lat.type));
-          lon.type=crd_typ;
-          lon.sz=dmn_sz;
-          lon.srt=0L;
-          vp_lon=(void *)nco_malloc(dmn_sz*nco_typ_lng(lon.type));
-          rcd+=nco_get_vara(grp_id,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
-          rcd+=nco_get_vara(grp_id,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
+      } /* endif latitude */
 
-          lmt_sct lmt_tpl;
-          (void)nco_lmt_init(&lmt_tpl);
-          lmt_tpl.nm=(char *)strdup(dmn_nm);
-          lmt_tpl.lmt_typ=lmt_dmn_idx;
-          lmt_tpl.is_usr_spc_lmt=True; 
-          lmt_tpl.is_usr_spc_min=True; 
-          lmt_tpl.is_usr_spc_max=True;
-          lmt_tpl.flg_mro=False;
-          lmt_tpl.srd_sng=(char *)strdup("1");
-          lmt_tpl.drn_sng=NULL;
-          lmt_tpl.drn_sng=NULL;
-          lmt_tpl.mro_sng=NULL;
-          lmt_tpl.mro_sng=NULL;
-          lmt_tpl.is_rec_dmn=0;
-          lmt_tpl.id=dmn_id;
-          lmt_tpl.min_idx=0;
-          lmt_tpl.max_idx=0;
-          lmt_tpl.srt=0L;
-          lmt_tpl.end=0L;
-          lmt_tpl.cnt=0L;
-          lmt_tpl.srd=1L;
-          lmt_tpl.drn=1L;
-
-          /* malloc() lmt structure to return
-          No way to know exact size in advance though maximum is about dim_sz/2 */
-          int MAX_LMT_NBR=dmn_sz/2;
-
-          if(aux_nbr > 0) lmt=(lmt_sct **)nco_malloc(MAX_LMT_NBR*sizeof(lmt_sct *));
-
-          /* Loop over user-specified bounding boxes */
-          for(aux_idx=0;aux_idx<aux_nbr;aux_idx++){
-            /* Parse into lon_min,lat_min,lon_max,lon_max, accounting for units */
-            nco_aux_prs(aux_arg[aux_idx],units,&lon_min,&lon_max,&lat_min,&lat_max);
-            /* Current cell assumed to lay outside current bounding box */
-            cll_idx_min=-1;
-            /* Initialize number of consecutive cells inside current bounding box */
-            cll_nbr_cns=0; /* [nbr] Number of consecutive cells within current group */
-            cll_nbr_ttl=0; /* [nbr] Total number of cells within this bounding box */
-            cll_grp_nbr=0; /* [nbr] Number of groups of cells within this bounding box */
-            if(lon_min == lon_max){
-              (void)fprintf(stderr,"%s: ERROR %s reports degenerate auxiliary coordinate hyperslab with lon_min = lon_max = %g. Auxiliary coordinates do not support degenerate hyperlabs yet. This is TODO nco1010. If this feature is important to you, post your vexation to sourceforge and we will work on it.\n",nco_prg_nm_get(),fnc_nm,lon_min);
-              nco_exit(EXIT_FAILURE);
-            } /* endif */
-            if(lat_min == lat_max){
-              (void)fprintf(stderr,"%s: ERROR %s reports degenerate auxiliary coordinate hyperslab with lat_min = lat_max = %g. Auxiliary coordinates do not support degenerate hyperlabs yet. This is TODO nco1010. If this feature is important to you, post your vexation to sourceforge and we will work on it.\n",nco_prg_nm_get(),fnc_nm,lat_min);
-              nco_exit(EXIT_FAILURE);
-            } /* endif */
-            /* Loop over auxiliary coordinate cells */
-            for(cll_idx=0;cll_idx<dmn_sz;cll_idx++){
-              if(lat.type == NC_FLOAT) lat_crr=((float *)vp_lat)[cll_idx]; else lat_crr=((double *)vp_lat)[cll_idx];
-              if(lon.type == NC_FLOAT) lon_crr=((float *)vp_lon)[cll_idx]; else lon_crr=((double *)vp_lon)[cll_idx];
-              if(lon_crr >= lon_min && lon_crr <= lon_max &&
-                lat_crr >= lat_min && lat_crr <= lat_max){
-                  if(cll_idx_min == -1){
-                    /* First cell within current bounding box */
-                    cll_idx_min=cll_idx;
-                    cll_nbr_cns=1;
-                  }else if(cll_idx == cll_idx_min+cll_nbr_cns){
-                    /* Later, contiguous cell within current bounding box */
-                    cll_nbr_cns++;
-                  } /* end found matching cell */
-              }else if(cll_idx_min != -1){
-                /* Current cell is not within bounding box though immediately previous cell is */
-                sprintf(cll_idx_sng,"%d",cll_idx_min);
-                lmt_tpl.min_sng=(char *)strdup(cll_idx_sng);
-                lmt_tpl.min_idx=lmt_tpl.srt=cll_idx_min;
-                sprintf(cll_idx_sng,"%d",cll_idx_min+cll_nbr_cns-1);
-                lmt_tpl.max_sng=(char *)strdup(cll_idx_sng);
-                lmt_tpl.max_idx=lmt_tpl.end=cll_idx_min+cll_nbr_cns-1;
-                lmt_tpl.cnt=cll_nbr_cns;
-                (*aux_lmt_nbr)++;
-                if(*aux_lmt_nbr > MAX_LMT_NBR) nco_err_exit(0,"%s: Number of slabs exceeds allocated mamory");
-                lmt[(*aux_lmt_nbr)-1]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-                *lmt[(*aux_lmt_nbr)-1]=lmt_tpl;
-                cll_grp_nbr++;
-                cll_nbr_ttl+=cll_nbr_cns;
-                /* Indicate that next cell, if any, in this bounding box requires new limit structure */
-                cll_idx_min=-1;
-              } /* end if one or more consecutive matching cells */
-            } /* end loop over cells */
-            if(nco_dbg_lvl_get() > nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev){
-              (void)fprintf(stdout,"%s: %s reports bounding-box %g <= %s <= %g and %g <= %s <= %g brackets %d distinct group(s) comprising %d total gridpoint(s)\n",nco_prg_nm_get(),fnc_nm,lon_min,var_nm_lon,lon_max,lat_min,var_nm_lat,lat_max,cll_grp_nbr,cll_nbr_ttl); 
-            }
-          } /* end loop over user supplied -X options */
-
-          /* Free allocated memory */
-          if(units) units=(char *)nco_free(units);
-          if(vp_lat) vp_lat=nco_free(vp_lat);
-          if(vp_lon) vp_lon=nco_free(vp_lon);
-
-          /* With some loss of generality, we assume cell-based coordinates are not 
-          record coordinates spanning multiple files. Thus finding no cells within
-          any bounding box constitutes a domain error. */
-          if(*aux_lmt_nbr == 0){
-            (void)fprintf(stdout,"%s: ERROR %s reports that none of the %d specified auxiliary-coordinate bounding-box(es) contain any latitude/longitude coordinate pairs. This condition was not flagged as an error until 20110221. Prior to that, when no coordinates were in any of the user-specified auxiliary-coordinate hyperslab(s), NCO mistakenly returned the entire coordinate range as being within the hyperslab(s).\n",nco_prg_nm_get(),fnc_nm,aux_nbr);
-            nco_exit(EXIT_FAILURE);
-          } /* end if */
-
-          lmt=(lmt_sct **)nco_realloc(lmt,(*aux_lmt_nbr)*sizeof(lmt_sct *));
+      if(!strcmp(value,"longitude")){
 
 
-        } /* "latitude" and "longitude" were found */
-      } /* In scope */
-    } /* Loop table */
+      } /* endif longitude */
+    } /* endif standard_name */
+
+
   } /* Loop attributes */
 
   return NULL;
