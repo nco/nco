@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.431 2014-01-02 20:28:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.432 2014-01-02 22:56:39 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -221,7 +221,7 @@ nco_xtr_dfn                           /* [fnc] Define extracted groups, variable
  int * const cnk_map_ptr,             /* I [enm] Chunking map */
  int * const cnk_plc_ptr,             /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,             /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                   /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                   /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,           /* I [sng] GPE structure */
@@ -348,7 +348,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
  int cnk_map,                          /* I [enm] Chunking map */
  int cnk_plc,                          /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
@@ -373,7 +373,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
  int cnk_map,                          /* I [enm] Chunking map */
  int cnk_plc,                          /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
@@ -401,7 +401,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
  int cnk_map,                          /* I [enm] Chunking map */
  int cnk_plc,                          /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
@@ -424,7 +424,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  int cnk_map,                          /* I [enm] Chunking map */
  int cnk_plc,                          /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */

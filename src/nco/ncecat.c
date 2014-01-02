@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.354 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.355 2014-01-02 22:56:39 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,11 +124,11 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.354 2013-12-31 05:14:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.354 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.355 2014-01-02 22:56:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.355 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
-  cnk_sct **cnk=NULL_CEWI;
+  cnk_dmn_sct **cnk_dmn=NULL_CEWI;
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -512,7 +512,7 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
   /* Make uniform list of user-specified chunksizes */
-  if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
+  if(cnk_nbr > 0) cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -602,7 +602,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
 
     /* Define dimensions, extracted groups, variables, and attributes in output file */
-    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
+    (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
 
     /* Copy global attributes */
 #ifdef COPY_ROOT_GLOBAL_ATTRIBUTES
@@ -748,7 +748,7 @@ main(int argc,char **argv)
       /* We now have final list of variables to extract. Phew. */
 
       /* Define extracted groups, variables, and attributes in output file */
-      (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,CPY_GLB_METADATA,(nco_bool)True,nco_pck_plc_nil,rec_dmn_nm,trv_tbl_gpr);
+      (void)nco_xtr_dfn(in_id,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,md5,CPY_GLB_METADATA,(nco_bool)True,nco_pck_plc_nil,rec_dmn_nm,trv_tbl_gpr);
 
       /* Turn off default filling behavior to enhance efficiency */
       nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -888,7 +888,7 @@ main(int argc,char **argv)
     for(int idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     /* Free chunking information */
     for(int idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
+    if(cnk_nbr > 0) cnk_dmn=nco_cnk_lst_free(cnk_dmn,cnk_nbr);
     if(RECORD_AGGREGATE){
       /* Free dimension lists */
       /* ncecat-specific memory cleanup */

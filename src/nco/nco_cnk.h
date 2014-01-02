@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.24 2014-01-01 01:00:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.25 2014-01-02 22:56:39 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -64,19 +64,19 @@ const char * /* O [sng] Chunking policy string */
 nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
 (const int nco_cnk_plc); /* I [enm] Chunking policy */
 
-cnk_sct ** /* O [sct] Structure list with user-specified chunking information */
+cnk_dmn_sct ** /* O [sct] Structure list with user-specified per-dimension chunking information */
 nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements */
 (const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg)); /* I [sng] List of user-specified chunksizes */
 
-cnk_sct ** /* O [sct] Pointer to free'd structure list */
+cnk_dmn_sct ** /* O [sct] Pointer to free'd structure list */
 nco_cnk_lst_free /* [fnc] Free memory associated with chunking structure list */
-(cnk_sct **cnk_lst, /* I/O [sct] Chunking structure list to free */
+(cnk_dmn_sct **cnk_lst, /* I/O [sct] Chunking structure list to free */
  const int cnk_nbr); /* I [nbr] Number of chunking structures in list */
 
-cnk_sct * /* O [sct] Pointer to free'd chunking structure */
+cnk_dmn_sct * /* O [sct] Pointer to free'd chunking structure */
 nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
-(cnk_sct *cnk); /* I/O [sct] Chunking structure to free */
+(cnk_dmn_sct *cnk_dmn); /* I/O [sct] Chunking structure to free */
 
 void
 nco_cnk_sz_set /* [fnc] Set chunksize parameters */
@@ -86,7 +86,7 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
  int * const cnk_map_ptr, /* I/O [enm] Chunking map */
  int * const cnk_plc_ptr, /* I/O [enm] Chunking policy */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr); /* I [nbr] Number of dimensions with user-specified chunking */
 
 void
@@ -95,7 +95,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
  int * const cnk_map_ptr, /* I/O [enm] Chunking map */
  int * const cnk_plc_ptr, /* I/O [enm] Chunking policy */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr, /* I [nbr] Number of dimensions with user-specified chunking */
  const trv_sct * const var_trv); /* I [sct] Variable Object */
 
@@ -120,7 +120,7 @@ nco_cnk_sz_get /* [fnc] Determine chunksize array */
  const int cnk_map, /* I [enm] Chunking map */
  const int cnk_plc, /* I [enm] Chunking policy */
  const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr); /* I [nbr] Number of dimensions with user-specified chunking */
 
 nco_bool /* O [flg] NCO will attempt to chunk variable */

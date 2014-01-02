@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.280 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.281 2014-01-02 22:56:39 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -128,11 +128,11 @@ main(int argc,char **argv)
 
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.280 2013-12-31 05:14:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.280 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.281 2014-01-02 22:56:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.281 $";
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
-  cnk_sct **cnk=NULL_CEWI;
+  cnk_dmn_sct **cnk_dmn=NULL_CEWI;
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -602,7 +602,7 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
   /* Make uniform list of user-specified chunksizes */
-  if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
+  if(cnk_nbr > 0) cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Make uniform list of user-specified dimension limits */
   if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
@@ -865,7 +865,7 @@ main(int argc,char **argv)
   } /* end for */
   
   /* Set chunksize parameters */
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,(lmt_msa_sct **)NULL_CEWI,(int)0,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr);
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set(out_id,(lmt_msa_sct **)NULL_CEWI,(int)0,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr);
 
   /* Turn off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -939,7 +939,7 @@ main(int argc,char **argv)
     if(lmt_nbr > 0) lmt=nco_lmt_lst_free(lmt,lmt_nbr);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
+    if(cnk_nbr > 0) cnk_dmn=nco_cnk_lst_free(cnk_dmn,cnk_nbr);
     /* Free dimension lists */
     if(nbr_dmn_in > 0) dmn_in=nco_dmn_lst_free(dmn_in,nbr_dmn_in);
     if(nbr_dmn_out > 0) dmn_out=nco_dmn_lst_free(dmn_out,nbr_dmn_out);

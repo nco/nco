@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.278 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.279 2014-01-02 22:56:39 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,11 +116,11 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.278 2013-12-31 05:14:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.278 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.279 2014-01-02 22:56:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.279 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
-  cnk_sct **cnk=NULL_CEWI;
+  cnk_dmn_sct **cnk_dmn=NULL_CEWI;
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -516,7 +516,7 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
   /* Make uniform list of user-specified chunksizes */
-  if(cnk_nbr > 0) cnk=nco_cnk_prs(cnk_nbr,cnk_arg);
+  if(cnk_nbr > 0) cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
@@ -592,7 +592,7 @@ main(int argc,char **argv)
   (void)nco_var_typ_trv(xtr_nbr,var,trv_tbl);         
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
+  (void)nco_xtr_dfn(in_id_1,out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -867,7 +867,7 @@ main(int argc,char **argv)
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk=nco_cnk_lst_free(cnk,cnk_nbr);
+    if(cnk_nbr > 0) cnk_dmn=nco_cnk_lst_free(cnk_dmn,cnk_nbr);
     var=(var_sct **)nco_free(var);
     var_out=(var_sct **)nco_free(var_out);
     var_prc_out=(var_sct **)nco_free(var_prc_out);

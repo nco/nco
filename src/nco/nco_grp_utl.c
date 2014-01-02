@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1149 2014-01-02 20:28:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1150 2014-01-02 22:56:39 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1499,7 +1499,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
  int * const cnk_map_ptr,            /* I [enm] Chunking map */
  int * const cnk_plc_ptr,            /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,            /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                  /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                  /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,          /* I [sct] GPE structure */
@@ -1645,7 +1645,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
 
       /* Set chunksize parameters */
-      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk,cnk_nbr,&var_trv);
+      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk_dmn,cnk_nbr,&var_trv);
 
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
@@ -3377,7 +3377,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
  int cnk_map,                          /* I [enm] Chunking map */
  int cnk_plc,                          /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
@@ -3543,7 +3543,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Set chunksize parameters */
-    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,rnk_gtr);
+    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,rnk_gtr);
 
     /* Copy variable's attributes */
     if(RNK_1_GTR) (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); else (void)nco_att_cpy(grp_id_2,grp_out_id,var_id_2,var_out_id,PCK_ATT_CPY);
@@ -3640,7 +3640,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
  int cnk_map,                          /* I [enm] Chunking map */
  int cnk_plc,                          /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
@@ -3718,7 +3718,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
     var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
 
     /* Set chunksize parameters */
-    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk,cnk_nbr,trv_1);
+    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,trv_1);
 
     /* Copy variable's attributes */
     (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); 
@@ -3795,7 +3795,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
  int cnk_map,                          /* I [enm] Chunking map */
  int cnk_plc,                          /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
@@ -3820,7 +3820,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
       if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)){
         trv_sct *trv_2=&trv_tbl_2->lst[uidx];
         rel_mch=True;
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table 2 */
 
@@ -3830,7 +3830,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
       if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)){
         trv_sct *trv_1=&trv_tbl_1->lst[uidx];
         rel_mch=True;
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table 2 */
   } /* !flg_tbl_1 */
@@ -3847,7 +3847,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
  int cnk_map,                          /* I [enm] Chunking map */
  int cnk_plc,                          /* I [enm] Chunking policy */
  const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_sct,cnk), /* I [sct] Chunking information */
+ CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
  const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
@@ -3893,7 +3893,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
       if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll); 
 
       /* Process common object */
-      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
+      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
 
     }else{
       /* Object exists and is flagged for extraction only in one file */
@@ -3907,10 +3907,10 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
 
           /* Match not found in file 2, copy instead object from file 1 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
         }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
 	  /* Object exists and is flagged for extraction only in file 2 */
@@ -3918,10 +3918,10 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
 
           /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
         } /* fl_2 */
 
@@ -3935,10 +3935,10 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
 
           /* Match was not found in file 2, copy instead object from file 1 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
         }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
 	  /* Object exists and is flagged for extraction only in file 2 */
@@ -3946,10 +3946,10 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
 
           /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
         } /* fl_2 */
 
@@ -4334,7 +4334,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   for(int idx_dmn=0;idx_dmn<NC_MAX_DIMS;idx_dmn++) dmn_out_id[idx_dmn]=NCO_REC_DMN_UNDEFINED;
 
-  /* File format needed for decision tree and to enable netCDF4 features */
+  /* File format needed for decision tree and to enable netCDF4 features like chunking */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
 
   /* Local copy of object name */ 
