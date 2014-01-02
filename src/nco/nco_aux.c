@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.63 2014-01-02 21:47:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.64 2014-01-02 23:03:23 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -408,17 +408,22 @@ nco_aux_evl_trv
 
   assert(nbr_att == var_trv->nbr_att);
 
+  /* Make sure CF tag exists. Currently require CF-1.0 value */
+  if(NCO_GET_ATT_CHAR(grp_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.")){
+    if(nco_dbg_lvl_get() >= nco_dbg_dev)
+      (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or is present but not of the form \"CF-1.X\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.X metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
+  } /* !CF */
+
   /* Loop attributes */
   for(int idx_att=0;idx_att<nbr_att;idx_att++){
 
     /* Get attribute name */
     (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
 
-    /* Make sure CF tag exists. Currently require CF-1.0 value */
-    if(NCO_GET_ATT_CHAR(grp_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.")){
-      if(nco_dbg_lvl_get() >= nco_dbg_dev)
-        (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or is present but not of the form \"CF-1.X\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.X metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
-    } /* !CF */
+    /* Skip attribute if not "standard_name" */
+    if(strcmp(att_nm,"standard_name") != 0){
+      continue;
+    }
 
 
     /* Find auxiliary coordinate variables that map to latitude/longitude 
@@ -444,26 +449,65 @@ nco_aux_evl_trv
     int var_dmn_nbr;                /* [nbr] Number of dimensions */
 
     nc_type var_typ; /* [enm] variable type */
+    nc_type crd_typ;
 
     long lenp;
 
-    (void)nco_inq_var(grp_id,var_id,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
+    int crd_nbr;   /* [nbr] Counter for finding both "latitude" and "longitude" values in "standard_name" attribute */
+    int lat_id;    /* [id] "latitude" variable ID */
+    int lon_id;    /* [id] "longitude" variable ID */
+
+    crd_nbr=0;
+
     if(!nco_inq_attlen_flg(grp_id,var_id,"standard_name",&lenp)){
       NCO_GET_ATT_CHAR(grp_id,var_id,"standard_name",value);
       value[lenp]='\0';
       if(!strcmp(value,"latitude")){
 
+        strcpy(var_nm_lat,var_nm);
+        lat_id=var_id;
+
+        /* Get units; assume same for both lat and lon */
+        rcd=nco_inq_attlen(grp_id,var_id,"units",&lenp);
+        if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
+        units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
+        NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
+        units[lenp]='\0';
+
+        if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
+
+        /* Assign type; assumed same for both lat and lon */
+        crd_typ=var_typ;
+        crd_nbr++;
 
       } /* endif latitude */
 
       if(!strcmp(value,"longitude")){
 
+        strcpy(var_nm_lon,var_nm);
+        lon_id=var_id;
+        crd_nbr++;
 
       } /* endif longitude */
     } /* endif standard_name */
 
 
+    /* "latitude" and "longitude" were found */
+    if (crd_nbr == 2){
+
+      /* Obtain dimension information of lat/lon coordinates */
+      rcd+=nco_get_dmn_info(grp_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
+
+      if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_aux_evl() unable get past nco_get_dmn_info()\n");
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",nco_prg_nm_get(),fnc_nm,
+          var_nm); 
+      }
+    } /* "latitude" and "longitude" were found */
+
   } /* Loop attributes */
 
   return NULL;
 } /* nco_aux_evl_trv */
+
