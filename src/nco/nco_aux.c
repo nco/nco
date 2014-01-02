@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.64 2014-01-02 23:03:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.65 2014-01-02 23:39:42 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -386,14 +386,10 @@ nco_aux_evl_trv
 
   char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
   char value[NC_MAX_NAME];  /* [sng] Attribute value */
-  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
 
   int grp_id;               /* [id] Group ID */
   int var_id;               /* [id] Variable ID */
-  int dmn_id=int_CEWI;      /* [id] Dimension ID */
   int nbr_att;              /* [nbr] Number of attributes */
-
-  long dmn_sz=0;            /* [nbr] Dimension size */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
@@ -425,7 +421,6 @@ nco_aux_evl_trv
       continue;
     }
 
-
     /* Find auxiliary coordinate variables that map to latitude/longitude 
     Find variables with standard_name = "latitude" and "longitude"
     Return true if both latitude and longitude standard names are found
@@ -436,76 +431,29 @@ nco_aux_evl_trv
 
     /* nco_find_lat_lon() For each variable, see if standard name is latitude or longitude */
 
-    char var_nm[NC_MAX_NAME+1];
     char value[NC_MAX_NAME+1];
-    char var_nm_lat[NC_MAX_NAME+1]; 
-    char var_nm_lon[NC_MAX_NAME+1];
-    char *units;
-
-    int rcd=NC_NOERR;
-
-    int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
-    int var_att_nbr;                /* [nbr] Number of attributes */
-    int var_dmn_nbr;                /* [nbr] Number of dimensions */
-
-    nc_type var_typ; /* [enm] variable type */
-    nc_type crd_typ;
+    char *var_nm_lat; 
+    char *var_nm_lon;
 
     long lenp;
 
-    int crd_nbr;   /* [nbr] Counter for finding both "latitude" and "longitude" values in "standard_name" attribute */
-    int lat_id;    /* [id] "latitude" variable ID */
-    int lon_id;    /* [id] "longitude" variable ID */
+    (void)nco_inq_attlen(grp_id,var_id,"standard_name",&lenp);
 
-    crd_nbr=0;
+    NCO_GET_ATT_CHAR(grp_id,var_id,"standard_name",value);
+    value[lenp]='\0';
+    if(!strcmp(value,"latitude")){
 
-    if(!nco_inq_attlen_flg(grp_id,var_id,"standard_name",&lenp)){
-      NCO_GET_ATT_CHAR(grp_id,var_id,"standard_name",value);
-      value[lenp]='\0';
-      if(!strcmp(value,"latitude")){
+      /* Construct full name  */
+      var_nm_lat=(char *)strdup(var_trv->nm_fll);
 
-        strcpy(var_nm_lat,var_nm);
-        lat_id=var_id;
+    } /* endif latitude */
 
-        /* Get units; assume same for both lat and lon */
-        rcd=nco_inq_attlen(grp_id,var_id,"units",&lenp);
-        if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
-        units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
-        NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
-        units[lenp]='\0';
+    if(!strcmp(value,"longitude")){
 
-        if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
+      /* Construct full name  */
+      var_nm_lon=(char *)strdup(var_trv->nm_fll);
 
-        /* Assign type; assumed same for both lat and lon */
-        crd_typ=var_typ;
-        crd_nbr++;
-
-      } /* endif latitude */
-
-      if(!strcmp(value,"longitude")){
-
-        strcpy(var_nm_lon,var_nm);
-        lon_id=var_id;
-        crd_nbr++;
-
-      } /* endif longitude */
-    } /* endif standard_name */
-
-
-    /* "latitude" and "longitude" were found */
-    if (crd_nbr == 2){
-
-      /* Obtain dimension information of lat/lon coordinates */
-      rcd+=nco_get_dmn_info(grp_id,lat_id,dmn_nm,&dmn_id,&dmn_sz);
-
-      if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_aux_evl() unable get past nco_get_dmn_info()\n");
-
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
-        (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",nco_prg_nm_get(),fnc_nm,
-          var_nm); 
-      }
-    } /* "latitude" and "longitude" were found */
-
+    } /* endif longitude */
   } /* Loop attributes */
 
   return NULL;
