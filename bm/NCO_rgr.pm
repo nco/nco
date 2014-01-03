@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.399 2013-12-31 21:11:56 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.400 2014-01-03 21:09:28 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1672,11 +1672,11 @@ print "\n";
     $#tst_cmd=0; # Reset array
 
     
-#ncks #30 2D variable definition (netCDF4 file)
+#ncks #30 2D variable definition
 
-    $dsc_sng="2D variable definition (netCDF4 file)";
+    $dsc_sng="2D variable definition";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -C -v ilev $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks  %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00%";
     $tst_cmd[2]="lev[2] vrt_nbr[1] ilev[5]=1013.25";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
