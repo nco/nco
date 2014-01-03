@@ -1,5 +1,11 @@
 2014-01-03  Charlie Zender  <zender@uci.edu>
 
+	* Add stubs for two new (and not-yet-supported) chunking maps: map_xst and map_lfp
+
+	* Verified nccopy does not preserve pre-set _Chunksizes when copying variables
+
+	* Revert to calling nco_cnk_sz_set_trv() only when user-specified
+
 	* Fix bug where nco_var_lst_dvd_trv() was called with cnk_map, cnk_plc instead of pck_map, pck_plc
 
 2014-01-02  Charlie Zender  <zender@uci.edu>

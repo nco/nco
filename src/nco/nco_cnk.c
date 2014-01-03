@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.73 2014-01-03 20:02:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.74 2014-01-03 20:37:06 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -55,6 +55,10 @@ nco_cnk_map_sng_get /* [fnc] Convert chunking map enum to string */
     return "scl";
   case nco_cnk_map_prd:
     return "prd";
+  case nco_cnk_map_lfp:
+    return "lfp";
+  case nco_cnk_map_xst:
+    return "xst";
   default: nco_dfl_case_cnk_map_err(); break;
   } /* end switch */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
@@ -270,6 +274,10 @@ nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
   if(!strcmp(nco_cnk_map_sng,"cnk_map_scl")) return nco_cnk_map_scl;
   if(!strcmp(nco_cnk_map_sng,"prd")) return nco_cnk_map_prd;
   if(!strcmp(nco_cnk_map_sng,"cnk_map_prd")) return nco_cnk_map_prd;
+  if(!strcmp(nco_cnk_map_sng,"lfp")) return nco_cnk_map_lfp;
+  if(!strcmp(nco_cnk_map_sng,"cnk_map_lfp")) return nco_cnk_map_lfp;
+  if(!strcmp(nco_cnk_map_sng,"xst")) return nco_cnk_map_xst;
+  if(!strcmp(nco_cnk_map_sng,"cnk_map_xst")) return nco_cnk_map_xst;
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified chunking map %s\n",nco_prg_nm_get(),fnc_nm,nco_cnk_map_sng);
   nco_exit(EXIT_FAILURE);
@@ -768,6 +776,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     (void)fprintf(stderr,"%s: ERROR cnk_plc = %s not yet supported\n",nco_prg_nm_get(),nco_cnk_plc_sng_get(cnk_plc));
     nco_exit(EXIT_FAILURE);
   } /* endif */
+  if(cnk_map == nco_cnk_map_xst || cnk_map == nco_cnk_map_lfp){
+    (void)fprintf(stderr,"%s: ERROR cnk_map = %s not yet supported\n",nco_prg_nm_get(),nco_cnk_map_sng_get(cnk_map));
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
 
   /* Does output file support chunking? */
   (void)nco_inq_format(grp_id_out,&fl_fmt);
@@ -783,7 +795,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   } /* endif cnk_sz_scl */
 
   if(FIRST_INFO && nco_dbg_lvl_get() >= nco_dbg_fl){
-    (void)fprintf(stdout,"%s: INFO Performing chunking or unchunking\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: INFO User requested chunking or unchunking\n",nco_prg_nm_get());
     FIRST_INFO=False;
     if(nco_dbg_lvl_get() >= nco_dbg_scl){
       (void)fprintf(stdout,"cnk_plc: %s\n",nco_cnk_plc_sng_get(cnk_plc));
@@ -907,6 +919,11 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   /* Loop over dimensions */
   for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+
+    if(cnk_map == nco_cnk_map_xst){
+      /* fxm Set chunksizes to existing sizes for this variable */
+      ;
+    } /* !nco_cnk_map_xst */
 
     /* Is this a record dimension? */
     if(dmn_cmn[dmn_idx].is_rec_dmn){

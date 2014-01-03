@@ -78,7 +78,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.116 2013-12-30 06:49:43 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.117 2014-01-03 20:37:06 zender Exp $";
   
  data:
   area=10.,10.;
@@ -407,6 +407,9 @@ netcdf in_grp {
   three:_ChunkSizes=1;
   three:_Endianness="big";
 
+    int four(lat);
+  four:_ChunkSizes=2;
+
     int var_cmp(lat);
   var_cmp:purpose="Variable with compression. Original _DeflateLevel = 1";
   var_cmp:_DeflateLevel = 1;
@@ -427,6 +430,7 @@ netcdf in_grp {
     one=1,1;
     two=2,2;
     three=3,3;
+    four=4,4;
     var_cmp=1,1;
     var_cmp_0=1,1;
     var_cmp_1=1,1;
