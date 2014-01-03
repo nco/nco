@@ -4,7 +4,7 @@
 
 	* Verified nccopy does not preserve pre-set _Chunksizes when copying variables
 
-	* Revert to calling nco_cnk_sz_set_trv() only when user-specified
+	* Revert to completing nco_cnk_sz_set_trv() only when user-specified
 
 	* Fix bug where nco_var_lst_dvd_trv() was called with cnk_map, cnk_plc instead of pck_map, pck_plc
 

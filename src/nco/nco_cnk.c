@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.74 2014-01-03 20:37:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.75 2014-01-03 20:43:53 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -743,7 +743,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   nc_type var_typ_dsk; /* [nbr] Variable type */
 
-  nco_bool flg_usr_rqs=False; /* [flg] User requested checking */
+  nco_bool flg_usr_rqs; /* [flg] User requested checking */
   nco_bool is_rec_var; /* [flg] Record variable */
   nco_bool is_chk_var; /* [flg] Checksummed variable */
   nco_bool is_cmp_var; /* [flg] Compressed variable */
@@ -757,15 +757,15 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   static short FIRST_INFO=True;
 
   /* Initialize local convenience variables */
+  flg_usr_rqs=cnk->flg_usr_rqs;
+  cnk_nbr=cnk->cnk_nbr;
   cnk_nbr=cnk->cnk_nbr;
   cnk_map=cnk->cnk_map;
   cnk_plc=cnk->cnk_plc;
   cnk_sz_scl=cnk->cnk_sz_scl;
   cnk_dmn=cnk->cnk_dmn;
 
-  /* Did user explicitly request chunking? */
-  if(cnk_nbr > 0 || cnk_sz_scl > 0UL || cnk_map != nco_cnk_map_nil || cnk_plc != nco_cnk_plc_nil) flg_usr_rqs=True;
-
+  /* For now only use this routine when user explicitly sets a chunking option */
   if(!flg_usr_rqs) return;
 
   /* Object must be a variable */
