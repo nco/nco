@@ -1,6 +1,8 @@
 2014-01-02  Charlie Zender  <zender@uci.edu>
 
-	* Get ready to fix nco_cnk_sz_set_trv() bug where nco_cnk_dsk_inq() was called with output not input ID
+	* Refactored chunking code. Exposed old bug in is_chunked flag.
+
+	* Fixed nco_cnk_sz_set_trv() bug where nco_cnk_dsk_inq() was called with output not input ID
 
 	* Replace cnk_sct with cnk_dmn, cnk with cnk_dmn in preparation	for new chunk structure
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.454 2014-01-02 22:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.455 2014-01-03 06:04:07 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -761,19 +761,21 @@ extern "C" {
     ptr_unn val;
   } att_sct;
 
-  /* Chunking structure */
-  typedef struct{ /* cnk_sct */
-    char *nm; /* [sng] Dimension name */
-    size_t sz; /* [nbr] Chunk size */
-    nco_bool is_usr_spc_cnk; /* [flg] Chunk size was user-specified */
-  } cnk_sct;
-  
   /* Per-dimension chunking specification */
   typedef struct{ /* cnk_dmn_sct */
     char *nm; /* [sng] Dimension name */
     size_t sz; /* [nbr] Chunk size */
     nco_bool is_usr_spc_cnk; /* [flg] Chunk size was user-specified */
   } cnk_dmn_sct;
+  
+  /* Chunking structure */
+  typedef struct{ /* cnk_sct */
+    int cnk_nbr; /* [nbr] Number of user-specified chunk sizes */
+    cnk_dmn_sct **cnk_dmn; /* [sct] User-specified per-dimension chunking information */
+    int cnk_map; /* [enm] Chunking map */
+    int cnk_plc; /* [enm] Chunking policy */
+    size_t cnk_sz_scl; /* I [nbr] Chunk size scalar */
+  } cnk_sct;
   
   /* GTT structure to break full path name into components */
   typedef struct{ 

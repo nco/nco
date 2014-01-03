@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.165 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.166 2014-01-03 06:04:07 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -1260,32 +1260,32 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
     /* NB: all !strcmp()'s except "msk_" which uses strstr() */
     if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm))) var_op_typ=fix_typ;
     /* Known "multi-dimensional coordinates" in CCSM-like model output:
-    lat, lon, lev are normally 1-D coordinates
-    Known exceptions:
-    lat and lon are "2-D coordinates" in NARCCAP output
-    NARCCAP specifies lat and lon in "coordinates" attribute of 2-D fields
-    latixy and longxy are "2-D coordinates" in CLM output
-    CLM does not specify latixy and longxy in "coordinates" attribute of any fields
-    NARCCAP output gives all "coordinate-like" fields an "axis" attribute
-    This includes the record coordinate (i.e., "time") which both ncra and ncwa _should_ process
-    CLM does not give an "axis" attribute to any fields
-    One method of chasing down all "coordinate-like" fields is to look
-    for the field name in the "coordinates" attribute of any variable.
-    However, this will miss (false-negative) the case when no variables 
-    use an N-D coordinate-like variable as a coordinate. 
-    And this may hit (false-positive) the record coordinate (often "time")
-    which should be averaged by ncra, though perhaps not by nces.
-    "coordinate-like" variables that should be "fixed", and not
-    differenced, interpolated, or ensemble-averaged, include those 
-    satisfying these conditions:
-    0. Traditional coordinate (1-D variable same name as its dimension)
-    1. Present in a "coordinates" attribute (except "time" for ncra)
-    2. Present in a "bounds" attribute (except "time_bnds" for ncra)
-    3. Contain an "axis" attribute (except "time") fxm not done yet
-    4. Found in empirical list of variables
-    NB: In the above algorithm discussion, "time" is my shorthand 
-    for "the record variable, if any" */
-
+       lat, lon, lev are normally 1-D coordinates
+       Known exceptions:
+       lat and lon are "2-D coordinates" in NARCCAP output
+       NARCCAP specifies lat and lon in "coordinates" attribute of 2-D fields
+       latixy and longxy are "2-D coordinates" in CLM output
+       CLM does not specify latixy and longxy in "coordinates" attribute of any fields
+       NARCCAP output gives all "coordinate-like" fields an "axis" attribute
+       This includes the record coordinate (i.e., "time") which both ncra and ncwa _should_ process
+       CLM does not give an "axis" attribute to any fields
+       One method of chasing down all "coordinate-like" fields is to look
+       for the field name in the "coordinates" attribute of any variable.
+       However, this will miss (false-negative) the case when no variables 
+       use an N-D coordinate-like variable as a coordinate. 
+       And this may hit (false-positive) the record coordinate (often "time")
+       which should be averaged by ncra, though perhaps not by nces.
+       "coordinate-like" variables that should be "fixed", and not
+       differenced, interpolated, or ensemble-averaged, include those 
+       satisfying these conditions:
+       0. Traditional coordinate (1-D variable same name as its dimension)
+       1. Present in a "coordinates" attribute (except "time" for ncra)
+       2. Present in a "bounds" attribute (except "time_bnds" for ncra)
+       3. Contain an "axis" attribute (except "time") fxm not done yet
+       4. Found in empirical list of variables
+       NB: In the above algorithm discussion, "time" is my shorthand 
+       for "the record variable, if any" */
+    
     /* Conditions #1 and #2 are already implemented above in the case() statement */
     /* Check condition #4 above: */
     if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_op_typ=fix_typ;
@@ -1310,4 +1310,3 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
   *prc=var_op_typ;
 
 } /* end nco_var_lst_dvd_trv */
-

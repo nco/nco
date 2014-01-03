@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.25 2014-01-02 22:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.26 2014-01-03 06:04:07 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -64,6 +64,15 @@ const char * /* O [sng] Chunking policy string */
 nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
 (const int nco_cnk_plc); /* I [enm] Chunking policy */
 
+int /* [rcd] [enm] Return code */
+nco_cnk_ini /* [fnc] Create structure with all chunking information */
+(cnk_sct * const cnk, /* O [sct] Chunking structure */
+ CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg), /* I [sng] List of user-specified chunksizes */
+ const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
+ const int cnk_map, /* I [enm] Chunking map */
+ const int cnk_plc, /* I [enm] Chunking policy */
+ const size_t cnk_sz_scl); /* I [nbr] Chunk size scalar */
+
 cnk_dmn_sct ** /* O [sct] Structure list with user-specified per-dimension chunking information */
 nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements */
 (const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
@@ -90,13 +99,10 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
  const int cnk_nbr); /* I [nbr] Number of dimensions with user-specified chunking */
 
 void
-nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_set()) */
-(const int grp_id, /* I [id] netCDF group ID in output file */
- int * const cnk_map_ptr, /* I/O [enm] Chunking map */
- int * const cnk_plc_ptr, /* I/O [enm] Chunking policy */
- const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr, /* I [nbr] Number of dimensions with user-specified chunking */
+nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_set() ) */
+(const int grp_id_in, /* I [id] netCDF group ID in input file */
+ const int grp_id_out, /* I [id] netCDF group ID in output file */
+ const cnk_sct * const cnk, /* I [sct] Chunking structure */
  const trv_sct * const var_trv); /* I [sct] Variable Object */
 
 int /* O [enm] Chunking map */

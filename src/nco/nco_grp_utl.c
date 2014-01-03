@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1150 2014-01-02 22:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1151 2014-01-03 06:04:07 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1496,11 +1496,7 @@ void
 nco_xtr_dfn                          /* [fnc] Define extracted groups, variables, and attributes in output file */
 (const int nc_id,                    /* I [ID] netCDF input file ID */
  const int nc_out_id,                /* I [ID] netCDF output file ID */
- int * const cnk_map_ptr,            /* I [enm] Chunking map */
- int * const cnk_plc_ptr,            /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,            /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                  /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,          /* I [sct] Chunking structure */
  const int dfl_lvl,                  /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,          /* I [sct] GPE structure */
  const md5_sct * const md5,          /* I [sct] MD5 configuration */
@@ -1642,10 +1638,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
       if(gpe) nco_gpe_chk(grp_out_fll,var_trv.nm,&gpe_nm,&nbr_gpe_nm);                       
 
       /* Define variable in output file */
-      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
-
-      /* Set chunksize parameters */
-      if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,cnk_map_ptr,cnk_plc_ptr,cnk_sz_scl,cnk_dmn,cnk_nbr,&var_trv);
+      var_out_id=nco_cpy_var_dfn_trv(nc_id,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,&var_trv,trv_tbl);
 
       /* Copy variable's attributes */
       if(CPY_VAR_METADATA){
@@ -3374,11 +3367,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_id_2,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
@@ -3418,8 +3407,6 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   prc_typ_enm prc_typ_1;         /* [enm] Processing type */
   prc_typ_enm prc_typ_2;         /* [enm] Processing type */
 
-  trv_sct *rnk_gtr;              /* [sct] Object of greater or equal rank */
-
   assert(trv_1->nco_typ == nco_obj_typ_var);
   assert(trv_1->flg_xtr);
 
@@ -3452,14 +3439,13 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   var_prc_2=nco_var_fll_trv(grp_id_2,var_id_2,trv_2,trv_tbl_2);
 
   if(var_prc_1->nbr_dim >= var_prc_2->nbr_dim) RNK_1_GTR=True; else RNK_1_GTR=False;
-  rnk_gtr= (RNK_1_GTR) ? trv_1 : trv_2;
   var_prc_gtr= (RNK_1_GTR) ? var_prc_1 : var_prc_2;
   var_prc_lsr= (RNK_1_GTR) ? var_prc_2 : var_prc_1;
   var_prc_out= (RNK_1_GTR) ? nco_var_dpl(var_prc_1) : nco_var_dpl(var_prc_2);
 
   /* Get processing type */
-  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
-  (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
+  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk->cnk_map,cnk->cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+  (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk->cnk_map,cnk->cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
 
   /* Conform type and rank for processed variables */
   if(prc_typ_1 == prc_typ && prc_typ_2 == prc_typ){
@@ -3540,10 +3526,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
     if(!rec_dmn_nm && rec_dmn_nm_2->lst) rec_dmn_nm=(char *)strdup(rec_dmn_nm_2->lst[0].nm);
 
     /* Define variable in output file. NB: Use file/variable of greater rank as template */
-    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
-
-    /* Set chunksize parameters */
-    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,rnk_gtr);
+    var_out_id= (RNK_1_GTR) ? nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_1,trv_tbl_1) : nco_cpy_var_dfn_trv(nc_id_2,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,rec_dmn_nm,trv_2,trv_tbl_2);
 
     /* Copy variable's attributes */
     if(RNK_1_GTR) (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); else (void)nco_att_cpy(grp_id_2,grp_out_id,var_id_2,var_out_id,PCK_ATT_CPY);
@@ -3637,11 +3620,7 @@ void
 nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,         /* I [sct] Chunking structure */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
@@ -3692,7 +3671,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
   var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1,trv_tbl_1);     
 
   var_prc_out=nco_var_dpl(var_prc_1);
-  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk_map,cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk->cnk_map,cnk->cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
 
   if(prc_typ_1 != fix_typ){
     var_prc_1->val.vp=nco_free(var_prc_1->val.vp);
@@ -3714,11 +3693,8 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
     /* Detect duplicate GPE names in advance, then exit with helpful error */
     if(gpe)(void)nco_gpe_chk(grp_out_fll,trv_1->nm,&gpe_nm,&nbr_gpe_nm);                       
 
-    /* Define variable in output file. */
-    var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,grp_out_fll,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
-
-    /* Set chunksize parameters */
-    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_out_id,&cnk_map,&cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,trv_1);
+    /* Define variable in output file */
+    var_out_id=nco_cpy_var_dfn_trv(nc_id_1,nc_out_id,cnk,grp_out_fll,dfl_lvl,gpe,(char *)NULL,trv_1,trv_tbl_1);
 
     /* Copy variable's attributes */
     (void)nco_att_cpy(grp_id_1,grp_out_id,var_id_1,var_out_id,PCK_ATT_CPY); 
@@ -3792,11 +3768,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
 (const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
  const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
@@ -3820,7 +3792,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
       if(trv_tbl_2->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_2->lst[uidx].nm)){
         trv_sct *trv_2=&trv_tbl_2->lst[uidx];
         rel_mch=True;
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table 2 */
 
@@ -3830,7 +3802,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
       if(trv_tbl_1->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_trv->nm,trv_tbl_1->lst[uidx].nm)){
         trv_sct *trv_1=&trv_tbl_1->lst[uidx];
         rel_mch=True;
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table 2 */
   } /* !flg_tbl_1 */
@@ -3844,11 +3816,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_id_2,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
@@ -3893,7 +3861,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
       if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports common element to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll); 
 
       /* Process common object */
-      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
+      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,True,flg_dfn);
 
     }else{
       /* Object exists and is flagged for extraction only in one file */
@@ -3907,10 +3875,10 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,True,trv_tbl_1,trv_tbl_2,flg_dfn);
 
           /* Match not found in file 2, copy instead object from file 1 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
         }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
 	  /* Object exists and is flagged for extraction only in file 2 */
@@ -3918,10 +3886,10 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,True,trv_tbl_1,trv_tbl_2,flg_dfn);
 
           /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
         } /* fl_2 */
 
@@ -3935,10 +3903,10 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 1 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_1->nm_fll);
 
           /* Try relative match in file 2 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,True,False,trv_tbl_1,trv_tbl_2,flg_dfn);
 
           /* Match was not found in file 2, copy instead object from file 1 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
+          if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
         }else if(trv_2 && cmn_lst[idx].flg_in_fl[0] == False && cmn_lst[idx].flg_in_fl[1] && trv_2->flg_xtr){
 	  /* Object exists and is flagged for extraction only in file 2 */
@@ -3946,10 +3914,10 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
           if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s reports element in file 2 to output:%s\n",nco_prg_nm_get(),fnc_nm,trv_2->nm_fll);
 
           /* Try relative match in file 1 */
-          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
+          has_mch=nco_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,False,False,trv_tbl_1,trv_tbl_2,flg_dfn);
 
           /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
+          if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
         } /* fl_2 */
 
@@ -4263,6 +4231,7 @@ int                                 /* O [id] Output file variable ID */
 nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output file */
 (const int nc_in_id,                /* I [ID] netCDF input file ID */
  const int nc_out_id,               /* I [ID] netCDF output file ID */
+ const cnk_sct * const cnk,         /* I [sct] Chunking structure */
  const char * const grp_out_fll,    /* I [sng] Output group name */
  const int dfl_lvl,                 /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,         /* I [sct] GPE structure */
@@ -4742,7 +4711,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
 
-    /* NB: Copy/set chunking information in nco_cnk_sz_set(), not here! */
+    /* Set chunksize parameters */
+    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv);
 
   } /* !NC_FORMAT_NETCDF4 */ 
 

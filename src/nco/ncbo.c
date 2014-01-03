@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.277 2014-01-02 22:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.278 2014-01-03 06:04:07 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,11 +132,11 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.277 2014-01-02 22:56:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.277 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.278 2014-01-03 06:04:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.278 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
-  cnk_dmn_sct **cnk_dmn=NULL_CEWI;
+  cnk_sct cnk; /* [sct] Chunking structure */
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -497,8 +497,8 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
-  /* Make uniform list of user-specified chunksizes */
-  if(cnk_nbr > 0) cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);
+  /* Create structure with all chunking information */
+  rcd+=nco_cnk_ini(&cnk,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_scl);
 
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
@@ -574,7 +574,7 @@ main(int argc,char **argv)
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
     
   /* Process common objects (DEFINE mode, True as flg_dfn parameter) */
-  (void)nco_prc_cmn_nm(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,(nco_bool)True);
+  (void)nco_prc_cmn_nm(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,(nco_bool)True);
 
   /* Copy global attributes from file 1 */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -594,7 +594,7 @@ main(int argc,char **argv)
   } /* hdr_pad */
 
   /* Process common objects (WRITE mode, False as flg_dfn parameter) */
-  (void)nco_prc_cmn_nm(in_id_1,in_id_2,out_id,cnk_map,cnk_plc,cnk_sz_scl,cnk_dmn,cnk_nbr,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,(nco_bool)False);
+  (void)nco_prc_cmn_nm(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,(nco_bool)False);
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
@@ -632,7 +632,7 @@ main(int argc,char **argv)
     for(idx=0;idx<aux_nbr;idx++) aux_arg[idx]=(char *)nco_free(aux_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk_dmn=nco_cnk_lst_free(cnk_dmn,cnk_nbr); 
+    if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     trv_tbl_free(trv_tbl_1);
     trv_tbl_free(trv_tbl_2);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);

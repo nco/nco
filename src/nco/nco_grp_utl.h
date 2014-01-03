@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.432 2014-01-02 22:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.433 2014-01-03 06:04:07 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -218,11 +218,7 @@ void
 nco_xtr_dfn                           /* [fnc] Define extracted groups, variables, and attributes in output file */
 (const int nc_id,                     /* I [ID] netCDF input file ID */
  const int nc_out_id,                 /* I [ID] netCDF output file ID */
- int * const cnk_map_ptr,             /* I [enm] Chunking map */
- int * const cnk_plc_ptr,             /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,             /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                   /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,           /* I [sct] Chunking structure */
  const int dfl_lvl,                   /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,           /* I [sng] GPE structure */
  const md5_sct * const md5,           /* I [sct] MD5 configuration */
@@ -345,11 +341,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_id_2,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
@@ -370,11 +362,7 @@ void
 nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
@@ -398,11 +386,7 @@ nco_rel_mch                            /* [fnc] Relative match of object in tabl
 (const int nc_id_1,                    /* I [id] netCDF input-file ID from file 1 */
  const int nc_id_2,                    /* I [id] netCDF input-file ID from file 2 */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
@@ -421,11 +405,7 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_id_2,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- int cnk_map,                          /* I [enm] Chunking map */
- int cnk_plc,                          /* I [enm] Chunking policy */
- const size_t cnk_sz_scl,              /* I [nbr] Chunk size scalar */
- CST_X_PTR_CST_PTR_CST_Y(cnk_dmn_sct,cnk_dmn), /* I [sct] Chunking information */
- const int cnk_nbr,                    /* I [nbr] Number of dimensions with user-specified chunking */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
@@ -463,6 +443,7 @@ int                                    /* O [id] Output file variable ID */
 nco_cpy_var_dfn_trv                    /* [fnc] Define specified variable in output file */
 (const int nc_in_id,                   /* I [ID] netCDF input file ID */
  const int nc_out_id,                  /* I [ID] netCDF output file ID */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
  const char * const grp_out_fll,       /* I [sng] Output group name */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
