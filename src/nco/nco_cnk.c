@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.70 2014-01-03 06:04:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.71 2014-01-03 19:33:41 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -450,8 +450,8 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   if(!flg_cnk) return;
 
   /* Set actual chunk policy and map to defaults as necessary
-  This rather arcane procedure saves a few lines of code in calling program
-  (because defaults not set there) while maintaining correctness of arguments */
+     This rather arcane procedure saves a few lines of code in calling program
+     (because defaults not set there) while maintaining correctness of arguments */
   if(*cnk_map_ptr == nco_cnk_map_nil) *cnk_map_ptr=nco_cnk_map_get((char *)NULL);
   if(*cnk_plc_ptr == nco_cnk_plc_nil) *cnk_plc_ptr=nco_cnk_plc_get((char *)NULL);
   cnk_map=*cnk_map_ptr;
@@ -777,7 +777,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   } /* endif cnk_sz_scl */
 
   if(FIRST_INFO && nco_dbg_lvl_get() >= nco_dbg_fl){
-    (void)fprintf(stdout,"%s: INFO Requested chunking or unchunking\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: INFO Performing chunking or unchunking\n",nco_prg_nm_get());
     FIRST_INFO=False;
     if(nco_dbg_lvl_get() >= nco_dbg_scl){
       (void)fprintf(stdout,"cnk_plc: %s\n",nco_cnk_plc_sng_get(cnk_plc));
@@ -785,7 +785,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       (void)fprintf(stdout,"cnk_sz_scl: %lu\n",(unsigned long)cnk_sz_scl);
       if(cnk_nbr > 0){
 	(void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
-	for(int cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
+p	for(int cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
       } /* cnk_nbr == 0 */
     } /* endif dbg */
   } /* endif dbg */
