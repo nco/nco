@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1152 2014-01-03 17:56:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1153 2014-01-03 18:30:31 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3444,8 +3444,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   var_prc_out= (RNK_1_GTR) ? nco_var_dpl(var_prc_1) : nco_var_dpl(var_prc_2);
 
   /* Get processing type */
-  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk->cnk_map,cnk->cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
-  (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk->cnk_map,cnk->cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
+  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+  (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
 
   /* Conform type and rank for processed variables */
   if(prc_typ_1 == prc_typ && prc_typ_2 == prc_typ){
@@ -3620,7 +3620,7 @@ void
 nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
 (const int nc_id_1,                    /* I [id] netCDF input-file ID */
  const int nc_out_id,                  /* I [id] netCDF output-file ID */
- const cnk_sct * const cnk,         /* I [sct] Chunking structure */
+ const cnk_sct * const cnk,            /* I [sct] Chunking structure */
  const int dfl_lvl,                    /* I [enm] Deflate level [0..9] */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
@@ -3671,7 +3671,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
   var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1,trv_tbl_1);     
 
   var_prc_out=nco_var_dpl(var_prc_1);
-  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,cnk->cnk_map,cnk->cnk_plc,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
 
   if(prc_typ_1 != fix_typ){
     var_prc_1->val.vp=nco_free(var_prc_1->val.vp);

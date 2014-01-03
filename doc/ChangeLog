@@ -1,3 +1,7 @@
+2014-01-03  Charlie Zender  <zender@uci.edu>
+
+	* Fix bug where nco_var_lst_dvd_trv() was called with cnk_map, cnk_plc instead of pck_map, pck_plc
+
 2014-01-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.0 release procedure:
