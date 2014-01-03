@@ -1,5 +1,7 @@
 2014-01-03  Charlie Zender  <zender@uci.edu>
 
+	* Implement plc_xpl and correct detour when must_be_chunked
+
 	* Add stubs for two new (and not-yet-supported) chunking maps: map_xst and map_lfp
 
 	* Verified nccopy does not preserve pre-set _Chunksizes when copying variables
