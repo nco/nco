@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.66 2014-01-03 07:51:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.67 2014-01-03 19:44:44 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -178,7 +178,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
   } /* end switch */
 } /* end nco_opr_drv() */
 
-char * /* O [enm] Arithmetic operation */
+const char * /* O [enm] Arithmetic operation */
 nco_op_typ_cf_sng /* [fnc] Convert arithmetic operation type enum to string */
 (const int nco_op_typ) /* I [enm] Arithmetic operation type */
 {

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.71 2014-01-03 19:33:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.72 2014-01-03 19:44:44 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -198,6 +198,9 @@ nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements
     cnk_dmn[idx]->sz=strtoul(arg_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[1],"strtoul",sng_cnv_rcd);
     
+    /* Placeholder for full dimension name */
+    cnk_dmn[idx]->nm_fll=NULL;
+
     /* Free current pointer array to strings
        Strings themselves are untouched and will be free()'d with chunk structures 
        in nco_cnk_lst_free() */
@@ -217,7 +220,7 @@ nco_cnk_lst_free /* [fnc] Free memory associated with chunking structure list */
   int idx;
 
   for(idx=0;idx<cnk_nbr;idx++){
-    cnk_lst[idx]=nco_cnk_free(cnk_lst[idx]);
+    cnk_lst[idx]=nco_cnk_dmn_free(cnk_lst[idx]);
   } /* end loop over idx */
 
   /* Free structure pointer last */
@@ -227,17 +230,18 @@ nco_cnk_lst_free /* [fnc] Free memory associated with chunking structure list */
 } /* end nco_cnk_lst_free() */
 
 cnk_dmn_sct * /* O [sct] Pointer to free'd chunking structure */
-nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
+nco_cnk_dmn_free /* [fnc] Free all memory associated with chunking structure */
 (cnk_dmn_sct *cnk_dmn) /* I/O [sct] Chunking structure to free */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with a dynamically allocated chunking structure */
-  cnk_dmn->nm=(char *)nco_free(cnk_dmn->nm);
+  if(cnk_dmn->nm) cnk_dmn->nm=(char *)nco_free(cnk_dmn->nm);
+  if(cnk_dmn->nm_fll) cnk_dmn->nm_fll=(char *)nco_free(cnk_dmn->nm_fll);
   /* Free structure pointer last */
-  cnk_dmn=(cnk_dmn_sct *)nco_free(cnk_dmn);
+  if(cnk_dmn) cnk_dmn=(cnk_dmn_sct *)nco_free(cnk_dmn);
 
   return NULL;
-} /* end nco_cnk_free() */
+} /* end nco_cnk_dmn_free() */
 
 int /* O [enm] Chunking map */
 nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
@@ -785,7 +789,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       (void)fprintf(stdout,"cnk_sz_scl: %lu\n",(unsigned long)cnk_sz_scl);
       if(cnk_nbr > 0){
 	(void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
-p	for(int cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
+	for(int cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
       } /* cnk_nbr == 0 */
     } /* endif dbg */
   } /* endif dbg */

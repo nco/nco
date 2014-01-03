@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.456 2014-01-03 19:33:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.457 2014-01-03 19:44:44 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -761,7 +761,7 @@ extern "C" {
     ptr_unn val;
   } att_sct;
 
-  /* Per-dimension chunking specification */
+  /* Per-dimension chunking specification (free with nco_cnk_dmn_free()) */
   typedef struct{ /* cnk_dmn_sct */
     char *nm; /* [sng] Dimension name */
     char *nm_fll; /* [sng] Full dimension name */

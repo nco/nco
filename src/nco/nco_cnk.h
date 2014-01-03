@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.26 2014-01-03 06:04:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.27 2014-01-03 19:44:44 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -84,7 +84,7 @@ nco_cnk_lst_free /* [fnc] Free memory associated with chunking structure list */
  const int cnk_nbr); /* I [nbr] Number of chunking structures in list */
 
 cnk_dmn_sct * /* O [sct] Pointer to free'd chunking structure */
-nco_cnk_free /* [fnc] Free all memory associated with chunking structure */
+nco_cnk_dmn_free /* [fnc] Free all memory associated with chunking structure */
 (cnk_dmn_sct *cnk_dmn); /* I/O [sct] Chunking structure to free */
 
 void
