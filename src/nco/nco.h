@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.457 2014-01-03 19:44:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.458 2014-01-03 20:02:09 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -771,6 +771,7 @@ extern "C" {
   
   /* Chunking structure */
   typedef struct{ /* cnk_sct */
+    nco_bool flg_usr_rqs; /* [flg] User requested chunking */
     int cnk_nbr; /* [nbr] Number of user-specified chunk sizes */
     cnk_dmn_sct **cnk_dmn; /* [sct] User-specified per-dimension chunking information */
     int cnk_map; /* [enm] Chunking map */

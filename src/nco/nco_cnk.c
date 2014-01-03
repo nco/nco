@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.72 2014-01-03 19:44:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.73 2014-01-03 20:02:09 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -124,18 +124,20 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   int rcd=0; /* [enm] Return code  */
 
   /* Initialize */
+  cnk->flg_usr_rqs=False;
   cnk->cnk_dmn=NULL_CEWI;
   cnk->cnk_nbr=cnk_nbr;
   cnk->cnk_map=cnk_map;
   cnk->cnk_plc=cnk_plc;
   cnk->cnk_sz_scl=cnk_sz_scl;
 
+  /* Did user explicitly request chunking? */
+  if(cnk_nbr > 0 || cnk_sz_scl > 0UL || cnk_map != nco_cnk_map_nil || cnk_plc != nco_cnk_plc_nil) cnk->flg_usr_rqs=True;
+
   /* Make uniform list of user-specified per-dimension chunksizes */
   if(cnk->cnk_nbr > 0) cnk->cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);
 
-  /* Set actual chunk policy and map to defaults as necessary
-     This rather arcane procedure saves a few lines of code in calling program
-     (because defaults not set there) while maintaining correctness of arguments */
+  /* Set actual chunk policy and map to defaults as necessary */
   if(cnk_map == nco_cnk_map_nil) cnk->cnk_map=nco_cnk_map_get((char *)NULL);
   if(cnk_plc == nco_cnk_plc_nil) cnk->cnk_plc=nco_cnk_plc_get((char *)NULL);
 
@@ -733,7 +735,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   nc_type var_typ_dsk; /* [nbr] Variable type */
 
-  nco_bool flg_cnk=False; /* [flg] Chunking requested */
+  nco_bool flg_usr_rqs=False; /* [flg] User requested checking */
   nco_bool is_rec_var; /* [flg] Record variable */
   nco_bool is_chk_var; /* [flg] Checksummed variable */
   nco_bool is_cmp_var; /* [flg] Compressed variable */
@@ -754,9 +756,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   cnk_dmn=cnk->cnk_dmn;
 
   /* Did user explicitly request chunking? */
-  if(cnk_nbr > 0 || cnk_sz_scl > 0UL || cnk_map != nco_cnk_map_nil || cnk_plc != nco_cnk_plc_nil) flg_cnk=True;
+  if(cnk_nbr > 0 || cnk_sz_scl > 0UL || cnk_map != nco_cnk_map_nil || cnk_plc != nco_cnk_plc_nil) flg_usr_rqs=True;
 
-  if(!flg_cnk) return;
+  if(!flg_usr_rqs) return;
 
   /* Object must be a variable */
   assert(var_trv->nco_typ == nco_obj_typ_var);
