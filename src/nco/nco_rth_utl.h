@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.41 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.42 2014-01-03 07:51:56 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -46,6 +46,10 @@ extern "C" {
 int /* O [enm] Arithmetic operation */
 nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 (const char * const nco_op_sng); /* I [sng] User-specified operation */
+
+char * /* O [enm] Arithmetic operation */
+nco_op_typ_cf_sng /* [fnc] Convert arithmetic operation type enum to string */
+(const int nco_op_typ); /* I [enm] Arithmetic operation type */
 
 void 
 nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */

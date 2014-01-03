@@ -1,6 +1,14 @@
 2014-01-02  Charlie Zender  <zender@uci.edu>
 
-	* Refactored chunking code. Exposed old bug in is_chunked flag.
+	* NCO 4.4.0 release procedure:
+ 	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn
+	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
+	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
+
+	* Add nco_op_typ_cf_sng() for cell_methods functionality
+
+	* Refactored chunking code. Exposed old bug in is_chunked flag. Many regressions.
 
 	* Fixed nco_cnk_sz_set_trv() bug where nco_cnk_dsk_inq() was called with output not input ID
 
@@ -11,12 +19,6 @@
 	* Tidy nco_cnk_sz_set_trv()
 
 2013-12-31  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.0 release procedure:
- 	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn
-	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
-	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
 	* Prevent printing hidden attributes on netCDF3 files
 

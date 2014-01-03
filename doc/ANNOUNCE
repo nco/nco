@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.672 2013-12-31 21:11:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.673 2014-01-03 07:51:56 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -200,6 +200,9 @@ A. ncks XML/NcML no longer creates a _FillValue attribute for unsigned
    types. It did so in NCO 4.3.7--4.3.9 because Unidata toolsUI does
    so, but apparently this is a bug not a feature so NCO no longer
    emulates it. 
+
+A. Chunking options were not working quite as intended for some time.
+   Fixed. fxm.
 
 KNOWN ISSUES NOT YET FIXED:
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.168 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.169 2014-01-03 07:51:56 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -464,7 +464,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 	if(PCK_ATT_CPY || var_out_id==NC_GLOBAL) att_typ_out=att_typ_in; else (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
       } /* flg_autoconvert */
 
-      if(att_typ_out==att_typ_in){
+      if(att_typ_out == att_typ_in){
         aed.type=att_typ_out; /* Type of attribute */
         aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
         (void)nco_get_att(in_id,var_in_id,att_nm,aed.val.vp,att_typ_out);

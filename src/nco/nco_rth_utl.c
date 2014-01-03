@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.65 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.66 2014-01-03 07:51:56 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -177,6 +177,33 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/nces
     break;
   } /* end switch */
 } /* end nco_opr_drv() */
+
+char * /* O [enm] Arithmetic operation */
+nco_op_typ_cf_sng /* [fnc] Convert arithmetic operation type enum to string */
+(const int nco_op_typ) /* I [enm] Arithmetic operation type */
+{
+  /* Purpose: Convert arithmetic operation type enum to string for use in CF Cell Methods 
+     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#appendix-cell-methods */
+  switch(nco_op_typ){
+  case nco_op_avg: return "mean"; break; /* [enm] Average */
+  case nco_op_min: return "minimum"; break; /* [enm] Minimum value */
+  case nco_op_max: return "maximum"; break; /* [enm] Maximum value */
+  case nco_op_ttl: return "sum"; break; /* [enm] Linear sum */
+  case nco_op_sqravg: return "TBD"; break; /* [enm] Square of mean */
+  case nco_op_avgsqr: return "variance"; break; /* [enm] Mean of sum of squares */
+  case nco_op_sqrt: return "TBD"; break; /* [enm] Square root of mean */
+  case nco_op_rms: return "TBD"; break; /* [enm] Root-mean-square (normalized by N) */
+  case nco_op_rmssdn: return "TBD"; break; /* [enm] Root-mean square normalized by N-1 */
+  case nco_op_add:
+  case nco_op_sbt:
+  case nco_op_mlt:
+  case nco_op_dvd:
+  case nco_op_nil:
+  default:
+    return "BROKEN";
+    break; /* [enm] Nil or undefined operation type */
+  } /* end switch */
+} /* end nco_op_typ_cf_sng() */
 
 int /* O [enm] Arithmetic operation */
 nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */

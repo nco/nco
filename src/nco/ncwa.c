@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.391 2014-01-03 06:04:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.392 2014-01-03 07:51:56 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.391 2014-01-03 06:04:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.391 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.392 2014-01-03 07:51:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.392 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -156,7 +156,7 @@ main(int argc,char **argv)
   extern int optind;
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning
-  Copy appropriate filehandle to variable scoped shared in parallel clause */
+     Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
@@ -427,7 +427,7 @@ main(int argc,char **argv)
 #ifdef _MSC_VER
       (void)fprintf(fp_stdout,"%s: ERROR -B and --mask_condition options unsupported on Windows, which lacks a free, standard parser and lexer. HINT: Break condition into component -m -T -M switches, e.g., use -m ORO -T lt -M 1.0 instead of -B \"ORO < 1\"\n",nco_prg_nm);
       nco_exit(EXIT_FAILURE);
-#endif
+#endif /* !_MSC_VER */
       break;
     case 'b': /* [flg] Retain degenerate dimensions */
       flg_rdd=True;
@@ -451,7 +451,7 @@ main(int argc,char **argv)
       break;
     case 'G': /* Apply Group Path Editing (GPE) to output group */
       /* NB: GNU getopt() optional argument syntax is ugly (requires "=" sign) so avoid it
-      http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
+	 http://stackoverflow.com/questions/1052746/getopt-does-not-parse-optional-arguments-to-parameters */
       gpe=nco_gpe_prs_arg(optarg);
       fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
@@ -777,9 +777,9 @@ main(int argc,char **argv)
 
 #ifdef _OPENMP
     /* OpenMP notes:
-    firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
-    shared(): msk and wgt are not altered within loop
-    private(): wgt_avg does not need initialization */
+       firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
+       shared(): msk and wgt are not altered within loop
+       private(): wgt_avg does not need initialization */
 #pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,nco_dbg_lvl,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,nco_prg_nm,rcd,trv_tbl,var_prc,var_prc_out,wgt_nm)
 #endif /* !_OPENMP */
 
@@ -888,20 +888,20 @@ main(int argc,char **argv)
       NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
       var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,flg_rdd,&ddra_info);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
-      Denominator is also tricky due to sundry normalization options
-      These logical switches are VERY tricky---be careful modifying them */
+	 Denominator is also tricky due to sundry normalization options
+	 These logical switches are VERY tricky---be careful modifying them */
       if(NRM_BY_DNM && DO_CONFORM_WGT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
         /* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
-        averaging operation and may be re-used on next variable.
-        Free wgt_avg after each use but continue to re-use wgt_out */
+	   averaging operation and may be re-used on next variable.
+	   Free wgt_avg after each use but continue to re-use wgt_out */
         wgt_avg=nco_var_dpl(wgt_out);
 
         if(var_prc[idx]->has_mss_val){
           double mss_val_dbl=double_CEWI;
           /* Set denominator to missing value at all locations where variable is missing value
-          If this is accomplished by setting weight to missing value wherever variable is missing value
-          then weight must not be re-used by next variable (which might conform but have missing values in different locations)
-          This is one good reason to copy wgt_out into disposable wgt_avg for each new variable */
+	     If this is accomplished by setting weight to missing value wherever variable is missing value
+	     then weight must not be re-used by next variable (which might conform but have missing values in different locations)
+	     This is one good reason to copy wgt_out into disposable wgt_avg for each new variable */
           /* First, make sure wgt_avg has same missing value as variable */
           (void)nco_mss_val_cp(var_prc[idx],wgt_avg);
           /* Copy missing value into double precision variable */
@@ -929,8 +929,8 @@ main(int argc,char **argv)
 
         if(msk && DO_CONFORM_MSK){
           /* Must mask weight in same fashion as variable was masked
-          If msk and var did not conform then do not mask wgt
-          Ensure wgt_avg has a missing value */
+	     If msk and var did not conform then do not mask wgt
+	     Ensure wgt_avg has a missing value */
           if(!wgt_avg->has_mss_val){
             wgt_avg->has_mss_val=True;
             wgt_avg->mss_val=nco_mss_val_mk(wgt_avg->type);
@@ -940,10 +940,10 @@ main(int argc,char **argv)
         } /* endif weight must be masked */
 
         /* fxm: temporary kludge to make sure weight has tally space
-        wgt_avg may lack valid tally array in ncwa because wgt_avg is created, 
-        sometimes, before the tally array for var_prc_out[idx] is created. 
-        When this occurs the nco_var_dpl() call in nco_var_cnf_dmn() does not copy
-        tally array into wgt_avg. See related note about this above. TODO #114.*/
+	   wgt_avg may lack valid tally array in ncwa because wgt_avg is created, 
+	   sometimes, before the tally array for var_prc_out[idx] is created. 
+	   When this occurs the nco_var_dpl() call in nco_var_cnf_dmn() does not copy
+	   tally array into wgt_avg. See related note about this above. TODO #114.*/
         if(wgt_avg->sz > 0)
           if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
             (void)fprintf(fp_stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",nco_prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
@@ -955,7 +955,7 @@ main(int argc,char **argv)
           if(MULTIPLY_BY_TALLY){
             /* NB: Currently this is not implemented */
             /* Multiply numerator (weighted sum of variable) by tally 
-            We deviously accomplish this by dividing denominator by tally */
+	       We deviously accomplish this by dividing denominator by tally */
             (void)nco_var_nrm(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);
           } /* endif */
           /* Divide numerator by denominator */
@@ -977,10 +977,10 @@ main(int argc,char **argv)
           /* End of branch for normalization when weights were specified */
       }else if(NRM_BY_DNM){
         /* Branch for normalization when no weights were specified
-        Normalization is just due to tally */
+	   Normalization is just due to tally */
         if(var_prc[idx]->is_crd_var){
           /* Return linear averages of coordinates unless computing extrema
-          Prevent coordinate variables from encountering nco_var_nrm_sdn() */
+	     Prevent coordinate variables from encountering nco_var_nrm_sdn() */
           if((nco_op_typ != nco_op_min) && (nco_op_typ != nco_op_max)) (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
         }else{ /* !var_prc[idx]->is_crd_var */
           switch(nco_op_typ){
@@ -1061,11 +1061,11 @@ main(int argc,char **argv)
 
       if(flg_ddra){
         /* DDRA diagnostics
-        Usage:
-        ncwa -O -C --mdl -a lat,lon,time -w lat ~/nco/data/in.nc ~/foo.nc
-        ncwa -O -C --mdl -a lat,lon -w lat ${DATA}/nco_bm/stl_5km.nc ~/foo.nc
-        ncwa -O -C --mdl -a lat,lon,time -w lat ${DATA}/nco_bm/gcm_T85.nc ~/foo.nc */
-
+	   Usage:
+	   ncwa -O -C --mdl -a lat,lon,time -w lat ~/nco/data/in.nc ~/foo.nc
+	   ncwa -O -C --mdl -a lat,lon -w lat ${DATA}/nco_bm/stl_5km.nc ~/foo.nc
+	   ncwa -O -C --mdl -a lat,lon,time -w lat ${DATA}/nco_bm/gcm_T85.nc ~/foo.nc */
+	
         /* Assign remaining input for DDRA diagnostics */
         ddra_info.lmn_nbr=var_prc[idx]->sz; /* [nbr] Variable size */
         if(wgt) ddra_info.lmn_nbr_wgt=wgt->sz; /* [nbr] Weight size */
