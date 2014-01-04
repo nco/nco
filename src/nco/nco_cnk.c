@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.80 2014-01-04 03:25:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.81 2014-01-04 04:25:18 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -834,12 +834,45 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     return; 
   } /* dmn_nbr */
 
+  dmn_cmn=(dmn_cmn_sct *)nco_malloc(dmn_nbr*sizeof(dmn_cmn_sct));
+
+  /* Loop over dimensions */
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+
+    dmn_trv_sct *dmn_trv=NULL; /* [sct] Unique dimension */
+    crd_sct *crd=NULL; /* [sct] Coordinate dimension */
+
+    /* This dimension has a coordinate variable */
+    if(var_trv->var_dmn[dmn_idx].is_crd_var){
+      /* Get coordinate from table */
+      crd=var_trv->var_dmn[dmn_idx].crd;
+      dmn_cmn[dmn_idx].sz=crd->sz;
+      dmn_cmn[dmn_idx].is_rec_dmn=crd->is_rec_dmn;
+      dmn_cmn[dmn_idx].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
+      dmn_cmn[dmn_idx].dmn_cnt=crd->lmt_msa.dmn_cnt;
+      strcpy(dmn_cmn[dmn_idx].nm,crd->nm);
+    }else{
+      /* Get unique dimension from table */
+      dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
+      dmn_cmn[dmn_idx].sz=dmn_trv->sz;
+      dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
+      dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
+      strcpy(dmn_cmn[dmn_idx].nm,dmn_trv->nm);
+    } /* end else */
+
+  } /* end loop over dimensions */
+  
   /* Is this a record variable? Handy object variable already knows this */
   is_rec_var=var_trv->is_rec_var; 
-  /* fxm 20140103 */
-  /* Original definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */
-  // for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
-  //if(var_trv->var_dmn[dmn_idx].is_rec_dmn) is_rec_var=True;
+  /* fxm 20140103 
+  /* Original definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */ 
+  /* Loop over dimensions */ 
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){ 
+    /* Is this a record dimension? */ 
+    if(dmn_cmn[dmn_idx].is_rec_dmn){ 
+      is_rec_var=True; 
+    } /* Is this a record dimension? */ 
+  } /* Loop over dimensions */ 
 
   /* Is variable compressed? */
   (void)nco_inq_var_deflate(grp_id_out,var_id_out,(int *)NULL,&deflate,(int *)NULL);
@@ -894,8 +927,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s %schunking %s\n",nco_prg_nm_get(),fnc_nm,(is_chunked ? "re-" : "" ),var_trv->nm_fll);
 
   /* Allocate space to hold chunksizes */
-  cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));
-  dmn_cmn=(dmn_cmn_sct *)nco_malloc(dmn_nbr*sizeof(dmn_cmn_sct));
+  cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));  
 
   if(cnk_map == nco_cnk_map_xst){
     /* Set chunksizes to existing sizes for this variable */
@@ -918,31 +950,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     cnk_sz_dfl=(size_t)cnk_sz_dfl_dbl;
   } /* endif map_prd */
 
-  /* Loop over dimensions */
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-
-    dmn_trv_sct *dmn_trv=NULL; /* [sct] Unique dimension */
-    crd_sct *crd=NULL; /* [sct] Coordinate dimension */
-
-    /* This dimension has a coordinate variable */
-    if(var_trv->var_dmn[dmn_idx].is_crd_var){
-      /* Get coordinate from table */
-      crd=var_trv->var_dmn[dmn_idx].crd;
-      dmn_cmn[dmn_idx].sz=crd->sz;
-      dmn_cmn[dmn_idx].is_rec_dmn=crd->is_rec_dmn;
-      dmn_cmn[dmn_idx].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
-      dmn_cmn[dmn_idx].dmn_cnt=crd->lmt_msa.dmn_cnt;
-      strcpy(dmn_cmn[dmn_idx].nm,crd->nm);
-    }else{
-      /* Get unique dimension from table */
-      dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
-      dmn_cmn[dmn_idx].sz=dmn_trv->sz;
-      dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
-      dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
-      strcpy(dmn_cmn[dmn_idx].nm,dmn_trv->nm);
-    } /* end else */
-
-  } /* end loop over dimensions */
+  
   
   /* Loop over dimensions */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
