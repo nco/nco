@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.76 2014-01-03 23:13:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.77 2014-01-04 01:45:47 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -81,6 +81,8 @@ nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
     return "g3d";
   case nco_cnk_plc_xpl: 
     return "xpl";
+  case nco_cnk_plc_xst:
+    return "xst";
   case nco_cnk_plc_uck:
     return "uck";
   default: nco_dfl_case_cnk_plc_err(); break;
@@ -315,6 +317,9 @@ nco_cnk_plc_get /* [fnc] Convert user-specified chunking policy to key */
   if(!strcmp(nco_cnk_plc_sng,"xpl")) return nco_cnk_plc_xpl;
   if(!strcmp(nco_cnk_plc_sng,"cnk_xpl")) return nco_cnk_plc_xpl;
   if(!strcmp(nco_cnk_plc_sng,"plc_xpl")) return nco_cnk_plc_xpl;
+  if(!strcmp(nco_cnk_plc_sng,"xst")) return nco_cnk_plc_xst;
+  if(!strcmp(nco_cnk_plc_sng,"cnk_xst")) return nco_cnk_plc_xst;
+  if(!strcmp(nco_cnk_plc_sng,"plc_xst")) return nco_cnk_plc_xst;
   if(!strcmp(nco_cnk_plc_sng,"uck")) return nco_cnk_plc_uck;
   if(!strcmp(nco_cnk_plc_sng,"cnk_uck")) return nco_cnk_plc_uck;
   if(!strcmp(nco_cnk_plc_sng,"plc_uck")) return nco_cnk_plc_uck;
@@ -775,7 +780,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
   /* Bail on unsupported options */
-  if(cnk_map == nco_cnk_map_xst || cnk_map == nco_cnk_map_lfp){
+  if(cnk_map == nco_cnk_map_lfp){
     (void)fprintf(stderr,"%s: ERROR cnk_map = %s not yet supported\n",nco_prg_nm_get(),nco_cnk_map_sng_get(cnk_map));
     nco_exit(EXIT_FAILURE);
   } /* endif */
@@ -844,7 +849,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   if(is_rec_var || is_chk_var || is_cmp_var) must_be_chunked=True; else must_be_chunked=False;
 
   /* Is variable currently chunked? */
-  is_chunked=nco_cnk_dsk_inq(grp_id_in,var_id_in);
+  if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4) is_chunked=nco_cnk_dsk_inq(grp_id_in,var_id_in);
 
   /* Check if this variable has user-chunked dimensions */
   if(cnk_plc == nco_cnk_plc_xpl){
@@ -861,6 +866,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   }else{
     /* Explicitly turn-off chunking for arrays that are... */
     if((cnk_plc == nco_cnk_plc_xpl && !is_xpl_cnk) || /* ...not explicitly chunked... */
+       (cnk_plc == nco_cnk_plc_xst && !is_chunked) || /* ...not already chunked... */
        (cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
        (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
        (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
@@ -879,9 +885,22 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     } /* !turn-off chunking */
   } /* !must_be_chunked */
 
-  /* Variable will definitely be chunked */
+  /* Since routine has not returned yet, we know this variable will definitely be chunked */
   srg_typ=NC_CHUNKED; /* [enm] Storage type */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s %schunking %s\n",nco_prg_nm_get(),fnc_nm,(is_chunked ? "re-" : "" ),var_trv->nm_fll);
+
+  /* Allocate space to hold chunksizes */
+  cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));
+  dmn_cmn=(dmn_cmn_sct *)nco_malloc(dmn_nbr*sizeof(dmn_cmn_sct));
+
+  if(cnk_map == nco_cnk_map_xst){
+    /* Set chunksizes to existing sizes for this variable */
+    if(is_chunked){
+      (void)nco_inq_var_chunking(grp_id_in,var_id_in,(int *)NULL,cnk_sz);
+      /* Allow existing chunksizes to be over-ridden by explicitly specified chunksizes */
+      goto cnk_xpl_override;
+    } /* !is_chunked */
+  } /* !nco_cnk_map_xst */
 
   /* Default "equal" chunksize for each dimension */
   cnk_sz_dfl=cnk_sz_scl;
@@ -894,10 +913,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     cnk_sz_dfl_dbl=ceil(cnk_sz_eql_dbl);
     cnk_sz_dfl=(size_t)cnk_sz_dfl_dbl;
   } /* endif map_prd */
-
-  /* Allocate space to hold chunksizes */
-  cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));
-  dmn_cmn=(dmn_cmn_sct *)nco_malloc(dmn_nbr*sizeof(dmn_cmn_sct));
 
   /* Loop over dimensions */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
@@ -928,18 +943,13 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   /* Loop over dimensions */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
-    if(cnk_map == nco_cnk_map_xst){
-      /* fxm Set chunksizes to existing sizes for this variable */
-      ;
-    } /* !nco_cnk_map_xst */
-
     /* Is this a record dimension? */
     if(dmn_cmn[dmn_idx].is_rec_dmn){
       /* Does policy specify record dimension treatment? */
       if(cnk_map == nco_cnk_map_rd1){
         cnk_sz[dmn_idx]=1UL;
-        /* This may still be over-ridden by explicitly specified chunksize */
-        goto cnk_xpl_override;
+        /* Record chunksize has beeen set and may still be over-ridden by explicitly specified record chunksize */
+	continue;
       } /* !nco_cnk_map_rd1 */
       /* Record dimension size in output file is zero until first write
 	 Obtain record dimension size from lmt_all structure (for nco_cnk_sz_set()).
@@ -954,7 +964,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     }else{ /* !record dimension */
       /* Set non-record dimensions to default, possibly over-ride later */
       cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
-      if(dmn_cmn[dmn_idx].sz == 0L) (void)fprintf(stdout,"%s: ERROR %s reports variable <%s> has dim_sz == 0L for non-record dimension <%s>. This should not occur and it will cause chunking to fail...\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_cmn[dmn_idx].nm);
+      if(dmn_cmn[dmn_idx].sz == 0L) (void)fprintf(stdout,"%s: ERROR %s reports variable %s has dim_sz == 0L for non-record dimension %s. This should not occur and it will cause chunking to fail...\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_cmn[dmn_idx].nm);
     } /* !record dimension */
 
     /* Propagate scalar chunksize, if specified */
@@ -975,7 +985,14 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       } /* Is this the record dimension? */
     } /* !cnk_sz_dfl */
 
+  } /* end loop over dimensions */
+
+  /* Status: Reasonable defaults have been inserted for all dimensions
+     Override defaults with explicitly set sizes */
 cnk_xpl_override: /* end goto */
+
+  /* Loop over dimensions */
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
     /* Explicit chunk specifications override all else */
     for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
@@ -989,18 +1006,18 @@ cnk_xpl_override: /* end goto */
         if(dmn_cmn[dmn_idx].is_rec_dmn){
           if(dmn_cmn[dmn_idx].BASIC_DMN){
             if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
-              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed record dimension size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,(unsigned long)cnk_dmn[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,(unsigned long)dmn_cmn[dmn_idx].sz);
+              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds record dimension size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
             } /* endif too big */
           }else{ /* !BASIC_DMN */
             if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].dmn_cnt){
-              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed user-specified record dimension hyperslab size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,(unsigned long)cnk_dmn[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,dmn_cmn[dmn_idx].dmn_cnt);
+              (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize = %lu which exceeds user-specified record dimension hyperslab size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,dmn_cmn[dmn_idx].dmn_cnt);
             } /* endif too big */
           } /* !BASIC_DMN */
         }else{ /* !rcd_dmn_id */
           if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
             /* dmn_sz of record dimension may (will) be zero in output file
 	       Non-record dimensions, though, must have cnk_sz <= dmn_sz */
-            (void)fprintf(stderr,"%s: WARNING %s trimming user-specified chunksize = %lu to %s size = %lu\n",nco_prg_nm_get(),fnc_nm,(unsigned long)cnk_dmn[cnk_idx]->sz,dmn_cmn[dmn_idx].nm,(unsigned long)dmn_cmn[dmn_idx].sz);
+            (void)fprintf(stderr,"%s: WARNING %s trimming user-specified %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
             /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
             cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
           } /* endif */

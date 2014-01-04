@@ -1,5 +1,13 @@
 2014-01-03  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.0 release procedure:
+ 	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn
+	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
+	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
+
+	* Implement plc_xst and map_xst. Unable to fully test due to erroneous is_rec_var.
+
 	* Implement plc_xpl and correct detour when must_be_chunked
 
 	* Add stubs for two new (and not-yet-supported) chunking maps: map_xst and map_lfp
@@ -11,12 +19,6 @@
 	* Fix bug where nco_var_lst_dvd_trv() was called with cnk_map, cnk_plc instead of pck_map, pck_plc
 
 2014-01-02  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.0 release procedure:
- 	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn
-	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
-	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
 	* Add nco_op_typ_cf_sng() for cell_methods functionality
 
