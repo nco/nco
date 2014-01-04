@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.77 2014-01-04 01:45:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.78 2014-01-04 02:17:13 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -836,6 +836,18 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   /* Is this a record variable? Handy object variable already knows this */
   is_rec_var=var_trv->is_rec_var; 
+
+  /* fxm 20140103
+  /* Original definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */
+  /* Loop over dimensions */
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+    /* Is this a record dimension? */
+    if(dmn_cmn[dmn_idx].is_rec_dmn){
+      is_rec_var=True;
+    } /* Is this a record dimension? */
+  } /* Loop over dimensions */
+
+
 
   /* Is variable compressed? */
   (void)nco_inq_var_deflate(grp_id_out,var_id_out,(int *)NULL,&deflate,(int *)NULL);
