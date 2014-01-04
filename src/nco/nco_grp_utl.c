@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1155 2014-01-04 00:28:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1156 2014-01-04 05:55:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1928,6 +1928,9 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 
         /* Store full group name where dimension is located */
         trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].grp_nm_fll=strdup(dmn_trv->grp_nm_fll);
+
+        /* Mark as record dimension if so */
+        trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].is_rec_dmn=dmn_trv->is_rec_dmn;
       }
 
     } /* Filter variables */
@@ -2152,6 +2155,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_nm_fll=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].grp_nm_fll=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].is_crd_var=nco_obj_typ_err;
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].is_rec_dmn=nco_obj_typ_err;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].crd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].ncd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;

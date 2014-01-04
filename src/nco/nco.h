@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.458 2014-01-03 20:02:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.459 2014-01-04 05:55:38 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -835,6 +835,7 @@ extern "C" {
     char *dmn_nm_fll;        /* [sng] Full dimension name */
     char *dmn_nm;            /* [sng] Dimension name */
     char *grp_nm_fll;        /* [sng] Full group where dimension is defined */
+    nco_bool is_rec_dmn;     /* [flg] Is a record dimension? */
     nco_bool is_crd_var;     /* [flg] Dimension has an associated coordinate variable */
     crd_sct *crd;            /* [sct] Pointer to coordinate variable if any */
     dmn_trv_sct *ncd;        /* [sct] Pointer to non-coordinate dimension if any */
