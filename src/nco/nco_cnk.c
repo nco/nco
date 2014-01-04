@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.81 2014-01-04 04:25:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.82 2014-01-04 04:55:11 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -867,6 +867,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   /* fxm 20140103 
   /* Original definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */ 
   /* Loop over dimensions */ 
+  // for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
+  //if(var_trv->var_dmn[dmn_idx].is_rec_dmn) is_rec_var=True;
+
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){ 
     /* Is this a record dimension? */ 
     if(dmn_cmn[dmn_idx].is_rec_dmn){ 
