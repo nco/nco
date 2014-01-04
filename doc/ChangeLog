@@ -6,9 +6,9 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
 	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
-	* Try then discard new is_rec_var algorithm
+	* Implement map_lfp and begin accounting for type size and chunk size in bytes
 
-	* Implement plc_xst and map_xst. Unable to fully test due to erroneous is_rec_var.
+	* Implement plc_xst and map_xst
 
 	* Implement plc_xpl and correct detour when must_be_chunked
 
