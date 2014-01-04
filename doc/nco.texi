@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.941 2014-01-04 01:45:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.942 2014-01-04 02:41:39 pvicente Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6046,17 +6046,14 @@ Five chunking policies are currently implemented:@*
 @cindex @samp{g2d}
 @cindex @samp{g3d}
 @cindex @samp{xpl}
-@cindex @samp{xst}
 @cindex @samp{cnk_all}
 @cindex @samp{cnk_g2d}
 @cindex @samp{cnk_g3d}
 @cindex @samp{cnk_xpl}
-@cindex @samp{cnk_xst}
 @cindex @samp{plc_all}
 @cindex @samp{plc_g2d}
 @cindex @samp{plc_g3d}
 @cindex @samp{plc_xpl}
-@cindex @samp{plc_xst}
 @table @dfn
 @item Chunk All Variables [@emph{default}]
 Definition: Chunk all variables possible.
@@ -6080,14 +6077,6 @@ dimension whose chunksize was explicitly set with the @samp{--cnk_dmn} option.
 Alternate invocation: none@*
 @var{cnk_plc} key values: @samp{xpl}, @samp{cnk_xpl}, @samp{plc_xpl}@*
 Mnemonic: E@emph{XPL}icitly specified dimensions@*
-@item Chunk Variables with Existing Chunk Sizes
-Definition: Chunk all variables possible that are already chunked in the
-input file.
-When used in conjunction with @samp{cnk_map=xst} this option preserves
-and copies the chunking parameters from the input to the output file.
-Alternate invocation: none@*
-@var{cnk_plc} key values: @samp{xst}, @samp{cnk_xst}, @samp{plc_xst}@*
-Mnemonic: e@emph{X}i{ST} chunk sizes@*
 @item Unchunking
 Definition: Unchunk all variables possible. 
 The @acronym{HDF5} storge layer requires that record variables (i.e.,
@@ -6122,17 +6111,14 @@ Four chunking maps are currently implemented:@*
 @cindex @samp{scl}
 @cindex @samp{prd}
 @cindex @samp{rd1}
-@cindex @samp{xst}
 @cindex @samp{cnk_dmn}
 @cindex @samp{cnk_scl}
 @cindex @samp{cnk_prd}
 @cindex @samp{cnk_rd1}
-@cindex @samp{cnk_xst}
 @cindex @samp{map_dmn}
 @cindex @samp{map_scl}
 @cindex @samp{map_prd}
 @cindex @samp{map_rd1}
-@cindex @samp{map_xst}
 @table @dfn
 @item Chunksize Equals Dimension Size [@emph{default}]
 Definition: Chunksize defaults to dimension size. 
@@ -6161,13 +6147,6 @@ dimensions), the chunksize in each non-degenerate dimension is the
 @var{R}th root of @var{cnk_scl}.@*
 @var{cnk_map} key values: @samp{prd}, @samp{cnk_prd}, @samp{map_prd}@*
 Mnemonic: @emph{PR}o@emph{D}uct@*
-@item Chunksize Equals Existing Chunksize
-Definition: Chunksizes are copied from the input to the output
-file for every variable that is chunked in the input file.
-Variables not chunked in the input file will be chunked with 
-default mappings.@*
-@var{cnk_map} key values: @samp{xst}, @samp{cnk_xst}, @samp{map_xst}@*
-Mnemonic: e@emph{X}i@emph{ST}@*
 @end table
 @noindent
 It is possible to combine the above chunking map algorithms with
