@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1153 2014-01-03 18:30:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1154 2014-01-04 00:09:28 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8284,7 +8284,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   const char fnc_nm[]="nco_bld_aux_crd()"; /* [sng] Function name */
 
 
-#if 1
+#if 0
 #define USE_AUX_EVL_TRV
 #endif
 #ifndef USE_AUX_EVL_TRV 
