@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1154 2014-01-04 00:09:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1155 2014-01-04 00:28:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2129,8 +2129,8 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
     trv_tbl->lst[idx].nbr_var=nco_obj_typ_err;
 
-    trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;             
-    trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err; 
+    trv_tbl->lst[idx].is_crd_var=False;             
+    trv_tbl->lst[idx].is_rec_var=False; 
     trv_tbl->lst[idx].var_typ=var_typ; 
     trv_tbl->lst[idx].enm_prc_typ=err_typ;
     trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; 
