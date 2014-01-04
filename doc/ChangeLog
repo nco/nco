@@ -1,10 +1,12 @@
 2014-01-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.0 release procedure:
- 	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn
+ 	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn, cnk
 	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
 	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
+
+	* Try then discard new is_rec_var algorithm
 
 	* Implement plc_xst and map_xst. Unable to fully test due to erroneous is_rec_var.
 

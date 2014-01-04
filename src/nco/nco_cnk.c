@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.79 2014-01-04 02:41:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.80 2014-01-04 03:25:41 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -836,6 +836,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   /* Is this a record variable? Handy object variable already knows this */
   is_rec_var=var_trv->is_rec_var; 
+  /* fxm 20140103 */
+  /* Original definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */
+  // for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
+  //if(var_trv->var_dmn[dmn_idx].is_rec_dmn) is_rec_var=True;
 
   /* Is variable compressed? */
   (void)nco_inq_var_deflate(grp_id_out,var_id_out,(int *)NULL,&deflate,(int *)NULL);
@@ -939,19 +943,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     } /* end else */
 
   } /* end loop over dimensions */
-
   
-  /* fxm 20140103
-  /* Original definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */
-  /* Loop over dimensions */
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-    /* Is this a record dimension? */
-    if(dmn_cmn[dmn_idx].is_rec_dmn){
-      is_rec_var=True;
-    } /* Is this a record dimension? */
-  } /* Loop over dimensions */
-
-
   /* Loop over dimensions */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
@@ -978,6 +970,22 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
       if(dmn_cmn[dmn_idx].sz == 0L) (void)fprintf(stdout,"%s: ERROR %s reports variable %s has dim_sz == 0L for non-record dimension %s. This should not occur and it will cause chunking to fail...\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_cmn[dmn_idx].nm);
     } /* !record dimension */
+
+  } /* end loop over dimensions */
+
+  if(cnk_map == nco_cnk_map_lfp){
+    /* Set "Lefter Product" chunksizes
+       Now that "reasonable defaults have been set for all dimensions, adjust lefter dimensions to match overall size */
+    ;
+    /* Allow existing chunksizes to be over-ridden by explicitly specified chunksizes */
+    goto cnk_xpl_override;
+  } /* !nco_cnk_map_lfp */
+
+  /* Status: Reasonable defaults have been inserted for all dimensions
+     Override defaults with explicitly set uniform chunksize, if any */
+
+  /* Loop over dimensions */
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
     /* Propagate scalar chunksize, if specified */
     if(cnk_sz_dfl > 0UL){
