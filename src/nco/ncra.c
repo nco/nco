@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.489 2014-01-06 06:46:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.490 2014-01-06 18:24:57 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.489 2014-01-06 06:46:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.489 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.490 2014-01-06 18:24:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.490 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -302,6 +302,7 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
     {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
     {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
     {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */

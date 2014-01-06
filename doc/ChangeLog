@@ -1,5 +1,7 @@
 2014-01-06  Charlie Zender  <zender@uci.edu>
 
+	* Add cnk_map argument to some executables that were missing it
+
 	* Fix recidivist bug where if(sng_cnv_rcd) used instead of if(*sng_cnv_rcd)
 
 2013-01-05  Pedro Vicente  <pvicente@uci.edu>

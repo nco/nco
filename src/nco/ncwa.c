@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.393 2014-01-06 06:46:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.394 2014-01-06 18:24:58 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.393 2014-01-06 06:46:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.393 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.394 2014-01-06 18:24:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.394 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -250,6 +250,7 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"cnk_map",required_argument,0,0}, /* [nbr] Chunking map */
     {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
     {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
     {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
