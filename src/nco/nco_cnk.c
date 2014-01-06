@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.91 2014-01-06 09:53:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.92 2014-01-06 18:13:51 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -742,7 +742,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
  const int grp_id_out, /* I [id] netCDF group ID in output file */
  const cnk_sct * const cnk, /* I [sct] Chunking structure */
  const char * const nm_var,  /* I [sng] Name of variable */
- dmn_cmn_sct *dmn_cmn) /* I [sct] Dimension structure on output */
+ const dmn_cmn_sct * const dmn_cmn) /* I [sct] Dimension structure in output file */
 {
   /* Purpose: Use chunking map and policy to determine chunksize list
      Adapted from nco_cnk_sz_set() to GTT:
@@ -855,9 +855,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   } /* dmn_nbr */
 
   /* Does variable contain a record dimension? */
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
     if(dmn_cmn[dmn_idx].is_rec_dmn) is_rec_var=True;
-  } /* Does variable contain a record dimension? */
 
   /* Is variable compressed? */
   (void)nco_inq_var_deflate(grp_id_out,var_id_out,(int *)NULL,&deflate,(int *)NULL);

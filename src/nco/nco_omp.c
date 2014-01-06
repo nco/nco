@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.65 2014-01-06 09:19:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.66 2014-01-06 18:13:51 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -90,7 +90,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
     if((nvr_OMP_NUM_THREADS=getenv("OMP_NUM_THREADS"))) ntg_OMP_NUM_THREADS=(int)strtol(nvr_OMP_NUM_THREADS,&sng_cnv_rcd,NCO_SNG_CNV_BASE10); /* [sng] Environment variable OMP_NUM_THREADS */
-    if(sng_cnv_rcd) nco_sng_cnv_err(nvr_OMP_NUM_THREADS,"strtol",sng_cnv_rcd);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(nvr_OMP_NUM_THREADS,"strtol",sng_cnv_rcd);
     (void)fprintf(fp_stderr,"%s: INFO Environment variable OMP_NUM_THREADS ",nco_prg_nm_get());
     if(ntg_OMP_NUM_THREADS > 0) (void)fprintf(fp_stderr,"= %d\n",ntg_OMP_NUM_THREADS); else (void)fprintf(fp_stderr,"does not exist\n");
     (void)fprintf(fp_stderr,"%s: INFO Number of processors available is %d\n",nco_prg_nm_get(),prc_nbr_max);
