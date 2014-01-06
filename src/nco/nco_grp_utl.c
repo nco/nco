@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1159 2014-01-06 09:53:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1160 2014-01-06 19:26:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4725,7 +4725,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if (var_trv->var_dmn){
         dmn_trv=NULL; /* [sct] Unique dimension */
         crd_sct *crd=NULL; /* [sct] Coordinate dimension */
-        dmn_cmn[dmn_idx].nm_fll=strdup(var_trv->var_dmn[dmn_idx].dmn_nm_fll);
+        dmn_cmn[dmn_idx].nm_fll=var_trv->var_dmn[dmn_idx].dmn_nm_fll;
         /* This dimension has a coordinate variable */
         if(var_trv->var_dmn[dmn_idx].is_crd_var){
           /* Get coordinate from table */
@@ -4760,7 +4760,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       dmn_cmn[0].BASIC_DMN=True;
       dmn_cmn[0].dmn_cnt=NC_UNLIMITED;
       strcpy(dmn_cmn[0].nm,rec_dmn_nm);
-      dmn_cmn[0].nm_fll=strdup(rec_dmn_nm); /* TODO define full name */
+      dmn_cmn[0].nm_fll=rec_dmn_nm; /* TODO define full name */ 
     } /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
 
     /* Set chunksize parameters */
