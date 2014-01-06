@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.401 2014-01-06 10:09:41 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.402 2014-01-06 21:35:01 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4523,7 +4523,8 @@ print "\n";
     $#tst_cmd=0; # Reset array		
 	
 #NEW 4.4.0	
-#ncwa #54 Use -a /g8/lev, -w /g8/lev_wgt
+#ncwa #54 
+#Use -a /g8/lev, -w /g8/lev_wgt
 # ncwa -h -O -v lev -a /g8/lev -w /g8/lev_wgt in_grp_3.nc out.nc
 # lev = 230.769 lev_wgt=10,2,1; /g19/lev
 # lev = 241.667 lev_wgt=9,2,1;  /g8/lev
@@ -4537,6 +4538,20 @@ print "\n";
     $#tst_cmd=0; # Reset array		
 	
 	} #### Group tests	
+	
+
+#NEW 4.4.0	
+#ncwa #55
+#ncwa -O -4  -a time --cnk_dmn lon,4 -v byt_3D_rec in.nc out.nc
+    
+	$dsc_sng="Chunking -a time --cnk_dmn lon,4 -v byt_3D_rec";
+    $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a time --cnk_dmn lon,4 -v byt_3D_rec $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'byt_3D_rec dimension 1'";
+	$tst_cmd[2]="byt_3D_rec dimension 1: lon, size = 4 NC_FLOAT, chunksize = 4 (Coordinate is lon)";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
+	
     
 ####################
 #### ncrename tests #### OK!

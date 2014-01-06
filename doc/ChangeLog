@@ -1,3 +1,7 @@
+2013-01-06  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncwa regression #55: Chunking -a time --cnk_dmn lon,4 -v byt_3D_rec
+
 2014-01-06  Charlie Zender  <zender@uci.edu>
 
 	* Use "_ChunkSizes" (plural) not "_ChunkSize" (singular) in NcML output
