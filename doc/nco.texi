@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.944 2014-01-06 06:46:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.945 2014-01-06 19:00:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -14056,15 +14056,12 @@ zender@roulee:~$ ncks --xml -v one ~/nco/data/in.nc
 </netcdf>
 @end verbatim
 @end example
-@acronym{XML}-mode prints variable metadata, and, as of 
-@acronym{NCO} version 4.3.7 (October, 2013), variable data.
-We know of no reference application that translates @acronym{CDM}
-files completely into @acronym{NcML}, so it is possible that
-@acronym{ncks} produces incorrect translations for some datatypes.
-The @command{toolsUI} Java program is helpful but incomplete.
-We have found that @command{toolsUI} fails to ingest some @acronym{NcML} 
-produced by both @command{ncks --xml} and @command{ncdump -x}.
-However, most common features work well.
+@acronym{XML}-mode prints variable metadata and, as of 
+@acronym{NCO} version 4.3.7 (October, 2013), variable data and, as of
+@acronym{NCO} version 4.4.0 (January, 2014), hidden attributes.
+That @acronym{ncks} produces correct @acronym{NcML} translations of
+@acronym{CDM} files for all supported datatypes is verified by
+comparison to output from Unidata's @command{toolsUI} Java program.
 Please let us know how to improve @acronym{XML}/@acronym{NcML}
 features. 
 
