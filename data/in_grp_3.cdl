@@ -145,7 +145,7 @@ netcdf in_grp_3 {
     lon1=4;  //dimension that has a coordinate variable down in scope at /g16/g16g1/lon1(lon1)
     lon2=4;  //dimension that does NOT have a coordinate variable anywhere 
     lon3=4;  //dimension that has a coordinate "out of scope" (with group depth greater than the variable that uses the coordinate, g16g3g3)
-    lon4=2;  //dimension that has several intermidiate "in scope" coordinates
+    lon4=2;  //dimension that has several intermediate "in scope" coordinates
     variables:
     float lat1(lat);
     float lon2_var(lon2); //variable with no associated coordinate variable
