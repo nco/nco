@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1157 2014-01-06 08:39:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1158 2014-01-06 09:19:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4717,9 +4717,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
 
     /* Dimension information on output */
-    dmn_cmn_sct *dmn_cmn;
-    /* Allocate for number of dimensions on output  */
-    dmn_cmn=(dmn_cmn_sct *)nco_malloc(nbr_dmn_var*sizeof(dmn_cmn_sct));
+    dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];
 
     /* Loop over dimensions. NB use original input dimensions for this loop, defined in the table  */
     for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
@@ -4740,6 +4738,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           /* Get unique dimension from table */
           dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
           dmn_cmn[dmn_idx].sz=dmn_trv->sz;
+          dmn_cmn[dmn_idx].is_rec_dmn=dmn_trv->is_rec_dmn;
           dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
           dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
           strcpy(dmn_cmn[dmn_idx].nm,dmn_trv->nm);
@@ -4747,12 +4746,23 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } /* Dimensions exist */
     } /* Loop over dimensions */
 
-    /* TODO: Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
+    /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
+    if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
+      /* Loop output dimensions  */
+      for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+        /* Move up to make room for inserted dimension at 0 index */
+        dmn_cmn[dmn_idx+1]=dmn_cmn[dmn_idx];
+      } /* Loop dimensions  */
+      /* Define the "record" dimension made for ncecat */
+      dmn_cmn[0].sz=NC_UNLIMITED;
+      dmn_cmn[0].is_rec_dmn=True;
+      dmn_cmn[0].BASIC_DMN=True;
+      dmn_cmn[0].dmn_cnt=NC_UNLIMITED;
+      strcpy(dmn_cmn[0].nm,rec_dmn_nm);
+    } /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
 
     /* Set chunksize parameters */
-    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv,dmn_cmn);
-
-    if(dmn_cmn) dmn_cmn=(dmn_cmn_sct *)nco_free(dmn_cmn);
+    (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv,dmn_cmn);
 
   } /* !NC_FORMAT_NETCDF4 */ 
 

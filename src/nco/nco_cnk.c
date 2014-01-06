@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.89 2014-01-06 08:39:30 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.90 2014-01-06 09:19:44 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -858,8 +858,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   } /* dmn_nbr */
 
   /* Does variable contain a record dimension? */
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
-    if(var_trv->var_dmn[dmn_idx].is_rec_dmn) is_rec_var=True;
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+    if(dmn_cmn[dmn_idx].is_rec_dmn) is_rec_var=True;
+  } /* Does variable contain a record dimension? */
 
   /* Is variable compressed? */
   (void)nco_inq_var_deflate(grp_id_out,var_id_out,(int *)NULL,&deflate,(int *)NULL);
