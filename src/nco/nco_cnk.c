@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.87 2014-01-06 06:46:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.88 2014-01-06 07:46:17 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -753,15 +753,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
 
   cnk_dmn_sct **cnk_dmn;
-
-  /* Utility structure to share common fields */
-  typedef struct{ 
-    char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension/coordinate */
-    nco_bool is_rec_dmn; /* [flg] Is a record dimension/coordinate? */
-    size_t sz; /* [nbr] Size of dimension/coordinate */
-    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
-    long dmn_cnt; /* [nbr] Hyperslabbed size of dimension */  
-  } dmn_cmn_sct; 
 
   dmn_cmn_sct *dmn_cmn;
 

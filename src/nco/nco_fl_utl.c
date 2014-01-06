@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.233 2014-01-06 06:46:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.234 2014-01-06 07:46:17 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1424,7 +1424,9 @@ nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this
     (void)fprintf(stdout,"%s: ERROR %s reports output file directory %s does not exist, unable to stat()\n",nco_prg_nm_get(),fnc_nm,drc_out);
     nco_exit(EXIT_FAILURE);
   } /* end if */
+#ifndef _MSC_VER
   fl_sys_blk_sz=(size_t)stat_sct.st_blksize;
+#endif /* _MSC_VER */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports preferred output filesystem I/O block size: %ld bytes\n",nco_prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
   
   if(drc_out) drc_out=(char *)nco_free(drc_out);

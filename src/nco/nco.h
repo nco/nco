@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.460 2014-01-04 06:56:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.461 2014-01-06 07:46:17 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -1051,6 +1051,15 @@ extern "C" {
     size_t *cnk_sz; /* [id] Contiguous vector of chunk sizes */
     struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually structure for variable on output) fxm: deprecate! TODO nco226 */
   } var_sct; /* end var_sct_tag */
+
+   /* Dimension utility structure to share common fields; used in nco_cnk_sz_set_trv() */
+  typedef struct{ 
+    char nm[NC_MAX_NAME+1L];/* [sng] Name of dimension/coordinate */
+    nco_bool is_rec_dmn; /* [flg] Is a record dimension/coordinate? */
+    size_t sz; /* [nbr] Size of dimension/coordinate */
+    nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
+    long dmn_cnt; /* [nbr] Hyperslabbed size of dimension */  
+  } dmn_cmn_sct; 
   
 #ifdef __cplusplus
 } /* end extern "C" */
