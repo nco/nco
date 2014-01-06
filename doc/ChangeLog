@@ -1,3 +1,7 @@
+2013-01-05  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncecat regression #11: Chunking --cnk_plc=all
+
 2014-01-05  Charlie Zender  <zender@uci.edu>
 
 	* Base default cnk_sz_byt on output filesystem blocksize

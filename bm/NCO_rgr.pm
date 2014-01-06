@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.400 2014-01-03 21:09:28 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.401 2014-01-06 10:09:41 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1097,6 +1097,9 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			       
 
+    } #### Group tests	
+	
+		
 #ncecat #10 
 #Concatenate files containing same variable in different orders
 # ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
@@ -1113,8 +1116,17 @@ print "\n";
     $tst_cmd[5]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
+#ncecat #11
+#Chunking 
+# ncecat -O -4 -D 5 -C --cnk_plc=all -v date_int in.nc in.nc out.nc
 
-    } #### Group tests	
+    $dsc_sng="Chunking --cnk_plc=all -v date_int";
+    $tst_cmd[0]="ncecat -O -4 $nco_D_flg --cnk_plc=all -v date_int $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'date_int dimension 0'";
+    $tst_cmd[2]="date_int dimension 0: record, size = 2, chunksize = 1 (Record non-coordinate dimension)";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 		
 	
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
