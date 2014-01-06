@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.74 2014-01-06 06:46:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.75 2014-01-06 07:36:08 pvicente Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -133,7 +133,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 
 size_t /* [B] Blocksize */
 nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this file */
-(const char const * fl_out); /* [sng] Filename */
+(const char * const  fl_out); /* [sng] Filename */
 
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */

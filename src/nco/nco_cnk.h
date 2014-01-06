@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.30 2014-01-06 06:46:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.31 2014-01-06 07:36:08 pvicente Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -70,7 +70,7 @@ nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
 
 int /* [rcd] [enm] Return code */
 nco_cnk_ini /* [fnc] Create structure with all chunking information */
-(const char const * fl_out, /* I [sng] Output filename */
+(const char * const fl_out, /* I [sng] Output filename */
  CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg), /* I [sng] List of user-specified chunksizes */
  const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  const int cnk_map, /* I [enm] Chunking map */
