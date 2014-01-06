@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.94 2014-01-06 21:22:24 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.95 2014-01-06 22:17:01 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -742,7 +742,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
  const int grp_id_out, /* I [id] netCDF group ID in output file */
  const cnk_sct * const cnk, /* I [sct] Chunking structure */
  const char * const nm_var,  /* I [sng] Name of variable */
- const dmn_cmn_sct * const dmn_cmn) /* I [sct] Dimension structure in output file */
+ const dmn_cmn_sct * const dmn_cmn, /* I [sct] Dimension structure in output file */
+ const int nbr_dmn) /* I [nbr] Number of dimensions in output file (size of above array) */
 {
   /* Purpose: Use chunking map and policy to determine chunksize list
      Adapted from nco_cnk_sz_set() to GTT:
@@ -847,7 +848,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   (void)nco_inq_var(grp_id_out,var_id_out,var_nm,&var_typ_dsk,&dmn_nbr,(int *)NULL,(int *)NULL);
   typ_sz=nco_typ_lng(var_typ_dsk);
 
+  /* Sanity check (the number of dimensions in parameter is redundant, since we are obtaining it)  */
   assert(strcmp(var_nm,nm_var) == 0);
+  assert(nbr_dmn == dmn_nbr);
 
   if(dmn_nbr == 0){
     if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s skipping scalar...\n",nco_prg_nm_get(),fnc_nm);

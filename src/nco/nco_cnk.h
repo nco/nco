@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.34 2014-01-06 18:13:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.35 2014-01-06 22:17:01 pvicente Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -110,7 +110,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
  const int grp_id_out, /* I [id] netCDF group ID in output file */
  const cnk_sct * const cnk, /* I [sct] Chunking structure */
  const char * const var_nm,  /* I [sng] Name of variable */
- const dmn_cmn_sct * const dmn_cmn); /* I [sct] Dimension structure in output file */
+ const dmn_cmn_sct * const dmn_cmn, /* I [sct] Dimension structure in output file */
+ const int nbr_dmn); /* I [nbr] Number of dimensions in output file (size of above array) */
 
 int /* O [enm] Chunking map */
 nco_cnk_map_get /* [fnc] Convert user-specified chunking map to key */
