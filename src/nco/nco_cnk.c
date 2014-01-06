@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.88 2014-01-06 07:46:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.89 2014-01-06 08:39:30 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -741,7 +741,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 (const int grp_id_in, /* I [id] netCDF group ID in input file */
  const int grp_id_out, /* I [id] netCDF group ID in output file */
  const cnk_sct * const cnk, /* I [sct] Chunking structure */
- const trv_sct * const var_trv) /* I [sct] Variable Object */
+ const trv_sct * const var_trv, /* I [sct] Variable Object */
+ dmn_cmn_sct *dmn_cmn) /* I [sct] Dimension structure on output */
 {
   /* Purpose: Use chunking map and policy to determine chunksize list
      Adapted from nco_cnk_sz_set() to GTT:
@@ -753,8 +754,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
 
   cnk_dmn_sct **cnk_dmn;
-
-  dmn_cmn_sct *dmn_cmn;
 
   int chk_typ; /* [enm] Checksum type */
   int cnk_idx; /* [idx] Chunk dimension index */
@@ -915,34 +914,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s %schunking %s\n",nco_prg_nm_get(),fnc_nm,(is_chunked ? "re-" : "" ),var_trv->nm_fll);
 
   /* Allocate space to hold chunksizes */
-  cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));  
-  dmn_cmn=(dmn_cmn_sct *)nco_malloc(dmn_nbr*sizeof(dmn_cmn_sct));
-
-  /* Loop over dimensions */
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-
-    dmn_trv_sct *dmn_trv=NULL; /* [sct] Unique dimension */
-    crd_sct *crd=NULL; /* [sct] Coordinate dimension */
-
-    /* This dimension has a coordinate variable */
-    if(var_trv->var_dmn[dmn_idx].is_crd_var){
-      /* Get coordinate from table */
-      crd=var_trv->var_dmn[dmn_idx].crd;
-      dmn_cmn[dmn_idx].sz=crd->sz;
-      dmn_cmn[dmn_idx].is_rec_dmn=crd->is_rec_dmn;
-      dmn_cmn[dmn_idx].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
-      dmn_cmn[dmn_idx].dmn_cnt=crd->lmt_msa.dmn_cnt;
-      strcpy(dmn_cmn[dmn_idx].nm,crd->nm);
-    }else{
-      /* Get unique dimension from table */
-      dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
-      dmn_cmn[dmn_idx].sz=dmn_trv->sz;
-      dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
-      dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
-      strcpy(dmn_cmn[dmn_idx].nm,dmn_trv->nm);
-    } /* end else */
-
-  } /* end loop over dimensions */
+  cnk_sz=(size_t *)nco_malloc(dmn_nbr*sizeof(size_t));    
 
   if(cnk_map == nco_cnk_map_xst){
     /* Set chunksizes to existing sizes for this variable */
@@ -1085,7 +1057,6 @@ cnk_xpl_override: /* end goto */
 
   /* Free space holding dimension IDs and chunksizes */
   if(cnk_sz) cnk_sz=(size_t *)nco_free(cnk_sz);
-  if(dmn_cmn) dmn_cmn=(dmn_cmn_sct *)nco_free(dmn_cmn);
 
   return;
 } /* nco_cnk_sz_set_trv() */

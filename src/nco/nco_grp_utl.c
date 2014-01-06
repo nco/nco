@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1156 2014-01-04 05:55:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1157 2014-01-06 08:39:30 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4715,8 +4715,44 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
 
+
+    /* Dimension information on output */
+    dmn_cmn_sct *dmn_cmn;
+    /* Allocate for number of dimensions on output  */
+    dmn_cmn=(dmn_cmn_sct *)nco_malloc(nbr_dmn_var*sizeof(dmn_cmn_sct));
+
+    /* Loop over dimensions. NB use original input dimensions for this loop, defined in the table  */
+    for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
+      /* Dimensions exist */
+      if (var_trv->var_dmn){
+        dmn_trv=NULL; /* [sct] Unique dimension */
+        crd_sct *crd=NULL; /* [sct] Coordinate dimension */
+        /* This dimension has a coordinate variable */
+        if(var_trv->var_dmn[dmn_idx].is_crd_var){
+          /* Get coordinate from table */
+          crd=var_trv->var_dmn[dmn_idx].crd;
+          dmn_cmn[dmn_idx].sz=crd->sz;
+          dmn_cmn[dmn_idx].is_rec_dmn=crd->is_rec_dmn;
+          dmn_cmn[dmn_idx].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
+          dmn_cmn[dmn_idx].dmn_cnt=crd->lmt_msa.dmn_cnt;
+          strcpy(dmn_cmn[dmn_idx].nm,crd->nm);
+        }else{
+          /* Get unique dimension from table */
+          dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
+          dmn_cmn[dmn_idx].sz=dmn_trv->sz;
+          dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
+          dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
+          strcpy(dmn_cmn[dmn_idx].nm,dmn_trv->nm);
+        } /* This dimension has a coordinate variable */
+      } /* Dimensions exist */
+    } /* Loop over dimensions */
+
+    /* TODO: Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
+
     /* Set chunksize parameters */
-    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv);
+    if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv,dmn_cmn);
+
+    if(dmn_cmn) dmn_cmn=(dmn_cmn_sct *)nco_free(dmn_cmn);
 
   } /* !NC_FORMAT_NETCDF4 */ 
 
