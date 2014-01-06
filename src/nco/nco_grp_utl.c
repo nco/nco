@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1160 2014-01-06 19:26:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1161 2014-01-06 20:15:18 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4760,11 +4760,14 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       dmn_cmn[0].BASIC_DMN=True;
       dmn_cmn[0].dmn_cnt=NC_UNLIMITED;
       strcpy(dmn_cmn[0].nm,rec_dmn_nm);
-      dmn_cmn[0].nm_fll=rec_dmn_nm; /* TODO define full name */ 
+      /* Define full name */ 
+      dmn_cmn[0].nm_fll=nco_bld_nm_fll(var_trv->grp_nm_fll,rec_dmn_nm);
     } /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
 
     /* Set chunksize parameters */
     (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn);
+
+    if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ) dmn_cmn[0].nm_fll=(char *)nco_free(dmn_cmn[0].nm_fll);
 
   } /* !NC_FORMAT_NETCDF4 */ 
 
