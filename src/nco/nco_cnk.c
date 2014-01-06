@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.92 2014-01-06 18:13:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.93 2014-01-06 20:26:49 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -783,7 +783,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   size_t cnk_sz_scl; /* [nbr] Chunk size scalar */
   size_t typ_sz; /* [B] Bytes per value */
 
-  static short FIRST_INFO=True;
+  static short FIRST_CALL=True;
 
   unsigned long long cnk_sz_byt; /* [B] Desired bytes per chunk (e.g., system blocksize) */
 
@@ -818,9 +818,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     nco_exit(EXIT_FAILURE);
   } /* endif cnk_sz_scl */
 
-  if(FIRST_INFO && nco_dbg_lvl_get() >= nco_dbg_fl){
+  if(FIRST_CALL && nco_dbg_lvl_get() >= nco_dbg_fl){
     (void)fprintf(stdout,"%s: INFO User requested chunking or unchunking\n",nco_prg_nm_get());
-    FIRST_INFO=False;
     if(nco_dbg_lvl_get() >= nco_dbg_scl){
       (void)fprintf(stdout,"cnk_plc, cnk_map: %s, %s\n",nco_cnk_plc_sng_get(cnk_plc),nco_cnk_map_sng_get(cnk_map));
       (void)fprintf(stdout,"cnk_sz_scl, cnk_sz_byt: %lu, %lu\n",(unsigned long)cnk_sz_scl,(unsigned long)cnk_sz_byt);
@@ -830,6 +829,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       } /* cnk_nbr == 0 */
     } /* endif dbg */
   } /* endif dbg */
+  FIRST_CALL=False;
 
   /* Initialize storage type for this variable */
   srg_typ=NC_CONTIGUOUS; /* [enm] Storage type */
