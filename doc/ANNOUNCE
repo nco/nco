@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.673 2014-01-03 07:51:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.674 2014-01-06 06:56:37 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -150,6 +150,14 @@ A. The -X option for auxiliary coordinates now works fully when
    latitude and longitude coordinates are nested in group hierarchies.
    http://nco.sf.net/nco.html#aux
    fxm verify
+
+A. The --cnk_byt option was introduced to allow users to manually
+   specify the desired chunksize (in Bytes) to use. In the absence
+   of this parameter, NCO will set the chunksize to the filesystem
+   blocksize of the output file (if it can be determined), or else
+   to 4096 B, the Linux default blocksize.
+   ncks -4 --cnk_byt=8192 in.nc out.nc
+   http://nco.sf.net/nco.html#cnk
 
 BUG FIXES:
 
