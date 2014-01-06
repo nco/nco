@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.113 2014-01-02 22:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/mpncpdq.c,v 1.114 2014-01-06 06:46:04 zender Exp $ */
 
 /* mpncpdq -- netCDF pack, re-dimension, query */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
-  const char * const CVS_Id="$Id: mpncpdq.c,v 1.113 2014-01-02 22:56:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.113 $";
+  const char * const CVS_Id="$Id: mpncpdq.c,v 1.114 2014-01-06 06:46:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.114 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:FhL:l:M:Oo:P:p:RrSt:v:Ux-:";
   
   cnk_dmn_sct **cnk_dmn=NULL_CEWI;
@@ -187,6 +187,7 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
   
@@ -236,6 +237,8 @@ main(int argc,char **argv)
       {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
       {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
       {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
+      {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
       {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
@@ -325,6 +328,10 @@ main(int argc,char **argv)
 	bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
+        cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* endif cnk_byt */
       if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
 	/* Copy limit argument for later processing */
 	cnk_arg[cnk_nbr]=(char *)strdup(optarg);

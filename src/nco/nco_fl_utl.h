@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.73 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.74 2014-01-06 06:46:05 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -36,7 +36,6 @@
 typedef int pid_t;
 #endif /* !_MSC_VER */
 
-#include <sys/types.h> /* needed for _res */
 #ifndef WIN32
 # include <arpa/nameser.h> /* needed for _res */
 # include <resolv.h> /* Internet structures for _res */
@@ -131,6 +130,10 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
  const int abb_arg_nbr, /* I [nbr] Number of abbreviation arguments */
  CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_abb), /* I [sng] NINTAP-style arguments, if any */
  const char * const fl_pth); /* I [sng] Path prefix for files in fl_lst_in */
+
+size_t /* [B] Blocksize */
+nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this file */
+(const char const * fl_out); /* [sng] Filename */
 
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */

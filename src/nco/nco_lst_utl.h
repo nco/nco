@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.53 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.54 2014-01-06 06:46:05 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -24,7 +24,7 @@
 #ifdef HAVE_REGEX_H 
 /* 20120213: Linux GCC 4.6 man page says regex.h depends on (non-present) sys/types.h */
 # ifdef MACOSX
-#  include <sys/types.h> /* 20040822: Provide off_t required by Mac OS X regex.h */
+#  include <sys/types.h> /*19950312: _res, 20040822: Mac OS X off_t required by regex.h */
 # endif /* !MACOSX */
 # include <regex.h> /* POSIX regular expressions library */
 #endif /* HAVE_REGEX_H */

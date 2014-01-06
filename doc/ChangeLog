@@ -1,3 +1,9 @@
+2014-01-05  Charlie Zender  <zender@uci.edu>
+
+	* Base default cnk_sz_byt on output filesystem blocksize
+
+	* Add chk_sz_byt/cnk_byt input to all netCDF4 writers
+
 2014-01-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.0 release procedure:

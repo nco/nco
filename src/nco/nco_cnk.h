@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.29 2014-01-04 01:45:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.30 2014-01-06 06:46:05 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -22,6 +22,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_fl_utl.h" /* File manipulation */
 #include "nco_grp_utl.h" /* Group utilities */
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
@@ -69,12 +70,14 @@ nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
 
 int /* [rcd] [enm] Return code */
 nco_cnk_ini /* [fnc] Create structure with all chunking information */
-(cnk_sct * const cnk, /* O [sct] Chunking structure */
+(const char const * fl_out, /* I [sng] Output filename */
  CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg), /* I [sng] List of user-specified chunksizes */
  const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  const int cnk_map, /* I [enm] Chunking map */
  const int cnk_plc, /* I [enm] Chunking policy */
- const size_t cnk_sz_scl); /* I [nbr] Chunk size scalar */
+ const size_t cnk_sz_byt, /* I [B] Chunk size in bytes */
+ const size_t cnk_sz_scl, /* I [nbr] Chunk size scalar */
+ cnk_sct * const cnk); /* O [sct] Chunking structure */
 
 cnk_dmn_sct ** /* O [sct] Structure list with user-specified per-dimension chunking information */
 nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements */

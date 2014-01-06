@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.232 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.233 2014-01-06 06:46:05 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -166,8 +166,6 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
      Uses chmod() C-library call rather than chmod shell program
      Routine assumes that output file already exists, but is of unknown mode */
 
-  //  blksize_t fl_sys_blk_sz; /* [nbr] File system blocksize for I/O */
-
   const char fnc_nm[]="nco_fl_chmod()"; /* [sng] Function name */
   
   int rcd_sys;
@@ -187,16 +185,12 @@ nco_fl_chmod /* [fnc] Ensure file is user/owner-writable */
      S_IRWXU    00700     mask for file owner permissions
      S_IWUSR    00200     owner has write permission
      Method of checking: 
-     First  bit-wise "and" (& S_IRWXU) uses mask to strips full, multibyte, file mode flag of all but user/owner byte 
-     Second bit-wise "and" (& S_IWUSR) is only "true" (non-zero) is owner write permission is set */
+     First  bit-wise "and" (& S_IRWXU) uses mask to strip full, multibyte, file mode flag of all but user/owner byte 
+     Second bit-wise "and" (& S_IWUSR) is "true" (non-zero) iff owner write permission is set */
   fl_md=stat_sct.st_mode;
-  /* Blocksize information in stat structure:
-     blksize_t st_blksize blocksize for file system I/O */
-  // fl_sys_blk_sz=stat_sct.st_blksize;
   fl_usr_md=fl_md & S_IRWXU;
   fl_usr_wrt_md=fl_usr_md & S_IWUSR;
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports permissions for file %s are (octal) = %lo\n",nco_prg_nm_get(),fnc_nm,fl_nm,(unsigned long)fl_md);
-  // if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: %s reports preferred filesystem I/O block size: %ld bytes\n",nco_prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
   if(!fl_usr_wrt_md){
     /* Set user-write bit of output file */
     fl_md=fl_md | S_IWUSR;
@@ -1388,6 +1382,56 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   return rcd;
 } /* end nco_fl_open() */
 
+size_t /* [B] Blocksize */
+nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this file */
+(const char const * fl_out) /* [sng] Filename */
+{
+  /* Purpose: Find blocksize of filesystem will or does contain this file */
+  const char fnc_nm[]="nco_fl_blocksize()"; /* [sng] Function name */
+  const char sls_chr='/';   /* [chr] Slash character */
+  
+  char *drc_out; /* [sng] Directory containing output file */
+  char *sls_ptr; /* [sng] Pointer to slash */
+  
+  int rcd_stt=0; /* [rcd] Return code from stat() */
+  
+  size_t fl_sys_blk_sz=0UL; /* [nbr] File system blocksize for I/O */
+
+  struct stat stat_sct;
+
+  drc_out=(char *)strdup(fl_out);
+  
+  /* Find last occurence of '/' */
+  sls_ptr=strrchr(drc_out,sls_chr);
+  
+  if(sls_ptr){
+    /* Filename includes path component(s)
+       NUL-terminate file name at last slash */
+    *sls_ptr='\0';
+  }else{
+    /* Filename is relative to local directory
+       Replace filename by local directory specification, i.e., by UNIX "."  */
+    drc_out[0]='.'; 
+    drc_out[1]='\0'; 
+  } /* endif */
+
+  /* Blocksize information in stat structure:
+     blksize_t st_blksize blocksize for file system I/O
+     20140105: Although blksize_t defined in stat(), there is actually no Linux type named blksize_t 
+     Use size_t instead */
+  rcd_stt=stat(drc_out,&stat_sct);
+  if(rcd_stt == -1){
+    (void)fprintf(stdout,"%s: ERROR %s reports output file directory %s does not exist, unable to stat()\n",nco_prg_nm_get(),fnc_nm,drc_out);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+  fl_sys_blk_sz=(size_t)stat_sct.st_blksize;
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO %s reports preferred output filesystem I/O block size: %ld bytes\n",nco_prg_nm_get(),fnc_nm,(long)fl_sys_blk_sz);
+  
+  if(drc_out) drc_out=(char *)nco_free(drc_out);
+
+  return fl_sys_blk_sz;
+} /* end nco_fl_blocksize() */
+
 char * /* O [sng] Name of temporary file actually opened */
 nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
 (const char * const fl_out, /* I [sng] Name of file to open */
@@ -1423,7 +1467,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   pid_t pid; /* Process ID */
 
   size_t bfr_sz_hnt_lcl; /* [B] Buffer size hint */
-
+  
   struct stat stat_sct;
 
   /* Make sure output is possible */

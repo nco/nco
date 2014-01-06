@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncra.1,v 1.33 2013-12-02 01:05:56 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncra.1,v 1.34 2014-01-06 06:46:04 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncra
 .\" Usage:
 .\" nroff -man ~/nco/man/ncra.1 | less
@@ -7,7 +7,15 @@
 ncra \- netCDF Record Averager
 .SH SYNTAX
 ncra [\-3] [\-4] [\-6] [\-7] [\-A] [\-\-bfr
-.IR sz ] [\-C] [\-c] [\-D 
+.IR sz ] [\-C] [\-c] [\-\-cnk_byt
+.IR sz ] [\-\-cnk_dmn 
+.IR nm,sz ]
+[\-\-cnk_map 
+.IR map ]
+[\-\-cnk_plc 
+.IR plc ]
+[\-\-cnk_scl 
+.IR sz ] [\-D 
 .IR dbg_lvl ]
 [\-d 
 .IR dim ,[
@@ -136,7 +144,7 @@ ncra \-d time,6.,54. ??.nc 8506_8906.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncra.1,v 1.33 2013-12-02 01:05:56 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncra.1,v 1.34 2014-01-06 06:46:04 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

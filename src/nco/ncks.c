@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.694 2014-01-03 06:04:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.695 2014-01-06 06:46:05 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -159,8 +159,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.694 2014-01-03 06:04:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.694 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.695 2014-01-06 06:46:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.695 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -211,6 +211,7 @@ main(int argc,char **argv)
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
@@ -281,6 +282,8 @@ main(int argc,char **argv)
       {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
       {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
       {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+      {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
+      {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
       {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
       {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
@@ -384,26 +387,30 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"bfr_sz_hnt") || !strcmp(opt_crr,"buffer_size_hint")){
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk */
+      } /* endif bfr_sz */
+      if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
+        cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* endif cnk_byt */
       if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
         /* Copy limit argument for later processing */
         cnk_arg[cnk_nbr]=(char *)strdup(optarg);
         cnk_nbr++;
-      } /* endif cnk */
+      } /* endif cnk_dmn */
       if(!strcmp(opt_crr,"cnk_scl") || !strcmp(opt_crr,"chunk_scalar")){
         cnk_sz_scl=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
-      } /* endif cnk */
+      } /* endif cnk_scl */
       if(!strcmp(opt_crr,"cnk_map") || !strcmp(opt_crr,"chunk_map")){
         /* Chunking map */
         cnk_map_sng=(char *)strdup(optarg);
         cnk_map=nco_cnk_map_get(cnk_map_sng);
-      } /* endif cnk */
+      } /* endif cnk_map */
       if(!strcmp(opt_crr,"cnk_plc") || !strcmp(opt_crr,"chunk_policy")){
         /* Chunking policy */
         cnk_plc_sng=(char *)strdup(optarg);
         cnk_plc=nco_cnk_plc_get(cnk_plc_sng);
-      } /* endif cnk */
+      } /* endif cnk_plc */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
         (void)fprintf(stdout,"%s\n",nco_cmp_get());
         nco_exit(EXIT_SUCCESS);
@@ -654,9 +661,6 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
-  /* Create structure with all chunking information */
-  rcd+=nco_cnk_ini(&cnk,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_scl);
-
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -757,6 +761,9 @@ main(int argc,char **argv)
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
     
+    /* Create structure with all chunking information */
+    rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
+
     /* Define extracted groups, variables, and attributes in output file */
     (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,PRN_GLB_METADATA,PRN_VAR_METADATA,nco_pck_plc_nil,rec_dmn_nm,trv_tbl);
 

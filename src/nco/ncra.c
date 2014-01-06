@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.488 2014-01-03 06:04:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.489 2014-01-06 06:46:05 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.488 2014-01-03 06:04:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.488 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.489 2014-01-06 06:46:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.489 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -247,6 +247,7 @@ main(int argc,char **argv)
   nco_int base_time_crr=nco_int_CEWI;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  size_t cnk_sz_byt=0UL; /* [B] Chunk size in bytes */
   size_t cnk_sz_scl=0UL; /* [nbr] Chunk size scalar */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
@@ -304,6 +305,8 @@ main(int argc,char **argv)
     {"chunk_map",required_argument,0,0}, /* [nbr] Chunking map */
     {"cnk_plc",required_argument,0,0}, /* [nbr] Chunking policy */
     {"chunk_policy",required_argument,0,0}, /* [nbr] Chunking policy */
+    {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
+    {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"cnk_scl",required_argument,0,0}, /* [nbr] Chunk size scalar */
     {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
     {"cnk_dmn",required_argument,0,0}, /* [nbr] Chunk size */
@@ -396,6 +399,10 @@ main(int argc,char **argv)
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif cnk */
+      if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
+        cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+      } /* endif cnk_byt */
       if(!strcmp(opt_crr,"cnk_dmn") || !strcmp(opt_crr,"chunk_dimension")){
         /* Copy limit argument for later processing */
         cnk_arg[cnk_nbr]=(char *)strdup(optarg);
@@ -600,9 +607,6 @@ main(int argc,char **argv)
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
-  /* Create structure with all chunking information */
-  rcd+=nco_cnk_ini(&cnk,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_scl);
-
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
@@ -689,6 +693,9 @@ main(int argc,char **argv)
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+
+  /* Create structure with all chunking information */
+  rcd+=nco_cnk_ini(fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,True,True,nco_pck_plc_nil,(char *)NULL,trv_tbl);

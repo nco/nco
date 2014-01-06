@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.943 2014-01-04 03:25:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.944 2014-01-06 06:46:01 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5986,10 +5986,12 @@ important information from being lost.
 @end html
 @node Chunking, Deflation, Missing Values, Common features
 @section Chunking
+@cindex @code{--cnk_byt}
 @cindex @code{--cnk_dmn}
 @cindex @code{--cnk_map}
 @cindex @code{--cnk_plc}
 @cindex @code{--cnk_scl}
+@cindex @code{--chunk_byte}
 @cindex @code{--chunk_dimension}
 @cindex @code{--chunk_map}
 @cindex @code{--chunk_policy}
@@ -6000,7 +6002,9 @@ Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: none@*
-Long options: @samp{--cnk_dmn @var{dmn_nm},@var{cnk_sz}},
+Long options: 
+@samp{--cnk_byt @var{cnk_sz}}, @samp{--chunk_byte @var{cnk_sz}}@*
+@samp{--cnk_dmn @var{dmn_nm},@var{cnk_sz}},
 @samp{--chunk_dimension @var{dmn_nm},@var{cnk_sz}}@*,
 @samp{--cnk_map @var{cnk_map}}, @samp{--chunk_map @var{cnk_map}},@*
 @samp{--cnk_plc @var{cnk_plc}}, @samp{--chunk_policy @var{cnk_plc}},@*
