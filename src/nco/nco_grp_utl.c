@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1161 2014-01-06 20:15:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1162 2014-01-06 21:22:24 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4676,9 +4676,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* Special case for ncwa */
   if(nco_prg_id == ncwa){
-
     int dmn_ids_out[NC_MAX_DIMS];  /* [id] Dimension IDs array for output variable (ncwa can skip some dimensions, rearrange) */
-
     int idx_dmn_def=0;
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
       if(DEFINE_DIM[idx_dmn]){
@@ -4715,7 +4713,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
 
-
     /* Dimension information on output */
     dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];
 
@@ -4750,9 +4747,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
     if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
       /* Loop output dimensions  */
-      for(int dmn_idx=0;dmn_idx<nbr_dmn_var;dmn_idx++){
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
         /* Move up to make room for inserted dimension at 0 index */
-        dmn_cmn[dmn_idx+1]=dmn_cmn[dmn_idx];
+        dmn_cmn[idx_dmn+1]=dmn_cmn[idx_dmn];
       } /* Loop dimensions  */
       /* Define the "record" dimension made for ncecat */
       dmn_cmn[0].sz=NC_UNLIMITED;
@@ -4763,6 +4760,26 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       /* Define full name */ 
       dmn_cmn[0].nm_fll=nco_bld_nm_fll(var_trv->grp_nm_fll,rec_dmn_nm);
     } /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
+
+    /* Special case for ncwa */
+    if(nco_prg_id == ncwa){
+      int idx_dmn_def=0;
+      /* Loop dimensions. NB use original input dimensions for this loop */
+      for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+        if(DEFINE_DIM[idx_dmn]){
+          /* Redefine the array */
+          dmn_cmn[idx_dmn_def]=dmn_cmn[idx_dmn];
+          idx_dmn_def++;
+        } /* DEFINE_DIM[idx_dmn]) */
+      } /* Loop dimensions */
+    } /* Special case for ncwa */
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s setting chunksizes for <%s> with dimensions:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
+        (void)fprintf(stdout,"[%d]<%s> (size=%ld)(count=%ld)\n",idx_dmn,dmn_cmn[idx_dmn].nm_fll,dmn_cmn[idx_dmn].sz,dmn_cmn[idx_dmn].dmn_cnt);
+      }
+    } /* endif */
 
     /* Set chunksize parameters */
     (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.66 2014-01-06 18:13:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.67 2014-01-06 21:22:24 pvicente Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -88,7 +88,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     thr_nbr_max=omp_get_max_threads(); /* [nbr] Maximum number of threads system allows */
   } /* end error */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+  if(nco_dbg_lvl_get() >= nco_dbg_scl && nco_dbg_lvl_get() != nco_dbg_dev){
     if((nvr_OMP_NUM_THREADS=getenv("OMP_NUM_THREADS"))) ntg_OMP_NUM_THREADS=(int)strtol(nvr_OMP_NUM_THREADS,&sng_cnv_rcd,NCO_SNG_CNV_BASE10); /* [sng] Environment variable OMP_NUM_THREADS */
     if(*sng_cnv_rcd) nco_sng_cnv_err(nvr_OMP_NUM_THREADS,"strtol",sng_cnv_rcd);
     (void)fprintf(fp_stderr,"%s: INFO Environment variable OMP_NUM_THREADS ",nco_prg_nm_get());
