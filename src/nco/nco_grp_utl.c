@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1169 2014-01-07 19:08:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1170 2014-01-07 20:53:22 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4302,6 +4302,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   nco_bool DEFINE_DIM[NC_MAX_DIMS];      /* [flg] Defined dimension (always True, except for ncwa)  */  
 
   dmn_trv_sct *dmn_trv;                  /* [sct] Unique dimension object */
+  
+  dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];      /* [sct] Dimension information on output */
 
   rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
 
@@ -4311,7 +4313,35 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   (void)nco_inq_format(nc_out_id,&fl_fmt);
 
   /* Local copy of object name */ 
-  strcpy(var_nm,var_trv->nm);       
+  strcpy(var_nm,var_trv->nm);     
+
+  /* Initialize the output dimensions as the same as in input  */
+  for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
+    /* Dimensions exist */
+    if (var_trv->var_dmn){
+      dmn_trv=NULL; /* [sct] Unique dimension */
+      crd_sct *crd=NULL; /* [sct] Coordinate dimension */
+      dmn_cmn[dmn_idx].nm_fll=var_trv->var_dmn[dmn_idx].dmn_nm_fll;
+      /* This dimension has a coordinate variable */
+      if(var_trv->var_dmn[dmn_idx].is_crd_var){
+        /* Get coordinate from table */
+        crd=var_trv->var_dmn[dmn_idx].crd;
+        dmn_cmn[dmn_idx].sz=crd->sz;
+        dmn_cmn[dmn_idx].is_rec_dmn=crd->is_rec_dmn;
+        dmn_cmn[dmn_idx].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
+        dmn_cmn[dmn_idx].dmn_cnt=crd->lmt_msa.dmn_cnt;
+        strcpy(dmn_cmn[dmn_idx].nm,crd->nm);
+      }else{
+        /* Get unique dimension from table */
+        dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
+        dmn_cmn[dmn_idx].sz=dmn_trv->sz;
+        dmn_cmn[dmn_idx].is_rec_dmn=dmn_trv->is_rec_dmn;
+        dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
+        dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
+        strcpy(dmn_cmn[dmn_idx].nm,dmn_trv->nm);
+      } /* This dimension has a coordinate variable */
+    } /* Dimensions exist */
+  } /* Loop over dimensions */
 
   /* Recall:
   1. Dimensions must be defined before variables
@@ -4713,36 +4743,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
 
-    /* Dimension information on output */
-    dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];
+    
 
-    /* Loop over dimensions. NB use original input dimensions for this loop, defined in the table  */
-    for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
-      /* Dimensions exist */
-      if (var_trv->var_dmn){
-        dmn_trv=NULL; /* [sct] Unique dimension */
-        crd_sct *crd=NULL; /* [sct] Coordinate dimension */
-        dmn_cmn[dmn_idx].nm_fll=var_trv->var_dmn[dmn_idx].dmn_nm_fll;
-        /* This dimension has a coordinate variable */
-        if(var_trv->var_dmn[dmn_idx].is_crd_var){
-          /* Get coordinate from table */
-          crd=var_trv->var_dmn[dmn_idx].crd;
-          dmn_cmn[dmn_idx].sz=crd->sz;
-          dmn_cmn[dmn_idx].is_rec_dmn=crd->is_rec_dmn;
-          dmn_cmn[dmn_idx].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
-          dmn_cmn[dmn_idx].dmn_cnt=crd->lmt_msa.dmn_cnt;
-          strcpy(dmn_cmn[dmn_idx].nm,crd->nm);
-        }else{
-          /* Get unique dimension from table */
-          dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
-          dmn_cmn[dmn_idx].sz=dmn_trv->sz;
-          dmn_cmn[dmn_idx].is_rec_dmn=dmn_trv->is_rec_dmn;
-          dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
-          dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
-          strcpy(dmn_cmn[dmn_idx].nm,dmn_trv->nm);
-        } /* This dimension has a coordinate variable */
-      } /* Dimensions exist */
-    } /* Loop over dimensions */
+   
 
     /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
     if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
