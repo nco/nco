@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.207 2014-01-06 19:00:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.208 2014-01-07 17:32:48 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -151,7 +151,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  /* Print _ChunkSizes for chunked arrays */
 	  idx=att_nbr_ttl++;
 	  att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
-	  // Prior to 20140105, NcML generated _ChunkSize (singular) attribute, not _Chunksizes (netCDFJava #JQM-616814)
+	  // Prior to ~20140105, NcML generated _ChunkSize (singular) attribute, not _Chunksizes (netCDFJava #JQM-616814, JIRA TDS-517)
 	  //	  att[idx].nm= (prn_flg->xml) ? (char *)strdup("_ChunkSize") : (char *)strdup("_ChunkSizes");
 	  att[idx].nm=(char *)strdup("_ChunkSizes");
 	  att[idx].type=NC_INT;

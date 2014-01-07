@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.95 2014-01-06 22:17:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.96 2014-01-07 17:32:48 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1051,6 +1051,14 @@ cnk_xpl_override: /* end goto */
       } /* cnk_nm != dmn_nm */
     } /* end loop over dimensions */
   } /* end loop over cnk */
+
+  if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev){
+    /* Dimensions and chunksizes used by variable in output file */
+    (void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)cnk_sz[dmn_idx]);
+    (void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)cnk_sz[dmn_idx]);
+  } /* endif dbg */
 
   /* Turn-on chunking for this variable */
   (void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);

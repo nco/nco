@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1165 2014-01-07 01:11:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1166 2014-01-07 17:32:48 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4774,7 +4774,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } /* Loop dimensions */
     } /* Special case for ncwa */
 
-
     /* Special case for ncpdq */
     if(nco_prg_id == ncpdq){
       int var_id_out; /* [id] Variable ID */
@@ -4790,7 +4789,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         (void)nco_inq_dim(grp_out_id,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
         /* The output dimension name differs from input: there was a swap */
         if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm) != 0){
-
 
         } /* Match ID */
       } /* Loop dimensions */

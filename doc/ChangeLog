@@ -1,7 +1,7 @@
-2013-01-06  Pedro Vicente  <pvicente@uci.edu>
+2014-01-06  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncwa regression #55: Chunking -a time --cnk_dmn lon,4 -v byt_3D_rec
-	
+
 	* Add ncwa regression #56: Chunking -a /time --cnk_dmn /time,1 -v time
 
 2014-01-06  Charlie Zender  <zender@uci.edu>
@@ -12,7 +12,7 @@
 
 	* Fix recidivist bug where if(sng_cnv_rcd) used instead of if(*sng_cnv_rcd)
 
-2013-01-05  Pedro Vicente  <pvicente@uci.edu>
+2014-01-05  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncecat regression #11: Chunking --cnk_plc=all
 
