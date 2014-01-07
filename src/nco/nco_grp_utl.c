@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1167 2014-01-07 18:21:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1168 2014-01-07 18:37:25 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4746,11 +4746,13 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
     if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
+      /* Temporary store for old dimensions */
+      dmn_cmn_sct dmn_cmn_tmp[NC_MAX_DIMS];
       /* Loop output dimensions  */
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
-        /* Move up to make room for inserted dimension at 0 index */
-        dmn_cmn[idx_dmn+1]=dmn_cmn[idx_dmn];
+        dmn_cmn_tmp[idx_dmn]=dmn_cmn[idx_dmn];
       } /* Loop dimensions  */
+
       /* Define the "record" dimension made for ncecat */
       dmn_cmn[0].sz=NC_UNLIMITED;
       dmn_cmn[0].is_rec_dmn=True;
@@ -4759,6 +4761,13 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       strcpy(dmn_cmn[0].nm,rec_dmn_nm);
       /* Define full name */ 
       dmn_cmn[0].nm_fll=nco_bld_nm_fll(var_trv->grp_nm_fll,rec_dmn_nm);
+
+      /* Redefine the array */
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
+        /* Move up to make room for inserted dimension at 0 index */
+        dmn_cmn[idx_dmn+1]=dmn_cmn_tmp[idx_dmn];
+      } /* Loop dimensions  */
+
     } /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
 
     /* Special case for ncwa */
