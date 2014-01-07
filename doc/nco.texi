@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.945 2014-01-06 19:00:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.946 2014-01-07 22:18:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6173,10 +6173,12 @@ Mnemonic: @emph{PR}o@emph{D}uct@*
 Definition: The product of the chunksizes for each variable
 (approximately) equals the size specified with the @samp{--cnk_scl} 
 option.
-This is accomplished by using chunksizes values for the rightmost
-(most rapidly varying) dimensions, and then ``flexing'' the chunksize of
-the leftmost (least rapidly varying) dimensions such that the product
-of all chunksizes matches the specified size.
+This is accomplished by using dimension sizes as chunksizes for the
+rightmost (most rapidly varying) dimensions, and then ``flexing'' the
+chunksize of the leftmost (least rapidly varying) dimensions such that 
+the product of all chunksizes matches the specified size.
+All dimensions to the left of and including the first record dimension
+define the left-hand side.
 This map was first proposed by Chris Barker.@*
 @var{cnk_map} key values: @samp{lfp}, @samp{cnk_lfp}, @samp{map_lfp}@*
 Mnemonic: @emph{L}e@emph{F}ter @emph{P}roduct@*
@@ -6212,6 +6214,9 @@ ncks -O -4 --cnk_plc=unchunk in.nc out.nc # Unchunk in.nc
 ncks -O -4 -D 4 --cnk_plc=all ~/nco/data/in.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_plc=uck ~/foo.nc ~/foo.nc
 
+# Set total chunksize to 8192 B
+ncks -O -4 -D 4 --cnk_plc=all --cnk_byt=8192 ~/nco/data/in.nc ~/foo.nc
+
 # More complex chunking procedures, with informative metadata
 ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
 ncks -O -4 -D 4 --cnk_scl=8 dstmch90_clm.nc ~/foo.nc
@@ -6237,13 +6242,13 @@ ncwa -O -4 -D 4 -a time --cnk_plc=g2d --cnk_map=rd1 --cnk_dmn lat,32 \
 
 @cindex record dimension
 It is appropriate to conclude by informing users about an aspect of
-chunking that may not be expected: 
-Record dimensions are always chunked with a chunksize of one. 
-Hence all variables that contain the record dimension are also stored 
-as chunked (since data must be stored with chunking either in all
-dimensions, or in no dimensions). 
+chunking that may not be expected.
+Three types of variables are @emph{always} chunked: Record variables,
+Deflated (compressed) variables, and Checksummed variables.
+Hence all variables that contain a record dimension are also chunked
+(since data must be chunked in all dimensions, not just one).
 Unless otherwise specified by the user, the other (fixed, non-record) 
-dimensions of such variables are assigned default chunk sizes. 
+dimensions of record variables are assigned default chunk sizes. 
 The @acronym{HDF5} layer does all this automatically to optimize the
 on-disk variable/file storage geometry of record variables.
 Do not be surprised to learn that files created without any explicit

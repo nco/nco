@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.186 2014-01-06 06:46:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco++/ncap2.cc,v 1.187 2014-01-07 22:18:01 zender Exp $ */
 
 /* ncap2 -- netCDF arithmetic processor */
 
@@ -145,8 +145,8 @@ main(int argc,char **argv)
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL_CEWI; /* [sng] User-specified script */
   
-  const char * const CVS_Id="$Id: ncap2.cc,v 1.186 2014-01-06 06:46:06 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.186 $";
+  const char * const CVS_Id="$Id: ncap2.cc,v 1.187 2014-01-07 22:18:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.187 $";
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
@@ -596,6 +596,7 @@ main(int argc,char **argv)
   if(fl_out) FL_OUT_NEW=True; else fl_out=(char *)strdup(fl_lst_in[0]);
   
   /* Make uniform list of user-specified chunksizes */
+  cnk_sz_byt+=0; /* CEWI */
   if(cnk_nbr > 0) cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);
 
   /* Make uniform list of user-specified dimension limits */

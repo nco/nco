@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.98 2014-01-07 19:20:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.99 2014-01-07 22:18:01 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -153,11 +153,20 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
      Variables are compressed and checksummed one chunk at-a-time
      Set NCO_CNK_SZ_BYT_DFL to system blocksize, if known
      Setting chunksize equal to system blocksize thought to minimize disk head movement, be most efficient 
-     Linux default blocksize is 4096 B */
+     Blocksize is related to default buffer; check this with
+     ncks -O -4 -D 6 -v one ~/nco/data/in.nc ~/foo.nc
+     Buffer is at least twice and sometimes sixteen times Blocksize:
+
+                         Blocksize Buffer
+     Linux default            4096 8192
+     Yellowstone /home       32768 524288
+     Yellowstong /glade     131072 524288
+     Yellowstong /tmp         4096 524288 <-- probably hardcoded default not actual blocksize reported */
 
   /* Discover blocksize if possible */
   fl_sys_blk_sz=nco_fl_blocksize(fl_out);
 
+  /* Linux default blocksize is 4096 B */
 #define NCO_CNK_SZ_BYT_DFL 4096
   if(cnk_sz_byt > 0ULL){
     /* Use user-specified chunk size if available */
@@ -1064,9 +1073,9 @@ cnk_xpl_override: /* end goto */
     } /* end loop over dimensions */
   } /* end loop over cnk */
 
-  /* Status: Previous block implemented per-dimension user requested chunksizes 
-     Block below implements final safety check for all chunking maps
-     Check trims chunksizes so they are never larger than dimension sizes except possibly for record dimensions */
+  /* Status: Previous block implemented per-dimension checks on user-requested chunksizes only
+     Block below implements similar final safety check for ALL dimensions and ALL chunking maps
+     Check trims fixed (not record) dimension chunksize to never be larger than dimension size */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
       if(!dmn_cmn[dmn_idx].is_rec_dmn){
@@ -1074,7 +1083,7 @@ cnk_xpl_override: /* end goto */
 	(void)fprintf(stderr,"%s: WARNING %s final check trimming %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
 	/* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
 	cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
-      } /* !rcd_dmn_id */
+      } /* rcd_dmn_id */
     } /* end if */
   } /* end loop over dmn */
 

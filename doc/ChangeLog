@@ -1,9 +1,19 @@
+2014-01-07  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.4.0 release procedure:
+ 	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn, cnk
+	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
+	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
+
+	* Verify yellowstone build is clean, improve chunking error-tolerance
+
 2014-01-07  Pedro Vicente  <pvicente@uci.edu>
-	
-	* Add ncpdq regression #46: Chunking -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct 
-	
-	* Add ncecat regression #12: Chunking -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 
-	
+
+	* Add ncpdq regression #46: Chunking -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct
+
+	* Add ncecat regression #12: Chunking -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4
+
 	* Add ncwa regression #57: Chunking with --rdd
 
 2014-01-06  Pedro Vicente  <pvicente@uci.edu>
@@ -31,12 +41,6 @@
 	* Add chk_sz_byt/cnk_byt input to all netCDF4 writers
 
 2014-01-03  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.0 release procedure:
- 	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn, cnk
-	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
-	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
 
 	* Implement map_lfp and begin accounting for type size and chunk size in bytes
 

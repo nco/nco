@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.674 2014-01-06 06:56:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.675 2014-01-07 22:18:00 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -20,19 +20,12 @@ for of datasets in HDF4, HDF5, and netCDF4 formats. The solution
 is a script called ncdismember that now works well with most
 NASA stewarded datasets I've thrown at it.
 
-As indicated in the last release, NCO 4.4.0 renamed ncra as ncrs and
-ncwa as ncws (Record Statistics and Weighted Statistics,
-respectively).  This is to more accurately reflect their purpose.
-The same technique is used to guarantee backwards compatibility.
-That is, NCO installs by default with symbolic links from ncra->ncrs
-and ncwa->ncws so calling either operator by its old name still works,
-and calling either operator by its new name produces the same results.
-However, ncra and ncwa are deprecated and will eventually be removed.
-Please change your scripts/habits accordingly within a few years...
-
-Work on NCO 4.4.1 is underway. It focuses on stability and speed.  
+We decided to postpone the name-change of ncra and ncwa to ncrs
+and ncws, respectively, until the next version for stability.
+Work on NCO 4.4.1 is underway. It focuses on more stability and speed.   
 There will be some netCDF4 mop-up, including netCDF4 support for
-various options, and, possibly, improved support for HDF4 files. 
+various options, and, possibly, improved support for HDF4 files,
+and cache manipulation for chunking. 
 
 Enjoy,
 Charlie
@@ -159,6 +152,13 @@ A. The --cnk_byt option was introduced to allow users to manually
    ncks -4 --cnk_byt=8192 in.nc out.nc
    http://nco.sf.net/nco.html#cnk
 
+A. New Chunking policies (xst) and maps (xst, lfp)
+   These stand for "Existing" and "LeFter Product", respectively.
+   The new options allow NCO to retain existing chunking sizes, and/or 
+   to use lfp map in many situations.
+   ncks -4 --cnk_plc=xst --cnk_map=lfp in.nc out.nc
+   http://nco.sf.net/nco.html#cnk
+
 BUG FIXES:
 
 A. De-compressing netCDF4 files/variables by specifying deflation
@@ -202,22 +202,21 @@ A. Sometimes the "coordinates" and "bounds" CF attributes caused
 A. NCO correctly handles output filenames that contain whitespace. 
    Previously, NCO would complain when moving the temporary to the
    final output file (the workaround was to use --no_tmp_fl).
-   Fixed.
 
 A. ncks XML/NcML no longer creates a _FillValue attribute for unsigned 
    types. It did so in NCO 4.3.7--4.3.9 because Unidata toolsUI does
    so, but apparently this is a bug not a feature so NCO no longer
-   emulates it. 
+   emulates it. Likewise, ncks emits a _ChunkSizes attributes when
+   appropriate, not (like toolsUI) a _ChunkSize attribute.
 
-A. Chunking options were not working quite as intended for some time.
-   Fixed. fxm.
+A. Chunking options were not working as intended for some time. Fixed.  
 
 KNOWN ISSUES NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.4.0 built/tested with netCDF
-   4.3.1-rc5 snapshot 20131218 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.3.1-rc7 snapshot 20131222 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
