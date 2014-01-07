@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1166 2014-01-07 17:32:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1167 2014-01-07 18:21:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4775,7 +4775,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     } /* Special case for ncwa */
 
     /* Special case for ncpdq */
-    if(nco_prg_id == ncpdq){
+    if(nco_prg_id == ncpdq && nbr_dmn_var > 1){
       int var_id_out; /* [id] Variable ID */
       int var_dmn_nbr; /* [nbr] Number of dimensions */
       int var_dimid[NC_MAX_VAR_DIMS]; /* [lst] Dimension IDs */
@@ -4789,8 +4789,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         (void)nco_inq_dim(grp_out_id,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
         /* The output dimension name differs from input: there was a swap */
         if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm) != 0){
-
-        } /* Match ID */
+          /* Swap array for these 2 names */
+          (void)nco_dmn_swap(dmn_nm,dmn_cmn[idx_dmn].nm,dmn_cmn,nbr_dmn_var);
+        } /* Dimension name differs from input */
       } /* Loop dimensions */
     } /* Special case for ncpdq */
 
@@ -4813,6 +4814,41 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   return var_out_id;
 } /* end nco_cpy_var_dfn_trv() */
+
+
+void
+nco_dmn_swap                           /* [fnc] Swap dimensions */
+(const char * const dmn_nm_1,          /* I [sng] Name of dimension 1 */
+ const char * const dmn_nm_2,          /* I [sng] Name of dimension 2 */
+ dmn_cmn_sct *dmn_cmn,                 /* I/O [sct] Dimension structure array */
+ const int nbr_dmn)                    /* I [nbr] Number of dimensions (size of above array) */
+{
+  dmn_cmn_sct dmn_cmn_tmp;
+  int dmn_nm_1_idx;
+  int dmn_nm_2_idx;
+
+  /* Loop dimensions */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+    /* Find index of name 1 */
+    if(strcmp(dmn_nm_1,dmn_cmn[idx_dmn].nm) == 0){
+      dmn_nm_1_idx=idx_dmn;
+    } /* Find index of name 1 */
+  } /* Loop dimensions */
+
+  /* Loop dimensions */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+    /* Find index of name 2 */
+    if(strcmp(dmn_nm_2,dmn_cmn[idx_dmn].nm) == 0){
+      dmn_nm_2_idx=idx_dmn;
+    } /* Find index of name 2 */
+  } /* Loop dimensions */
+
+  /* Swap */
+  dmn_cmn_tmp=dmn_cmn[dmn_nm_1_idx];
+  dmn_cmn[dmn_nm_1_idx]=dmn_cmn[dmn_nm_2_idx];
+  dmn_cmn[dmn_nm_2_idx]=dmn_cmn_tmp;
+
+} /* nco_dmn_swap */
 
 void
 nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */

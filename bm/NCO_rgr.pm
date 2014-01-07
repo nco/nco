@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.403 2014-01-06 22:17:01 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.404 2014-01-07 18:21:20 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3141,6 +3141,10 @@ print "\n";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array  
+	
+	} ##### Group tests	
+	
+#ncpdq #42
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 %tmp_fl_00% %tmp_fl_01%";
@@ -3150,6 +3154,8 @@ print "\n";
     $tst_cmd[4]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
+	
+#ncpdq #43	
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
@@ -3158,6 +3164,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
+	
+#ncpdq #44	
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk --hdf_upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%f' -v pck_7 %tmp_fl_00%";
@@ -3166,6 +3174,8 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array
+	
+#ncpdq #45	
 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P xst_new --hdf_upk -v pck_7 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P upk -v pck_7 %tmp_fl_00% %tmp_fl_01%";
@@ -3174,9 +3184,20 @@ print "\n";
     $tst_cmd[3]="-8";
     $tst_cmd[4]="SS_OK";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-    $#tst_cmd=0; # Reset array
+    $#tst_cmd=0; # Reset array	
 	
-	} ##### Group tests	
+	
+#NEW NCO 4.4.0
+#ncpdq #46
+# ncpdq -O -4  -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct in.nc out.nc
+
+   $dsc_sng="Chunking -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
+   $tst_cmd[0]="ncpdq $omp_flg -4 $nco_D_flg -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct $in_pth_arg in.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'lat_2D_rct dimension 0'";
+   $tst_cmd[2]="lat_2D_rct dimension 0: lon, size = 4 NC_FLOAT, chunksize = 2 (Coordinate is lon)";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array  	
 	
 
 ####################
