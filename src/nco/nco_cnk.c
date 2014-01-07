@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.97 2014-01-07 19:08:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.98 2014-01-07 19:20:49 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1040,7 +1040,9 @@ cnk_xpl_override: /* end goto */
         cnk_sz[dmn_idx]=cnk_dmn[cnk_idx]->sz;
         /* Is this a record dimension? */
         if(dmn_cmn[dmn_idx].is_rec_dmn){
-          if(dmn_cmn[dmn_idx].BASIC_DMN){
+	  /* dmn_sz of record dimension may (will) be zero in output file
+	     Must allow (though warn) when cnk_sz > dmn_sz in such cases */
+	  if(dmn_cmn[dmn_idx].BASIC_DMN){
             if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
               (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds record dimension size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
             } /* endif too big */
@@ -1051,8 +1053,7 @@ cnk_xpl_override: /* end goto */
           } /* !BASIC_DMN */
         }else{ /* !rcd_dmn_id */
           if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
-            /* dmn_sz of record dimension may (will) be zero in output file
-	       Non-record dimensions, though, must have cnk_sz <= dmn_sz */
+	    /* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
             (void)fprintf(stderr,"%s: WARNING %s trimming user-specified %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
             /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
             cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
@@ -1063,12 +1064,24 @@ cnk_xpl_override: /* end goto */
     } /* end loop over dimensions */
   } /* end loop over cnk */
 
+  /* Status: Previous block implemented per-dimension user requested chunksizes 
+     Block below implements final safety check for all chunking maps
+     Check trims chunksizes so they are never larger than dimension sizes except possibly for record dimensions */
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+    if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
+      if(!dmn_cmn[dmn_idx].is_rec_dmn){
+	/* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
+	(void)fprintf(stderr,"%s: WARNING %s final check trimming %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
+	/* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
+	cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
+      } /* !rcd_dmn_id */
+    } /* end if */
+  } /* end loop over dmn */
+
   if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev){
     /* Dimensions and chunksizes used by variable in output file */
-    (void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)cnk_sz[dmn_idx]);
-    (void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)cnk_sz[dmn_idx]);
+    (void)fprintf(stdout,"idx dmn_nm\tdmn_sz\tcnk_sz:\n");
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)cnk_sz[dmn_idx]);
   } /* endif dbg */
 
   /* Turn-on chunking for this variable */
