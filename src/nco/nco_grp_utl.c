@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1164 2014-01-07 00:44:48 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1165 2014-01-07 01:11:01 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4723,7 +4723,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         dmn_trv=NULL; /* [sct] Unique dimension */
         crd_sct *crd=NULL; /* [sct] Coordinate dimension */
         dmn_cmn[dmn_idx].nm_fll=var_trv->var_dmn[dmn_idx].dmn_nm_fll;
-        dmn_cmn[dmn_idx].id=var_trv->var_dmn[dmn_idx].dmn_id;
         /* This dimension has a coordinate variable */
         if(var_trv->var_dmn[dmn_idx].is_crd_var){
           /* Get coordinate from table */
@@ -4778,7 +4777,23 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     /* Special case for ncpdq */
     if(nco_prg_id == ncpdq){
-     
+      int var_id_out; /* [id] Variable ID */
+      int var_dmn_nbr; /* [nbr] Number of dimensions */
+      int var_dimid[NC_MAX_VAR_DIMS]; /* [lst] Dimension IDs */
+      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_id_out);
+      (void)nco_inq_var(grp_out_id,var_id_out,var_nm,&var_typ,&var_dmn_nbr,var_dimid,NULL);
+      /* Sanity check */
+      assert(nbr_dmn_var == var_trv->nbr_dmn);
+      assert(nbr_dmn_var == var_dmn_nbr);
+      /* Loop dimensions */
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+        (void)nco_inq_dim(grp_out_id,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
+        /* The output dimension name differs from input: there was a swap */
+        if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm) != 0){
+
+
+        } /* Match ID */
+      } /* Loop dimensions */
     } /* Special case for ncpdq */
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev){
