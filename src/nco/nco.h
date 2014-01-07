@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.464 2014-01-07 01:11:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.465 2014-01-07 21:42:39 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -1060,6 +1060,7 @@ extern "C" {
     size_t sz; /* [nbr] Size of dimension/coordinate */
     nco_bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
     long dmn_cnt; /* [nbr] Hyperslabbed size of dimension */ 
+    int id; /* [id] Dimension ID */ 
   } dmn_cmn_sct; 
   
 #ifdef __cplusplus

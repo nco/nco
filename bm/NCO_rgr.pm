@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.405 2014-01-07 18:43:22 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.406 2014-01-07 21:42:39 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4593,6 +4593,19 @@ print "\n";
     $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a /time --cnk_dmn /time,1 -v time $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'time:'";
 	$tst_cmd[2]="time: type NC_DOUBLE, 0 dimensions, 4 attributes, chunked? no, compressed? no, packed? no";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
+
+#NEW 4.4.0	
+#ncwa #57	
+#ncwa -O -C -4 -D 12 --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4  in.nc out.nc	
+#ncks --hdn --cdl -v four_dmn_rec_var  out.nc
+
+    $dsc_sng="Chunking with -rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 ";
+    $tst_cmd[0]="ncwa $omp_flg -O -C -4 $nco_D_flg --rdd -a lon,lat -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks --hdn --cdl -v four_dmn_rec_var %tmp_fl_00% | grep 'four_dmn_rec_var:_ChunkSizes'";
+	$tst_cmd[2]="      four_dmn_rec_var:_ChunkSizes = 1, 1, 3, 1 ;";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		

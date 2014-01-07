@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1170 2014-01-07 20:53:22 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1171 2014-01-07 21:42:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4316,29 +4316,30 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   strcpy(var_nm,var_trv->nm);     
 
   /* Initialize the output dimensions as the same as in input  */
-  for(int dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
+  for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
     /* Dimensions exist */
     if (var_trv->var_dmn){
       dmn_trv=NULL; /* [sct] Unique dimension */
       crd_sct *crd=NULL; /* [sct] Coordinate dimension */
-      dmn_cmn[dmn_idx].nm_fll=var_trv->var_dmn[dmn_idx].dmn_nm_fll;
+      dmn_cmn[idx_dmn].nm_fll=var_trv->var_dmn[idx_dmn].dmn_nm_fll;
+      dmn_cmn[idx_dmn].id=nco_obj_typ_err;
       /* This dimension has a coordinate variable */
-      if(var_trv->var_dmn[dmn_idx].is_crd_var){
+      if(var_trv->var_dmn[idx_dmn].is_crd_var){
         /* Get coordinate from table */
-        crd=var_trv->var_dmn[dmn_idx].crd;
-        dmn_cmn[dmn_idx].sz=crd->sz;
-        dmn_cmn[dmn_idx].is_rec_dmn=crd->is_rec_dmn;
-        dmn_cmn[dmn_idx].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
-        dmn_cmn[dmn_idx].dmn_cnt=crd->lmt_msa.dmn_cnt;
-        strcpy(dmn_cmn[dmn_idx].nm,crd->nm);
+        crd=var_trv->var_dmn[idx_dmn].crd;
+        dmn_cmn[idx_dmn].sz=crd->sz;
+        dmn_cmn[idx_dmn].is_rec_dmn=crd->is_rec_dmn;
+        dmn_cmn[idx_dmn].BASIC_DMN=crd->lmt_msa.BASIC_DMN;
+        dmn_cmn[idx_dmn].dmn_cnt=crd->lmt_msa.dmn_cnt;
+        strcpy(dmn_cmn[idx_dmn].nm,crd->nm);
       }else{
         /* Get unique dimension from table */
-        dmn_trv=var_trv->var_dmn[dmn_idx].ncd;
-        dmn_cmn[dmn_idx].sz=dmn_trv->sz;
-        dmn_cmn[dmn_idx].is_rec_dmn=dmn_trv->is_rec_dmn;
-        dmn_cmn[dmn_idx].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
-        dmn_cmn[dmn_idx].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
-        strcpy(dmn_cmn[dmn_idx].nm,dmn_trv->nm);
+        dmn_trv=var_trv->var_dmn[idx_dmn].ncd;
+        dmn_cmn[idx_dmn].sz=dmn_trv->sz;
+        dmn_cmn[idx_dmn].is_rec_dmn=dmn_trv->is_rec_dmn;
+        dmn_cmn[idx_dmn].BASIC_DMN=dmn_trv->lmt_msa.BASIC_DMN;
+        dmn_cmn[idx_dmn].dmn_cnt=dmn_trv->lmt_msa.dmn_cnt;
+        strcpy(dmn_cmn[idx_dmn].nm,dmn_trv->nm);
       } /* This dimension has a coordinate variable */
     } /* Dimensions exist */
   } /* Loop over dimensions */
@@ -4623,6 +4624,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(DEFINE_DIM[idx_dmn]){
         /* Define dimension and obtain dimension ID */
         (void)nco_def_dim(grp_dmn_out_id,dmn_nm,dmn_cnt,&dmn_id_out);
+        /* Redefine output dimension array for this dimension */
+        (void)nco_dfn_dmn(dmn_nm,dmn_cnt,dmn_id_out,dmn_cmn,var_trv->nbr_dmn);
         /* Assign defined ID to dimension ID array for the variable */
         dmn_out_id[idx_dmn]=dmn_id_out; 
       } /* !DEFINE_DIM */
@@ -4743,10 +4746,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,(int)True,(int)True,dfl_lvl);
     } /* endif */
 
-    
-
-   
-
     /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
     if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
       /* Temporary store for old dimensions */
@@ -4755,7 +4754,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
         dmn_cmn_tmp[idx_dmn]=dmn_cmn[idx_dmn];
       } /* Loop dimensions  */
-
       /* Define the "record" dimension made for ncecat */
       dmn_cmn[0].sz=NC_UNLIMITED;
       dmn_cmn[0].is_rec_dmn=True;
@@ -4764,13 +4762,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       strcpy(dmn_cmn[0].nm,rec_dmn_nm);
       /* Define full name */ 
       dmn_cmn[0].nm_fll=nco_bld_nm_fll(var_trv->grp_nm_fll,rec_dmn_nm);
-
       /* Redefine the array */
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
         /* Move up to make room for inserted dimension at 0 index */
         dmn_cmn[idx_dmn+1]=dmn_cmn_tmp[idx_dmn];
       } /* Loop dimensions  */
-
     } /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
 
     /* Special case for ncwa */
@@ -4861,6 +4857,27 @@ nco_dmn_swap                           /* [fnc] Swap dimensions */
   dmn_cmn[dmn_nm_2_idx]=dmn_cmn_tmp;
 
 } /* nco_dmn_swap */
+
+
+void
+nco_dfn_dmn                            /* [fnc] Define dimension size and ID in array */
+(const char * const dmn_nm,            /* I [sng] Name of dimension */
+ const long dmn_sz,                    /* I [nbr] Size of dimension */
+ const int dmn_id,                     /* I [id] ID of dimension */
+ dmn_cmn_sct *dmn_cmn,                 /* I/O [sct] Dimension structure array */
+ const int nbr_dmn)                    /* I [nbr] Number of dimensions (size of above array) */
+{
+  /* Loop dimensions */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+    /* Find dimension */
+    if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm) == 0){
+      dmn_cmn[idx_dmn].sz=dmn_sz;
+      dmn_cmn[idx_dmn].id=dmn_id;
+      return;
+    } /* Find dimension */
+  } /* Loop dimensions */
+
+} /* nco_dmn_dfn */
 
 void
 nco_dmn_rdr_trv                        /* [fnc] Transfer dimension structures to be re-ordered (ncpdq) into GTT */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.434 2014-01-07 18:21:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.435 2014-01-07 21:42:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -707,6 +707,14 @@ void
 nco_dmn_swap                           /* [fnc] Swap dimensions */
 (const char * const dmn_nm_1,          /* I [sng] Name of dimension 1 */
  const char * const dmn_nm_2,          /* I [sng] Name of dimension 2 */
+ dmn_cmn_sct *dmn_cmn,                 /* I/O [sct] Dimension structure array */
+ const int nbr_dmn);                   /* I [nbr] Number of dimensions (size of above array) */
+
+void
+nco_dfn_dmn                            /* [fnc] Define dimension size and ID in array */
+(const char * const dmn_nm,            /* I [sng] Name of dimension */
+ const long dmn_sz,                    /* I [nbr] Size of dimension */
+ const int dmn_id,                     /* I [id] ID of dimension */
  dmn_cmn_sct *dmn_cmn,                 /* I/O [sct] Dimension structure array */
  const int nbr_dmn);                   /* I [nbr] Number of dimensions (size of above array) */
 
