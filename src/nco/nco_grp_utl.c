@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1168 2014-01-07 18:37:25 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1169 2014-01-07 19:08:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4261,8 +4261,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   char *rec_dmn_nm=NULL;                 /* [sng] User-specified record dimension name */
   char *rec_dmn_nm_mlc=NULL;             /* [sng] Local copy of rec_dmn_nm_cst, which may be encoded */
   char *grp_dmn_out_fll=NULL;            /* [sng] Group name of dimension in output */
-  char dmn_nm[NC_MAX_NAME];              /* [sng] Dimension names  */
-  char dmn_nm_grp[NC_MAX_NAME];          /* [sng] Dimension names for group */  
+  char dmn_nm[NC_MAX_NAME];              /* [sng] Dimension name  */
+  char dmn_nm_grp[NC_MAX_NAME];          /* [sng] Dimension name for group */  
 
   int dmn_in_id_var[NC_MAX_DIMS];        /* [id] Dimension IDs array for input variable */
   int dmn_out_id[NC_MAX_DIMS];           /* [id] Dimension IDs array for output variable */

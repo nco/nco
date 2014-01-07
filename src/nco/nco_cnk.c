@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.96 2014-01-07 17:32:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.97 2014-01-07 19:08:55 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -753,6 +753,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
 
   char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
+  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name  */
 
   cnk_dmn_sct **cnk_dmn;
 
@@ -768,6 +769,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   int srg_typ; /* [enm] Storage type */
   int var_id_in; /* [ID] Variable ID in input file */
   int var_id_out; /* [ID] Variable ID in output file */
+  int var_dimid[NC_MAX_VAR_DIMS]; /* [lst] Dimension IDs */
 
   nc_type var_typ_dsk; /* [nbr] Variable type */
 
@@ -787,6 +789,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   static short FIRST_CALL=True;
 
   unsigned long long cnk_sz_byt; /* [B] Desired bytes per chunk (e.g., system blocksize) */
+
+  long dmn_sz; /* [nbr] Size of dimension */  
 
   /* Initialize local convenience variables */
   flg_usr_rqs=cnk->flg_usr_rqs;
@@ -845,12 +849,19 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   (void)nco_inq_varid(grp_id_in,nm_var,&var_id_in);
 
   /* Get type and number of dimensions for variable */
-  (void)nco_inq_var(grp_id_out,var_id_out,var_nm,&var_typ_dsk,&dmn_nbr,(int *)NULL,(int *)NULL);
+  (void)nco_inq_var(grp_id_out,var_id_out,var_nm,&var_typ_dsk,&dmn_nbr,var_dimid,(int *)NULL);
   typ_sz=nco_typ_lng(var_typ_dsk);
 
   /* Sanity check (the number of dimensions in parameter is redundant, since we are obtaining it)  */
   assert(strcmp(var_nm,nm_var) == 0);
   assert(nbr_dmn == dmn_nbr);
+  /* Sanity check */
+  /* Loop dimensions */
+  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
+    (void)nco_inq_dim(grp_id_out,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
+    /* Match names of parameter array with API */
+    assert(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm) == 0);
+  } /* Loop dimensions */
 
   if(dmn_nbr == 0){
     if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s skipping scalar...\n",nco_prg_nm_get(),fnc_nm);
