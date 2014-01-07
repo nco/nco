@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1163 2014-01-06 22:17:01 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1164 2014-01-07 00:44:48 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4723,6 +4723,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         dmn_trv=NULL; /* [sct] Unique dimension */
         crd_sct *crd=NULL; /* [sct] Coordinate dimension */
         dmn_cmn[dmn_idx].nm_fll=var_trv->var_dmn[dmn_idx].dmn_nm_fll;
+        dmn_cmn[dmn_idx].id=var_trv->var_dmn[dmn_idx].dmn_id;
         /* This dimension has a coordinate variable */
         if(var_trv->var_dmn[dmn_idx].is_crd_var){
           /* Get coordinate from table */
@@ -4773,6 +4774,12 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         } /* DEFINE_DIM[idx_dmn]) */
       } /* Loop dimensions */
     } /* Special case for ncwa */
+
+
+    /* Special case for ncpdq */
+    if(nco_prg_id == ncpdq){
+     
+    } /* Special case for ncpdq */
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: DEBUG %s setting chunksizes for <%s> with dimensions:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
