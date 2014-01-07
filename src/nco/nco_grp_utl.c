@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1171 2014-01-07 21:42:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1172 2014-01-07 23:33:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -733,7 +733,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
                   var_mch_srt=usr_sng+usr_sng_lng-trv_obj.nm_lng;
                   if(!strcmp(var_mch_srt,trv_obj.nm)) flg_var_cnd=True;
                 } /* endif */
-                if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",nco_prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
+                if(nco_dbg_lvl_get() >= nco_dbg_sbr && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stderr,"%s: INFO %s reports variable %s %s additional conditions for variable match with %s.\n",nco_prg_nm_get(),fnc_nm,usr_sng,(flg_var_cnd) ? "meets" : "fails",trv_obj.nm_fll);
               } /* endif var */
 
               /* If anchoring, match must begin at root */
@@ -788,7 +788,7 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
 
     } /* obj_idx */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+    if(nco_dbg_lvl_get() >= nco_dbg_sbr && nco_dbg_lvl_get() != nco_dbg_dev){
       (void)fprintf(stdout,"%s: INFO %s reports following %s match sub-setting and regular expressions:\n",nco_prg_nm_get(),fnc_nm,(obj_typ == nco_obj_typ_grp) ? "groups" : "variables");
       trv_tbl_prn_flg_mch(trv_tbl,obj_typ);
     } /* endif dbg */
@@ -4415,8 +4415,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     if(nco_prg_id == ncks){
       if(!FIX_ALL_REC_DMN){
         int rec_dmn_id_dmy;
-        /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
-        rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
         rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
         if(rcd != NC_NOERR){
           (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
@@ -4581,13 +4579,15 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         long cnt;
         if(var_trv->var_dmn[idx_dmn].is_crd_var) cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt; else cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
         (void)nco_dmn_set_msa(var_dim_id,cnt,trv_tbl);  
-
+        /* Update output dimension info */
+        dmn_cmn[idx_dmn].is_rec_dmn=True;
       }else{ /* Get size from GTT */
-
+        /* Update output dimension info */
+        dmn_cmn[idx_dmn].is_rec_dmn=False;
         if(var_trv->var_dmn[idx_dmn].is_crd_var){
           dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
           /* Update GTT dimension */
-          (void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl);        
+          (void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl); 
         }else{ /* !is_crd_var */
           dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
           /* Update GTT dimension */
@@ -4806,7 +4806,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     if(nco_dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: DEBUG %s setting chunksizes for <%s> with dimensions:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
-        (void)fprintf(stdout,"[%d]<%s> (size=%ld)(count=%ld)\n",idx_dmn,dmn_cmn[idx_dmn].nm_fll,dmn_cmn[idx_dmn].sz,dmn_cmn[idx_dmn].dmn_cnt);
+        (void)fprintf(stdout,"[%d]<%s> (size=%ld)(count=%ld)(record=%d)\n",
+          idx_dmn,dmn_cmn[idx_dmn].nm_fll,dmn_cmn[idx_dmn].sz,dmn_cmn[idx_dmn].dmn_cnt,dmn_cmn[idx_dmn].is_rec_dmn);
       }
     } /* endif */
 
