@@ -1,6 +1,8 @@
 2014-01-07  Pedro Vicente  <pvicente@uci.edu>
 	
 	* Add ncpdq regression #46: Chunking -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct 
+	
+	* Add ncecat regression #12: Chunking -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 
 
 2014-01-06  Pedro Vicente  <pvicente@uci.edu>
 

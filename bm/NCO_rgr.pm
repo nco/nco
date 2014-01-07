@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.404 2014-01-07 18:21:20 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.405 2014-01-07 18:43:22 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1126,7 +1126,19 @@ print "\n";
     $tst_cmd[2]="date_int dimension 0: record, size = 2, chunksize = 1 (Record non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 		
+    $#tst_cmd=0; # Reset array 
+
+#ncecat #12
+#Chunking 
+#ncecat -O -C -4  -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 in.nc in.nc out.nc
+
+    $dsc_sng="Chunking -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4";
+    $tst_cmd[0]="ncecat -O -C -4 $nco_D_flg  -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4  $in_pth_arg in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks %tmp_fl_00% | grep 'four_dmn_rec_var dimension 2'";
+    $tst_cmd[2]="four_dmn_rec_var dimension 2: lat, size = 2, chunksize = 2 (Non-coordinate dimension)";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 
 	
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
