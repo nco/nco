@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.67 2014-01-08 18:05:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.68 2014-01-08 20:33:13 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -384,18 +384,7 @@ nco_aux_evl_trv
 
   const char fnc_nm[]="nco_aux_evl_trv()";
 
-  char *lat_nm_fll;
-  char *lon_nm_fll;
-
-  nco_bool has_lat;
-  nco_bool has_lon;
-
-  has_lat=nco_find_lat_lon_trv(nc_id,var_trv,"latitude",&lat_nm_fll);
-  has_lon=nco_find_lat_lon_trv(nc_id,var_trv,"longitude",&lon_nm_fll);
-
-  if (has_lat && has_lon){
-
-  }
+  
 
   return NULL;
 } /* nco_aux_evl_trv */
@@ -471,8 +460,9 @@ nco_find_lat_lon_trv
       /* Export full name  */
       *var_nm_fll=(char *)strdup(var_trv->nm_fll);
 
-    } /* Match parameter name to find ( "latitude" or "longitude" ) */
+      return True;
 
+    } /* Match parameter name to find ( "latitude" or "longitude" ) */
   } /* Loop attributes */
 
   return False;

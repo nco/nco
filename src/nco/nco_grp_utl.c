@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1173 2014-01-08 18:24:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1174 2014-01-08 20:33:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8532,8 +8532,55 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
   /* 
   1) Traverse table
-  2) Select each variable to extract
-  3) Look for in scope only associated variables in nco_aux_evl_trv() */
+  2) Look for 'standard_name' 'latitude' and 'longitude' attributes
+  3) Select each variable to extract
+  4) Look for in scope only associated variables in nco_aux_evl_trv() */
+
+  /* Look for 'standard_name' 'latitude' and 'longitude' attributes */
+
+  char *lat_nm_fll;
+  char *lon_nm_fll;
+  char *var_nm_fll;
+
+  nco_bool has_lat_fl;
+  nco_bool has_lon_fl;
+
+  /* Loop table */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    /* Filter variables */
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    nco_bool has_lat;
+    nco_bool has_lon;
+
+    /* Filter variables to extract */ 
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+
+      has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll);
+      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll);
+
+      if (has_lat){
+        has_lat_fl=True;
+        lat_nm_fll=var_nm_fll;
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s variable <%s> has attribute 'standard_name' to <%s>\n",nco_prg_nm_get(),fnc_nm,
+            var_trv.nm_fll,lat_nm_fll); 
+        }
+      } /* has_lat */
+
+      if (has_lon){
+        has_lon_fl=True;
+        lon_nm_fll=var_nm_fll;
+        if(nco_dbg_lvl_get() >= nco_dbg_dev){
+          (void)fprintf(stdout,"%s: DEBUG %s variable <%s> has attribute 'standard_name' to <%s>\n",nco_prg_nm_get(),fnc_nm,
+            var_trv.nm_fll,lon_nm_fll); 
+        }
+      } /* has_lon */
+
+    } /* Filter variables to extract */ 
+  } /* Loop table */
+
+  if (!has_lat_fl || !has_lon_fl) return;
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
