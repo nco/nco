@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1172 2014-01-07 23:33:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1173 2014-01-08 18:24:22 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4517,7 +4517,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
       if(FIX_ALL_REC_DMN){
         DFN_CRR_DMN_AS_REC_IN_OUTPUT=False;
-        if(CRR_DMN_IS_REC_IN_INPUT && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining all input record dimensions, including this one, %s, as fixed dimensions in output file per user request\n",nco_prg_nm_get(),fnc_nm,dmn_nm);
+        if(CRR_DMN_IS_REC_IN_INPUT && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s is defining all input record dimensions including this one, %s, as fixed dimensions in output file per user request\n",nco_prg_nm_get(),fnc_nm,dmn_nm);
       }else if(rec_dmn_nm){
         /* User requested (with --fix_rec_dmn or --mk_rec_dmn) to treat a certain dimension specially */
         /* ... and this dimension is that dimension, i.e., the user-specified dimension ... */
@@ -4586,13 +4586,17 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         dmn_cmn[idx_dmn].is_rec_dmn=False;
         if(var_trv->var_dmn[idx_dmn].is_crd_var){
           dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
-          /* Update GTT dimension */
-          (void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl); 
-        }else{ /* !is_crd_var */
+	}else{ /* !is_crd_var */
           dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
-          /* Update GTT dimension */
-          (void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl);  
         } /* !is_crd_var */
+	/* 20140108: Converting variables with multiple record dimensions and empty input to all fixed dimensions and netCDF3 output
+	   Empty input means size is zero so dmn_cnt looks like NC_UNLIMITED, i.e., a record dimension
+	   In other words, there is no good way to "fix" a record dimension for a variable with no records/data
+	   Workaround is to arbitrarily assign such dimensions a size of 1 so they are fixed output, and still have no data
+	   This ugly hack seems to work and is only invoked in this extreme corner case so may be OK */
+	if(dmn_cnt == 0) dmn_cnt=1;
+        /* Update GTT dimension */
+	(void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl);  
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 
       /* ncwa */

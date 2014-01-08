@@ -1,5 +1,7 @@
 2014-01-08  Charlie Zender  <zender@uci.edu>
 
+	* Add hack to help convert empty variables with multiple record dimensions to all fixed dimensions and netCDF3 output
+
 	* Fix subtle bug when overwriting attributes during autoconversion
 
 2014-01-07  Charlie Zender  <zender@uci.edu>
