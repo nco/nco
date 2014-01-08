@@ -1,3 +1,7 @@
+2014-01-08  Charlie Zender  <zender@uci.edu>
+
+	* Fix subtle bug when overwriting attributes during autoconversion
+
 2014-01-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.0 release procedure:

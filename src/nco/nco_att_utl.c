@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.169 2014-01-03 07:51:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.170 2014-01-08 16:20:30 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -359,7 +359,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     att_typ_out=att_typ_in;
 
     /* Look for same attribute in output variable in output file */
-    rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,&att_typ_in,(long *)NULL);
+    rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,(nc_type *)NULL,(long *)NULL);
 
     /* If attribute is "scale_factor" or "add_offset" ... */
     if(!strcmp(att_nm,"scale_factor") || !strcmp(att_nm,"add_offset")){
@@ -384,7 +384,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     if(nco_dbg_lvl_get() >= nco_dbg_std && nco_dbg_lvl_get() != nco_dbg_dev){
       if(rcd == NC_NOERR){
         if(var_out_id == NC_GLOBAL){
-          (void)fprintf(stderr,"%s: INFO Overwriting global attribute %s\n",nco_prg_nm_get(),att_nm);
+          (void)fprintf(stderr,"%s: INFO Overwriting global or group attribute %s\n",nco_prg_nm_get(),att_nm);
         }else{
           (void)fprintf(stderr,"%s: INFO Overwriting attribute %s for output variable %s\n",nco_prg_nm_get(),att_nm,var_nm);
         } /* end else */
@@ -398,7 +398,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     if(nco_prg_id_get() == ncks && fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(att_typ_in)){
       att_typ_out=nco_typ_nc4_nc3(att_typ_in);
       flg_autoconvert=True;
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting variable %s attribute %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,att_nm,nco_typ_sng(att_typ_in),nco_typ_sng(att_typ_out));
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting %s%s attribute %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),(var_out_id == NC_GLOBAL) ? "global or group" : "variable",(var_out_id == NC_GLOBAL) ? "" : var_nm,att_nm,nco_typ_sng(att_typ_in),nco_typ_sng(att_typ_out));
     } /* !flg_autoconvert */
 
     if(strcmp(att_nm,nco_mss_val_sng_get())){

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.675 2014-01-07 22:18:00 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.676 2014-01-08 16:20:30 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -145,9 +145,9 @@ A. The -X option for auxiliary coordinates now works fully when
    fxm verify
 
 A. The --cnk_byt option was introduced to allow users to manually
-   specify the desired chunksize (in Bytes) to use. In the absence
-   of this parameter, NCO will set the chunksize to the filesystem
-   blocksize of the output file (if it can be determined), or else
+   specify the total desired chunksize (in Bytes). In the absence
+   of this parameter, NCO sets the chunksize to the filesystem
+   blocksize of the output file (if obtainable via stat()), or else  
    to 4096 B, the Linux default blocksize.
    ncks -4 --cnk_byt=8192 in.nc out.nc
    http://nco.sf.net/nco.html#cnk
@@ -158,6 +158,10 @@ A. New Chunking policies (xst) and maps (xst, lfp)
    to use lfp map in many situations.
    ncks -4 --cnk_plc=xst --cnk_map=lfp in.nc out.nc
    http://nco.sf.net/nco.html#cnk
+
+A. A question for chunkers: Would you prefer to provide chunksize
+   inputs in absolute Bytes or in data elements (and have NCO assume,
+   say, four-bytes per element)? Difficult question
 
 BUG FIXES:
 
