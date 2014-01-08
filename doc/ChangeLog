@@ -1,16 +1,16 @@
 2014-01-08  Charlie Zender  <zender@uci.edu>
 
-	* Add hack to help convert empty variables with multiple record dimensions to all fixed dimensions and netCDF3 output
-
-	* Fix subtle bug when overwriting attributes during autoconversion
-
-2014-01-07  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.4.0 release procedure:
  	Changes since nco-4_3_9: hash, dyn mmr, ncra.c fixes, hdf4, autocnv, hdn, cnk
 	cd ~/nco;cvs tag -d nco-4_4_0;cvs tag -d nco-4_4_0-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.0 release"
 	cvs tag -c nco-4_4_0;cvs tag -c nco-4_4_0-1
+
+	* Add hack to help convert empty variables with multiple record dimensions to all fixed dimensions and netCDF3 output
+
+	* Fix subtle bug when overwriting attributes during autoconversion
+
+2014-01-07  Charlie Zender  <zender@uci.edu>
 
 	* Verify yellowstone build is clean, improve chunking error-tolerance
 
