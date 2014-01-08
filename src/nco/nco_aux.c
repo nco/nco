@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.71 2014-01-08 22:27:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.72 2014-01-08 22:48:16 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -372,8 +372,8 @@ nco_aux_evl_trv
  const trv_sct * const var_trv,      /* I [sct] Variable object */
  int aux_nbr,                        /* I [sng] Number of auxiliary coordinates */
  char *aux_arg[],                    /* I [sng] Auxiliary coordinates */
- const char * const lat_nm_fll,      /* I [sng] "latitude" full name */
- const char * const lon_nm_fll,      /* I [sng] "longitude" full name */
+ trv_sct *lat_trv,                   /* I [sct] "latitude" variable */
+ trv_sct *lon_trv,                   /* I [sct] "longitude" variable */
  const nc_type crd_typ,              /* I [nbr] netCDF type of both "latitude" and "longitude" */
  const char * const units,           /* I [sng] Units of both "latitude" and "longitude" */
  const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
@@ -428,19 +428,13 @@ nco_aux_evl_trv
 
   *aux_lmt_nbr=0;
 
-  /* Obtain 'latitude' GTT object using full variable name */
-  trv_sct *lat_trv=trv_tbl_var_nm_fll(lat_nm_fll,trv_tbl);
-
-  /* Obtain 'longitude' GTT object using full variable name */
-  trv_sct *lon_trv=trv_tbl_var_nm_fll(lon_nm_fll,trv_tbl);
-
   /* Obtain group ID from netCDF API using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,lat_trv->grp_nm_fll,&grp_id_lat);
   (void)nco_inq_grp_full_ncid(nc_id,lon_trv->grp_nm_fll,&grp_id_lon);
 
   /* Obtain variable ID */
-  (void)nco_inq_varid(grp_id_lat,var_trv->nm,&lat_id);
-  (void)nco_inq_varid(grp_id_lon,var_trv->nm,&lon_id);
+  (void)nco_inq_varid(grp_id_lat,lat_trv->nm,&lat_id);
+  (void)nco_inq_varid(grp_id_lon,lon_trv->nm,&lon_id);
 
   /* Obtain dimension information of lat/lon coordinates */
   (void)nco_get_dmn_info(grp_id_lat,lat_id,dmn_nm,&dmn_id,&dmn_sz);
@@ -546,13 +540,10 @@ nco_aux_evl_trv
   if(vp_lat) vp_lat=nco_free(vp_lat);
   if(vp_lon) vp_lon=nco_free(vp_lon);
 
-  /* With some loss of generality, we assume cell-based coordinates are not 
-  record coordinates spanning multiple files. Thus finding no cells within
-  any bounding box constitutes a domain error. */
+  /* No limits found */
   if(*aux_lmt_nbr == 0){
-    (void)fprintf(stdout,"%s: ERROR %s reports that none of the %d specified auxiliary-coordinate bounding-box(es) contain any latitude/longitude coordinate pairs. This condition was not flagged as an error until 20110221. Prior to that, when no coordinates were in any of the user-specified auxiliary-coordinate hyperslab(s), NCO mistakenly returned the entire coordinate range as being within the hyperslab(s).\n",nco_prg_nm_get(),fnc_nm,aux_nbr);
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
+    return NULL;
+  } /* No limits found */
 
   lmt=(lmt_sct **)nco_realloc(lmt,(*aux_lmt_nbr)*sizeof(lmt_sct *));
 

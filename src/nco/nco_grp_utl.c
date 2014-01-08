@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1176 2014-01-08 22:10:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1177 2014-01-08 22:48:16 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8597,7 +8597,13 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
       aux_lmt_nbr=0;
 
-      aux=nco_aux_evl_trv(nc_id,&var_trv,aux_nbr,aux_arg,var_nm_fll,lon_nm_fll,crd_typ,units,trv_tbl,&aux_lmt_nbr);
+      /* Obtain 'latitude' GTT object using full variable name */
+      trv_sct *lat_trv=trv_tbl_var_nm_fll(lat_nm_fll,trv_tbl);
+
+      /* Obtain 'longitude' GTT object using full variable name */
+      trv_sct *lon_trv=trv_tbl_var_nm_fll(lon_nm_fll,trv_tbl);
+
+      aux=nco_aux_evl_trv(nc_id,&var_trv,aux_nbr,aux_arg,lat_trv,lon_trv,crd_typ,units,trv_tbl,&aux_lmt_nbr);
 
       /* Found limits */
       if(aux_lmt_nbr > 0 ){  
