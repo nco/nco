@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.70 2014-01-08 22:10:56 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.71 2014-01-08 22:27:10 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -566,7 +566,7 @@ nco_find_lat_lon_trv
  const trv_sct * const var_trv,      /* I [sct] Variable object that contains "standard_name" attribute */
  const char * const attr_val,        /* I [sng] Attribute value to find ( "latitude" or "longitude" ) */
  char **var_nm_fll,                  /* I/O [sng] Full name of variable that has "latitude" or "longitude" attributes */
- nc_type *crd_typ,                   /* I/O [nbr] netCDF type of both "latitude" and "longitude" */
+ nc_type *crd_typ,                   /* I/O [enm] netCDF type of both "latitude" and "longitude" */
  char **units)                       /* I/O [sng] Units of both "latitude" and "longitude" */
 {
   /* Purpose: Find auxiliary coordinate variables that map to latitude/longitude 
@@ -581,10 +581,17 @@ nco_find_lat_lon_trv
 
   char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
   char value[NC_MAX_NAME];  /* [sng] Attribute value */
+  char var_nm[NC_MAX_NAME];
 
   int grp_id;               /* [id] Group ID */
   int var_id;               /* [id] Variable ID */
-  int nbr_att;              /* [nbr] Number of attributes */
+  int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
+  int var_att_nbr;          /* [nbr] Number of attributes */
+  int var_dmn_nbr;          /* [nbr] Number of dimensions */
+
+  long lenp;
+
+  nc_type var_typ;          /* [enm] variable type */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
@@ -595,9 +602,9 @@ nco_find_lat_lon_trv
   (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
 
   /* Find number of attributes */
-  (void)nco_inq_varnatts(grp_id,var_id,&nbr_att);
+  (void)nco_inq_var(grp_id,var_id,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
 
-  assert(nbr_att == var_trv->nbr_att);
+  assert(var_att_nbr == var_trv->nbr_att);
 
   /* Make sure CF tag exists. Currently require CF-1.0 value */
   if(NCO_GET_ATT_CHAR(grp_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.")){
@@ -606,7 +613,7 @@ nco_find_lat_lon_trv
   } /* !CF */
 
   /* Loop attributes */
-  for(int idx_att=0;idx_att<nbr_att;idx_att++){
+  for(int idx_att=0;idx_att<var_att_nbr;idx_att++){
 
     /* Get attribute name */
     (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
@@ -627,11 +634,25 @@ nco_find_lat_lon_trv
     NCO_GET_ATT_CHAR(grp_id,var_id,"standard_name",value);
     value[lenp]='\0';
 
+    lenp=0;
+
     /* Match parameter name to find ( "latitude" or "longitude" ) */
     if(strcmp(value,attr_val) == 0){
 
       /* Export full name  */
       *var_nm_fll=(char *)strdup(var_trv->nm_fll);
+
+      /* Get units; assume same for both lat and lon */
+      int rcd=nco_inq_attlen(grp_id,var_id,"units",&lenp);
+      if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
+      *units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
+      NCO_GET_ATT_CHAR(nc_id,var_id,"units",*units);
+      units[lenp]='\0';
+
+      if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
+
+      /* Assign type; assumed same for both lat and lon */
+      *crd_typ=var_typ;
 
       return True;
 
