@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.24 2014-01-08 18:05:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.25 2014-01-08 21:45:47 pvicente Exp $ */
 
 /* Purpose: Sub-set cell-based grids using auxiliary coordinate variable */
 
@@ -70,6 +70,8 @@ nco_aux_evl_trv
  const trv_sct * const var_trv,      /* I [sct] Variable object */
  int aux_nbr,                        /* I [sng] Number of auxiliary coordinates */
  char *aux_arg[],                    /* I [sng] Auxiliary coordinates */
+ const char * const lat_nm_fll,      /* I [sng] "latitude" full name */
+ const char * const lon_nm_fll,      /* I [sng] "longitude" full name */
  const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
  int *aux_lmt_nbr);                  /* I/O [nbr] Number of coordinate limits */
 
@@ -77,7 +79,7 @@ nco_bool
 nco_find_lat_lon_trv
 (const int nc_id,                    /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,      /* I [sct] Variable object that contains "standard_name" attribute */
- const char *attr_val,               /* I [sng] Attribute value to find ( "latitude" or "longitude" ) */
+ const char * const attr_val,        /* I [sng] Attribute value to find ( "latitude" or "longitude" ) */
  char **var_nm_fll);                 /* I/O [sng] Full name of variable that has "latitude" or "longitude" attributes */
 
 #ifdef __cplusplus
