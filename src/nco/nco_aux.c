@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.69 2014-01-08 21:45:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.70 2014-01-08 22:10:56 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -374,6 +374,8 @@ nco_aux_evl_trv
  char *aux_arg[],                    /* I [sng] Auxiliary coordinates */
  const char * const lat_nm_fll,      /* I [sng] "latitude" full name */
  const char * const lon_nm_fll,      /* I [sng] "longitude" full name */
+ const nc_type crd_typ,              /* I [nbr] netCDF type of both "latitude" and "longitude" */
+ const char * const units,           /* I [sng] Units of both "latitude" and "longitude" */
  const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
  int *aux_lmt_nbr)                   /* I/O [nbr] Number of coordinate limits */
 {
@@ -386,7 +388,6 @@ nco_aux_evl_trv
 
   const char fnc_nm[]="nco_aux_evl_trv()";
 
-  char *units=NULL; /* fxm TODO nco925: "units" value needs dynamically allocated size in case value exceeds NC_MAX_NAME */
   char cll_idx_sng[100]; /* Buffer for user-assigned limit names */
   char dmn_nm[NC_MAX_NAME];
   char var_nm_lat[NC_MAX_NAME];
@@ -413,14 +414,12 @@ nco_aux_evl_trv
   int lat_id;
   int lon_id;
   int rcd=NC_NOERR;
-  int grp_id;               /* [id] Group ID */
-  int var_id;               /* [id] Variable ID */
+  int grp_id_lat;               /* [id] Group ID */
+  int grp_id_lon;               /* [id] Group ID */
 
   lmt_sct **lmt=NULL; /* [sct] List of returned lmt structures */
 
   long dmn_sz=0;
-
-  nc_type crd_typ;
 
   void *vp_lat; /* [dgr] Latitude coordinate array, float or double */
   void *vp_lon; /* [dgr] Longitude coordinate array, float or double */
@@ -429,11 +428,22 @@ nco_aux_evl_trv
 
   *aux_lmt_nbr=0;
 
+  /* Obtain 'latitude' GTT object using full variable name */
+  trv_sct *lat_trv=trv_tbl_var_nm_fll(lat_nm_fll,trv_tbl);
+
+  /* Obtain 'longitude' GTT object using full variable name */
+  trv_sct *lon_trv=trv_tbl_var_nm_fll(lon_nm_fll,trv_tbl);
+
   /* Obtain group ID from netCDF API using full group name */
-  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
+  (void)nco_inq_grp_full_ncid(nc_id,lat_trv->grp_nm_fll,&grp_id_lat);
+  (void)nco_inq_grp_full_ncid(nc_id,lon_trv->grp_nm_fll,&grp_id_lon);
 
   /* Obtain variable ID */
-  (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
+  (void)nco_inq_varid(grp_id_lat,var_trv->nm,&lat_id);
+  (void)nco_inq_varid(grp_id_lon,var_trv->nm,&lon_id);
+
+  /* Obtain dimension information of lat/lon coordinates */
+  (void)nco_get_dmn_info(grp_id_lat,lat_id,dmn_nm,&dmn_id,&dmn_sz);
 
    /* Load latitude/longitude variables needed to search for region matches */
   lat.type=crd_typ;
@@ -444,8 +454,8 @@ nco_aux_evl_trv
   lon.sz=dmn_sz;
   lon.srt=0L;
   vp_lon=(void *)nco_malloc(dmn_sz*nco_typ_lng(lon.type));
-  rcd+=nco_get_vara(grp_id,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
-  rcd+=nco_get_vara(grp_id,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
+  rcd+=nco_get_vara(grp_id_lat,lat_id,&lat.srt,&lat.sz,vp_lat,lat.type);
+  rcd+=nco_get_vara(grp_id_lon,lon_id,&lon.srt,&lon.sz,vp_lon,lon.type);
 
   lmt_sct lmt_tpl;
   (void)nco_lmt_init(&lmt_tpl);
@@ -533,7 +543,6 @@ nco_aux_evl_trv
   } /* end loop over user supplied -X options */
 
   /* Free allocated memory */
-  if(units) units=(char *)nco_free(units);
   if(vp_lat) vp_lat=nco_free(vp_lat);
   if(vp_lon) vp_lon=nco_free(vp_lon);
 
@@ -556,7 +565,9 @@ nco_find_lat_lon_trv
 (const int nc_id,                    /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,      /* I [sct] Variable object that contains "standard_name" attribute */
  const char * const attr_val,        /* I [sng] Attribute value to find ( "latitude" or "longitude" ) */
- char **var_nm_fll)                  /* I/O [sng] Full name of variable that has "latitude" or "longitude" attributes */
+ char **var_nm_fll,                  /* I/O [sng] Full name of variable that has "latitude" or "longitude" attributes */
+ nc_type *crd_typ,                   /* I/O [nbr] netCDF type of both "latitude" and "longitude" */
+ char **units)                       /* I/O [sng] Units of both "latitude" and "longitude" */
 {
   /* Purpose: Find auxiliary coordinate variables that map to latitude/longitude 
      Find variables with standard_name = "latitude" and "longitude"

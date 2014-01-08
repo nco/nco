@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1175 2014-01-08 21:45:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1176 2014-01-08 22:10:56 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8541,9 +8541,12 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   char *lat_nm_fll;
   char *lon_nm_fll;
   char *var_nm_fll;
+  char *units=NULL;
 
   nco_bool has_lat_fl;
   nco_bool has_lon_fl;
+
+  nc_type crd_typ;
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -8556,8 +8559,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     /* Filter variables to extract */ 
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-      has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll);
-      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll);
+      has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&crd_typ,&units);
+      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&crd_typ,&units);
 
       if (has_lat){
         has_lat_fl=True;
@@ -8594,7 +8597,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
       aux_lmt_nbr=0;
 
-      aux=nco_aux_evl_trv(nc_id,&var_trv,aux_nbr,aux_arg,var_nm_fll,lon_nm_fll,trv_tbl,&aux_lmt_nbr);
+      aux=nco_aux_evl_trv(nc_id,&var_trv,aux_nbr,aux_arg,var_nm_fll,lon_nm_fll,crd_typ,units,trv_tbl,&aux_lmt_nbr);
 
       /* Found limits */
       if(aux_lmt_nbr > 0 ){  
@@ -8615,6 +8618,9 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       } /* Found limits */
     } /* Filter variables to extract */ 
   } /* Loop table */
+
+  /* Free allocated memory */
+  if(units) units=(char *)nco_free(units);
 
 
 #endif /* USE_AUX_EVL_TRV */

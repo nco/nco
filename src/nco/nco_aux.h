@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.25 2014-01-08 21:45:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.26 2014-01-08 22:10:56 pvicente Exp $ */
 
 /* Purpose: Sub-set cell-based grids using auxiliary coordinate variable */
 
@@ -72,6 +72,8 @@ nco_aux_evl_trv
  char *aux_arg[],                    /* I [sng] Auxiliary coordinates */
  const char * const lat_nm_fll,      /* I [sng] "latitude" full name */
  const char * const lon_nm_fll,      /* I [sng] "longitude" full name */
+ const nc_type crd_typ,              /* I [nbr] netCDF type of both "latitude" and "longitude" */
+ const char * const units,           /* I [sng] Units of both "latitude" and "longitude" */
  const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
  int *aux_lmt_nbr);                  /* I/O [nbr] Number of coordinate limits */
 
@@ -80,7 +82,9 @@ nco_find_lat_lon_trv
 (const int nc_id,                    /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,      /* I [sct] Variable object that contains "standard_name" attribute */
  const char * const attr_val,        /* I [sng] Attribute value to find ( "latitude" or "longitude" ) */
- char **var_nm_fll);                 /* I/O [sng] Full name of variable that has "latitude" or "longitude" attributes */
+ char **var_nm_fll,                  /* I/O [sng] Full name of variable that has "latitude" or "longitude" attributes */
+ nc_type *crd_typ,                   /* I/O [nbr] netCDF type of both "latitude" and "longitude" */
+ char **units);                      /* I/O [sng] Units of both "latitude" and "longitude" */
 
 #ifdef __cplusplus
 } /* end extern "C" */
