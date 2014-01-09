@@ -1,3 +1,11 @@
+2014-01-09  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.4.1 release procedure:
+ 	Changes since nco-4_4_0: cnk?, hsh?
+	cd ~/nco;cvs tag -d nco-4_4_1;cvs tag -d nco-4_4_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.1 release"
+	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
+
 2014-01-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.0 release procedure:
