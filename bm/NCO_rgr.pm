@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.406 2014-01-07 21:42:39 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.407 2014-01-09 04:52:47 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1095,27 +1095,8 @@ print "\n";
     $tst_cmd[2]="SS_OK";        
     }
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			       
+    $#tst_cmd=0; # Reset array 		
 
-    } #### Group tests	
-	
-		
-#ncecat #10 
-#Concatenate files containing same variable in different orders
-# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
-# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
-# ncecat -O -p ~ foo1.nc foo2.nc ~/foo3.nc
-# ncks -C -H -v one -d record,1 -s '%g' ~/foo3.nc
-
-    $dsc_sng="Concatenate variables with different ID ordering";
-    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
-    $tst_cmd[2]="ncecat -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
-    $tst_cmd[3]="ncks -C -H -d record,1 -v one -s '%g' %tmp_fl_02%";
-    $tst_cmd[4]="1";
-    $tst_cmd[5]="SS_OK";   
-    NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 	
 #ncecat #11
 #Chunking 
 # ncecat -O -4 -D 5 -C --cnk_plc=all -v date_int in.nc in.nc out.nc
@@ -1138,7 +1119,28 @@ print "\n";
     $tst_cmd[2]="four_dmn_rec_var dimension 2: lat, size = 2, chunksize = 2 (Non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 
+    $#tst_cmd=0; # Reset array 	
+
+    } #### Group tests	
+	
+		
+#ncecat #10 
+#Concatenate files containing same variable in different orders
+# ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
+# ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc
+# ncecat -O -p ~ foo1.nc foo2.nc ~/foo3.nc
+# ncks -C -H -v one -d record,1 -s '%g' ~/foo3.nc
+
+    $dsc_sng="Concatenate variables with different ID ordering";
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -C    -v time,one $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -h -O $fl_fmt $nco_D_flg -C -a -v one,time $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncecat -h -O $fl_fmt $nco_D_flg %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -H -d record,1 -v one -s '%g' %tmp_fl_02%";
+    $tst_cmd[4]="1";
+    $tst_cmd[5]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+
 	
 
 #print "paused - hit return to continue"; my $wait=<STDIN>;
@@ -3153,6 +3155,20 @@ print "\n";
    $tst_cmd[3]="SS_OK";
    if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
    $#tst_cmd=0; # Reset array  
+   
+   	
+#NEW NCO 4.4.0
+#ncpdq #46
+# ncpdq -O -4  -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct in.nc out.nc
+
+   $dsc_sng="Chunking -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
+   $tst_cmd[0]="ncpdq $omp_flg -4 $nco_D_flg -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct $in_pth_arg in.nc %tmp_fl_00%";
+   $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'lat_2D_rct dimension 0'";
+   $tst_cmd[2]="lat_2D_rct dimension 0: lon, size = 4 NC_FLOAT, chunksize = 2 (Coordinate is lon)";
+   $tst_cmd[3]="SS_OK";
+   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
+   $#tst_cmd=0; # Reset array  	
+	
 	
 	} ##### Group tests	
 	
@@ -3198,19 +3214,7 @@ print "\n";
     if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
     $#tst_cmd=0; # Reset array	
 	
-	
-#NEW NCO 4.4.0
-#ncpdq #46
-# ncpdq -O -4  -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct in.nc out.nc
 
-   $dsc_sng="Chunking -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct";
-   $tst_cmd[0]="ncpdq $omp_flg -4 $nco_D_flg -a lon,lat --cnk_dmn lat,1 --cnk_dmn lon,2 -v lat_2D_rct $in_pth_arg in.nc %tmp_fl_00%";
-   $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'lat_2D_rct dimension 0'";
-   $tst_cmd[2]="lat_2D_rct dimension 0: lon, size = 4 NC_FLOAT, chunksize = 2 (Coordinate is lon)";
-   $tst_cmd[3]="SS_OK";
-   if($mpi_prc == 0 || ($mpi_prc > 0 && !($localhostname =~ /pbs/))){NCO_bm::tst_run(\@tst_cmd);} # ncpdq hangs with MPI TODO nco772
-   $#tst_cmd=0; # Reset array  	
-	
 
 ####################
 #### ncrcat tests ## OK !
@@ -4570,8 +4574,6 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 	
-	} #### Group tests	
-	
 
 #NEW 4.4.0	
 #ncwa #55
@@ -4608,7 +4610,11 @@ print "\n";
 	$tst_cmd[2]="      four_dmn_rec_var:_ChunkSizes = 1, 1, 3, 1 ;";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array		
+    $#tst_cmd=0; # Reset array			
+	
+	} #### Group tests	
+	
+
 	
     
 ####################
