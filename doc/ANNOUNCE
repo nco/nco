@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.676 2014-01-08 16:20:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.677 2014-01-09 02:20:43 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.0 are ready. 
 
@@ -20,12 +20,11 @@ for of datasets in HDF4, HDF5, and netCDF4 formats. The solution
 is a script called ncdismember that now works well with most
 NASA stewarded datasets I've thrown at it.
 
-We decided to postpone the name-change of ncra and ncwa to ncrs
-and ncws, respectively, until the next version for stability.
-Work on NCO 4.4.1 is underway. It focuses on more stability and speed.   
-There will be some netCDF4 mop-up, including netCDF4 support for
-various options, and, possibly, improved support for HDF4 files,
-and cache manipulation for chunking. 
+We postponed the name-change of ncra and ncwa to ncrs and ncws,
+respectively, until the next version for stability. 
+Work on NCO 4.4.1 is underway, focused on stability and speed.   
+There will be more netCDF4 mop-up (-X and --cnk) and, possibly,
+improved HDF4 support, and cache manipulation for chunking.  
 
 Enjoy,
 Charlie
@@ -61,7 +60,7 @@ A. Speed-up due to removing new static arrays from codebase.
    sluggish over the past year, you may be pleasantly surprised
    by NCO's new zippiness.
 
-A. ncrename behavior. The underlying netCDF4/HDF5 library on which NCO
+B. ncrename behavior. The underlying netCDF4/HDF5 library on which NCO
    depends has important features and bugfixes in netCDF-4.3.1-rc5,
    now available. Users who build NCO on that version or later gain
    access to group renaming, and to fixes in renaming coordinates.
@@ -69,7 +68,37 @@ A. ncrename behavior. The underlying netCDF4/HDF5 library on which NCO
    http://nco.sf.net/nco.html#ncrename_crd
    http://nco.sf.net/nco.html#ncrename
 
-A. ncdismember flattens all groups in a file, not only leaf groups. 
+C. ncks now accepts the "all" argument to the --fix_rec_dmn option.
+   ncks --fix_rec_dmn=all 
+   converts all output record dimensions to fixed dimensions. 
+   Previously, --fix_rec_dmn only accepted the name of the single
+   record dimension to be fixed.  
+   Now it is simple to fix all record dimensions simultaneously.
+   This is useful (and nearly mandatory) when flattening netCDF4
+   files that have multiple record dimensions per group into netCDF3
+   files (which may have at most one record dimension).
+   ncks --fix_rec_dmn=all in.nc out.nc   
+   ncks -G : -3 --fix_rec_dmn=all in.nc out.nc   
+   http://nco.sf.net/nco.html#fix_rec_dmn
+   http://nco.sf.net/nco.html#autocnv
+
+D. HDF4 behavior: Thanks to recent improvements in netCDF, 
+   NCO more gracefully handles HDF4 files. When compiled with netCDF
+   version 4.3.1-rc7 (20131222) or later, NCO no longer needs the
+   --hdf4 switch. NCO uses netCDF to determine automatically whether
+   the underlying file is HDF4, then takes appropriate precautions to 
+   avoid calls not supported by the netCDF4 subset of HDF4.
+   ncks fl.hdf
+   ncks fl.hdf fl.nc
+   http://nco.sf.net/nco.html#hdf4
+
+E. NCO autoconverts HDF4 and HDF5 atomic-types (e.g., NC_UBYTE, 
+   NC_STRING) to netCDF3 atomic types (e.g., NC_SHORT, NC_CHAR) when  
+   necessary, i.e., when the output file is netCDF3.
+   ncks -3 fl.hdf fl.nc
+   http://nco.sf.net/nco.html#autocnv
+
+F. ncdismember flattens all groups in a file, not only leaf groups. 
    Previously ncdismember disaggregated only leaf groups.
    Hierarchical files may contain data and/or metadata at all levels. 
    The new behavior disaggregates all groups with data/metadata. 
@@ -82,23 +111,7 @@ A. ncdismember flattens all groups in a file, not only leaf groups.
    This considerably reduces CF Warning and Error counts.
    http://nco.sf.net/nco.html#ncdismember
 
-A. HDF4 behavior: Thanks to recent improvements in netCDF, 
-   NCO more gracefully handles HDF4 files. When compiled with netCDF
-   version 4.3.1-rc7 (20131222) or later, NCO no longer needs the
-   --hdf4 switch. NCO uses netCDF to determine automatically whether
-   the underlying file is HDF4, then takes appropriate precautions to 
-   avoid calls not supported by the netCDF4 subset of HDF4.
-   ncks fl.hdf
-   ncks fl.hdf fl.nc
-   http://nco.sf.net/nco.html#hdf4
-
-A. NCO autoconverts HDF4 and HDF5 atomic-types (e.g., NC_UBYTE, 
-   NC_STRING) to netCDF3 atomic types (e.g., NC_SHORT, NC_CHAR) when  
-   necessary, i.e., when the output file is netCDF3.
-   ncks -3 fl.hdf fl.nc
-   http://nco.sf.net/nco.html#autocnv
-
-A. ncdismember just plain works in most real world cases.
+G. ncdismember just plain works in most real world cases.
    Taken together, NCO's new features (autoconversion to netCDF3
    atomic types, fixing multiple record dimensions, autosensing
    HDF4 input) and bugfixes (allowing whitespace in group and
@@ -111,21 +124,7 @@ A. ncdismember just plain works in most real world cases.
    http://nco.sf.net/nco.html#ncdismember
    http://nco.sf.net/nco.html#autocnv
 
-A. ncks now accepts the "all" argument to the --fix_rec_dmn option.
-   ncks --fix_rec_dmn=all 
-   converts all record dimensions to fixed dimensions in the output
-   file. Previously, --fix_rec_dmn only accepted the name of the
-   single record dimension to be fixed. 
-   Now it is simple to fix all record dimensions simultaneously.
-   This is useful (and nearly mandatory) when flattening netCDF4
-   files that have multiple record dimensions per group into netCDF3
-   files (which may have at most one record dimension).
-   ncks --fix_rec_dmn=all in.nc out.nc   
-   ncks -G : -3 --fix_rec_dmn=all in.nc out.nc   
-   http://nco.sf.net/nco.html#fix_rec_dmn
-   http://nco.sf.net/nco.html#autocnv
-
-A. ncks now prints hidden (aka special) attributes when given the
+H. ncks now prints hidden (aka special) attributes when given the
    --hdn or --hidden option. This is equivalent to ncdump -s.
    Hidden attributes include: _Format, _DeflateLevel, _Shuffle,
    _Storage, _ChunkSizes, _Endianness, _Fletcher32, and _NOFILL. 
@@ -133,35 +132,29 @@ A. ncks now prints hidden (aka special) attributes when given the
    Now it prints these attributes as appropriate. 
    http://nco.sf.net/nco.html#hdn
 
-A. ncwa weight and mask (-w and -m) arguments may now be full path
+I. ncwa weight and mask (-w and -m) arguments may now be full path
    names to variables nested within a group hierarchy.
    ncwa -a lev -w /g8/lev_wgt in.nc out.nc
-   ncwa -a lev -w /g8/lev_wgt in.nc out.nc
+   ncwa -a lev -w /g8/lev_msk in.nc out.nc
    http://nco.sf.net/nco.html#ncwa
 
-A. The -X option for auxiliary coordinates now works fully when
-   latitude and longitude coordinates are nested in group hierarchies.
-   http://nco.sf.net/nco.html#aux
-   fxm verify
-
-A. The --cnk_byt option was introduced to allow users to manually
+J. The --cnk_byt option was introduced to allow users to manually
    specify the total desired chunksize (in Bytes). In the absence
    of this parameter, NCO sets the chunksize to the filesystem
    blocksize of the output file (if obtainable via stat()), or else  
-   to 4096 B, the Linux default blocksize.
+   to 4096 B, the Linux default blocksize. 
    ncks -4 --cnk_byt=8192 in.nc out.nc
+   Note that --cnk_dmn arguments are still in elements, not bytes. 
+   Should we use bytes instead of elements for all chunk arguments?
+   Send us your preference to help the decisions for 4.4.1.
    http://nco.sf.net/nco.html#cnk
 
-A. New Chunking policies (xst) and maps (xst, lfp)
+K. New Chunking policies (xst) and maps (xst, lfp)
    These stand for "Existing" and "LeFter Product", respectively.
    The new options allow NCO to retain existing chunking sizes, and/or 
-   to use lfp map in many situations.
+   to use lfp map (suggested by Chris Barker) in many situations.
    ncks -4 --cnk_plc=xst --cnk_map=lfp in.nc out.nc
    http://nco.sf.net/nco.html#cnk
-
-A. A question for chunkers: Would you prefer to provide chunksize
-   inputs in absolute Bytes or in data elements (and have NCO assume,
-   say, four-bytes per element)? Difficult question
 
 BUG FIXES:
 
@@ -169,23 +162,23 @@ A. De-compressing netCDF4 files/variables by specifying deflation
    level=0 works. This fixes a bug where previously NCO could set the  
    deflation level of any variable to any level except zero.
    
-A. Dimensions in hyperslabbing arguments are once again checked for 
+B. Dimensions in hyperslabbing arguments are once again checked for 
    validity prior to processing and invalid (i.e., non-existent)
    dimensions once-again cause operators to abort.
 
-A. Fix one-line diagnostic bug that caused many OpenMP-enabled
+C. Fix one-line diagnostic bug that caused many OpenMP-enabled
    operators to die when dbg_lvl > 2.
 
-A. Fix ncra/ncrcat bug where extra record used when superfluous input
+D. Fix ncra/ncrcat bug where extra record used when superfluous input
    files provided and stride places first index of superfluous files
    beyond user-specified last index. An "important corner-case".
    Problem reported by John.
 
-A. Fix ncra/ncrcat bug where no more files were read after all desired
+E. Fix ncra/ncrcat bug where no more files were read after all desired
    records of the first record dimension were obtained (i.e., in cases
    where multiple record dimensions exist in multiple files).
 
-A. Versions 4.3.6--4.3.9 of ncra could treat missing values
+F. Versions 4.3.6--4.3.9 of ncra could treat missing values
    incorrectly during double-precision arithmetic. A symptom was that
    missing values could be replaced by strange numbers like, well,
    infinity or zero. This mainly affects ncra in MRO (multi-record
@@ -196,24 +189,24 @@ A. Versions 4.3.6--4.3.9 of ncra could treat missing values
    Problem reported by Andrew Friedman.
    http://nco.sf.net#bug_ncra_mss_val
 
-A. Versions through 4.3.9 would not always copy/print groups that
+G. Versions through 4.3.9 would not always copy/print groups that
    contain _only_ metadata (i.e., contain no variables). Fixed.
 
-A. Sometimes the "coordinates" and "bounds" CF attributes caused 
+H. Sometimes the "coordinates" and "bounds" CF attributes caused 
    incorrect matches to out-of-scope variables in hierarchical files. 
    Fixed.
 
-A. NCO correctly handles output filenames that contain whitespace. 
+I. NCO correctly handles output filenames that contain whitespace. 
    Previously, NCO would complain when moving the temporary to the
    final output file (the workaround was to use --no_tmp_fl).
 
-A. ncks XML/NcML no longer creates a _FillValue attribute for unsigned 
+J. ncks XML/NcML no longer creates a _FillValue attribute for unsigned 
    types. It did so in NCO 4.3.7--4.3.9 because Unidata toolsUI does
    so, but apparently this is a bug not a feature so NCO no longer
    emulates it. Likewise, ncks emits a _ChunkSizes attributes when
    appropriate, not (like toolsUI) a _ChunkSize attribute.
 
-A. Chunking options were not working as intended for some time. Fixed.  
+K. Chunking options were not working as intended for some time. Fixed.  
 
 KNOWN ISSUES NOT YET FIXED:
 
