@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.853 2014-01-09 02:20:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.854 2014-01-09 15:58:04 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -146,6 +146,7 @@ and
 <h2>NCO Milestones</h2>
 
 <ul>
+<li>2013 Mar&nbsp;25: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201403.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2013 Feb&nbsp;??: NCO 4.4.1 (<i>In progress</i>)
 <li>2013 Jan&nbsp;09: NCO 4.4.0 (Stability)
 <li>2013 Dec&nbsp;13: NCO <a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201312.pdf">Talk</a> at Fall AGU, San Francisco, California</li>
@@ -490,6 +491,10 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <h2>Publications and Presentations</h2>
 <ul>
 
+<li><!-- ZVW13 --> <a name="ZVW12"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
+Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2012): <i>Use Hierarchical Storage and Analysis to Exploit Intrinsic Parallelism</i>. Presented at the Fall Meeting of the American Geophysical Union, San Francisco,&nbsp;CA, December 9&ndash;13, 2013. <i>Eos Trans. AGU</i>, <b>93</b>(53), Fall Meet. Suppl., Abstract IN52A-06.
+<a href="http://dust.ess.uci.edu/smn/smn_nco_agu_201312.pdf">PDF</a> (&copy;&nbsp;2013 by me)</a></li>
+
 <li><!-- ZVW13 --> <a name="ZVW13"></a> <!--http://www.ess.uci.edu/~zender#ZVW13 -->
 Zender, C.&nbsp;S., P.&nbsp;Vicente and W.&nbsp;Wang (2013): <i>The Future of Model Evaluation</i>. Presented to the Chapman University Symposium on Big Data and Analytics: 44th Symposium on the Interface of Computing Science and Statistics, Chapman University, Orange,&nbsp;CA, April 4&ndash;6, 2013. <a href="http://dust.ess.uci.edu/smn/smn_nco_chapman_201304.pdf">PDF</a> (&copy;&nbsp;2013 by me)</a></li>
 
@@ -618,6 +623,8 @@ extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.4.1</b>: (<i>In Progress, features completed or being worked on include</i>)
+Group support for <tt>-X</tt>;
+<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
 <li><b>NCO 4.4.0</b>: (<i>Current Stable Release</i>)
 Optimizations;
 <tt>ncdismember</tt> awesomeness;
