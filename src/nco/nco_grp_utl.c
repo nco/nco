@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1177 2014-01-08 22:48:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1178 2014-01-10 21:35:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8590,8 +8590,13 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     /* Filter variables */
     trv_sct var_trv=trv_tbl->lst[idx_var];
 
-    /* Filter variables to extract */ 
-    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+    if(var_trv.nco_typ == !nco_obj_typ_var) continue;
+
+    /* Inquire if variable has "coordinates" attribute */
+    nco_bool flg_crd_attr=nco_find_coordinates(nc_id,&var_trv,"coordinates");
+
+    /* Filter variables to extract. Does not apply to coordinate variables */ 
+    if (var_trv.flg_xtr && !var_trv.is_crd_var && flg_crd_attr){
       lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
       int aux_lmt_nbr;           /* Number of auxiliary coordinate limits */
 
