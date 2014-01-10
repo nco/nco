@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.855 2014-01-09 18:13:53 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.856 2014-01-10 04:46:25 pvicente Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1007,7 +1007,7 @@ scp /tmp/nco-4.0.7_x86_10.6.dmg dust.ess.uci.edu:/var/www/html/nco/src
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.3.8.macosx.10.8.tar.gz pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date binaries are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.3.9.macosx.10.8.tar.gz">nco-4.3.9.macosx.10.8.tar.gz</a> (<!--#fsize file="src/nco-4.3.9.macosx.10.8.tar.gz"-->): Executables MacOSX 10.6-compatible (last updated <!--#flastmod file="src/nco-4.3.9.macosx.10.8.tar.gz"-->). 
+<li><a href="src/nco-4.4.0.macosx.10.8.tar.gz">nco-4.4.0.macosx.10.8.tar.gz</a> (<!--#fsize file="src/nco-4.4.0.macosx.10.8.tar.gz"-->): Executables MacOSX 10.6-compatible (last updated <!--#flastmod file="src/nco-4.4.0.macosx.10.8.tar.gz"-->). 
 (NB: These executables require the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> dependencies for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
 <li><a href="src/nco-4.0.3_x86_10.6.dmg">nco-4.0.3_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.3_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.3_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
 <li><a href="src/nco-4.0.7_x86_10.6.dmg">nco-4.0.7_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.7_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.7_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
