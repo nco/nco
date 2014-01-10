@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.100 2014-01-08 16:20:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.101 2014-01-10 00:12:00 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1012,7 +1012,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     cnk_sz_lft_dbl=pow(cnk_sz_prd_lft,1.0/dmn_nbr_lft);
     cnk_sz_lft=(size_t)cnk_sz_lft_dbl;
     /* Assign remaining chunkspace equally amongst lefter dimensions */
-    for(dmn_idx=0;dmn_idx<dmn_idx_1st_rec;dmn_idx++) cnk_sz[dmn_idx]=cnk_sz_lft;
+    for(dmn_idx=0;dmn_idx<=dmn_idx_1st_rec;dmn_idx++) cnk_sz[dmn_idx]=cnk_sz_lft;
 
     /* Allow existing chunksizes to be over-ridden by explicitly specified chunksizes */
     goto cnk_xpl_override;
