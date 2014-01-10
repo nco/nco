@@ -6,7 +6,7 @@
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.1 release"
 	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
 
-	* Fix cnk lfp map bug, re-release
+	* Fix cnk lfp map bug, re-release 4.4.0
 
 2014-01-08  Charlie Zender  <zender@uci.edu>
 
