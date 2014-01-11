@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1178 2014-01-10 21:35:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1179 2014-01-11 23:53:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8541,7 +8541,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   char *lat_nm_fll;
   char *lon_nm_fll;
   char *var_nm_fll;
-  char *units=NULL;
+  char units[NC_MAX_NAME+1];
 
   nco_bool has_lat_fl;
   nco_bool has_lon_fl;
@@ -8559,25 +8559,22 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     /* Filter variables to extract */ 
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-      has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&crd_typ,&units);
-      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&crd_typ,&units);
+      char units_lat[NC_MAX_NAME+1];
+      char units_lon[NC_MAX_NAME+1];
+
+      has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&crd_typ,units_lat);
+      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&crd_typ,units_lon);
 
       if (has_lat){
         has_lat_fl=True;
         lat_nm_fll=var_nm_fll;
-        if(nco_dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s variable <%s> has attribute 'standard_name' to <%s>\n",nco_prg_nm_get(),fnc_nm,
-            var_trv.nm_fll,lat_nm_fll); 
-        }
+        strcpy(units,units_lat);
       } /* has_lat */
 
       if (has_lon){
         has_lon_fl=True;
         lon_nm_fll=var_nm_fll;
-        if(nco_dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s variable <%s> has attribute 'standard_name' to <%s>\n",nco_prg_nm_get(),fnc_nm,
-            var_trv.nm_fll,lon_nm_fll); 
-        }
+        strcpy(units,units_lon);   
       } /* has_lon */
 
     } /* Filter variables to extract */ 
@@ -8593,7 +8590,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     if(var_trv.nco_typ == !nco_obj_typ_var) continue;
 
     /* Inquire if variable has "coordinates" attribute */
-    nco_bool flg_crd_attr=nco_find_coordinates(nc_id,&var_trv,"coordinates");
+    nco_bool flg_crd_attr=nco_find_coordinates(nc_id,&var_trv);
 
     /* Filter variables to extract. Does not apply to coordinate variables */ 
     if (var_trv.flg_xtr && !var_trv.is_crd_var && flg_crd_attr){
@@ -8629,11 +8626,6 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       } /* Found limits */
     } /* Filter variables to extract */ 
   } /* Loop table */
-
-  /* Free allocated memory */
-  if(units) units=(char *)nco_free(units);
-
-
 #endif /* USE_AUX_EVL_TRV */
 
   return;

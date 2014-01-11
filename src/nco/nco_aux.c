@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.73 2014-01-10 21:35:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.74 2014-01-11 23:53:38 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -558,7 +558,7 @@ nco_find_lat_lon_trv
  const char * const attr_val,        /* I [sng] Attribute value to find ( "latitude" or "longitude" ) */
  char **var_nm_fll,                  /* I/O [sng] Full name of variable that has "latitude" or "longitude" attributes */
  nc_type *crd_typ,                   /* I/O [enm] netCDF type of both "latitude" and "longitude" */
- char **units)                       /* I/O [sng] Units of both "latitude" and "longitude" */
+ char units[])                       /* I/O [sng] Units of both "latitude" and "longitude" */
 {
   /* Purpose: Find auxiliary coordinate variables that map to latitude/longitude 
      Find variables with standard_name = "latitude" and "longitude"
@@ -625,8 +625,6 @@ nco_find_lat_lon_trv
     NCO_GET_ATT_CHAR(grp_id,var_id,"standard_name",value);
     value[lenp]='\0';
 
-    lenp=0;
-
     /* Match parameter name to find ( "latitude" or "longitude" ) */
     if(strcmp(value,attr_val) == 0){
 
@@ -636,8 +634,7 @@ nco_find_lat_lon_trv
       /* Get units; assume same for both lat and lon */
       int rcd=nco_inq_attlen(grp_id,var_id,"units",&lenp);
       if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
-      *units=(char *)nco_malloc((lenp+1L)*sizeof(char *));
-      NCO_GET_ATT_CHAR(nc_id,var_id,"units",*units);
+      NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
       units[lenp]='\0';
 
       if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
@@ -658,12 +655,9 @@ nco_find_lat_lon_trv
 nco_bool 
 nco_find_coordinates
 (const int nc_id,                    /* I [ID] netCDF file ID */
- const trv_sct * const var_trv,      /* I [sct] Variable object that contains "standard_name" attribute */
- const char * const attr_val)        /* I [sng] Attribute value to find ( "coordinates" ) */
+ const trv_sct * const var_trv)      /* I [sct] Variable object that contains "standard_name" attribute */
 {
   /* Purpose: Find "coordinates" attribute */
-
-  const char fnc_nm[]="nco_find_coordinates()";
 
   char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
   char var_nm[NC_MAX_NAME];
@@ -696,7 +690,7 @@ nco_find_coordinates
     (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
 
     /* Find attribute */
-    if(strcmp(att_nm,"coordinates") != 0){
+    if(strcmp(att_nm,"coordinates") == 0){
       return True;
     }
 
