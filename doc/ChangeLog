@@ -1,3 +1,11 @@
+2014-01-13  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.4.1 release procedure:
+ 	Changes since nco-4_4_0: -X, cnk?, hsh?
+	cd ~/nco;cvs tag -d nco-4_4_1;cvs tag -d nco-4_4_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.1 release"
+	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
+
 2014-01-12  Pedro Vicente  <pvicente@uci.edu>
 
 	* -X support for associated variables located anywhere in file hierarchy
@@ -5,12 +13,6 @@
 	* Add ncks regression #70: -X for associated variables located anywhere in file hierarchy
 
 2014-01-09  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.1 release procedure:
- 	Changes since nco-4_4_0: cnk?, hsh?
-	cd ~/nco;cvs tag -d nco-4_4_1;cvs tag -d nco-4_4_1-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.1 release"
-	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
 
 	* Fix cnk lfp map bug, re-release 4.4.0
 

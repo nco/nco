@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.856 2014-01-10 04:46:25 pvicente Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.857 2014-01-13 16:20:03 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -153,7 +153,7 @@ and
 <li>2013 Dec&nbsp;02: NCO 4.3.9 (new operator, <tt>nces</tt>)
 <li>2013 Nov&nbsp;06: NCO 4.3.8 (<tt>ncatted</tt> groups)
 <li>2013 Oct&nbsp;17: NCO 4.3.7 (HDF4, XML, <tt>ncrename</tt> groups)
-<li>2012 Oct&nbsp;02: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201310.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
+<li>2013 Oct&nbsp;02: NCO <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201310.pdf">Poster</a> for NASA ESDSWG, Greenbelt, Maryland</li>
 <li>2013 Sep&nbsp;27: NCO 4.3.6 (<tt>--dbl</tt> default, <tt>ncdismember</tt>)
 <li>2013 Sep&nbsp;20: NCO 4.3.5 (<tt>nces</tt>, <tt>ncra</tt>, <tt>ncrcat</tt> groups)
 <li>2013 Aug&nbsp;01: NCO 4.3.4 (<tt>ncpdq</tt> bugfix, HDF unpacking)

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.678 2014-01-09 19:13:35 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.679 2014-01-13 16:20:03 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.1 are ready. 
 
@@ -7,22 +7,19 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release focuses on stability and speed. 
 It also addresses previous omissions so that full path names are
-accepted by all appropriate options, such as the ncwa weights and
-masks (-w and -m), and ncks auxiliary coordinates (-X).
-See below for bugfixes include ncra and ncrcat use-cases involving
-strides with superfluous files and/or multi-record output (MRO).
+accepted by all appropriate options, such as ncks auxiliary
+coordinates (-X) and chunking (--cnk_dmn).
 
-Other significant new features include major improvements to
-conversion of HDF4, HDF5, and netCDF4 files to netCDF3 and netCDF4
-files. Most of this work is an offshoot of writing an NCO and
-CFchecker-based solution to the problem of checking CF-compliance
-for of datasets in HDF4, HDF5, and netCDF4 formats. The solution
-is a script called ncdismember that now works well with most
-NASA stewarded datasets I've thrown at it.
+NCO 4.4.1 renames ncra as ncrs and ncwa as ncws (Record Statistics and
+Weighted Statistics, respectively).  This is to more accurately
+reflect their purpose. Backward compatibility is guaranteed. NCO
+installs by default with symbolic links from ncra->ncrs and ncwa->ncws
+so calling either operator by its old name still works, and calling
+either operator by its new name produces the same results. 
+However, ncra and ncwa are deprecated and will eventually be removed.
+Please change your scripts/habits accordingly within a few years...
 
-We postponed the name-change of ncra and ncwa to ncrs and ncws,
-respectively, until the next version for stability. 
-Work on NCO 4.4.1 is underway, focused on stability and speed.   
+Work on NCO 4.4.2 is underway, focused on stability and speed.   
 There will be more netCDF4 mop-up (-X and --cnk) and, possibly,
 improved HDF4 support, and cache manipulation for chunking.  
 
@@ -32,16 +29,6 @@ Charlie
 "New stuff" in 4.4.1 summary (full details always in ChangeLog):
 
 NEW FEATURES:
-
-As indicated in the last release, NCO 4.4.1 renamed ncra as ncrs and
-ncwa as ncws (Record Statistics and Weighted Statistics,
-respectively).  This is to more accurately reflect their purpose.
-The same technique is used to guarantee backwards compatibility.
-That is, NCO installs by default with symbolic links from ncra->ncrs
-and ncwa->ncws so calling either operator by its old name still works,
-and calling either operator by its new name produces the same results.
-However, ncra and ncwa are deprecated and will eventually be removed.
-Please change your scripts/habits accordingly within a few years...
 
 A. The -X option for auxiliary coordinates now works fully when
    latitude and longitude coordinates are nested in group hierarchies.
