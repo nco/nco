@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.76 2014-01-13 03:09:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.77 2014-01-13 03:29:53 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -596,12 +596,6 @@ nco_find_lat_lon_trv
 
   assert(var_att_nbr == var_trv->nbr_att);
 
-  /* Make sure CF tag exists. Currently require CF-1.0 value */
-  if(NCO_GET_ATT_CHAR(grp_id,NC_GLOBAL,"Conventions",value) || !strstr(value,"CF-1.")){
-    if(nco_dbg_lvl_get() >= nco_dbg_dev)
-      (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or is present but not of the form \"CF-1.X\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.X metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
-  } /* !CF */
-
   /* Loop attributes */
   for(int idx_att=0;idx_att<var_att_nbr;idx_att++){
 
@@ -652,53 +646,4 @@ nco_find_lat_lon_trv
   return False;
 
 } /* end nco_find_lat_lon_trv() */
-
-
-nco_bool 
-nco_find_coordinates
-(const int nc_id,                    /* I [ID] netCDF file ID */
- const trv_sct * const var_trv)      /* I [sct] Variable object that contains "standard_name" attribute */
-{
-  /* Purpose: Find "coordinates" attribute */
-
-  char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
-  char var_nm[NC_MAX_NAME];
-
-  int grp_id;               /* [id] Group ID */
-  int var_id;               /* [id] Variable ID */
-  int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
-  int var_att_nbr;          /* [nbr] Number of attributes */
-  int var_dmn_nbr;          /* [nbr] Number of dimensions */
-
-  nc_type var_typ;          /* [enm] variable type */
-
-  assert(var_trv->nco_typ == nco_obj_typ_var);
-
-  /* Obtain group ID from netCDF API using full group name */
-  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
-
-  /* Obtain variable ID */
-  (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
-
-  /* Find number of attributes */
-  (void)nco_inq_var(grp_id,var_id,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
-
-  assert(var_att_nbr == var_trv->nbr_att);
-
-  /* Loop attributes */
-  for(int idx_att=0;idx_att<var_att_nbr;idx_att++){
-
-    /* Get attribute name */
-    (void)nco_inq_attname(grp_id,var_id,idx_att,att_nm);
-
-    /* Find attribute */
-    if(strcmp(att_nm,"coordinates") == 0){
-      return True;
-    }
-
-  } /* Loop attributes */
-
-  return False;
-
-} /* nco_find_coordinates() */
 

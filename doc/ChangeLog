@@ -1,3 +1,9 @@
+2014-01-12  Pedro Vicente  <pvicente@uci.edu>
+
+	* -X support for associated variables located anywhere in file hierarchy
+
+	* Add ncks regression #70: -X for associated variables located anywhere in file hierarchy
+
 2014-01-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.1 release procedure:

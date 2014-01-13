@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.407 2014-01-09 04:52:47 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.408 2014-01-13 03:29:52 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2378,8 +2378,25 @@ print "\n";
     }
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 			
-
+	
 #ncks #70
+# Test -X with variables anywhere in file (g18g1 has variable)
+# ncks -O -C -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar in_grp_3.nc 
+
+    $dsc_sng="(Groups) Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -C -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar $in_pth_arg in_grp_3.nc";
+    if($HAVE_NETCDF4_H == 1){
+    $tst_cmd[1]="time[9] gds_crd[1]=1 gds_3dvar[73]=282.2 meter";
+    $tst_cmd[2]="SS_OK";   
+    }elsif($HAVE_NETCDF4_H == 0){
+     $tst_cmd[1]="nco_err_exit(): ERROR NCO will now exit with system call exit(EXIT_FAILURE)"; 
+    $tst_cmd[2]="SS_OK";        
+    }
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			
+	
+
+#ncks #71
 # ncks  -h -O  -C -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc
 
     $dsc_sng="Limits -C -v three_dmn_var_dbl -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in.nc";
@@ -2389,7 +2406,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
-#ncks #71
+#ncks #72
 #same as #70, with group
 # ncks -h -O  -v three_dmn_var_dbl  -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc
 
@@ -2405,7 +2422,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
-#ncks #72
+#ncks #73
 # ncks -v lat -d latitude,0,1,1 in_grp.nc
 
     $dsc_sng="(Groups) Invalid dimension input -v lat -d latitude,0,1,1 in_grp.nc";
@@ -2420,7 +2437,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
-#ncks #73
+#ncks #74
 # ncks -O -p ~/nco/data in_grp.nc ~/foo.nc
 # ncks --cdl -g g8g1g1g1 ~/foo.nc | grep answer
 
@@ -2437,7 +2454,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncks #74
+#ncks #75
 # ncks -O -c in_grp.nc out.nc
 
     $dsc_sng="(Groups) -c Extract all coordinate variables";
@@ -2448,7 +2465,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncks #75
+#ncks #76
 # ncks -O in_grp.nc out.nc
 
     $dsc_sng="(Groups) Default input dataset";
@@ -2459,7 +2476,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-#ncks #76
+#ncks #77
 # ncks -O in.nc out.nc
 
     $dsc_sng="Default input dataset";
@@ -2470,7 +2487,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 
-#ncks #77	
+#ncks #78
 #ncks -O -3 -G : -g /g27g1/ in_grp_3.nc out.nc
     
     $dsc_sng="(Groups) Test flatenning with parallel variables (-3 -G : -g)";
@@ -2481,7 +2498,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
-#ncks #78	
+#ncks #79
 #ncks -O -3 -G : -g g28 -v delta_time_stop  in_grp_3.nc out.nc	
 # simpler case of ncks -O -D 2 -3 -G : -g /altimetry/${DATA}/hdf/mabel_l2_20130927t201800_008_1.h5 ~/foo_mabel.nc
     

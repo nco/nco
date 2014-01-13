@@ -267,7 +267,7 @@ netcdf in_grp_3 {
     lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
     lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
 	
-		 group: g18g1 {  //text -X with "lat_gds lon_gds" in scope
+		 group: g18g1 {  //test -X with "lat_gds lon_gds" in scope
 		 
 			:Conventions = "CF-1.0";
 			
