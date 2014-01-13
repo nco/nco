@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.75 2014-01-13 02:43:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.76 2014-01-13 03:09:07 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -369,14 +369,12 @@ nco_aux_prs
 lmt_sct **                           /* O [lst] Auxiliary coordinate limits */
 nco_aux_evl_trv
 (const int nc_id,                    /* I [ID] netCDF file ID */
- const trv_sct * const var_trv,      /* I [sct] Variable object */
  int aux_nbr,                        /* I [sng] Number of auxiliary coordinates */
  char *aux_arg[],                    /* I [sng] Auxiliary coordinates */
  trv_sct *lat_trv,                   /* I [sct] "latitude" variable */
  trv_sct *lon_trv,                   /* I [sct] "longitude" variable */
  const nc_type crd_typ,              /* I [nbr] netCDF type of both "latitude" and "longitude" */
  const char * const units,           /* I [sng] Units of both "latitude" and "longitude" */
- const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
  int *aux_lmt_nbr)                   /* I/O [nbr] Number of coordinate limits */
 {
   /* Purpose: Create lmt structure of slabs of continguous cells that
@@ -428,11 +426,11 @@ nco_aux_evl_trv
 
   *aux_lmt_nbr=0;
 
-  /* Obtain group ID from netCDF API using full group name */
+  /* Obtain group ID of 'latitude' and 'longitude' from netCDF API using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,lat_trv->grp_nm_fll,&grp_id_lat);
   (void)nco_inq_grp_full_ncid(nc_id,lon_trv->grp_nm_fll,&grp_id_lon);
 
-  /* Obtain variable ID */
+  /* Obtain variable ID of 'latitude' and 'longitude' */
   (void)nco_inq_varid(grp_id_lat,lat_trv->nm,&lat_id);
   (void)nco_inq_varid(grp_id_lon,lon_trv->nm,&lon_id);
 

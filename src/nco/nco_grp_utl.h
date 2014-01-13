@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.435 2014-01-07 21:42:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.436 2014-01-13 03:09:08 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -313,7 +313,6 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
  lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
- const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 var_sct **                            /* O [sct] Variable list */  

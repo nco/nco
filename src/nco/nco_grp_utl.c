@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1181 2014-01-13 02:40:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1182 2014-01-13 03:09:07 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6709,7 +6709,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(lmt_nbr) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
 
   /* Parse auxiliary coordinates */
-  if(aux_nbr) (void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl); 
+  if(aux_nbr) (void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
 
   /* Add dimension limits */
   if(lmt_nbr) (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
@@ -8440,101 +8440,15 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
  lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
- const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_bld_aux_crd()"; /* [sng] Function name */
 
-
-#if 0
-#define USE_AUX_EVL_TRV
-#endif
-#ifndef USE_AUX_EVL_TRV 
-  /* Loop table */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-    trv_sct var_trv=trv_tbl->lst[idx_var];
-
-    /* Filter variables to extract */ 
-    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
-
-      lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
-      char dmn_nm[NC_MAX_NAME];  /* Dimension name */
-      int aux_idx_nbr;
-      int grp_id;
-
-      /* Obtain group ID where variable is located using full group name */
-      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
-
-      aux_idx_nbr=0;
-
-      aux=nco_aux_evl(grp_id,aux_nbr,aux_arg,&aux_idx_nbr,dmn_nm);
-
-      /* Use case 
-
-      ncks  -X 0.,1.,-30.,-29.  -v gds_3dvar in.nc
-
-      float gds_3dvar(time,gds_crd);
-      gds_3dvar:coordinates = "lat_gds lon_gds";
-
-      float gds_crd(gds_crd);
-      gds_crd:coordinates = "lat_gds lon_gds";
-
-      Before groups traversal, nco_aux_evl() was called in ncks main;
-      nco_find_lat_lon(), exports the lat/lon variable names internally, and nco_get_dmn_info()
-      obtains the associated dimension; for this use case:
-
-      lat/lon variable names = "lat_gds lon_gds"
-      associated dimension = "gds_crd"
-
-      In this version nco_aux_evl() is called in a traversal table loop; changes introduced
-      in nco_aux_evl() are the export of the associated dimension ("gds_crd") in the last parameter;
-      then two extra conditions need to be met to assign the limits: that this dimension exists 
-      for the variable and that the variable is a coordinate variable.
-      */
-
-      nco_bool flg_dmn=False; /* [flg] Dimension exists for this variable */
-      nco_bool flg_crd=False; /* [flg] Handle -C cases */
-
-      if (EXTRACT_ASSOCIATED_COORDINATES == False) flg_crd=True;
-      if (var_trv.is_crd_var) flg_crd=True;
-
-      /* Loop variable dimensions */
-      for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-        /* Match the exported dimension from nco_aux_evl() */
-        if (strcmp(dmn_nm,var_trv.var_dmn[idx_dmn].dmn_nm) == 0){
-          flg_dmn=True;
-        }
-      }
-
-      if(aux_idx_nbr > 0 &&    /* Found limits */
-        flg_dmn &&             /* ... in a dimension exported from nco_aux_evl() */
-        flg_crd ){             /* ... and is a coordinate variable or -C option was set */
-          assert(aux);
-
-          if(nco_dbg_lvl_get() >= nco_dbg_dev){
-            (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,
-              trv_tbl->lst[idx_var].nm_fll,aux_idx_nbr); 
-          }
-
-          (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_idx_nbr)*sizeof(lmt_sct *));
-          int lmt_nbr_new=*lmt_nbr+aux_idx_nbr;
-          int aux_idx=0;
-          for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
-          *lmt_nbr=lmt_nbr_new;
-
-          aux=(lmt_sct **)nco_free(aux); 
-
-      } /* Found limits */
-    } /* Filter variables */ 
-  } /* Loop table */
-
-#else /* USE_AUX_EVL_TRV */
-
   /* 
-  1) Traverse table loop 1: look for 'standard_name' 'latitude' and 'longitude' attributes
+  1) Traverse table (all variables): look for 'standard_name' 'latitude' and 'longitude' attributes in nco_find_lat_lon_trv()
   2) Locate 'latitude' and 'longitude' coordinate variables
   3) Locate dimension of 'latitude' and 'longitude' coordinate variables
-  4) Traverse table loop 2: Select each variable to extract and apply previous variables and dimension
+  4) Apply previous variables and dimension in nco_aux_evl_trv()
   5) Additional criteria is in scope only associated variables */
 
   /* Look for 'standard_name' 'latitude' and 'longitude' attributes */
@@ -8559,8 +8473,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     nco_bool has_lat;
     nco_bool has_lon;
 
-    /* Filter variables to extract */ 
-    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+    /* Filter variables. */ 
+    if(var_trv.nco_typ == nco_obj_typ_var){
 
       char units_lat[NC_MAX_NAME+1];
       char units_lon[NC_MAX_NAME+1];
@@ -8601,50 +8515,31 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   /* Obtain coordinate variable of the dimension of both 'latitude' and 'longitude' (e.g lat_gds(gds_crd) ) */
   trv_sct *crd_trv=trv_tbl_var_nm_fll(dmn_trv->nm_fll,trv_tbl);
 
+  lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
+  int aux_lmt_nbr;           /* Number of auxiliary coordinate limits */
 
+  aux_lmt_nbr=0;
 
+  aux=nco_aux_evl_trv(nc_id,aux_nbr,aux_arg,lat_trv,lon_trv,crd_typ,units,&aux_lmt_nbr);
 
-  /* Loop table */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-    /* Filter variables */
-    trv_sct var_trv=trv_tbl->lst[idx_var];
+  /* Found limits */
+  if(aux_lmt_nbr > 0 ){  
 
-    if(var_trv.nco_typ == !nco_obj_typ_var) continue;
+    if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,
+        crd_trv->nm_fll,aux_lmt_nbr); 
+    }
 
-    /* Inquire if variable has "coordinates" attribute */
-    nco_bool flg_crd_attr=nco_find_coordinates(nc_id,&var_trv);
+    (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_lmt_nbr)*sizeof(lmt_sct *));
+    int lmt_nbr_new=*lmt_nbr+aux_lmt_nbr;
+    int aux_idx=0;
+    for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
+    *lmt_nbr=lmt_nbr_new;
 
-    /* Filter variables to extract */ 
-    if (var_trv.flg_xtr && flg_crd_attr){
-      lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
-      int aux_lmt_nbr;           /* Number of auxiliary coordinate limits */
+    aux=(lmt_sct **)nco_free(aux); 
 
-      aux_lmt_nbr=0;
+  } /* Found limits */
 
-     
-
-      aux=nco_aux_evl_trv(nc_id,&var_trv,aux_nbr,aux_arg,lat_trv,lon_trv,crd_typ,units,trv_tbl,&aux_lmt_nbr);
-
-      /* Found limits */
-      if(aux_lmt_nbr > 0 ){  
-
-        if(nco_dbg_lvl_get() >= nco_dbg_dev){
-          (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,
-            trv_tbl->lst[idx_var].nm_fll,aux_lmt_nbr); 
-        }
-
-        (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_lmt_nbr)*sizeof(lmt_sct *));
-        int lmt_nbr_new=*lmt_nbr+aux_lmt_nbr;
-        int aux_idx=0;
-        for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
-        *lmt_nbr=lmt_nbr_new;
-
-        aux=(lmt_sct **)nco_free(aux); 
-
-      } /* Found limits */
-    } /* Filter variables to extract */ 
-  } /* Loop table */
-#endif /* USE_AUX_EVL_TRV */
 
   return;
 } /* nco_bld_aux_crd() */

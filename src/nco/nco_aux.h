@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.31 2014-01-13 02:43:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.32 2014-01-13 03:09:07 pvicente Exp $ */
 
 /* Purpose: Sub-set cell-based grids using auxiliary coordinate variable */
 
@@ -67,14 +67,12 @@ nco_aux_prs
 lmt_sct **                           /* O [lst] Auxiliary coordinate limits */
 nco_aux_evl_trv
 (const int nc_id,                    /* I [ID] netCDF file ID */
- const trv_sct * const var_trv,      /* I [sct] Variable object */
  int aux_nbr,                        /* I [sng] Number of auxiliary coordinates */
  char *aux_arg[],                    /* I [sng] Auxiliary coordinates */
  trv_sct *lat_trv,                   /* I [sct] "latitude" variable */
  trv_sct *lon_trv,                   /* I [sct] "longitude" variable */
  const nc_type crd_typ,              /* I [nbr] netCDF type of both "latitude" and "longitude" */
  const char * const units,           /* I [sng] Units of both "latitude" and "longitude" */
- const trv_tbl_sct * const trv_tbl,  /* I [sct] GTT (Group Traversal Table) */
  int *aux_lmt_nbr);                  /* I/O [nbr] Number of coordinate limits */
 
 nco_bool 
