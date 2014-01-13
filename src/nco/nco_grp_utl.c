@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1179 2014-01-11 23:53:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1180 2014-01-13 02:18:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8531,10 +8531,11 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 #else /* USE_AUX_EVL_TRV */
 
   /* 
-  1) Traverse table
-  2) Look for 'standard_name' 'latitude' and 'longitude' attributes
-  3) Select each variable to extract
-  4) Look for in scope only associated variables in nco_aux_evl_trv() */
+  1) Traverse table loop 1: look for 'standard_name' 'latitude' and 'longitude' attributes
+  2) Locate 'latitude' and 'longitude' coordinate variables
+  3) Locate dimension of 'latitude' and 'longitude' coordinate variables
+  4) Traverse table loop 2: Select each variable to extract and apply previous variables and dimension
+  5) Additional criteria is in scope only associated variables */
 
   /* Look for 'standard_name' 'latitude' and 'longitude' attributes */
 
@@ -8543,8 +8544,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   char *var_nm_fll;
   char units[NC_MAX_NAME+1];
 
-  nco_bool has_lat_fl;
-  nco_bool has_lon_fl;
+  nco_bool has_lat_fl=False;
+  nco_bool has_lon_fl=False;
 
   nc_type crd_typ;
 
@@ -8580,7 +8581,13 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     } /* Filter variables to extract */ 
   } /* Loop table */
 
+  /* If the attribute was not found, return */
   if (!has_lat_fl || !has_lon_fl) return;
+
+  /* Locate dimension of 'latitude' and 'longitude' coordinate variables */
+
+
+
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -8592,8 +8599,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     /* Inquire if variable has "coordinates" attribute */
     nco_bool flg_crd_attr=nco_find_coordinates(nc_id,&var_trv);
 
-    /* Filter variables to extract. Does not apply to coordinate variables */ 
-    if (var_trv.flg_xtr && !var_trv.is_crd_var && flg_crd_attr){
+    /* Filter variables to extract */ 
+    if (var_trv.flg_xtr && flg_crd_attr){
       lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
       int aux_lmt_nbr;           /* Number of auxiliary coordinate limits */
 
