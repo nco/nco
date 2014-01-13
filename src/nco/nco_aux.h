@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.30 2014-01-11 23:53:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.h,v 1.31 2014-01-13 02:43:40 pvicente Exp $ */
 
 /* Purpose: Sub-set cell-based grids using auxiliary coordinate variable */
 
@@ -83,6 +83,7 @@ nco_find_lat_lon_trv
  const trv_sct * const var_trv,      /* I [sct] Variable object that contains "standard_name" attribute */
  const char * const attr_val,        /* I [sng] Attribute value to find ( "latitude" or "longitude" ) */
  char **var_nm_fll,                  /* I/O [sng] Full name of variable that has "latitude" or "longitude" attributes */
+ int *dmn_id,                        /* I/O [id] Dimension ID of the diension of "latitude" and "longitude" */
  nc_type *crd_typ,                   /* I/O [enm] netCDF type of both "latitude" and "longitude" */
  char units[]);                      /* I/O [sng] Units of both "latitude" and "longitude" */
 
