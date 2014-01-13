@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1180 2014-01-13 02:18:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1181 2014-01-13 02:40:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8539,10 +8539,12 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
   /* Look for 'standard_name' 'latitude' and 'longitude' attributes */
 
-  char *lat_nm_fll;
-  char *lon_nm_fll;
-  char *var_nm_fll;
+  char *lat_nm_fll=NULL;
+  char *lon_nm_fll=NULL;
+  char *var_nm_fll=NULL;
   char units[NC_MAX_NAME+1];
+
+  int dmn_id;
 
   nco_bool has_lat_fl=False;
   nco_bool has_lon_fl=False;
@@ -8563,8 +8565,8 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       char units_lat[NC_MAX_NAME+1];
       char units_lon[NC_MAX_NAME+1];
 
-      has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&crd_typ,units_lat);
-      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&crd_typ,units_lon);
+      has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&dmn_id,&crd_typ,units_lat);
+      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&dmn_id,&crd_typ,units_lon);
 
       if (has_lat){
         has_lat_fl=True;
@@ -8585,6 +8587,19 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   if (!has_lat_fl || !has_lon_fl) return;
 
   /* Locate dimension of 'latitude' and 'longitude' coordinate variables */
+  dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
+
+  /* If dimension was not found, return */
+  if (dmn_trv == NULL) return;
+
+  /* Obtain 'latitude' GTT object using full variable name */
+  trv_sct *lat_trv=trv_tbl_var_nm_fll(lat_nm_fll,trv_tbl);
+
+  /* Obtain 'longitude' GTT object using full variable name */
+  trv_sct *lon_trv=trv_tbl_var_nm_fll(lon_nm_fll,trv_tbl);
+
+  /* Obtain coordinate variable of the dimension of both 'latitude' and 'longitude' (e.g lat_gds(gds_crd) ) */
+  trv_sct *crd_trv=trv_tbl_var_nm_fll(dmn_trv->nm_fll,trv_tbl);
 
 
 
@@ -8606,11 +8621,7 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
       aux_lmt_nbr=0;
 
-      /* Obtain 'latitude' GTT object using full variable name */
-      trv_sct *lat_trv=trv_tbl_var_nm_fll(lat_nm_fll,trv_tbl);
-
-      /* Obtain 'longitude' GTT object using full variable name */
-      trv_sct *lon_trv=trv_tbl_var_nm_fll(lon_nm_fll,trv_tbl);
+     
 
       aux=nco_aux_evl_trv(nc_id,&var_trv,aux_nbr,aux_arg,lat_trv,lon_trv,crd_typ,units,trv_tbl,&aux_lmt_nbr);
 
