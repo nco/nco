@@ -1,3 +1,7 @@
+2014-01-14  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add test data for -X option in in_grp_3.cdl
+
 2014-01-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.1 release procedure:
