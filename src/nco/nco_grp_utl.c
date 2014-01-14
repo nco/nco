@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1183 2014-01-14 03:55:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1184 2014-01-14 07:55:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8470,7 +8470,13 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   typedef struct{
     char *nm_fll;  /* [sng] Coordinate full name ('latitude' or 'longitude') */ 
     int dmn_id;    /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
-  } aux_lmt_sct; 
+    char units[NC_MAX_NAME+1]; /* [sng] Units of 'latitude' and 'longitude' */ 
+  } aux_crd_sct; 
+
+  aux_crd_sct *lat_crd=NULL; /* [lst] Array of 'latitude' coordinates */
+  aux_crd_sct *lon_crd=NULL; /* [lst] Array of 'longitude' coordinates */
+  int nbr_lat_crd=0;         /* [nbr] Number of items in 'latitude' coordinates array */
+  int nbr_lon_crd=0;         /* [nbr] Number of items in 'longitude' coordinates array */
 
   /* Loop table; build a list of 'standard_name' 'latitude' and 'longitude' coordinates  */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -8493,12 +8499,19 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         has_lat_fl=True;
         lat_nm_fll=var_nm_fll;
         strcpy(units,units_lat);
+
+        nbr_lat_crd++;
+
+
       } /* has_lat */
 
       if (has_lon){
         has_lon_fl=True;
         lon_nm_fll=var_nm_fll;
         strcpy(units,units_lon);   
+
+        nbr_lon_crd++;
+
       } /* has_lon */
 
     } /* Filter variables to extract */ 
