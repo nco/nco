@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.408 2014-01-13 03:29:52 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.409 2014-01-14 03:55:37 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2383,7 +2383,7 @@ print "\n";
 # Test -X with variables anywhere in file (g18g1 has variable)
 # ncks -O -C -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar in_grp_3.nc 
 
-    $dsc_sng="(Groups) Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
+    $dsc_sng="(Groups) Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[9] gds_crd[1]=1 gds_3dvar[73]=282.2 meter";

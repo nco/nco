@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1182 2014-01-13 03:09:07 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1183 2014-01-14 03:55:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8445,11 +8445,12 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   const char fnc_nm[]="nco_bld_aux_crd()"; /* [sng] Function name */
 
   /* 
-  1) Traverse table (all variables): look for 'standard_name' 'latitude' and 'longitude' attributes in nco_find_lat_lon_trv()
-  2) Locate 'latitude' and 'longitude' coordinate variables
-  3) Locate dimension of 'latitude' and 'longitude' coordinate variables
-  4) Apply previous variables and dimension in nco_aux_evl_trv()
-  5) Additional criteria is in scope only associated variables */
+  1) Traverse table (all variables): build a list of 'standard_name' 'latitude' and 'longitude' coordinates 
+  2) Look for 'standard_name' 'latitude' and 'longitude' attributes in nco_find_lat_lon_trv() 
+  3) Locate 'latitude' and 'longitude' coordinate variables
+  4) Locate dimension of 'latitude' and 'longitude' coordinate variables
+  5) Apply previous variables and dimension in nco_aux_evl_trv()
+  6) Additional criteria is in scope only associated variables */
 
   /* Look for 'standard_name' 'latitude' and 'longitude' attributes */
 
@@ -8458,14 +8459,20 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   char *var_nm_fll=NULL;
   char units[NC_MAX_NAME+1];
 
-  int dmn_id;
+  int dmn_id; /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
 
   nco_bool has_lat_fl=False;
   nco_bool has_lon_fl=False;
 
   nc_type crd_typ;
 
-  /* Loop table */
+  /* Build a list of 'standard_name' 'latitude' and 'longitude' coordinates */
+  typedef struct{
+    char *nm_fll;  /* [sng] Coordinate full name ('latitude' or 'longitude') */ 
+    int dmn_id;    /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
+  } aux_lmt_sct; 
+
+  /* Loop table; build a list of 'standard_name' 'latitude' and 'longitude' coordinates  */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     /* Filter variables */
     trv_sct var_trv=trv_tbl->lst[idx_var];
