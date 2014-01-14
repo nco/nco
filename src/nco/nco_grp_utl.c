@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1184 2014-01-14 07:55:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1185 2014-01-14 21:51:21 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8500,8 +8500,12 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         lat_nm_fll=var_nm_fll;
         strcpy(units,units_lat);
 
+        /* Insert item into list */
         nbr_lat_crd++;
-
+        lat_crd=(aux_crd_sct *)nco_realloc(lat_crd,nbr_lat_crd*sizeof(aux_crd_sct));
+        lat_crd[nbr_lat_crd-1].nm_fll=strdup(var_nm_fll);
+        lat_crd[nbr_lat_crd-1].dmn_id=dmn_id;
+        strcpy(lat_crd[nbr_lat_crd-1].units,units_lat);
 
       } /* has_lat */
 
@@ -8510,7 +8514,12 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         lon_nm_fll=var_nm_fll;
         strcpy(units,units_lon);   
 
-        nbr_lon_crd++;
+        /* Insert item into list */
+        nbr_lon_crd++;      
+        lon_crd=(aux_crd_sct *)nco_realloc(lon_crd,nbr_lon_crd*sizeof(aux_crd_sct));
+        lon_crd[nbr_lon_crd-1].nm_fll=strdup(lon_nm_fll);
+        lon_crd[nbr_lon_crd-1].dmn_id=dmn_id;
+        strcpy(lon_crd[nbr_lon_crd-1].units,units_lon);
 
       } /* has_lon */
 
