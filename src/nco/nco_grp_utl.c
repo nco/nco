@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1187 2014-01-15 18:43:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1188 2014-01-15 22:16:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8444,8 +8444,8 @@ nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by gro
   const aux_crd_sct * const crd_1=(const aux_crd_sct *)val_1;
   const aux_crd_sct * const crd_2=(const aux_crd_sct *)val_2;
 
-  if(crd_1->grp_dpt > crd_2->grp_dpt) return -1;
-  else if(crd_1->grp_dpt < crd_2->grp_dpt) return 1;
+  if(crd_1->grp_dpt > crd_2->grp_dpt) return 1;
+  else if(crd_1->grp_dpt < crd_2->grp_dpt) return -1;
   else return 0;
 
 } /* nco_cmp_aux_crd_dpt() */
@@ -8577,8 +8577,11 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
       (void)fprintf(stdout,"%s: DEBUG %s <%s> dpt=%d\n",nco_prg_nm_get(),fnc_nm,
         lat_crd[idx_crd].nm_fll,lat_crd[idx_crd].grp_dpt);
     }   
-  }
-  
+  }  
+
+  /* Use the coordinate with lower group depth (index 0) */
+  lat_trv=trv_tbl_var_nm_fll(lat_crd[0].nm_fll,trv_tbl);
+  lon_trv=trv_tbl_var_nm_fll(lon_crd[0].nm_fll,trv_tbl);
 
   /* Obtain coordinate variable of the dimension of both 'latitude' and 'longitude' (e.g lat_gds(gds_crd) ) */
   trv_sct *crd_trv=trv_tbl_var_nm_fll(dmn_trv->nm_fll,trv_tbl);
@@ -8607,6 +8610,14 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
     aux=(lmt_sct **)nco_free(aux); 
 
   } /* Found limits */
+
+  /* Free array */
+  for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++){    
+    lat_crd[idx_crd].nm_fll=(char *)nco_free(lat_crd[idx_crd].nm_fll);
+  }   
+  for(int idx_crd=0;idx_crd<nbr_lon_crd;idx_crd++){    
+    lon_crd[idx_crd].nm_fll=(char *)nco_free(lon_crd[idx_crd].nm_fll);
+  }   
 
 
   return;
