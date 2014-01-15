@@ -228,28 +228,28 @@ netcdf in_grp_3 {
     gds_crd=8;
 	
     variables:
-    double lat_gds(gds_crd);
-    lat_gds:long_name = "Latitude";  
-    lat_gds:standard_name = "latitude";
-    lat_gds:units="degree";
-    lat_gds:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
+    double lat_gds_1(gds_crd);
+    lat_gds_1:long_name = "Latitude";  
+    lat_gds_1:standard_name = "latitude";
+    lat_gds_1:units="degree";
+    lat_gds_1:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
 
-    double lon_gds(gds_crd);
-    lon_gds:long_name = "Longitude";
-    lon_gds:standard_name = "longitude";
-    lon_gds:units="degree";
-    lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
+    double lon_gds_1(gds_crd);
+    lon_gds_1:long_name = "Longitude";
+    lon_gds_1:standard_name = "longitude";
+    lon_gds_1:units="degree";
+    lon_gds_1:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
     
     float gds_crd(gds_crd);
     gds_crd:long_name = "Geodesic coordinate";
     gds_crd:units = "degree";
     gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
-    gds_crd:coordinates = "lat_gds lon_gds";
+    gds_crd:coordinates = "lat_gds_1 lon_gds_1";
     
     float gds_3dvar(time,gds_crd);
     gds_3dvar:long_name = "Geodesic variable";
     gds_3dvar:units = "meter";
-    gds_3dvar:coordinates = "lat_gds lon_gds";
+    gds_3dvar:coordinates = "lat_gds_1 lon_gds_1";
     gds_3dvar:purpose = "Test auxiliary coordinates like those that define geodesic grids";
     
     data:
@@ -264,8 +264,8 @@ netcdf in_grp_3 {
 	          280.1,280.2,280.3,280.4,280.5,280.9,280.7,280.8,
 	          281.1,281.2,281.3,281.4,281.5,281.9,281.7,281.8,
 	          282.1,282.2,282.3,282.4,282.5,282.9,282.7,282.8;
-    lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
-    lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;
+    lat_gds_1=-90, -30,  -30,    0,   0, 30,  30,  90;
+    lon_gds_1=  0,   0,  180,    0, 180,  0, 180,   0;
 	
 		 group: g18g1 {  //test -X with "lat_gds lon_gds" in scope
 		 
@@ -275,7 +275,7 @@ netcdf in_grp_3 {
 			float gds_3dvar(time,gds_crd);
 			gds_3dvar:long_name = "Geodesic variable";
 			gds_3dvar:units = "meter";
-			gds_3dvar:coordinates = "lat_gds lon_gds";
+			gds_3dvar:coordinates = "lat_gds_1 lon_gds_1";
 			gds_3dvar:purpose = "Test auxiliary coordinates like those that define geodesic grids";
     
 			data:
@@ -292,28 +292,28 @@ netcdf in_grp_3 {
 			  
 			group: g18g2 {  	  
 				variables:
-				double lat_gds(gds_crd);
-				lat_gds:long_name = "Latitude";  
-				lat_gds:standard_name = "latitude";
-				lat_gds:units="degree";
-				lat_gds:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
+				double lat_gds_2(gds_crd);
+				lat_gds_2:long_name = "Latitude";  
+				lat_gds_2:standard_name = "latitude";
+				lat_gds_2:units="degree";
+				lat_gds_2:purpose = "1-D latitude coordinate referred to by geodesic grid variables";
 
-				double lon_gds(gds_crd);
-				lon_gds:long_name = "Longitude";
-				lon_gds:standard_name = "longitude";
-				lon_gds:units="degree";
-				lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
+				double lon_gds_2(gds_crd);
+				lon_gds_2:long_name = "Longitude";
+				lon_gds_2:standard_name = "longitude";
+				lon_gds_2:units="degree";
+				lon_gds_2:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
     
 				float gds_crd(gds_crd);
 				gds_crd:long_name = "Geodesic coordinate";
 				gds_crd:units = "degree";
 				gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
-				gds_crd:coordinates = "lat_gds lon_gds";
+				gds_crd:coordinates = "lat_gds_2 lon_gds_2";
 
                 data:
 				gds_crd=0,1,2,3,4,5,6,7;
-				lat_gds=-90, -30,  -30,    0,   0, 30,  30,  90;
-				lon_gds=  0,   0,  180,    0, 180,  0, 180,   0;				
+				lat_gds_2=-90, -30,  -30,    0,   0, 30,  30,  90;
+				lon_gds_2=  0,   0,  180,    0, 180,  0, 180,   0;				
 			  } // end g18g2
 		 } // end g18g1 
     } // end g18
