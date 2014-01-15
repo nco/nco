@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.436 2014-01-13 03:09:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.437 2014-01-15 18:43:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -716,6 +716,11 @@ nco_dfn_dmn                            /* [fnc] Define dimension size and ID in 
  const int dmn_id,                     /* I [id] ID of dimension */
  dmn_cmn_sct *dmn_cmn,                 /* I/O [sct] Dimension structure array */
  const int nbr_dmn);                   /* I [nbr] Number of dimensions (size of above array) */
+
+int                                    /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by group depth */
+(const void *val_1,                    /* I [sct] aux_crd_sct * to compare */
+ const void *val_2);                   /* I [sct] aux_crd_sct * to compare */
 
 #ifdef __cplusplus
 } /* end extern "C" */

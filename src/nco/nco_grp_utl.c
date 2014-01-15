@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1186 2014-01-15 08:51:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1187 2014-01-15 18:43:33 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2875,6 +2875,7 @@ nco_scp_var_crd                       /* [fnc] Return in scope coordinate for va
   /g16/g16g4/lon4
 
   */
+
 
   /* If more than one coordinate, sort them by group depth */
   if(dmn_trv->crd_nbr>1) qsort(dmn_trv->crd,(size_t)dmn_trv->crd_nbr,sizeof(crd_sct *),nco_cmp_crd_dpt);
@@ -8432,17 +8433,21 @@ nco_chk_dmn                           /* [fnc] Check valid dimension names */
   } /* Check if all input -d dimensions were found */
 } /* nco_chk_dmn() */
 
-
-
-int                 /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
-nco_cmp_aux_crd_dpt /* [fnc] Compare two aux_crd_sct's by group depth */
-(const void *val_1, /* I [sct] aux_crd_sct * to compare */
- const void *val_2) /* I [sct] aux_crd_sct * to compare */
+int                                    /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by group depth */
+(const void *val_1,                    /* I [sct] aux_crd_sct * to compare */
+ const void *val_2)                    /* I [sct] aux_crd_sct * to compare */
 {
   /* Purpose: Compare two aux_crd_sct's by group depth structure member
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h */
 
-  return 0;
+  const aux_crd_sct * const crd_1=(const aux_crd_sct *)val_1;
+  const aux_crd_sct * const crd_2=(const aux_crd_sct *)val_2;
+
+  if(crd_1->grp_dpt > crd_2->grp_dpt) return -1;
+  else if(crd_1->grp_dpt < crd_2->grp_dpt) return 1;
+  else return 0;
+
 } /* nco_cmp_aux_crd_dpt() */
 
 
@@ -8553,12 +8558,26 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   /* If dimension was not found, return */
   if (dmn_trv == NULL) return;
 
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s coordinate variables found:\n",nco_prg_nm_get(),fnc_nm);
+    for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++){
+      (void)fprintf(stdout,"%s: DEBUG %s <%s> dpt=%d\n",nco_prg_nm_get(),fnc_nm,
+        lat_crd[idx_crd].nm_fll,lat_crd[idx_crd].grp_dpt);
+    }   
+  }
+
   /* Sort the array of 'latitude' and 'longitude' coordinate variables by group depth and choose the most in scope variables */
 
   /* If more than one coordinate, sort them by group depth */
-  if(nbr_lat_crd>1) qsort(lat_crd,(size_t)nbr_lat_crd,sizeof(aux_crd_sct *),nco_cmp_aux_crd_dpt);
+  if(nbr_lat_crd>1) qsort(lat_crd,(size_t)nbr_lat_crd,sizeof(lat_crd[0]),nco_cmp_aux_crd_dpt);
 
-
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
+    (void)fprintf(stdout,"%s: DEBUG %s sorted coordinate variables:\n",nco_prg_nm_get(),fnc_nm);
+    for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++){
+      (void)fprintf(stdout,"%s: DEBUG %s <%s> dpt=%d\n",nco_prg_nm_get(),fnc_nm,
+        lat_crd[idx_crd].nm_fll,lat_crd[idx_crd].grp_dpt);
+    }   
+  }
   
 
   /* Obtain coordinate variable of the dimension of both 'latitude' and 'longitude' (e.g lat_gds(gds_crd) ) */
