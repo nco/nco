@@ -304,14 +304,7 @@ netcdf in_grp_3 {
 				lon_gds_2:units="degree";
 				lon_gds_2:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
     
-				float gds_crd(gds_crd);
-				gds_crd:long_name = "Geodesic coordinate";
-				gds_crd:units = "degree";
-				gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid";
-				gds_crd:coordinates = "lat_gds_2 lon_gds_2";
-
                 data:
-				gds_crd=0,1,2,3,4,5,6,7;
 				lat_gds_2=-90, -30,  -30,    0,   0, 30,  30,  90;
 				lon_gds_2=  0,   0,  180,    0, 180,  0, 180,   0;				
 			  } // end g18g2

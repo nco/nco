@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.465 2014-01-07 21:42:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.466 2014-01-15 08:51:37 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -1062,6 +1062,14 @@ extern "C" {
     long dmn_cnt; /* [nbr] Hyperslabbed size of dimension */ 
     int id; /* [id] Dimension ID */ 
   } dmn_cmn_sct; 
+
+  /* Build a list of 'standard_name' 'latitude' and 'longitude' coordinates (Auxiliary Coordinates) */
+  typedef struct{
+    char *nm_fll;              /* [sng] Coordinate full name ('latitude' or 'longitude') */ 
+    int dmn_id;                /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
+    char units[NC_MAX_NAME+1]; /* [sng] Units of 'latitude' and 'longitude' */ 
+    int grp_dpt;               /* [nbr] Depth of group (root = 0) */
+  } aux_crd_sct; 
   
 #ifdef __cplusplus
 } /* end extern "C" */

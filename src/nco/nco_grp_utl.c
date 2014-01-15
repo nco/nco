@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1185 2014-01-14 21:51:21 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1186 2014-01-15 08:51:37 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8432,7 +8432,21 @@ nco_chk_dmn                           /* [fnc] Check valid dimension names */
   } /* Check if all input -d dimensions were found */
 } /* nco_chk_dmn() */
 
-  
+
+
+int                 /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_aux_crd_dpt /* [fnc] Compare two aux_crd_sct's by group depth */
+(const void *val_1, /* I [sct] aux_crd_sct * to compare */
+ const void *val_2) /* I [sct] aux_crd_sct * to compare */
+{
+  /* Purpose: Compare two aux_crd_sct's by group depth structure member
+     Function is suitable for argument to ANSI C qsort() routine in stdlib.h */
+
+  return 0;
+} /* nco_cmp_aux_crd_dpt() */
+
+
+
 void
 nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 (const int nc_id,                     /* I [ID] netCDF file ID */
@@ -8464,14 +8478,10 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   nco_bool has_lat_fl=False;
   nco_bool has_lon_fl=False;
 
-  nc_type crd_typ;
+  trv_sct *lat_trv;
+  trv_sct *lon_trv;
 
-  /* Build a list of 'standard_name' 'latitude' and 'longitude' coordinates */
-  typedef struct{
-    char *nm_fll;  /* [sng] Coordinate full name ('latitude' or 'longitude') */ 
-    int dmn_id;    /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
-    char units[NC_MAX_NAME+1]; /* [sng] Units of 'latitude' and 'longitude' */ 
-  } aux_crd_sct; 
+  nc_type crd_typ;
 
   aux_crd_sct *lat_crd=NULL; /* [lst] Array of 'latitude' coordinates */
   aux_crd_sct *lon_crd=NULL; /* [lst] Array of 'longitude' coordinates */
@@ -8500,11 +8510,15 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         lat_nm_fll=var_nm_fll;
         strcpy(units,units_lat);
 
+        /* Obtain 'latitude' GTT object using full variable name */
+        lat_trv=trv_tbl_var_nm_fll(lat_nm_fll,trv_tbl);
+
         /* Insert item into list */
         nbr_lat_crd++;
         lat_crd=(aux_crd_sct *)nco_realloc(lat_crd,nbr_lat_crd*sizeof(aux_crd_sct));
         lat_crd[nbr_lat_crd-1].nm_fll=strdup(var_nm_fll);
         lat_crd[nbr_lat_crd-1].dmn_id=dmn_id;
+        lat_crd[nbr_lat_crd-1].grp_dpt=lat_trv->grp_dpt;
         strcpy(lat_crd[nbr_lat_crd-1].units,units_lat);
 
       } /* has_lat */
@@ -8514,11 +8528,15 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         lon_nm_fll=var_nm_fll;
         strcpy(units,units_lon);   
 
+        /* Obtain 'longitude' GTT object using full variable name */
+        lon_trv=trv_tbl_var_nm_fll(lon_nm_fll,trv_tbl);
+
         /* Insert item into list */
         nbr_lon_crd++;      
         lon_crd=(aux_crd_sct *)nco_realloc(lon_crd,nbr_lon_crd*sizeof(aux_crd_sct));
         lon_crd[nbr_lon_crd-1].nm_fll=strdup(lon_nm_fll);
         lon_crd[nbr_lon_crd-1].dmn_id=dmn_id;
+        lon_crd[nbr_lon_crd-1].grp_dpt=lon_trv->grp_dpt;
         strcpy(lon_crd[nbr_lon_crd-1].units,units_lon);
 
       } /* has_lon */
@@ -8535,11 +8553,13 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   /* If dimension was not found, return */
   if (dmn_trv == NULL) return;
 
-  /* Obtain 'latitude' GTT object using full variable name */
-  trv_sct *lat_trv=trv_tbl_var_nm_fll(lat_nm_fll,trv_tbl);
+  /* Sort the array of 'latitude' and 'longitude' coordinate variables by group depth and choose the most in scope variables */
 
-  /* Obtain 'longitude' GTT object using full variable name */
-  trv_sct *lon_trv=trv_tbl_var_nm_fll(lon_nm_fll,trv_tbl);
+  /* If more than one coordinate, sort them by group depth */
+  if(nbr_lat_crd>1) qsort(lat_crd,(size_t)nbr_lat_crd,sizeof(aux_crd_sct *),nco_cmp_aux_crd_dpt);
+
+
+  
 
   /* Obtain coordinate variable of the dimension of both 'latitude' and 'longitude' (e.g lat_gds(gds_crd) ) */
   trv_sct *crd_trv=trv_tbl_var_nm_fll(dmn_trv->nm_fll,trv_tbl);
