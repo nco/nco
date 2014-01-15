@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.948 2014-01-13 16:20:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.949 2014-01-15 00:47:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4581,7 +4581,7 @@ By default the @acronym{CF} version checked is determined automatically by
 The user can override this default by supplying a supported @acronym{CF} version,
 e.g., @samp{1.3}, as an optional fourth argument to
 @command{ncdismember}. 
-Current valid @acronym{CF} versions are @samp{1.0}, @samp{1.1},
+Current valid @acronym{CF} options are @samp{1.0}, @samp{1.1},
 @samp{1.2}, @samp{1.3}, @samp{1.4}, and @samp{1.5}. 
 
 Our development and testing of @command{ncdismember} is funded by our
