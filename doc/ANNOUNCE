@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.679 2014-01-13 16:20:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.680 2014-01-16 21:13:45 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.1 are ready. 
 
@@ -48,7 +48,8 @@ J. The --cnk_byt option was introduced to allow users to manually
 
 BUG FIXES:
 
-A. 
+A. NCO 4.4.0 could sometimes fail when asked to simultaneously
+   uncompress (-L 0) and to chunk (--cnk_dmn) a file. Fixed.
 
 KNOWN ISSUES NOT YET FIXED:
 

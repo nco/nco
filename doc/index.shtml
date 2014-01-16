@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.857 2014-01-13 16:20:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.858 2014-01-16 21:13:46 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -623,7 +623,8 @@ extensive hashing?;
 netCDF4 compound types?;
 Optimize diskless files?;</li>
 <li><b>NCO 4.4.1</b>: (<i>In Progress, features completed or being worked on include</i>)
-Group support for <tt>-X</tt>;
+Better group support for <tt>-X</tt>;
+Chunk and uncompress simultaneously;
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
 <li><b>NCO 4.4.0</b>: (<i>Current Stable Release</i>)
 Optimizations;

@@ -1,3 +1,7 @@
+2014-01-16  Charlie Zender  <zender@uci.edu>
+
+	* Fix to allow uncompressing files at the same time as chunking files
+
 2014-01-14  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add test data for -X option in in_grp_3.cdl
