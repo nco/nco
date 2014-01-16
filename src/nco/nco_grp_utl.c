@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1188 2014-01-15 22:16:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1189 2014-01-16 21:07:20 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4748,7 +4748,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       /* Copy original deflation settings */
       if(deflate || shuffle) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
       /* Overwrite HDF Lempel-Ziv compression level, if requested */
-      if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,(int)True,(int)True,dfl_lvl);
+      if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
+      if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl);
     } /* endif */
 
     /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
@@ -4800,8 +4801,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       /* Loop dimensions */
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
         (void)nco_inq_dim(grp_out_id,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
-        /* The output dimension name differs from input: there was a swap */
-        if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm) != 0){
+        /* If output dimension name differs from input there was a swap */
+        if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm)){
           /* Swap array for these 2 names */
           (void)nco_dmn_swap(dmn_nm,dmn_cmn[idx_dmn].nm,dmn_cmn,nbr_dmn_var);
         } /* Dimension name differs from input */
@@ -4810,10 +4811,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev){
       (void)fprintf(stdout,"%s: DEBUG %s setting chunksizes for <%s> with dimensions:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
-        (void)fprintf(stdout,"[%d]<%s> (size=%ld)(count=%ld)(record=%d)\n",
-          idx_dmn,dmn_cmn[idx_dmn].nm_fll,dmn_cmn[idx_dmn].sz,dmn_cmn[idx_dmn].dmn_cnt,dmn_cmn[idx_dmn].is_rec_dmn);
-      }
+      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++)
+        (void)fprintf(stdout,"[%d]<%s> (size=%ld)(count=%ld)(record=%d)\n",idx_dmn,dmn_cmn[idx_dmn].nm_fll,dmn_cmn[idx_dmn].sz,dmn_cmn[idx_dmn].dmn_cnt,dmn_cmn[idx_dmn].is_rec_dmn);
     } /* endif */
 
     /* Set chunksize parameters */
@@ -4828,7 +4827,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   return var_out_id;
 } /* end nco_cpy_var_dfn_trv() */
-
 
 void
 nco_dmn_swap                           /* [fnc] Swap dimensions */
