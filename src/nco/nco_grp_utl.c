@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1191 2014-01-17 22:04:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1192 2014-01-17 23:15:57 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4749,13 +4749,13 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(deflate || shuffle) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
       /* Overwrite HDF Lempel-Ziv compression level, if requested */
       if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
+      /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+      if(dfl_lvl == 0) shuffle=(int)False;
       if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl);
     } /* endif */
 
-    /* Chunking */
-
     /* Chunking routine called only when user explicitly sets a chunking option */
-    if (cnk && cnk->flg_usr_rqs){
+    if(cnk && cnk->flg_usr_rqs){
 
       /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
       if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
@@ -4840,11 +4840,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } /* endif */
 
       /* Set chunksize parameters */
-      if (do_cnk) (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn,nbr_dmn_var_out);
+      if(do_cnk) (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn,nbr_dmn_var_out);
 
       if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ) dmn_cmn[0].nm_fll=(char *)nco_free(dmn_cmn[0].nm_fll);
 
-    } /* Chunking routine called only when user explicitly sets a chunking option */
+    } /* !flg_usr_rqs */
 
   } /* !NC_FORMAT_NETCDF4 */ 
 

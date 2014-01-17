@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.105 2014-01-17 22:04:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.106 2014-01-17 23:15:57 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -792,6 +792,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   int dmn_idx; /* [idx] Dimension index */
   int dmn_nbr; /* [nbr] Number of dimensions for variable */
   int fl_fmt; /* [enm] Input file format */
+  int shuffle; /* [enm] Shuffle filter is on */
   int srg_typ; /* [enm] Storage type */
   int var_id_in; /* [ID] Variable ID in input file */
   int var_id_out; /* [ID] Variable ID in output file */
@@ -899,7 +900,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     if(dmn_cmn[dmn_idx].is_rec_dmn) is_rec_var=True;
 
   /* Is variable compressed? */
-  (void)nco_inq_var_deflate(grp_id_out,var_id_out,(int *)NULL,&deflate,(int *)NULL);
+  (void)nco_inq_var_deflate(grp_id_out,var_id_out,&shuffle,&deflate,(int *)NULL);
   if(deflate) is_cmp_var=True; 
 
   /* Is variable checksummed? */
@@ -936,6 +937,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       if(is_chunked){
 	/* Turn-off chunking for this variable */
 	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s unchunking %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	if(shuffle) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has shuffle flag set before unchunking. Expect the worst.",nco_prg_nm_get(),fnc_nm,var_nm);
 	(void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
       }else{ /* !chunked */
 	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);

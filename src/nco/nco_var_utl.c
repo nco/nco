@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.354 2014-01-16 21:07:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.355 2014-01-17 23:15:58 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1136,6 +1136,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
           } /* endif */
           /* Overwrite HDF Lempel-Ziv compression level, if requested */
 	  if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
+	  /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+	  if(dfl_lvl == 0) shuffle=(int)False; 
           if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
         } /* endif */
       } /* endif netCDF4 */

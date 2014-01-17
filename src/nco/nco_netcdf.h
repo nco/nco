@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.110 2014-01-02 19:51:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.111 2014-01-17 23:15:58 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -297,6 +297,7 @@ int nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id);
 int nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id);
 int nco_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz);
 int nco_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
+int nco_def_var_fletcher32(const int nc_id,const int var_id,const int chk_typ);
 int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * const var_typ,int * const dmn_nbr,int * const dmn_id,int * const nbr_att);
 int nco_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
 int nco_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle,int * const deflate,int * const dfl_lvl);
@@ -358,6 +359,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 # endif /* !NC_HAVE_NEW_CHUNKING_API */
   int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
   int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
+  int nc_def_var_fletcher32(const int nc_id,const int var_id,const int chk_typ);
   int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl);
   int nc_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ);
   int nc_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val);

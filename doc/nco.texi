@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.949 2014-01-15 00:47:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.950 2014-01-17 23:15:57 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -16546,14 +16546,14 @@ Graphical representations of the results (@acronym{NCL} scripts
 available upon request) are provided to illustrate physical meaning of
 the analysis.
 @ignore
-Over the summer of 2013, we will add scripts which make use of new
-@acronym{NCO} features that combine all the loops in the analysis into
-single commands by exploiting @acronym{NCO}'s new group aggregation and
-arithmetic features.  
+In 2013 we added scripts which make use of new @acronym{NCO} features
+that combine all the loops in the analysis into single commands by
+exploiting @acronym{NCO}'s new group aggregation and arithmetic
+features.   
 @end ignore
-Since @acronym{NCO} @value{nco-edition} can process hierarchical 
-datasets, i.e., datasets stored with netCDF4 groups, we present sample
-scripts illustrating group-based processing as well.
+Since @acronym{NCO} can process hierarchical datasets, i.e., datasets
+stored with netCDF4 groups, we present sample scripts illustrating
+group-based processing as well. 
 
 @menu
 * Combine Files::
@@ -16582,8 +16582,9 @@ Key steps include:
 @verbatiminclude xmp/cmb_fl.sh
 @end example
 
-Right now, @acronym{CIMP5} model data downloaded from Earth System Grid Federation (@uref{http://pcmdi9.llnl.gov/esgf-web-fe/, @acronym{ESGF}})
-has not implement @key{group} feature yet. 
+Right now, @acronym{CMIP5} model data downloaded from Earth System Grid
+Federation (@uref{http://pcmdi9.llnl.gov/esgf-web-fe/, @acronym{ESGF}}) 
+will not contain @key{group} features yet. 
 Therefore users can aggregate the flat files into groups themselves.
 The following script shows how to aggregate models to one file.
 Each dataset becomes a group in the output file.

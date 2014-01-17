@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.229 2014-01-13 16:20:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.230 2014-01-17 23:15:58 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -1313,6 +1313,25 @@ nco_inq_var_fill
 } /* end nco_inq_var_fill() */
 
 int
+nco_def_var_fletcher32
+(const int nc_id, /* I [ID] netCDF ID */
+ const int var_id, /* I [ID] Variable ID */
+ const int chk_typ) /* I [enm] Checksum type */
+{
+  /* Purpose: Wrapper for nc_def_var_fletcher32() */
+  /* NB: netCDF fletcher32 set function only works on netCDF4 files
+     NCO wrapper works on netCDF3 and netCDF4 files */
+  int rcd=NC_NOERR;
+  int fl_fmt; /* [enm] Input file format */
+  rcd=nco_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+    rcd=nc_def_var_fletcher32(nc_id,var_id,chk_typ);
+  } /* !netCDF4 */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_fletcher32()");
+  return rcd;
+} /* end nco_def_var_fletcher32() */
+
+int
 nco_inq_var_fletcher32
 (const int nc_id, /* I [ID] netCDF ID */
  const int var_id, /* I [ID] Variable ID */
@@ -1321,7 +1340,7 @@ nco_inq_var_fletcher32
   /* Purpose: Wrapper for nc_inq_var_fletcher32() */
   /* NB: netCDF fletcher32 inquire function only works on netCDF4 files
      NCO wrapper works on netCDF3 and netCDF4 files */
-  int rcd;
+  int rcd=NC_NOERR;
   int fl_fmt; /* [enm] Input file format */
   rcd=nco_inq_format(nc_id,&fl_fmt);
   if(fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -1907,6 +1926,7 @@ int nc_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,siz
 int nc_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl){return 1;}
 int nc_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle, int * const deflate,int * const dfl_lvl){if(shuffle) *shuffle=0;if(deflate) *deflate=0;if(dfl_lvl) *dfl_lvl=0;return 1;}
 int nc_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ){if(ndn_typ) *ndn_typ=0;return 1;}
+int nc_def_var_fletcher32(const int nc_id,const int var_id,const int chk_typ){return 1;}
 int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ){if(chk_typ) *chk_typ=NC_NOCHECKSUM;return 1;}
 int nc_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val){if(fll_nil) *fll_nil=0;if(fll_val) assert(0);return 1;}
 int nc_get_chunk_cache(size_t * const sz_byt,size_t * const cnk_nbr_hsh,float * const pmp_fvr_frc){if(sz_byt) *sz_byt=0L;if(cnk_nbr_hsh) *cnk_nbr_hsh=0L;if(pmp_fvr_frc) *pmp_fvr_frc=0.0f;return 1;}
