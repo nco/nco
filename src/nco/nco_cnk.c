@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.103 2014-01-17 05:17:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.104 2014-01-17 20:32:00 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -254,8 +254,6 @@ nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements
       cnk_dmn[idx]->nm=(char *)strdup(str_tmp);
     }
 
-    /* Fill-in structure */
-    cnk_dmn[idx]->nm=arg_lst[0];
     /* 20130711: Debian Mayhem project bug #716602 shows unsanitized input can cause core-dump _inside_ strtoul() */
     cnk_dmn[idx]->sz=strtoul(arg_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[1],"strtoul",sng_cnv_rcd);   
