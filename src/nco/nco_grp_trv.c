@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.262 2014-01-17 01:57:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.263 2014-01-17 05:17:06 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -884,3 +884,19 @@ nco_is_fll_pth                         /* [fnc] Utility function to inquire if a
   return False;
 
 } /* nco_is_fll_pth() */
+
+
+char *
+nco_strrstr                            /* [fnc] Searches a substring starting from the end */
+(const char *str,                      /* [fnc] String */
+ const char *str_fnd)                  /* [fnc] String to find */
+{
+  char *ptr;
+  char *lst=NULL;
+
+  ptr = (char*)str;
+  while((ptr = strstr(ptr, str_fnd))){
+    lst = ptr++;
+  }
+  return lst;
+} /* nco_strrstr() */

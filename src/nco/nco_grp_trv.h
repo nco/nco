@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.108 2014-01-17 01:57:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.109 2014-01-17 05:17:06 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -174,6 +174,11 @@ nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
 nco_bool                              
 nco_is_fll_pth                         /* [fnc] Utility function to inquire if a string is a full path */
 (const char * const str);              /* I [sng] A string to inquire */
+
+char *
+nco_strrstr                            /* [fnc] Searches a substring starting from the end */
+(const char *str,                      /* [fnc] String */
+ const char *str_fnd);                 /* [fnc] String to find */
 
 
 #endif /* NCO_GRP_TRV_H */

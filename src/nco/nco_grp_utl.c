@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1189 2014-01-16 21:07:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1190 2014-01-17 05:17:06 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4752,73 +4752,94 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       if(dfl_lvl >= 0) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl);
     } /* endif */
 
-    /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
-    if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
-      /* Temporary store for old dimensions */
-      dmn_cmn_sct dmn_cmn_tmp[NC_MAX_DIMS];
-      /* Loop output dimensions  */
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
-        dmn_cmn_tmp[idx_dmn]=dmn_cmn[idx_dmn];
-      } /* Loop dimensions  */
-      /* Define the "record" dimension made for ncecat */
-      dmn_cmn[0].sz=NC_UNLIMITED;
-      dmn_cmn[0].is_rec_dmn=True;
-      dmn_cmn[0].BASIC_DMN=True;
-      dmn_cmn[0].dmn_cnt=NC_UNLIMITED;
-      strcpy(dmn_cmn[0].nm,rec_dmn_nm);
-      /* Define full name */ 
-      dmn_cmn[0].nm_fll=nco_bld_nm_fll(var_trv->grp_nm_fll,rec_dmn_nm);
-      /* Redefine the array */
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
-        /* Move up to make room for inserted dimension at 0 index */
-        dmn_cmn[idx_dmn+1]=dmn_cmn_tmp[idx_dmn];
-      } /* Loop dimensions  */
-    } /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
+    /* Chunking */
 
-    /* Special case for ncwa */
-    if(nco_prg_id == ncwa){
-      int idx_dmn_def=0;
-      /* Loop dimensions. NB use original input dimensions for this loop */
-      for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
-        if(DEFINE_DIM[idx_dmn]){
-          /* Redefine the array */
-          dmn_cmn[idx_dmn_def]=dmn_cmn[idx_dmn];
-          idx_dmn_def++;
-        } /* DEFINE_DIM[idx_dmn]) */
-      } /* Loop dimensions */
-    } /* Special case for ncwa */
+    /* Chunking routine called only when user explicitly sets a chunking option */
+    if (cnk && cnk->flg_usr_rqs){
 
-    /* Special case for ncpdq */
-    if(nco_prg_id == ncpdq && nbr_dmn_var > 1){
-      int var_id_out; /* [id] Variable ID */
-      int var_dmn_nbr; /* [nbr] Number of dimensions */
-      int var_dimid[NC_MAX_VAR_DIMS]; /* [lst] Dimension IDs */
-      (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_id_out);
-      (void)nco_inq_var(grp_out_id,var_id_out,var_nm,&var_typ,&var_dmn_nbr,var_dimid,NULL);
-      /* Sanity check */
-      assert(nbr_dmn_var == var_trv->nbr_dmn);
-      assert(nbr_dmn_var == var_dmn_nbr);
-      /* Loop dimensions */
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-        (void)nco_inq_dim(grp_out_id,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
-        /* If output dimension name differs from input there was a swap */
-        if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm)){
-          /* Swap array for these 2 names */
-          (void)nco_dmn_swap(dmn_nm,dmn_cmn[idx_dmn].nm,dmn_cmn,nbr_dmn_var);
-        } /* Dimension name differs from input */
-      } /* Loop dimensions */
-    } /* Special case for ncpdq */
+      /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
+      if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
+        /* Temporary store for old dimensions */
+        dmn_cmn_sct dmn_cmn_tmp[NC_MAX_DIMS];
+        /* Loop output dimensions  */
+        for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
+          dmn_cmn_tmp[idx_dmn]=dmn_cmn[idx_dmn];
+        } /* Loop dimensions  */
+        /* Define the "record" dimension made for ncecat */
+        dmn_cmn[0].sz=NC_UNLIMITED;
+        dmn_cmn[0].is_rec_dmn=True;
+        dmn_cmn[0].BASIC_DMN=True;
+        dmn_cmn[0].dmn_cnt=NC_UNLIMITED;
+        strcpy(dmn_cmn[0].nm,rec_dmn_nm);
+        /* Define full name */ 
+        dmn_cmn[0].nm_fll=nco_bld_nm_fll(var_trv->grp_nm_fll,rec_dmn_nm);
+        /* Redefine the array */
+        for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++){
+          /* Move up to make room for inserted dimension at 0 index */
+          dmn_cmn[idx_dmn+1]=dmn_cmn_tmp[idx_dmn];
+        } /* Loop dimensions  */
+      } /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG %s setting chunksizes for <%s> with dimensions:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
-      for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++)
-        (void)fprintf(stdout,"[%d]<%s> (size=%ld)(count=%ld)(record=%d)\n",idx_dmn,dmn_cmn[idx_dmn].nm_fll,dmn_cmn[idx_dmn].sz,dmn_cmn[idx_dmn].dmn_cnt,dmn_cmn[idx_dmn].is_rec_dmn);
-    } /* endif */
+      /* Special case for ncwa */
+      if(nco_prg_id == ncwa){
+        int idx_dmn_def=0;
+        /* Loop dimensions. NB use original input dimensions for this loop */
+        for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
+          if(DEFINE_DIM[idx_dmn]){
+            /* Redefine the array */
+            dmn_cmn[idx_dmn_def]=dmn_cmn[idx_dmn];
+            idx_dmn_def++;
+          } /* DEFINE_DIM[idx_dmn]) */
+        } /* Loop dimensions */
+      } /* Special case for ncwa */
 
-    /* Set chunksize parameters */
-    (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn,nbr_dmn_var_out);
+      /* Special case for ncpdq */
+      if(nco_prg_id == ncpdq && nbr_dmn_var > 1){
+        int var_id_out; /* [id] Variable ID */
+        int var_dmn_nbr; /* [nbr] Number of dimensions */
+        int var_dimid[NC_MAX_VAR_DIMS]; /* [lst] Dimension IDs */
+        (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_id_out);
+        (void)nco_inq_var(grp_out_id,var_id_out,var_nm,&var_typ,&var_dmn_nbr,var_dimid,NULL);
+        /* Sanity check */
+        assert(nbr_dmn_var == var_trv->nbr_dmn);
+        assert(nbr_dmn_var == var_dmn_nbr);
+        /* Loop dimensions */
+        for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+          (void)nco_inq_dim(grp_out_id,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
+          /* If output dimension name differs from input there was a swap */
+          if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm)){
+            /* Swap array for these 2 names */
+            (void)nco_dmn_swap(dmn_nm,dmn_cmn[idx_dmn].nm,dmn_cmn,nbr_dmn_var);
+          } /* Dimension name differs from input */
+        } /* Loop dimensions */
+      } /* Special case for ncpdq */
 
-    if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ) dmn_cmn[0].nm_fll=(char *)nco_free(dmn_cmn[0].nm_fll);
+      /* Inquire if there is any full name in --cnk_dmn */
+      for(int idx_cnk=0;idx_cnk<cnk->cnk_nbr;idx_cnk++){
+
+        /* Full name exists */
+        if(cnk->cnk_dmn[idx_cnk]->nm_fll){
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev){
+            (void)fprintf(stdout,"%s: DEBUG %s chunk dimension <%s>:\n",nco_prg_nm_get(),fnc_nm,
+              cnk->cnk_dmn[idx_cnk]->nm_fll);
+          }
+
+        } 
+      } /* Inquire if there is any full name in --cnk_dmn */
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s setting chunksizes for <%s> with dimensions:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
+        for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++)
+          (void)fprintf(stdout,"[%d]<%s> (size=%ld)(count=%ld)(record=%d)\n",idx_dmn,dmn_cmn[idx_dmn].nm_fll,dmn_cmn[idx_dmn].sz,dmn_cmn[idx_dmn].dmn_cnt,dmn_cmn[idx_dmn].is_rec_dmn);
+      } /* endif */
+
+      /* Set chunksize parameters */
+      (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn,nbr_dmn_var_out);
+
+      if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ) dmn_cmn[0].nm_fll=(char *)nco_free(dmn_cmn[0].nm_fll);
+
+    } /* Chunking routine called only when user explicitly sets a chunking option */
 
   } /* !NC_FORMAT_NETCDF4 */ 
 
