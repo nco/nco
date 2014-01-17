@@ -2,7 +2,7 @@
 
 	* Add test data for --cnk_dmn full names in_grp_3.cdl
 	
-	* Add ncks regression #80 Chunking and compression
+	* Add ncks regression #80 Chunking and uncompression (-L 0 )
 	
 	* Add utility functions nco_strrstr(), nco_is_fll_pth()
 
