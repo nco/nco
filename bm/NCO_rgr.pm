@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.413 2014-01-17 22:04:45 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.414 2014-01-17 23:41:49 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2546,7 +2546,19 @@ print "\n";
     $tst_cmd[2]="two_dmn_var attribute 1: _ChunkSizes, size = 2 NC_INT, value = 2, 1";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array		
+    $#tst_cmd=0; # Reset array	
+
+#ncks #83
+#ncks -O -L 0 --cnk_dmn lat,2 -v one in_grp.nc out.nc
+#ncks -C -m  --hdn -v one -g g13  out.nc | grep  _Storage
+    
+    $dsc_sng="(Groups) Chunking and shuffle filter -L 0 --cnk_dmn lat,2 -v one";
+    $tst_cmd[0]="ncks -O -4 -L 0 --cnk_dmn lat,2 -v one $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -m  --hdn -v one -g g13 %tmp_fl_00% | grep _Storage";
+    $tst_cmd[2]="one attribute 1: _Storage, size = 10 NC_CHAR, value = contiguous";
+    $tst_cmd[3]="SS_OK";     
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
 
 
    } #### Group tests	
