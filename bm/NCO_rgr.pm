@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.412 2014-01-17 18:47:55 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.413 2014-01-17 22:04:45 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2520,7 +2520,34 @@ print "\n";
     $tst_cmd[2]="two_dmn_var dimension 1: lev, size = 3, chunksize = 1 (Non-coordinate dimension)";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array			
+    $#tst_cmd=0; # Reset array	
+
+#ncks #81
+# there are 2 'two_dmn_var' beneath /g19/g19g1, chunking only 1
+#ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1  -v two_dmn_var in_grp_3.nc out.nc
+#ncks -m -C -v /g19/g19g1/two_dmn_var  --hdn out.nc
+    
+    $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
+    $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1  -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var  --hdn %tmp_fl_00%";
+    $tst_cmd[2]="two_dmn_var attribute 2: _Storage, size = 10 NC_CHAR, value = contiguous";
+    $tst_cmd[3]="SS_OK";     
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+	
+#ncks #82
+# there are 2 'two_dmn_var' beneath /g19/g19g1, chunking only 1
+#ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1  -v two_dmn_var in_grp_3.nc out.nc
+#ncks -m -C -v /g19/g19g1/two_dmn_var  --hdn out.nc
+    
+    $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
+    $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1  -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var  --hdn %tmp_fl_00% | grep _ChunkSizes";
+    $tst_cmd[2]="two_dmn_var attribute 1: _ChunkSizes, size = 2 NC_INT, value = 2, 1";
+    $tst_cmd[3]="SS_OK";     
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
+
 
    } #### Group tests	
     

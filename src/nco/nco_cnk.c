@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.104 2014-01-17 20:32:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.105 2014-01-17 22:04:45 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -184,6 +184,13 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   /* Set actual chunk policy and map to defaults as necessary */
   if(cnk_map == nco_cnk_map_nil) cnk->cnk_map=nco_cnk_map_get((char *)NULL);
   if(cnk_plc == nco_cnk_plc_nil) cnk->cnk_plc=nco_cnk_plc_get((char *)NULL);
+
+  cnk->flg_fll_pth=False;
+  for(int idx_cnk=0;idx_cnk<cnk_nbr;idx_cnk++){
+    if(cnk->cnk_dmn[idx_cnk]->nm_fll){
+      cnk->flg_fll_pth=True;
+    }
+  }
 
   return rcd;
 } /* end nco_cnk_ini() */
