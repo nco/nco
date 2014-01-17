@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.410 2014-01-17 00:28:21 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.411 2014-01-17 05:52:54 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2511,12 +2511,13 @@ print "\n";
     $#tst_cmd=0; # Reset array		
 	
 #ncks #80
-#ncks -O -4 --cnk_dmn lev,1  -v two_dmn_var in_grp_3.nc out.nc
+#ncks -O -4 -L 3 --cnk_dmn lev,1  -v two_dmn_var in_grp_3.nc out.nc
+#ncks -C -g g19g1g1 --hdn --cdl out.nc | grep _DeflateLevel
     
-    $dsc_sng="(Groups) Chunking (relative dimension input) --cnk_dmn lev,1  -v two_dmn_var";
-    $tst_cmd[0]="ncks -O -4 --cnk_dmn lev,1  -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -m -g /g19/g19g1/g19g1g1 %tmp_fl_00%";
-    $tst_cmd[2]="two_dmn_var dimension 1: lev, size = 3, chunksize = 1 (Non-coordinate dimension)";
+    $dsc_sng="(Groups) Chunking and compression -L 3 --cnk_dmn lev,1  -v two_dmn_var";
+    $tst_cmd[0]="ncks -O -L 3 -4 --cnk_dmn lev,1  -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -g g19g1g1 --hdn --cdl %tmp_fl_00% | grep _DeflateLevel";
+    $tst_cmd[2]="            two_dmn_var:_DeflateLevel = 3 ;";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array			

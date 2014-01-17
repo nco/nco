@@ -1,3 +1,11 @@
+2014-01-16  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add test data for --cnk_dmn full names in_grp_3.cdl
+	
+	* Add ncks regression #80 Chunking and compression
+	
+	* Add utility functions nco_strrstr(), nco_is_fll_pth()
+
 2014-01-16  Charlie Zender  <zender@uci.edu>
 
 	* Fix to allow uncompressing files at the same time as chunking files

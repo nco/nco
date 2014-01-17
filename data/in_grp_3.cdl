@@ -351,6 +351,7 @@ netcdf in_grp_3 {
       lev=3;
       variables:
       float two_dmn_var(lat,lev);
+	  two_dmn_var:_DeflateLevel=1;
        data:
        two_dmn_var=1.5,5.5,9.5,13.5,17.5,21.5;
       
