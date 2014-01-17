@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.107 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.108 2014-01-17 01:57:42 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -170,6 +170,10 @@ char *                                 /* O [sng] Full path with suffix */
 nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
 (const char * const grp_nm_fll_prn,    /* I [sng] Absolute group name of ensemble root */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
+nco_bool                              
+nco_is_fll_pth                         /* [fnc] Utility function to inquire if a string is a full path */
+(const char * const str);              /* I [sng] A string to inquire */
 
 
 #endif /* NCO_GRP_TRV_H */

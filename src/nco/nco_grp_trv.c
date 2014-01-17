@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.261 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.262 2014-01-17 01:57:42 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -871,3 +871,16 @@ nco_bld_nsm_sfx                        /* [fnc] Build ensemble suffix */
   return NULL;
 
 } /* nco_bld_nsm_sfx() */
+
+nco_bool                              
+nco_is_fll_pth                         /* [fnc] Utility function to inquire if a string is a full path */
+(const char * const str)               /* I [sng] A string to inquire */
+{
+  const char *sbs_srt; /* [sng] Location of string match start in parameter string */
+
+  /* If parameter string contains any slash character '/' , assume it's a full path */
+  sbs_srt=strstr(str,"/");
+  if (sbs_srt) return True;
+  return False;
+
+} /* nco_is_fll_pth() */

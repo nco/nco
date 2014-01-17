@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.101 2014-01-10 00:12:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.102 2014-01-17 01:57:42 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -243,10 +243,13 @@ nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements
     /* 20130711: Debian Mayhem project bug #716602 shows unsanitized input can cause core-dump _inside_ strtoul() */
     cnk_dmn[idx]->sz=strtoul(arg_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[1],"strtoul",sng_cnv_rcd);
-    
-    /* Placeholder for full dimension name 
-       20140102: Simpliy copy stub name for now. Replace by full dimension name after output dimensions defined */
-    cnk_dmn[idx]->nm_fll=(char *)strdup(cnk_dmn[idx]->nm);
+
+    /* Full dimension name; initialize to NULL and inquire if name is a full path */
+    cnk_dmn[idx]->nm_fll=NULL;
+    nco_bool is_fll_pth=nco_is_fll_pth(cnk_dmn[idx]->nm);
+    if (is_fll_pth){
+      cnk_dmn[idx]->nm_fll=(char *)strdup(cnk_dmn[idx]->nm);
+    }
 
     /* Free current pointer array to strings
        Strings themselves are untouched and will be free()'d with chunk structures 
