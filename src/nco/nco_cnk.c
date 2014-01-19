@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.106 2014-01-17 23:15:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.107 2014-01-19 21:24:18 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -251,12 +251,14 @@ nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements
     nco_bool is_fll_pth=nco_is_fll_pth(str_tmp);
     if (is_fll_pth){
       cnk_dmn[idx]->nm_fll=(char *)strdup(str_tmp);
+#if 0
       const char *str; /* [sng] Location of string match */
       /* Return the last last component of the full name and define it as the relative name */
       str=nco_strrstr(str_tmp,"/");
       /* Get rid of the first character '/' */
       str++;
       cnk_dmn[idx]->nm=(char *)strdup(str);
+#endif
     } else {
       cnk_dmn[idx]->nm=(char *)strdup(str_tmp);
     }
@@ -772,9 +774,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
  const int nbr_dmn) /* I [nbr] Number of dimensions in output file (size of above array) */
 {
   /* Purpose: Use chunking map and policy to determine chunksize list
-     Adapted from nco_cnk_sz_set() to GTT:
-     1) Instead of a loop for all variables, this functions chunks one variable, the object parameter variable
-     2) In the dimension loop, the dimension object is obtained from variable object...much simpler */
+  Adapted from nco_cnk_sz_set() to GTT:
+  1) Instead of a loop for all variables, this functions chunks one variable, the object parameter variable
+  2) In the dimension loop, the dimension object is obtained from variable object...much simpler */
 
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
 
@@ -828,6 +830,46 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   cnk_sz_byt=cnk->cnk_sz_byt;
   cnk_dmn=cnk->cnk_dmn;
 
+  nco_bool is_usr_spc_cnk=False; /* [flg] User specified chunks */
+  for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
+    if (cnk_dmn[cnk_idx]->is_usr_spc_cnk){
+      is_usr_spc_cnk=True;
+    }
+  }
+
+  /* User-chunked dimensions, check for matches  */
+  if(is_usr_spc_cnk){
+
+    nco_bool flg_mth=False; /* [flg] Name match (absolure or relative) */
+
+    /* Loop chunks */
+    for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
+      /* Loop dimensions */
+      for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
+        /* Absolute name exists  */
+        if (cnk_dmn[cnk_idx]->nm_fll){
+          /* Match absolute */
+          if(strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll) == 0){
+            flg_mth=True;
+          } /* Match absolute */
+        }
+        /* Relative name exists  */
+        else if (cnk_dmn[cnk_idx]->nm){
+          /* Match relative */
+          if(strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm) == 0){
+            flg_mth=True;
+          } /* Match relative */
+        }
+        else assert(0);
+      } /* Loop dimensions */
+    } /* Loop chunks */
+
+    /* No match, return */
+    if (!flg_mth){
+      return;
+    }
+  } /* User-chunked dimensions, check for matches  */
+
   /* For now only use this routine when user explicitly sets a chunking option */
   if(!flg_usr_rqs) return;
 
@@ -856,8 +898,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       (void)fprintf(stdout,"cnk_plc, cnk_map: %s, %s\n",nco_cnk_plc_sng_get(cnk_plc),nco_cnk_map_sng_get(cnk_map));
       (void)fprintf(stdout,"cnk_sz_scl, cnk_sz_byt: %lu, %lu\n",(unsigned long)cnk_sz_scl,(unsigned long)cnk_sz_byt);
       if(cnk_nbr > 0){
-	(void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
-	for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++) (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
+        (void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
+        for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
+          (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
+        }
       } /* cnk_nbr == 0 */
     } /* endif dbg */
   } /* endif dbg */
@@ -916,10 +960,24 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   /* Check if this variable has user-chunked dimensions */
   if(cnk_plc == nco_cnk_plc_xpl){
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
-      for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++)
-        if(!strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll)) break;
-    /* Are one or more explicitly chunked dimensions in this variable */
-    if(dmn_idx != dmn_nbr) is_xpl_cnk=True;
+      /* Loop chunks */
+      for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
+        if (cnk_dmn[cnk_idx]->nm_fll){
+          /* Match absolute */
+          if(strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll) == 0){
+            break;
+          } /* Match absolute */
+        }
+        else if (cnk_dmn[cnk_idx]->nm){
+          /* Match relative */
+          if(strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm) == 0){
+            break;
+          } /* Match relative */
+        }
+        else assert(0);
+      } /* Loop chunks */
+      /* Are one or more explicitly chunked dimensions in this variable */
+      if(dmn_idx != dmn_nbr) is_xpl_cnk=True;
   } /* end plc_xpl */
 
   if(must_be_chunked){
@@ -928,23 +986,23 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   }else{
     /* Explicitly turn-off chunking for arrays that are... */
     if((cnk_plc == nco_cnk_plc_xpl && !is_xpl_cnk) || /* ...not explicitly chunked... */
-       (cnk_plc == nco_cnk_plc_xst && !is_chunked) || /* ...not already chunked... */
-       (cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
-       (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
-       (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
-       False){
-      /* If variable is chunked */
-      if(is_chunked){
-	/* Turn-off chunking for this variable */
-	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s unchunking %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	if(shuffle) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has shuffle flag set before unchunking. Expect the worst.",nco_prg_nm_get(),fnc_nm,var_nm);
-	(void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
-      }else{ /* !chunked */
-	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);
-      } /* !chunked */
-      /* Return control to calling routine
-	 NB: Here is where loop in original nco_cnk_sz_set() continues to next variable */
-      return;
+      (cnk_plc == nco_cnk_plc_xst && !is_chunked) || /* ...not already chunked... */
+      (cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
+      (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
+      (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
+      False){
+        /* If variable is chunked */
+        if(is_chunked){
+          /* Turn-off chunking for this variable */
+          if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s unchunking %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+          if(shuffle) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has shuffle flag set before unchunking. Expect the worst.",nco_prg_nm_get(),fnc_nm,var_nm);
+          (void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
+        }else{ /* !chunked */
+          if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);
+        } /* !chunked */
+        /* Return control to calling routine
+        NB: Here is where loop in original nco_cnk_sz_set() continues to next variable */
+        return;
     } /* !turn-off chunking */
   } /* !must_be_chunked */
 
@@ -985,10 +1043,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       if(cnk_map == nco_cnk_map_rd1){
         cnk_sz[dmn_idx]=1UL;
         /* Record chunksize has beeen set and may still be over-ridden by explicitly specified record chunksize */
-	continue;
+        continue;
       } /* !nco_cnk_map_rd1 */
       /* Record dimension size in output file is zero until first write
-	 Obtain record dimension size from lmt_all structure (for nco_cnk_sz_set()) */
+      Obtain record dimension size from lmt_all structure (for nco_cnk_sz_set()) */
       if(dmn_cmn[dmn_idx].BASIC_DMN){
         /* When not hyperslabbed, use input record dimension size ... */
         cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
@@ -1006,7 +1064,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   if(cnk_map == nco_cnk_map_lfp){
     /* Set "Lefter Product" chunksizes
-       Reasonable defaults have been set for all dimensions, now adjust lefter dimensions to match overall size */
+    Reasonable defaults have been set for all dimensions, now adjust lefter dimensions to match overall size */
     int dmn_idx_1st_rec;
     int dmn_nbr_lft;
     double cnk_sz_prd_rgt=1.0;
@@ -1062,15 +1120,32 @@ cnk_xpl_override: /* end goto */
   /* Override "reasonable" defaults with explicitly set per-dimension sizes, if any */
   for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+
+      nco_bool flg_mth=False; /* [flg] Name match (absolure or relative) */
+
       /* Match on name not ID */
-      /* fxm pvn check origin of chunk names */
-      if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)){
+      if (cnk_dmn[cnk_idx]->nm_fll){
+        /* Match absolute */
+        if(strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll) == 0){
+          flg_mth=True;
+        } /* Match absolute */
+      }
+      else if (cnk_dmn[cnk_idx]->nm){
+        /* Match relative */
+        if(strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm) == 0){
+          flg_mth=True;
+        } /* Match relative */
+      }
+      else assert(0);
+
+      /* Name match found */
+      if(flg_mth){
         cnk_sz[dmn_idx]=cnk_dmn[cnk_idx]->sz;
         /* Is this a record dimension? */
         if(dmn_cmn[dmn_idx].is_rec_dmn){
-	  /* dmn_sz of record dimension may (will) be zero in output file
-	     Must allow (though warn) when cnk_sz > dmn_sz in such cases */
-	  if(dmn_cmn[dmn_idx].BASIC_DMN){
+          /* dmn_sz of record dimension may (will) be zero in output file
+          Must allow (though warn) when cnk_sz > dmn_sz in such cases */
+          if(dmn_cmn[dmn_idx].BASIC_DMN){
             if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
               (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds current record dimension size in output file = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
             } /* endif too big */
@@ -1081,7 +1156,7 @@ cnk_xpl_override: /* end goto */
           } /* !BASIC_DMN */
         }else{ /* !rcd_dmn_id */
           if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
-	    /* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
+            /* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
             (void)fprintf(stderr,"%s: WARNING %s trimming user-specified %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
             /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
             cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
@@ -1093,15 +1168,15 @@ cnk_xpl_override: /* end goto */
   } /* end loop over cnk */
 
   /* Status: Previous block implemented per-dimension checks on user-requested chunksizes only
-     Block below implements similar final safety check for ALL dimensions and ALL chunking maps
-     Check trims fixed (not record) dimension chunksize to never be larger than dimension size */
+  Block below implements similar final safety check for ALL dimensions and ALL chunking maps
+  Check trims fixed (not record) dimension chunksize to never be larger than dimension size */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
       if(!dmn_cmn[dmn_idx].is_rec_dmn){
-	/* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
-	(void)fprintf(stderr,"%s: WARNING %s final check trimming %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
-	/* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
-	cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
+        /* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
+        (void)fprintf(stderr,"%s: WARNING %s final check trimming %s chunksize from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
+        /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
+        cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
       } /* rcd_dmn_id */
     } /* end if */
   } /* end loop over dmn */
