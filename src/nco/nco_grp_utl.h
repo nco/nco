@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.437 2014-01-15 18:43:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.438 2014-01-20 23:00:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -721,6 +721,11 @@ int                                    /* O [enm] Comparison result [<,=,>] 0 if
 nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by group depth */
 (const void *val_1,                    /* I [sct] aux_crd_sct * to compare */
  const void *val_2);                   /* I [sct] aux_crd_sct * to compare */
+
+void
+nco_bld_crd_aux                        /* [fnc] Build auxiliary coordinates information into table */
+(const int nc_id,                      /* I [ID] netCDF file ID */
+ trv_tbl_sct *trv_tbl);                /* I [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */

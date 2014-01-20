@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.468 2014-01-20 21:09:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.469 2014-01-20 23:00:53 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -841,6 +841,8 @@ extern "C" {
     crd_sct *crd;            /* [sct] Pointer to coordinate variable if any */
     dmn_trv_sct *ncd;        /* [sct] Pointer to non-coordinate dimension if any */
     int dmn_id;              /* [ID] Dimension ID; same as dmn_trv_sct.id from nc_inq_vardimid() */
+    char *lat_nm_fll;        /* [sng] Auxiliary latitude full name */
+    char *lon_nm_fll;        /* [sng] Auxiliary longitude full name */
     /* Following are members only used by transformation operators (non-ncks) */
     nco_bool flg_dmn_avg;    /* [flg] Diferentiate between dimensions to average or keep for this variable (ncwa) */  
     nco_bool flg_rdd;        /* [flg] Retain dimension as degenerate (size 1) (ncwa) */  

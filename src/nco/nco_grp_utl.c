@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1194 2014-01-20 21:09:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1195 2014-01-20 23:00:53 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2161,7 +2161,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;
       /* Assume dimension is to keep on output */
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg=False;
-      trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;   
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;  
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].lat_nm_fll=NULL;
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].lon_nm_fll=NULL;
     }
 
     /* Variable dimensions; store what we know at this time: relative name and ID */
@@ -6677,13 +6679,16 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_has_crd_dmn_scp(trv_tbl);
 
   /* Assign variables' dimensions to either coordinates or dimension structs */
-  (void)nco_bld_var_dmn(trv_tbl);
+  (void)nco_bld_var_dmn(trv_tbl);       
 
   /* ncbo co-sequential match algorithm requires alphabetical sorted full names. Do it here, to avoid rebuilding hash table */
   if(nco_prg_id_get() == ncbo) (void)trv_tbl_srt(trv_tbl);
 
   /* Hash traversal table for faster access */
   (void)nco_trv_hsh_bld(trv_tbl);
+
+  /* Build auxiliary coordinates information into table */
+  (void)nco_bld_crd_aux(nc_id,trv_tbl);        
 
   /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
@@ -8628,6 +8633,76 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   return;
 } /* nco_bld_aux_crd() */
 
+
+void
+nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates information into table */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ trv_tbl_sct *trv_tbl)                /* I [sct] GTT (Group Traversal Table) */
+{
+  const char fnc_nm[]="nco_bld_crd_aux()"; /* [sng] Function name */
+
+  /* Look for 'standard_name' 'latitude' and 'longitude' attributes */
+
+  char *var_nm_fll=NULL;
+  char units[NC_MAX_NAME+1];
+
+  int dmn_id; /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
+
+  nc_type crd_typ;
+
+  /* Loop table  */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    /* Filter variables */
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+
+    nco_bool has_lat;
+    nco_bool has_lon;
+
+    /* Filter variables. */ 
+    if(var_trv.nco_typ == nco_obj_typ_var){
+
+      char units_lat[NC_MAX_NAME+1];
+      char units_lon[NC_MAX_NAME+1];
+
+      has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&dmn_id,&crd_typ,units_lat);
+      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&dmn_id,&crd_typ,units_lon);
+
+      if (has_lat){
+
+        /* Locate dimension of 'latitude' or 'longitude' coordinate variables */
+        dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
+
+        /* Loop table  */
+        for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
+          /* Filter */
+          if(trv_tbl->lst[idx_crd].nco_typ == nco_obj_typ_var &&
+            trv_tbl->lst[idx_crd].nbr_dmn >=2 &&
+            trv_tbl->lst[idx_crd].is_crd_var == False){
+              /* Loop dimensions  */
+              for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_crd].nbr_dmn;idx_dmn++){
+                /* Match dimension */
+                if (trv_tbl->lst[idx_crd].var_dmn[idx_dmn].dmn_id == dmn_id){
+                  trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_nm_fll=var_nm_fll;
+                } /* Match dimension */
+              } /* Loop dimensions  */
+          } /* Filter */
+        } /* Loop table  */
+
+
+      } /* has_lat */
+
+      if (has_lon){
+
+        /* Locate dimension of 'latitude' or 'longitude' coordinate variables */
+        dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
+        
+
+      } /* has_lon */
+    } /* Filter variables to extract */ 
+  } /* Loop table */
+
+  return;
+} /* nco_bld_crd_aux() */
 
 nco_bool                               /* O [flg] True if variable 1 is in scope of variable 2 */
 nco_var_scp                            /* [fnc] Is variable 1 is in scope of variable 2 */
