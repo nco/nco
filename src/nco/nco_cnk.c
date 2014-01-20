@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.108 2014-01-20 20:07:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.109 2014-01-20 21:09:00 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -185,13 +185,6 @@ nco_cnk_ini /* [fnc] Create structure with all chunking information */
   if(cnk_map == nco_cnk_map_nil) cnk->cnk_map=nco_cnk_map_get((char *)NULL);
   if(cnk_plc == nco_cnk_plc_nil) cnk->cnk_plc=nco_cnk_plc_get((char *)NULL);
 
-  cnk->flg_fll_pth=False;
-  for(int idx_cnk=0;idx_cnk<cnk_nbr;idx_cnk++){
-    if(cnk->cnk_dmn[idx_cnk]->nm_fll){
-      cnk->flg_fll_pth=True;
-    }
-  }
-
   return rcd;
 } /* end nco_cnk_ini() */
 
@@ -251,14 +244,6 @@ nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements
     nco_bool is_fll_pth=nco_is_fll_pth(str_tmp);
     if (is_fll_pth){
       cnk_dmn[idx]->nm_fll=(char *)strdup(str_tmp);
-#if 0
-      const char *str; /* [sng] Location of string match */
-      /* Return the last last component of the full name and define it as the relative name */
-      str=nco_strrstr(str_tmp,"/");
-      /* Get rid of the first character '/' */
-      str++;
-      cnk_dmn[idx]->nm=(char *)strdup(str);
-#endif
     } else {
       cnk_dmn[idx]->nm=(char *)strdup(str_tmp);
     }

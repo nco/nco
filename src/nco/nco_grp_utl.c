@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1193 2014-01-19 21:24:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1194 2014-01-20 21:09:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4814,35 +4814,14 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         } /* Loop dimensions */
       } /* Special case for ncpdq */
 
-      /* Do chunking; assume True except when there is a full name dimension, to avoid other variables */
-      nco_bool do_cnk=True;
-#if 0
-      if(cnk->flg_fll_pth) do_cnk=False; 
-
-      /* Inquire if there is any full name in --cnk_dmn */
-      for(int idx_cnk=0;idx_cnk<cnk->cnk_nbr;idx_cnk++){
-        /* Full name exists */
-        if(cnk->cnk_dmn[idx_cnk]->nm_fll){
-          /* Loop dimensions */
-          for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-            /* Match */
-            if(strcmp(cnk->cnk_dmn[idx_cnk]->nm_fll,dmn_cmn[idx_dmn].nm_fll) == 0){         
-              /* Full name match; do chunking */
-              do_cnk=True;
-            } /* Match */
-          } /* Loop dimensions */
-        } /* Full name exists */
-      } /* Inquire if there is any full name in --cnk_dmn */
-#endif
-
-      if(do_cnk && nco_dbg_lvl_get() >= nco_dbg_dev){
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s setting chunksizes for <%s> with dimensions:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);
         for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++)
           (void)fprintf(stdout,"[%d]<%s> (size=%ld)(count=%ld)(record=%d)\n",idx_dmn,dmn_cmn[idx_dmn].nm_fll,dmn_cmn[idx_dmn].sz,dmn_cmn[idx_dmn].dmn_cnt,dmn_cmn[idx_dmn].is_rec_dmn);
       } /* endif */
 
       /* Set chunksize parameters */
-      if(do_cnk) (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn,nbr_dmn_var_out);
+      (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn,nbr_dmn_var_out);
 
       if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ) dmn_cmn[0].nm_fll=(char *)nco_free(dmn_cmn[0].nm_fll);
 
