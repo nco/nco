@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.107 2014-01-19 21:24:18 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.108 2014-01-20 20:07:00 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1118,10 +1118,11 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 cnk_xpl_override: /* end goto */
 
   /* Override "reasonable" defaults with explicitly set per-dimension sizes, if any */
-  for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
-      nco_bool flg_mth=False; /* [flg] Name match (absolure or relative) */
+    nco_bool flg_mth=False; /* [flg] Name match (absolure or relative) */
+
+    for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
 
       /* Match on name not ID */
       if (cnk_dmn[cnk_idx]->nm_fll){

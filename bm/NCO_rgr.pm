@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.414 2014-01-17 23:41:49 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.415 2014-01-20 20:06:59 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2086,6 +2086,7 @@ print "\n";
 # The test greps chunksize = 2 for lat
 # Policy: Chunk All Variables [default]
 # Map:Chunksize Equals Dimension Size [default]
+#ncks -O -4 -v lat_lon --cnk_plc=all in_grp.nc out.nc"
 
     $dsc_sng="(Groups) Chunking --cnk_plc=all --v lat_lon";
     $tst_cmd[0]="ncks $nco_D_flg -O -4 -v lat_lon --cnk_plc=all $in_pth_arg in_grp.nc %tmp_fl_00%";
@@ -2538,7 +2539,7 @@ print "\n";
 #ncks #82
 # there are 2 'two_dmn_var' beneath /g19/g19g1, chunking only 1
 #ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1  -v two_dmn_var in_grp_3.nc out.nc
-#ncks -m -C -v /g19/g19g1/two_dmn_var  --hdn out.nc
+#ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var  --hdn out.nc
     
     $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1  -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
@@ -2547,8 +2548,35 @@ print "\n";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+	
+#ncks #83 (part 1)
+# there are 2 'two_dmn_var' beneath /g19/g19g1, chunking the 2 , one with absolute other with relative
+# ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3  -v two_dmn_var in_grp_3.nc out.nc
+# ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var  --hdn out.nc | grep _ChunkSizes
+    
+    $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
+    $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1  -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -C -v /g19/g19g1/g19g1g1/two_dmn_var  --hdn %tmp_fl_00% | grep _ChunkSizes";
+    $tst_cmd[2]="two_dmn_var attribute 1: _ChunkSizes, size = 2 NC_INT, value = 2, 1";
+    $tst_cmd[3]="SS_OK";     
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+	
+#ncks #84 (part 2)
+# there are 2 'two_dmn_var' beneath /g19/g19g1, chunking the 2 , one with absolute other with relative
+# ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3  -v two_dmn_var in_grp_3.nc out.nc
+# ncks -m -C -v /g19/g19g1/two_dmn_var  --hdn out.nc | grep _ChunkSizes
+    
+    $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
+    $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 --cnk_dmn lev,3  -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var  --hdn  --hdn %tmp_fl_00% | grep _ChunkSizes";
+    $tst_cmd[2]="two_dmn_var attribute 3: _ChunkSizes, size = 2 NC_INT, value = 2, 3";
+    $tst_cmd[3]="SS_OK";     
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
+	
 
-#ncks #83
+#ncks #85
 #ncks -O -L 0 --cnk_dmn lat,2 -v one in_grp.nc out.nc
 #ncks -C -m  --hdn -v one -g g13  out.nc | grep  _Storage
     
