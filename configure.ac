@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.29 2014-01-21 21:57:40 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.30 2014-01-21 22:34:28 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -12,7 +12,7 @@
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
 # cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
 # cd ~/nco;autoreconf --force
-q# cd ~/nco;for fl in NEWS README AUTHORS ChangeLog ; do ln -s doc/${fl} ${fl};done;autoreconf --force
+# cd ~/nco;for fl in NEWS README AUTHORS ChangeLog ; do ln -s doc/${fl} ${fl};done;autoreconf --force
 
 # Distribution:
 # scp ~/nco/configure givre.ess.uci.edu:nco
