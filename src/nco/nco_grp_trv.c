@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.263 2014-01-17 05:17:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.264 2014-01-21 21:19:31 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -51,6 +51,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   for(unsigned idx=0;idx<tbl->nbr;idx++){
     tbl->lst[idx].nm_fll=(char *)nco_free(tbl->lst[idx].nm_fll);
     tbl->lst[idx].nm=(char *)nco_free(tbl->lst[idx].nm);
+    tbl->lst[idx].grp_nm=(char *)nco_free(tbl->lst[idx].grp_nm);
     tbl->lst[idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].grp_nm_fll);
     tbl->lst[idx].grp_nm_fll_prn=(char *)nco_free(tbl->lst[idx].grp_nm_fll_prn);
     tbl->lst[idx].nsm_nm=(char *)nco_free(tbl->lst[idx].nsm_nm);
@@ -65,6 +66,8 @@ trv_tbl_free                           /* [fnc] GTT free memory */
         tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll);
         tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
         tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
+        tbl->lst[idx].var_dmn[dmn_idx].lat_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].lat_nm_fll);
+        tbl->lst[idx].var_dmn[dmn_idx].lon_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].lon_nm_fll);
 
         /* Coordinate structure */ 
         if(tbl->lst[idx].var_dmn[dmn_idx].crd){

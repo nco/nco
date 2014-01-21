@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1196 2014-01-21 20:52:08 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1197 2014-01-21 21:19:31 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2015,6 +2015,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].nco_typ=nco_obj_typ_grp;          /* [enm] netCDF4 object type: group or variable */
 
   trv_tbl->lst[idx].nm=strdup(grp_nm);            /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
+  trv_tbl->lst[idx].grp_nm=strdup(grp_nm);        /* [sng] Group name */
   trv_tbl->lst[idx].nm_lng=strlen(grp_nm);        /* [sng] Length of short name */
   trv_tbl->lst[idx].grp_nm_fll=strdup(grp_nm_fll);/* [sng] Full group name (for groups, same as nm_fll) */
   trv_tbl->lst[idx].nm_fll=strdup(grp_nm_fll);    /* [sng] Fully qualified name (path) */
@@ -2106,6 +2107,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nm=strdup(var_nm); 
     trv_tbl->lst[idx].nm_lng=strlen(var_nm);
     trv_tbl->lst[idx].grp_nm_fll=strdup(grp_nm_fll);
+    trv_tbl->lst[idx].grp_nm=strdup(grp_nm);        
     trv_tbl->lst[idx].nm_fll=strdup(var_nm_fll);
     trv_tbl->lst[idx].nm_fll_lng=strlen(var_nm_fll);  
 
@@ -8682,8 +8684,8 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
               for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_crd].nbr_dmn;idx_dmn++){
                 /* Match dimension */
                 if (trv_tbl->lst[idx_crd].var_dmn[idx_dmn].dmn_id == dmn_id){
-                  /* Is in scope */
-                  if (nco_var_scp(&var_trv,&trv_tbl->lst[idx_crd])){
+                  /* Check if possible 'latitude' (var_trv) is in scope */
+                  if (nco_var_scp(&trv_tbl->lst[idx_crd],&var_trv)){
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_nm_fll=var_nm_fll;
                   } /* Is in scope */
                 } /* Match dimension */
@@ -8713,8 +8715,11 @@ nco_var_scp                            /* [fnc] Is variable 1 is in scope of var
 {
   const char fnc_nm[]="nco_var_scp()"; /* [sng] Function name */
 
-  const char sls_chr='/';              /* [chr] Slash character */
- 
+  /* Same group */
+  if (strcmp(var_trv_1->grp_nm_fll,var_trv_2->grp_nm_fll) == 0){
+    return True;
+  }
+
 
   return False;
 } /* nco_var_scp() */
