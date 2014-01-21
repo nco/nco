@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1198 2014-01-21 23:15:13 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1199 2014-01-21 23:39:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8714,7 +8714,6 @@ nco_var_scp                            /* [fnc] Is variable 1 is in scope of var
  const trv_sct * const var_trv_2,      /* I [sct] Variable 2 (use case , find 'latitude in scope )*/
  const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
-  const char fnc_nm[]="nco_var_scp()"; /* [sng] Function name */
 
   /* Same group */
   if (strcmp(var_trv_1->grp_nm_fll,var_trv_2->grp_nm_fll) == 0){
@@ -8722,9 +8721,30 @@ nco_var_scp                            /* [fnc] Is variable 1 is in scope of var
   }
 
   char *grp_nm_fll_prn_1=var_trv_1->grp_nm_fll_prn; /* [sct] Parent group */
-  char *grp_nm_fll_prn_2=var_trv_2->grp_nm_fll_prn; /* [sct] Parent group */
-  trv_sct *grp_prn_2;
+  trv_sct *grp_prn_1;
 
+  grp_prn_1=trv_tbl_grp_nm_fll(grp_nm_fll_prn_1,trv_tbl);
+
+  /* Look for same group name in  hierarchy */
+  while (grp_nm_fll_prn_1){
+
+    /* Same group in hierarchy */
+    if (strcmp(grp_prn_1->grp_nm,var_trv_2->grp_nm) == 0){
+
+      /* And variable to find (Variable 2) is located at at higher level than variable 1 (in scope ) */
+      if(var_trv_1->grp_dpt < var_trv_2->grp_dpt){
+        return True;
+      }
+    } /* Same group in hierarchy */
+
+    /* Exit loop when root reached */
+    if (grp_prn_1->grp_dpt == 0){
+      break; 
+    }
+
+    grp_nm_fll_prn_1=grp_prn_1->grp_nm_fll_prn;
+    grp_prn_1=trv_tbl_grp_nm_fll(grp_nm_fll_prn_1,trv_tbl);
+  }  /* Look for same group name in  hierarchy */
 
   return False;
 } /* nco_var_scp() */
