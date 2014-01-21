@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.109 2014-01-17 05:17:06 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.h,v 1.110 2014-01-21 23:15:13 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -67,6 +67,11 @@ trv_tbl_fnd_var_nm_fll                 /* [fnc] Check if "var_nm_fll" is in tabl
 trv_sct *                              /* O [sct] Table object */
 trv_tbl_var_nm_fll                     /* [fnc] Return object from full name key */
 (const char * const var_nm_fll,        /* I [sng] Variable name to find */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
+
+trv_sct *                              /* O [sct] Table object */
+trv_tbl_grp_nm_fll                     /* [fnc] Return group object from full name key */
+(const char * const grp_nm_fll,        /* I [sng] Group name to find */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 void

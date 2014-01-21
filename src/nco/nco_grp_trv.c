@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.264 2014-01-21 21:19:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.265 2014-01-21 23:15:13 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -280,7 +280,6 @@ trv_tbl_var_nm_fll                    /* [fnc] Return variable object from full 
   trv_sct *trv_obj; /* [sct] GTT object structure */
   HASH_FIND_STR(trv_tbl->hsh,var_nm_fll,trv_obj);
   if(trv_obj && trv_obj->nco_typ == nco_obj_typ_var) return trv_obj; else return NULL;
-  //  return trv_obj;
 #else /* !NCO_HSH_TRV_OBJ */
   for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++)
     if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[uidx].nm_fll)) return &trv_tbl->lst[uidx];
@@ -289,6 +288,23 @@ trv_tbl_var_nm_fll                    /* [fnc] Return variable object from full 
 #endif /* !NCO_HSH_TRV_OBJ */
 
 } /* trv_tbl_var_nm_fll() */
+
+trv_sct *                             /* O [sct] Table object */
+trv_tbl_grp_nm_fll                    /* [fnc] Return group object from full name key */
+(const char * const grp_nm_fll,       /* I [sng] Group name to find */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{
+  /* Purpose: Return group object with given full name */
+
+  for(unsigned uidx=0;uidx<trv_tbl->nbr;uidx++){
+    if(trv_tbl->lst[uidx].nco_typ == nco_obj_typ_grp && 
+      strcmp(grp_nm_fll,trv_tbl->lst[uidx].nm_fll) == 0){
+      return &trv_tbl->lst[uidx];
+    }
+  }
+
+  return NULL;
+} /* trv_tbl_grp_nm_fll() */
 
 void
 trv_tbl_mrk_xtr                       /* [fnc] Mark extraction flag in table for "var_nm_fll" */

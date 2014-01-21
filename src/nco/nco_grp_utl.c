@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1197 2014-01-21 21:19:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1198 2014-01-21 23:15:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8685,7 +8685,7 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
                 /* Match dimension */
                 if (trv_tbl->lst[idx_crd].var_dmn[idx_dmn].dmn_id == dmn_id){
                   /* Check if possible 'latitude' (var_trv) is in scope */
-                  if (nco_var_scp(&trv_tbl->lst[idx_crd],&var_trv)){
+                  if (nco_var_scp(&trv_tbl->lst[idx_crd],&var_trv,trv_tbl)){
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_nm_fll=var_nm_fll;
                   } /* Is in scope */
                 } /* Match dimension */
@@ -8711,7 +8711,8 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
 nco_bool                               /* O [flg] True if variable 1 is in scope of variable 2 */
 nco_var_scp                            /* [fnc] Is variable 1 is in scope of variable 2 */
 (const trv_sct * const var_trv_1,      /* I [sct] Variable 1 */
- const trv_sct * const var_trv_2)      /* I [sct] Variable 2 */
+ const trv_sct * const var_trv_2,      /* I [sct] Variable 2 (use case , find 'latitude in scope )*/
+ const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
   const char fnc_nm[]="nco_var_scp()"; /* [sng] Function name */
 
@@ -8719,6 +8720,10 @@ nco_var_scp                            /* [fnc] Is variable 1 is in scope of var
   if (strcmp(var_trv_1->grp_nm_fll,var_trv_2->grp_nm_fll) == 0){
     return True;
   }
+
+  char *grp_nm_fll_prn_1=var_trv_1->grp_nm_fll_prn; /* [sct] Parent group */
+  char *grp_nm_fll_prn_2=var_trv_2->grp_nm_fll_prn; /* [sct] Parent group */
+  trv_sct *grp_prn_2;
 
 
   return False;

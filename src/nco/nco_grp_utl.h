@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.438 2014-01-20 23:00:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.439 2014-01-21 23:15:13 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -700,7 +700,8 @@ nco_chk_dmn                           /* [fnc] Check valid dimension names */
 nco_bool                               /* O [flg] True if variable 1 is in scope of variable 2 */
 nco_var_scp                            /* [fnc] Is variable 1 is in scope of variable 2 */
 (const trv_sct * const var_trv_1,      /* I [sct] Variable 1 */
- const trv_sct * const var_trv_2);     /* I [sct] Variable 2 */
+ const trv_sct * const var_trv_2,      /* I [sct] Variable 2 */
+ const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 
 void
 nco_dmn_swap                           /* [fnc] Swap dimensions */
