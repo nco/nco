@@ -160,6 +160,55 @@ netcdf buggy {
      one=1;
    } // /g4
 
+ group: g5 { // Level 1
+    // Purpose: Test hidden attributes
+    // NB: Hidden attributes not supported by ncgen at least through netCDF 4.1.1 (201111)
+    // Having this group in in_grp.cdl will break NCO builds with netCDF 4.1.1 (201111) and earlier
+    // ncks -C -v var_cmp.? -m ~/nco/data/in_grp.nc
+  variables:
+
+    int one(lat);
+  one:_DeflateLevel=1;
+  one:_Shuffle=1;
+  one:_Fletcher32=1;
+  one:_NOFILL=1;
+
+    int two(lat);
+
+    int three(lat);
+  three:_ChunkSizes=1;
+  three:_Endianness="big";
+
+    int four(lat);
+  four:_ChunkSizes=2;
+
+    int var_cmp(lat);
+  var_cmp:purpose="Variable with compression. Original _DeflateLevel = 1";
+  var_cmp:_DeflateLevel = 1;
+
+    int var_cmp_0(lat);
+  var_cmp_0:purpose="Variable with compression. Original _DeflateLevel = 0";
+  var_cmp_0:_DeflateLevel = 0;
+    
+    int var_cmp_1(lat);
+  var_cmp_1:purpose="Variable with compression. Original _DeflateLevel = 1";
+  var_cmp_1:_DeflateLevel = 1;
+
+    int var_cmp_9(lat);
+  var_cmp_9:purpose="Variable with compression. Original _DeflateLevel = 9";
+  var_cmp_9:_DeflateLevel = 9;
+
+  data:
+    one=1,1;
+    two=2,2;
+    three=3,3;
+    four=4,4;
+    var_cmp=1,1;
+    var_cmp_0=1,1;
+    var_cmp_1=1,1;
+    var_cmp_9=1,1;
+  } // end g5
+
  group: g12 {
     // Purpose: Test netCDF4 vlen type
     // 20130208: ncgen from netCDF 4.2.1- broken for vlen types

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.231 2014-01-21 21:57:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.232 2014-01-21 22:21:51 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -38,7 +38,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   case NC_ELATEFILL: /* netcdf.h replaced NC_EFILLVALUE by NC_ELATEFILL after about netCDF ~4.2.1 */ 
      (void)fprintf(stdout,"ERROR NC_ELATEFILL (formerly NC_EFILLVALUE) Attempt to define fill value when data already exists\nHINT: NC_ELATEFILL errors can occur when ncap2 attempts to define a variable with a _FillValue attribute in a netCDF4 file.  We believe this is an NCO bug (fxm TODO nco1089) and are working to fix it. Does your output file need to be netCDF4 or netCDF4_classic format? If so, then wait for us to fix the bug. If not, change the output format to netCDF3 (e.g., with -3 option) as a temporary workaround. This file can then successfully be converted to netCDF4 (e.g., with ncks -4 in.nc out.nc).\n"); break; 
 #ifdef ENABLE_NETCDF4 
-  case NC_ENOTBUILT: (void)fprintf(stdout,"ERROR NC_ENOTBUILT Attempt to use feature that was not turned on when netCDF was built\nHINT: NC_ENOTBUILT errors occur only, in our experience, when NCO attempts to access an HDF-EOS2 or HDF4 file. In this case it may be possible to access the input files using NCO if NCO is first re-linked to a version of netCDF configured with the --enable-hdf4 option. This is a non-standard netCDF build option described here: http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html\n"); 
+  case NC_ENOTBUILT: (void)fprintf(stdout,"ERROR NC_ENOTBUILT Attempt to use feature that was not turned on when netCDF was built\nHINT: NC_ENOTBUILT errors occur only, in our experience, when NCO attempts to access an HDF4 (including HDF-EOS2) file. It is only possible to access HDF4 files from NCO if NCO is first re-linked to a version of netCDF configured with the --enable-hdf4 option, which itself must be linked to a version of HDF4 configured with the --disable-netcdf option. These are non-standard build options! Full instructions are provided here: http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html\n"); 
 #endif /* !ENABLE_NETCDF4 */
   case NC_ENOTNC: (void)fprintf(stdout,"ERROR NC_ENOTNC Not a netCDF file\nHINT: NC_ENOTNC errors can occur for many reasons. If your use case matches one of the four listed below, take the corrective action indicated:\n1. An NCO operator linked to the netCDF3 library attempts to read netCDF4 files. "); 
 #ifdef ENABLE_NETCDF4 

@@ -78,7 +78,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.117 2014-01-03 20:37:06 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.118 2014-01-21 22:21:50 zender Exp $";
   
  data:
   area=10.,10.;
@@ -392,6 +392,9 @@ netcdf in_grp {
 
  group: g13 { // Level 1
     // Purpose: Test hidden attributes
+    // NB: Hidden attributes not supported by ncgen at least through netCDF 4.1.1 (201111)
+    // Having this group in in_grp.cdl breaks building of in_grp.nc with netCDF 4.1.1- (201111)
+    // This breaks many NCO regression tests
     // ncks -C -v var_cmp.? -m ~/nco/data/in_grp.nc
   variables:
 
