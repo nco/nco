@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.140 2013-11-06 18:12:22 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.141 2014-01-21 21:57:40 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -81,14 +81,14 @@ build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
 subdir = .
-DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am \
+DIST_COMMON = INSTALL NEWS README AUTHORS ChangeLog \
+	$(srcdir)/Makefile.in $(srcdir)/Makefile.am \
 	$(top_srcdir)/configure $(am__configure_deps) \
 	$(srcdir)/config.h.in $(top_srcdir)/autobld/mkinstalldirs \
-	AUTHORS COPYING ChangeLog INSTALL NEWS README \
-	autobld/config.guess autobld/config.sub autobld/depcomp \
-	autobld/install-sh autobld/missing autobld/mkinstalldirs \
-	autobld/texinfo.tex autobld/ylwrap autobld/ltmain.sh \
-	$(top_srcdir)/autobld/config.guess \
+	COPYING autobld/config.guess autobld/config.sub \
+	autobld/depcomp autobld/install-sh autobld/missing \
+	autobld/mkinstalldirs autobld/texinfo.tex autobld/ylwrap \
+	autobld/ltmain.sh $(top_srcdir)/autobld/config.guess \
 	$(top_srcdir)/autobld/config.sub \
 	$(top_srcdir)/autobld/install-sh \
 	$(top_srcdir)/autobld/ltmain.sh $(top_srcdir)/autobld/missing
@@ -368,15 +368,15 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign'; \
-	      $(am__cd) $(srcdir) && $(AUTOMAKE) --foreign \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --gnu'; \
+	      $(am__cd) $(srcdir) && $(AUTOMAKE) --gnu \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign Makefile
+	  $(AUTOMAKE) --gnu Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/man/Makefile.in,v 1.107 2013-11-06 18:12:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/man/Makefile.in,v 1.108 2014-01-21 21:57:45 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -290,7 +290,7 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-man_MANS = ncap.1 ncap2.1 ncatted.1 ncbo.1 ncdiff.1 ncea.1 ncecat.1 ncflint.1 ncks.1 nco.1 ncra.1 ncrename.1 ncpdq.1 ncrcat.1 ncwa.1
+man_MANS = ncap.1 ncap2.1 ncatted.1 ncbo.1 ncdiff.1 ncea.1 nces.1 ncecat.1 ncflint.1 ncks.1 nco.1 ncra.1 ncrename.1 ncpdq.1 ncrcat.1 ncwa.1
 EXTRA_DIST = $(man_MANS)
 all: all-am
 
@@ -304,9 +304,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign man/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu man/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign man/Makefile
+	  $(AUTOMAKE) --gnu man/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \

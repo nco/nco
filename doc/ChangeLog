@@ -1,7 +1,13 @@
+2014-01-21  Charlie Zender  <zender@uci.edu>
+
+	* Performed autoreconf --force to update config.{sub,guess} for	Debian AArch64
+
+	* Add nces.1 manpage to automake instructions
+
 2014-01-20  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncks regressions #81,#82,#83,84 --cnk_dmn full names
-	
+
 2014-01-17  Charlie Zender  <zender@uci.edu>
 
 	* Turn-off shuffle when uncompressing otherwise chunking requests may fail
@@ -9,7 +15,7 @@
 	* Add nco_def_var_fletcher32() wrapper and stub
 
 2014-01-17  Pedro Vicente  <pvicente@uci.edu>
-	
+
 	* Add ncks regressions #83 Chunking and shuffle filter
 
 2014-01-16  Pedro Vicente  <pvicente@uci.edu>

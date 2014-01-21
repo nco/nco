@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.108 2013-11-06 18:12:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.in,v 1.109 2014-01-21 21:57:46 zender Exp $ -*-makefile-*-
 
 
 VPATH = @srcdir@
@@ -557,9 +557,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign src/nco_c++/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu src/nco_c++/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign src/nco_c++/Makefile
+	  $(AUTOMAKE) --gnu src/nco_c++/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
