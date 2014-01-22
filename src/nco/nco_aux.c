@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.77 2014-01-13 03:29:53 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.78 2014-01-22 21:59:51 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -422,8 +422,6 @@ nco_aux_evl_trv
   void *vp_lat; /* [dgr] Latitude coordinate array, float or double */
   void *vp_lon; /* [dgr] Longitude coordinate array, float or double */
 
-  nco_bool has_lat_lon;
-
   *aux_lmt_nbr=0;
 
   /* Obtain group ID of 'latitude' and 'longitude' from netCDF API using full group name */
@@ -570,7 +568,6 @@ nco_find_lat_lon_trv
   const char fnc_nm[]="nco_find_lat_lon_trv()";
 
   char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
-  char value[NC_MAX_NAME];  /* [sng] Attribute value */
   char var_nm[NC_MAX_NAME];
 
   int grp_id;               /* [id] Group ID */
@@ -578,8 +575,6 @@ nco_find_lat_lon_trv
   int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
   int var_att_nbr;          /* [nbr] Number of attributes */
   int var_dmn_nbr;          /* [nbr] Number of dimensions */
-
-  long lenp;
 
   nc_type var_typ;          /* [enm] variable type */
 
@@ -608,8 +603,6 @@ nco_find_lat_lon_trv
     }
 
     char value[NC_MAX_NAME+1];
-    char *var_nm_lat=NULL; 
-    char *var_nm_lon=NULL;
 
     long lenp;
 
