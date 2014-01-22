@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.442 2014-01-22 21:59:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.443 2014-01-22 22:23:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -307,20 +307,12 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
  nm_tbl_sct ** rec_dmn_nm);            /* I/O [sct] Array of record names */
  
 void
-nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
- char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
- int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
- lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
-
-void
 nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 var_sct **                            /* O [sct] Variable list */  
@@ -735,6 +727,7 @@ void
 nco_bld_crd_aux                        /* [fnc] Build auxiliary coordinates information into table */
 (const int nc_id,                      /* I [ID] netCDF file ID */
  trv_tbl_sct *trv_tbl);                /* I [sct] GTT (Group Traversal Table) */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

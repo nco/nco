@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1207 2014-01-22 21:59:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1208 2014-01-22 22:23:44 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6722,14 +6722,14 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Mark extracted groups */
   (void)nco_xtr_grp_mrk(trv_tbl);
 
-  /* Make uniform list of user-specified dimension limits */
-  if(lmt_nbr) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-
-  /* Parse auxiliary coordinates */
-  if(aux_nbr) (void)nco_bld_aux_crd(nc_id,aux_nbr,aux_arg,&lmt_nbr,&lmt,trv_tbl); 
+  /* Parse auxiliary coordinates and build found limits directly into table (auxiliary limits are not merged into regular limits ) */
+  if(aux_nbr) (void)nco_prs_aux_crd(nc_id,aux_nbr,aux_arg,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
 
   /* Add dimension limits */
-  if(lmt_nbr) (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
+  if(lmt_nbr){
+    lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
+    (void)nco_bld_lmt(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,trv_tbl);
+  }
 
   /* Build ensembles */
   if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,trv_tbl);
@@ -8467,184 +8467,13 @@ nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by gro
 } /* nco_cmp_aux_crd_dpt() */
 
 
-
-void
-nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
-(const int nc_id,                     /* I [ID] netCDF file ID */
- const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
- char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
- int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
- lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
-{
-  const char fnc_nm[]="nco_bld_aux_crd()"; /* [sng] Function name */
-
-  /* 
-  1) Traverse table (all variables): build a list of 'standard_name' 'latitude' and 'longitude' coordinates 
-  2) Look for 'standard_name' 'latitude' and 'longitude' attributes in nco_find_lat_lon_trv() 
-  3) Locate 'latitude' and 'longitude' coordinate variables
-  4) Locate dimension of 'latitude' and 'longitude' coordinate variables
-  5) Apply previous variables and dimension in nco_aux_evl_trv()
-  6) Additional criteria is in scope only associated variables */
-
-  /* Look for 'standard_name' 'latitude' and 'longitude' attributes */
-
-  char *lat_nm_fll=NULL;
-  char *lon_nm_fll=NULL;
-  char *var_nm_fll=NULL;
-  char units[NC_MAX_NAME+1];
-
-  int dmn_id; /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
-
-  nco_bool has_lat_fl=False;
-  nco_bool has_lon_fl=False;
-
-  trv_sct *lat_trv;
-  trv_sct *lon_trv;
-
-  nc_type crd_typ;
-
-  aux_crd_sct *lat_crd=NULL; /* [lst] Array of 'latitude' coordinates */
-  aux_crd_sct *lon_crd=NULL; /* [lst] Array of 'longitude' coordinates */
-  int nbr_lat_crd=0;         /* [nbr] Number of items in 'latitude' coordinates array */
-  int nbr_lon_crd=0;         /* [nbr] Number of items in 'longitude' coordinates array */
-
-  /* Loop table; build a list of 'standard_name' 'latitude' and 'longitude' coordinates  */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-    /* Filter variables */
-    trv_sct var_trv=trv_tbl->lst[idx_var];
-
-    nco_bool has_lat;
-    nco_bool has_lon;
-
-    /* Filter variables. */ 
-    if(var_trv.nco_typ == nco_obj_typ_var){
-
-      char units_lat[NC_MAX_NAME+1];
-      char units_lon[NC_MAX_NAME+1];
-
-      has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&dmn_id,&crd_typ,units_lat);
-      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&dmn_id,&crd_typ,units_lon);
-
-      if (has_lat){
-        has_lat_fl=True;
-        lat_nm_fll=var_nm_fll;
-        strcpy(units,units_lat);
-
-        /* Obtain 'latitude' GTT object using full variable name */
-        lat_trv=trv_tbl_var_nm_fll(lat_nm_fll,trv_tbl);
-
-        /* Insert item into list */
-        nbr_lat_crd++;
-        lat_crd=(aux_crd_sct *)nco_realloc(lat_crd,nbr_lat_crd*sizeof(aux_crd_sct));
-        lat_crd[nbr_lat_crd-1].nm_fll=strdup(var_nm_fll);
-        lat_crd[nbr_lat_crd-1].dmn_id=dmn_id;
-        lat_crd[nbr_lat_crd-1].grp_dpt=lat_trv->grp_dpt;
-        strcpy(lat_crd[nbr_lat_crd-1].units,units_lat);
-
-      } /* has_lat */
-
-      if (has_lon){
-        has_lon_fl=True;
-        lon_nm_fll=var_nm_fll;
-        strcpy(units,units_lon);   
-
-        /* Obtain 'longitude' GTT object using full variable name */
-        lon_trv=trv_tbl_var_nm_fll(lon_nm_fll,trv_tbl);
-
-        /* Insert item into list */
-        nbr_lon_crd++;      
-        lon_crd=(aux_crd_sct *)nco_realloc(lon_crd,nbr_lon_crd*sizeof(aux_crd_sct));
-        lon_crd[nbr_lon_crd-1].nm_fll=strdup(lon_nm_fll);
-        lon_crd[nbr_lon_crd-1].dmn_id=dmn_id;
-        lon_crd[nbr_lon_crd-1].grp_dpt=lon_trv->grp_dpt;
-        strcpy(lon_crd[nbr_lon_crd-1].units,units_lon);
-
-      } /* has_lon */
-
-    } /* Filter variables to extract */ 
-  } /* Loop table */
-
-  /* If the attribute was not found, return */
-  if (!has_lat_fl || !has_lon_fl) return;
-
-  /* Locate dimension of 'latitude' and 'longitude' coordinate variables */
-  dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
-
-  /* If dimension was not found, return */
-  if (dmn_trv == NULL) return;
-
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s coordinate variables found:\n",nco_prg_nm_get(),fnc_nm);
-    for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s> dpt=%d\n",nco_prg_nm_get(),fnc_nm,
-        lat_crd[idx_crd].nm_fll,lat_crd[idx_crd].grp_dpt);
-    }   
-  }
-
-  /* Sort the array of 'latitude' and 'longitude' coordinate variables by group depth and choose the most in scope variables */
-
-  /* If more than one coordinate, sort them by group depth */
-  if(nbr_lat_crd>1) qsort(lat_crd,(size_t)nbr_lat_crd,sizeof(lat_crd[0]),nco_cmp_aux_crd_dpt);
-
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: DEBUG %s sorted coordinate variables:\n",nco_prg_nm_get(),fnc_nm);
-    for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++){
-      (void)fprintf(stdout,"%s: DEBUG %s <%s> dpt=%d\n",nco_prg_nm_get(),fnc_nm,
-        lat_crd[idx_crd].nm_fll,lat_crd[idx_crd].grp_dpt);
-    }   
-  }  
-
-  /* Use the coordinate with lower group depth (index 0) */
-  lat_trv=trv_tbl_var_nm_fll(lat_crd[0].nm_fll,trv_tbl);
-  lon_trv=trv_tbl_var_nm_fll(lon_crd[0].nm_fll,trv_tbl);
-
-  /* Obtain coordinate variable of the dimension of both 'latitude' and 'longitude' (e.g lat_gds(gds_crd) ) */
-  trv_sct *crd_trv=trv_tbl_var_nm_fll(dmn_trv->nm_fll,trv_tbl);
-
-  lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
-  int aux_lmt_nbr;           /* Number of auxiliary coordinate limits */
-
-  aux_lmt_nbr=0;
-
-  aux=nco_aux_evl_trv(nc_id,aux_nbr,aux_arg,lat_trv,lon_trv,crd_typ,units,&aux_lmt_nbr);
-
-  /* Found limits */
-  if(aux_lmt_nbr > 0 ){  
-
-    if(nco_dbg_lvl_get() >= nco_dbg_dev){
-      (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,
-        crd_trv->nm_fll,aux_lmt_nbr); 
-    }
-
-    (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_lmt_nbr)*sizeof(lmt_sct *));
-    int lmt_nbr_new=*lmt_nbr+aux_lmt_nbr;
-    int aux_idx=0;
-    for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
-    *lmt_nbr=lmt_nbr_new;
-
-    aux=(lmt_sct **)nco_free(aux); 
-
-  } /* Found limits */
-
-  /* Free array */
-  for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++){    
-    lat_crd[idx_crd].nm_fll=(char *)nco_free(lat_crd[idx_crd].nm_fll);
-  }   
-  for(int idx_crd=0;idx_crd<nbr_lon_crd;idx_crd++){    
-    lon_crd[idx_crd].nm_fll=(char *)nco_free(lon_crd[idx_crd].nm_fll);
-  }   
-
-
-  return;
-} /* nco_bld_aux_crd() */
-
 void
 nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limits directly into table */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_prs_aux_crd()"; /* [sng] Function name */
@@ -8759,12 +8588,74 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
 
               } /* Loop limits */
 
+
+              /* Apply MSA for each Dimension in new cycle (that now has all its limits in place) */
+
+              /* Loop limits */
+              for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
+
+                /* Adapted from original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
+
+                nco_bool flg_ovl; /* [flg] Limits overlap */
+
+                /* GTT: If this coordinate has no limits, continue */
+                if(crd->lmt_msa.lmt_dmn_nbr == 0) continue;
+
+                /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
+                if(crd->is_rec_dmn && (nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat)) continue;
+
+                /* Split-up wrapped limits. NOTE: using deep copy version nco_msa_wrp_splt_cpy() */   
+                (void)nco_msa_wrp_splt_cpy(&trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa);
+
+                /* Wrapped hyperslabs are dimensions broken into the "wrong" order, e.g., from
+                -d time,8,2 broken into -d time,8,9 -d time,0,2 
+                WRP flag set only when list contains dimensions split as above */
+                if(trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa.WRP){
+
+                  /* Find and store size of output dim */  
+                  (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa); 
+
+                  continue;
+                } /* End WRP flag set */
+
+                /* Single slab---no analysis needed */  
+                if(trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa.lmt_dmn_nbr == 1){
+
+                  (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa);  
+
+                  continue;    
+                } /* End Single slab */
+
+                /* Does Multi-Slab Algorithm returns hyperslabs in user-specified order? */
+                if(MSA_USR_RDR){
+                  trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa.MSA_USR_RDR=True;
+
+                  /* Find and store size of output dimension */  
+                  (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa);  
+
+                  continue;
+                } /* End MSA_USR_RDR */
+
+                /* Sort limits */
+                (void)nco_msa_qsort_srt(&trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa);
+
+                /* Check for overlap */
+                flg_ovl=nco_msa_ovl(&trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa); 
+
+                /* Find and store size of output dimension */  
+                (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa);
+
+                if(nco_dbg_lvl_get() >= nco_dbg_fl){
+                  if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),crd->nm); else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),crd->nm); 
+                } /* endif */
+
+              } /* Loop limits */
+
+
               /* b) case of dimension only (there is no coordinate variable for this dimension */
             }else{
-
-              trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].ncd->lmt_msa.lmt_dmn_nbr=lmt_dmn_nbr;
-              trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
-
+              /* Not valed for auxiliary coordinates */
+              assert(0);
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
 
 
@@ -8982,7 +8873,6 @@ nco_var_scp                            /* [fnc] Is variable 1 is in scope of var
     }  /* Look for same group name in  hierarchy */
 
   }
-
 
   return False;
 } /* nco_var_scp() */

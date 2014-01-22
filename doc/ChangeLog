@@ -1,3 +1,7 @@
+2014-01-22  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_prs_aux_crd() Parse auxiliary coordinates limits directly into traversal table 
+
 2014-01-21  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add nco_var_scp(). Check if one variable is in scope of another.
