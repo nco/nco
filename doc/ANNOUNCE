@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.680 2014-01-16 21:13:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.681 2014-01-22 01:01:26 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.1 are ready. 
 
@@ -35,6 +35,14 @@ A. The -X option for auxiliary coordinates now works fully when
    http://nco.sf.net/nco.html#aux
    fxm verify
 
+A. Chunking options now support full group pathnames for dimensions.
+   These override chunking arguments with short names when a given
+   dimension matches both the long and short name arguments, e.g.,
+   ncks --cnk_dmn lat,2 --cnk_dmn /g1/lat,4 in.nc out.nc
+   causes all dimensions named "lat" to be chunked with size=2
+   except for the /g1/lat dimension which has chunksize=4.
+   http://nco.sf.net/nco.html#cnk
+
 J. The --cnk_byt option was introduced to allow users to manually
    specify the total desired chunksize (in Bytes). In the absence
    of this parameter, NCO sets the chunksize to the filesystem
@@ -49,7 +57,9 @@ J. The --cnk_byt option was introduced to allow users to manually
 BUG FIXES:
 
 A. NCO 4.4.0 could sometimes fail when asked to simultaneously
-   uncompress (-L 0) and to chunk (--cnk_dmn) a file. Fixed.
+   uncompress (-L 0) and to chunk (--cnk_dmn) a file. This seems to
+   have occurred only if the compressed variable was shuffled.
+   Problem reported by Ben. Fixed.
 
 KNOWN ISSUES NOT YET FIXED:
 

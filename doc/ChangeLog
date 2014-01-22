@@ -1,5 +1,11 @@
 2014-01-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.1 release procedure:
+ 	Changes since nco-4_4_0: -X, cnk?, hsh?
+	cd ~/nco;cvs tag -d nco-4_4_1;cvs tag -d nco-4_4_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.1 release"
+	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
+
 	* ncgen breaks on hidden attributes in CDL with netCDF 4.1.1- (201111)
 	Hence NCO 4.4.0 has many regressions on older netCDF
 	Need to move in_grp.cdl hidden attributes group g13 into its own "safe" file
@@ -20,6 +26,8 @@
 
 2014-01-17  Pedro Vicente  <pvicente@uci.edu>
 
+	* Add ncks regressions #81,#82 --cnk_dmn full names
+
 	* Add ncks regressions #83 Chunking and shuffle filter
 
 2014-01-16  Pedro Vicente  <pvicente@uci.edu>
@@ -37,14 +45,6 @@
 2014-01-14  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add test data for -X option in in_grp_3.cdl
-
-2014-01-13  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.1 release procedure:
- 	Changes since nco-4_4_0: -X, cnk?, hsh?
-	cd ~/nco;cvs tag -d nco-4_4_1;cvs tag -d nco-4_4_1-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.1 release"
-	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
 
 2014-01-12  Pedro Vicente  <pvicente@uci.edu>
 
