@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1201 2014-01-22 06:44:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1202 2014-01-22 18:46:38 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2036,6 +2036,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_xcl=False;                /* [flg] Object matches exclusion criteria */
   trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
   trv_tbl->lst[idx].flg_rdr=False;                /* [flg] Variable has dimensions to re-order (ncpdq) */
+  trv_tbl->lst[idx].flg_aux=False;                /* [flg] Variable contains auxiliary coordinates */
   trv_tbl->lst[idx].rec_dmn_nm_out=NULL;          /* [sng] Record dimension name, re-ordered */ 
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
   trv_tbl->lst[idx].nbr_dmn=nbr_dmn_grp;          /* [nbr] Number of dimensions */
@@ -2126,6 +2127,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_xcl=False; 
     trv_tbl->lst[idx].flg_xtr=False;
     trv_tbl->lst[idx].flg_rdr=False;
+    trv_tbl->lst[idx].flg_aux=False;
     trv_tbl->lst[idx].rec_dmn_nm_out=NULL;                     
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
     trv_tbl->lst[idx].nbr_att=nbr_att;
@@ -8689,6 +8691,8 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
                   /* Check if possible 'latitude' (var_trv) is in scope */
                   if (nco_var_scp(&trv_tbl->lst[idx_crd],&var_trv,trv_tbl)){
 
+                    trv_tbl->lst[idx_crd].flg_aux=True;
+
                     /* Insert item into list */
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].nbr_lat_crd++;
                     int nbr_lat_crd=trv_tbl->lst[idx_crd].var_dmn[idx_dmn].nbr_lat_crd;
@@ -8711,14 +8715,62 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
 
         /* Locate dimension of 'latitude' or 'longitude' coordinate variables */
         dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
-        
 
+         /* Loop table  */
+        for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
+          /* Filter */
+          if(trv_tbl->lst[idx_crd].nco_typ == nco_obj_typ_var &&
+            trv_tbl->lst[idx_crd].nbr_dmn >=2 &&
+            trv_tbl->lst[idx_crd].is_crd_var == False){
+              /* Loop dimensions  */
+              for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_crd].nbr_dmn;idx_dmn++){
+                /* Match dimension */
+                if (trv_tbl->lst[idx_crd].var_dmn[idx_dmn].dmn_id == dmn_id){
+                  /* Check if possible 'longitude' (var_trv) is in scope */
+                  if (nco_var_scp(&trv_tbl->lst[idx_crd],&var_trv,trv_tbl)){
+
+                    trv_tbl->lst[idx_crd].flg_aux=True;
+
+                    /* Insert item into list */
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].nbr_lon_crd++;
+                    int nbr_lon_crd=trv_tbl->lst[idx_crd].var_dmn[idx_dmn].nbr_lon_crd;
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd=(aux_crd_sct *)nco_realloc(
+                      trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd,nbr_lon_crd*sizeof(aux_crd_sct));
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lon_crd-1].nm_fll=strdup(var_nm_fll);
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lon_crd-1].dmn_id=dmn_id;
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lon_crd-1].grp_dpt=var_trv.grp_dpt;
+                    strcpy(trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lon_crd-1].units,units_lat);
+
+                  } /* Is in scope */
+                } /* Match dimension */
+              } /* Loop dimensions  */
+          } /* Filter */
+        } /* Loop table  */
+        
       } /* has_lon */
     } /* Filter variables to extract */ 
   } /* Loop table */
 
 
   /* Sort the array of 'latitude' and 'longitude' coordinate variables by group depth and choose the most in scope variables */
+
+  /* Loop table  */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+
+    /* Filter variables with auxiliary coordinates */ 
+    if(trv_tbl->lst[idx_var].flg_aux){
+
+      assert(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var);
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s variable with auxiliary coordinates <%s>\n",nco_prg_nm_get(),fnc_nm,
+          trv_tbl->lst[idx_var].nm_fll); 
+      }
+
+    } /* Filter variables with auxiliary coordinates */ 
+  } /* Loop table  */
+
+
 
 
 

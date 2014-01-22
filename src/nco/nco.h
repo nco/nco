@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.471 2014-01-22 06:44:20 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.472 2014-01-22 18:46:38 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -851,8 +851,8 @@ extern "C" {
     dmn_trv_sct *ncd;        /* [sct] Pointer to non-coordinate dimension if any */
     int dmn_id;              /* [ID] Dimension ID; same as dmn_trv_sct.id from nc_inq_vardimid() */
 
-    aux_crd_sct *lat_crd; /* [lst] Array of 'latitude' coordinates */
-    aux_crd_sct *lon_crd; /* [lst] Array of 'longitude' coordinates */
+    aux_crd_sct *lat_crd;    /* [lst] Array of 'latitude' coordinates */
+    aux_crd_sct *lon_crd;    /* [lst] Array of 'longitude' coordinates */
     int nbr_lat_crd;         /* [nbr] Number of items in 'latitude' coordinates array */
     int nbr_lon_crd;         /* [nbr] Number of items in 'longitude' coordinates array */
 
@@ -908,6 +908,7 @@ extern "C" {
     nco_bool flg_vsg;                 /* [flg] Variable selected because group matches */
     nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr;                 /* [flg] Extract object */ 
+    nco_bool flg_aux;                 /* [flg] Variable contains auxiliary coordinates */ 
     /* Following are members only used by transformation operators (non-ncks)  */
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  
