@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1208 2014-01-22 22:23:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1209 2014-01-22 22:33:40 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8478,9 +8478,6 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
 {
   const char fnc_nm[]="nco_prs_aux_crd()"; /* [sng] Function name */
 
-  trv_sct *lat_trv=NULL;
-  trv_sct *lon_trv=NULL;
-
   /* Loop table  */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
@@ -8498,6 +8495,9 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
         }
 
         int dmn_idx_fnd; /* [nbr] Index of dimension that has the coordinate */
+
+        trv_sct *lat_trv=NULL;
+        trv_sct *lon_trv=NULL;
 
         /* Loop dimensions  */
         for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_tbl].nbr_dmn;idx_dmn++){
@@ -8650,6 +8650,9 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
                 } /* endif */
 
               } /* Loop limits */
+
+              /* Free limits exported from nco_aux_evl_trv() */
+              aux=(lmt_sct **)nco_free(aux);  
 
 
               /* b) case of dimension only (there is no coordinate variable for this dimension */
