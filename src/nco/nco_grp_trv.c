@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.266 2014-01-22 06:26:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.267 2014-01-22 06:44:20 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -67,7 +67,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
         tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
         tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
       
-        tbl->lst[idx].var_dmn[dmn_idx].lon_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].lon_nm_fll);
+       
 
         /* Coordinate structure */ 
         if(tbl->lst[idx].var_dmn[dmn_idx].crd){

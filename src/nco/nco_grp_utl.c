@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1200 2014-01-22 06:26:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1201 2014-01-22 06:44:20 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2164,8 +2164,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       /* Assume dimension is to keep on output */
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg=False;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;  
-      trv_tbl->lst[idx].var_dmn[idx_dmn_var].lat_nm_fll=NULL;
-      trv_tbl->lst[idx].var_dmn[idx_dmn_var].lon_nm_fll=NULL;
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].lat_crd=NULL;
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].lon_crd=NULL;
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].nbr_lat_crd=0;
+      trv_tbl->lst[idx].var_dmn[idx_dmn_var].nbr_lon_crd=0;
     }
 
     /* Variable dimensions; store what we know at this time: relative name and ID */
@@ -8686,7 +8688,17 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
                 if (trv_tbl->lst[idx_crd].var_dmn[idx_dmn].dmn_id == dmn_id){
                   /* Check if possible 'latitude' (var_trv) is in scope */
                   if (nco_var_scp(&trv_tbl->lst[idx_crd],&var_trv,trv_tbl)){
-                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_nm_fll=var_nm_fll;
+
+                    /* Insert item into list */
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].nbr_lat_crd++;
+                    int nbr_lat_crd=trv_tbl->lst[idx_crd].var_dmn[idx_dmn].nbr_lat_crd;
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd=(aux_crd_sct *)nco_realloc(
+                      trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd,nbr_lat_crd*sizeof(aux_crd_sct));
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].nm_fll=strdup(var_nm_fll);
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].dmn_id=dmn_id;
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].grp_dpt=var_trv.grp_dpt;
+                    strcpy(trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].units,units_lat);
+
                   } /* Is in scope */
                 } /* Match dimension */
               } /* Loop dimensions  */
@@ -8704,6 +8716,12 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
       } /* has_lon */
     } /* Filter variables to extract */ 
   } /* Loop table */
+
+
+  /* Sort the array of 'latitude' and 'longitude' coordinate variables by group depth and choose the most in scope variables */
+
+
+
 
   return;
 } /* nco_bld_crd_aux() */

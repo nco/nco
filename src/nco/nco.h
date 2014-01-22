@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.470 2014-01-21 21:19:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.471 2014-01-22 06:44:20 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -830,8 +830,17 @@ extern "C" {
     nco_bool flg_xtr;        /* [flg] Extract dimension */
   } dmn_trv_sct; 
 
+
+  /* Build a list of 'standard_name' 'latitude' and 'longitude' coordinates (Auxiliary Coordinates) */
+  typedef struct{
+    char *nm_fll;              /* [sng] Coordinate full name ('latitude' or 'longitude') */ 
+    int dmn_id;                /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
+    char units[NC_MAX_NAME+1]; /* [sng] Units of 'latitude' and 'longitude' */ 
+    int grp_dpt;               /* [nbr] Depth of group (root = 0) */
+  } aux_crd_sct; 
+
   /* GTT Variable dimensions:
-     Dimension have name and size, and can have an associated variable (coordinate variable) */
+  Dimension have name and size, and can have an associated variable (coordinate variable) */
   typedef struct{ 
     char *dmn_nm_fll;        /* [sng] Full dimension name */
     char *dmn_nm;            /* [sng] Dimension name */
@@ -841,8 +850,12 @@ extern "C" {
     crd_sct *crd;            /* [sct] Pointer to coordinate variable if any */
     dmn_trv_sct *ncd;        /* [sct] Pointer to non-coordinate dimension if any */
     int dmn_id;              /* [ID] Dimension ID; same as dmn_trv_sct.id from nc_inq_vardimid() */
-    char *lat_nm_fll;        /* [sng] Auxiliary latitude full name */
-    char *lon_nm_fll;        /* [sng] Auxiliary longitude full name */
+
+    aux_crd_sct *lat_crd; /* [lst] Array of 'latitude' coordinates */
+    aux_crd_sct *lon_crd; /* [lst] Array of 'longitude' coordinates */
+    int nbr_lat_crd;         /* [nbr] Number of items in 'latitude' coordinates array */
+    int nbr_lon_crd;         /* [nbr] Number of items in 'longitude' coordinates array */
+
     /* Following are members only used by transformation operators (non-ncks) */
     nco_bool flg_dmn_avg;    /* [flg] Diferentiate between dimensions to average or keep for this variable (ncwa) */  
     nco_bool flg_rdd;        /* [flg] Retain dimension as degenerate (size 1) (ncwa) */  
@@ -1066,13 +1079,7 @@ extern "C" {
     int id; /* [id] Dimension ID */ 
   } dmn_cmn_sct; 
 
-  /* Build a list of 'standard_name' 'latitude' and 'longitude' coordinates (Auxiliary Coordinates) */
-  typedef struct{
-    char *nm_fll;              /* [sng] Coordinate full name ('latitude' or 'longitude') */ 
-    int dmn_id;                /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
-    char units[NC_MAX_NAME+1]; /* [sng] Units of 'latitude' and 'longitude' */ 
-    int grp_dpt;               /* [nbr] Depth of group (root = 0) */
-  } aux_crd_sct; 
+ 
   
 #ifdef __cplusplus
 } /* end extern "C" */
