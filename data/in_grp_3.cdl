@@ -305,7 +305,7 @@ netcdf in_grp_3 {
 				lon_gds_2:purpose = "1-D longitude coordinate referred to by geodesic grid variables";
     
                 data:
-				lat_gds_2=-90, -10,  -10,    0,   0, 10,  10,  90; //differs from lat_gds_1
+				lat_gds_2=-90, -30,  -30,    0,   0, 30,  30,  90;
 				lon_gds_2=  0,   0,  180,    0, 180,  0, 180,   0;				
 			  } // end g18g2
 		 } // end g18g1 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.440 2014-01-22 19:40:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.441 2014-01-22 21:29:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -320,8 +320,6 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
- int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
- lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
 
 var_sct **                            /* O [sct] Variable list */  

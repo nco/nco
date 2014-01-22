@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1205 2014-01-22 20:00:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1206 2014-01-22 21:29:43 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8640,12 +8640,10 @@ nco_bld_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 } /* nco_bld_aux_crd() */
 
 void
-nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
+nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limits directly into table */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
- int *lmt_nbr,                        /* I/O [nbr] Number of user-specified dimension limits */
- lmt_sct ***lmt,                      /* I/O [sct] Limit structure  */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_prs_aux_crd()"; /* [sng] Function name */
@@ -8654,39 +8652,41 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
   trv_sct *lon_trv=NULL;
 
   /* Loop table  */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
     /* Filter variables to extract */ 
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_var].flg_xtr){
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].flg_xtr){
+
+      trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
       /* Filter variables with auxiliary coordinates */ 
-      if(trv_tbl->lst[idx_var].flg_aux){
+      if(var_trv.flg_aux){
 
         if(nco_dbg_lvl_get() >= nco_dbg_dev){
           (void)fprintf(stdout,"%s: DEBUG %s variable <%s>\n",nco_prg_nm_get(),fnc_nm,
-            trv_tbl->lst[idx_var].nm_fll); 
+            trv_tbl->lst[idx_tbl].nm_fll); 
         }
 
-        int dmn_idx_fnd;
+        int dmn_idx_fnd; /* [nbr] Index of dimension that has the coordinate */
 
         /* Loop dimensions  */
-        for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_var].nbr_dmn;idx_dmn++){
+        for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_tbl].nbr_dmn;idx_dmn++){
 
           /* Has 'latitude' auxiliary coordinates  */
-          if (trv_tbl->lst[idx_var].var_dmn[idx_dmn].nbr_lat_crd){
+          if (trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].nbr_lat_crd){
 
             /* Use the coordinate with lower group depth (index 0) */
-            lat_trv=trv_tbl_var_nm_fll(trv_tbl->lst[idx_var].var_dmn[idx_dmn].lat_crd[0].nm_fll,trv_tbl);
+            lat_trv=trv_tbl_var_nm_fll(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].lat_crd[0].nm_fll,trv_tbl);
 
             dmn_idx_fnd=idx_dmn;
 
           } /* Has 'latitude' auxiliary coordinates  */
 
           /* Has 'longitude' auxiliary coordinates  */
-          if (trv_tbl->lst[idx_var].var_dmn[idx_dmn].nbr_lon_crd){
+          if (trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].nbr_lon_crd){
 
             /* Use the coordinate with lower group depth (index 0) */
-            lon_trv=trv_tbl_var_nm_fll(trv_tbl->lst[idx_var].var_dmn[idx_dmn].lon_crd[0].nm_fll,trv_tbl);
+            lon_trv=trv_tbl_var_nm_fll(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].lon_crd[0].nm_fll,trv_tbl);
 
             dmn_idx_fnd=idx_dmn;
 
@@ -8702,8 +8702,8 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
           char units[NC_MAX_NAME+1];
 
           aux_lmt_nbr=0;
-          crd_typ=trv_tbl->lst[idx_var].var_dmn[dmn_idx_fnd].lat_crd[0].crd_typ;
-          strcpy(units,trv_tbl->lst[idx_var].var_dmn[dmn_idx_fnd].lat_crd[0].units);
+          crd_typ=trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].lat_crd[0].crd_typ;
+          strcpy(units,trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].lat_crd[0].units);
 
           aux=nco_aux_evl_trv(nc_id,aux_nbr,aux_arg,lat_trv,lon_trv,crd_typ,units,&aux_lmt_nbr);
 
@@ -8712,21 +8712,30 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 
             if(nco_dbg_lvl_get() >= nco_dbg_dev){
               (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,
-                trv_tbl->lst[idx_var].nm_fll,aux_lmt_nbr); 
+                trv_tbl->lst[idx_tbl].nm_fll,aux_lmt_nbr); 
             }
 
-            (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_lmt_nbr)*sizeof(lmt_sct *));
-            int lmt_nbr_new=*lmt_nbr+aux_lmt_nbr;
-            int aux_idx=0;
-            for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
-            *lmt_nbr=lmt_nbr_new;
+            /*  The limits have to be separated to */
 
-            aux=(lmt_sct **)nco_free(aux); 
+            int lmt_dmn_nbr=aux_lmt_nbr;
+
+            /* a) case where the dimension has coordinate variables */
+            if(var_trv.var_dmn[dmn_idx_fnd].crd){
+
+              trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa.lmt_dmn_nbr=lmt_dmn_nbr;
+              trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
+
+              /* b) case of dimension only (there is no coordinate variable for this dimension */
+            }else{
+
+              trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].ncd->lmt_msa.lmt_dmn_nbr=lmt_dmn_nbr;
+              trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
+
+            } /* b) case of dimension only (there is no coordinate variable for this dimension */
+
 
           } /* Found limits */
-
         } /* Auxiliary coordinates found */
-
       } /* Filter variables with auxiliary coordinates */ 
     }  /* Filter variables to extract */ 
   } /* Loop table  */
