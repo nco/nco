@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1199 2014-01-21 23:39:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1200 2014-01-22 06:26:17 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8720,31 +8720,33 @@ nco_var_scp                            /* [fnc] Is variable 1 is in scope of var
     return True;
   }
 
-  char *grp_nm_fll_prn_1=var_trv_1->grp_nm_fll_prn; /* [sct] Parent group */
-  trv_sct *grp_prn_1;
+  /* Different groups: traverse down the higher and look for a group match name */  
+  if(var_trv_2->grp_dpt > var_trv_1->grp_dpt){
 
-  grp_prn_1=trv_tbl_grp_nm_fll(grp_nm_fll_prn_1,trv_tbl);
+    char *grp_nm_fll_prn_2=var_trv_2->grp_nm_fll_prn; /* [sct] Parent group */
+    trv_sct *grp_prn_2;
 
-  /* Look for same group name in  hierarchy */
-  while (grp_nm_fll_prn_1){
+    grp_prn_2=trv_tbl_grp_nm_fll(grp_nm_fll_prn_2,trv_tbl);
 
-    /* Same group in hierarchy */
-    if (strcmp(grp_prn_1->grp_nm,var_trv_2->grp_nm) == 0){
+    /* Look for same group name in  hierarchy */
+    while (grp_nm_fll_prn_2){
 
-      /* And variable to find (Variable 2) is located at at higher level than variable 1 (in scope ) */
-      if(var_trv_1->grp_dpt < var_trv_2->grp_dpt){
+      /* Same group in hierarchy */
+      if (strcmp(grp_prn_2->grp_nm,var_trv_1->grp_nm) == 0){
         return True;
+      } /* Same group in hierarchy */
+
+      /* Exit loop when root reached */
+      if (grp_prn_2->grp_dpt == 0){
+        break; 
       }
-    } /* Same group in hierarchy */
 
-    /* Exit loop when root reached */
-    if (grp_prn_1->grp_dpt == 0){
-      break; 
-    }
+      grp_nm_fll_prn_2=grp_prn_2->grp_nm_fll_prn;
+      grp_prn_2=trv_tbl_grp_nm_fll(grp_nm_fll_prn_2,trv_tbl);
+    }  /* Look for same group name in  hierarchy */
 
-    grp_nm_fll_prn_1=grp_prn_1->grp_nm_fll_prn;
-    grp_prn_1=trv_tbl_grp_nm_fll(grp_nm_fll_prn_1,trv_tbl);
-  }  /* Look for same group name in  hierarchy */
+  }
+
 
   return False;
 } /* nco_var_scp() */

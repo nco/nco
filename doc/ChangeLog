@@ -1,3 +1,7 @@
+2014-01-21  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add nco_var_scp(). Check if one variable is in scope of another.
+
 2014-01-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.1 release procedure:
