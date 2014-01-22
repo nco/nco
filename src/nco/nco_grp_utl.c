@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1204 2014-01-22 19:40:37 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1205 2014-01-22 20:00:41 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8650,8 +8650,8 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 {
   const char fnc_nm[]="nco_prs_aux_crd()"; /* [sng] Function name */
 
-  trv_sct *lat_trv;
-  trv_sct *lon_trv;
+  trv_sct *lat_trv=NULL;
+  trv_sct *lon_trv=NULL;
 
   /* Loop table  */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
@@ -8667,6 +8667,8 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             trv_tbl->lst[idx_var].nm_fll); 
         }
 
+        int dmn_idx_fnd;
+
         /* Loop dimensions  */
         for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_var].nbr_dmn;idx_dmn++){
 
@@ -8676,7 +8678,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             /* Use the coordinate with lower group depth (index 0) */
             lat_trv=trv_tbl_var_nm_fll(trv_tbl->lst[idx_var].var_dmn[idx_dmn].lat_crd[0].nm_fll,trv_tbl);
 
-            break;
+            dmn_idx_fnd=idx_dmn;
 
           } /* Has 'latitude' auxiliary coordinates  */
 
@@ -8686,16 +8688,44 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             /* Use the coordinate with lower group depth (index 0) */
             lon_trv=trv_tbl_var_nm_fll(trv_tbl->lst[idx_var].var_dmn[idx_dmn].lon_crd[0].nm_fll,trv_tbl);
 
-            break;
+            dmn_idx_fnd=idx_dmn;
 
           } /* Has 'longitude' auxiliary coordinates  */
-
-
-
-
-
-
         } /* Loop dimensions  */
+
+        /* Auxiliary coordinates found */
+        if (lat_trv && lon_trv){
+
+          lmt_sct **aux=NULL_CEWI;   /* Auxiliary coordinate limits */
+          int aux_lmt_nbr;           /* Number of auxiliary coordinate limits */
+          nc_type crd_typ;           /* [enm] netCDF type of both "latitude" and "longitude" */
+          char units[NC_MAX_NAME+1];
+
+          aux_lmt_nbr=0;
+          crd_typ=trv_tbl->lst[idx_var].var_dmn[dmn_idx_fnd].lat_crd[0].crd_typ;
+          strcpy(units,trv_tbl->lst[idx_var].var_dmn[dmn_idx_fnd].lat_crd[0].units);
+
+          aux=nco_aux_evl_trv(nc_id,aux_nbr,aux_arg,lat_trv,lon_trv,crd_typ,units,&aux_lmt_nbr);
+
+          /* Found limits */
+          if(aux_lmt_nbr > 0 ){  
+
+            if(nco_dbg_lvl_get() >= nco_dbg_dev){
+              (void)fprintf(stdout,"%s: DEBUG %s variable <%s> (%d) limits\n",nco_prg_nm_get(),fnc_nm,
+                trv_tbl->lst[idx_var].nm_fll,aux_lmt_nbr); 
+            }
+
+            (*lmt)=(lmt_sct **)nco_realloc((*lmt),(*lmt_nbr+aux_lmt_nbr)*sizeof(lmt_sct *));
+            int lmt_nbr_new=*lmt_nbr+aux_lmt_nbr;
+            int aux_idx=0;
+            for(int lmt_idx=*lmt_nbr;lmt_idx<lmt_nbr_new;lmt_idx++) (*lmt)[lmt_idx]=aux[aux_idx++];
+            *lmt_nbr=lmt_nbr_new;
+
+            aux=(lmt_sct **)nco_free(aux); 
+
+          } /* Found limits */
+
+        } /* Auxiliary coordinates found */
 
       } /* Filter variables with auxiliary coordinates */ 
     }  /* Filter variables to extract */ 
@@ -8735,8 +8765,7 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
       char units_lon[NC_MAX_NAME+1];
 
       has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&dmn_id,&crd_typ,units_lat);
-      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&dmn_id,&crd_typ,units_lon);
-
+      
       if (has_lat){
 
         /* Loop table  */
@@ -8762,6 +8791,7 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].nm_fll=strdup(var_nm_fll);
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].dmn_id=dmn_id;
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].grp_dpt=var_trv.grp_dpt;
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].crd_typ=crd_typ;
                     strcpy(trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].units,units_lat);
 
                   } /* Is in scope */
@@ -8771,6 +8801,8 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
         } /* Loop table  */
 
       } /* has_lat */
+
+      has_lon=nco_find_lat_lon_trv(nc_id,&var_trv,"longitude",&var_nm_fll,&dmn_id,&crd_typ,units_lon);
 
       if (has_lon){
 
@@ -8797,6 +8829,7 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].nm_fll=strdup(var_nm_fll);
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].dmn_id=dmn_id;
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].grp_dpt=var_trv.grp_dpt;
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lon_crd-1].crd_typ=crd_typ;
                     strcpy(trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].units,units_lat);
 
                   } /* Is in scope */

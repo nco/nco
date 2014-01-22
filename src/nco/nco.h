@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.472 2014-01-22 18:46:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.473 2014-01-22 20:00:41 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -836,6 +836,7 @@ extern "C" {
     char *nm_fll;              /* [sng] Coordinate full name ('latitude' or 'longitude') */ 
     int dmn_id;                /* [id] Dimension ID of dimension of 'latitude' and 'longitude' coordinate variables, e.g lat_gds(gds_crd) */
     char units[NC_MAX_NAME+1]; /* [sng] Units of 'latitude' and 'longitude' */ 
+    nc_type crd_typ;           /* [enm] netCDF type of both "latitude" and "longitude" */
     int grp_dpt;               /* [nbr] Depth of group (root = 0) */
   } aux_crd_sct; 
 
