@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1209 2014-01-22 22:33:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1210 2014-01-23 21:45:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -1793,19 +1793,15 @@ nco_prn_dmn /* [fnc] Print dimensions for a group  */
 (const int nc_id, /* I [ID] File ID */
  const char * const grp_nm_fll) /* I [sng] Full name of group */
 {
-  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */ 
+  char dmn_nm[NC_MAX_NAME];     /* [sng] Dimension name */ 
 
-  const int flg_prn=0; /* [flg] Retrieve all dimensions in parent groups */        
-
-  int dmn_ids[NC_MAX_DIMS]; /* [nbr] Dimensions IDs array */
+  int *dmn_ids;                 /* [nbr] Dimensions IDs array */
   int dmn_ids_ult[NC_MAX_DIMS]; /* [nbr] Unlimited dimensions IDs array */
-  int grp_id; /* [ID]  Group ID */
-  int nbr_att; /* [nbr] Number of attributes */
-  int nbr_dmn; /* [nbr] Number of dimensions */
-  int nbr_dmn_ult; /* [nbr] Number of unlimited dimensions */
-  int nbr_var; /* [nbr] Number of variables */
+  int grp_id;                   /* [ID]  Group ID */
+  int nbr_dmn;                  /* [nbr] Number of dimensions */
+  int nbr_dmn_ult;              /* [nbr] Number of unlimited dimensions */
 
-  long dmn_sz; /* [nbr] Dimension size */
+  long dmn_sz;                  /* [nbr] Dimension size */
 
   /* Obtain group ID from netCDF API using full group name */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
@@ -1813,11 +1809,8 @@ nco_prn_dmn /* [fnc] Print dimensions for a group  */
   /* Obtain unlimited dimensions for group */
   (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
 
-  /* Obtain number of dimensions for group */
-  (void)nco_inq(grp_id,&nbr_dmn,&nbr_var,&nbr_att,NULL);
-
   /* Obtain dimensions IDs for group */
-  (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
+  dmn_ids=nco_dmn_malloc(nc_id,grp_nm_fll,&nbr_dmn);
 
   /* List dimensions using obtained group ID */
   for(int dnm_idx=0;dnm_idx<nbr_dmn;dnm_idx++){
@@ -1836,6 +1829,8 @@ nco_prn_dmn /* [fnc] Print dimensions for a group  */
     if(!is_rec_dim) (void)fprintf(stdout," #%d dimension: '%s'(%li)\n",dmn_ids[dnm_idx],dmn_nm,dmn_sz);
 
   } /* end dnm_idx dimensions */
+
+  dmn_ids=(int *)nco_free(dmn_ids);
 } /* end nco_prn_dmn() */
 
 void                          
@@ -2491,11 +2486,11 @@ prt_lmt                             /* [fnc] Print limit  */
 
 
 void                          
-nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) for debugging  with --get_grp_info  */
+nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) */
 (const int nc_id,                    /* I [ID] File ID */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] GTT (Group Traversal Table) */
 {
-  /* Groups */
+  /* Purpose: print GTT (Group Traversal Table); usage ncks --get_grp_info ~/nco/data/in_grp.nc  */
 
   int nbr_dmn;      /* [nbr] Total number of unique dimensions */
   int nbr_crd;      /* [nbr] Total number of coordinate variables */
@@ -4276,6 +4271,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int dmn_in_id_var[NC_MAX_DIMS];        /* [id] Dimension IDs array for input variable */
   int dmn_out_id[NC_MAX_DIMS];           /* [id] Dimension IDs array for output variable */
   int dmn_out_id_grp[NC_MAX_DIMS];       /* [id] Dimension IDs array in output group */ 
+  int dmn_idx_in_out[NC_MAX_DIMS];       /* [idx] Dimension correspondence, input->output (ncpdq) */
+  int dmn_out_id_tmp[NC_MAX_DIMS];       /* [idx] Copy of dmn_out_id (ncpdq) */
   int rec_dmn_out_id;                    /* [id] Record dimension for output variable */
   int var_in_id;                         /* [id] Variable ID */
   int var_out_id;                        /* [id] Variable ID */
@@ -4292,9 +4289,6 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */
   int grp_in_id;                         /* [id] Group ID */
   int grp_out_id;                        /* [id] Group ID */
-
-  int dmn_idx_in_out[NC_MAX_DIMS];       /* [idx] Dimension correspondence, input->output (ncpdq) */
-  int dmn_out_id_tmp[NC_MAX_DIMS];       /* [idx] Copy of dmn_out_id (ncpdq) */
 
   long dmn_cnt;                          /* [nbr] Hyperslabbed size of dimension */  
   long dmn_sz;                           /* [nbr] Size of dimension (on input)  */  
@@ -8654,13 +8648,11 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
               /* Free limits exported from nco_aux_evl_trv() */
               aux=(lmt_sct **)nco_free(aux);  
 
-
               /* b) case of dimension only (there is no coordinate variable for this dimension */
             }else{
-              /* Not valed for auxiliary coordinates */
+              /* Not valid for auxiliary coordinates */
               assert(0);
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
-
 
           } /* Found limits */
         } /* Auxiliary coordinates found */
@@ -8879,3 +8871,34 @@ nco_var_scp                            /* [fnc] Is variable 1 is in scope of var
 
   return False;
 } /* nco_var_scp() */
+
+int *
+nco_dmn_malloc                        /* [fnc] Inquire about number of dimensions in group and return dynamic array of dimension IDs */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ const char * const grp_nm_fll,       /* I [sng] Group full name */
+ int *dmn_nbr)                        /* I/O [nbr] Number of dimensions in group */
+
+{
+  const int flg_prn=0;   /* [flg] Retrieve all dimensions in parent groups */        
+
+  int *dmn_ids;          /* [nbr] Dimensions IDs array */
+  int grp_id;            /* [ID]  Group ID */
+  int nbr_dmn;           /* [nbr] Number of dimensions */
+
+  /* Obtain group ID from netCDF API using full group name */
+  (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
+
+  /* Obtain number of dimensions for group */
+  (void)nco_inq(grp_id,&nbr_dmn,(int *)NULL,(int *)NULL,(int *)NULL);
+
+  /* Alloc array */
+  dmn_ids=(int *)nco_malloc(nbr_dmn*sizeof(int));
+
+  /* Obtain dimensions IDs for group */
+  (void)nco_inq_dimids(grp_id,&nbr_dmn,dmn_ids,flg_prn);
+
+  /* Export number of dimensions */
+  *dmn_nbr=nbr_dmn;
+
+  return dmn_ids;
+}

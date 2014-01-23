@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.443 2014-01-22 22:23:44 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.444 2014-01-23 21:45:42 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -727,6 +727,13 @@ void
 nco_bld_crd_aux                        /* [fnc] Build auxiliary coordinates information into table */
 (const int nc_id,                      /* I [ID] netCDF file ID */
  trv_tbl_sct *trv_tbl);                /* I [sct] GTT (Group Traversal Table) */
+
+int *
+nco_dmn_malloc                         /* [fnc] Inquire about number of dimensions in group and return dynamic array of dimension IDs */
+(const int nc_id,                      /* I [ID] netCDF file ID */
+ const char * const grp_nm_fll,        /* I [sng] Group full name */
+ int *nbr_dmn);                        /* I/O [nbr] Number of dimensions in group */
+
 
 
 #ifdef __cplusplus

@@ -1,3 +1,7 @@
+2014-01-23  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_dmn_malloc() Inquire about number of dimensions in group and return dynamic array of dimension IDs 
+
 2014-01-22  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_prs_aux_crd() Parse auxiliary coordinates limits directly into traversal table 
