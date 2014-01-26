@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.418 2014-01-26 17:49:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.419 2014-01-26 22:18:33 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -1097,7 +1097,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
-#ncecat #11
+#ncecat #10
 #Chunking 
 # ncecat -O -4 -D 5 -C --cnk_plc=all -v date_int in.nc in.nc out.nc
 
@@ -1109,7 +1109,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 
 
-#ncecat #12
+#ncecat #11
 #Chunking 
 #ncecat -O -C -4  -v four_dmn_rec_var --cnk_dmn lat,2 --cnk_dmn lon,4 in.nc in.nc out.nc
 
@@ -1124,7 +1124,7 @@ print "\n";
     } #### Group tests	
 	
 		
-#ncecat #10 
+#ncecat #12
 #Concatenate files containing same variable in different orders
 # ncks -O    -v time,one ~/nco/data/in.nc ~/foo1.nc
 # ncks -O -a -v one,time ~/nco/data/in.nc ~/foo2.nc

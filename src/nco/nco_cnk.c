@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.111 2014-01-26 17:49:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.112 2014-01-26 22:18:33 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -785,6 +785,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   nco_bool is_chunked; /* [flg] Chunked variable */
   nco_bool is_xpl_cnk; /* [flg] Explicitly chunked variable */
   nco_bool must_be_chunked; /* [flg] Variable must be chunked */
+  nco_bool flg_mch[NC_MAX_VAR_DIMS]; /* [flg] Name match (absolute or relative) between chunking structure 'cnk_sct' and dimension 'dmn_cmn' */
 
   size_t *cnk_sz=NULL; /* [nbr] Chunksize list */
   size_t cnk_sz_dfl; /* [nbr] Chunksize default */
@@ -794,6 +795,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   static short FIRST_CALL=True;
 
   unsigned long long cnk_sz_byt; /* [B] Desired bytes per chunk (e.g., system blocksize) */
+
+  for(dmn_idx=0;dmn_idx<dmn_cmn->dmn_cnt;dmn_idx++) flg_mch[dmn_idx]=False;
 
   /* Initialize local convenience variables */
   flg_usr_rqs=cnk->flg_usr_rqs;
@@ -1032,18 +1035,20 @@ cnk_xpl_override: /* end goto */
   /* Override "reasonable" defaults with explicitly set per-dimension sizes, if any */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
-    nco_bool flg_mch=False; /* [flg] Name match (absolute or relative) */
-
     for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
 
       if(cnk_dmn[cnk_idx]->nm_fll){
-        if(!strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll)) flg_mch=True;
+        if(!strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll)){
+          flg_mch[dmn_idx]=True;
+        }
       }else{
-        if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)) flg_mch=True;
+        if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)){
+          flg_mch[dmn_idx]=True;
+        }
       } /* end else */
 
       /* Name match found */
-      if(flg_mch){
+      if(flg_mch[dmn_idx]){
         cnk_sz[dmn_idx]=cnk_dmn[cnk_idx]->sz;
         /* Is this a record dimension? */
         if(dmn_cmn[dmn_idx].is_rec_dmn){
@@ -1091,7 +1096,28 @@ cnk_xpl_override: /* end goto */
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)cnk_sz[dmn_idx]);
   } /* endif dbg */
 
-  /* Turn-on chunking for this variable */
+
+  /* If no name match (absolute or relative) for user requested chunk, between chunking structure 'cnk_sct' and dimension 'dmn_cmn', turn off chunking */
+  if (cnk && cnk->cnk_nbr){
+    nco_bool flg_cnk=False;
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      if (flg_mch[dmn_idx] == True){
+        flg_cnk=True;
+      }
+    }
+    if (!flg_cnk){
+      srg_typ=NC_CONTIGUOUS;   
+    }
+  }
+
+  if(nco_dbg_lvl_get() == nco_dbg_dev){
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      (void)fprintf(stdout,"%s: DEBUG %s %s\t%lu\t%lu\n",nco_prg_nm_get(),fnc_nm,
+        dmn_cmn[dmn_idx].nm_fll,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)cnk_sz[dmn_idx]);
+    }
+  } /* endif dbg */
+
+  /* Set storage (chunked or contiguous) for this variable */
   (void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
 
   /* Free space holding dimension IDs and chunksizes */
