@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.109 2014-01-20 21:09:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.110 2014-01-26 17:24:56 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -766,7 +766,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
 
   char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
-  char dmn_nm[NC_MAX_NAME];    /* [sng] Dimension name  */
 
   cnk_dmn_sct **cnk_dmn;
 
@@ -804,8 +803,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   unsigned long long cnk_sz_byt; /* [B] Desired bytes per chunk (e.g., system blocksize) */
 
-  long dmn_sz; /* [nbr] Size of dimension */  
-
   /* Initialize local convenience variables */
   flg_usr_rqs=cnk->flg_usr_rqs;
   cnk_nbr=cnk->cnk_nbr;
@@ -816,44 +813,26 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   cnk_dmn=cnk->cnk_dmn;
 
   nco_bool is_usr_spc_cnk=False; /* [flg] User specified chunks */
-  for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
-    if (cnk_dmn[cnk_idx]->is_usr_spc_cnk){
-      is_usr_spc_cnk=True;
-    }
-  }
+  for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++)
+    if(cnk_dmn[cnk_idx]->is_usr_spc_cnk) is_usr_spc_cnk=True;
 
-  /* User-chunked dimensions, check for matches  */
+  /* User-chunked dimensions, check for matches */
   if(is_usr_spc_cnk){
 
-    nco_bool flg_mth=False; /* [flg] Name match (absolure or relative) */
-
-    /* Loop chunks */
+    nco_bool flg_mch=False; /* [flg] Name match (absolute or relative) */
     for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
-      /* Loop dimensions */
       for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-        /* Absolute name exists  */
-        if (cnk_dmn[cnk_idx]->nm_fll){
-          /* Match absolute */
-          if(strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll) == 0){
-            flg_mth=True;
-          } /* Match absolute */
-        }
-        /* Relative name exists  */
-        else if (cnk_dmn[cnk_idx]->nm){
-          /* Match relative */
-          if(strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm) == 0){
-            flg_mth=True;
-          } /* Match relative */
-        }
-        else assert(0);
-      } /* Loop dimensions */
-    } /* Loop chunks */
+        if(cnk_dmn[cnk_idx]->nm_fll){
+          if(!strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll)) flg_mch=True;
+        }else{
+          if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)) flg_mch=True;
+        } /* end else */
+      } /* end loop over dmn_idx */
+    } /* end loop over cnk_idx */
 
     /* No match, return */
-    if (!flg_mth){
-      return;
-    }
-  } /* User-chunked dimensions, check for matches  */
+    if(!flg_mch) return;
+  } /* !is_usr_spc_cnk */
 
   /* For now only use this routine when user explicitly sets a chunking option */
   if(!flg_usr_rqs) return;
@@ -908,17 +887,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   (void)nco_inq_var(grp_id_out,var_id_out,var_nm,&var_typ_dsk,&dmn_nbr,var_dimid,(int *)NULL);
   typ_sz=nco_typ_lng(var_typ_dsk);
 
-  /* Sanity check (the number of dimensions in parameter is redundant, since we are obtaining it)  */
-  assert(strcmp(var_nm,nm_var) == 0);
-  assert(nbr_dmn == dmn_nbr);
-  /* Sanity check */
-  /* Loop dimensions */
-  for(int idx_dmn=0;idx_dmn<nbr_dmn;idx_dmn++){
-    (void)nco_inq_dim(grp_id_out,var_dimid[idx_dmn],dmn_nm,&dmn_sz);
-    /* Match names of parameter array with API */
-    assert(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm) == 0);
-  } /* Loop dimensions */
-
   if(dmn_nbr == 0){
     if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s skipping scalar...\n",nco_prg_nm_get(),fnc_nm);
     return; 
@@ -942,27 +910,17 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   /* Is variable currently chunked? */
   if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4) is_chunked=nco_cnk_dsk_inq(grp_id_in,var_id_in);
 
-  /* Check if this variable has user-chunked dimensions */
+  /* Does this variable have any user-chunked dimensions? */
   if(cnk_plc == nco_cnk_plc_xpl){
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
-      /* Loop chunks */
       for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
-        if (cnk_dmn[cnk_idx]->nm_fll){
-          /* Match absolute */
-          if(strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll) == 0){
-            break;
-          } /* Match absolute */
-        }
-        else if (cnk_dmn[cnk_idx]->nm){
-          /* Match relative */
-          if(strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm) == 0){
-            break;
-          } /* Match relative */
-        }
-        else assert(0);
-      } /* Loop chunks */
-      /* Are one or more explicitly chunked dimensions in this variable */
-      if(dmn_idx != dmn_nbr) is_xpl_cnk=True;
+        if(cnk_dmn[cnk_idx]->nm_fll){
+          if(!strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll)) break;
+        }else{
+          if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)) break;
+        } /* end else */
+      } /* end loop over cnk_idx */
+    if(dmn_idx != dmn_nbr) is_xpl_cnk=True;
   } /* end plc_xpl */
 
   if(must_be_chunked){
@@ -986,7 +944,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
           if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);
         } /* !chunked */
         /* Return control to calling routine
-        NB: Here is where loop in original nco_cnk_sz_set() continues to next variable */
+	   NB: Here is where loop in original nco_cnk_sz_set() continues to next variable */
         return;
     } /* !turn-off chunking */
   } /* !must_be_chunked */
@@ -1105,27 +1063,18 @@ cnk_xpl_override: /* end goto */
   /* Override "reasonable" defaults with explicitly set per-dimension sizes, if any */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
-    nco_bool flg_mth=False; /* [flg] Name match (absolure or relative) */
+    nco_bool flg_mch=False; /* [flg] Name match (absolute or relative) */
 
     for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
 
-      /* Match on name not ID */
-      if (cnk_dmn[cnk_idx]->nm_fll){
-        /* Match absolute */
-        if(strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll) == 0){
-          flg_mth=True;
-        } /* Match absolute */
-      }
-      else if (cnk_dmn[cnk_idx]->nm){
-        /* Match relative */
-        if(strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm) == 0){
-          flg_mth=True;
-        } /* Match relative */
-      }
-      else assert(0);
+      if(cnk_dmn[cnk_idx]->nm_fll){
+        if(!strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll)) flg_mch=True;
+      }else{
+        if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)) flg_mch=True;
+      } /* end else */
 
       /* Name match found */
-      if(flg_mth){
+      if(flg_mch){
         cnk_sz[dmn_idx]=cnk_dmn[cnk_idx]->sz;
         /* Is this a record dimension? */
         if(dmn_cmn[dmn_idx].is_rec_dmn){
@@ -1154,8 +1103,8 @@ cnk_xpl_override: /* end goto */
   } /* end loop over cnk */
 
   /* Status: Previous block implemented per-dimension checks on user-requested chunksizes only
-  Block below implements similar final safety check for ALL dimensions and ALL chunking maps
-  Check trims fixed (not record) dimension chunksize to never be larger than dimension size */
+     Block below implements similar final safety check for ALL dimensions and ALL chunking maps
+     Check trims fixed (not record) dimension chunksize to never be larger than dimension size */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
       if(!dmn_cmn[dmn_idx].is_rec_dmn){

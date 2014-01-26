@@ -1,5 +1,7 @@
 2014-01-26  Charlie Zender  <zender@uci.edu>
 
+	* Tidy nco_cnk.c
+
 	* NCO 4.4.1 release procedure:
  	Changes since nco-4_4_0: -X, cnk?, hsh?
 	cd ~/nco;cvs tag -d nco-4_4_1;cvs tag -d nco-4_4_1-1
