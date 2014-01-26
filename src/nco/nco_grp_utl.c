@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1210 2014-01-23 21:45:42 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1211 2014-01-26 17:49:57 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4823,7 +4823,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       } /* endif */
 
       /* Set chunksize parameters */
-      (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn,nbr_dmn_var_out);
+      (void)nco_cnk_sz_set_trv(grp_in_id,grp_out_id,cnk,var_trv->nm,dmn_cmn);
 
       if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ) dmn_cmn[0].nm_fll=(char *)nco_free(dmn_cmn[0].nm_fll);
 

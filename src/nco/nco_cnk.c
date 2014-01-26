@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.110 2014-01-26 17:24:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.111 2014-01-26 17:49:57 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -240,13 +240,9 @@ nco_cnk_prs /* [fnc] Create chunking structures with name and chunksize elements
     cnk_dmn[idx]->is_usr_spc_cnk=True; /* True if any part of limit is user-specified, else False */
 
     /* Parse input name into a temporary string and inquire if name is absolute or relative */
-    char *str_tmp=arg_lst[0];
-    nco_bool is_fll_pth=nco_is_fll_pth(str_tmp);
-    if (is_fll_pth){
-      cnk_dmn[idx]->nm_fll=(char *)strdup(str_tmp);
-    } else {
-      cnk_dmn[idx]->nm=(char *)strdup(str_tmp);
-    }
+    char *sng_tmp=arg_lst[0];
+    nco_bool is_fll_pth=nco_is_fll_pth(sng_tmp);
+    if(is_fll_pth) cnk_dmn[idx]->nm_fll=(char *)strdup(sng_tmp); else cnk_dmn[idx]->nm=(char *)strdup(sng_tmp);
 
     /* 20130711: Debian Mayhem project bug #716602 shows unsanitized input can cause core-dump _inside_ strtoul() */
     cnk_dmn[idx]->sz=strtoul(arg_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -270,9 +266,8 @@ nco_cnk_lst_free /* [fnc] Free memory associated with chunking structure list */
   /* Purpose: Free all memory associated with dynamically allocated chunking structure list */
   int idx;
 
-  for(idx=0;idx<cnk_nbr;idx++){
+  for(idx=0;idx<cnk_nbr;idx++) 
     cnk_lst[idx]=nco_cnk_dmn_free(cnk_lst[idx]);
-  } /* end loop over idx */
 
   /* Free structure pointer last */
   cnk_lst=(cnk_dmn_sct **)nco_free(cnk_lst);
@@ -754,18 +749,15 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 (const int grp_id_in, /* I [id] netCDF group ID in input file */
  const int grp_id_out, /* I [id] netCDF group ID in output file */
  const cnk_sct * const cnk, /* I [sct] Chunking structure */
- const char * const nm_var,  /* I [sng] Name of variable */
- const dmn_cmn_sct * const dmn_cmn, /* I [sct] Dimension structure in output file */
- const int nbr_dmn) /* I [nbr] Number of dimensions in output file (size of above array) */
+ const char * const var_nm,  /* I [sng] Name of variable */
+ const dmn_cmn_sct * const dmn_cmn) /* I [sct] Dimension structure in output file */
 {
   /* Purpose: Use chunking map and policy to determine chunksize list
-  Adapted from nco_cnk_sz_set() to GTT:
-  1) Instead of a loop for all variables, this functions chunks one variable, the object parameter variable
-  2) In the dimension loop, the dimension object is obtained from variable object...much simpler */
+     Adapted from nco_cnk_sz_set() to GTT:
+     1) Instead of a loop for all variables, this functions chunks one variable, the object parameter variable
+     2) In the dimension loop, the dimension object is obtained from variable object...much simpler */
 
   const char fnc_nm[]="nco_cnk_sz_set_trv()"; /* [sng] Function name */
-
-  char var_nm[NC_MAX_NAME+1L]; /* [sng] Variable name */
 
   cnk_dmn_sct **cnk_dmn;
 
@@ -812,28 +804,6 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   cnk_sz_byt=cnk->cnk_sz_byt;
   cnk_dmn=cnk->cnk_dmn;
 
-  nco_bool is_usr_spc_cnk=False; /* [flg] User specified chunks */
-  for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++)
-    if(cnk_dmn[cnk_idx]->is_usr_spc_cnk) is_usr_spc_cnk=True;
-
-  /* User-chunked dimensions, check for matches */
-  if(is_usr_spc_cnk){
-
-    nco_bool flg_mch=False; /* [flg] Name match (absolute or relative) */
-    for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
-      for(dmn_idx=0;dmn_idx<nbr_dmn;dmn_idx++){
-        if(cnk_dmn[cnk_idx]->nm_fll){
-          if(!strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll)) flg_mch=True;
-        }else{
-          if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)) flg_mch=True;
-        } /* end else */
-      } /* end loop over dmn_idx */
-    } /* end loop over cnk_idx */
-
-    /* No match, return */
-    if(!flg_mch) return;
-  } /* !is_usr_spc_cnk */
-
   /* For now only use this routine when user explicitly sets a chunking option */
   if(!flg_usr_rqs) return;
 
@@ -863,9 +833,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       (void)fprintf(stdout,"cnk_sz_scl, cnk_sz_byt: %lu, %lu\n",(unsigned long)cnk_sz_scl,(unsigned long)cnk_sz_byt);
       if(cnk_nbr > 0){
         (void)fprintf(stdout,"idx dmn_nm\tcnk_sz:\n");
-        for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
-          (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
-        }
+        for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++)
+	  (void)fprintf(stdout,"%2d %s\t%lu\n",cnk_idx,cnk_dmn[cnk_idx]->nm,(unsigned long)cnk_dmn[cnk_idx]->sz);
       } /* cnk_nbr == 0 */
     } /* endif dbg */
   } /* endif dbg */
@@ -880,11 +849,11 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   is_xpl_cnk=False; /* [flg] Explicitly chunked variable */
 
   /* Obtain variable ID using group ID */
-  (void)nco_inq_varid(grp_id_out,nm_var,&var_id_out);
-  (void)nco_inq_varid(grp_id_in,nm_var,&var_id_in);
+  (void)nco_inq_varid(grp_id_out,var_nm,&var_id_out);
+  (void)nco_inq_varid(grp_id_in,var_nm,&var_id_in);
 
   /* Get type and number of dimensions for variable */
-  (void)nco_inq_var(grp_id_out,var_id_out,var_nm,&var_typ_dsk,&dmn_nbr,var_dimid,(int *)NULL);
+  (void)nco_inq_var(grp_id_out,var_id_out,(char *)NULL,&var_typ_dsk,&dmn_nbr,var_dimid,(int *)NULL);
   typ_sz=nco_typ_lng(var_typ_dsk);
 
   if(dmn_nbr == 0){
