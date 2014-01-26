@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.950 2014-01-17 23:15:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.951 2014-01-26 16:27:10 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -115,7 +115,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.4.1
 @set copyright-years 1995--2014
 @set update-year 2014
-@set update-date 9 January 2014
+@set update-date 25 January 2014
 @set update-month January 2014
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1225,7 +1225,7 @@ netCDF format.
 Full support for these features is forthcoming, yet support as of
 December, 2013 is quite functional.
 For best results install @acronym{NCO} versions 4.4.0 or later on top of
-netCDF versions 4.3.1-rc7 or later. 
+netCDF versions 4.3.1 or later. 
 Getting to this point has been an iterative effort where Unidata
 improved netCDF library capabilities in response to our requests.
 @acronym{NCO} versions 4.3.6 and earlier do not explicitly support
@@ -1237,7 +1237,7 @@ use a special flag to workaround netCDF @acronym{HDF4} issues.
 The user must tell these versions of @acronym{NCO} that an input file is
 @acronym{HDF4} format by using the @samp{--hdf4} switch. 
 
-When compiled with netCDF version 4.3.1-rc7 (20131222) or later, 
+When compiled with netCDF version 4.3.1 (20140116) or later, 
 @acronym{NCO} versions 4.4.0 (January, 2014) and later more gracefully 
 handle @acronym{HDF4} files.
 In particular, the @samp{--hdf4} switch is obsolete. 
@@ -4599,6 +4599,114 @@ Example compliance checks of common @acronym{NASA} datasets are at
 @uref{http://dust.ess.uci.edu/diwg}.
 Our long-term goal is to enrich the hierarchical data model with the 
 expressivity and syntactic power of @acronym{CF} conventions.
+
+@acronym{NASA} asked the @acronym{DIWG} to prepare a one-page summary
+of the procedure necessary to check @acronym{HDF} files for
+@acronym{CF}-compliance: 
+@example
+@verbatim
+cat > ~/ncdismember.txt << 'EOF'
+    Preparing an RPM-based OS to Test Hierarchical Files for CF-Compliance
+
+By Charlie Zender, UCI & NASA Dataset Interoperability Working Group (DIWG)
+
+Installation Summary:
+1. HDF4
+2. HDF5
+3. netCDF version 4.3.1 (or later)
+4. NCO version 4.4.0 (or later)
+5. numpy
+6. netcdf4-python
+7. python-lxml
+8. CFunits-python
+9. CFChecker
+10. ncdismember
+
+Following instructions for Fedora Core 20 (FC20), an RPM-based Linux OS
+Not yet tested on RHEL or CentOS
+Feedback and changes for other Linux-based OS's welcome to zender at uci.edu
+${H4DIR}, ${H5DIR}, ${NETCDFDIR}, ${NCODIR}, may all be different
+For simplicity CZ sets them all to /usr/local
+
+# 1. HDF4. Build in non-default manner. Turn-off its own netCDF support:
+# HDF4 support not necessary though it makes ncdismember more comprehensive
+# As per http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html
+wget -c http://www.hdfgroup.org/ftp/HDF/HDF_Current/src/hdf-4.2.9.tar.gz
+tar xvzf hdf-4.2.9.tar.gz
+cd hdf-4.2.9
+./configure --enable-shared --disable-netcdf --disable-fortran --prefix=${H4DIR}
+make && make check && make install
+
+# 2. HDF5. Build normally. RPM may work too. Please let me know if so.
+# HDF5 is a necessary pre-requisite for netCDF4
+wget -c ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4/hdf5-1.8.11.tar.gz
+tar xvzf hdf5-1.8.11.tar.gz
+cd hdf5-1.8.11
+./configure --enable-shared --prefix=${H5DIR}
+make && make check && make install
+
+# 3. netCDF version 4.3.1 with HDF4. (No RPM, must install by hand)
+# Earlier versions of netCDF may fail checking some HDF4 files
+# As per http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html
+wget -c ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.3.1.tar.gz
+tar xvzf netcdf-4.3.1.tar.gz
+cd netcdf-4.3.1
+CPPFLAGS="-I${H5DIR}/include -I${H4DIR}/include" \
+LDFLAGS="-L${H5DIR}/lib -L${H4DIR}/lib" \
+./configure --enable-hdf4 --enable-hdf4-file-tests
+make && make check && make install
+
+# 4. NCO version 4.4.0. No RPM for this version. Must install by hand.
+# Earlier versions of NCO are relatively useless for ncdismember
+cd ${DATA}/tmp
+wget http://nco.sourceforge.net/src/nco-4.4.0.tar.gz .
+tar xvzf nco-4.4.0.tar.gz
+cd nco-4.4.0
+./configure --prefix=${NCODIR}
+make && make install
+
+# 5. numpy
+sudo yum install numpy -y
+
+# 6. netcdf4-python
+sudo yum install netcdf4-python -y
+
+# 7. python-lxml
+sudo yum install python-lxml -y
+
+# 8. CFunits-python. No RPM available. Must install by hand.
+# http://code.google.com/p/cfunits-python/
+cd ${DATA}/tmp
+wget http://cfunits-python.googlecode.com/files/cfunits-0.9.6.tar.gz .
+cd cfunits-0.9.6
+sudo python setup.py install
+
+# 9. CFChecker. No RPM available. Must install by hand.
+# https://bitbucket.org/mde_/cfchecker
+cd ${DATA}/tmp
+wget https://bitbucket.org/mde_/cfchecker/downloads/CFchecker-1.5.15.tar.bz2 . 
+tar xvjf CFchecker-1.5.15.tar.bz2 
+cd CFchecker
+sudo python setup.py install
+
+# 10. ncdismember. Copy script from http://nco.sf.net/nco.html#ncdismember
+# Store dismembered files somewhere, e.g., ${DATA}/nco/tmp/hdf
+mkdir -p ${DATA}/nco/tmp/hdf
+# Many datasets work with a simpler command...
+ncdismember ~/nco/data/in.nc ${DATA}/nco/tmp/hdf cf 1.5
+ncdismember ~/nco/data/mdl.nc ${DATA}/nco/tmp/hdf cf 1.5
+ncdismember ${DATA}/hdf/AMSR_E_L2_Rain_V10_200905312326_A.hdf \
+            ${DATA}/nco/tmp/hdf cf 1.5
+ncdismember ${DATA}/hdf/BUV-Nimbus04_L3zm_v01-00-2012m0203t144121.h5 \
+            ${DATA}/nco/tmp/hdf cf 1.5
+ncdismember ${DATA}/hdf/HIRDLS-Aura_L3ZAD_v06-00-00-c02_2005d022-2008d077.he5 ${DATA}/nco/tmp/hdf cf 1.5
+# Some datasets, typically .h5, require the --fix_rec_dmn=all argument
+ncdismember_${DATA}/hdf/GATMO_npp_d20100906_t1935191_e1935505_b00012_c20110707155932065809_noaa_ops.h5 ${DATA}/nco/tmp/hdf cf 1.5 --fix_rec_dmn=all
+ncdismember ${DATA}/hdf/mabel_l2_20130927t201800_008_1.h5 \
+            ${DATA}/nco/tmp/hdf cf 1.5 --fix_rec_dmn=all
+EOF
+@end verbatim
+@end example
 
 @html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
@@ -14937,7 +15045,7 @@ ncpdq --hdf_upk -P xst_new modis.nc modis.nc
 @end example
 @acronym{NCO} now
 @footnote{
-Prior to @acronym{NCO} 4.4.0 and netCDF 4.3.1-rc7 (January, 2013),
+Prior to @acronym{NCO} 4.4.0 and netCDF 4.3.1 (January, 2014),
 @acronym{NCO} requires the @samp{--hdf4} switch to correctly read
 HDF4 input files.
 For example, @samp{ncpdq --hdf4 --hdf_upk -P xst_new modis.hdf modis.nc}.

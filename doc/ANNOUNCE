@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.681 2014-01-22 01:01:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.682 2014-01-26 16:27:10 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.1 are ready. 
 
@@ -20,8 +20,8 @@ However, ncra and ncwa are deprecated and will eventually be removed.
 Please change your scripts/habits accordingly within a few years...
 
 Work on NCO 4.4.2 is underway, focused on stability and speed.   
-There will be more netCDF4 mop-up (-X and --cnk) and, possibly,
-improved HDF4 support, and cache manipulation for chunking.  
+There will be more netCDF4 mop-up and, possibly, improved HDF4
+support, and cache manipulation for chunking.   
 
 Enjoy,
 Charlie
@@ -33,7 +33,6 @@ NEW FEATURES:
 A. The -X option for auxiliary coordinates now works fully when
    latitude and longitude coordinates are nested in group hierarchies.
    http://nco.sf.net/nco.html#aux
-   fxm verify
 
 A. Chunking options now support full group pathnames for dimensions.
    These override chunking arguments with short names when a given
@@ -66,7 +65,7 @@ KNOWN ISSUES NOT YET FIXED:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.4.1 built/tested with netCDF
-   4.3.1-rc7 snapshot 20131222 on top of HDF5 hdf5-1.8.9 with these methods: 
+   4.3.1 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism

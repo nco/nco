@@ -1,22 +1,26 @@
-2014-01-23  Pedro Vicente  <pvicente@uci.edu>
-
-	* nco_dmn_malloc() Inquire about number of dimensions in group and return dynamic array of dimension IDs 
-
-2014-01-22  Pedro Vicente  <pvicente@uci.edu>
-
-	* nco_prs_aux_crd() Parse auxiliary coordinates limits directly into traversal table 
-
-2014-01-21  Pedro Vicente  <pvicente@uci.edu>
-
-	* Add nco_var_scp(). Check if one variable is in scope of another.
-
-2014-01-21  Charlie Zender  <zender@uci.edu>
+2014-01-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.1 release procedure:
  	Changes since nco-4_4_0: -X, cnk?, hsh?
 	cd ~/nco;cvs tag -d nco-4_4_1;cvs tag -d nco-4_4_1-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.1 release"
 	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
+
+	* NB: Unidata renamed netCDF 4.3.1-rc7 as 4.3.1. Some NCO notes	still say 4.3.1-rc7.
+
+2014-01-23  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_dmn_malloc() Inquire about number of dimensions in group and return dynamic array of dimension IDs
+
+2014-01-22  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_prs_aux_crd() Parse auxiliary coordinates limits directly into traversal table
+
+2014-01-21  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add nco_var_scp(). Check if one variable is in scope of another.
+
+2014-01-21  Charlie Zender  <zender@uci.edu>
 
 	* ncgen breaks on hidden attributes in CDL with netCDF 4.1.1- (201111)
 	Hence NCO 4.4.0 has many regressions on older netCDF
