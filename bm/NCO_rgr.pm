@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.419 2014-01-26 22:18:33 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.420 2014-01-27 23:00:03 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2531,7 +2531,7 @@ print "\n";
     $dsc_sng="(Groups) Chunking and full dimension names --cnk_dmn /g19/g19g1/g19g1g1/lev,1";
     $tst_cmd[0]="ncks -O -4 --cnk_dmn /g19/g19g1/g19g1g1/lev,1 -v two_dmn_var $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m -C -v /g19/g19g1/two_dmn_var --hdn %tmp_fl_00%";
-    $tst_cmd[2]="two_dmn_var attribute 2: _Storage, size = 10 NC_CHAR, value = contiguous";
+    $tst_cmd[2]="two_dmn_var attribute 3: _ChunkSizes, size = 2 NC_INT, value = 2, 3";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
