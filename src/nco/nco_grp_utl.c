@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1211 2014-01-26 17:49:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1212 2014-01-27 22:56:46 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4780,7 +4780,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           /* Move up to make room for inserted dimension at 0 index */
           dmn_cmn[idx_dmn+1]=dmn_cmn_tmp[idx_dmn];
         } /* Loop dimensions  */
-      } /* Define extra dimension on output; (e.g ncecat adds "record" dimension)  */
+      } /* !ncecat */
 
       /* Special case for ncwa */
       if(nco_prg_id == ncwa){
@@ -4793,7 +4793,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
             idx_dmn_def++;
           } /* DEFINE_DIM[idx_dmn]) */
         } /* Loop dimensions */
-      } /* Special case for ncwa */
+      } /* !ncwa */
 
       /* Special case for ncpdq */
       if(nco_prg_id == ncpdq && nbr_dmn_var > 1){
@@ -4812,9 +4812,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
           if(strcmp(dmn_nm,dmn_cmn[idx_dmn].nm)){
             /* Swap array for these 2 names */
             (void)nco_dmn_swap(dmn_nm,dmn_cmn[idx_dmn].nm,dmn_cmn,nbr_dmn_var);
-          } /* Dimension name differs from input */
-        } /* Loop dimensions */
-      } /* Special case for ncpdq */
+          } /* endif */
+        } /* idx_dmn */
+      } /* !ncpdq */
 
       if(nco_dbg_lvl_get() >= nco_dbg_dev){
         (void)fprintf(stdout,"%s: DEBUG %s setting chunksizes for <%s> with dimensions:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll);

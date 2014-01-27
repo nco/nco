@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.112 2014-01-26 22:18:33 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.113 2014-01-27 22:56:46 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1038,13 +1038,9 @@ cnk_xpl_override: /* end goto */
     for(cnk_idx=0;cnk_idx<cnk_nbr;cnk_idx++){
 
       if(cnk_dmn[cnk_idx]->nm_fll){
-        if(!strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll)){
-          flg_mch[dmn_idx]=True;
-        }
+        if(!strcmp(cnk_dmn[cnk_idx]->nm_fll,dmn_cmn[dmn_idx].nm_fll)) flg_mch[dmn_idx]=True;
       }else{
-        if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)){
-          flg_mch[dmn_idx]=True;
-        }
+        if(!strcmp(cnk_dmn[cnk_idx]->nm,dmn_cmn[dmn_idx].nm)) flg_mch[dmn_idx]=True;
       } /* end else */
 
       /* Name match found */
@@ -1096,25 +1092,9 @@ cnk_xpl_override: /* end goto */
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(stdout,"%2d %s\t%lu\t%lu\n",dmn_idx,dmn_cmn[dmn_idx].nm_fll,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)cnk_sz[dmn_idx]);
   } /* endif dbg */
 
-
-  /* If no name match (absolute or relative) for user requested chunk, between chunking structure 'cnk_sct' and dimension 'dmn_cmn', turn off chunking */
-  if (cnk && cnk->cnk_nbr){
-    nco_bool flg_cnk=False;
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-      if (flg_mch[dmn_idx] == True){
-        flg_cnk=True;
-      }
-    }
-    if (!flg_cnk){
-      srg_typ=NC_CONTIGUOUS;   
-    }
-  }
-
   if(nco_dbg_lvl_get() == nco_dbg_dev){
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-      (void)fprintf(stdout,"%s: DEBUG %s %s\t%lu\t%lu\n",nco_prg_nm_get(),fnc_nm,
-        dmn_cmn[dmn_idx].nm_fll,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)cnk_sz[dmn_idx]);
-    }
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++)
+      (void)fprintf(stdout,"%s: DEBUG %s %s\t%lu\t%lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm_fll,(unsigned long)dmn_cmn[dmn_idx].sz,(unsigned long)cnk_sz[dmn_idx]);
   } /* endif dbg */
 
   /* Set storage (chunked or contiguous) for this variable */
