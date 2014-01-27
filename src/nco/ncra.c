@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.490 2014-01-06 18:24:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.491 2014-01-27 05:57:00 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.490 2014-01-06 18:24:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.490 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.491 2014-01-27 05:57:00 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.491 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -642,21 +642,26 @@ main(int argc,char **argv)
   /* Build record dimensions array */
   (void)nco_bld_rec_dmn(in_id,FORTRAN_IDX_CNV,flg_rec_all,trv_tbl);  
 
-  /* Allocate arrays for multi-records cases */
-  flg_input_complete=(nco_bool *)nco_malloc(trv_tbl->nbr_rec*sizeof(nco_bool));
-  idx_rec_out=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
-  rec_in_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
-  rec_usd_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
-  REC_LST_DSR=(nco_bool *)nco_malloc(trv_tbl->nbr_rec*sizeof(nco_bool));
+  /* Record handling operators only */
+  if(nco_prg_id == ncra || nco_prg_id == ncrcat){
 
-  /* Initialize arrays for multi-records cases */
-  for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
-    flg_input_complete[idx_rec]=False;
-    idx_rec_out[idx_rec]=0L;
-    rec_in_cml[idx_rec]=0L;
-    rec_usd_cml[idx_rec]=0L;
-    REC_LST_DSR[idx_rec]=False;
-  } /* Initialize arrays */
+    /* Allocate arrays for multi-records cases */
+    flg_input_complete=(nco_bool *)nco_malloc(trv_tbl->nbr_rec*sizeof(nco_bool));
+    idx_rec_out=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
+    rec_in_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
+    rec_usd_cml=(long *)nco_malloc(trv_tbl->nbr_rec*sizeof(long));
+    REC_LST_DSR=(nco_bool *)nco_malloc(trv_tbl->nbr_rec*sizeof(nco_bool));
+
+    /* Initialize arrays for multi-records cases */
+    for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
+      flg_input_complete[idx_rec]=False;
+      idx_rec_out[idx_rec]=0L;
+      rec_in_cml[idx_rec]=0L;
+      rec_usd_cml[idx_rec]=0L;
+      REC_LST_DSR[idx_rec]=False;
+    } /* Initialize arrays */
+
+  } /* Record handling operators only */
 
   /* Is this an ARM-format data file? */
   CNV_ARM=nco_cnv_arm_inq(in_id);
