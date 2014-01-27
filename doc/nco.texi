@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.951 2014-01-26 16:27:10 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.952 2014-01-27 05:42:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4474,7 +4474,7 @@ opt='' # [flg] Additional ncks options (e.g., '--fix_rec_dmn=all')
 
 # Command line argument option parsing
 if [ -n "${1}" ]; then fl_in=${1}; fi
-if [ -n "${2}" ]; then drc_out=${2};  fi
+if [ -n "${2}" ]; then drc_out=${2}; fi
 if [ -n "${3}" ]; then flg_cf=${3}; fi
 if [ -n "${4}" ]; then cf_vrs=${4}; fi
 if [ -n "${5}" ]; then opt=${5}; fi
@@ -4584,6 +4584,9 @@ e.g., @samp{1.3}, as an optional fourth argument to
 Current valid @acronym{CF} options are @samp{1.0}, @samp{1.1},
 @samp{1.2}, @samp{1.3}, @samp{1.4}, and @samp{1.5}. 
 
+@html
+<a name="diwg"></a> <!-- http://nco.sf.net/nco.html#diwg -->
+@end html
 Our development and testing of @command{ncdismember} is funded by our
 involvement in @acronym{NASA}'s Dataset Interoperability Working Group 
 (@uref{https://wiki.earthdata.nasa.gov/display/ESDSWG/Dataset+Interoperability+Working+Group,
@@ -4611,9 +4614,9 @@ cat > ~/ncdismember.txt << 'EOF'
 By Charlie Zender, UCI & NASA Dataset Interoperability Working Group (DIWG)
 
 Installation Summary:
-1. HDF4
+1. HDF4 [with netCDF support _disabled_]
 2. HDF5
-3. netCDF version 4.3.1 (or later)
+3. netCDF version 4.3.1 (or later) [with HDF4 support _enabled_]
 4. NCO version 4.4.0 (or later)
 5. numpy
 6. netcdf4-python
@@ -4622,15 +4625,15 @@ Installation Summary:
 9. CFChecker
 10. ncdismember
 
+All 10 packages can use default installs _except_ HDF4 and netCDF.
 Following instructions for Fedora Core 20 (FC20), an RPM-based Linux OS
-Not yet tested on RHEL or CentOS
 Feedback and changes for other Linux-based OS's welcome to zender at uci.edu
 ${H4DIR}, ${H5DIR}, ${NETCDFDIR}, ${NCODIR}, may all be different
 For simplicity CZ sets them all to /usr/local
 
-# 1. HDF4. Build in non-default manner. Turn-off its own netCDF support:
+# 1. HDF4. Build in non-default manner. Turn-off its own netCDF support.
+# Per http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html
 # HDF4 support not necessary though it makes ncdismember more comprehensive
-# As per http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html
 wget -c http://www.hdfgroup.org/ftp/HDF/HDF_Current/src/hdf-4.2.9.tar.gz
 tar xvzf hdf-4.2.9.tar.gz
 cd hdf-4.2.9
@@ -4645,9 +4648,9 @@ cd hdf5-1.8.11
 ./configure --enable-shared --prefix=${H5DIR}
 make && make check && make install
 
-# 3. netCDF version 4.3.1 with HDF4. (No RPM, must install by hand)
+# 3. netCDF version 4.3.1. Build in non-default manner with HDF4. No RPM.
+# Per http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html
 # Earlier versions of netCDF may fail checking some HDF4 files
-# As per http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html
 wget -c ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf-4.3.1.tar.gz
 tar xvzf netcdf-4.3.1.tar.gz
 cd netcdf-4.3.1
