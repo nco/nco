@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.492 2014-01-28 05:05:16 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.493 2014-01-28 06:15:05 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.492 2014-01-28 05:05:16 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.492 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.493 2014-01-28 06:15:05 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.493 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -799,9 +799,9 @@ main(int argc,char **argv)
           int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
           /* Get group ID using record group full name */
           (void)nco_inq_grp_full_ncid(out_id,trv_tbl->lmt_rec[idx_rec]->grp_nm_fll,&grp_out_id);
-
-          /* fxm: this assumes only one record dimension exists in this group */
+          /* Get the dimension ID (rec_dmn_out_id) of the current record, from its name */
           (void)nco_inq_dimid(grp_out_id,trv_tbl->lmt_rec[idx_rec]->nm,&rec_dmn_out_id);
+          /* Get the size of the record  */
           (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
         } /* !REC_APN */
 

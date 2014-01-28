@@ -78,7 +78,7 @@ netcdf in_grp {
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
   :julian_day = 200000.04;
-  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.118 2014-01-21 22:21:50 zender Exp $";
+  :RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in_grp.cdl,v 1.119 2014-01-28 06:15:05 pvicente Exp $";
   
  data:
   area=10.,10.;
@@ -149,6 +149,25 @@ netcdf in_grp {
   data:
     one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10;  
   } // end g4
+  
+ //
+ //g5
+ //
+ group: g5 { 
+  dimensions:
+  time51=unlimited;  //test --rec_apn with more than 1 record in group (NB: make first record, time51, differ from variable size (time52) ) 
+  time52=unlimited;
+  variables:
+    int one_dmn_rec_var(time52);
+	one_dmn_rec_var:long_name = "one dimensional record variable";
+	one_dmn_rec_var:units = "kelvin";
+	double time51(time51);
+	double time52(time52);
+  data:
+    one_dmn_rec_var=1,2,3,4,5,6,7,8,9,10; 
+	time51=1.,2.;
+    time52=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;	
+  } // end g5
   
   //
   //g6

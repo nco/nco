@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.421 2014-01-28 05:05:16 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.422 2014-01-28 06:15:05 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3666,17 +3666,30 @@ print "\n";
 	if($HAVE_NETCDF4_H == 1){	
 
 #ncrcat #28
-#ncks -h -O -v one_dmn_rec_var in_grp.nc in_grp1.nc
+#ncks -h -O -g g4 -v one_dmn_rec_var in_grp.nc in_grp1.nc
 #ncrcat -h --no_tmp_fl --rec_apn -v one_dmn_rec_var in_grp.nc in_grp1.nc
 
-    $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrcat $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[2]="ncks  -C -v one_dmn_rec_var  %tmp_fl_00%";
-    $dsc_sng="(Groups) Append records to existing file without copying original";
+    $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrcat $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[2]="ncks  -C -g g4 -v one_dmn_rec_var  %tmp_fl_00%";
+    $dsc_sng="(Groups) Append records to existing file without copying original (Group with 1 record case)";
     $tst_cmd[3]="time[19]=10 one_dmn_rec_var[19]=10 kelvin";
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+	
+#ncrcat #29
+#ncks -h -O -g g5 -v one_dmn_rec_var,time51,time52 in_grp.nc in_grp1.nc
+#ncrcat -h --no_tmp_fl --rec_apn -g g5 -v one_dmn_rec_var in_grp.nc in_grp1.nc
+
+    $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncrcat $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[2]="ncks  -C -g g5 -v one_dmn_rec_var  %tmp_fl_00%";
+    $dsc_sng="(Groups) Append records to existing file without copying original (Group with 2 records case)";
+    $tst_cmd[3]="time52[19]=10 one_dmn_rec_var[19]=10 kelvin";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
 	
 	
 	} #### End Group tests
