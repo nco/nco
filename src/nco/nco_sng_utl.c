@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.67 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.68 2014-01-28 18:09:53 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -26,23 +26,23 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
     if(chr_1 < chr_2){
       /* Use free() not nco_free() to keep this more like a generic (non-NCO) library function */
 #ifndef _MSC_VER
-      sng_1_c=(char *)free(sng_1_c);
-      sng_2_c=(char *)free(sng_2_c);
+      sng_1_c=(char *)free((void *)sng_1_c);
+      sng_2_c=(char *)free((void *)sng_2_c);
 #endif /* _MSC_VER */
       return -1;
     }
     if(chr_1 > chr_2){
 #ifndef _MSC_VER
-      sng_1_c=(char *)free(sng_1_c);
-      sng_2_c=(char *)free(sng_2_c);
+      sng_1_c=(char *)free((void *)sng_1_c);
+      sng_2_c=(char *)free((void *)sng_2_c);
 #endif /* _MSC_VER */
       return 1;
     }
     if(chr_1 == 0){
 #ifndef _MSC_VER
-      sng_1_c=(char *)free(sng_1_c);
-      sng_2_c=(char *)free(sng_2_c);
-#endif
+      sng_1_c=(char *)free((void *)sng_1_c);
+      sng_2_c=(char *)free((void *)sng_2_c);
+#endif /* _MSC_VER */
       return 0;
     }
   } /* end while */

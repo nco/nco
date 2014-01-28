@@ -1,3 +1,7 @@
+2014-01-28  Charlie Zender  <zender@uci.edu>
+
+	* strcasecmp() cast (char *) to (void *) in free() argument for Mac OS 10.9 LLVM compatibility
+
 2014-01-27  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncrcat regressions #28,29,30 Record appending for a group with one record, for a group with 2 records
