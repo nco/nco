@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.206 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.207 2014-01-28 07:15:55 pvicente Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -559,7 +559,7 @@ nco_prn_lmt                    /* [fnc] Print limit information */
 
 void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
-(int nc_id, /* I [idx] netCDF file ID */
+(const int grp_id, /* I [idx] netCDF group ID */
  lmt_sct *lmt_ptr, /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
  long rec_usd_cml, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  nco_bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
@@ -610,8 +610,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   lmt.srd=1L;
   lmt.flg_input_complete=False;
 
-  /* Get dimension ID */
-  rcd=nco_inq_dimid_flg(nc_id,lmt.nm,&lmt.id);
+  /* Get dimension ID from name */
+  rcd=nco_inq_dimid_flg(grp_id,lmt.nm,&lmt.id);
   if(rcd != NC_NOERR){
     (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),lmt.nm);
     nco_exit(EXIT_FAILURE);
@@ -623,16 +623,16 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
      the limit is a record limit may be tested.
      Program defensively and define this flag in all cases. */
 
-  (void)nco_inq_format(nc_id,&fl_fmt);
+  (void)nco_inq_format(grp_id,&fl_fmt);
 
-   /* Obtain unlimited dimensions */
-  (void)nco_inq_unlimdims(nc_id,&nbr_dmn_ult,dmn_ids_ult);
+   /* Obtain unlimited dimensions for group */
+  (void)nco_inq_unlimdims(grp_id,&nbr_dmn_ult,dmn_ids_ult);
 
   rec_dmn_id=-1; 
 
   if(fl_fmt == NC_FORMAT_NETCDF4){
     for(int idx_dmn=0;idx_dmn<nbr_dmn_ult;idx_dmn++)
-      /* fxm: check is broken, should match names not IDs; names never change */
+      /* Match IDs to get the ID of the record (both IDs from 'dmn_ids_ult' and 'lmt' are obtained here, and function is called on ncra file loop */
       if(lmt.id == dmn_ids_ult[idx_dmn]) rec_dmn_id=dmn_ids_ult[idx_dmn];
   }else{
     rec_dmn_id=dmn_ids_ult[0];
@@ -642,7 +642,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   if(lmt.is_rec_dmn && (nco_prg_id == ncra || nco_prg_id == ncrcat)) rec_dmn_and_mfo=True; else rec_dmn_and_mfo=False;
 
   /* Get dimension size */
-  (void)nco_inq_dimlen(nc_id,lmt.id,&dim.sz);
+  (void)nco_inq_dimlen(grp_id,lmt.id,&dim.sz);
 
   /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
@@ -736,12 +736,12 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* Coordinate re-basing code */
   lmt.origin=0.0;
   /* Get variable ID of coordinate */
-  rcd=nco_inq_varid_flg(nc_id,lmt.nm,&dim.cid);
+  rcd=nco_inq_varid_flg(grp_id,lmt.nm,&dim.cid);
   if(rcd == NC_NOERR){
     char *cln_sng=NULL_CEWI;
 
-    fl_udu_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"units"); /* Units attribute of coordinate variable */
-    cln_sng=nco_lmt_get_udu_att(nc_id,dim.cid,"calendar"); /* Calendar attribute */
+    fl_udu_sng=nco_lmt_get_udu_att(grp_id,dim.cid,"units"); /* Units attribute of coordinate variable */
+    cln_sng=nco_lmt_get_udu_att(grp_id,dim.cid,"calendar"); /* Calendar attribute */
 
     if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng){ 
 #ifdef ENABLE_UDUNITS
@@ -770,7 +770,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     long dmn_srt=0L;
 
     /* Get coordinate type */
-    (void)nco_inq_vartype(nc_id,dim.cid,&dim.type);
+    (void)nco_inq_vartype(grp_id,dim.cid,&dim.type);
 
     /* Warn when coordinate type is weird */
     if(dim.type == NC_BYTE || dim.type == NC_UBYTE || dim.type == NC_CHAR || dim.type == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",nco_prg_nm_get(),lmt.nm,nco_typ_sng(dim.type));
@@ -788,7 +788,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 Block is thread-safe for distinct in_id's */
       /* 20110221: replace nco_get_vara() with nc_get_vara_double() */
       /* Retrieve this coordinate */
-      nc_get_vara_double(nc_id,dim.cid,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
+      nc_get_vara_double(grp_id,dim.cid,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
     } /* end OpenMP critical */
 
     /* Officially change type */

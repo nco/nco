@@ -1,6 +1,6 @@
 2014-01-27  Pedro Vicente  <pvicente@uci.edu>
 
-	* Add ncrcat regressions #28,29 Record appending for a group with one record, for a group with 2 records
+	* Add ncrcat regressions #28,29,30 Record appending for a group with one record, for a group with 2 records
 
 2014-01-26  Charlie Zender  <zender@uci.edu>
 
