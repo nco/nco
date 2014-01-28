@@ -1,3 +1,7 @@
+2014-01-27  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncrcat regressions #28 Record appending for a group with one record
+
 2014-01-26  Charlie Zender  <zender@uci.edu>
 
 	* Remove early exit from nco_cnk_sz_set(). Revert some changes.
