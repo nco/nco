@@ -1,5 +1,7 @@
 2014-01-28  Charlie Zender  <zender@uci.edu>
 
+	* Another rearrangement of stcasecmp() for Mac OS 10.9 LLVM compatibility
+
 	* strcasecmp() cast (char *) to (void *) in free() argument for Mac OS 10.9 LLVM compatibility
 
 2014-01-27  Pedro Vicente  <pvicente@uci.edu>
