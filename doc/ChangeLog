@@ -1,6 +1,6 @@
 2014-01-26  Charlie Zender  <zender@uci.edu>
 
-	* Remove early exit from nco_cnk_sz_set(). Revert some changes. Cause regression.
+	* Remove early exit from nco_cnk_sz_set(). Revert some changes.
 
 	* Tidy nco_cnk.c
 

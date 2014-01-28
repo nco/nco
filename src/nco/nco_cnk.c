@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.113 2014-01-27 22:56:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.114 2014-01-28 00:18:32 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -807,7 +807,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   cnk_sz_byt=cnk->cnk_sz_byt;
   cnk_dmn=cnk->cnk_dmn;
 
-  /* For now only use this routine when user explicitly sets a chunking option */
+  /* Only use NCO chunking when user explicitly sets a chunking option */
   if(!flg_usr_rqs) return;
 
   /* Bail on unsupported options */
@@ -901,23 +901,23 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   }else{
     /* Explicitly turn-off chunking for arrays that are... */
     if((cnk_plc == nco_cnk_plc_xpl && !is_xpl_cnk) || /* ...not explicitly chunked... */
-      (cnk_plc == nco_cnk_plc_xst && !is_chunked) || /* ...not already chunked... */
-      (cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
-      (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
-      (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
-      False){
-        /* If variable is chunked */
-        if(is_chunked){
-          /* Turn-off chunking for this variable */
-          if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s unchunking %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-          if(shuffle) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has shuffle flag set before unchunking. Expect the worst.",nco_prg_nm_get(),fnc_nm,var_nm);
-          (void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
-        }else{ /* !chunked */
-          if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);
-        } /* !chunked */
-        /* Return control to calling routine
-	   NB: Here is where loop in original nco_cnk_sz_set() continues to next variable */
-        return;
+       (cnk_plc == nco_cnk_plc_xst && !is_chunked) || /* ...not already chunked... */
+       (cnk_plc == nco_cnk_plc_g2d && dmn_nbr < 2) || /* ...much too small... */
+       (cnk_plc == nco_cnk_plc_g3d && dmn_nbr < 3) || /* ...too small... */
+       (cnk_plc == nco_cnk_plc_uck) || /* ...intentionally unchunked... */
+       False){
+      /* If variable is chunked */
+      if(is_chunked){
+	/* Turn-off chunking for this variable */
+	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s unchunking %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	if(shuffle) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has shuffle flag set before unchunking. Expect the worst.",nco_prg_nm_get(),fnc_nm,var_nm);
+	(void)nco_def_var_chunking(grp_id_out,var_id_out,srg_typ,cnk_sz);
+      }else{ /* !chunked */
+	if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s not unchunking %s because it is not chunked\n",nco_prg_nm_get(),fnc_nm,var_nm);
+      } /* !chunked */
+      /* Return control to calling routine
+	 NB: Here is where loop in original nco_cnk_sz_set() continues to next variable */
+      return;
     } /* !turn-off chunking */
   } /* !must_be_chunked */
 
