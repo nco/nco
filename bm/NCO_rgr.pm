@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.423 2014-01-28 07:15:55 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.424 2014-01-28 07:55:57 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -3698,7 +3698,7 @@ print "\n";
 #ncks -C -g g5 -v one_dmn_rec_var  out.nc
 
 	$tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_01%";
+    $tst_cmd[1]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_01%";
     $tst_cmd[2]="ncrcat -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
 	$tst_cmd[3]="ncks -C -g g5 -v one_dmn_rec_var  %tmp_fl_02%";
     $dsc_sng="(Groups) Group with 2 records case";
