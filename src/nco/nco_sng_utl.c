@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.71 2014-01-29 18:56:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.72 2014-01-29 20:59:19 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -20,26 +20,19 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
   char chr_1;
   char chr_2;
 
-  sng_1_c=(char *)strdup(sng_1);
-  sng_2_c=(char *)strdup(sng_2);
+  sng_1_c=(char *)sng_1;
+  sng_2_c=(char *)sng_2;
 
   while(1){
     chr_1=tolower(*sng_1_c++);
     chr_2=tolower(*sng_2_c++);
     if(chr_1 < chr_2){
-      /* Use free() not nco_free() to keep this more like a generic (non-NCO) library function */
-      free(sng_1_c);
-      free(sng_2_c);
       return -1;
     } /* end if */
     if(chr_1 > chr_2){
-      free(sng_1_c);
-      free(sng_2_c);
       return 1;
     } /* end if */
     if(chr_1 == 0){
-      free(sng_1_c);
-      free(sng_2_c);
       return 0;
     } /* end if */
   } /* end while */

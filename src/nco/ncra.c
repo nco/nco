@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.494 2014-01-29 18:56:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.495 2014-01-29 20:59:19 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.494 2014-01-29 18:56:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.494 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.495 2014-01-29 20:59:19 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.495 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -875,13 +875,14 @@ main(int argc,char **argv)
             /* Obtain group ID using full group name */
             (void)nco_inq_grp_full_ncid(in_id,var_trv->grp_nm_fll,&grp_id);
             /* Edit group name for output */
-            if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+            grp_out_fll=NULL;
+            if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=var_trv->grp_nm_fll;
             /* Obtain output group ID using full group name */
             (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
             /* Get variable ID */
             (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
             /* Memory management after current extracted group */
-            if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+            if(gpe && grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
             /* Store the output variable ID */
             var_prc_out[idx]->id=var_out_id;
