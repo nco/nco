@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.684 2014-01-29 19:22:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.685 2014-01-29 22:29:16 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.1 are ready. 
 
@@ -61,7 +61,32 @@ KNOWN ISSUES NOT YET FIXED:
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-
    cd ~/nco/bld;make dir;make allinone # Old Makefile mechanism
 
-A. NOT YET FIXED (would require DAP protocol change?)
+A. NOT YET FIXED (NCO problem)
+   Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
+
+   Demonstration:
+   ncatted -D 5 -O -a new_string_att,att_var,c,sng,"list","of","str,ings" ~/nco/data/in_4.nc ~/foo.nc
+   ncks -m -C -v att_var ~/foo.nc
+
+   20130724: Verified problem still exists
+   TODO nco1102
+   Cause: NCO parsing of ncatted arguments is not sophisticated
+   enough to handle arrays of NC_STRINGS with embedded delimiters.
+
+B. NOT YET FIXED (netCDF library problem)
+   Probe hidden attributes (chunking, compression) of HDF4 files
+
+   Demonstration:
+   ncdump -h -s ~/nco/data/hdf.hdf # (dies)
+   ncks -m ~/nco/data/hdf.hdf # (works by avoiding fatal calls)
+
+   20131230: Verified problem still exists
+
+   Cause: some libnetCDF library functions fail on HDF4 file inquiries.
+   Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file
+   Tracking tickets NCF-272, NCF-273
+
+C. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
    Metadata are returned successfully, data are not.
@@ -76,7 +101,7 @@ A. NOT YET FIXED (would require DAP protocol change?)
 
    Bug report filed: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-B. NOT YET FIXED (would require DAP protocol change)
+D. NOT YET FIXED (would require DAP protocol change)
    Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol
@@ -89,48 +114,6 @@ B. NOT YET FIXED (would require DAP protocol change)
    Cause: DAP translates scalar characters into 64-element (this
    dimension is user-configurable, but still...), NUL-terminated
    strings so MD5 agreement fails 
-
-C. NOT YET FIXED (NCO problem)
-   Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
-
-   Demonstration:
-   ncatted -D 5 -O -a new_string_att,att_var,c,sng,"list","of","str,ings" ~/nco/data/in_4.nc ~/foo.nc
-   ncks -m -C -v att_var ~/foo.nc
-
-   20130724: Verified problem still exists
-   TODO nco1102
-   Cause: NCO parsing of ncatted arguments is not sophisticated
-   enough to handle arrays of NC_STRINGS with embedded delimiters.
-
-D. NOT YET FIXED (netCDF library problem)
-   Probe hidden attributes (chunking, compression) of HDF4 files
-
-   Demonstration:
-   ncdump -h -s ~/nco/data/hdf.hdf # (dies)
-   ncks -m ~/nco/data/hdf.hdf # (works by avoiding fatal calls)
-
-   20131230: Verified problem still exists
-
-   Cause: some libnetCDF library functions fail on HDF4 file inquiries.
-   Bug report filed: netCDF #HZY-708311 ncdump/netCDF4 segfaults probing HDF4 file
-   Tracking tickets NCF-272, NCF-273
-
-E. [FIXED in netCDF 4.3.1-rc5 ... please upgrade] 
-   netCDF4 library fails when renaming dimension and variable using
-   that dimension, in either order. Works fine with netCDF3.
-   Also library causes var rename to imply dimension rename, and visa versa.
-   Hence coordinate renaming does not work with netCDF4 files.
-   Problem with netCDF4 library implementation.
-
-   Demonstration:
-   ncks -O -4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc
-   ncrename -O -D 2 -d lat_T42,lat -v lat_T42,lat ~/foo.nc ~/foo2.nc # Breaks with "NetCDF: HDF error"
-   ncks -m ~/foo.nc
-
-   20130724: FIXED in netCDF 4.3.1-rc5 in 201212. Will be in netCDF 4.3.1.
-   Bug report filed: netCDF #YQN-334036: problem renaming dimension and coordinate in netCDF4 file 
-   Workaround: Use ncrename twice; first rename the variable, then rename the dimension. 
-   More Info: http://nco.sf.net/nco.html#ncrename_crd
 
 "Sticky" reminders:
 
@@ -146,25 +129,14 @@ C. Pre-built Windows (native) and Cygwin binaries:
 D. Pre-built AIX binaries:
    http://nco.sf.net#aix
 
-E. Did you try SWAMP (Script Workflow Analysis for MultiProcessing)?
-   SWAMP efficiently schedules/executes NCO scripts on remote servers:  
-
-   http://swamp.googlecode.com
-
-   SWAMP can work command-line operator analysis scripts besides NCO. 
-   If you must transfer lots of data from a server to your client
-   before you analyze it, then SWAMP will likely speed things up. 
-
-F. NCO support for netCDF4 features is tracked at
+E. NCO support for netCDF4 features is tracked at
 
    http://nco.sf.net/nco.html#nco4
 
    NCO supports netCDF4 atomic data types, compression, chunking, and groups.
 
-G. Reminder that NCO works on most HDF4 and HDF5 datasets, e.g., 
-   NASA AURA HIRDLS HDF-EOS5
-   NASA ICESat GLAS HDF5
-   NASA MERRA HDF4
-   NASA MODIS HDF4
-   NASA SBUV HDF5...
+F. Reminder that NCO works on most HDF4 and HDF5 datasets, e.g., 
+   HDF4: AMSR MERRA MODIS ...
+   HDF5: GLAS ICESat Mabel SBUV ...
+   HDF-EOS5: AURA HIRDLS OMI ...
 

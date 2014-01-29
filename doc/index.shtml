@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.861 2014-01-29 20:08:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.862 2014-01-29 22:29:16 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -626,7 +626,7 @@ Optimize diskless files?;</li>
 <li><b>NCO 4.4.2</b>: (<i>In Progress, features completed or being worked on include</i>)
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;</li>
 <li><b>NCO 4.4.1</b>: (<i>Current Stable Release</i>)
-Better group support for <tt>-X</tt>;
+Group support for <tt>-X</tt> and <tt>--cnk_dmn</tt>;
 Chunk and uncompress simultaneously;
 <tt>ncra/ncea/ncrcat</tt> <a href="#bug_ncra_no_fl_close">bugfix</a></li>
 <li><b>NCO 4.4.0</b>: 

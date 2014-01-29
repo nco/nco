@@ -7,7 +7,7 @@
 	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
 
 	* Verified ./configure works on Intel compilers on greenplanet, and
-	bld/Makefile works on Intel compilers on yellowstone
+	bld/Makefile works on Intel compilers on yellowstone, and all regressions pass
 
 	* Revert nco_close() and nco_fl_rm() to intended location within ncra.c file loop
 	Fixes important bug since multi-file operator was not closing/removing input files
