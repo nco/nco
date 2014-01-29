@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.493 2014-01-28 06:15:05 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.494 2014-01-29 18:56:52 zender Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.493 2014-01-28 06:15:05 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.493 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.494 2014-01-29 18:56:52 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.494 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1166,6 +1166,12 @@ main(int argc,char **argv)
 
     if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stderr,"\n");
 
+    /* Close input netCDF file */
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
+
+    /* Dispose local copy of file */
+    if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
+
     /* Are all our data tanks already full? */
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){
       for(idx_rec=0;idx_rec<trv_tbl->nbr_rec;idx_rec++){
@@ -1264,12 +1270,6 @@ main(int argc,char **argv)
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     } /* end loop over idx */
   } /* endif ncra || nces */
-
-  /* Close input netCDF file */
-  for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_arr[thr_idx]);
-
-  /* Dispose local copy of file */
-  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);

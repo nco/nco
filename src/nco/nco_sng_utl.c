@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.70 2014-01-29 06:51:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.71 2014-01-29 18:56:52 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -30,24 +30,18 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
       /* Use free() not nco_free() to keep this more like a generic (non-NCO) library function */
       free(sng_1_c);
       free(sng_2_c);
-      sng_1_c=NULL;      
-      sng_2_c=NULL;
       return -1;
-    }
+    } /* end if */
     if(chr_1 > chr_2){
       free(sng_1_c);
       free(sng_2_c);
-      sng_1_c=NULL;      
-      sng_2_c=NULL;
       return 1;
-    }
+    } /* end if */
     if(chr_1 == 0){
       free(sng_1_c);
       free(sng_2_c);
-      sng_1_c=NULL;      
-      sng_2_c=NULL;
       return 0;
-    }
+    } /* end if */
   } /* end while */
 } /* end strcasecmp() */
 #endif /* !NEED_STRCASECMP */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.682 2014-01-26 16:27:10 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.683 2014-01-29 18:56:51 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.1 are ready. 
 
@@ -59,6 +59,8 @@ A. NCO 4.4.0 could sometimes fail when asked to simultaneously
    uncompress (-L 0) and to chunk (--cnk_dmn) a file. This seems to
    have occurred only if the compressed variable was shuffled.
    Problem reported by Ben. Fixed.
+
+A. Fix build problem exposed by LLVM on Mac OS X 10.9 Mavericks
 
 KNOWN ISSUES NOT YET FIXED:
 
