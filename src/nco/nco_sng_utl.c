@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.69 2014-01-28 21:15:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.70 2014-01-29 06:51:28 pvicente Exp $ */
 
 /* Purpose: String utilities */
 
@@ -28,24 +28,24 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
     chr_2=tolower(*sng_2_c++);
     if(chr_1 < chr_2){
       /* Use free() not nco_free() to keep this more like a generic (non-NCO) library function */
-#ifndef _MSC_VER
-      sng_1_c=(char *)free(sng_1_c);
-      sng_2_c=(char *)free(sng_2_c);
-#endif /* _MSC_VER */
+      free(sng_1_c);
+      free(sng_2_c);
+      sng_1_c=NULL;      
+      sng_2_c=NULL;
       return -1;
     }
     if(chr_1 > chr_2){
-#ifndef _MSC_VER
-      sng_1_c=(char *)free(sng_1_c);
-      sng_2_c=(char *)free(sng_2_c);
-#endif /* _MSC_VER */
+      free(sng_1_c);
+      free(sng_2_c);
+      sng_1_c=NULL;      
+      sng_2_c=NULL;
       return 1;
     }
     if(chr_1 == 0){
-#ifndef _MSC_VER
-      sng_1_c=(char *)free(sng_1_c);
-      sng_2_c=(char *)free(sng_2_c);
-#endif /* _MSC_VER */
+      free(sng_1_c);
+      free(sng_2_c);
+      sng_1_c=NULL;      
+      sng_2_c=NULL;
       return 0;
     }
   } /* end while */
