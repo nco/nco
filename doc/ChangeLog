@@ -1,5 +1,14 @@
 2014-01-29  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.1 release procedure:
+ 	Changes since nco-4_4_0: -X, cnk?, hsh?
+	cd ~/nco;cvs tag -d nco-4_4_1;cvs tag -d nco-4_4_1-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.1 release"
+	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
+
+	* Verified ./configure works on Intel compilers on greenplanet, and
+	bld/Makefile works on Intel compilers on yellowstone
+
 	* Revert nco_close() and nco_fl_rm() to intended location within ncra.c file loop
 	Fixes important bug since multi-file operator was not closing/removing input files
 	Bug committed in ncra.c revision 1.430 on 20131107 thus affects	NCO 4.3.9-4.4.0.
@@ -19,12 +28,6 @@
 	* Remove early exit from nco_cnk_sz_set(). Revert some changes.
 
 	* Tidy nco_cnk.c
-
-	* NCO 4.4.1 release procedure:
- 	Changes since nco-4_4_0: -X, cnk?, hsh?
-	cd ~/nco;cvs tag -d nco-4_4_1;cvs tag -d nco-4_4_1-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.1 release"
-	cvs tag -c nco-4_4_1;cvs tag -c nco-4_4_1-1
 
 	* NB: Unidata renamed netCDF 4.3.1-rc7 as 4.3.1. Some NCO notes	still say 4.3.1-rc7.
 

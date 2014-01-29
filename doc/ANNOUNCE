@@ -1,23 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.683 2014-01-29 18:56:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.684 2014-01-29 19:22:43 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release focuses on stability and speed. 
-It also addresses previous omissions so that full path names are
-accepted by all appropriate options, such as ncks auxiliary
-coordinates (-X) and chunking (--cnk_dmn).
-
-NCO 4.4.1 renames ncra as ncrs and ncwa as ncws (Record Statistics and
-Weighted Statistics, respectively).  This is to more accurately
-reflect their purpose. Backward compatibility is guaranteed. NCO
-installs by default with symbolic links from ncra->ncrs and ncwa->ncws
-so calling either operator by its old name still works, and calling
-either operator by its new name produces the same results. 
-However, ncra and ncwa are deprecated and will eventually be removed.
-Please change your scripts/habits accordingly within a few years...
+This release focuses on stability and speed. If you use NCO's
+ncea, ncra, or ncrcat version 4.3.9-4.4.0 on hundreds-to-thousands of
+files at a time, then please upgrade. This release fixes a bug 
+that could cause ncea/ncra/ncrcat to fail on large numbers of input
+files. It also supports full path names for dimension arguments 
+to chunking (--cnk_dmn), and supports using most-in-scope
+latitude/longitude for auxiliary coordinates (-X).
 
 Work on NCO 4.4.2 is underway, focused on stability and speed.   
 There will be more netCDF4 mop-up and, possibly, improved HDF4
@@ -32,9 +26,10 @@ NEW FEATURES:
 
 A. The -X option for auxiliary coordinates now works fully when
    latitude and longitude coordinates are nested in group hierarchies.
+   The most in-scope lat/long are found and used for each variable. 
    http://nco.sf.net/nco.html#aux
 
-A. Chunking options now support full group pathnames for dimensions.
+B. Chunking options now support full group pathnames for dimensions.
    These override chunking arguments with short names when a given
    dimension matches both the long and short name arguments, e.g.,
    ncks --cnk_dmn lat,2 --cnk_dmn /g1/lat,4 in.nc out.nc
@@ -42,25 +37,19 @@ A. Chunking options now support full group pathnames for dimensions.
    except for the /g1/lat dimension which has chunksize=4.
    http://nco.sf.net/nco.html#cnk
 
-J. The --cnk_byt option was introduced to allow users to manually
-   specify the total desired chunksize (in Bytes). In the absence
-   of this parameter, NCO sets the chunksize to the filesystem
-   blocksize of the output file (if obtainable via stat()), or else  
-   to 4096 B, the Linux default blocksize. 
-   ncks -4 --cnk_byt=8192 in.nc out.nc
-   Note that --cnk_dmn arguments are still in elements, not bytes. 
-   Should we use bytes instead of elements for all chunk arguments?
-   Send us your preference to help the decisions for 4.4.1.
-   http://nco.sf.net/nco.html#cnk
-
 BUG FIXES:
 
-A. NCO 4.4.0 could sometimes fail when asked to simultaneously
+A. ncra/ncea/ncrcat in NCO 4.3.9-4.4.0 did not close or remove input
+   files after use. This could cause NCO to exceed system limits on
+   maximum number of open files when hundreds--thousands of input
+   files were specified. Fixed.
+
+B. NCO 4.4.0 could sometimes fail when asked to simultaneously
    uncompress (-L 0) and to chunk (--cnk_dmn) a file. This seems to
    have occurred only if the compressed variable was shuffled.
    Problem reported by Ben. Fixed.
 
-A. Fix build problem exposed by LLVM on Mac OS X 10.9 Mavericks
+C. Fix build problem exposed by LLVM on Mac OS X 10.9 Mavericks
 
 KNOWN ISSUES NOT YET FIXED:
 
