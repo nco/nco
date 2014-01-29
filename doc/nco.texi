@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.952 2014-01-27 05:42:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.953 2014-01-29 20:08:03 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4659,12 +4659,12 @@ LDFLAGS="-L${H5DIR}/lib -L${H4DIR}/lib" \
 ./configure --enable-hdf4 --enable-hdf4-file-tests
 make && make check && make install
 
-# 4. NCO version 4.4.0. No RPM for this version. Must install by hand.
+# 4. NCO version 4.4.1. No RPM for this version. Must install by hand.
 # Earlier versions of NCO are relatively useless for ncdismember
 cd ${DATA}/tmp
-wget http://nco.sourceforge.net/src/nco-4.4.0.tar.gz .
-tar xvzf nco-4.4.0.tar.gz
-cd nco-4.4.0
+wget http://nco.sourceforge.net/src/nco-4.4.1.tar.gz .
+tar xvzf nco-4.4.1.tar.gz
+cd nco-4.4.1
 ./configure --prefix=${NCODIR}
 make && make install
 

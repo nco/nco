@@ -1,8 +1,8 @@
 nco (4.4.1-1) unstable; urgency=low
 
-  * new upstream version (fxm)
+  * new upstream version (-X grp, cnk_dmn grp, ncra_no_fl_close bugfix)
 
- -- Charlie Zender <zender@uci.edu>  Thu, 09 Jan 2013 12:24:58 -0700
+ -- Charlie Zender <zender@uci.edu>  Wed, 29 Jan 2013 12:24:58 -0700
 
 nco (4.4.0-1) unstable; urgency=low
 

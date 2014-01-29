@@ -108,7 +108,7 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
-* Thu Feb 09 2014 Charlie Zender <zender@uci.edu> - 4.4.1-1
+* Thu Jan 29 2014 Charlie Zender <zender@uci.edu> - 4.4.1-1
 - new upstream 4.4.1
 
 * Thu Jan 09 2013 Charlie Zender <zender@uci.edu> - 4.4.0-1
