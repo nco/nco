@@ -1,17 +1,24 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.685 2014-01-29 22:29:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.686 2014-01-29 22:41:13 zender Exp $ -*-text-*-
 
 The netCDF Operators NCO version 4.4.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release focuses on stability and speed. If you use NCO's
-ncea, ncra, or ncrcat version 4.3.9-4.4.0 on hundreds-to-thousands of
-files at a time, then please upgrade. This release fixes a bug 
-that could cause ncea/ncra/ncrcat to fail on large numbers of input
-files. It also supports full path names for dimension arguments 
-to chunking (--cnk_dmn), and supports using most-in-scope
-latitude/longitude for auxiliary coordinates (-X).
+This release is mainly a bugfix release for power users. If you use
+NCO's ncea, ncra, or ncrcat version 4.3.9-4.4.0 on
+hundreds-to-thousands of input files per invocation, then you may
+wish to upgrade. This release fixes a bug that could cause
+ncea/ncra/ncrcat to fail on large numbers (> 256) of input files. 
+This is embarassing because NCO has always been designed to work with
+arbitrary numbers of input files and we want power users to be
+comfortable running it on hundreds of thousands of input files.
+So we're releasing 4.4.1 to fix this bug for power users.
+http://nco.sf.net#bug_ncra_no_fl_close
+
+There are also a few new features: NCO now supports full path names
+for dimension arguments to chunking (--cnk_dmn), and supports using
+most-in-scope latitude/longitude for auxiliary coordinates (-X).
 
 Work on NCO 4.4.2 is underway, focused on stability and speed.   
 There will be more netCDF4 mop-up and, possibly, improved HDF4
@@ -43,6 +50,7 @@ A. ncra/ncea/ncrcat in NCO 4.3.9-4.4.0 did not close or remove input
    files after use. This could cause NCO to exceed system limits on
    maximum number of open files when hundreds--thousands of input
    files were specified. Fixed.
+   http://nco.sf.net#bug_ncra_no_fl_close
 
 B. NCO 4.4.0 could sometimes fail when asked to simultaneously
    uncompress (-L 0) and to chunk (--cnk_dmn) a file. This seems to

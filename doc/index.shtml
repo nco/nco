@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.862 2014-01-29 22:29:16 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.863 2014-01-29 22:41:13 zender Exp $
 Purpose: NCO homepage
 
 URL:
@@ -1743,9 +1743,15 @@ in NCO 4.0.9, which assumes that netCDF 4.1.3 or later is installed.
 <li><i><tt>ncra</tt>, <tt>ncea</tt>, and <tt>ncrcat</tt> file close bug:</i>
 Versions 4.3.9&mdash;4.4.0 of <tt>ncra</tt>, <tt>ncea</tt>,
 and <tt>ncrcat</tt> failed to correctly close and optionally remove
-input files after use. 
+input files. 
 This could cause NCO to exceed system limits on the maximum number of
-open files when hundreds--thousands of input files were specified.
+open files when hundreds-to-thousands of input files were specified
+per NCO invocation. 
+The exact failure point is OS-dependent (NCO commands on Mac OS X 10.9
+would fail when processing more than 256 files at a time). 
+This is embarassing because NCO has always been designed to work with
+arbitrary numbers of input files and we want power users to be
+comfortable running it on hundreds of thousands of input files.
 The solution is to avoid versions 4.3.9&mdash;4.4.0 or to upgrade to
 NCO&nbsp;4.4.1.
 </li>
