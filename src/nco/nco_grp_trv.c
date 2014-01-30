@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.268 2014-01-22 22:33:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.269 2014-01-30 07:35:23 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -29,10 +29,6 @@ trv_tbl_init                           /* [fnc] GTT initialize */
   /* Degenerate dimensions used by ncwa */
   tb->nbr_dmn_dgn=0;
   tb->dmn_dgn=NULL;
-
-  /* Record dimensions used by ncra */
-  tb->nbr_rec=0;
-  tb->lmt_rec=NULL;
 
   /* Ensembles */
   tb->nsm_nbr=0;
@@ -138,10 +134,6 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   tbl->lst_dmn=(dmn_trv_sct *)nco_free(tbl->lst_dmn);
 
   /* Members used only by transformation operators (non-ncks) */
-
-  /* (ncra) Record dimensions */
-  for(int idx=0;idx<tbl->nbr_rec;idx++)
-    tbl->lmt_rec[idx]=nco_lmt_free(tbl->lmt_rec[idx]);
 
   /* (ncwa) Degenerate dimensions */
   tbl->dmn_dgn=(dmn_sct *)nco_free(tbl->dmn_dgn); 

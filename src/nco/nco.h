@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.473 2014-01-22 20:00:41 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.474 2014-01-30 07:35:23 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -417,7 +417,7 @@ extern "C" {
     ncrcat,
     ncrename,
     ncwa,
-    ncge, /* 20131018: Potential new operator */
+    ncge, /* 20131018: New operator */
     ncmv /* 20131018: Potential new operator */
   }; /* end nco_prg_id enum */
   
@@ -981,8 +981,6 @@ extern "C" {
     trv_sct *hsh;           /* [hsh] Hash table of all trv_sct objects */
     dmn_sct *dmn_dgn;       /* [sct] (ncwa) Degenerate dimensions */
     int nbr_dmn_dgn;        /* [sct] (ncwa) Number of degenerate dimensions (size of above array) */
-    lmt_sct **lmt_rec;      /* [sct] (ncra) Record dimensions */
-    int nbr_rec;            /* [sct] (ncra) Number of record dimensions (size of above array) */
     int nsm_nbr;            /* [nbr] (ncge) Number of ensembles (i.e., number in first file) */ 
     nsm_sct *nsm;           /* [lst] (ncge) List of ensembles (size is nsm_nbr) */ 
     char *nsm_sfx;          /* [sng] (ncge) Ensemble suffix (e.g /cesm + _avg). Store here instead of passing as function parameters (ncge only) */
