@@ -20340,11 +20340,9 @@ fi
 
 # 20120705 Test for makeinfo; if not present, do not build doc/Makefile
 # Note: Debian install with 'sudo apt-get install texinfo'
-# AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
-for ac_prog in makeinfo
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
+# AC_CHECK_PROGS (variable, program-to-check-for, [value-if-not-found], [path]
+# Extract the first word of "makeinfo", so it can be a program name with args.
+set dummy makeinfo; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
 if ${ac_cv_prog_HAVE_MAKEINFO+:} false; then :
@@ -20360,7 +20358,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_MAKEINFO="$ac_prog"
+    ac_cv_prog_HAVE_MAKEINFO="yes"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -20368,6 +20366,7 @@ done
   done
 IFS=$as_save_IFS
 
+  test -z "$ac_cv_prog_HAVE_MAKEINFO" && ac_cv_prog_HAVE_MAKEINFO="no"
 fi
 fi
 HAVE_MAKEINFO=$ac_cv_prog_HAVE_MAKEINFO
@@ -20379,10 +20378,6 @@ else
 $as_echo "no" >&6; }
 fi
 
-
-  test -n "$HAVE_MAKEINFO" && break
-done
-test -n "$HAVE_MAKEINFO" || HAVE_MAKEINFO="no"
 
 
 # Begin config

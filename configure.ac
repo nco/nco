@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.31 2014-01-30 07:10:11 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.32 2014-01-30 07:18:51 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1096,8 +1096,8 @@ fi
 
 # 20120705 Test for makeinfo; if not present, do not build doc/Makefile
 # Note: Debian install with 'sudo apt-get install texinfo'
-# AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
-AC_CHECK_PROGS(HAVE_MAKEINFO,[makeinfo],no,${PATH},[]) 
+# AC_CHECK_PROGS (variable, program-to-check-for, [value-if-not-found], [path]
+AC_CHECK_PROG(HAVE_MAKEINFO,makeinfo,yes,no,${PATH}) 
 
 # Begin config
 #AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
