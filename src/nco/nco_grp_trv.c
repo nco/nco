@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.269 2014-01-30 07:35:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.270 2014-01-30 09:22:54 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -571,20 +571,6 @@ nco_dmn_set_msa                       /* [fnc] Update dimension with hyperslabbe
 
   return;
 } /* nco_dmn_set_msa() */
-
-long                                  /* O [nbr] Hyperslabbed size */
-nco_dmn_get_msa                       /* [fnc] Update dimension with hyperslabbed size */
-(const int dmn_id,                    /* I [id] Unique dimension ID */
- const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
-{
-  /* Search table dimension list and compare IDs */
-  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
-    if(dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id)
-      return trv_tbl->lst_dmn[dmn_idx].lmt_msa.dmn_cnt;
-     
-  assert(0);
-  return -1;
-} /* nco_dmn_get_msa() */
 
 void
 nco_trv_hsh_del /* Delete hash table */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1214 2014-01-30 08:35:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1215 2014-01-30 09:22:55 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4599,17 +4599,17 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
         dmn_cmn[idx_dmn].is_rec_dmn=False;
         if(var_trv->var_dmn[idx_dmn].is_crd_var){
           dmn_cnt=var_trv->var_dmn[idx_dmn].crd->lmt_msa.dmn_cnt;
-	}else{ /* !is_crd_var */
+        }else{ /* !is_crd_var */
           dmn_cnt=var_trv->var_dmn[idx_dmn].ncd->lmt_msa.dmn_cnt;
         } /* !is_crd_var */
-	/* 20140108: Converting variables with multiple record dimensions and empty input to all fixed dimensions and netCDF3 output
-	   Empty input means size is zero so dmn_cnt looks like NC_UNLIMITED, i.e., a record dimension
-	   In other words, there is no good way to "fix" a record dimension for a variable with no records/data
-	   Workaround is to arbitrarily assign such dimensions a size of 1 so they are fixed output, and still have no data
-	   This ugly hack seems to work and is only invoked in this extreme corner case so may be OK */
-	if(dmn_cnt == 0) dmn_cnt=1;
+        /* 20140108: Converting variables with multiple record dimensions and empty input to all fixed dimensions and netCDF3 output
+        Empty input means size is zero so dmn_cnt looks like NC_UNLIMITED, i.e., a record dimension
+        In other words, there is no good way to "fix" a record dimension for a variable with no records/data
+        Workaround is to arbitrarily assign such dimensions a size of 1 so they are fixed output, and still have no data
+        This ugly hack seems to work and is only invoked in this extreme corner case so may be OK */
+        if(dmn_cnt == 0) dmn_cnt=1;
         /* Update GTT dimension */
-	(void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl);  
+        (void)nco_dmn_set_msa(var_dim_id,dmn_cnt,trv_tbl);  
       } /* !DFN_CRR_DMN_AS_REC_IN_OUTPUT */
 
       /* ncwa */
