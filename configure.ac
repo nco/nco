@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.32 2014-01-30 07:18:51 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.33 2014-01-30 07:20:24 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1124,7 +1124,7 @@ fi
 AC_SUBST(NCOXX)
 
 # Conditional build of doc/Makefile
-if test "${HAVE_MAKEINFO}" != 'no' ; then
+if test "${HAVE_MAKEINFO}" = 'yes' ; then
     AC_CONFIG_FILES(doc/Makefile)
     DOC_FOLDER="doc"
 else

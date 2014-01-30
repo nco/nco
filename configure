@@ -20408,7 +20408,7 @@ fi
 
 
 # Conditional build of doc/Makefile
-if test "${HAVE_MAKEINFO}" != 'no' ; then
+if test "${HAVE_MAKEINFO}" = 'yes' ; then
     ac_config_files="$ac_config_files doc/Makefile"
 
     DOC_FOLDER="doc"
