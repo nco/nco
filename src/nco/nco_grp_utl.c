@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1215 2014-01-30 09:22:55 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1216 2014-01-30 23:07:46 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6638,7 +6638,7 @@ nco_prn_tbl_lmt                       /* [fnc] Print table limits */
 
 } /* nco_prn_tbl_lmt() */
 
-void
+int                                   /* O [rcd] Return code (Used to go to close_and_free on error)  */
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  char * const grp_pth,                /* I [sng] Absolute group path where to start build (root typically) */
@@ -6656,10 +6656,11 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */
- nco_dmn_dne_t **flg_dne,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
   /* Purpose: Construct GTT, Group Traversal Table (groups, variables, dimensions, limits) 
+
+  Return value: Check for valid input; NC_NOERR (0) or > 0 for a user input error, used to go to close_and_free on main
 
   Notes:
   * Dimension limit structures are handled internaly in this function and not exported
@@ -6692,6 +6693,11 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 
   lmt_sct **lmt=NULL_CEWI;  /* [sct] User defined limits */
+
+  int rcd; /* [rcd] Return code */
+
+  /* Initialize return code to NC_NOERR (0) */
+  rcd=NC_NOERR;
 
   /* Construct traversal table objects (groups, variables) */
   (void)nco_grp_itr(nc_id,(char *)NULL,grp_pth,trv_tbl);
@@ -6759,7 +6765,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,trv_tbl);
 
   /* Check valid input (limits) */
-  if(lmt_nbr) (void)nco_chk_dmn_in(lmt_nbr,lmt,flg_dne,trv_tbl);
+  rcd+=nco_chk_lmt(lmt_nbr,lmt,trv_tbl);
 
   /* Free limits */
   if(lmt_nbr){
@@ -6772,37 +6778,64 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     trv_tbl_prn_flg_xtr(trv_tbl);
   } /* endif dbg */
 
+  return rcd;
 
 } /* nco_bld_trv_tbl() */
 
-void
-nco_chk_dmn_in                        /* [fnc] Check input dimensions */
+int
+nco_chk_lmt                           /* [fnc] Check input dimensions specified with --dimension (hyperslabs) */
 (int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
- nco_dmn_dne_t **dne_lst,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 { 
-  (*dne_lst)=(nco_dmn_dne_t *)nco_malloc(lmt_nbr*sizeof(nco_dmn_dne_t));
+  /* Purpose: Check input dimensions specified with --dimension
+
+  Return value: 0 for no error or 1 for a user input error, used to go to close_and_free on main */
+
+  /* Structure to check for valid input dimension  */
+  typedef struct {	
+    nco_bool flg_dne;           /* [flg] Flag to check if input dimension -d "does not exist" */
+    char *dim_nm;               /* [sng] Dimension name */    
+  } nco_dmn_dne_t;
+
+  nco_dmn_dne_t *dne_lst;
+
+  dne_lst=(nco_dmn_dne_t *)nco_malloc(lmt_nbr*sizeof(nco_dmn_dne_t));
 
   /* Let's be pessimistic and assume an invalid user input */
-  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) (*dne_lst)[lmt_idx].flg_dne=True; 
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) dne_lst[lmt_idx].flg_dne=True; 
 
   /* Loop input name list */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
     assert(lmt[lmt_idx]->nm);
 
-    (*dne_lst)[lmt_idx].dim_nm=(char *) strdup(lmt[lmt_idx]->nm);
+    dne_lst[lmt_idx].dim_nm=(char *) strdup(lmt[lmt_idx]->nm);
 
     /* Dimension list */
     for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
       /* Match input relative name to dimension relative name */ 
       if(strcmp(lmt[lmt_idx]->nm,trv_tbl->lst_dmn[dmn_idx].nm) == 0){
         /* Found */
-        (*dne_lst)[lmt_idx].flg_dne=False; 
+        dne_lst[lmt_idx].flg_dne=False; 
       } /* Match input relative name to dimension relative name */ 
     } /* Dimension list */
   } /* Loop input name list */
-} /* nco_chk_dmn_in() */
+
+
+  /* Check if all input -d dimensions were found */ 
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
+    /* Check this flag */
+    if (dne_lst[lmt_idx].flg_dne == True){
+      (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),dne_lst[lmt_idx].dim_nm);
+
+      for(int idx=0;idx<lmt_nbr;idx++) dne_lst[idx].dim_nm=(char *)nco_free(dne_lst[idx].dim_nm);
+      dne_lst=(nco_dmn_dne_t *)nco_free(dne_lst);
+      return 1;
+    } /* Check this flag */
+  } /* Check if all input -d dimensions were found */
+
+  return 0;
+} /* nco_chk_lmt() */
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */
@@ -8456,22 +8489,6 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
   }
 
 } /* nco_nsm_ncr() */
-
-void
-nco_chk_dmn                           /* [fnc] Check valid dimension names */
-(const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
- nco_dmn_dne_t * flg_dne)             /* I [lst] Flag to check if input dimension -d "does not exist" */
-{
-  /* Check if all input -d dimensions were found */ 
-  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
-    /* Check this flag */
-    if (flg_dne[lmt_idx].flg_dne == True){
-      (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),flg_dne[lmt_idx].dim_nm);
-      flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
-      nco_exit(EXIT_FAILURE);
-    } /* Check this flag */
-  } /* Check if all input -d dimensions were found */
-} /* nco_chk_dmn() */
 
 int                                    /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by group depth */

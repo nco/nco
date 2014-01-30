@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.280 2014-01-06 18:24:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.281 2014-01-30 23:07:46 pvicente Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.280 2014-01-06 18:24:57 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.280 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.281 2014-01-30 23:07:46 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.281 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -212,10 +212,6 @@ main(int argc,char **argv)
   
   nco_cmn_t *cmn_lst=NULL; /* [sct] A list of common names */ 
   
-  nco_dmn_dne_t *flg_dne1=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
-  nco_dmn_dne_t *flg_dne2=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
-  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
-
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       /* Long options with no argument, no short option counterpart */
@@ -536,18 +532,8 @@ main(int argc,char **argv)
   in_id_2=in_id_2_arr[0];
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id_1,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne1,trv_tbl_1);
-  (void)nco_bld_trv_tbl(in_id_2,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne2,trv_tbl_2);
-
-  /* ncbo is a special case regarding checking of valid -d names, since 2 tables are built; merge the 2 "dne" lists and check for this list */
-  flg_dne=(nco_dmn_dne_t *)nco_malloc(2*lmt_nbr*sizeof(nco_dmn_dne_t));
-
-  /* Merge "dne" lists */
-  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) flg_dne[lmt_idx]=flg_dne1[lmt_idx]; 
-  for(int lmt_idx=lmt_nbr;lmt_idx<2*lmt_nbr;lmt_idx++) flg_dne[lmt_idx]=flg_dne2[lmt_idx]; 
- 
-  /* Check if all input -d dimensions were found */ 
-  (void)nco_chk_dmn(lmt_nbr,flg_dne);     
+  (void)nco_bld_trv_tbl(in_id_1,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl_1);
+  (void)nco_bld_trv_tbl(in_id_2,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl_2);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq(&nbr_glb_att_1,&nbr_grp_att_1,&nbr_att_var_1,&nbr_dmn_fl_1,&nbr_rec_fl_1,&grp_dpt_fl_1,&nbr_grp_fl_1,&var_ntm_fl_1,&nbr_var_fl_1,trv_tbl_1);
@@ -650,12 +636,6 @@ main(int argc,char **argv)
     /* Memory management for common names list */
     for(idx=0;idx<nbr_cmn_nm;idx++) cmn_lst[idx].var_nm_fll=(char *)nco_free(cmn_lst[idx].var_nm_fll);
     if(nbr_cmn_nm > 0) cmn_lst=(nco_cmn_t *)nco_free(cmn_lst);
-    for(idx=0;idx<lmt_nbr;idx++) flg_dne1[idx].dim_nm=(char *)nco_free(flg_dne1[idx].dim_nm);
-    flg_dne1=(nco_dmn_dne_t *)nco_free(flg_dne1);
-    for(idx=0;idx<lmt_nbr;idx++) flg_dne2[idx].dim_nm=(char *)nco_free(flg_dne2[idx].dim_nm);
-    flg_dne2=(nco_dmn_dne_t *)nco_free(flg_dne2);
-    for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
-    flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
 
   } /* !flg_cln */
 

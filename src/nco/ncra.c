@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.496 2014-01-30 07:35:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.497 2014-01-30 23:07:46 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.496 2014-01-30 07:35:23 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.496 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.497 2014-01-30 23:07:46 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.497 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -263,8 +263,6 @@ main(int argc,char **argv)
   trv_tbl_sct *trv_tbl;    /* [lst] Traversal table */
 
   lmt_sct **lmt_rec=NULL; /* [lst] (ncra) Record dimensions */
-
-  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -628,10 +626,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
-
-  /* Check if all input -d dimensions were found */ 
-  (void)nco_chk_dmn(lmt_nbr,flg_dne);     
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);  
 
   /* Store ncge ensemble suffix in table */
   if(nco_prg_id == ncge && nsm_sfx) trv_tbl->nsm_sfx=nsm_sfx;
@@ -1098,7 +1093,7 @@ main(int argc,char **argv)
       trv_tbl_init(&trv_tbl1); 
 
       /* Construct GTT using current file ID */
-      (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,NULL,trv_tbl1);
+      (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl1);
 
       /* Loop over ensembles in current file */
       for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
@@ -1318,9 +1313,6 @@ main(int argc,char **argv)
     rec_in_cml=(long *)nco_free(rec_in_cml);
     rec_usd_cml=(long *)nco_free(rec_usd_cml);
     REC_LST_DSR=(nco_bool *)nco_free(REC_LST_DSR);
-    for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
-    for(idx=0;idx<lmt_nbr;idx++) lmt_rec[idx]=nco_lmt_free(lmt_rec[idx]);
-    flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
 
   } /* !flg_cln */
 
