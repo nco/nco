@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.475 2014-01-30 23:07:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.476 2014-01-30 23:45:01 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -389,6 +389,11 @@ extern "C" {
 #define NCO_NOERR 1
 /* Internal NCO return code indicating failure */
 #define NCO_ERR 0
+/* Internal NCO return code indicating failure for checking invalid input */
+#define NCO_CHK_ERR 1
+/* Internal NCO return code indicating success for checking invalid input */
+#define NCO_CHK_NOERR 0
+
 /* UDUnits return code indicating success */
 #define UDUNITS_NOERR 0
 

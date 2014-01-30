@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1216 2014-01-30 23:07:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1217 2014-01-30 23:45:02 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6792,49 +6792,39 @@ nco_chk_lmt                           /* [fnc] Check input dimensions specified 
 
   Return value: 0 for no error or 1 for a user input error, used to go to close_and_free on main */
 
-  /* Structure to check for valid input dimension  */
-  typedef struct {	
-    nco_bool flg_dne;           /* [flg] Flag to check if input dimension -d "does not exist" */
-    char *dim_nm;               /* [sng] Dimension name */    
-  } nco_dmn_dne_t;
+  nco_bool *dne_lst;
 
-  nco_dmn_dne_t *dne_lst;
-
-  dne_lst=(nco_dmn_dne_t *)nco_malloc(lmt_nbr*sizeof(nco_dmn_dne_t));
+  dne_lst=(nco_bool *)nco_malloc(lmt_nbr*sizeof(nco_bool));
 
   /* Let's be pessimistic and assume an invalid user input */
-  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) dne_lst[lmt_idx].flg_dne=True; 
+  for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) dne_lst[lmt_idx]=True; 
 
   /* Loop input name list */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
     assert(lmt[lmt_idx]->nm);
-
-    dne_lst[lmt_idx].dim_nm=(char *) strdup(lmt[lmt_idx]->nm);
 
     /* Dimension list */
     for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
       /* Match input relative name to dimension relative name */ 
       if(strcmp(lmt[lmt_idx]->nm,trv_tbl->lst_dmn[dmn_idx].nm) == 0){
         /* Found */
-        dne_lst[lmt_idx].flg_dne=False; 
+        dne_lst[lmt_idx]=False; 
       } /* Match input relative name to dimension relative name */ 
     } /* Dimension list */
   } /* Loop input name list */
 
-
   /* Check if all input -d dimensions were found */ 
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
     /* Check this flag */
-    if (dne_lst[lmt_idx].flg_dne == True){
-      (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),dne_lst[lmt_idx].dim_nm);
-
-      for(int idx=0;idx<lmt_nbr;idx++) dne_lst[idx].dim_nm=(char *)nco_free(dne_lst[idx].dim_nm);
-      dne_lst=(nco_dmn_dne_t *)nco_free(dne_lst);
-      return 1;
+    if (dne_lst[lmt_idx] == True){
+      (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),lmt[lmt_idx]->nm);
+      dne_lst=(nco_bool *)nco_free(dne_lst);
+      return NCO_CHK_ERR;
     } /* Check this flag */
   } /* Check if all input -d dimensions were found */
 
-  return 0;
+  dne_lst=(nco_bool *)nco_free(dne_lst);
+  return NCO_CHK_NOERR;
 } /* nco_chk_lmt() */
 
 void
