@@ -1,3 +1,7 @@
+2014-01-29  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncks regressions #86 Change record dimension to fixed dimension --fix_rec_dmn
+
 2014-01-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.2 release procedure:

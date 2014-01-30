@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1213 2014-01-30 07:35:23 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1214 2014-01-30 08:35:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -4289,6 +4289,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int nbr_dmn_out_grp;                   /* [id] Number of dimensions in group */
   int grp_in_id;                         /* [id] Group ID */
   int grp_out_id;                        /* [id] Group ID */
+  int nbr_rec_fl;                        /* [nbr] Number of records in file */
 
   long dmn_cnt;                          /* [nbr] Hyperslabbed size of dimension */  
   long dmn_sz;                           /* [nbr] Size of dimension (on input)  */  
@@ -4314,6 +4315,9 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* File format needed for decision tree and to enable netCDF4 features like chunking */
   (void)nco_inq_format(nc_out_id,&fl_fmt);
+
+  /* Get number of records in file */
+  (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_rec_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,trv_tbl);
 
   /* Local copy of object name */ 
   strcpy(var_nm,var_trv->nm);     
@@ -4412,25 +4416,31 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     rec_dmn_nm=(char *)strdup(var_trv->rec_dmn_nm_out);
   } /* endif */
 
-  /* Is requested record dimension in input file? */
+  /* Is requested record dimension in this group ? */
   if(rec_dmn_nm){
 
     if(nco_prg_id == ncks){
       if(!FIX_ALL_REC_DMN){
         int rec_dmn_id_dmy;
         rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
+        /* Record name not found in this group */
         if(rcd != NC_NOERR){
-          (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
-          nco_exit(EXIT_FAILURE);
-        } /* endif */
+          /* If only 1 record in file, that's an input error */
+          if (nbr_rec_fl == 1) {
+            (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
+            nco_exit(EXIT_FAILURE);
+          } /* nbr_rec_fl > 1 */
+        } /* endif rcd != NC_NOERR */
 
-        /* Does variable contain requested record dimension? */
-        for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-          if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
-            if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
-            break;
-          } /* endif */
-        } /* end loop over idx_dmn */
+        if(rcd == NC_NOERR){
+          /* Does variable contain requested record dimension? */
+          for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+            if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
+              if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+              break;
+            } /* endif */
+          } /* end loop over idx_dmn */
+        } /* endif rcd == NC_NOERR */
       } /* FIX_ALL_REC_DMN */
 
     }else if(nco_prg_id == ncecat){
@@ -5721,7 +5731,8 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
   int nbr_dmn_var;                       /* [nbr] Number of dimensions for variable */
   int rcd=NC_NOERR;                      /* [rcd] Return code */
   int nco_prg_id;                        /* [enm] Program ID */
-  int var_dim_id;                        /* [id] Variable dimension ID */   
+  int var_dim_id;                        /* [id] Variable dimension ID */ 
+  int nbr_rec_fl;                        /* [nbr] Number of records in file */
 
   long dmn_cnt;                          /* [sng] Hyperslabbed dimension size  */  
   long dmn_sz;                           /* [sng] Dimension size  */  
@@ -5738,6 +5749,9 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
 
   /* File format needed for decision tree and to enable netCDF4 features */
   (void)nco_inq_format(grp_in_id,&fl_fmt);
+
+   /* Get number of records in file */
+  (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_rec_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,trv_tbl);
 
   /* Local copy of object name */ 
   strcpy(var_nm,var_trv->nm);       
@@ -5796,22 +5810,26 @@ nco_dmn_msa_tbl                       /* [fnc] Update all GTT dimensions with hy
     /* ncks */
     if(nco_prg_id == ncks){
       if(!FIX_ALL_REC_DMN){
-        int rec_dmn_id_dmy;
-        /* NB: Following lines works on libnetcdf 4.2.1+ but not on 4.1.1- (broken in netCDF library)
-        rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,(int *)NULL); */
+        int rec_dmn_id_dmy;   
         rcd=nco_inq_dimid_flg(grp_in_id,rec_dmn_nm,&rec_dmn_id_dmy);
+        /* Record name not found in this group */
         if(rcd != NC_NOERR){
-          (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
-          nco_exit(EXIT_FAILURE);
-        } /* endif */
+          /* If only 1 record in file, that's an input error */
+          if (nbr_rec_fl == 1) {
+            (void)fprintf(stdout,"%s: ERROR User specifically requested that dimension \"%s\" be %s dimension in output file. However, this dimension is not visible in input file by variable %s. HINT: Perhaps it is mis-spelled? HINT: Verify \"%s\" is used in a variable that will appear in output file, or eliminate --fix_rec_dmn/--mk_rec_dmn switch from command-line.\n",nco_prg_nm_get(),rec_dmn_nm,(FIX_REC_DMN) ? "fixed" : "record",var_nm,rec_dmn_nm);
+            nco_exit(EXIT_FAILURE);
+          } /* nbr_rec_fl == 1 */
+        } /* endif rcd != NC_NOERR */
 
-        /* Does variable contain requested record dimension? */
-        for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
-          if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
-            if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
-            break;
-          } /* endif */
-        } /* end loop over idx_dmn */
+        if(rcd == NC_NOERR){
+          /* Does variable contain requested record dimension? */
+          for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
+            if(dmn_in_id_var[idx_dmn] == rec_dmn_id_dmy){
+              if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stderr,"%s: INFO %s reports variable %s contains user-specified record dimension %s\n",nco_prg_nm_get(),fnc_nm,var_nm,rec_dmn_nm);
+              break;
+            } /* endif */
+          } /* end loop over idx_dmn */
+        } /* endif rcd == NC_NOERR */
       } /* FIX_ALL_REC_DMN */
 
       /* ncecat */

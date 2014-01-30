@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.424 2014-01-28 07:55:57 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.425 2014-01-30 08:35:47 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2586,6 +2586,18 @@ print "\n";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+	
+#ncks #86
+#ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var in_grp.nc out.nc
+#ncks -v time52 -m  out.nc
+    
+    $dsc_sng="(Groups) Change record dimension to fixed dimension --fix_rec_dmn time52 -v one_dmn_rec_var";
+    $tst_cmd[0]="ncks -h -O --fix_rec_dmn time52 -v one_dmn_rec_var $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -v time52 -m %tmp_fl_00%";
+    $tst_cmd[2]="time52 dimension 0: time52, size = 10 NC_DOUBLE (Coordinate is time52)";
+    $tst_cmd[3]="SS_OK";     
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
 
    } #### Group tests	
     
