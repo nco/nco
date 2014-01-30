@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.30 2014-01-21 22:34:28 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.31 2014-01-30 07:10:11 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1094,12 +1094,10 @@ if test "${enable_static}" = 'yes'; then
 fi
 # End Static
 
-# 07/05/2012 Test for makeinfo; if not present, do not build doc/Makefile
-# Note: debian install with 'sudo apt-get install texinfo'
+# 20120705 Test for makeinfo; if not present, do not build doc/Makefile
+# Note: Debian install with 'sudo apt-get install texinfo'
 # AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
-AC_CHECK_PROGS(have_makeinfo,[makeinfo],no,${PATH},[]) 
-
-#echo "DEBUG: have_makeinfo  = ${have_makeinfo}"
+AC_CHECK_PROGS(HAVE_MAKEINFO,[makeinfo],no,${PATH},[]) 
 
 # Begin config
 #AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
@@ -1125,8 +1123,8 @@ fi
 
 AC_SUBST(NCOXX)
 
-#Conditional build of doc/Makefile
-if test "${have_makeinfo}" != 'no' ; then
+# Conditional build of doc/Makefile
+if test "${HAVE_MAKEINFO}" != 'no' ; then
     AC_CONFIG_FILES(doc/Makefile)
     DOC_FOLDER="doc"
 else
@@ -1168,6 +1166,7 @@ echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HAVE_ANTLR........... ${HAVE_ANTLR}"  
+echo "HAVE_MAKEINFO.........${HAVE_MAKEINFO}"  
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"

@@ -641,7 +641,7 @@ LFLAGS
 DOC_FOLDER
 NCOXX
 NCO_CXX
-have_makeinfo
+HAVE_MAKEINFO
 PATH_TO_NCGEN
 UDUNITS2_PATH
 ENABLE_GSL_FALSE
@@ -20338,8 +20338,8 @@ $as_echo "#define ENABLE_STATIC 1" >>confdefs.h
 fi
 # End Static
 
-# 07/05/2012 Test for makeinfo; if not present, do not build doc/Makefile
-# Note: debian install with 'sudo apt-get install texinfo'
+# 20120705 Test for makeinfo; if not present, do not build doc/Makefile
+# Note: Debian install with 'sudo apt-get install texinfo'
 # AC_CHECK_PROGS (variable, progs-to-check-for, [value-if-not-found], [path]
 for ac_prog in makeinfo
 do
@@ -20347,11 +20347,11 @@ do
 set dummy $ac_prog; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_have_makeinfo+:} false; then :
+if ${ac_cv_prog_HAVE_MAKEINFO+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$have_makeinfo"; then
-  ac_cv_prog_have_makeinfo="$have_makeinfo" # Let the user override the test.
+  if test -n "$HAVE_MAKEINFO"; then
+  ac_cv_prog_HAVE_MAKEINFO="$HAVE_MAKEINFO" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in ${PATH}
@@ -20360,7 +20360,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_have_makeinfo="$ac_prog"
+    ac_cv_prog_HAVE_MAKEINFO="$ac_prog"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -20370,22 +20370,20 @@ IFS=$as_save_IFS
 
 fi
 fi
-have_makeinfo=$ac_cv_prog_have_makeinfo
-if test -n "$have_makeinfo"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_makeinfo" >&5
-$as_echo "$have_makeinfo" >&6; }
+HAVE_MAKEINFO=$ac_cv_prog_HAVE_MAKEINFO
+if test -n "$HAVE_MAKEINFO"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_MAKEINFO" >&5
+$as_echo "$HAVE_MAKEINFO" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 
 
-  test -n "$have_makeinfo" && break
+  test -n "$HAVE_MAKEINFO" && break
 done
-test -n "$have_makeinfo" || have_makeinfo="no"
+test -n "$HAVE_MAKEINFO" || HAVE_MAKEINFO="no"
 
-
-#echo "DEBUG: have_makeinfo  = ${have_makeinfo}"
 
 # Begin config
 #AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
@@ -20414,8 +20412,8 @@ fi
 
 
 
-#Conditional build of doc/Makefile
-if test "${have_makeinfo}" != 'no' ; then
+# Conditional build of doc/Makefile
+if test "${HAVE_MAKEINFO}" != 'no' ; then
     ac_config_files="$ac_config_files doc/Makefile"
 
     DOC_FOLDER="doc"
@@ -23114,6 +23112,7 @@ echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HAVE_ANTLR........... ${HAVE_ANTLR}"
+echo "HAVE_MAKEINFO.........${HAVE_MAKEINFO}"
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"

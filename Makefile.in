@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.142 2014-01-21 22:34:53 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/Makefile.in,v 1.143 2014-01-30 07:10:11 zender Exp $ -*-makefile-*-
 VPATH = @srcdir@
 am__is_gnu_make = test -n '$(MAKEFILE_LIST)' && test -n '$(MAKELEVEL)'
 am__make_running_with_option = \
@@ -237,6 +237,7 @@ EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 GREP = @GREP@
 HAVE_ANTLR = @HAVE_ANTLR@
+HAVE_MAKEINFO = @HAVE_MAKEINFO@
 I18N_SHARE = @I18N_SHARE@
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -315,7 +316,6 @@ datarootdir = @datarootdir@
 docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
-have_makeinfo = @have_makeinfo@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
