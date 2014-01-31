@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1217 2014-01-30 23:45:02 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1218 2014-01-31 01:41:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6782,17 +6782,17 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
 } /* nco_bld_trv_tbl() */
 
-int
+int                                   /* O [rcd] Return code (NCO_CHK_NOERR or NCO_CHK_ERR)  */
 nco_chk_lmt                           /* [fnc] Check input dimensions specified with --dimension (hyperslabs) */
 (int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ lmt_sct **lmt,                       /* I [sct] Limit structure array */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 { 
   /* Purpose: Check input dimensions specified with --dimension
 
   Return value: 0 for no error or 1 for a user input error, used to go to close_and_free on main */
 
-  nco_bool *dne_lst;
+  nco_bool *dne_lst; /* [lst] Name 'does not exist' */
 
   dne_lst=(nco_bool *)nco_malloc(lmt_nbr*sizeof(nco_bool));
 
@@ -6826,6 +6826,27 @@ nco_chk_lmt                           /* [fnc] Check input dimensions specified 
   dne_lst=(nco_bool *)nco_free(dne_lst);
   return NCO_CHK_NOERR;
 } /* nco_chk_lmt() */
+
+
+nco_bool                              /* O [rcd] Return code  */
+nco_chk_dmn                           /* [fnc] Check valit input dimension name */
+(const char * const dmn_nm,           /* I [sng] Dimension name (relative) */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
+{ 
+  /* Purpose: Check if input dimension name is valid */
+
+  /* Dimension list */
+  for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
+    /* Match input relative name to dimension relative name */ 
+    if(strcmp(dmn_nm,trv_tbl->lst_dmn[dmn_idx].nm) == 0){
+      /* Found */
+      return True;
+    } /* Match input relative name to dimension relative name */ 
+  } /* Dimension list */
+
+  (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),dmn_nm);
+  return False;
+} /* nco_chk_dmn() */
 
 void
 nco_bld_lmt                           /* [fnc] Assign user specified dimension limits to traversal table */

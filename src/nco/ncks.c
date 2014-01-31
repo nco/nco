@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.697 2014-01-31 00:16:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.698 2014-01-31 01:41:15 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -151,6 +151,7 @@ main(int argc,char **argv)
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm=NULL; /* [sng] Record dimension name */
+  char *rec_dmn_nm_fix=NULL; /* [sng] Record dimension name (Original input name without _fix prefix) */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -159,8 +160,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.697 2014-01-31 00:16:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.697 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.698 2014-01-31 01:41:15 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.698 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -422,6 +423,7 @@ main(int argc,char **argv)
         rec_dmn_nm=(char *)nco_malloc((strlen(fix_pfx)+strlen(optarg)+1L)*sizeof(char));
         rec_dmn_nm=strcpy(rec_dmn_nm,fix_pfx);
         rec_dmn_nm=strcat(rec_dmn_nm,optarg);
+        rec_dmn_nm_fix=strdup(optarg);
       } /* endif fix_rec_dmn */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
@@ -673,6 +675,14 @@ main(int argc,char **argv)
 
   /* Table error checking (valid input names) returned an error, exit */
   if (rcd_tbl) goto close_and_free; 
+
+  /* Check valid input dimension record name (--fix_rec_dmn) */
+  if (rec_dmn_nm_fix){
+    nco_bool flg_ret=nco_chk_dmn(rec_dmn_nm_fix,trv_tbl);
+
+    /* Name checking returned an error, exit */
+    if (flg_ret == False) goto close_and_free; 
+  }
 
   /* Get number of variables, dimensions, and global attributes in file */
   (void)trv_tbl_inq(&att_glb_nbr,&att_grp_nbr,&att_var_nbr,&dmn_nbr_fl,&dmn_rec_fl,&grp_dpt_fl,&grp_nbr_fl,&var_ntm_fl,&var_nbr_fl,trv_tbl);
@@ -980,6 +990,7 @@ close_and_free:
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
     if(smr_sng) smr_sng=(char *)nco_free(smr_sng);
     if(smr_xtn_sng) smr_xtn_sng=(char *)nco_free(smr_xtn_sng);
+    rec_dmn_nm_fix=(char *)nco_free(rec_dmn_nm_fix);
   } /* !flg_cln */
   
   /* End timer */ 

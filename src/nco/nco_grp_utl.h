@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.446 2014-01-30 23:07:46 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.447 2014-01-31 01:41:15 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -685,10 +685,15 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 (const int nc_id,                     /* I [id] netCDF file ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-int
+int                                   /* O [rcd] Return code (NCO_CHK_NOERR or NCO_CHK_ERR)  */
 nco_chk_lmt                           /* [fnc] Check input dimensions specified with --dimension (hyperslabs) */
 (int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ lmt_sct **lmt,                       /* I [sct] Limit structure array */
+ const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+
+nco_bool                              /* O [rcd] Return code  */
+nco_chk_dmn                           /* [fnc] Check valit input dimension name */
+(const char * const dmn_nm,           /* I [sng] Dimension name (relative) */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 nco_bool                               /* O [flg] True if variable 1 is in scope of variable 2 */
