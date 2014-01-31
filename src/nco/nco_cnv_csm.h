@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.35 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.36 2014-01-31 03:57:19 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -47,14 +47,17 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
  int * const xtr_nbr); /* I/O number of variables in current extraction list */
 
-int /* [rcd] Return code */
-nco_cnv_cf_cll_mth_add /* [fnc] Add cell_methods attributes */
-(const int nc_id, /* I netCDF file ID */
- var_sct * const * const var, /* I [sct] Variable to reduce (e.g., average) (destroyed) */
- const int nbr_var, /* I [nbr] Number of variables to be defined */
- dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
- const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
- const int nco_op_typ); /* I [enm] Operation type, default is average */
+int                                  /* [rcd] Return code */
+nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
+(const int out_id,                   /* I [id] netCDF file ID */
+ var_sct * const * const var,        /* I [sct] Variable to reduce (e.g., average) (destroyed) */
+ const int nbr_var,                  /* I [nbr] Number of variables to be defined */
+ dmn_sct * const * const dim,        /* I [sct] Dimensions over which to reduce variable */
+ const int nbr_dim,                  /* I [sct] Number of dimensions to reduce variable over */
+ const int nco_op_typ,               /* I [enm] Operation type, default is average */
+ gpe_sct *gpe,                       /* [sng] Group Path Editing (GPE) structure */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.66 2014-01-28 21:15:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.67 2014-01-31 03:57:19 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -224,24 +224,52 @@ nco_cnv_cf_crd_add /* [fnc] Add coordinates defined by CF convention */
   
 } /* end nco_cnv_cf_crd_add() */
 
-int /* [rcd] Return code */
-nco_cnv_cf_cll_mth_add /* [fnc] Add cell_methods attributes */
-(const int nc_id, /* I netCDF file ID */
- var_sct * const * const var, /* I [sct] Variable to reduce (e.g., average) (destroyed) */
- const int nbr_var, /* I [nbr] Number of variables to be defined */
- dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
- const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
- const int nco_op_typ) /* I [enm] Operation type, default is average */
+int                                  /* [rcd] Return code */
+nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
+(const int out_id,                   /* I [id] netCDF file ID */
+ var_sct * const * const var,        /* I [sct] Variable to reduce (e.g., average) (destroyed) */
+ const int nbr_var,                  /* I [nbr] Number of variables to be defined */
+ dmn_sct * const * const dim,        /* I [sct] Dimensions over which to reduce variable */
+ const int nbr_dim,                  /* I [sct] Number of dimensions to reduce variable over */
+ const int nco_op_typ,               /* I [enm] Operation type, default is average */
+ gpe_sct *gpe,                       /* [sng] Group Path Editing (GPE) structure */
+ const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* Purpose: Add/modify cell_methods attribute according to CF convention
-     http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods */
+  http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.7-draft1/cf-conventions.html#cell-methods */
 
   const char fnc_nm[]="nco_cnv_cf_cll_mth_add()"; /* [sng] Function name */
 
-  int rcd=NC_NOERR; /* [rcd] Return code */
+  int grp_out_id;    /* [ID] Group ID (output) */
+  int var_out_id;    /* [ID] Variable ID (output) */
+  int rcd=NC_NOERR;  /* [rcd] Return code */
 
-  rcd=0*(nbr_dim+(int)strlen(fnc_nm)+nc_id+sizeof(var)+nbr_var+sizeof(dim)+nco_op_typ);
+  rcd=0*(nbr_dim+(int)strlen(fnc_nm)+out_id+sizeof(var)+nbr_var+sizeof(dim)+nco_op_typ);
+
+  /* Process all variables */
+  for(int idx_var=0;idx_var<nbr_var;idx_var++){ 
+    char *grp_out_fll=NULL; /* [sng] Group name */
+    trv_sct *var_trv=NULL;  /* [sct] Variable GTT object */
+
+    /* Obtain variable GTT object using full variable name */
+    var_trv=trv_tbl_var_nm_fll(var[idx_var]->nm_fll,trv_tbl);
+
+    /* Edit group name for output */
+    if(gpe) grp_out_fll=nco_gpe_evl(gpe,var_trv->grp_nm_fll); else grp_out_fll=(char *)strdup(var_trv->grp_nm_fll);
+
+    /* Obtain output group ID using full group name */
+    (void)nco_inq_grp_full_ncid(out_id,grp_out_fll,&grp_out_id);
+
+    /* Memory management after current extracted group */
+    if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
+
+    /* Get variable ID */
+    (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
+
+
+
+  } /* Process all variables */
 
   return rcd;
-  
+
 } /* end nco_cnv_cf_cll_mth_add() */
