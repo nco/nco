@@ -1,3 +1,8 @@
+2014-01-30  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_chk_dmn(): Check valid input dimension name (used for --fix_rec_dmn). Make group table construction function return a value
+	for valid or invalid user input (NCO_CHK_NOERR or NCO_CHK_ERR)
+
 2014-01-29  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncks regressions #86 Change record dimension to fixed dimension --fix_rec_dmn

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.698 2014-01-31 01:41:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.699 2014-01-31 04:13:31 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -160,8 +160,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.698 2014-01-31 01:41:15 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.698 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.699 2014-01-31 04:13:31 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.699 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -889,58 +889,58 @@ main(int argc,char **argv)
     } /* endif summary */
 
     if(!prn_flg.new_fmt){
-      
+
       /* Traditional printing order/format */
       if(PRN_GLB_METADATA){
-	int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
-	int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
-	/* Get unlimited dimension information from input file/group */
-	rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
-	if(nbr_rec_lcl > 0){
-	  char dmn_nm[NC_MAX_NAME]; 
-	  long rec_dmn_sz;
-	  for(int rec_idx=0;rec_idx<nbr_rec_lcl;rec_idx++){
-	    (void)nco_inq_dim(in_id,dmn_ids_rec[rec_idx],dmn_nm,&rec_dmn_sz);
-	    (void)fprintf(stdout,"Root record dimension %d: name = %s, size = %li\n",rec_idx,dmn_nm,rec_dmn_sz);
-	  } /* end loop over rec_idx */
-	  (void)fprintf(stdout,"\n");
-	} /* NCO_REC_DMN_UNDEFINED */
-	/* Print group attributes recursively */
-	(void)nco_prn_att_trv(in_id,&prn_flg,trv_tbl);
+        int dmn_ids_rec[NC_MAX_DIMS]; /* [ID] Record dimension IDs array */
+        int nbr_rec_lcl; /* [nbr] Number of record dimensions visible in root */
+        /* Get unlimited dimension information from input file/group */
+        rcd=nco_inq_unlimdims(in_id,&nbr_rec_lcl,dmn_ids_rec);
+        if(nbr_rec_lcl > 0){
+          char dmn_nm[NC_MAX_NAME]; 
+          long rec_dmn_sz;
+          for(int rec_idx=0;rec_idx<nbr_rec_lcl;rec_idx++){
+            (void)nco_inq_dim(in_id,dmn_ids_rec[rec_idx],dmn_nm,&rec_dmn_sz);
+            (void)fprintf(stdout,"Root record dimension %d: name = %s, size = %li\n",rec_idx,dmn_nm,rec_dmn_sz);
+          } /* end loop over rec_idx */
+          (void)fprintf(stdout,"\n");
+        } /* NCO_REC_DMN_UNDEFINED */
+        /* Print group attributes recursively */
+        (void)nco_prn_att_trv(in_id,&prn_flg,trv_tbl);
       } /* !PRN_GLB_METADATA */
-      
+
       if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
       if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
       
     }else{ 
-      
+
       /* New file dump format developed 201307 for CDL, TRD, XML, SRM */
-      
+
       if(PRN_SRM){
-	nco_srm_hdr();
-	goto close_and_free;
+        nco_srm_hdr();
+        goto close_and_free;
       } /* !PRN_SRM */
 
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
-	rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl);
+        rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl);
       }else{
-	trv_sct trv_obj; /* [sct] Traversal table object */
-	for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
-	  /* Shallow copy to avoid indirection */
-	  trv_obj=trv_tbl->lst[obj_idx];
-	  /* Print this group */
-	  if(trv_obj.nco_typ == nco_obj_typ_grp){
-	    /* Print dimensions defined in this group */
-	    // (void)nco_prn_dmn_xtr(in_id,trv_tbl);
-	    /* Print group attributes */
-	    //if(PRN_GLB_METADATA) (void)nco_prn_grp_att(in_id,trv_tbl);
-	    ;
-	  } /* endif group */
-	  if(trv_obj.nco_typ == nco_obj_typ_var){
-	    if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
-	    if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
-	  } /* endif variable */
-	} /* end loop over obj_idx */
+        trv_sct trv_obj; /* [sct] Traversal table object */
+        for(unsigned int obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++){
+          /* Shallow copy to avoid indirection */
+          trv_obj=trv_tbl->lst[obj_idx];
+          /* Print this group */
+          if(trv_obj.nco_typ == nco_obj_typ_grp){
+            /* Print dimensions defined in this group */
+            // (void)nco_prn_dmn_xtr(in_id,trv_tbl);
+            /* Print group attributes */
+            //if(PRN_GLB_METADATA) (void)nco_prn_grp_att(in_id,trv_tbl);
+            ;
+          } /* endif group */
+          if(trv_obj.nco_typ == nco_obj_typ_var){
+            if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
+            if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
+          } /* endif variable */
+        } /* end loop over obj_idx */
       } /* end if */
     } /* endif new format */
 
@@ -949,10 +949,10 @@ main(int argc,char **argv)
 
   /* goto close_and_free */
 close_and_free: 
-  
+
   /* Close input netCDF file */
   nco_close(in_id);
-  
+
   /* Remove local copy of file */
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
   
