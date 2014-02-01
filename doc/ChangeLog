@@ -1,3 +1,9 @@
+2014-01-31  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_cnv_cf_cll_mth_add() Add cell_methods attributes (create mode)
+	
+	* Add ncwa regression #58 Add cell_methods attributes (create mode)
+
 2014-01-30  Pedro Vicente  <pvicente@uci.edu>
 
 	* nco_chk_dmn(): Check valid input dimension name (used for --fix_rec_dmn). Make group table construction function return a value

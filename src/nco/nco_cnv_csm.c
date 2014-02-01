@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.68 2014-02-01 01:05:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.69 2014-02-01 01:49:19 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -246,15 +246,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   aed_sct aed;       /* [sct] Structure containing information necessary to edit */
 
-  /* Initialize common members */
-  aed.att_nm=strdup("cell_methods");
-  aed.var_nm=NULL;
-  aed.val.vp=NULL;
-  aed.type=NC_CHAR;
-  aed.mode=aed_create;
-  aed.sz=-1L;
-  aed.id=-1;
-
   rcd=0*(nbr_dim+(int)strlen(fnc_nm)+out_id+sizeof(var)+nbr_var+sizeof(dim)+nco_op_typ);
 
   /* Process all variables */
@@ -291,6 +282,16 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           switch (nco_op_typ)
           {
           case nco_op_avg:
+
+            /* Initialize common members */
+            aed.att_nm=strdup("cell_methods");
+            aed.var_nm=NULL;
+            aed.val.vp=NULL;
+            aed.type=NC_CHAR;
+            aed.mode=aed_create;
+            aed.sz=-1L;
+            aed.id=-1;
+
             /* Concatenate attribute parts (e.g "time: mean" */
             aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen("mean")+1L;
             att_val=(char *)nco_malloc(aed.sz);
@@ -300,22 +301,23 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
             /* Type is NC_CHAR */
             aed.val.cp=(char *)strdup(att_val);
             att_val=(char *)nco_free(att_val);
+
+            /* Edit attribute */
+            (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+
+            /* Delete currente value */
+            if (aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
+            aed.sz=-1L;
+
+            aed.att_nm=(char *)nco_free(aed.att_nm);
             break;
-          }
-
-          /* Edit attribute */
-          (void)nco_aed_prc(grp_out_id,var_out_id,aed);
-
-          /* Delete currente value */
-          if (aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
-          aed.sz=-1L;
-
+          } /* End switch */
         } /*  Match name */
       } /* Loop dimensions */
     } /* Loop variable dimensions */
   } /* Process all variables */
 
-  aed.att_nm=(char *)nco_free(aed.att_nm);
+
 
   return rcd;
 

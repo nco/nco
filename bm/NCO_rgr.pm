@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.426 2014-02-01 01:05:43 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.427 2014-02-01 01:49:19 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4744,8 +4744,8 @@ print "\n";
     
 	$dsc_sng="Chunking -a /time --cnk_dmn /time,1 -v time";
     $tst_cmd[0]="ncwa $omp_flg -O -4 $nco_D_flg -a /time --cnk_dmn /time,1 -v time $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'time:'";
-	$tst_cmd[2]="time: type NC_DOUBLE, 0 dimensions, 4 attributes, chunked? no, compressed? no, packed? no";
+    $tst_cmd[1]="ncks -m %tmp_fl_00% | grep 'time: type'";
+	$tst_cmd[2]="time: type NC_DOUBLE, 0 dimensions, 5 attributes, chunked? no, compressed? no, packed? no";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
@@ -4762,6 +4762,19 @@ print "\n";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+	
+#NEW 4.4.2	
+#ncwa #58
+#ncwa -O -a time -v time -C in.nc out.nc	  
+#ncks -m out.nc
+
+    $dsc_sng="Cell methods -a time -v time";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -a time -v time -C $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m %tmp_fl_00%";
+	$tst_cmd[2]="time attribute 4: cell_methods, size = 11 NC_CHAR, value = time: mean";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
 
 	
 	} #### Group tests	
