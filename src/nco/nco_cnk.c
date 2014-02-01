@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.115 2014-02-01 02:52:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.116 2014-02-01 21:59:04 pvicente Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -1042,7 +1042,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
     if(var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs) < 1.0){
       cnk_sz[0]=1L;
-      cnk_nbr_2D_axs=1.0/sqrt(var_shp[0]);
+      cnk_nbr_2D_axs=1.0/sqrt((double)var_shp[0]);
     }else{
       cnk_sz[0]=var_shp[0]/(cnk_nbr_2D_axs*cnk_nbr_2D_axs);
     } /* endif */
