@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1220 2014-02-01 02:52:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1221 2014-02-01 19:56:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8783,7 +8783,7 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
                   /* Check if possible 'longitude' (var_trv) is in scope */
                   if (nco_var_scp(&trv_tbl->lst[idx_crd],&var_trv,trv_tbl)){
 
-                    trv_tbl->lst[idx_crd].flg_aux=True;
+                    trv_tbl->lst[idx_crd].flg_aux=True; 
 
                     /* Insert item into list */
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].nbr_lon_crd++;
@@ -8793,7 +8793,7 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].nm_fll=strdup(var_nm_fll);
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].dmn_id=dmn_id;
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].grp_dpt=var_trv.grp_dpt;
-                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lat_crd[nbr_lon_crd-1].crd_typ=crd_typ;
+                    trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].crd_typ=crd_typ;
                     strcpy(trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].units,units_lat);
 
                   } /* Is in scope */
