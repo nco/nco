@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.36 2014-01-26 17:49:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.h,v 1.37 2014-02-01 02:52:30 zender Exp $ */
 
 /* Purpose: Description (definition) of chunking functions */
 
@@ -47,7 +47,8 @@ enum nco_cnk_map{ /* [enm] Chunking conversion map */
   nco_cnk_map_scl, /* 3 [enm] Chunksize equals scalar size specified */
   nco_cnk_map_prd, /* 4 [enm] Chunksize product is scalar size specified */
   nco_cnk_map_lfp, /* 5 [enm] Chunksizes of lefter dimensions flexes to matches scalar size specified */
-  nco_cnk_map_xst /* 6 [enm] Chunksize equals chunk-sizes in input file */
+  nco_cnk_map_xst, /* 6 [enm] Chunksize equals chunk-sizes in input file */
+  nco_cnk_map_rew /* 7 [enm] Chunksize balances access to 1D and 2D slabs of 3D variable */
 }; /* end nco_cnk_map enum */
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.457 2014-01-30 07:10:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.458 2014-02-01 02:52:30 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -983,8 +983,8 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-c]")) (void)fprintf(stdout,"-c, --crd, --coords\tCoordinate variables will all be processed\n");
   if(strstr(opt_sng,"--cdl")) (void)fprintf(stdout,"    --cdl\t\tPrint CDL (netCDF lingua franca used by ncdump/ncgen)\n");
   if(strstr(opt_sng,"--cnk_dmn")) (void)fprintf(stdout,"    --cnk_dmn, --chunk_dimension nm,sz\tChunksize of dimension nm is sz\n");
-  if(strstr(opt_sng,"--cnk_map")) (void)fprintf(stdout,"    --cnk_map, --chunk_map map\t\tChunking map [dmn,rd1,prd,xpl]\n");
-  if(strstr(opt_sng,"--cnk_plc")) (void)fprintf(stdout,"    --cnk_plc, --chunk_policy plc\tChunking policy [all,g2d,g3d,xpl,uck]\n");
+  if(strstr(opt_sng,"--cnk_map")) (void)fprintf(stdout,"    --cnk_map, --chunk_map map\t\tChunking map [dmn,lfp,prd,rd1,rew,scl,xpl,xst]\n");
+  if(strstr(opt_sng,"--cnk_plc")) (void)fprintf(stdout,"    --cnk_plc, --chunk_policy plc\tChunking policy [all,g2d,g3d,xpl,xst,uck]\n");
   if(strstr(opt_sng,"--cnk_scl")) (void)fprintf(stdout,"    --cnk_scl, --chunk_scalar sz\tChunksize scalar (for all dimensions)\n");
   if(strstr(opt_sng,"[-D")) (void)fprintf(stdout,"-D, --dbg_lvl, --debug-level lvl\tDebug-level is lvl\n");
   if(strstr(opt_sng,"[-d")){

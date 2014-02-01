@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.954 2014-01-30 07:10:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.955 2014-02-01 02:52:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5025,12 +5025,11 @@ Multi-File, Multi-Record operators (@command{ncra} and @command{ncrcat})
 to append their output directly to the end of an existing file.
 This feature may be used to augment a target file, rather than construct
 it from scratch. 
-For example, when a timeseries is concatenated from input data that
-becomes available in stages rather than all at once.
-This switch enables an optimization that significantly speeds writing
-in such cases.
+This helps, for example, when a timeseries is concatenated from input
+data that becomes available in stages rather than all at once.
+In such cases this switch significantly speeds writing.
 
-Consider the use case where wants to preserve the contents of
+Consider the use case where one wishes to preserve the contents of
 @file{fl_1.nc}, and add to them new records contained in
 @file{fl_2.nc}. 
 Previously the output had to be placed in a third file, @file{fl_3.nc}
@@ -5049,14 +5048,21 @@ the final output file (@pxref{Temporary Output Files}).
 All this copying is expensive for large files. 
 
 The new @samp{--record_append} switch causes all records in
-@file{fl_1.nc} to be appended to the end of the corresponding records in
-@file{fl_2.nc}: 
+@file{fl_2.nc} to be appended to the end of the corresponding records in
+@file{fl_1.nc}: 
 @example
-ncrcat --rec_apn fl_1.nc fl_2.nc
+ncrcat --rec_apn fl_2.nc fl_1.nc
 @end example
-The contents of @file{fl_2.nc} are completely preserved, and only
-values in @file{fl_1.nc} are copied. 
-This switch avoids the necessity of copying all of @file{fl_2.nc} 
+The ordering of the filename arguments may seem non-intuitive.
+If the record variable represents time in these files, then the
+values in @file{fl_1.nc} precede those in @file{fl_2.nc}, so why
+do the files appear in the reverse order on the command line?
+@file{fl_1.nc} is the last file named because it is the pre-existing
+output file to which we are appending all of the other input files
+(in this case only @file{fl_2.nc}).
+The contents of @file{fl_1.nc} are completely preserved, and only
+values in @file{fl_2.nc} (and any other input files) are copied. 
+This switch avoids the necessity of copying all of @file{fl_1.nc} 
 through the netCDF interface to a new output file.
 The @samp{--rec_apn} switch automatically puts @acronym{NCO} into 
 append mode (@pxref{Appending Variables}), so specifying @samp{-A} is
@@ -5066,10 +5072,10 @@ By default, NCO works in an intermediate temporary file.
 Power users may combine @samp{--rec_apn} with the @samp{--no_tmp_fl}
 switch (@pxref{Temporary Output Files}):
 @example
-ncrcat --rec_apn --no_tmp_fl fl_1.nc fl_2.nc
+ncrcat --rec_apn --no_tmp_fl fl_2.nc fl_1.nc
 @end example
 This avoids creating an intermediate file, and copies only the
-minimal amount of data (i.e., all of @file{fl_1.nc}). 
+minimal amount of data (i.e., all of @file{fl_2.nc}). 
 Hence, it is fast.
 We recommend users try to understand the safety trade-offs involved. 
 
@@ -6258,6 +6264,7 @@ Four chunking maps are currently implemented:@*
 @cindex @samp{lfp}
 @cindex @samp{rd1}
 @cindex @samp{xst}
+@cindex @samp{rew}
 @cindex @samp{cnk_dmn}
 @cindex @samp{cnk_scl}
 @cindex @samp{cnk_prd}
@@ -6319,6 +6326,17 @@ Variables not chunked in the input file will be chunked with
 default mappings.@*
 @var{cnk_map} key values: @samp{xst}, @samp{cnk_xst}, @samp{map_xst}@*
 Mnemonic: E@emph{X}i@emph{ST}@*
+@item Chunksize Balances 1D and (N-1)-D Access to N-D Variable
+Definition: Chunksizes are chosen so that 1-D and (@var{(N-1)})-D
+hyperslabs of @var{3}-D variables (e.g., point-timeseries orn
+latitude/longitude surfaces of 3-D fields) both require approximately
+the number of chunks. 
+Hence their access time should be balanced.
+Russ Rew explains the motivation and derivation for this strategy 
+@uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes,
+here}.@*
+@var{cnk_map} key values: @samp{rew}, @samp{cnk_rew}, @samp{map_rew}@*
+Mnemonic: Russ @emph{REW}@*
 @end table
 @noindent
 It is possible to combine the above chunking map algorithms with
@@ -16882,6 +16900,7 @@ Key steps include:
 @node Permute MODIS Coordinates,  , Add Coordinates to MODIS Data, CMIP5 Example
 @section Permute @acronym{MODIS} Coordinates
 @cindex coordinates, modifying
+@c NB: 20140130: @textdegree is in TeXInfo 4.12 but Mac OS X 10.8 ships with 4.8
 @acronym{MODIS} orders latitude data from 90@textdegree{}N to
 -90@textdegree{}N, and longitude from -180@textdegree{}E to
 180@textdegree{}E.   

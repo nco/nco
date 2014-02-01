@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.33 2014-01-30 07:20:24 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.34 2014-02-01 02:52:26 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -1155,7 +1155,7 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
-echo "OPENMP_CFLAGS.........${OPENMP_CFLAGS}"
+echo "OPENMP_CFLAGS........ ${OPENMP_CFLAGS}"
 echo "ENABLE_DAP_NETCDF.... ${enable_dap_netcdf}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
@@ -1166,7 +1166,7 @@ echo "ENABLE_UDUNITS....... ${enable_udunits}"
 echo "ENABLE_UDUNITS2...... ${enable_udunits2}"
 echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HAVE_ANTLR........... ${HAVE_ANTLR}"  
-echo "HAVE_MAKEINFO.........${HAVE_MAKEINFO}"  
+echo "HAVE_MAKEINFO........ ${HAVE_MAKEINFO}"  
 echo "HOST................. ${HOST}"
 echo "host................. ${host}"
 echo "HOSTNAME............. ${HOSTNAME}"

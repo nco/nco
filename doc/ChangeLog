@@ -1,25 +1,33 @@
-2014-01-31  Pedro Vicente  <pvicente@uci.edu>
-
-	* nco_cnv_cf_cll_mth_add() Add cell_methods attributes (create mode)
-	
-	* Add ncwa regression #58 Add cell_methods attributes (create mode)
-
-2014-01-30  Pedro Vicente  <pvicente@uci.edu>
-
-	* nco_chk_dmn(): Check valid input dimension name (used for --fix_rec_dmn). Make group table construction function return a value
-	for valid or invalid user input (NCO_CHK_NOERR or NCO_CHK_ERR)
-
-2014-01-29  Pedro Vicente  <pvicente@uci.edu>
-
-	* Add ncks regressions #86 Change record dimension to fixed dimension --fix_rec_dmn
-
-2014-01-29  Charlie Zender  <zender@uci.edu>
+2014-01-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.2 release procedure:
  	Changes since nco-4_4_1: fxm
 	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
 	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
 	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
+
+	* Crude implementation of cnk_map=rew
+
+2014-01-31  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_cnv_cf_cll_mth_add() Add cell_methods attributes (create mode)
+
+	* Add ncwa regression #58 Add cell_methods attributes (create mode)
+
+2014-01-30  Pedro Vicente  <pvicente@uci.edu>
+
+	* nco_chk_dmn(): Check valid input dimension name (used for --fix_rec_dmn)
+	Make group table construction function return NCO_CHK_NOERR or NCO_CHK_ERR
+
+2014-01-30  Charlie Zender  <zender@uci.edu>
+
+	* Improve REC_APN documentation
+
+2014-01-29  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncks regressions #86 Change record dimension to fixed dimension --fix_rec_dmn
+
+2014-01-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.1 release procedure:
  	Changes since nco-4_4_0: -X grp, cnk_dmn grp, ncra_no_fl_close bugfix
