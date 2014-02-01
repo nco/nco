@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.67 2014-01-31 03:57:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.68 2014-02-01 01:05:45 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -244,6 +244,17 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   int var_out_id;    /* [ID] Variable ID (output) */
   int rcd=NC_NOERR;  /* [rcd] Return code */
 
+  aed_sct aed;       /* [sct] Structure containing information necessary to edit */
+
+  /* Initialize common members */
+  aed.att_nm=strdup("cell_methods");
+  aed.var_nm=NULL;
+  aed.val.vp=NULL;
+  aed.type=NC_CHAR;
+  aed.mode=aed_create;
+  aed.sz=-1L;
+  aed.id=-1;
+
   rcd=0*(nbr_dim+(int)strlen(fnc_nm)+out_id+sizeof(var)+nbr_var+sizeof(dim)+nco_op_typ);
 
   /* Process all variables */
@@ -266,9 +277,45 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     /* Get variable ID */
     (void)nco_inq_varid(grp_out_id,var_trv->nm,&var_out_id);
 
+    /* Loop variable dimensions */
+    for(int idx_dmn_var=0;idx_dmn_var<var_trv->nbr_dmn;idx_dmn_var++){
 
+      /* Loop dimensions */
+      for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
 
+        /*  Match name */
+        if(strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm) == 0){ 
+
+          char *att_val=NULL;
+          aed.val.cp=NULL;
+          switch (nco_op_typ)
+          {
+          case nco_op_avg:
+            /* Concatenate attribute parts (e.g "time: mean" */
+            aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen("mean")+1L;
+            att_val=(char *)nco_malloc(aed.sz);
+            strcpy(att_val,dim[idx_dmn]->nm);
+            strcat(att_val,": ");
+            strcat(att_val,"mean");
+            /* Type is NC_CHAR */
+            aed.val.cp=(char *)strdup(att_val);
+            att_val=(char *)nco_free(att_val);
+            break;
+          }
+
+          /* Edit attribute */
+          (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+
+          /* Delete currente value */
+          if (aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
+          aed.sz=-1L;
+
+        } /*  Match name */
+      } /* Loop dimensions */
+    } /* Loop variable dimensions */
   } /* Process all variables */
+
+  aed.att_nm=(char *)nco_free(aed.att_nm);
 
   return rcd;
 

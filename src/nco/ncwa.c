@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.397 2014-01-31 03:57:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.398 2014-02-01 01:05:45 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.397 2014-01-31 03:57:19 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.397 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.398 2014-02-01 01:05:45 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.398 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1109,9 +1109,6 @@ main(int argc,char **argv)
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
 
   } /* end loop over fl_idx */
-
-  /* Add cell_methods attributes */
-  rcd+=nco_cnv_cf_cll_mth_add(out_id,var_prc_out,nbr_var_prc,dmn_avg,dmn_avg_nbr,nco_op_typ,gpe,trv_tbl);
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
