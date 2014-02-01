@@ -603,38 +603,61 @@ netcdf in_grp_3 {
 	 gw_lon = 1, 1, 1 ;
 	} // end g26
 	
-    group: g27 { //test flatenning with paralell variables: ncks -3 -G : -g /g27g1/
-		group: g27g1 {
-		dimensions:
-		delta_time_start=2;
-		variables:
-		float delta_time_start(delta_time_start);
-		data:
-		delta_time_start=1,2;
-		}
+group: g27 { //test flatenning with paralell variables: ncks -3 -G : -g /g27g1/
+	group: g27g1 {
+	dimensions:
+	delta_time_start=2;
+	variables:
+	float delta_time_start(delta_time_start);
+	data:
+	delta_time_start=1,2;
+	}
 		
-		group: g27g2 {
-		dimensions:
-		delta_time_start=1;
-		variables:
-		float delta_time_start(delta_time_start);
-		data:
-		delta_time_start=1;	
-		}	
-	} // end g27
+	group: g27g2 {
+	dimensions:
+	delta_time_start=1;
+	variables:
+	float delta_time_start(delta_time_start);
+	data:
+	delta_time_start=1;	
+	}	
+} // end g27
 	
 	
-	 group: g28 { //test CF extraction ( "delta_time_stop" has a CF attribute to "delta_time_start")
-		dimensions:
-		delta_time_start=1;
-		variables:
-		float delta_time_start(delta_time_start);
-		float delta_time_stop(delta_time_start);
-		delta_time_stop:coordinates = "delta_time_start";
-		data:
-		delta_time_start=1;	
-		delta_time_stop=1;
-	} // end g28
+group: g28 { //test CF extraction ( "delta_time_stop" has a CF attribute to "delta_time_start")
+	dimensions:
+	delta_time_start=1;
+	variables:
+	float delta_time_start(delta_time_start);
+	float delta_time_stop(delta_time_start);
+	delta_time_stop:coordinates = "delta_time_start";
+	data:
+	delta_time_start=1;	
+	delta_time_stop=1;
+} // end g28
+
+group: g29 { //test standard_name = "longitude"
+	dimensions:
+	time29=unlimited;
+	lat29=2;
+	lon29=2;
+
+	variables:
+	int time29(time29);
+	int lat29(lat29);
+	lat29:standard_name = "latitude";
+	lat29:units="degree";
+	int lon29(lon29);
+	lon29:standard_name = "longitude";
+	lon29:units="degree";
+	int var3d(time29,lat29,lon29);
+	
+	data:
+	time29=1;	
+	lat29=1,2;
+	lon29=1,2;
+	var3d=1,2,3,4;
+} // end g28
 	
 	
 	

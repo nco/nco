@@ -1,3 +1,7 @@
+2014-02-01  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncks regression #83 Test 'standard_name' attribute for "longitude" and "latitude" values
+
 2014-01-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.4.2 release procedure:

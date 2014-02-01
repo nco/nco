@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.427 2014-02-01 01:49:19 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.428 2014-02-01 23:54:37 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2597,7 +2597,18 @@ print "\n";
     $tst_cmd[2]="time52 dimension 0: time52, size = 10 NC_DOUBLE (Coordinate is time52)";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array		
+    $#tst_cmd=0; # Reset array	
+
+#ncks #87
+#ncks -O -v lat29 in_grp_3.nc out.nc
+    
+    $dsc_sng="(Groups) Test ";
+    $tst_cmd[0]="ncks -O -v lat29  $nco_D_flg $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m -v lat29 %tmp_fl_00%  | grep 'standard_name'";
+    $tst_cmd[2]="lat29 attribute 0: standard_name, size = 8 NC_CHAR, value = latitude";
+    $tst_cmd[3]="SS_OK";     
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
 
    } #### Group tests	
     

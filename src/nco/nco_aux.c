@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.78 2014-01-22 21:59:51 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_aux.c,v 1.79 2014-02-01 23:54:38 pvicente Exp $ */
 
 /* Copyright (C) 1995--2014 Charlie Zender
    License: GNU General Public License (GPL) Version 3
@@ -618,8 +618,13 @@ nco_find_lat_lon_trv
       *var_nm_fll=(char *)strdup(var_trv->nm_fll);
 
       /* Get units; assume same for both lat and lon */
-      int rcd=nco_inq_attlen(grp_id,var_id,"units",&lenp);
-      if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
+      int rcd=nco_inq_attlen_flg(grp_id,var_id,"units",&lenp);
+      if(rcd != NC_NOERR){
+        if(nco_dbg_lvl_get() >= nco_dbg_var){
+        (void)fprintf(stdout,"nco_find_lat_lon() reports CF convention requires \"latitude\" to have units attribute\n");
+        }
+        return False;
+      }
       NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
       units[lenp]='\0';
 
