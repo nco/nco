@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1222 2014-02-01 23:54:38 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1223 2014-02-02 00:22:32 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6701,7 +6701,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_trv_hsh_bld(trv_tbl);
 
   /* Build auxiliary coordinates information into table */
-  (void)nco_bld_crd_aux(nc_id,trv_tbl);        
+  if (aux_nbr) (void)nco_bld_crd_aux(nc_id,trv_tbl);        
 
   /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
