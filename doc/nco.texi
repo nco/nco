@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.955 2014-02-01 02:52:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.956 2014-02-03 03:54:07 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3599,6 +3599,7 @@ Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
 @samp{211 H D F} indicate either of the newer netCDF4 file formats.
 
 @html
+<a name="hdf2nc"></a> <!-- http://nco.sf.net/nco.html#hdf2nc -->
 <a name="3to4"></a> <!-- http://nco.sf.net/nco.html#3to4 -->
 <a name="4to3"></a> <!-- http://nco.sf.net/nco.html#4to3 -->
 @end html
