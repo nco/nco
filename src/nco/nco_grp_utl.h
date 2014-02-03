@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.448 2014-02-03 01:40:39 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.449 2014-02-03 02:10:35 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -733,7 +733,7 @@ nco_lmt_aux_tbl                       /* [fnc] Apply limits to variable in table
  lmt_sct **lmt,                       /* I [sct] Limits */
  const int lmt_dmn_nbr,               /* I [nbr] Number of limits */
  const char * const var_nm_fll,       /* I [sng] Variable full name */
- const int idx_dmn_in,                /* I [nbr] Index of dimension to apply the limits */
+ const int dmn_id,                    /* I [id] ID of dimension to apply the limits */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
