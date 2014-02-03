@@ -1,3 +1,7 @@
+2014-02-02  Pedro Vicente  <pvicente@uci.edu>
+	
+	* Add ncks regression #88 -X writing and associated coordinates 
+
 2014-02-01  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncks regression #83 Test 'standard_name' attribute for "longitude" and "latitude" values

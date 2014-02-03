@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1225 2014-02-03 02:10:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1226 2014-02-03 04:35:09 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8507,6 +8507,9 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
 {
   const char fnc_nm[]="nco_prs_aux_crd()"; /* [sng] Function name */
 
+  nco_bool flg_lmt_crd[NC_MAX_DIMS]; /* [flg] Limit was applied to coordinate */
+  for(int idx=0;idx<NC_MAX_DIMS;idx++)flg_lmt_crd[idx]=False;
+
   /* Loop table  */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
@@ -8528,7 +8531,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
         int dmn_id_fnd_lon=-1;  /* [id] ID of dimension that has the longituee coordinate */
 
         trv_sct *lat_trv=NULL;
-        trv_sct *lon_trv=NULL;
+        trv_sct *lon_trv=NULL;      
 
         /* Loop dimensions, look for latitude  */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
@@ -8583,12 +8586,30 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
             assert(dmn_id_fnd_lon == dmn_id_fnd_lat);
             
             /* Apply limits to variable in table */
-            (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,var_trv.nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);        
+            (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,var_trv.nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
 
-            /* Free limits exported from nco_aux_evl_trv() */
-            aux=(lmt_sct **)nco_free(aux);  
+            /* Apply limits to 'latitude', 'longitude' and the coordinate itself (e.g 'gds_crd) as well !  */
+            (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,lat_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);       
+            (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,lon_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
+
+            /* Get unique dimension object from unique dimension ID (e.g 'gds_crd) */
+            dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id_fnd_lat,trv_tbl);
+
+            /* The dimension IDs of both 'latitude' and 'longitude' must refer to the same dimemsion (e.g 'gds_crd) ) */
+            assert(dmn_id_fnd_lon == dmn_trv->dmn_id);
+
+            /* Since this is the coordinate, apply the limit just once */
+            if (flg_lmt_crd[dmn_trv->dmn_id] == False){
+              (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,dmn_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
+              flg_lmt_crd[dmn_trv->dmn_id]=True;
+            }
 
           } /* Found limits */
+
+
+          /* Free limits exported from nco_aux_evl_trv() */
+          aux=(lmt_sct **)nco_free(aux);  
+
         } /* Auxiliary coordinates found */
       } /* Filter variables with auxiliary coordinates */ 
     }  /* Filter variables to extract */ 
@@ -8826,7 +8847,6 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].dmn_id=dmn_id;
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].grp_dpt=var_trv.grp_dpt;
                     trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].crd_typ=crd_typ;
-
                     strcpy(trv_tbl->lst[idx_crd].var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].units,units_lat);
 
                   } /* Is in scope */
