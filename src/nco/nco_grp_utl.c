@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1226 2014-02-03 04:35:09 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1227 2014-02-03 07:20:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -3847,11 +3847,6 @@ nco_prc_cmn_nm                         /* [fnc] Process common objects from a co
   nbr_grp_dpt_1=trv_tbl_inq_dpt(trv_tbl_1);    
   nbr_grp_dpt_2=trv_tbl_inq_dpt(trv_tbl_2);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO %s reports extracted objects:\n",nco_prg_nm_get(),fnc_nm);
-    trv_tbl_prn_flg_xtr(trv_tbl_1);
-  } /* endif dbg */
-
   /* Process objects in list */
   for(int idx=0;idx<nbr_cmn_nm;idx++){
 
@@ -6715,11 +6710,16 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Extract coordinates associated with extracted variables */
   if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(nc_id,trv_tbl);
 
+  if(nco_dbg_lvl_get() >= nco_dbg_dev) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
+
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(nc_id);
   if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
     /* Implement CF "coordinates" and "bounds" conventions */
     (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
+
     (void)nco_xtr_cf_add(nc_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
@@ -6750,10 +6750,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     lmt=(lmt_sct **)nco_free(lmt);
   } /* !lmt_nbr */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev){
-    (void)fprintf(stdout,"%s: INFO %s reports extracted objects:\n",nco_prg_nm_get(),fnc_nm);
-    trv_tbl_prn_flg_xtr(trv_tbl);
-  } /* endif dbg */
+  if(nco_dbg_lvl_get() >= nco_dbg_dev) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
 
   return rcd;
 

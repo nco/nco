@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.270 2014-01-30 09:22:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_trv.c,v 1.271 2014-02-03 07:20:44 pvicente Exp $ */
 
 /* Purpose: netCDF4 traversal storage */
 
@@ -235,13 +235,15 @@ trv_tbl_prn_flg_mch                  /* [fnc] Print table items that have .flg_m
 
 void 
 trv_tbl_prn_flg_xtr                  /* [fnc] Print table items that have .flg_xtr  */
-(const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
+(const char * const fnc_nm,          /* I [sng] Function name  */
+ const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
+  (void)fprintf(stdout,"%s: INFO %s reports extracted objects:\n",nco_prg_nm_get(),fnc_nm);
  /* Print all matching objects from traversal table */
   trv_sct trv_obj;
   for(unsigned int tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
     trv_obj=trv_tbl->lst[tbl_idx];
-    if(trv_obj.flg_xtr) (void)fprintf(stdout,"nm_fll=%s\n",trv_obj.nm_fll);
+    if(trv_obj.flg_xtr) (void)fprintf(stdout,"%s\n",trv_obj.nm_fll);
   } /* end loop over trv_tbl */
 } /* end trv_tbl_prn_flg_xtr() */
 
