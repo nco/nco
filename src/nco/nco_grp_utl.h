@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.447 2014-01-31 01:41:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.448 2014-02-03 01:40:39 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -313,7 +313,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] GTT (Group Traversal Table) */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 var_sct **                            /* O [sct] Variable list */  
 nco_fll_var_trv                       /* [fnc] Fill-in variable structure list for all extracted variables */
@@ -726,6 +726,17 @@ void
 nco_bld_crd_aux                        /* [fnc] Build auxiliary coordinates information into table */
 (const int nc_id,                      /* I [ID] netCDF file ID */
  trv_tbl_sct *trv_tbl);                /* I [sct] GTT (Group Traversal Table) */
+
+void
+nco_lmt_aux_tbl                       /* [fnc] Apply limits to variable in table */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ lmt_sct **lmt,                       /* I [sct] Limits */
+ const int lmt_dmn_nbr,               /* I [nbr] Number of limits */
+ const char * const var_nm_fll,       /* I [sng] Variable full name */
+ const int idx_dmn_in,                /* I [nbr] Index of dimension to apply the limits */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 int *
 nco_dmn_malloc                         /* [fnc] Inquire about number of dimensions in group and return dynamic array of dimension IDs */
