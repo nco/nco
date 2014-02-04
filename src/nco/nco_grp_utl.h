@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.449 2014-02-03 02:10:35 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.450 2014-02-04 17:38:54 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -744,7 +744,15 @@ nco_dmn_malloc                         /* [fnc] Inquire about number of dimensio
  const char * const grp_nm_fll,        /* I [sng] Group full name */
  int *nbr_dmn);                        /* I/O [nbr] Number of dimensions in group */
 
-
+void
+nco_lmt_std_att_lat_lon               /* [fnc] Apply limits to variable in table that contains 'standard_name' attribute "latitude" */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ lmt_sct **lmt,                       /* I [sct] Limits */
+ const int lmt_dmn_nbr,               /* I [nbr] Number of limits */
+ const int dmn_id,                    /* I [id] ID of dimension to apply the limits */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
 
 #ifdef __cplusplus
 } /* end extern "C" */
