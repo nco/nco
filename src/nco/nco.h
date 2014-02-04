@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.477 2014-02-01 02:52:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.478 2014-02-04 17:21:00 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -900,6 +900,7 @@ extern "C" {
     int nbr_rec;                      /* [nbr] Number of record dimensions */
     int nbr_grp;                      /* [nbr] (For groups only) Number of sub-groups */   
     int nbr_var;                      /* [nbr] (For groups only) Number of variables */
+
     nco_bool flg_cf;                  /* [flg] Object matches CF-metadata extraction criteria */
     nco_bool flg_crd;                 /* [flg] Object matches coordinate extraction criteria */
     nco_bool flg_dfl;                 /* [flg] Object meets default subsetting criteria */
@@ -915,6 +916,9 @@ extern "C" {
     nco_bool flg_xcl;                 /* [flg] Object matches exclusion criteria */
     nco_bool flg_xtr;                 /* [flg] Extract object */ 
     nco_bool flg_aux;                 /* [flg] Variable contains auxiliary coordinates */ 
+    nco_bool flg_std_att_lat;         /* [flg] Variable contains 'standard_name' attribute "latitude" */ 
+    nco_bool flg_std_att_lon;         /* [flg] Variable contains 'standard_name' attribute "longitude" */ 
+
     /* Following are members only used by transformation operators (non-ncks)  */
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  

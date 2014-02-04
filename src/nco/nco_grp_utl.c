@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1227 2014-02-03 07:20:45 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1228 2014-02-04 17:21:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -2032,6 +2032,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_xtr=False;                /* [flg] Extract object */
   trv_tbl->lst[idx].flg_rdr=False;                /* [flg] Variable has dimensions to re-order (ncpdq) */
   trv_tbl->lst[idx].flg_aux=False;                /* [flg] Variable contains auxiliary coordinates */
+  trv_tbl->lst[idx].flg_std_att_lat=False;        /* [flg] Variable contains 'standard_name' attribute "latitude" */ 
+  trv_tbl->lst[idx].flg_std_att_lon=False;        /* [flg] Variable contains 'standard_name' attribute "longitude" */ 
+
   trv_tbl->lst[idx].rec_dmn_nm_out=NULL;          /* [sng] Record dimension name, re-ordered */ 
   trv_tbl->lst[idx].grp_dpt=grp_dpt;              /* [nbr] Depth of group (root = 0) */
   trv_tbl->lst[idx].nbr_dmn=nbr_dmn_grp;          /* [nbr] Number of dimensions */
@@ -2123,6 +2126,9 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_xtr=False;
     trv_tbl->lst[idx].flg_rdr=False;
     trv_tbl->lst[idx].flg_aux=False;
+    trv_tbl->lst[idx].flg_std_att_lat=False;   
+    trv_tbl->lst[idx].flg_std_att_lon=False; 
+
     trv_tbl->lst[idx].rec_dmn_nm_out=NULL;                     
     trv_tbl->lst[idx].grp_dpt=grp_dpt; 
     trv_tbl->lst[idx].nbr_att=nbr_att;
@@ -8589,6 +8595,8 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
             (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,lat_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);       
             (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,lon_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
 
+            /*  Apply limits to *other* 'latitude', 'longitude' variables that share the same ID */
+
             /* Get unique dimension object from unique dimension ID (e.g 'gds_crd) */
             dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id_fnd_lat,trv_tbl);
 
@@ -8781,6 +8789,8 @@ nco_bld_crd_aux                       /* [fnc] Build auxiliary coordinates infor
       has_lat=nco_find_lat_lon_trv(nc_id,&var_trv,"latitude",&var_nm_fll,&dmn_id,&crd_typ,units_lat);
       
       if (has_lat){
+
+      trv_tbl->lst[idx_var].flg_std_att_lat=True; 
 
         /* Loop table  */
         for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){

@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.429 2014-02-03 04:35:09 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.430 2014-02-04 17:20:59 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -898,7 +898,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#nces #14
+#nces #15
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O --nsm_sfx=_avg $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g cesm_avg -v tas1 %tmp_fl_00%";
@@ -908,7 +908,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-#nces #15
+#nces #16
 # ncra -Y ncge -h -O -G /gpe_grp mdl.nc out.nc
 	
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O -G /gpe_grp $fl_fmt $nco_D_flg $in_pth_arg mdl.nc %tmp_fl_00%";
@@ -919,7 +919,7 @@ print "\n";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#nces #16
+#nces #17
 #ncra -Y ncge -O mdl.nc mdl2.nc out.nc
     $tst_cmd[0]="ncra -Y ncge $omp_flg -h -O $fl_fmt $nco_D_flg $in_pth_arg mdl.nc mdl2.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -g ecmwf -v tas1 %tmp_fl_00%";
@@ -930,6 +930,17 @@ print "\n";
     $#tst_cmd=0; # Reset array
 
      } # #### Group Ensemble tests	
+	 	
+#nces #18 # TODO	
+    #for i in $(seq -w 0 999) ; do iii=$( printf "%03d" ${i} ) ; ln in.nc foo${iii}.nc ; done
+	# TO DO run bash script above by perl
+    $tst_cmd[0]="ncra -Y ncfe $omp_flg -h -O $fl_fmt $nco_D_flg -v dgn_var $in_pth_arg in.nc in.nc in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks  %tmp_fl_00%";
+    $dsc_sng="Test file loop";
+    $tst_cmd[2]="dgn[0]=73 dgn_var[0]=73";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		 
     
 # print "paused - hit return to continue"; my $wait=<STDIN>;
     
