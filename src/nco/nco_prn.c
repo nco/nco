@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.208 2014-01-07 17:32:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.209 2014-02-04 18:50:33 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -85,7 +85,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   /* Allocate space for attribute names and types */
   att_nbr_ttl=att_nbr_vsb;
-  if(att_nbr_vsb > 0) att=(att_sct *)nco_malloc(att_nbr_ttl*sizeof(att_sct));
+  assert(att_nbr_ttl >= 0);
+  if(att_nbr_ttl > 0) att=(att_sct *)nco_malloc(att_nbr_ttl*sizeof(att_sct));
     
   rcd=nco_inq_format(grp_id,&fl_fmt);
 
