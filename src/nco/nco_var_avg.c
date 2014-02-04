@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.75 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.76 2014-02-04 22:40:20 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -401,25 +401,25 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Sum values in each contiguous block of first operand and place
-  result in corresponding element in second operand. 
-  Currently arithmetic operation performed is summation of elements in op1
-  Input operands are assumed to have conforming types, but not dimensions or sizes
-  nco_var_avg_rdc_ttl() knows nothing about dimensions
-  Routine is one dimensional array operator acting serially on each element of input buffer op1
-  Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
-  Routine only does summation rather than averaging in order to remain flexible
-  Operations which require normalization, e.g., averaging, must call nco_var_nrm() 
-  or nco_var_dvd() to divide sum set in this routine by tally set in this routine. */
-
+     result in corresponding element in second operand. 
+     Currently arithmetic operation performed is summation of elements in op1
+     Input operands are assumed to have conforming types, but not dimensions or sizes
+     nco_var_avg_rdc_ttl() knows nothing about dimensions
+     Routine is one dimensional array operator acting serially on each element of input buffer op1
+     Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
+     Routine only does summation rather than averaging in order to remain flexible
+     Operations which require normalization, e.g., averaging, must call nco_var_nrm() 
+     or nco_var_dvd() to divide sum set in this routine by tally set in this routine. */
+  
   /* Each operation has GNUC and non-GNUC blocks:
-  GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
-  This results in more elegent loop structure and, theoretically, in faster performance
-  20040225: In reality, the GNUC non-ANSI blocks fail on some large files
-  This may be because they allocate significant local storage on the stack
-
-  non-GNUC: Fully ANSI-compliant structure
-  Fortran: Support deprecated */
-
+     GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
+     This results in more elegent loop structure and, theoretically, in faster performance
+     20040225: In reality, the GNUC non-ANSI blocks fail on some large files
+     This may be because they allocate significant local storage on the stack
+     
+     non-GNUC: Fully ANSI-compliant structure
+     Fortran: Support deprecated */
+  
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
   long idx_op1;
@@ -427,24 +427,23 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;
+
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  nco_char mss_val_char;
-  nco_ubyte mss_val_ubyte;
-  nco_string mss_val_string;
-  nco_byte mss_val_byte;
+  nco_byte mss_val_byte=nco_byte_CEWI;
   nco_int mss_val_ntg=nco_int_CEWI;
-  nco_short mss_val_short=nco_short_CEWI;
-  nco_ushort mss_val_ushort=nco_ushort_CEWI;
-  nco_uint mss_val_uint=nco_uint_CEWI;
   nco_int64 mss_val_int64=nco_int64_CEWI;
+  nco_short mss_val_short=nco_short_CEWI;
+  nco_ubyte mss_val_ubyte=nco_ubyte_CEWI;
+  nco_uint mss_val_uint=nco_uint_CEWI;
   nco_uint64 mss_val_uint64=nco_uint64_CEWI;
-
+  nco_ushort mss_val_ushort=nco_ushort_CEWI;
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   if(has_mss_val){
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
@@ -452,17 +451,17 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     case NC_SHORT: mss_val_short=*mss_val.sp; break;
     case NC_INT: mss_val_ntg=*mss_val.ip; break;
     case NC_BYTE: mss_val_byte=*mss_val.bp; break;
-    case NC_CHAR: mss_val_char=*mss_val.cp; break;
     case NC_UBYTE: mss_val_ubyte=*mss_val.ubp; break;
     case NC_USHORT: mss_val_ushort=*mss_val.usp; break;
     case NC_UINT: mss_val_uint=*mss_val.uip; break;
     case NC_INT64: mss_val_int64=*mss_val.i64p; break;
     case NC_UINT64: mss_val_uint64=*mss_val.ui64p; break;
-    case NC_STRING: mss_val_string=*mss_val.sngp; break;
+    case NC_CHAR: break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
-
+  
   switch(type){
   case NC_FLOAT:
 #define FXM_NCO315 1
@@ -471,13 +470,13 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
         /* Operations: 1 multiply 
-        Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
-        Total Counts: \rthnbr=\dmnszavg^(\dmnnbr-\avgnbr) */
+	   Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
+	   Total Counts: \rthnbr=\dmnszavg^(\dmnnbr-\avgnbr) */
         const long blk_off=idx_op2*sz_blk;
         /* Operations: 1 fp add, 3 pointer offsets, 3 user memory fetch
-        Repetitions: \lmnnbr
-        Total Counts: \flpnbr=\lmnnbr, \rthnbr=3\lmnnbr, \mmrusrnbr=3\lmnnbr,
-        NB: Counted LHS+RHS+tally offsets and fetches */
+	   Repetitions: \lmnnbr
+	   Total Counts: \flpnbr=\lmnnbr, \rthnbr=3\lmnnbr, \mmrusrnbr=3\lmnnbr,
+	   NB: Counted LHS+RHS+tally offsets and fetches */
         for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
         tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
@@ -874,16 +873,108 @@ nco_var_avg_rdc_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_BYTE: mss_val_byte=mss_val_byte; break; /* CEWI */
-  case NC_CHAR: mss_val_char=mss_val_char; break; /* CEWI */
-  case NC_UBYTE: mss_val_ubyte=mss_val_ubyte; break; /* CEWI */
-  case NC_STRING: mss_val_string=mss_val_string; break; /* CEWI */
+  case NC_BYTE:
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.bp[idx_op2]+=op1.bp[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.bp[idx_op1] != mss_val_byte){
+            op2.bp[idx_op2]+=op1.bp[idx_op1];
+            tally[idx_op2]++;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(tally[idx_op2] == 0L) op2.bp[idx_op2]=mss_val_byte;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      nco_byte op1_2D[sz_op2][sz_blk];
+      (void)memcpy((void *)op1_2D,(void *)(op1.bp),sz_op1*nco_typ_lng(type));
+      if(!has_mss_val){
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.bp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
+      }else{
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_byte){
+              op2.bp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.bp[idx_op2]=mss_val_byte;
+        } /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_UBYTE:
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ubp[idx_op2]+=op1.ubp[blk_off+idx_blk];
+        tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.ubp[idx_op1] != mss_val_ubyte){
+            op2.ubp[idx_op2]+=op1.ubp[idx_op1];
+            tally[idx_op2]++;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(tally[idx_op2] == 0L) op2.ubp[idx_op2]=mss_val_ubyte;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      nco_ubyte op1_2D[sz_op2][sz_blk];
+      (void)memcpy((void *)op1_2D,(void *)(op1.ubp),sz_op1*nco_typ_lng(type));
+      if(!has_mss_val){
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.ubp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+          tally[idx_op2]=sz_blk;
+        } /* end loop over idx_op2 */
+      }else{
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_ubyte){
+              op2.ubp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+              tally[idx_op2]++;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(tally[idx_op2] == 0L) op2.ubp[idx_op2]=mss_val_ubyte;
+        } /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_CHAR: break;
+  case NC_STRING: break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-  because we have only operated on local copies of them. */
-
+     because we have only operated on local copies of them. */
+  
 } /* end nco_var_avg_rdc_ttl() */
 
 void
@@ -897,14 +988,14 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
  ptr_unn op2) /* O [sct] Minimum of each block of op1 */
 {
   /* Purpose: Find minimum value of each contiguous block of first operand and place
-  result in corresponding element in second operand. Operands are assumed to have
-  conforming types, but not dimensions or sizes. */
-
+     result in corresponding element in second operand. Operands are assumed to have
+     conforming types, but not dimensions or sizes. */
+  
   /* nco_var_avg_rdc_min() is derived from nco_var_avg_rdc_ttl()
-  Routines are very similar but tallies are not incremented
-  See nco_var_avg_rdc_ttl() for more algorithmic documentation
-  nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
-
+     Routines are very similar but tallies are not incremented
+     See nco_var_avg_rdc_ttl() for more algorithmic documentation
+     nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
+  
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
   long idx_op1;
@@ -912,27 +1003,25 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
   const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;
-
+  
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
+  nco_byte mss_val_byte=nco_byte_CEWI;
   nco_int mss_val_ntg=nco_int_CEWI;
-  nco_short mss_val_short=nco_short_CEWI;
-  nco_ushort mss_val_ushort=nco_ushort_CEWI;
-  nco_uint mss_val_uint=nco_uint_CEWI;
   nco_int64 mss_val_int64=nco_int64_CEWI;
+  nco_short mss_val_short=nco_short_CEWI;
+  nco_ubyte mss_val_ubyte=nco_ubyte_CEWI;
+  nco_uint mss_val_uint=nco_uint_CEWI;
   nco_uint64 mss_val_uint64=nco_uint64_CEWI;
-  nco_char mss_val_char;
-  nco_ubyte mss_val_ubyte;
-  nco_string mss_val_string;
-  nco_byte mss_val_byte;
-
+  nco_ushort mss_val_ushort=nco_ushort_CEWI;
+  
   nco_bool flg_mss=False; /* [flg] Block has valid (non-missing) values */
-
+  
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
+  
   if(has_mss_val){
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
@@ -940,20 +1029,19 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     case NC_SHORT: mss_val_short=*mss_val.sp; break;
     case NC_INT: mss_val_ntg=*mss_val.ip; break;
     case NC_BYTE: mss_val_byte=*mss_val.bp; break;
-    case NC_CHAR: mss_val_char=*mss_val.cp; break;
     case NC_UBYTE: mss_val_ubyte=*mss_val.ubp; break;
     case NC_USHORT: mss_val_ushort=*mss_val.usp; break;
     case NC_UINT: mss_val_uint=*mss_val.uip; break;
     case NC_INT64: mss_val_int64=*mss_val.i64p; break;
     case NC_UINT64: mss_val_uint64=*mss_val.ui64p; break;
-    case NC_STRING: mss_val_string=*mss_val.sngp; break;
+    case NC_CHAR: break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
-
+  
   switch(type){
   case NC_FLOAT:
-
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
@@ -1361,15 +1449,115 @@ nco_var_avg_rdc_min /* [fnc] Place minimum of op1 blocks into each element of op
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_BYTE: mss_val_byte=mss_val_byte; break; /* CEWI */
-  case NC_CHAR: mss_val_char=mss_val_char; break; /* CEWI */
-  case NC_UBYTE: mss_val_ubyte=mss_val_ubyte; break; /* CEWI */
-  case NC_STRING: mss_val_string=mss_val_string; break; /* CEWI */
+  case NC_BYTE:
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.bp[idx_op2]=op1.bp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.bp[idx_op2] > op1.bp[blk_off+idx_blk]) op2.bp[idx_op2]=op1.bp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.bp[idx_op1] != mss_val_byte){
+            if(!flg_mss || op2.bp[idx_op2] > op1.bp[idx_op1]) op2.bp[idx_op2]=op1.bp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.bp[idx_op2]=mss_val_byte;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      nco_byte op1_2D[sz_op2][sz_blk];
+      (void)memcpy((void *)op1_2D,(void *)(op1.bp),sz_op1*nco_typ_lng(type));
+      if(!has_mss_val){
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.bp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.bp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.bp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
+      }else{
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_byte){
+              if(!flg_mss  || op2.bp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.bp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.bp[idx_op2]=mss_val_byte;
+        } /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_UBYTE:
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.ubp[idx_op2]=op1.ubp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.ubp[idx_op2] > op1.ubp[blk_off+idx_blk]) op2.ubp[idx_op2]=op1.ubp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.ubp[idx_op1] != mss_val_ubyte){
+            if(!flg_mss || op2.ubp[idx_op2] > op1.ubp[idx_op1]) op2.ubp[idx_op2]=op1.ubp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.ubp[idx_op2]=mss_val_ubyte;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      nco_ubyte op1_2D[sz_op2][sz_blk];
+      (void)memcpy((void *)op1_2D,(void *)(op1.ubp),sz_op1*nco_typ_lng(type));
+      if(!has_mss_val){
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.ubp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.ubp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ubp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
+      }else{
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_ubyte){
+              if(!flg_mss  || op2.ubp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.ubp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.ubp[idx_op2]=mss_val_ubyte;
+        } /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_CHAR: break;
+  case NC_STRING: break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-  because we have only operated on local copies of them. */
+     because we have only operated on local copies of them. */
 
 } /* end nco_var_avg_rdc_min() */
 
@@ -1384,14 +1572,14 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
  ptr_unn op2) /* O [sct] Maximum of each block of op1 */
 {
   /* Purpose: Find maximum value of each contiguous block of first operand and place
-  result in corresponding element in second operand. Operands are assumed to have
-  conforming types, but not dimensions or sizes. */
-
+     result in corresponding element in second operand. Operands are assumed to have
+     conforming types, but not dimensions or sizes. */
+  
   /* nco_var_avg_rdc_min() is derived from nco_var_avg_rdc_ttl()
-  Routines are very similar but tallies are not incremented
-  See nco_var_avg_rdc_ttl() for more algorithmic documentation
-  nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
-
+     Routines are very similar but tallies are not incremented
+     See nco_var_avg_rdc_ttl() for more algorithmic documentation
+     nco_var_avg_rdc_max() is derived from nco_var_avg_rdc_min() */
+  
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
   long idx_op1;
@@ -1402,17 +1590,15 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
 
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
+  nco_byte mss_val_byte=nco_byte_CEWI;
   nco_int mss_val_ntg=nco_int_CEWI;
-  nco_short mss_val_short=nco_short_CEWI;
-  nco_ushort mss_val_ushort=nco_ushort_CEWI;
-  nco_uint mss_val_uint=nco_uint_CEWI;
   nco_int64 mss_val_int64=nco_int64_CEWI;
+  nco_short mss_val_short=nco_short_CEWI;
+  nco_ubyte mss_val_ubyte=nco_ubyte_CEWI;
+  nco_uint mss_val_uint=nco_uint_CEWI;
   nco_uint64 mss_val_uint64=nco_uint64_CEWI;
-  nco_char mss_val_char;
-  nco_ubyte mss_val_ubyte;
-  nco_string mss_val_string;
-  nco_byte mss_val_byte;
-
+  nco_ushort mss_val_ushort=nco_ushort_CEWI;
+  
   nco_bool flg_mss=False;
 
   /* Typecast pointer to values before access */
@@ -1427,20 +1613,19 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     case NC_SHORT: mss_val_short=*mss_val.sp; break;
     case NC_INT: mss_val_ntg=*mss_val.ip; break;
     case NC_BYTE: mss_val_byte=*mss_val.bp; break;
-    case NC_CHAR: mss_val_char=*mss_val.cp; break;
     case NC_UBYTE: mss_val_ubyte=*mss_val.ubp; break;
     case NC_USHORT: mss_val_ushort=*mss_val.usp; break;
     case NC_UINT: mss_val_uint=*mss_val.uip; break;
     case NC_INT64: mss_val_int64=*mss_val.i64p; break;
     case NC_UINT64: mss_val_uint64=*mss_val.ui64p; break;
-    case NC_STRING: mss_val_string=*mss_val.sngp; break;
+    case NC_CHAR: break;
+    case NC_STRING: break;
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
 
   switch(type){
   case NC_FLOAT:
-
 #define FXM_NCO315 1
 #ifdef FXM_NCO315
     /* ANSI-compliant branch */
@@ -1848,14 +2033,114 @@ nco_var_avg_rdc_max /* [fnc] Place maximum of op1 blocks into each element of op
     } /* end if */
 #endif /* __GNUC__ */
     break;
-  case NC_BYTE: mss_val_byte=mss_val_byte; break; /* CEWI */
-  case NC_CHAR: mss_val_char=mss_val_char; break; /* CEWI */
-  case NC_UBYTE: mss_val_ubyte=mss_val_ubyte; break; /* CEWI */
-  case NC_STRING: mss_val_string=mss_val_string; break; /* CEWI */
+  case NC_BYTE:
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.bp[idx_op2]=op1.bp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.bp[idx_op2] < op1.bp[blk_off+idx_blk]) op2.bp[idx_op2]=op1.bp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.bp[idx_op1] != mss_val_byte){
+            if(!flg_mss || op2.bp[idx_op2] < op1.bp[idx_op1]) op2.bp[idx_op2]=op1.bp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.bp[idx_op2]=mss_val_byte;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      nco_byte op1_2D[sz_op2][sz_blk];
+      (void)memcpy((void *)op1_2D,(void *)(op1.bp),sz_op1*nco_typ_lng(type));
+      if(!has_mss_val){
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.bp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.bp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.bp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
+      }else{
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_byte){
+              if(!flg_mss  || op2.bp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.bp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.bp[idx_op2]=mss_val_byte;
+        } /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_UBYTE:
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        op2.ubp[idx_op2]=op1.ubp[blk_off];
+        for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+          if(op2.ubp[idx_op2] < op1.ubp[blk_off+idx_blk]) op2.ubp[idx_op2]=op1.ubp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+        const long blk_off=idx_op2*sz_blk;
+        flg_mss=False;
+        for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+          idx_op1=blk_off+idx_blk;
+          if(op1.ubp[idx_op1] != mss_val_ubyte){
+            if(!flg_mss || op2.ubp[idx_op2] < op1.ubp[idx_op1]) op2.ubp[idx_op2]=op1.ubp[idx_op1];
+            flg_mss=True;
+          } /* end if */
+        } /* end loop over idx_blk */
+        if(!flg_mss) op2.ubp[idx_op2]=mss_val_ubyte;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      nco_ubyte op1_2D[sz_op2][sz_blk];
+      (void)memcpy((void *)op1_2D,(void *)(op1.ubp),sz_op1*nco_typ_lng(type));
+      if(!has_mss_val){
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          op2.ubp[idx_op2]=op1_2D[idx_op2][0];
+          for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+            if(op2.ubp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ubp[idx_op2]=op1_2D[idx_op2][idx_blk];
+        } /* end loop over idx_op2 */
+      }else{
+        for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+          flg_mss=False;
+          for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+            if(op1_2D[idx_op2][idx_blk] != mss_val_ubyte){
+              if(!flg_mss  || op2.ubp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.ubp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+              flg_mss=True;
+            } /* end if */
+          } /* end loop over idx_blk */
+          if(!flg_mss) op2.ubp[idx_op2]=mss_val_ubyte;
+        } /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_CHAR: break;
+  case NC_STRING: break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
-  because we have only operated on local copies of them. */
+     because we have only operated on local copies of them. */
 
 } /* end nco_var_avg_rdc_max() */

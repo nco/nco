@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.116 2014-02-01 21:59:04 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnk.c,v 1.117 2014-02-04 22:40:20 zender Exp $ */
 
 /* Purpose: NCO utilities for chunking */
 
@@ -125,7 +125,7 @@ nco_dfl_case_cnk_plc_err(void) /* [fnc] Print error and exit for illegal switch(
 
 int /* [rcd] Return code */
 nco_cnk_ini /* [fnc] Create structure with all chunking information */
-(const char const * fl_out, /* I [sng] Output filename */
+(const char * const fl_out, /* I [sng] Output filename */
  CST_X_PTR_CST_PTR_CST_Y(char,cnk_arg), /* I [sng] List of user-specified chunksizes */
  const int cnk_nbr, /* I [nbr] Number of chunksizes specified */
  const int cnk_map, /* I [enm] Chunking map */

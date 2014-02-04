@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.79 2013-10-22 03:03:45 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.80 2014-02-04 22:40:20 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -804,9 +804,9 @@ M_PI {return NAMED_CONSTANT;}
     (void)yyunput((int)0,(char *)NULL);
     /*    (void)yy_flex_realloc((void *)NULL,(size_t)NULL);*/
     /* Remove warnings which only occur on SGI IRIX cc */
-    yy_full_match=yy_full_match;
-    yy_full_lp=yy_full_lp;
-    yy_full_state=yy_full_state;
+    yy_full_match=yy_full_match+0;
+    yy_full_lp=yy_full_lp+0;
+    yy_full_state=yy_full_state+0;
   } /* endif False */
   
   /* Free dimension list memory */
@@ -1028,7 +1028,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
     case LHS_SBS:
       /* Add dimensions defined in LHS subscripts */
       lst_t=lst_d;
-      lst_t_nbr=lst_t_nbr;
+      lst_t_nbr=lst_t_nbr+0;
       lst_d=nco_var_lst_add(lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);
       if(lst_t_nbr > 0) (void)nco_nm_id_lst_free(lst_t,lst_t_nbr);
       break;

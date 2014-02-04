@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.399 2014-02-01 01:49:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.400 2014-02-04 22:40:20 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.399 2014-02-01 01:49:19 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.399 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.400 2014-02-04 22:40:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.400 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -337,8 +337,8 @@ main(int argc,char **argv)
   ddra_info.tmr_flg=nco_tmr_mtd;
   cmd_ln=nco_cmd_ln_sng(argc,argv);
 
-  NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* CEWI: Avert compiler warning that variable is set but never used */
-  NORMALIZE_BY_WEIGHT=NORMALIZE_BY_WEIGHT; /* CEWI: Avert compiler warning that variable is set but never used */
+  NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY+0; /* CEWI: Avert compiler warning that variable is set but never used */
+  NORMALIZE_BY_WEIGHT=NORMALIZE_BY_WEIGHT+0; /* CEWI: Avert compiler warning that variable is set but never used */
 
   /* Get program name and set program enum (e.g., nco_prg_id=ncra) */
   nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);

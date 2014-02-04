@@ -1,10 +1,14 @@
-2014-02-04  Pedro Vicente  <pvicente@uci.edu>
-
-	* Add ncks regression #89 -X writing and associated coordinates
-
 2014-02-04  Charlie Zender  <zender@uci.edu>
 
-	* Fix nco_fl_blocksize() prototype
+	* Add byte/ubyte-valued nco_var_avg_rdc_ttl()/_min()/max()
+	Was bug in native-byte arithmetic but NCO usually promotes to double...
+
+	* Fix Clang/LLVM compiler warnings: nco_fl_blocksize() and nco_cnk_ini() prototypes,
+	self-assign CEWI compiler warnings (now add zero).
+
+2014-02-04  Pedro Vicente  <pvicente@uci.edu>
+
+        * Add ncks regression #89 -X writing and associated coordinates
 
 2014-02-02  Pedro Vicente  <pvicente@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.235 2014-02-04 20:58:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.236 2014-02-04 22:40:20 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1543,7 +1543,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     /* 20020812: Cray OS does not support mkstemp() */
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
 #endif /* !HAVE_MKSTEMP */
-    fl_out_hnd=fl_out_hnd; /* Removes compiler warning on SGI */
+    fl_out_hnd=fl_out_hnd+0; /* CEWI Removes compiler warning on SGI */
     if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",nco_prg_nm_get(),fnc_nm,(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
     fl_out_tmp_sys=(char *)nco_free(fl_out_tmp_sys);
   } /* endif dbg */

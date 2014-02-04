@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.157 2013-12-31 05:14:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.158 2014-02-04 22:40:20 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1245,7 +1245,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     if(nco_dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",nco_prg_nm_get(),var_lsr->nm,var_gtr->nm);
     /* Dimensions in convolution are union of dimensions in variables */
     dmn_nbr=var_lsr->nbr_dim+var_gtr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr; /* Number of dimensions in convolution */
-    dmn_nbr=dmn_nbr; /* CEWI: Avert compiler warning that variable is set but never used */
+    dmn_nbr=dmn_nbr+0; /* CEWI: Avert compiler warning that variable is set but never used */
     /* fxm: these should go away soon */
     var_lsr_out=nco_var_dpl(var_lsr);
     var_gtr_out=nco_var_dpl(var_gtr);
