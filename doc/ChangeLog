@@ -1,5 +1,7 @@
 2014-02-04  Charlie Zender  <zender@uci.edu>
 
+	* Pass same Make arguments to clang/LLVM as to gcc/GCC
+
 	* Add byte/ubyte-valued nco_var_avg_rdc_ttl()/_min()/max()
 	Was bug in native-byte arithmetic but NCO usually promotes to double...
 

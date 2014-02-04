@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.683 2014-02-04 22:40:19 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.684 2014-02-04 22:59:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -284,7 +284,7 @@ endif
 # Default NCO build: DAP_NETCDF, DAP_OPENDAP, NETCDF4, PNETCDF, and ZNETCDF clauses may overwrite this
 ifndef LIB_NCAR
  NC_LDFLAGS := -L${NETCDF_LIB}
- NC_LIBS := -lnetcdf 
+ NC_LIBS := -lnetcdf
 else
  NC_LDFLAGS := ${LIB_NCAR}
 endif
@@ -972,9 +972,15 @@ ifeq (${OPTS},X)
 endif
  CXXFLAGS := ${CFLAGS}
 endif # endif Comeau C Compiler
-# GNU Compiler Collection
-#ifeq (gcc,$(firstword ${CC}))
+# GNU Compiler Collection or LLVM
+# 20140204: gcc and clang should receive identical options
+ifeq (gcc,$(firstword ${CC}))
+ GCC_OR_CLANG := Y
+endif
 ifeq (clang,$(firstword ${CC}))
+ GCC_OR_CLANG := Y
+endif
+ifeq (${GCC_OR_CLANG},Y)
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
