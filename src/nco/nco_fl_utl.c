@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.234 2014-01-06 07:46:17 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.235 2014-02-04 20:58:53 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -1384,7 +1384,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
 size_t /* [B] Blocksize */
 nco_fl_blocksize /* [fnc] Find blocksize of filesystem will or does contain this file */
-(const char const * fl_out) /* [sng] Filename */
+(const char * const fl_out) /* [sng] Filename */
 {
   /* Purpose: Find blocksize of filesystem will or does contain this file */
   const char fnc_nm[]="nco_fl_blocksize()"; /* [sng] Function name */
