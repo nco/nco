@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1229 2014-02-04 17:38:54 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1230 2014-02-04 22:09:14 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6841,7 +6841,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known 
   Steps:
 
-  Step 1) Find the total numbers of matches for a dimension
+  Find the total numbers of matches for a dimension
   ncks -d lon,0,0,1  ~/nco/data/in_grp.nc
   Here "lmt_nbr" is 1 and there is 1 match at most
   ncks -d lon,0,0,1 -d lon,0,0,1 -d lat,0,0,1  ~/nco/data/in_grp.nc
@@ -6850,11 +6850,9 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   a) case of coordinate variables
   b) case of dimension only (there is no coordinate variable for that dimension)
 
-  Step 2) Allocate and initialize counter index for number of limits to zero for a dimension;  
-  "lmt_dmn_nbr" needed from Step 1; initialize dimension structure limit information
   Deep copy matches to table, match at the current index, increment current index
 
-  Step 3) Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) ) 
+  Apply MSA for each Dimension in a new cycle (that now has all its limits in place :-) ) 
   At this point lmt_sct is no longer needed;  
 
   Tests:
@@ -6863,11 +6861,9 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   ncks -D 11 -d time,8,2 -v time -H ~/nco/data/in_grp.nc # wrapped limit
   */
 
-  /* Step 1) Find the total numbers of limit matches for a dimension and/or a coordinate variable */
 
-  const char fnc_nm[]="nco_bld_lmt()"; /* [sng] Function name  */
 
-  /* Loop table step 1 */
+  /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
@@ -6881,15 +6877,8 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         /* Loop input name list */
         for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
 
-          assert(lmt[lmt_idx]->nm);
-
           /* Match input relative name to dimension relative name */ 
           if(strcmp(lmt[lmt_idx]->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
-
-            if(nco_dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: DEBUG %s <%s:%s> limit<%s>\n",nco_prg_nm_get(),fnc_nm,
-                var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,lmt[lmt_idx]->nm);
-            }
 
             /*  The limits have to be separated to */
 
@@ -6899,16 +6888,19 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
               /* Increment number of dimension limits for this dimension */
               trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr++;
 
-              if(nco_dbg_lvl_get() >= nco_dbg_dev){
-                (void)fprintf(stdout,"%s: DEBUG %s <%s:%s> %d limits\n",nco_prg_nm_get(),fnc_nm,
-                  var_trv.nm_fll,var_trv.var_dmn[idx_var_dmn].dmn_nm_fll,var_trv.var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr);
-              }
+              int nbr_lmt=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr;
+              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_realloc(
+                trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn,nbr_lmt*sizeof(lmt_sct *));
 
               /* b) case of dimension only (there is no coordinate variable for this dimension */
             }else{
 
               /* Increment number of dimension limits for this dimension */
-              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr++; 
+              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr++;
+
+              int nbr_lmt=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr;
+              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_realloc(
+                trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn,nbr_lmt*sizeof(lmt_sct *));
 
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
 
@@ -6916,54 +6908,11 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
         } /* Loop input name list */
       } /* Loop variable dimensions */
     } /* Is variable to extract  */
-  } /* Loop table step 1 */
-
-
-
-  /* Loop table step 2 */
-  for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-
-    trv_sct var_trv=trv_tbl->lst[idx_tbl];
-
-    /* Is variable to extract  */
-    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
-
-      /* Loop variable dimensions */
-      for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
-
-        /* Loop input name list */
-        for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
-
-          /* Match input relative name to dimension relative name */ 
-          if(strcmp(lmt[lmt_idx]->nm,var_trv.var_dmn[idx_var_dmn].dmn_nm) == 0){
-
-            /*  The limits have to be separated to */
-
-            /* a) case where the dimension has coordinate variables */
-            if(var_trv.var_dmn[idx_var_dmn].crd){
-
-              int lmt_dmn_nbr=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr;
-
-              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
-
-              /* b) case of dimension only (there is no coordinate variable for this dimension */
-            }else{
-
-              int lmt_dmn_nbr=trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr;
-
-              trv_tbl->lst[idx_tbl].var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
-
-            } /* b) case of dimension only (there is no coordinate variable for this dimension */
-
-          } /* Match input relative name to dimension relative name */ 
-        } /* Loop input name list */
-      } /* Loop variable dimensions */
-    } /* Is variable to extract  */
-  } /* Loop table step 2 */
+  } /* Loop table  */
 
   /* Store matches in table, match at the current index, increment current index */
 
-  /* Loop table step 2 */
+  /* Loop table  */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
@@ -7048,7 +6997,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
     } /* Is variable to extract  */
   } /* Loop table step 2 */
 
-  /* Step 3) Apply MSA for each Dimension in new cycle (that now has all its limits in place) */
+  /*  Apply MSA for each Dimension in new cycle (that now has all its limits in place) */
 
   /* Loop table step 3 */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
@@ -8510,9 +8459,6 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
 {
   const char fnc_nm[]="nco_prs_aux_crd()"; /* [sng] Function name */
 
-  nco_bool flg_lmt_crd[NC_MAX_DIMS]; /* [flg] Limit was applied to coordinate */
-  for(int idx=0;idx<NC_MAX_DIMS;idx++)flg_lmt_crd[idx]=False;
-
   /* Loop table  */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
@@ -8587,16 +8533,12 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
 
             /* The dimension IDs of both 'latitude' and 'longitude' must refer to the same dimemsion (e.g 'gds_crd) ) */
             assert(dmn_id_fnd_lon == dmn_id_fnd_lat);
-            
+
             /* Apply limits to variable in table */
             (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,var_trv.nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
 
-            /* Apply limits to 'latitude', 'longitude' and the coordinate itself (e.g 'gds_crd) as well !  */
-            (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,lat_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);       
-            (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,lon_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
-
-            /*  Apply limits to *other* 'latitude', 'longitude' variables that share the same ID */
-
+            /*  Apply limits to *all* 'latitude', 'longitude' variables that share the same ID */
+            (void)nco_lmt_std_att_lat_lon(nc_id,lmt,lmt_dmn_nbr,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);   
 
             /* Get unique dimension object from unique dimension ID (e.g 'gds_crd) */
             dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id_fnd_lat,trv_tbl);
@@ -8604,14 +8546,10 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
             /* The dimension IDs of both 'latitude' and 'longitude' must refer to the same dimemsion (e.g 'gds_crd) ) */
             assert(dmn_id_fnd_lon == dmn_trv->dmn_id);
 
-            /* Since this is the coordinate, apply the limit just once */
-            if (flg_lmt_crd[dmn_trv->dmn_id] == False){
-              (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,dmn_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
-              flg_lmt_crd[dmn_trv->dmn_id]=True;
-            }
+            /*  Apply limits to the coordinate (e.g 'gds_crd)  */
+            (void)nco_lmt_aux_tbl(nc_id,lmt,lmt_dmn_nbr,dmn_trv->nm_fll,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
 
           } /* Found limits */
-
 
           /* Free limits exported from nco_aux_evl_trv() */
           aux=(lmt_sct **)nco_free(aux);  
@@ -8629,7 +8567,7 @@ void
 nco_lmt_aux_tbl                       /* [fnc] Apply limits to variable in table */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  lmt_sct **lmt,                       /* I [sct] Limits */
- const int lmt_dmn_nbr,               /* I [nbr] Number of limits */
+ const int nbr_lmt,                   /* I [nbr] Number of limits */
  const char * const var_nm_fll,       /* I [sng] Variable full name */
  const int dmn_id,                    /* I [id] ID of dimension to apply the limits */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
@@ -8644,115 +8582,16 @@ nco_lmt_aux_tbl                       /* [fnc] Apply limits to variable in table
       trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
       /* Loop dimensions  */
-      for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_tbl].nbr_dmn;idx_dmn++){
+      for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
         /* Match index  */
-        if(dmn_id == trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].dmn_id){
+        if(dmn_id == var_trv.var_dmn[idx_dmn].dmn_id){
 
-
-          /* a) case where the dimension has coordinate variables */
-          if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd){
-
-            trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=lmt_dmn_nbr;
-            trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
-
-            crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd;
-
-            /* Limit is same as dimension in input file? */
-            trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.BASIC_DMN=False;
-
-            /* Loop limits */
-            for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
-
-              /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
-              (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,lmt[lmt_idx]);
-
-              /* Current index (lmt_crr) of dimension limits for this (idx_dmn) table dimension  */
-              int lmt_crr=crd->lmt_msa.lmt_crr;
-
-              /* Increment current index being initialized  */
-              trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_crr++;
-
-              /* Alloc this limit */
-              trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-
-              /* Initialize this entry */
-              (void)nco_lmt_init(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[lmt_crr]);
-
-              /* Store dimension ID */
-              lmt[lmt_idx]->id=crd->dmn_id;
-
-              /* Store this valid input; deep-copy to table */ 
-              (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[lmt_crr]);
-
-            } /* Loop limits */
-
-
-            /* Apply MSA for each Dimension in new cycle (that now has all its limits in place) */
-
-            /* Loop limits */
-            for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
-
-              /* Adapted from original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
-
-              nco_bool flg_ovl; /* [flg] Limits overlap */
-
-              /* GTT: If this coordinate has no limits, continue */
-              if(crd->lmt_msa.lmt_dmn_nbr == 0) continue;
-
-              /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
-              if(crd->is_rec_dmn && (nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat)) continue;
-
-              /* Split-up wrapped limits. NOTE: using deep copy version nco_msa_wrp_splt_cpy() */   
-              (void)nco_msa_wrp_splt_cpy(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
-
-              /* Wrapped hyperslabs are dimensions broken into the "wrong" order, e.g., from
-              -d time,8,2 broken into -d time,8,9 -d time,0,2 
-              WRP flag set only when list contains dimensions split as above */
-              if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.WRP){
-
-                /* Find and store size of output dim */  
-                (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa); 
-
-                continue;
-              } /* End WRP flag set */
-
-              /* Single slab---no analysis needed */  
-              if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr == 1){
-
-                (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);  
-
-                continue;    
-              } /* End Single slab */
-
-              /* Does Multi-Slab Algorithm returns hyperslabs in user-specified order? */
-              if(MSA_USR_RDR){
-                trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.MSA_USR_RDR=True;
-
-                /* Find and store size of output dimension */  
-                (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);  
-
-                continue;
-              } /* End MSA_USR_RDR */
-
-              /* Sort limits */
-              (void)nco_msa_qsort_srt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
-
-              /* Check for overlap */
-              flg_ovl=nco_msa_ovl(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa); 
-
-              /* Find and store size of output dimension */  
-              (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
-
-              if(nco_dbg_lvl_get() >= nco_dbg_fl){
-                if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),crd->nm); else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),crd->nm); 
-              } /* endif */
-
-            } /* Loop limits */
-          } /* a) case where the dimension has coordinate variables */
-
+          /* Apply limits */
+          (void)nco_lmt_aux(nc_id,lmt,nbr_lmt,FORTRAN_IDX_CNV,MSA_USR_RDR,idx_tbl,idx_dmn,trv_tbl);    
 
         } /* Match index  */
       }  /* Loop dimensions  */
+
     }  /* Match variable  */
   } /* Loop table  */
 
@@ -8765,7 +8604,7 @@ void
 nco_lmt_std_att_lat_lon               /* [fnc] Apply limits to variable in table that contains 'standard_name' attribute "latitude" */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  lmt_sct **lmt,                       /* I [sct] Limits */
- const int lmt_dmn_nbr,               /* I [nbr] Number of limits */
+ const int nbr_nbr,                   /* I [nbr] Number of limits */
  const int dmn_id,                    /* I [id] ID of dimension to apply the limits */
  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -8777,118 +8616,19 @@ nco_lmt_std_att_lat_lon               /* [fnc] Apply limits to variable in table
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && 
       (trv_tbl->lst[idx_tbl].flg_std_att_lat || trv_tbl->lst[idx_tbl].flg_std_att_lon)){
 
-      trv_sct var_trv=trv_tbl->lst[idx_tbl];
+        trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
-      /* Loop dimensions  */
-      for(int idx_dmn=0;idx_dmn<trv_tbl->lst[idx_tbl].nbr_dmn;idx_dmn++){
-        /* Match index  */
-        if(dmn_id == trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].dmn_id){
+        /* Loop dimensions  */
+        for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
+          /* Match index  */
+          if(dmn_id == var_trv.var_dmn[idx_dmn].dmn_id){
 
+            /* Apply limits */
+            (void)nco_lmt_aux(nc_id,lmt,nbr_nbr,FORTRAN_IDX_CNV,MSA_USR_RDR,idx_tbl,idx_dmn,trv_tbl);    
 
-          /* a) case where the dimension has coordinate variables */
-          if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd){
+          } /* Match index  */
+        }  /* Loop dimensions  */
 
-            trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr=lmt_dmn_nbr;
-            trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_malloc(lmt_dmn_nbr*sizeof(lmt_sct *));
-
-            crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd;
-
-            /* Limit is same as dimension in input file? */
-            trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.BASIC_DMN=False;
-
-            /* Loop limits */
-            for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
-
-              /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
-              (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,lmt[lmt_idx]);
-
-              /* Current index (lmt_crr) of dimension limits for this (idx_dmn) table dimension  */
-              int lmt_crr=crd->lmt_msa.lmt_crr;
-
-              /* Increment current index being initialized  */
-              trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_crr++;
-
-              /* Alloc this limit */
-              trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[lmt_crr]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
-
-              /* Initialize this entry */
-              (void)nco_lmt_init(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[lmt_crr]);
-
-              /* Store dimension ID */
-              lmt[lmt_idx]->id=crd->dmn_id;
-
-              /* Store this valid input; deep-copy to table */ 
-              (void)nco_lmt_cpy(lmt[lmt_idx],trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[lmt_crr]);
-
-            } /* Loop limits */
-
-
-            /* Apply MSA for each Dimension in new cycle (that now has all its limits in place) */
-
-            /* Loop limits */
-            for(int lmt_idx=0;lmt_idx<lmt_dmn_nbr;lmt_idx++){
-
-              /* Adapted from original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
-
-              nco_bool flg_ovl; /* [flg] Limits overlap */
-
-              /* GTT: If this coordinate has no limits, continue */
-              if(crd->lmt_msa.lmt_dmn_nbr == 0) continue;
-
-              /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
-              if(crd->is_rec_dmn && (nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat)) continue;
-
-              /* Split-up wrapped limits. NOTE: using deep copy version nco_msa_wrp_splt_cpy() */   
-              (void)nco_msa_wrp_splt_cpy(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
-
-              /* Wrapped hyperslabs are dimensions broken into the "wrong" order, e.g., from
-              -d time,8,2 broken into -d time,8,9 -d time,0,2 
-              WRP flag set only when list contains dimensions split as above */
-              if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.WRP){
-
-                /* Find and store size of output dim */  
-                (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa); 
-
-                continue;
-              } /* End WRP flag set */
-
-              /* Single slab---no analysis needed */  
-              if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr == 1){
-
-                (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);  
-
-                continue;    
-              } /* End Single slab */
-
-              /* Does Multi-Slab Algorithm returns hyperslabs in user-specified order? */
-              if(MSA_USR_RDR){
-                trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.MSA_USR_RDR=True;
-
-                /* Find and store size of output dimension */  
-                (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);  
-
-                continue;
-              } /* End MSA_USR_RDR */
-
-              /* Sort limits */
-              (void)nco_msa_qsort_srt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
-
-              /* Check for overlap */
-              flg_ovl=nco_msa_ovl(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa); 
-
-              /* Find and store size of output dimension */  
-              (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
-
-              if(nco_dbg_lvl_get() >= nco_dbg_fl){
-                if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),crd->nm); else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),crd->nm); 
-              } /* endif */
-
-            } /* Loop limits */
-          } /* a) case where the dimension has coordinate variables */
-
-
-        } /* Match index  */
-      }  /* Loop dimensions  */
     }  /* Match variable  */
   } /* Loop table  */
 
@@ -8896,6 +8636,128 @@ nco_lmt_std_att_lat_lon               /* [fnc] Apply limits to variable in table
 } /* nco_lmt_std_att_lat_lon() */
 
 
+
+void
+nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxiliary function called by different functions ) */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+ lmt_sct **lmt,                       /* I [sct] Limits */
+ const int nbr_nbr,                   /* I [nbr] Number of limits */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ const int idx_tbl,                   /* I [nbr] Table index */
+ const int idx_dmn,                   /* I [nbr] Dimension index */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
+{
+
+  /* a) case where the dimension has coordinate variables */
+  if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd){
+
+    /* For this call (-X) the *same* limits are applied to all coordinates, and other variables might apply
+    them too, so make sure they are applied only once by setting -1 in lmt_crr */
+
+    if (trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_crr == -1) return;
+
+    trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_crr=-1;
+
+    /* Loop limits */
+    for(int idx_lmt=0;idx_lmt<nbr_nbr;idx_lmt++){
+
+      /* Increment number of dimension limits for this dimension */
+      trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr++;
+
+      int nbr_lmt=trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr;
+      trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn=(lmt_sct **)nco_realloc(
+        trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn,nbr_lmt*sizeof(lmt_sct *));
+
+      crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd;
+
+      /* Limit is same as dimension in input file? */
+      trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.BASIC_DMN=False;
+
+      /* Parse user-specified limits into hyperslab specifications. NOTE: Use True parameter and "crd" */
+      (void)nco_lmt_evl_dmn_crd(nc_id,0L,FORTRAN_IDX_CNV,crd->crd_grp_nm_fll,crd->nm,crd->sz,crd->is_rec_dmn,True,lmt[idx_lmt]);
+
+      /* Alloc this limit */
+      trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
+
+      /* Initialize this entry */
+      (void)nco_lmt_init(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]);
+
+      /* Store dimension ID */
+      lmt[idx_lmt]->id=crd->dmn_id;
+
+      /* Store this valid input; deep-copy to table */ 
+      (void)nco_lmt_cpy(lmt[idx_lmt],trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]);
+
+    } /* Loop limits */
+
+      /* Apply MSA for each Dimension in new cycle (that now has all its limits in place) */
+
+    /* Loop limits */
+    for(int idx_lmt=0;idx_lmt<nbr_nbr;idx_lmt++){
+
+      crd_sct *crd=trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd;
+
+      /* Adapted from original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
+
+      nco_bool flg_ovl; /* [flg] Limits overlap */
+
+      /* GTT: If this coordinate has no limits, continue */
+      if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr == 0) continue;
+
+      /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
+      if(crd->is_rec_dmn && (nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat)) continue;
+
+      /* Split-up wrapped limits. NOTE: using deep copy version nco_msa_wrp_splt_cpy() */   
+      (void)nco_msa_wrp_splt_cpy(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
+
+      /* Wrapped hyperslabs are dimensions broken into the "wrong" order, e.g., from
+      -d time,8,2 broken into -d time,8,9 -d time,0,2 
+      WRP flag set only when list contains dimensions split as above */
+      if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.WRP){
+
+        /* Find and store size of output dim */  
+        (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa); 
+
+        continue;
+      } /* End WRP flag set */
+
+      /* Single slab---no analysis needed */  
+      if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr == 1){
+
+        (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);  
+
+        continue;    
+      } /* End Single slab */
+
+      /* Does Multi-Slab Algorithm returns hyperslabs in user-specified order? */
+      if(MSA_USR_RDR){
+        trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.MSA_USR_RDR=True;
+
+        /* Find and store size of output dimension */  
+        (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);  
+
+        continue;
+      } /* End MSA_USR_RDR */
+
+      /* Sort limits */
+      (void)nco_msa_qsort_srt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
+
+      /* Check for overlap */
+      flg_ovl=nco_msa_ovl(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa); 
+
+      /* Find and store size of output dimension */  
+      (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
+
+      if(nco_dbg_lvl_get() >= nco_dbg_fl){
+        if(flg_ovl) (void)fprintf(stdout,"%s: coordinate \"%s\" has overlapping hyperslabs\n",nco_prg_nm_get(),crd->nm); else (void)fprintf(stdout,"%s: coordinate \"%s\" has distinct hyperslabs\n",nco_prg_nm_get(),crd->nm); 
+      } /* endif */
+
+    } /* Loop limits */
+  } /* a) case where the dimension has coordinate variables */
+
+  return;
+} /* nco_lmt_aux() */
 
 
 void

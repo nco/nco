@@ -1,3 +1,7 @@
+2014-02-04  Pedro Vicente  <pvicente@uci.edu>
+
+	* Add ncks regression #89 -X writing and associated coordinates
+
 2014-02-04  Charlie Zender  <zender@uci.edu>
 
 	* Fix nco_fl_blocksize() prototype

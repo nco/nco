@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.430 2014-02-04 17:20:59 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.431 2014-02-04 22:09:13 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2620,12 +2620,23 @@ print "\n";
     $tst_cmd[3]="SS_OK";     
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
-	
+
+#ncks #88
+# Test -X writing (apply limits to all standard 'lat' 'lon')
+# ncks -O  -X 0.,1.,-30.,-29. -g g18g1  -v gds_3dvar  in_grp_3.nc out.nc
+
+    $dsc_sng="(Groups) Auxiliary coordinates writing -X 0.,1.,-30.,-29. -g g18g1  -v gds_3dvar";
+    $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18g1  -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks $nco_D_flg -v lon_gds_1 %tmp_fl_00%";
+    $tst_cmd[2]="gds_crd[0]=1 lon_gds_1[0]=0 degree";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 			 
 
    } #### Group tests	
    
 	
-#ncks #88
+#ncks #89
 # Test -X writing
 # ncks -O -X 0.,1.,-30.,-29. -v gds_3dvar  in.nc out.nc
 
