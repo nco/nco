@@ -136,7 +136,7 @@ AM_V_texidevnull = $(am__v_texidevnull_@AM_V@)
 am__v_texidevnull_ = $(am__v_texidevnull_@AM_DEFAULT_V@)
 am__v_texidevnull_0 = > /dev/null
 am__v_texidevnull_1 = 
-INFO_DEPS = nco.info
+INFO_DEPS = $(srcdir)/nco.info
 TEXINFO_TEX = $(top_srcdir)/autobld/texinfo.tex
 am__TEXINFO_TEX_DIR = $(top_srcdir)/autobld
 DVIS = nco.dvi
@@ -328,7 +328,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 info_TEXINFOS = nco.texi
-EXTRA_DIST = nco nco.pdf nco.html nco.xml VERSION
+EXTRA_DIST = nco nco.dvi nco.html nco.pdf nco.ps nco.xml VERSION
 
 # csz 20061120 override default MAKEINFOHTML defaults:
 # --ifinfo: Treat HTML branches same as info branches
@@ -337,23 +337,10 @@ EXTRA_DIST = nco nco.pdf nco.html nco.xml VERSION
 # AM_MAKEINFOHTMLFLAGS = --ifinfo
 # Create single HTML file instead of file-per-node
 AM_MAKEINFOHTMLFLAGS = --ifinfo --no-split
-
-# Automake manual section 14:
-# If configure built it, 'distclean' should delete it
-# If make built it, 'clean' should delete it
-CLEANFILES = nco nco.info* nco.pdf nco.txt nco.xml
-html_docs = nco.html
-#	$(MAKEINFO) --html --no-split $<
-pdf_docs = nco.pdf
-#ps_docs = nco.ps
-#.texi.ps:
-#	dvips -o $@ $<
-txt_docs = nco.txt
-xml_docs = nco.xml
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .dvi .html .pdf .ps .texi .txt .xml
+.SUFFIXES: .dvi .html .info .pdf .ps .texi
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -391,40 +378,44 @@ mostlyclean-libtool:
 clean-libtool:
 	-rm -rf .libs _libs
 
-nco.info: nco.texi 
+.texi.info:
 	$(AM_V_MAKEINFO)restore=: && backupdir="$(am__leading_dot)am$$$$" && \
+	am__cwd=`pwd` && $(am__cd) $(srcdir) && \
 	rm -rf $$backupdir && mkdir $$backupdir && \
 	if ($(MAKEINFO) --version) >/dev/null 2>&1; then \
 	  for f in $@ $@-[0-9] $@-[0-9][0-9] $(@:.info=).i[0-9] $(@:.info=).i[0-9][0-9]; do \
 	    if test -f $$f; then mv $$f $$backupdir; restore=mv; else :; fi; \
 	  done; \
 	else :; fi && \
+	cd "$$am__cwd"; \
 	if $(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
-	 -o $@ `test -f 'nco.texi' || echo '$(srcdir)/'`nco.texi; \
+	 -o $@ $<; \
 	then \
 	  rc=0; \
+	  $(am__cd) $(srcdir); \
 	else \
 	  rc=$$?; \
+	  $(am__cd) $(srcdir) && \
 	  $$restore $$backupdir/* `echo "./$@" | sed 's|[^/]*$$||'`; \
 	fi; \
 	rm -rf $$backupdir; exit $$rc
 
-nco.dvi: nco.texi  
+.texi.dvi:
 	$(AM_V_TEXI2DVI)TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	MAKEINFO='$(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir)' \
 	$(TEXI2DVI) $(AM_V_texinfo) --build-dir=$(@:.dvi=.t2d) -o $@ $(AM_V_texidevnull) \
-	`test -f 'nco.texi' || echo '$(srcdir)/'`nco.texi
+	$<
 
-nco.pdf: nco.texi  
+.texi.pdf:
 	$(AM_V_TEXI2PDF)TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	MAKEINFO='$(MAKEINFO) $(AM_MAKEINFOFLAGS) $(MAKEINFOFLAGS) -I $(srcdir)' \
 	$(TEXI2PDF) $(AM_V_texinfo) --build-dir=$(@:.pdf=.t2p) -o $@ $(AM_V_texidevnull) \
-	`test -f 'nco.texi' || echo '$(srcdir)/'`nco.texi
+	$<
 
-nco.html: nco.texi  
+.texi.html:
 	$(AM_V_MAKEINFO)rm -rf $(@:.html=.htp)
 	$(AM_V_at)if $(MAKEINFOHTML) $(AM_MAKEINFOHTMLFLAGS) $(MAKEINFOFLAGS) -I $(srcdir) \
-	 -o $(@:.html=.htp) `test -f 'nco.texi' || echo '$(srcdir)/'`nco.texi; \
+	 -o $(@:.html=.htp) $<; \
 	then \
 	  rm -rf $@; \
 	  if test ! -d $(@:.html=.htp) && test -d $(@:.html=); then \
@@ -434,6 +425,10 @@ nco.html: nco.texi
 	    rm -rf $(@:.html=); else rm -Rf $(@:.html=.htp) $@; fi; \
 	  exit 1; \
 	fi
+$(srcdir)/nco.info: nco.texi 
+nco.dvi: nco.texi 
+nco.pdf: nco.texi 
+nco.html: nco.texi 
 .dvi.ps:
 	$(AM_V_DVIPS)TEXINPUTS="$(am__TEXINFO_TEX_DIR)$(PATH_SEPARATOR)$$TEXINPUTS" \
 	$(DVIPS) $(AM_V_texinfo) -o $@ $<
@@ -596,7 +591,6 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -783,17 +777,21 @@ uninstall-am: uninstall-dvi-am uninstall-html-am uninstall-info-am \
 	uninstall-pdf-am uninstall-ps-am
 
 
-# Additions for NCO; automake may support these later on
-# .PHONY tells make to remake the following non-file targets 
-.PHONY: html_docs pdf_docs txt_docs xml_docs
-.texi.html:
-	$(MAKEINFO) --html --ifinfo --no-split --output=$@ $<
-.texi.pdf:
-	$(TEXI2DVI) --pdf $<
-.texi.txt:
-	$(MAKEINFO) --no-headers --output=$@ $<
-.texi.xml:
-	$(MAKEINFO) --xml --ifinfo --no-split --output=$@ $<
+#CLEANFILES = nco nco.dvi nco.info* nco.pdf nco.ps nco.txt nco.xml
+#
+#.PHONY: html_docs pdf_docs txt_docs xml_docs
+#html_docs = nco.html
+#.texi.html:
+#	$(MAKEINFO) --html --ifinfo --no-split --output=$@ $<
+#pdf_docs = nco.pdf
+#.texi.pdf:
+#	$(TEXI2DVI) --pdf $<
+#txt_docs = nco.txt
+#.texi.txt:
+#	$(MAKEINFO) --no-headers --output=$@ $<
+#xml_docs = nco.xml
+#.texi.xml:
+#	$(MAKEINFO) --xml --ifinfo --no-split --output=$@ $<
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
