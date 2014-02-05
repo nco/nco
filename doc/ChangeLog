@@ -1,8 +1,10 @@
 2014-02-05  Pedro Vicente  <pvicente@uci.edu>
 
-    * Add ncks regression #89 -X and associated coordinates
+	* Add ncks regression #89 -X and associated coordinates
 
 2014-02-05  Charlie Zender  <zender@uci.edu>
+
+	* Improve documentation build rules in ./configure
 
 	* Explicitly add -Wuninitialized -Wmaybe-uninitialized to GCC in bld/Makefile
 
@@ -18,7 +20,7 @@
 
 2014-02-04  Pedro Vicente  <pvicente@uci.edu>
 
-    * Add ncks regression #89 -X writing and associated coordinates
+	* Add ncks regression #89 -X writing and associated coordinates
 
 2014-02-02  Pedro Vicente  <pvicente@uci.edu>
 

@@ -328,28 +328,32 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 info_TEXINFOS = nco.texi
-EXTRA_DIST = nco nco.pdf nco.ps VERSION
+EXTRA_DIST = nco nco.pdf nco.html nco.xml VERSION
 
 # csz 20061120 override default MAKEINFOHTML defaults:
 # --ifinfo: Treat HTML branches same as info branches
 # --output=html: Output to html directory
 # Unfortunately, autoconf overrides --output
-AM_MAKEINFOHTMLFLAGS = --ifinfo
+# AM_MAKEINFOHTMLFLAGS = --ifinfo
 # Create single HTML file instead of file-per-node
-#AM_MAKEINFOHTMLFLAGS = --ifinfo --no-split
+AM_MAKEINFOHTMLFLAGS = --ifinfo --no-split
 
 # Automake manual section 14:
 # If configure built it, 'distclean' should delete it
 # If make built it, 'clean' should delete it
 CLEANFILES = nco nco.info* nco.pdf nco.txt nco.xml
-
-# Additions for NCO; automake may support these later on
 html_docs = nco.html
+#	$(MAKEINFO) --html --no-split $<
 pdf_docs = nco.pdf
+#ps_docs = nco.ps
+#.texi.ps:
+#	dvips -o $@ $<
+txt_docs = nco.txt
+xml_docs = nco.xml
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .dvi .html .pdf .ps .texi
+.SUFFIXES: .dvi .html .pdf .ps .texi .txt .xml
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -778,12 +782,18 @@ uninstall-am: uninstall-dvi-am uninstall-html-am uninstall-info-am \
 	uninstall-dvi-am uninstall-html-am uninstall-info-am \
 	uninstall-pdf-am uninstall-ps-am
 
+
+# Additions for NCO; automake may support these later on
+# .PHONY tells make to remake the following non-file targets 
+.PHONY: html_docs pdf_docs txt_docs xml_docs
 .texi.html:
-	$(MAKEINFO) --html $<
-#	$(MAKEINFO) --html --no-split $<
-.PHONY: html_docs pdf_docs
+	$(MAKEINFO) --html --ifinfo --no-split --output=$@ $<
 .texi.pdf:
 	$(TEXI2DVI) --pdf $<
+.texi.txt:
+	$(MAKEINFO) --no-headers --output=$@ $<
+.texi.xml:
+	$(MAKEINFO) --xml --ifinfo --no-split --output=$@ $<
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
