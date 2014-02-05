@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.686 2014-01-29 22:41:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.687 2014-02-05 21:17:07 zender Exp $ -*-text-*-
 
-The netCDF Operators NCO version 4.4.1 are ready. 
+The netCDF Operators NCO version 4.4.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
@@ -13,7 +13,7 @@ ncea/ncra/ncrcat to fail on large numbers (> 256) of input files.
 This is embarassing because NCO has always been designed to work with
 arbitrary numbers of input files and we want power users to be
 comfortable running it on hundreds of thousands of input files.
-So we're releasing 4.4.1 to fix this bug for power users.
+So we're releasing 4.4.2 to fix this bug for power users.
 http://nco.sf.net#bug_ncra_no_fl_close
 
 There are also a few new features: NCO now supports full path names
@@ -27,7 +27,7 @@ support, and cache manipulation for chunking.
 Enjoy,
 Charlie
 
-"New stuff" in 4.4.1 summary (full details always in ChangeLog):
+"New stuff" in 4.4.2 summary (full details always in ChangeLog):
 
 NEW FEATURES:
 
@@ -63,7 +63,7 @@ KNOWN ISSUES NOT YET FIXED:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.4.1 built/tested with netCDF
+   These problems occur with NCO 4.4.2 built/tested with netCDF
    4.3.1 on top of HDF5 hdf5-1.8.9 with these methods: 
 
    cd ~/nco;./configure --enable-netcdf4  # Configure mechanism -or-

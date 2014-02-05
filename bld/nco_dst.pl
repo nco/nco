@@ -6,17 +6,18 @@
 # Usage:
 # Export tagged, public versions
 
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_4_1 # Build, do not install
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-4_4_1 # Install, do not build
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-4_4_1 # Build and install
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-4_4_1
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-4_4_1
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-4_4_1
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-4_4_1
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-4_4_1
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-4_4_1
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-4_4_1
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-4_4_1
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-4_4_2 # Build, do not release on SF
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --sf nco-4_4_2 # Build, release on SF
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-4_4_2 # Install, do not build
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-4_4_2 # Build and install
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-4_4_2
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-4_4_2
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-4_4_2
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-4_4_2
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-4_4_2
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-4_4_2
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-4_4_2
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-4_4_2
 
 # Export daily snapshot
 # ${HOME}/nco/bld/nco_dst.pl --dbg=2 
@@ -30,7 +31,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.211 2014-02-05 20:59:22 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.212 2014-02-05 21:17:07 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +68,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2014-02-05 20:59:22 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.211 2014-02-05 20:59:22 zender Exp $';
-my $CVS_Revision='$Revision: 1.211 $';
+my $CVS_Date='$Date: 2014-02-05 21:17:07 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.212 2014-02-05 21:17:07 zender Exp $';
+my $CVS_Revision='$Revision: 1.212 $';
 my $CVSROOT='zender@nco.cvs.sf.net:/cvsroot/nco'; # CVS repository
 my $DATA=$ENV{'DATA'};
 my $HOME=$ENV{'HOME'};
@@ -94,6 +95,7 @@ my $www_mch_mrr='web.sf.net'; # WWW machine for package mirror
 my $www_drc_mrr='/home/project-web/nco/htdocs'; # WWW directory for package mirror
 
 # Set defaults for command line arguments
+my $sf=$False; # Release tarball and update SourceForge
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -137,6 +139,7 @@ $rcd=GetOptions( # man Getopt::GetoptLong
 		'acd_cnt!' => \$acd_cnt,
 		'acd_prs!' => \$acd_prs,
 		'bld!' => \$bld,
+		'sf!' => \$sf,
 		'bbl_cnt!' => \$bbl_cnt,
 		'blk_cnt!' => \$blk_cnt,
 		'cgd_cnt!' => \$cgd_cnt,
@@ -173,6 +176,7 @@ if($dbg_lvl >= 1){print ("$prg_nm: $prg_dsc, version $prg_vrs of $prg_date\n");}
 if($dbg_lvl >= 2){print ("$prg_nm: \$vrs_tag = $vrs_tag\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$dbg_lvl = $dbg_lvl\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$bld = $bld\n");} # endif dbg
+if($dbg_lvl >= 2){print ("$prg_nm: \$sf = $sf\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$cln = $cln\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$dst_cln = $dst_cln\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$nst_all = $nst_all\n");} # endif dbg
@@ -251,7 +255,7 @@ if($bld){
 # Set up FTP server
     chdir $dst_pth_pfx or die "$prg_nm: ERROR unable to chdir to $dst_pth_pfx: $!\n"; # $! is system error string
     cmd_prc("$cp_cmd $doc_fl ./$dst_vrs/doc"); # Copy derived documentation to source directory
-    cmd_prc("$tar_cmd cvzf $dst_fl --exclude='nco-4.4.1/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude=ncap_yacc.[ch] ./$dst_vrs"); # Create gzipped tarfile
+    cmd_prc("$tar_cmd cvzf $dst_fl --exclude='nco-4.4.2/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude=ncap_yacc.[ch] ./$dst_vrs"); # Create gzipped tarfile
     cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/src/$dst_fl"); # Remove any distribution with same name
     if($dly_snp){cmd_prc("$rsh_cmd $www_mch $rm_cmd -r $www_drc/src/nco-????????.tar.gz");} # Remove previous daily snapshots from WWW server
     cmd_prc("$rcp_cmd $dst_fl $www_mch:$www_drc/src"); # Copy local tarfile to WWW server
@@ -275,7 +279,7 @@ if($bld){
 # Use rcp_cmd_no_prs_prm because scp appears to quit without notice if too many warnings errors occur copying first files
 # Usually scp_cmd includes -p switch to preserve permissions and times, but sourceforge server does not allow this
 # Hence it generates warnings when used with -p, and is not properly updated
-    if($True){
+    if($sf){
 	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/index.shtml $dst_pth_bld/doc/nco.png $dst_pth_bld/doc/nco_news.shtml $dst_pth_bld/doc/README $dst_pth_bld/doc/TODO $dst_pth_bld/doc/VERSION $dst_pth_bld/doc/ChangeLog $usr_nm,nco\@$www_mch_mrr:$www_drc_mrr");
 	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $usr_nm,nco\@$www_mch_mrr:$www_drc_mrr");
 	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_pfx/$dst_fl $DATA/$dst_fl_chg $DATA/$dst_fl_deb $DATA/$dst_fl_dsc $DATA/$dst_fl_tgz $usr_nm,nco\@$www_mch_mrr:$www_drc_mrr/src"); # Copy Debian files to WWW server
