@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.453 2014-02-05 20:07:10 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.454 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -559,7 +559,7 @@ void
 nco_prn_tbl_lmt                       /* [fnc] Print table limits */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-int                                   /* O [rcd] Return code (Used to go to close_and_free on error)  */
+void
 nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Table (groups,variables,dimensions, limits)   */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  char * const grp_pth,                /* I [sng] Absolute group path where to start build (root typically) */
@@ -577,6 +577,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const nco_bool flg_unn,              /* I [flg] Select union of specified groups and variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */ 
+ nco_dmn_dne_t **flg_dne,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
@@ -686,15 +687,16 @@ nco_nsm_ncr                           /* [fnc] Increase ensembles (more than 1 f
 (const int nc_id,                     /* I [id] netCDF file ID */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
-int                                   /* O [rcd] Return code (NCO_CHK_NOERR or NCO_CHK_ERR)  */
-nco_chk_lmt                           /* [fnc] Check input dimensions specified with --dimension (hyperslabs) */
-(int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
- lmt_sct **lmt,                       /* I [sct] Limit structure array */
- const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
+void
+nco_chk_dmn                           /* [fnc] Check valid dimension names */
+(const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
+ nco_dmn_dne_t * flg_dne);            /* I [lst] Flag to check if input dimension -d "does not exist" */
 
-void                          
-nco_chk_dmn                           /* [fnc] Check valit input dimension name */
-(const char * const dmn_nm,           /* I [sng] Dimension name (relative) */
+void
+nco_chk_dmn_in                        /* [fnc] Check input dimensions */
+(int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt,                       /* I [sct] Structure comming from nco_lmt_prs() */
+ nco_dmn_dne_t **dne_lst,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
 nco_bool                               /* O [flg] True if variable 1 is in scope of variable 2 */

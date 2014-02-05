@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.500 2014-02-04 04:07:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.501 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.500 2014-02-04 04:07:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.500 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.501 2014-02-05 23:27:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.501 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -194,7 +194,6 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcd_tbl; /* [rcd] Traversal table return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
@@ -262,6 +261,8 @@ main(int argc,char **argv)
   trv_sct *var_trv;        /* [sct] Variable GTT object */
 
   trv_tbl_sct *trv_tbl;    /* [lst] Traversal table */
+
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   lmt_sct **lmt_rec=NULL; /* [lst] (ncra) Record dimensions */
 
@@ -627,10 +628,10 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  rcd_tbl=nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);  
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
 
-  /* Table error checking (valid input names) returned an error, exit */
-  if (rcd_tbl) goto close_and_free; 
+  /* Check if all input -d dimensions were found */ 
+  (void)nco_chk_dmn(lmt_nbr,flg_dne);     
 
   /* Store ncge ensemble suffix in table */
   if(nco_prg_id == ncge && nsm_sfx) trv_tbl->nsm_sfx=nsm_sfx;
@@ -1097,10 +1098,7 @@ main(int argc,char **argv)
       trv_tbl_init(&trv_tbl1); 
 
       /* Construct GTT using current file ID */
-      rcd_tbl=nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl1);
-
-      /* Table error checking (valid input names) returned an error, exit */
-      if (rcd_tbl) goto close_and_free; 
+      (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,NULL,trv_tbl1);
 
       /* Loop over ensembles in current file */
       for(int idx_nsm=0;idx_nsm<trv_tbl->nsm_nbr;idx_nsm++){ 
@@ -1277,9 +1275,6 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
-  /* goto close_and_free */
-close_and_free: 
-
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* NCO-generic clean-up */
@@ -1318,6 +1313,8 @@ close_and_free:
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
 
     (void)trv_tbl_free(trv_tbl);
+    for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
+    if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     if(flg_input_complete) flg_input_complete=(nco_bool *)nco_free(flg_input_complete);
     if(idx_rec_out) idx_rec_out=(long *)nco_free(idx_rec_out);
     if(rec_in_cml) rec_in_cml=(long *)nco_free(rec_in_cml);

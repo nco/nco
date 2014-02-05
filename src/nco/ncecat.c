@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.360 2014-02-04 22:40:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.361 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -124,8 +124,8 @@ main(int argc,char **argv)
   char grp_out_sfx[NCO_GRP_OUT_SFX_LNG+1L];
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.360 2014-02-04 22:40:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.360 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.361 2014-02-05 23:27:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.361 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:HhL:l:Mn:Oo:p:rRt:u:v:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -174,7 +174,6 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcd_tbl; /* [rcd] Traversal table return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_idx;
@@ -198,6 +197,8 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -536,10 +537,10 @@ main(int argc,char **argv)
     (void)nco_inq_format(in_id,&fl_in_fmt); 
 
     /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-    rcd_tbl=nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
+    (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
 
-    /* Table error checking (valid input names) returned an error, exit */
-    if(rcd_tbl) goto close_and_free; 
+    /* Check if all input -d dimensions were found */ 
+    (void)nco_chk_dmn(lmt_nbr,flg_dne);     
 
     /* Get number of variables, dimensions, and global attributes in file, file format */
     (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -745,10 +746,7 @@ main(int argc,char **argv)
       trv_tbl_init(&trv_tbl_gpr);
 
       /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-      rcd_tbl=nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr_rgn,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl_gpr);
-
-      /* Table error checking (valid input names) returned an error, exit */
-      if(rcd_tbl) goto close_and_free; 
+      (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr_rgn,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl_gpr);
 
       /* Get number of variables, dimensions, and global attributes in file, file format */
       (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl_gpr);
@@ -869,9 +867,6 @@ main(int argc,char **argv)
 
   } /* end loop over fl_idx */
 
-  /* goto close_and_free */
- close_and_free: 
-
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
@@ -916,6 +911,8 @@ main(int argc,char **argv)
       if(md5) md5=(md5_sct *)nco_md5_free(md5);
       /* Free traversal table */
       trv_tbl_free(trv_tbl);
+      for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
+      if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     } /* RECORD_AGGREGATE */
   } /* !flg_cln */
 

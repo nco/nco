@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.190 2014-01-31 00:16:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.191 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
 
   char var_nm[NC_MAX_NAME+1];
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.190 2014-01-31 00:16:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.190 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.191 2014-02-05 23:27:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.191 $";
   const char * const opt_sht_lst="a:D:d:g:hl:Oo:p:rv:-:";
   const char dlm_chr='@'; /* Character delimiting variable from attribute name  */
   const char opt_chr='.'; /* Character indicating presence of following variable/dimension/attribute in file is optional */
@@ -126,7 +126,6 @@ main(int argc,char **argv)
   int grp_id;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcd_tbl; /* [rcd] Traversal table return code */
 
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
@@ -337,10 +336,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
-  rcd_tbl=nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,trv_tbl);
-
-  /* Table error checking (valid input names) returned an error, exit */
-  if (rcd_tbl) goto close_and_free; 
+  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,NULL,trv_tbl);
 
   /* Loop input variable names */
   for(int idx_var=0;idx_var<nbr_var_rnm;idx_var++){
@@ -594,9 +590,6 @@ main(int argc,char **argv)
     (void)nco__enddef(nc_id,hdr_pad);
     if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
-
-  /* goto close_and_free */
-close_and_free: 
 
   /* Close the open netCDF file */
   nco_close(nc_id);

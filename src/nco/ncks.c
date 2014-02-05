@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.700 2014-02-05 01:09:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.701 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -160,8 +160,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.700 2014-02-05 01:09:47 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.700 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.701 2014-02-05 23:27:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.701 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -204,7 +204,6 @@ main(int argc,char **argv)
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcd_tbl; /* [rcd] Traversal table return code */
   int var_lst_in_nbr=0;
   int var_nbr_fl;
   int var_ntm_fl;
@@ -218,6 +217,8 @@ main(int argc,char **argv)
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -670,14 +671,11 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
-  /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list */
-  rcd_tbl=nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);          
+  /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list*/
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
 
-  /* Table error checking (valid input names) returned an error, exit */
-  if (rcd_tbl) goto close_and_free; 
-
-  /* Check valid input dimension record name (--fix_rec_dmn) */
-  if (rec_dmn_nm_fix) (void)nco_chk_dmn(rec_dmn_nm_fix,trv_tbl);
+  /* Check if all input -d dimensions were found */ 
+  (void)nco_chk_dmn(lmt_nbr,flg_dne);    
 
   /* Get number of variables, dimensions, and global attributes in file */
   (void)trv_tbl_inq(&att_glb_nbr,&att_grp_nbr,&att_var_nbr,&dmn_nbr_fl,&dmn_rec_fl,&grp_dpt_fl,&grp_nbr_fl,&var_ntm_fl,&var_nbr_fl,trv_tbl);
@@ -981,6 +979,8 @@ close_and_free:
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
     if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     trv_tbl_free(trv_tbl);
+    for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
+    if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
     if(smr_sng) smr_sng=(char *)nco_free(smr_sng);

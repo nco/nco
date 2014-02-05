@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.183 2014-01-31 00:16:28 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.184 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -162,8 +162,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.183 2014-01-31 00:16:28 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.183 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.184 2014-02-05 23:27:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.184 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -184,12 +184,13 @@ main(int argc,char **argv)
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcd_tbl; /* [rcd] Traversal table return code */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
  
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -374,10 +375,7 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl); 
 
   /* Construct GTT (Group Traversal Table) */
-  rcd_tbl=nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,trv_tbl);
-
-  /* Table error checking (valid input names) returned an error, exit */
-  if (rcd_tbl) goto close_and_free; 
+  (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,NULL,(int) 0,False,False,False,True,&flg_dne,trv_tbl);
 
   /* Timestamp end of metadata setup and disk layout */
   rcd+=nco_ddra((char *)NULL,(char *)NULL,&ddra_info);
@@ -396,9 +394,7 @@ main(int argc,char **argv)
       var_lst_in=nco_lst_prs_2D(aed_lst[idx_aed].var_nm,",",&var_lst_in_nbr);
       trv_tbl_init(&trv_tbl_rx); 
       /* Construct GTT (Group Traversal Table) */
-      rcd_tbl=nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,var_lst_in,var_lst_in_nbr,False,False,False,False,trv_tbl_rx);
-      /* Table error checking (valid input names) returned an error, exit */
-      if (rcd_tbl) goto close_and_free; 
+      (void)nco_bld_trv_tbl(nc_id,trv_pth,(int)0,NULL,(int)0,NULL,False,False,NULL,(int)0,var_lst_in,var_lst_in_nbr,False,False,False,False,&flg_dne,trv_tbl_rx); 
       /* Edit same attribute for all variables ... */
       (void)nco_aed_prc_var_xtr(nc_id,aed_lst[idx_aed],trv_tbl_rx);
       trv_tbl_free(trv_tbl_rx);
@@ -427,9 +423,6 @@ main(int argc,char **argv)
     (void)nco__enddef(nc_id,hdr_pad);
     if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
   } /* hdr_pad */
-
-  /* goto close_and_free */
-  close_and_free: 
 
   /* Close the open netCDF file */
   nco_close(nc_id);

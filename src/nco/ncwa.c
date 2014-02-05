@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.400 2014-02-04 22:40:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.401 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.400 2014-02-04 22:40:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.400 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.401 2014-02-05 23:27:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.401 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -191,7 +191,6 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcd_tbl; /* [rcd] Traversal table return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
@@ -212,6 +211,8 @@ main(int argc,char **argv)
   var_sct *wgt_avg=NULL;
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
@@ -617,10 +618,7 @@ main(int argc,char **argv)
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  rcd_tbl=nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);  
-
-  /* Table error checking (valid input names) returned an error, exit */
-  if (rcd_tbl) goto close_and_free; 
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -1116,9 +1114,6 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
-  /* goto close_and_free */
-close_and_free: 
-
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncwa-specific memory */
@@ -1157,6 +1152,8 @@ close_and_free:
     var_prc=(var_sct **)nco_free(var_prc);
     var_fix=(var_sct **)nco_free(var_fix);
     var_out=(var_sct **)nco_free(var_out);
+    for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
+    if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
   } /* !flg_cln */
 
   /* End timer */ 

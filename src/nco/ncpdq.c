@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.388 2014-01-31 00:16:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.389 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -120,8 +120,8 @@ main(int argc,char **argv)
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.388 2014-01-31 00:16:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.388 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.389 2014-02-05 23:27:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.389 $";
   const char * const opt_sht_lst="3467Aa:CcD:d:Fg:G:hL:l:M:Oo:P:p:Rrt:v:UxZ-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -178,7 +178,6 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcd_tbl; /* [rcd] Traversal table return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
@@ -199,6 +198,8 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -537,10 +538,10 @@ main(int argc,char **argv)
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  rcd_tbl=nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);    
+  (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
 
-  /* Table error checking (valid input names) returned an error, exit */
-  if (rcd_tbl) goto close_and_free; 
+  /* Check if all input -d dimensions were found */ 
+  (void)nco_chk_dmn(lmt_nbr,flg_dne);     
 
   /* Create reversed dimension list */
   if(dmn_rdr_nbr_in > 0){
@@ -885,9 +886,6 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
-  /* goto close_and_free */
-close_and_free: 
-
   /* Clean memory unless dirty memory allowed */
   if(flg_cln){
     /* ncpdq-specific memory cleanup */
@@ -944,6 +942,8 @@ close_and_free:
     var_fix=(var_sct **)nco_free(var_fix);
     var_fix_out=(var_sct **)nco_free(var_fix_out);
     trv_tbl_free(trv_tbl); 
+    for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
+    if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
   } /* !flg_cln */
 

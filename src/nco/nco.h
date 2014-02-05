@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.478 2014-02-04 17:21:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.479 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -389,10 +389,7 @@ extern "C" {
 #define NCO_NOERR 1
 /* Internal NCO return code indicating failure */
 #define NCO_ERR 0
-/* Internal NCO return code indicating failure for checking invalid input */
-#define NCO_CHK_ERR 1
-/* Internal NCO return code indicating success for checking invalid input */
-#define NCO_CHK_NOERR 0
+
 
 /* UDUnits return code indicating success */
 #define UDUNITS_NOERR 0
@@ -1023,6 +1020,12 @@ extern "C" {
     increasing, /* 1 */
     not_checked /* 2 */
   } monotonic_direction_enm;
+
+   /* Structure to check for valid input dimension  */
+  typedef struct {	
+    nco_bool flg_dne;           /* [flg] Flag to check if input dimension -d "does not exist" */
+    char *dim_nm;               /* [sng] Dimension name */    
+  } nco_dmn_dne_t;
 
   /* Initialize default value of each member of var_sct structure in var_dfl_set()
      Fill actual value of var_sct structure in nco_var_fll()

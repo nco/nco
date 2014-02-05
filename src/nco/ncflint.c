@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.284 2014-01-31 00:16:29 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.285 2014-02-05 23:27:26 pvicente Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.284 2014-01-31 00:16:29 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.284 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.285 2014-02-05 23:27:26 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.285 $";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:hi:L:l:Oo:p:rRt:v:X:xw:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -173,7 +173,6 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcd_tbl; /* [rcd] Traversal table return code */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
@@ -201,6 +200,8 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
 
   trv_tbl_sct *trv_tbl=NULL; /* [lst] Traversal table */
+
+  nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
   static struct option opt_lng[]=
   { /* Structure ordered by short option key if possible */
@@ -558,10 +559,10 @@ main(int argc,char **argv)
   trv_tbl_init(&trv_tbl);
 
   /* Construct GTT, Group Traversal Table (groups,variables,dimensions, limits) */
-  rcd_tbl=nco_bld_trv_tbl(in_id_1,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
+  (void)nco_bld_trv_tbl(in_id_1,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne,trv_tbl);
 
-  /* Table error checking (valid input names) returned an error, exit */
-  if (rcd_tbl) goto close_and_free; 
+  /* Check if all input -d dimensions were found */ 
+  (void)nco_chk_dmn(lmt_nbr,flg_dne);     
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
   (void)trv_tbl_inq((int *)NULL,(int *)NULL,(int *)NULL,&nbr_dmn_fl,(int *)NULL,(int *)NULL,(int *)NULL,(int *)NULL,&nbr_var_fl,trv_tbl);
@@ -830,9 +831,6 @@ main(int argc,char **argv)
   } /* end (OpenMP parallel for) loop over idx */
   if(nco_dbg_lvl >= nco_dbg_var) (void)fprintf(stderr,"\n");
 
-  /* goto close_and_free */
-close_and_free: 
-
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_2_arr[thr_idx]);
@@ -884,6 +882,8 @@ close_and_free:
     if(nbr_var_fix > 0) var_fix=nco_var_lst_free(var_fix,nbr_var_fix);
     if(nbr_var_fix > 0) var_fix_out=nco_var_lst_free(var_fix_out,nbr_var_fix);
     trv_tbl_free(trv_tbl); 
+    for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
+    if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);
   } /* !flg_cln */
 
