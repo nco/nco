@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1230 2014-02-04 22:09:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1231 2014-02-05 01:09:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6808,24 +6808,29 @@ nco_chk_lmt                           /* [fnc] Check input dimensions specified 
 } /* nco_chk_lmt() */
 
 
-nco_bool                              /* O [rcd] Return code  */
+void 
 nco_chk_dmn                           /* [fnc] Check valit input dimension name */
 (const char * const dmn_nm,           /* I [sng] Dimension name (relative) */
  const trv_tbl_sct * const trv_tbl)   /* I [sct] Traversal table */
 { 
   /* Purpose: Check if input dimension name is valid */
 
+  nco_bool dmn_fnd=False; /* [flg] Dimension was found */
+
   /* Dimension list */
   for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
     /* Match input relative name to dimension relative name */ 
     if(strcmp(dmn_nm,trv_tbl->lst_dmn[dmn_idx].nm) == 0){
       /* Found */
-      return True;
+      dmn_fnd=True;
     } /* Match input relative name to dimension relative name */ 
   } /* Dimension list */
 
-  (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),dmn_nm);
-  return False;
+  if (!dmn_fnd){
+    (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),dmn_nm);
+    nco_exit(EXIT_FAILURE);
+  }
+  return;
 } /* nco_chk_dmn() */
 
 void

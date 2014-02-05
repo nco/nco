@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.451 2014-02-04 22:09:14 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.452 2014-02-05 01:09:47 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -691,7 +691,7 @@ nco_chk_lmt                           /* [fnc] Check input dimensions specified 
  lmt_sct **lmt,                       /* I [sct] Limit structure array */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
-nco_bool                              /* O [rcd] Return code  */
+void                          
 nco_chk_dmn                           /* [fnc] Check valit input dimension name */
 (const char * const dmn_nm,           /* I [sng] Dimension name (relative) */
  const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */

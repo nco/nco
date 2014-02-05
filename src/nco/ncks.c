@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.699 2014-01-31 04:13:31 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.700 2014-02-05 01:09:47 pvicente Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -160,8 +160,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.699 2014-01-31 04:13:31 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.699 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.700 2014-02-05 01:09:47 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.700 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -677,12 +677,7 @@ main(int argc,char **argv)
   if (rcd_tbl) goto close_and_free; 
 
   /* Check valid input dimension record name (--fix_rec_dmn) */
-  if (rec_dmn_nm_fix){
-    nco_bool flg_ret=nco_chk_dmn(rec_dmn_nm_fix,trv_tbl);
-
-    /* Name checking returned an error, exit */
-    if (flg_ret == False) goto close_and_free; 
-  }
+  if (rec_dmn_nm_fix) (void)nco_chk_dmn(rec_dmn_nm_fix,trv_tbl);
 
   /* Get number of variables, dimensions, and global attributes in file */
   (void)trv_tbl_inq(&att_glb_nbr,&att_grp_nbr,&att_var_nbr,&dmn_nbr_fl,&dmn_rec_fl,&grp_dpt_fl,&grp_nbr_fl,&var_ntm_fl,&var_nbr_fl,trv_tbl);
