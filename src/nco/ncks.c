@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.701 2014-02-05 23:27:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.702 2014-02-05 23:32:17 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -109,6 +109,7 @@ main(int argc,char **argv)
   nco_bool PRN_CDL=False; /* [flg] Print CDL */
   nco_bool PRN_HDN=False; /* [flg] Print hidden attributes */
   nco_bool PRN_SRM=False; /* [flg] Print ncStream */
+  nco_bool PRN_JSN=False; /* [flg] Print JSON */
   nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
   nco_bool PRN_XML_LOCATION=True; /* [flg] Print XML location tag */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
@@ -160,8 +161,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.701 2014-02-05 23:27:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.701 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.702 2014-02-05 23:32:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.702 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -271,7 +272,10 @@ main(int argc,char **argv)
       {"unn",no_argument,0,0}, /* [flg] Select union of specified groups and variables */
       {"version",no_argument,0,0},
       {"vrs",no_argument,0,0},
-      {"xml",no_argument,0,0}, /* [flg] Print XML (NcML) */
+      {"jsn",no_argument,0,0}, /* [flg] Print JSON */
+      {"json",no_argument,0,0}, /* [flg] Print JSON */
+      {"w10",no_argument,0,0}, /* [flg] Print JSON */
+      {"w10n",no_argument,0,0}, /* [flg] Print JSON */
       {"xml",no_argument,0,0}, /* [flg] Print XML (NcML) */
       {"ncml",no_argument,0,0}, /* [flg] Print XML (NcML) */
       {"xml_no_location",no_argument,0,0}, /* [flg] Omit XML location tag */
@@ -501,6 +505,7 @@ main(int argc,char **argv)
       } /* endif "vrs" */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
+      if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
       if(!strcmp(opt_crr,"xml") || !strcmp(opt_crr,"ncml")) PRN_XML=True; /* [flg] Print XML (NcML) */
       if(!strcmp(opt_crr,"xml_no_location") || !strcmp(opt_crr,"ncml_no_location")){PRN_XML_LOCATION=False;PRN_XML=True;} /* [flg] Print XML location tag */
       if(!strcmp(opt_crr,"xml_spr_chr")){spr_chr=(char *)strdup(optarg);PRN_XML=True;} /* [flg] Separator for XML character types */
@@ -821,6 +826,7 @@ main(int argc,char **argv)
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;
     prn_flg.cdl=PRN_CDL;
+    prn_flg.jsn=PRN_JSN;
     prn_flg.srm=PRN_SRM;
     prn_flg.xml=PRN_XML;
     prn_flg.trd=!(PRN_CDL || PRN_XML);

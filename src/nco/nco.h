@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.479 2014-02-05 23:27:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.480 2014-02-05 23:32:17 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -726,6 +726,7 @@ extern "C" {
     nco_bool cdl; /* [flg] Print CDL */
     nco_bool srm; /* [flg] Print ncStream */
     nco_bool trd; /* [flg] Print traditional NCO format */
+    nco_bool jsn; /* [flg] Print JSON */
     nco_bool xml; /* [flg] Print XML (NcML) */
     nco_bool hdn; /* [flg] Print hidden attributes */
     nco_bool xml_lcn; /* [flg] Print XML location tag */

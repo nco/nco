@@ -4,6 +4,8 @@
 
 2014-02-05  Charlie Zender  <zender@uci.edu>
 
+	* Add W10N/JSON stubs
+
 	* NCO 4.4.2 release procedure:
  	Changes since nco-4_4_1: bugfixes for ncra.c memory, LLVM/clang builds, -X
 	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
