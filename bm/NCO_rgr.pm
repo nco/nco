@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.431 2014-02-04 22:09:13 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.432 2014-02-05 20:07:09 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -2377,9 +2377,9 @@ print "\n";
     
 #ncks #69
 # Test -X
-# ncks -O -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc 
+# ncks -O -C -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc 
 
-    $dsc_sng="(Groups) Auxiliary coordinates -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
+    $dsc_sng="(Groups) Auxiliary coordinates -C -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
     $tst_cmd[0]="ncks $nco_D_flg -C -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar $in_pth_arg in_grp_3.nc";
     if($HAVE_NETCDF4_H == 1){
     $tst_cmd[1]="time[9] gds_crd[1]=1 gds_3dvar[73]=282.2 meter";
@@ -2631,12 +2631,25 @@ print "\n";
     $tst_cmd[2]="gds_crd[0]=1 lon_gds_1[0]=0 degree";
     $tst_cmd[3]="SS_OK";   
     NCO_bm::tst_run(\@tst_cmd);
-    $#tst_cmd=0; # Reset array 			 
+    $#tst_cmd=0; # Reset array 		
+
+#ncks #89
+# Test -X (writing associated coordinates) 
+# ncks -O  -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc out.nc
+# ncks  -g g18g2 -v lat_gds_2 out.nc 
+
+    $dsc_sng="(Groups) Auxiliary coordinates (writing associated coordinates) -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar in_grp_3.nc";
+    $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+	$tst_cmd[1]="ncks $nco_D_flg -g g18g2 -C -v lat_gds_2 %tmp_fl_00%";
+    $tst_cmd[2]="gds_crd[0]=1 lat_gds_2[0]=-30 degree";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 				
 
    } #### Group tests	
    
 	
-#ncks #89
+#ncks #90
 # Test -X writing
 # ncks -O -X 0.,1.,-30.,-29. -v gds_3dvar  in.nc out.nc
 

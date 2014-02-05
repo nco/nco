@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1231 2014-02-05 01:09:47 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1232 2014-02-05 20:07:10 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6716,16 +6716,11 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Extract coordinates associated with extracted variables */
   if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(nc_id,trv_tbl);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
-
   /* Is this a CCM/CCSM/CF-format history tape? */
   CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(nc_id);
   if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
     /* Implement CF "coordinates" and "bounds" conventions */
     (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
-
-    if(nco_dbg_lvl_get() >= nco_dbg_dev) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
-
     (void)nco_xtr_cf_add(nc_id,"bounds",trv_tbl);
   } /* CNV_CCM_CCSM_CF */
 
@@ -6736,7 +6731,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_xtr_grp_mrk(trv_tbl);
 
   /* Parse auxiliary coordinates and build found limits directly into table (auxiliary limits are not merged into regular limits ) */
-  if(aux_nbr) (void)nco_prs_aux_crd(nc_id,aux_nbr,aux_arg,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);
+  if(aux_nbr) (void)nco_prs_aux_crd(nc_id,aux_nbr,aux_arg,FORTRAN_IDX_CNV,MSA_USR_RDR,EXTRACT_ASSOCIATED_COORDINATES,trv_tbl);
 
   /* Add dimension limits */
   if(lmt_nbr){
@@ -6756,7 +6751,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     lmt=(lmt_sct **)nco_free(lmt);
   } /* !lmt_nbr */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
+  if(nco_dbg_lvl_get() == nco_dbg_old) trv_tbl_prn_flg_xtr(fnc_nm,trv_tbl);
 
   return rcd;
 
@@ -8454,12 +8449,13 @@ nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by gro
 
 
 void
-nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limits directly into table */
+nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 (const int nc_id,                     /* I [ID] netCDF file ID */
  const int aux_nbr,                   /* I [nbr] Number of auxiliary coordinates */
  char *aux_arg[],                     /* I [sng] Auxiliary coordinates */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ const nco_bool FORTRAN_IDX_CNV,      /* I [flg] Hyperslab indices obey Fortran convention */
+ const nco_bool MSA_USR_RDR,          /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ const nco_bool EXTRACT_ASSOCIATED_COORDINATES,  /* I [flg] Extract all coordinates associated with extracted variables? */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
   const char fnc_nm[]="nco_prs_aux_crd()"; /* [sng] Function name */
@@ -8524,6 +8520,12 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates limit
           strcpy(units,trv_tbl->lst[idx_tbl].var_dmn[dmn_idx_fnd].lat_crd[0].units);
 
           aux=nco_aux_evl_trv(nc_id,aux_nbr,aux_arg,lat_trv,lon_trv,crd_typ,units,&aux_lmt_nbr);
+
+          /* Mark both 'latitude' and 'longitude' for extraction */
+          if(EXTRACT_ASSOCIATED_COORDINATES){
+            (void)trv_tbl_mrk_xtr(lat_trv->nm_fll,trv_tbl);
+            (void)trv_tbl_mrk_xtr(lon_trv->nm_fll,trv_tbl);
+          }
 
           /* Found limits */
           if(aux_lmt_nbr > 0 ){  
