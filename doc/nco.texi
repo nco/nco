@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.956 2014-02-03 03:54:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.957 2014-02-05 19:33:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4658,14 +4658,14 @@ cd netcdf-4.3.1
 CPPFLAGS="-I${H5DIR}/include -I${H4DIR}/include" \
 LDFLAGS="-L${H5DIR}/lib -L${H4DIR}/lib" \
 ./configure --enable-hdf4 --enable-hdf4-file-tests
-make && make check && make install
+make && make check && make installas
 
-# 4. NCO version 4.4.1. No RPM for this version. Must install by hand.
+# 4. NCO version 4.4.2. No RPM for this version. Must install by hand.
 # Earlier versions of NCO are relatively useless for ncdismember
 cd ${DATA}/tmp
-wget http://nco.sourceforge.net/src/nco-4.4.1.tar.gz .
-tar xvzf nco-4.4.1.tar.gz
-cd nco-4.4.1
+wget http://nco.sourceforge.net/src/nco-4.4.2.tar.gz .
+tar xvzf nco-4.4.2.tar.gz
+cd nco-4.4.2
 ./configure --prefix=${NCODIR}
 make && make install
 
@@ -4711,6 +4711,9 @@ ncdismember ${DATA}/hdf/mabel_l2_20130927t201800_008_1.h5 \
 EOF
 @end verbatim
 @end example
+@c scp ~/ncdismember.pdf dust.ess.uci.edu:/var/www/html/diwg
+A @acronym{PDF} version of these instructions is available
+@uref{http://dust.ess.uci.edu/diwg/ncdismember.pdf, here}.
 
 @html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->

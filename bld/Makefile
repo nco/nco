@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.684 2014-02-04 22:59:55 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.685 2014-02-05 19:33:32 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -982,7 +982,7 @@ ifeq (clang,$(firstword ${CC}))
 endif
 ifeq (${GCC_OR_CLANG},Y)
  CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
- CFLAGS := -Wall
+ CFLAGS := -Wall -Wuninitialized -Wmaybe-uninitialized
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
  CFLAGS += -Werror=format-security -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g
 # Compilation flags recommended by GSL and others that I like and use:
@@ -993,12 +993,15 @@ ifeq (${GCC_OR_CLANG},Y)
 # -Wall: Warn about common programming problems
 # -Wcast-align: Warn if casting pointer to type of different size
 # -Wcast-qual: Warn if const qualifier removed from pointer
-# -Werror=format-security: Consider this specific warning as errors
 # -Werror: Consider warnings as errors
+# -Werror=format-security: Consider this specific warning as errors
+# -Wmaybe-uninitialized: Warn on uninitialized variables. GCC has many false negatives, clang is better?
 # -Wmissing-prototypes: Warn if missing prototypes
 # -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
 # -Wshadow: Warn if local variable has same name as other local variable
+# -Wsometimes-uninitialized: LLVM/clang uses this but GCC does not
 # -Wswitch: Warn if switch statement has enumerated index and case label outside enumeration range
+# -Wuninitialized: Warn on uninitialized variables. GCC has many false negatives, clang is better? 
 # -Wunused: Warn on unused functions, labels, parameters, values, and variables
 # -Wwrite-strings: Apply const-qualifier to string constants, die if overwritten
 # -fno-common: Prevent global variables from being simultaneously defined in different files
