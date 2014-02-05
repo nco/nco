@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.210 2014-01-10 00:24:18 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.211 2014-02-05 20:59:22 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -56,7 +56,7 @@ my ($idx,$rcd);
 my ($prg_nm,$prg_dsc,$prg_vrs,$prg_date);
 my ($pth_in,$fl_sfx);
 
-my ($dst_vrs,$dst_fl);
+my ($dst_vrs,$dst_fl,$doc_fl);
 my ($dst_fl_chg,$dst_fl_deb,$dst_fl_doc,$dst_fl_dsc,$dst_fl_tgz);
 my ($nco_vrs,$nco_vrs_mjr,$nco_vrs_mnr,$nco_vrs_pch);
 my ($dly_snp);
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2014-01-10 00:24:18 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.210 2014-01-10 00:24:18 zender Exp $';
-my $CVS_Revision='$Revision: 1.210 $';
+my $CVS_Date='$Date: 2014-02-05 20:59:22 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.211 2014-02-05 20:59:22 zender Exp $';
+my $CVS_Revision='$Revision: 1.211 $';
 my $CVSROOT='zender@nco.cvs.sf.net:/cvsroot/nco'; # CVS repository
 my $DATA=$ENV{'DATA'};
 my $HOME=$ENV{'HOME'};
@@ -206,6 +206,8 @@ if($dly_snp){
     $dst_vrs=$mdl_sng.'-'.$nco_vrs;
     if($nco_vrs_mjr < 1 || $nco_vrs_mjr > 4){die "$prg_nm: ERROR $nco_vrs_mjr < 1 || $nco_vrs_mjr > 3"};
 } # endelse
+$doc_fl="$HOME/nco/doc/nco.dvi $HOME/nco/doc/nco.html $HOME/nco/doc/nco.ps $HOME/nco/doc/nco.pdf $HOME/nco/doc/nco.txt $HOME/nco/doc/nco.xml"; # Derived documentation
+
 $dst_fl=$dst_vrs.'.tar.gz'; # Standard tarball distribution
 $dst_fl_chg=$mdl_sng.'_'.$nco_vrs.'-1_*.changes'; # Debian changes
 $dst_fl_deb=$mdl_sng.'_'.$nco_vrs.'-1_*.deb'; # Debian executables and libraries
@@ -248,6 +250,7 @@ if($bld){
 
 # Set up FTP server
     chdir $dst_pth_pfx or die "$prg_nm: ERROR unable to chdir to $dst_pth_pfx: $!\n"; # $! is system error string
+    cmd_prc("$cp_cmd $doc_fl ./$dst_vrs/doc"); # Copy derived documentation to source directory
     cmd_prc("$tar_cmd cvzf $dst_fl --exclude='nco-4.4.1/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude=ncap_yacc.[ch] ./$dst_vrs"); # Create gzipped tarfile
     cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/src/$dst_fl"); # Remove any distribution with same name
     if($dly_snp){cmd_prc("$rsh_cmd $www_mch $rm_cmd -r $www_drc/src/nco-????????.tar.gz");} # Remove previous daily snapshots from WWW server

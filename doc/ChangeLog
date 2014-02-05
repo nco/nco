@@ -4,6 +4,12 @@
 
 2014-02-05  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.4.2 release procedure:
+ 	Changes since nco-4_4_1: bugfixes (loop, clang, -X)
+	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
+	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
+
 	* Improve documentation build rules in ./configure
 
 	* Explicitly add -Wuninitialized -Wmaybe-uninitialized to GCC in bld/Makefile
@@ -31,12 +37,6 @@
 	* Add ncks regression #83 Test 'standard_name' attribute for "longitude" and "latitude" values
 
 2014-01-31  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.4.2 release procedure:
- 	Changes since nco-4_4_1: fxm
-	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
-	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
 
 	* Crude implementation of cnk_map=rew
 
