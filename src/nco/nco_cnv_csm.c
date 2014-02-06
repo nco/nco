@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.71 2014-02-06 22:19:34 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.72 2014-02-06 22:39:40 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -368,13 +368,14 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           /* Delete currente value */
           if (aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
           aed.sz=-1L;
-
-          aed.att_nm=(char *)nco_free(aed.att_nm);
+       
 
         } /*  Match name */
       } /* Loop dimensions */
     } /* Loop variable dimensions */
   } /* Process all variables */
+
+  aed.att_nm=(char *)nco_free(aed.att_nm);
 
   return rcd;
 
