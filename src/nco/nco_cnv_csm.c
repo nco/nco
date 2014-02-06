@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.72 2014-02-06 22:39:40 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.73 2014-02-06 22:58:19 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -246,6 +246,15 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   aed_sct aed;       /* [sct] Structure containing information necessary to edit */
 
+  long att_sz;       /* [nbr] Attribute size */
+
+  nc_type att_typ;   /* [nbr] Attribute type */
+
+  nco_bool att_xst;  /* [nbr] Attribute "exists" */
+
+  char *att_val;         /* [sng] The final value of the attribute (e.g. "time: mean" )*/
+  char att_op[NC_MAX_NAME];   /* [sng] Operation type (e.g. nco_op_avg translates to "mean" )*/
+
   rcd=0*(nbr_dim+(int)strlen(fnc_nm)+out_id+sizeof(var)+nbr_var+sizeof(dim)+nco_op_typ);
 
   /*
@@ -311,11 +320,21 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
         /*  Match name */
         if(strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm) == 0){ 
 
-          char *att_val=NULL;         /* [sng] The final value of the attribute (e.g. "time: mean" )*/
-          char att_op[NC_MAX_NAME];   /* [sng] Operation type (e.g. nco_op_avg translates to "mean" )*/
-          aed.val.cp=NULL;
+          /* Inquire if "cell_methods" attribute exists */
+          rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
 
-          att_op[0]='\0'; 
+          /* Set "exists" flag */
+          if (rcd == NC_NOERR) att_xst=True; else att_xst=False;
+
+          /* Set attribute mode (create or append). If it exists, append, else create */
+          if (att_xst == True) aed.mode=aed_append; else aed.mode=aed_create;
+
+          /* Initialize values */
+          aed.val.cp=NULL;
+          att_op[0]='\0';
+          att_val=NULL;
+          aed.sz=-1L;
+          aed.id=-1;
 
           switch (nco_op_typ)
           {
@@ -347,10 +366,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           } /* End switch */
 
           /* Build attribute and write */
-          aed.val.vp=NULL;
-          aed.mode=aed_create;
-          aed.sz=-1L;
-          aed.id=-1;
+          
+          
 
           /* Concatenate attribute parts (e.g "time: mean" */
           aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen(att_op)+1L;
@@ -377,6 +394,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   aed.att_nm=(char *)nco_free(aed.att_nm);
 
-  return rcd;
+  return 0;
 
 } /* end nco_cnv_cf_cll_mth_add() */
