@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1233 2014-02-05 23:27:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1234 2014-02-06 08:06:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -8990,3 +8990,37 @@ nco_dmn_malloc                        /* [fnc] Inquire about number of dimension
 
   return dmn_ids;
 }
+
+void
+nco_prn_var                           /* [fnc] Print variable (debug only) */
+(const int nc_id,                     /* I [ID] netCDF file ID (Input or output file) */
+ trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
+{
+  const char fnc_nm[]="nco_prn_var()"; /* [sng] Function name  */
+
+  int grp_id;
+  int var_id;
+  int var_typ;
+  int nbr_dmn;
+
+  /* Loop table */
+  for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+
+    trv_sct var_trv=trv_tbl->lst[idx_tbl];
+
+    /* Is variable */
+    if(var_trv.nco_typ == nco_obj_typ_var){
+
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);   
+      (void)nco_inq_var(grp_id,var_id,(char *)NULL,&var_typ,&nbr_dmn,(int *)NULL,(int *)NULL);
+
+      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+        (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Type: %d\n",nco_prg_nm_get(),fnc_nm,
+          var_trv.nm_fll,var_typ); 
+      }
+
+    } /* Is variable */
+  } /* Loop table */
+} /* nco_prn_var() */
+

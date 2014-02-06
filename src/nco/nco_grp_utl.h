@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.454 2014-02-05 23:27:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.455 2014-02-06 08:06:58 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -767,6 +767,12 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
  const int idx_tbl,                   /* I [nbr] Table index */
  const int idx_dmn,                   /* I [nbr] Dimension index */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] GTT (Group Traversal Table) */
+
+void
+nco_prn_var                           /* [fnc] Print variable (debug only) */
+(const int nc_id,                     /* I [ID] netCDF file ID (Input or output file) */
+ trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
