@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1234 2014-02-06 08:06:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1235 2014-02-06 23:48:09 zender Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -6673,11 +6673,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   lmt_sct **lmt=NULL_CEWI;  /* [sct] User defined limits */
 
-  int rcd; /* [rcd] Return code */
-
-  /* Initialize return code to NC_NOERR (0) */
-  rcd=NC_NOERR;
-
   /* Construct traversal table objects (groups, variables) */
   (void)nco_grp_itr(nc_id,(char *)NULL,grp_pth,trv_tbl);
 
@@ -6746,7 +6741,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
    /* Check valid input (limits) */
   if(lmt_nbr) (void)nco_chk_dmn_in(lmt_nbr,lmt,flg_dne,trv_tbl);
 
-
   /* Free limits */
   if(lmt_nbr){
     for(int idx=0;idx<lmt_nbr;idx++) lmt[idx]=nco_lmt_free(lmt[idx]);
@@ -6759,8 +6753,6 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
 } /* nco_bld_trv_tbl() */
 
-
-
 void
 nco_chk_dmn                           /* [fnc] Check valid dimension names */
 (const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
@@ -6769,14 +6761,13 @@ nco_chk_dmn                           /* [fnc] Check valid dimension names */
   /* Check if all input -d dimensions were found */ 
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++){
     /* Check this flag */
-    if (flg_dne[lmt_idx].flg_dne == True){
+    if(flg_dne[lmt_idx].flg_dne){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",nco_prg_nm_get(),flg_dne[lmt_idx].dim_nm);
       flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
       nco_exit(EXIT_FAILURE);
     } /* Check this flag */
   } /* Check if all input -d dimensions were found */
 } /* nco_chk_dmn() */
-
 
 void
 nco_chk_dmn_in                        /* [fnc] Check input dimensions */
@@ -6787,7 +6778,7 @@ nco_chk_dmn_in                        /* [fnc] Check input dimensions */
 { 
   (*dne_lst)=(nco_dmn_dne_t *)nco_malloc(lmt_nbr*sizeof(nco_dmn_dne_t));
 
-  /* Let's be pessimistic and assume an invalid user input */
+  /* Be pessimistic and assume invalid user input */
   for(int lmt_idx=0;lmt_idx<lmt_nbr;lmt_idx++) (*dne_lst)[lmt_idx].flg_dne=True; 
 
   /* Loop input name list */
@@ -6796,14 +6787,9 @@ nco_chk_dmn_in                        /* [fnc] Check input dimensions */
 
     (*dne_lst)[lmt_idx].dim_nm=(char *) strdup(lmt[lmt_idx]->nm);
 
-    /* Dimension list */
-    for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-      /* Match input relative name to dimension relative name */ 
-      if(strcmp(lmt[lmt_idx]->nm,trv_tbl->lst_dmn[dmn_idx].nm) == 0){
-        /* Found */
-        (*dne_lst)[lmt_idx].flg_dne=False; 
-      } /* Match input relative name to dimension relative name */ 
-    } /* Dimension list */
+    /* Match input relative name to dimension relative name */ 
+    for(unsigned int dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++)
+      if(!strcmp(lmt[lmt_idx]->nm,trv_tbl->lst_dmn[dmn_idx].nm)) (*dne_lst)[lmt_idx].flg_dne=False; 
   } /* Loop input name list */
 } /* nco_chk_dmn_in() */
 
@@ -6839,8 +6825,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
   ncks -D 11 -d time,8,9 -d time,0,2  -v time -H ~/nco/data/in_grp.nc
   ncks -D 11 -d time,8,2 -v time -H ~/nco/data/in_grp.nc # wrapped limit
   */
-
-
 
   /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){

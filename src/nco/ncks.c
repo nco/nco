@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.704 2014-02-06 10:11:32 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.705 2014-02-06 23:48:09 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -53,6 +53,10 @@
    ncks -O -G level3name:-5 -v v7 ~/nco/data/in_grp.nc ~/foo.nc
    ncks -O -v time ~/in_grp.nc ~/foo.nc
    ncks -O --sysconf ~/in_grp.nc ~/foo.nc
+   ncks -C --xml_spr_chr=', ' -v two_dmn_rec_var_sng ~/nco/data/in.nc
+   ncks --cdl -v one_dmn_rec_var ~/nco/data/in.nc
+   ncks --jsn -C -v one_dmn_rec_var ~/nco/data/in.nc
+   ncks --jsn -C -m -v one_dmn_rec_var ~/nco/data/in_grp.nc
    ncks -O -m -M -v Snow_Cover_Monthly_CMG ${DATA}/hdf/MOD10CM.A2007001.005.2007108111758.hdf */
 
 #ifdef HAVE_CONFIG_H
@@ -161,8 +165,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.704 2014-02-06 10:11:32 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.704 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.705 2014-02-06 23:48:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.705 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -832,9 +836,9 @@ main(int argc,char **argv)
     prn_flg.jsn=PRN_JSN;
     prn_flg.srm=PRN_SRM;
     prn_flg.xml=PRN_XML;
-    prn_flg.trd=!(PRN_CDL || PRN_XML);
+    prn_flg.trd=!(PRN_CDL || PRN_XML || PRN_JSN);
     if((prn_flg.cdl || prn_flg.xml) && nco_dbg_lvl >= nco_dbg_std) prn_flg.nfo_xtr=True; else prn_flg.nfo_xtr=False;
-    prn_flg.new_fmt=(PRN_CDL || PRN_SRM || PRN_XML || PRN_NEW_FMT);
+    prn_flg.new_fmt=(PRN_CDL || PRN_JSN || PRN_SRM || PRN_XML || PRN_NEW_FMT);
     prn_flg.hdn=PRN_HDN;
     /* CDL must print filename stub */
     if(prn_flg.cdl || prn_flg.xml){

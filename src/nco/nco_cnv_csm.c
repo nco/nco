@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.73 2014-02-06 22:58:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.74 2014-02-06 23:48:09 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -350,12 +350,21 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           case nco_op_ttl:               /* nco_op_ttl,  Linear sum */
             strcpy(att_op,"sum"); 
             break;
-
           case nco_op_sqravg:            /* nco_op_sqravg,  Square of mean */          
+            strcpy(att_op,"sqravg"); 
+            break;
           case nco_op_avgsqr:            /* nco_op_avgsqr, Mean of sum of squares */      
+            strcpy(att_op,"avgsqr"); 
+            break;
           case nco_op_sqrt:              /* nco_op_sqrt,  Square root of mean  */      
+            strcpy(att_op,"sqrt"); 
+            break;
           case nco_op_rms:               /* nco_op_rms,  Root-mean-square (normalized by N) */     
+            strcpy(att_op,"rms"); 
+            break;
           case nco_op_rmssdn:            /* nco_op_rmssdn, Root-mean square normalized by N-1 */
+            strcpy(att_op,"rmssdn"); 
+            break;
           case nco_op_nil:               /* nco_op_nil  Nil or undefined operation type */    
 
             if(nco_dbg_lvl_get() >= nco_dbg_var) 

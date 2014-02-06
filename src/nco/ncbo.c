@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.283 2014-02-05 23:27:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.284 2014-02-06 23:48:09 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.283 2014-02-05 23:27:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.283 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.284 2014-02-06 23:48:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.284 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -539,7 +539,7 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id_1,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne1,trv_tbl_1);
   (void)nco_bld_trv_tbl(in_id_2,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,var_lst_in_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,&flg_dne2,trv_tbl_2);
 
-  /* ncbo is a special case regarding checking of valid -d names, since 2 tables are built; merge the 2 "dne" lists and check for this list */
+  /* Merge DNE lists before checking */
   flg_dne=(nco_dmn_dne_t *)nco_malloc(2*lmt_nbr*sizeof(nco_dmn_dne_t));
 
   /* Merge "dne" lists */
