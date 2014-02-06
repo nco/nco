@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.210 2014-02-06 00:48:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.211 2014-02-06 17:29:20 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -2044,12 +2044,21 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   int var_idx;                     /* [idx] Variable index */
   int var_nbr_xtr;                 /* [nbr] Number of extracted variables */
 
+  const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output requested */
+  const nco_bool XML=prn_flg->xml; /* [flg] XML output requested */
+  const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output requested */
+  const nco_bool SRM=prn_flg->srm; /* [flg] Stream output requested */
+  const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output requested */
+  const nco_bool CDL_OR_XML=prn_flg->cdl|| prn_flg->xml; /* [flg] CDL or XML output requested */
+  const nco_bool CDL_OR_TRD=prn_flg->cdl|| prn_flg->trd; /* [flg] CDL or Traditional output requested */
+
   nm_id_sct *dmn_lst; /* [sct] Dimension list */
   nm_id_sct *var_lst; /* [sct] Variable list */
 
   unsigned int dmn_idx; /* [idx] Index over dimensions */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in group */
   unsigned int obj_idx; /* [idx] Index over traversal table */
+  unsigned int obj_idx_crr; /* [idx] Object index for this group */
 
   /* Initialize */
   dmn_nbr=0; /* [nbr] Number of dimensions defined in group */
@@ -2065,6 +2074,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   (void)nco_inq_grp_full_ncid(nc_id,grp_nm_fll,&grp_id);
 
   /* Obtain group information */
+  obj_idx_crr=obj_idx;
   grp_dpt=trv_tbl->lst[obj_idx].grp_dpt;
   nbr_att=trv_tbl->lst[obj_idx].nbr_att;
   nbr_var=trv_tbl->lst[obj_idx].nbr_var;
@@ -2095,39 +2105,39 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Sort dimensions alphabetically */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
 
-  if(prn_flg->jsn){
-    (void)fprintf(stdout,"{\"attributes\": [], \"leaves\": [], \"nodes\": [{\"name\": \"HDFEOS\"}, {\"name\": \"HDFEOS INFORMATION\"}], \"w10n\": [{\"name\": \"spec\", \"value\": \"draft-20091228\"}, {\"name\": \"application\", \"value\": \"%s\"}, {\"name\": \"type\", \"value\": \"%s\"}, {\"name\": \"path\", \"value\": \"%s\"}, {\"name\": \"identifier\", \"value\": \"/\"}], \"name\": \"\"}\n",nco_prg_nm_get(),jsn_fmt_xtn_nm(nco_fmt_xtn_get()),prn_flg->fl_in);
+  if(JSN){
+    (void)fprintf(stdout,"{\"attributes\": [], \"leaves\": [], \"w10n\": [{\"name\": \"spec\", \"value\": \"draft-20091228\"}, {\"name\": \"application\", \"value\": \"%s\"}, {\"name\": \"type\", \"value\": \"%s\"}, {\"name\": \"path\", \"value\": \"%s\"}, {\"name\": \"identifier\", \"value\": \"/\"}], \"name\": \"\"}\n",nco_prg_nm_get(),jsn_fmt_xtn_nm(nco_fmt_xtn_get()),prn_flg->fl_in);
   } /* !jsn */
+  if(JSN) (void)fprintf(stdout,"{");
 
-  if(prn_flg->xml){
+  if(XML){
     if(grp_dpt == 0){
       if(prn_flg->xml_lcn) (void)fprintf(stdout,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"%s\">\n",prn_flg->fl_in); else (void)fprintf(stdout,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
       if(prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s<!-- %s -->\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
     }else{ /* grp_dpt != 0 */
       (void)fprintf(stdout,"%*s<group name=\"%s\">\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
     } /* grp_dpt != 0 */
-  }else if(prn_flg->srm){ /* !xml */
+  }else if(SRM){ /* !xml */
     /* https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/stream/NcStream.html */
-    
-  }else{ /* !xml */
+  }else if(CDL_OR_TRD){ /* !xml */
     nm_cdl=nm2sng_cdl(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
-    if(grp_dpt == 0 && prn_flg->cdl) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_cdl);
+    if(grp_dpt == 0 && CDL) (void)fprintf(stdout,"netcdf %s {",prn_flg->fl_stb); else (void)fprintf(stdout,"%*sgroup: %s {",grp_dpt*prn_flg->spc_per_lvl,spc_sng,nm_cdl);
     nm_cdl=(char *)nco_free(nm_cdl);
     if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(stdout,"\n");
     if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
     if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// ncgen -k netCDF-4 -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->fl_stb,prn_flg->fl_stb);
-  } /* !xml */
+  } /* !XML */
 
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
-  if(dmn_nbr > 0 && !prn_flg->xml) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
-  if(prn_flg->cdl) prn_ndn+=prn_flg->var_fst;
+  if(dmn_nbr > 0 && !XML) (void)fprintf(stdout,"%*sdimensions:\n",prn_flg->ndn,spc_sng);
+  if(CDL) prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-    if(prn_flg->xml){
+    if(XML){
       (void)fprintf(stdout,"%*s<dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");
-    }else{ /* !XML */
+    }else if(CDL_OR_TRD){ /* !XML */
       nm_cdl=nm2sng_cdl(dmn_lst[dmn_idx].nm);
-      if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,nm_cdl,(prn_flg->cdl) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %lu%s\n",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(prn_flg->cdl) ? " ;" : "");
+      if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(stdout,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,nm_cdl,(CDL) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(stdout,"%*s%s = %lu%s\n",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(CDL) ? " ;" : "");
       nm_cdl=(char *)nco_free(nm_cdl);
     } /* !XML */
   } /* end loop over dimension */
@@ -2183,15 +2193,15 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg->ALPHA_BY_STUB_GROUP);
 
   /* Print variable information for group */
-  if(var_nbr_xtr > 0 && !prn_flg->xml) (void)fprintf(stdout,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
+  if(var_nbr_xtr > 0 && !XML) (void)fprintf(stdout,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
   for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
     trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
 
     /* Print variable full name */
-    if(var_trv.grp_dpt > 0 && prn_flg->fll_pth && prn_flg->trd) (void)fprintf(stdout,"%*s%s\n",prn_flg->ndn,spc_sng,var_trv.nm_fll);
+    if(var_trv.grp_dpt > 0 && prn_flg->fll_pth && TRD) (void)fprintf(stdout,"%*s%s\n",prn_flg->ndn,spc_sng,var_trv.nm_fll);
 
     /* Print variable metadata */ 
-    if(prn_flg->PRN_VAR_METADATA || prn_flg->cdl || prn_flg->xml) (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
+    if(prn_flg->PRN_VAR_METADATA || CDL_OR_XML) (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
 
     /* Obtain variable ID using group ID */
     (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
@@ -2199,18 +2209,18 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     /* Print variable attributes */
     if(prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
 
-    if(prn_flg->xml && prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
-    if(prn_flg->xml && (prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA)) (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
+    if(XML && prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
+    if(XML && (prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA)) (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
 
-    if(var_idx != var_nbr_xtr-1 && !prn_flg->xml) (void)fprintf(stdout,"\n");
+    if(var_idx != var_nbr_xtr-1 && !XML) (void)fprintf(stdout,"\n");
   } /* end loop over var_idx */
 
   /* Print attribute information for group */
-  if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA && !prn_flg->xml) (void)fprintf(stdout,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(prn_flg->cdl) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
+  if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA && !XML) (void)fprintf(stdout,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(CDL) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
   if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA) nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
 
   /* Print data for group */
-  if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA && !prn_flg->xml){
+  if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA && !XML){
     (void)fprintf(stdout,"\n%*sdata:\n",prn_flg->ndn,spc_sng);
     for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
   } /* end if */
@@ -2222,6 +2232,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
   rcd+=nco_inq_grps(grp_id,(int *)NULL,grp_ids);
 
+  if(JSN) (void)fprintf(stdout,"\"nodes\": [");
+
   /* Call recursively for all extracted subgroups */
   for(grp_idx=0;grp_idx<nbr_grp;grp_idx++){
     char *sub_grp_nm_fll=NULL; /* [sng] Sub group path */
@@ -2229,6 +2241,8 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
     /* Get sub-group name */
     rcd+=nco_inq_grpname(gid,grp_nm);
+
+    if(JSN) (void)fprintf(stdout,"{\"name\": \"%s\"}%s",grp_nm,(grp_idx == nbr_grp-1) ? "" : ", ");
 
     /* Allocate path buffer including space for trailing NUL */ 
     sub_grp_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(grp_nm)+2L);
@@ -2249,15 +2263,17 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is sub-group to be extracted? If so, recurse */
-    if(trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
+    if(!JSN && trv_tbl->lst[obj_idx].flg_xtr) rcd+=nco_grp_prn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
   } /* end loop over grp_idx */
+  if(JSN) (void)fprintf(stdout,"]");
+  if(JSN) (void)fprintf(stdout,", \"name\": \"%s\"}",(grp_dpt == 0) ? "" : trv_tbl->lst[obj_idx_crr].nm);
 
-  if(prn_flg->xml && grp_dpt == 0) (void)fprintf(stdout,"</netcdf>\n"); 
-  if(prn_flg->xml && grp_dpt != 0) (void)fprintf(stdout,"%*s</group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
-  if(prn_flg->cdl || prn_flg->trd) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nm2sng_cdl(nco_gpe_evl(prn_flg->gpe,grp_nm_fll)));
+  if(XML && grp_dpt == 0) (void)fprintf(stdout,"</netcdf>\n"); 
+  if(XML && grp_dpt != 0) (void)fprintf(stdout,"%*s</group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
+  if(CDL_OR_TRD) (void)fprintf(stdout,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nm2sng_cdl(nco_gpe_evl(prn_flg->gpe,grp_nm_fll)));
 
   return rcd;
 } /* end nco_grp_prn() */

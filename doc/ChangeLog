@@ -1,3 +1,13 @@
+2014-02-06  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.4.2 release procedure:
+ 	Changes since nco-4_4_1: bugfixes for ncra.c memory, LLVM/clang builds, -X
+	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
+	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
+	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
+
+	* Start node printing for JSON
+
 2014-02-05  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add ncks regression #89 -X and associated coordinates
@@ -5,12 +15,6 @@
 2014-02-05  Charlie Zender  <zender@uci.edu>
 
 	* Add W10N/JSON stubs
-
-	* NCO 4.4.2 release procedure:
- 	Changes since nco-4_4_1: bugfixes for ncra.c memory, LLVM/clang builds, -X
-	cd ~/nco;cvs tag -d nco-4_4_2;cvs tag -d nco-4_4_2-1
-	cd ~/nco;cvs commit -m "Preparing nco-4.4.2 release"
-	cvs tag -c nco-4_4_2;cvs tag -c nco-4_4_2-1
 
 	* Improve documentation build rules in ./configure
 
