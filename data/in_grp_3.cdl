@@ -657,7 +657,30 @@ group: g29 { //test standard_name = "longitude"
 	lat29=1,2;
 	lon29=1,2;
 	var3d=1,2,3,4;
-} // end g28
+} // end g29
+
+group: g30 { //test cell_methods attribute
+ group: g30g1 { 
+	dimensions:
+	time301=unlimited;
+	variables:
+	int time301(time301);
+	time301:long_name = "time";
+	data:
+	time301=1;
+   }// end g30g1
+  group: g30g2 { 
+	dimensions:
+	time302=unlimited;
+	variables:
+	int time302(time302);
+	time302:long_name = "time";
+	time302:cell_methods = "time: mean";
+	data:
+	time302=1;
+   }// end g30g2
+
+} // end g30
 	
 	
 	
