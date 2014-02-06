@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.184 2014-02-05 23:27:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.185 2014-02-06 21:07:52 pvicente Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -98,10 +98,6 @@
    Verify results:
    ncks -C -h ~/foo.nc | m */
 
-#if 1
-#define USE_TRV_API
-#endif
-
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
@@ -162,8 +158,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.184 2014-02-05 23:27:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.184 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.185 2014-02-06 21:07:52 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.185 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:Rr-:";
 
 #if defined(__cplusplus) || defined(PGI_CC)

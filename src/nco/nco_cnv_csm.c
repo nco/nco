@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.69 2014-02-01 01:49:19 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.70 2014-02-06 21:07:52 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -248,6 +248,35 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   rcd=0*(nbr_dim+(int)strlen(fnc_nm)+out_id+sizeof(var)+nbr_var+sizeof(dim)+nco_op_typ);
 
+  /*
+  cell_methods attribute values and description
+
+  point	: The data values are representative of points in space or time (instantaneous). 
+  sum	  : The data values are representative of a sum or accumulation over the cell. 
+  maximum	: Maximum
+  median	: Median
+  mid_range	: Average of maximum and minimum
+  minimum	: Minimum
+  mean	: Mean (average value)
+  mode	: Mode (most common value)
+  range	: Absolute difference between maximum and minimum
+  standard_deviation : Standard deviation
+  variance	: Variance
+
+  ncwa operation types
+
+  avg Mean value
+  sqravg Square of the mean
+  avgsqr Mean of sum of squares
+  max Maximium value
+  min Minimium value
+  rms Root-mean-square (normalized by N)
+  rmssdn Root-mean square (normalized by N-1)
+  sqrt Square root of the mean
+  ttl Sum of values
+
+  */
+
   /* Process all variables */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){ 
     char *grp_out_fll=NULL; /* [sng] Group name */
@@ -311,6 +340,39 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
             aed.att_nm=(char *)nco_free(aed.att_nm);
             break;
+
+          case nco_op_max:
+
+            /* Initialize common members */
+            aed.att_nm=strdup("cell_methods");
+            aed.var_nm=NULL;
+            aed.val.vp=NULL;
+            aed.type=NC_CHAR;
+            aed.mode=aed_create;
+            aed.sz=-1L;
+            aed.id=-1;
+
+            /* Concatenate attribute parts (e.g "time: mean" */
+            aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen("maximum")+1L;
+            att_val=(char *)nco_malloc(aed.sz);
+            strcpy(att_val,dim[idx_dmn]->nm);
+            strcat(att_val,": ");
+            strcat(att_val,"maximum");
+            /* Type is NC_CHAR */
+            aed.val.cp=(char *)strdup(att_val);
+            att_val=(char *)nco_free(att_val);
+
+            /* Edit attribute */
+            (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+
+            /* Delete currente value */
+            if (aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
+            aed.sz=-1L;
+
+            aed.att_nm=(char *)nco_free(aed.att_nm);
+            break;
+
+
           } /* End switch */
         } /*  Match name */
       } /* Loop dimensions */
