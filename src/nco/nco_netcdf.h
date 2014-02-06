@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.111 2014-01-17 23:15:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.112 2014-02-06 00:48:18 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -163,6 +163,10 @@ const char * /* O [sng] Native XML type */
 xml_typ_nm /* [fnc] Return string describing native XML type */
 (const nc_type type); /* I [enm] netCDF type */
 
+const char * /* O [sng] String describing extended file format */
+nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
+(const int fl_fmt_xtn); /* I [enm] netCDF extended file format */
+
 const char * /* O [sng] Native Fortran77 type */
 f77_typ_nm /* [fnc] Return string describing native Fortran77 type */
 (const nc_type type); /* I [enm] netCDF type */
@@ -206,10 +210,6 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
 const char * /* O [sng] String describing file format for hidden attributes */
 nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden attributes */
 (const int fl_fmt); /* I [enm] netCDF file format */
-
-const char * /* O [sng] String describing extended file format */
-nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
-(const int fl_fmt_xtn); /* I [enm] netCDF extended file format */
 
 const char * /* O [sng] String describing endianness for hidden attributes */
 nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attributes */

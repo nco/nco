@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.480 2014-02-05 23:32:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.481 2014-02-06 00:48:18 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -1086,8 +1086,6 @@ extern "C" {
     int id; /* [id] Dimension ID */ 
   } dmn_cmn_sct; 
 
- 
-  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* !__cplusplus */

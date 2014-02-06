@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.51 2013-12-31 05:14:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.52 2014-02-06 00:48:18 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -111,6 +111,14 @@ nco_xml_typ_rqr_flv_att /* [fnc] Does type require hidden _FillValue attribute f
 nco_bool /* O [flg] Type requires hidden attribute string */
 nco_xml_typ_rqr_nsg_att /* [fnc] Does type require hidden _Unsigned attribute for XML representation? */
 (const nc_type nco_typ); /* I [enm] netCDF type */
+
+void
+nco_dfl_case_fmt_xtn_err /* [fnc] Print error and exit for illegal switch(nco_fmt_xtn) case */
+(void);
+
+const char * /* O [sng] JSON file type */
+jsn_fmt_xtn_nm /* [fnc] Return string describing JSON filetype */
+(const int fl_fmt_xtn); /* I [enm] Extended filetype */
 
 #ifdef __cplusplus
 } /* end extern "C" */

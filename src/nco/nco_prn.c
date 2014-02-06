@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.209 2014-02-04 18:50:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.210 2014-02-06 00:48:18 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -2095,6 +2095,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   /* Sort dimensions alphabetically */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
 
+  if(prn_flg->jsn){
+    (void)fprintf(stdout,"{\"attributes\": [], \"leaves\": [], \"nodes\": [{\"name\": \"HDFEOS\"}, {\"name\": \"HDFEOS INFORMATION\"}], \"w10n\": [{\"name\": \"spec\", \"value\": \"draft-20091228\"}, {\"name\": \"application\", \"value\": \"%s\"}, {\"name\": \"type\", \"value\": \"%s\"}, {\"name\": \"path\", \"value\": \"%s\"}, {\"name\": \"identifier\", \"value\": \"/\"}], \"name\": \"\"}\n",nco_prg_nm_get(),jsn_fmt_xtn_nm(nco_fmt_xtn_get()),prn_flg->fl_in);
+  } /* !jsn */
+
   if(prn_flg->xml){
     if(grp_dpt == 0){
       if(prn_flg->xml_lcn) (void)fprintf(stdout,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"%s\">\n",prn_flg->fl_in); else (void)fprintf(stdout,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
@@ -2336,3 +2340,44 @@ nco_xml_typ_rqr_flv_att /* [fnc] Does type require hidden _FillValue attribute f
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return False;
 } /* end nco_xml_typ_rqr_flv_att() */
+
+void
+nco_dfl_case_fmt_xtn_err(void) /* [fnc] Print error and exit for illegal switch(nco_fmt_xtn) case */
+{
+  /* Purpose: Convenience routine for printing error and exiting when
+     switch(nco_fmt_xtn) statement receives an illegal default case
+
+     Placing this in its own routine also has the virtue of saving many lines
+     of code since this function is used in many many switch() statements. */
+  const char fnc_nm[]="nco_dfl_case_fmt_xtn_err()";
+  (void)fprintf(stdout,"%s: ERROR switch(nco_fmt_xtn) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(nco_fmt_xtn) statements are fully enumerated. Exiting...\n",fnc_nm);
+  nco_err_exit(0,fnc_nm);
+} /* end nco_dfl_case_fmt_xtn_err() */
+
+const char * /* O [sng] JSON file type */
+jsn_fmt_xtn_nm /* [fnc] Return string describing JSON filetype */
+(const int fl_fmt_xtn) /* I [enm] Extended filetype */
+{
+  /* Purpose: Divine JSON filetype string from netCDF exteded filetype enum */
+  switch(fl_fmt_xtn){
+  case nco_fmt_xtn_nil: /* 0 NC_FORMAT_UNDEFINED Undefined (more precisely, not yet defined) */
+    return "nil";
+  case nco_fmt_xtn_nc3: /* 1 NC_FORMAT_NC3 netCDF3 */
+    return "nc3";
+  case nco_fmt_xtn_hdf5: /* 2 NC_FORMAT_NC_HDF5 HDF5 */
+    return "hdf5";
+  case nco_fmt_xtn_hdf4: /* 3 NC_FORMAT_NC_HDF4 HDF4 */
+    return "hdf4";
+  case nco_fmt_xtn_pnetcdf: /* 4 NC_FORMAT_PNETCDF PnetCDF */
+    return "pnetcdf";
+  case nco_fmt_xtn_dap2: /* 5 NC_FORMAT_DAP2 DAP2 */
+    return "dap2";
+  case nco_fmt_xtn_dap4: /* 6 NC_FORMAT_DAP4 DAP4 */
+    return "dap4";
+  default: nco_dfl_case_fmt_xtn_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end jsn_fmt_xtn_nm() */
+

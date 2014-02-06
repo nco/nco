@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.702 2014-02-05 23:32:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.703 2014-02-06 00:48:18 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -161,8 +161,8 @@ main(int argc,char **argv)
 
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.702 2014-02-05 23:32:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.702 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.703 2014-02-06 00:48:18 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.703 $";
   const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:uv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -842,8 +842,8 @@ main(int argc,char **argv)
       if(sfx_ptr) *sfx_ptr='\0';
       prn_flg.fl_stb=fl_nm_stub;
     } /* endif CDL */
-    /* XML needs filename (unless location will be omitted) */
-    if(prn_flg.xml) prn_flg.fl_in=fl_in;
+    /* XML and JSON need filename (unless location will be omitted) */
+    if(prn_flg.xml || prn_flg.jsn) prn_flg.fl_in=fl_in;
     prn_flg.spr_nmr=spr_nmr;
     prn_flg.spr_chr=spr_chr;
     prn_flg.xml_lcn=PRN_XML_LOCATION;
