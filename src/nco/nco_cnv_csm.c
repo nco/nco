@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.70 2014-02-06 21:07:52 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.71 2014-02-06 22:19:34 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -277,6 +277,11 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   */
 
+  /* Initialize common members */
+  aed.att_nm=strdup("cell_methods");
+  aed.var_nm=NULL;
+  aed.type=NC_CHAR;
+
   /* Process all variables */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){ 
     char *grp_out_fll=NULL; /* [sng] Group name */
@@ -306,80 +311,70 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
         /*  Match name */
         if(strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm) == 0){ 
 
-          char *att_val=NULL;
+          char *att_val=NULL;         /* [sng] The final value of the attribute (e.g. "time: mean" )*/
+          char att_op[NC_MAX_NAME];   /* [sng] Operation type (e.g. nco_op_avg translates to "mean" )*/
           aed.val.cp=NULL;
+
+          att_op[0]='\0'; 
+
           switch (nco_op_typ)
           {
-          case nco_op_avg:
-
-            /* Initialize common members */
-            aed.att_nm=strdup("cell_methods");
-            aed.var_nm=NULL;
-            aed.val.vp=NULL;
-            aed.type=NC_CHAR;
-            aed.mode=aed_create;
-            aed.sz=-1L;
-            aed.id=-1;
-
-            /* Concatenate attribute parts (e.g "time: mean" */
-            aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen("mean")+1L;
-            att_val=(char *)nco_malloc(aed.sz);
-            strcpy(att_val,dim[idx_dmn]->nm);
-            strcat(att_val,": ");
-            strcat(att_val,"mean");
-            /* Type is NC_CHAR */
-            aed.val.cp=(char *)strdup(att_val);
-            att_val=(char *)nco_free(att_val);
-
-            /* Edit attribute */
-            (void)nco_aed_prc(grp_out_id,var_out_id,aed);
-
-            /* Delete currente value */
-            if (aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
-            aed.sz=-1L;
-
-            aed.att_nm=(char *)nco_free(aed.att_nm);
+          case nco_op_avg:               /* nco_op_avg,  Average */
+            strcpy(att_op,"mean");  
+            break;
+          case nco_op_min:               /* nco_op_min,  Minimum value */
+            strcpy(att_op,"minimum"); 
+            break;
+          case nco_op_max:               /* nco_op_max, Maximum value */
+            strcpy(att_op,"maximum"); 
+            break;
+          case nco_op_ttl:               /* nco_op_ttl,  Linear sum */
+            strcpy(att_op,"sum"); 
             break;
 
-          case nco_op_max:
+          case nco_op_sqravg:            /* nco_op_sqravg,  Square of mean */          
+          case nco_op_avgsqr:            /* nco_op_avgsqr, Mean of sum of squares */      
+          case nco_op_sqrt:              /* nco_op_sqrt,  Square root of mean  */      
+          case nco_op_rms:               /* nco_op_rms,  Root-mean-square (normalized by N) */     
+          case nco_op_rmssdn:            /* nco_op_rmssdn, Root-mean square normalized by N-1 */
+          case nco_op_nil:               /* nco_op_nil  Nil or undefined operation type */    
 
-            /* Initialize common members */
-            aed.att_nm=strdup("cell_methods");
-            aed.var_nm=NULL;
-            aed.val.vp=NULL;
-            aed.type=NC_CHAR;
-            aed.mode=aed_create;
-            aed.sz=-1L;
-            aed.id=-1;
+            if(nco_dbg_lvl_get() >= nco_dbg_var) 
+              (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Cell method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,
+              var_trv->nm_fll,nco_op_typ);
 
-            /* Concatenate attribute parts (e.g "time: mean" */
-            aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen("maximum")+1L;
-            att_val=(char *)nco_malloc(aed.sz);
-            strcpy(att_val,dim[idx_dmn]->nm);
-            strcat(att_val,": ");
-            strcat(att_val,"maximum");
-            /* Type is NC_CHAR */
-            aed.val.cp=(char *)strdup(att_val);
-            att_val=(char *)nco_free(att_val);
-
-            /* Edit attribute */
-            (void)nco_aed_prc(grp_out_id,var_out_id,aed);
-
-            /* Delete currente value */
-            if (aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
-            aed.sz=-1L;
-
-            aed.att_nm=(char *)nco_free(aed.att_nm);
-            break;
-
-
+            continue;
           } /* End switch */
+
+          /* Build attribute and write */
+          aed.val.vp=NULL;
+          aed.mode=aed_create;
+          aed.sz=-1L;
+          aed.id=-1;
+
+          /* Concatenate attribute parts (e.g "time: mean" */
+          aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen(att_op)+1L;
+          att_val=(char *)nco_malloc(aed.sz);
+          strcpy(att_val,dim[idx_dmn]->nm);
+          strcat(att_val,": ");
+          strcat(att_val,att_op);
+          /* Type is NC_CHAR */
+          aed.val.cp=(char *)strdup(att_val);
+          att_val=(char *)nco_free(att_val);
+
+          /* Edit attribute */
+          (void)nco_aed_prc(grp_out_id,var_out_id,aed);
+
+          /* Delete currente value */
+          if (aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
+          aed.sz=-1L;
+
+          aed.att_nm=(char *)nco_free(aed.att_nm);
+
         } /*  Match name */
       } /* Loop dimensions */
     } /* Loop variable dimensions */
   } /* Process all variables */
-
-
 
   return rcd;
 
