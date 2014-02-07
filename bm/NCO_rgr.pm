@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.436 2014-02-07 05:36:15 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.437 2014-02-07 20:16:28 zender Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4178,10 +4178,12 @@ print "\n";
 
 #ncwa #3
     
+# 20140207: Behavior changed to comply with documentation that coordinate variables always return averages, never extrema or other statistics
+# Hence request for min(lat) should actually return avg(lat) = 0 != -90
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y min -v lat $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H -s '%g' -v lat %tmp_fl_00%";
-    $dsc_sng="minimize coordinate variable";
-    $tst_cmd[2]="-90";
+    $dsc_sng="return average coordinate coordinate variable during minimization for non-coordinate variables";
+    $tst_cmd[2]="0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -4843,7 +4845,7 @@ print "\n";
     $dsc_sng="Cell methods (Create, maximum) -y max -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y max -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";
-    $tst_cmd[2]="time301 attribute 1: cell_methods, size = 17 NC_CHAR, value = time301: maximum";
+    $tst_cmd[2]="time301 attribute 1: cell_methods, size = 14 NC_CHAR, value = time301: mean";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
@@ -4858,7 +4860,7 @@ print "\n";
     $dsc_sng="Cell methods (Append) -y max -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y max -a time302 -v time302 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";
-    $tst_cmd[2]="time302 attribute 1: cell_methods, size = 31 NC_CHAR, value = time302: mean time302: maximum";
+    $tst_cmd[2]="time302 attribute 1: cell_methods, size = 28 NC_CHAR, value = time302: mean time302: mean";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array			

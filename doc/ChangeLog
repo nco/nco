@@ -1,3 +1,11 @@
+2014-02-07  Charlie Zender  <zender@uci.edu>
+
+	* Change cell_methods to agree with actual method used for coordinates
+
+	* Change ncwa behavior to comply with longstanding intent & documentation that coordinate
+	variables always return averages, never extrema or other statistics.
+	ncra and nces have long-implemented this convention.
+
 2014-02-06  Pedro Vicente  <pvicente@uci.edu>
 
 	* Add test data for cell_methods CF attribute convention

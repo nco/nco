@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.77 2014-02-07 17:44:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.78 2014-02-07 20:16:28 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -58,6 +58,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   int dmn_fix_nbr;
   int dmn_var_nbr;
   int dmn_rdd_nbr; /* flg_rdd ? dmn_var_nbr : dmn_fix_nbr */
+  int nco_op_typ_lcl; /* [enm] Operation type, default is average */
 
   long avg_sz=int_CEWI;
   long fix_sz;
@@ -321,7 +322,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
        Averaging routines can take advantage of this by casting avg_val to 
        two dimensional variable and averaging over inner dimension. 
        nco_var_avg_rdc_*() sets tally array */
-    switch(nco_op_typ){
+    if(var->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
+    switch(nco_op_typ_lcl){
     case nco_op_max:
       (void)nco_var_avg_rdc_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;

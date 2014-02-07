@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.213 2014-02-07 18:08:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.214 2014-02-07 20:16:28 zender Exp $ */
 
 /* Purpose: Print variables, attributes, metadata */
 
@@ -1381,6 +1381,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output requested */
   const nco_bool CDL_OR_XML=prn_flg->cdl || prn_flg->xml; /* [flg] CDL or XML output requested */
   const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output requested */
+  const nco_bool CDL_OR_XML_OR_JSN=prn_flg->cdl || prn_flg->xml || prn_flg->jsn; /* [flg] CDL or XML or JSON output requested */
 
   nco_bool is_mss_val=False;                 /* [flg] Current value is missing value */
   nco_bool MALLOC_UNITS_SNG=False;           /* [flg] Allocated memory for units string */
@@ -1500,7 +1501,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   } /* end if dlm_sng */
 
   spr_sng=cma_sng; /* [sng] Output separator string */
-  if(CDL || XML){
+  if(CDL_OR_XML_OR_JSN){
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
     int cpd_rec_dmn_idx[NC_MAX_DIMS]; /* [idx] Indices of non-leading record dimensions */
@@ -1665,7 +1666,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(CDL) (void)fprintf(stdout," ;\n");
     if(XML) (void)fprintf(stdout,"</values>\n");
 
-  } /* end if CDL || XML */
+  } /* end if CDL_OR_XML_OR_JSN */
 
   if(prn_flg->PRN_DMN_UNITS){
     const char units_nm[]="units"; /* [sng] Name of units attribute */

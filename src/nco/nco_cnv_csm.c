@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.76 2014-02-07 17:44:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.77 2014-02-07 20:16:28 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -240,22 +240,21 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   const char fnc_nm[]="nco_cnv_cf_cll_mth_add()"; /* [sng] Function name */
 
+  aed_sct aed;       /* [sct] Structure containing information necessary to edit */
+
+  char *att_val;         /* [sng] The final value of the attribute (e.g. "time: mean" )*/
+  char att_op[NC_MAX_NAME];   /* [sng] Operation type (e.g. nco_op_avg translates to "mean" )*/
+
   int grp_out_id;    /* [ID] Group ID (output) */
   int var_out_id;    /* [ID] Variable ID (output) */
   int rcd=NC_NOERR;  /* [rcd] Return code */
-
-  aed_sct aed;       /* [sct] Structure containing information necessary to edit */
+  int nco_op_typ_lcl; /* [enm] Operation type, default is average */
 
   long att_sz;       /* [nbr] Attribute size */
 
   nc_type att_typ;   /* [nbr] Attribute type */
 
   nco_bool att_xst;  /* [nbr] Attribute "exists" */
-
-  char *att_val;         /* [sng] The final value of the attribute (e.g. "time: mean" )*/
-  char att_op[NC_MAX_NAME];   /* [sng] Operation type (e.g. nco_op_avg translates to "mean" )*/
-
-  rcd=0*(nbr_dim+(int)strlen(fnc_nm)+out_id+sizeof(var)+nbr_var+sizeof(dim)+nco_op_typ);
 
   /* cell_methods attribute values and description
      
@@ -313,8 +312,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
       /* Loop dimensions */
       for(int idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
 
-        /*  Match name */
-        if(strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm) == 0){ 
+        /* Match name */
+        if(!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm,dim[idx_dmn]->nm)){ 
 
           /* Inquire if "cell_methods" attribute exists */
           rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
@@ -332,7 +331,9 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           aed.sz=-1L;
           aed.id=-1;
 
-          switch(nco_op_typ){
+	  /* Preserve rule to always return averages (never extrema or other statistics) of coordinates */
+	  if(var[idx_var]->is_crd_var) nco_op_typ_lcl=nco_op_avg; else nco_op_typ_lcl=nco_op_typ;
+	  switch(nco_op_typ_lcl){
 	    /* Next four operations are defined in CF Conventions */
           case nco_op_avg:               /* nco_op_avg,  Average */
             strcpy(att_op,"mean");  

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.402 2014-02-07 17:44:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.403 2014-02-07 20:16:28 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.402 2014-02-07 17:44:47 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.402 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.403 2014-02-07 20:16:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.403 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -892,7 +892,9 @@ main(int argc,char **argv)
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
       /* 20050516: fxm: destruction of var_prc_out in nco_var_avg() leaves dangling pointers in var_out? */
       /* Reduce variable over specified dimensions (tally array is set here)
-	 NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
+	 NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling
+	 nco_var_avg() will perform nco_op_typ on all variables except coordinate variables
+	 nco_var_avg() always performs averaging on coordinate variables */
       var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,flg_rdd,&ddra_info);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	 Denominator is also tricky due to sundry normalization options
@@ -986,9 +988,9 @@ main(int argc,char **argv)
         /* Branch for normalization when no weights were specified
 	   Normalization is just due to tally */
         if(var_prc[idx]->is_crd_var){
-          /* Return linear averages of coordinates unless computing extrema
+          /* Always return averages (never extrema or other statistics) of coordinates
 	     Prevent coordinate variables from encountering nco_var_nrm_sdn() */
-          if((nco_op_typ != nco_op_min) && (nco_op_typ != nco_op_max)) (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+          (void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
         }else{ /* !var_prc[idx]->is_crd_var */
           switch(nco_op_typ){
           case nco_op_avg: /* Normalize sum by tally to create mean */
