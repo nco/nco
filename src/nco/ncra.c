@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.501 2014-02-05 23:27:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.502 2014-02-07 19:23:14 pvicente Exp $ */
 
 /* This single source file compiles into three separate executables:
    ncra -- netCDF record averager
@@ -137,8 +137,8 @@ main(int argc,char **argv)
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncra.c,v 1.501 2014-02-05 23:27:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.501 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.502 2014-02-07 19:23:14 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.502 $";
   const char * const opt_sht_lst="3467ACcD:d:FG:g:HhL:l:n:Oo:p:P:rRt:v:X:xY:y:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1313,7 +1313,7 @@ main(int argc,char **argv)
     if(md5) md5=(md5_sct *)nco_md5_free(md5);
 
     (void)trv_tbl_free(trv_tbl);
-    for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
+    for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
     if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
     if(flg_input_complete) flg_input_complete=(nco_bool *)nco_free(flg_input_complete);
     if(idx_rec_out) idx_rec_out=(long *)nco_free(idx_rec_out);
