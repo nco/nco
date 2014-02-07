@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.76 2014-02-04 22:40:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.77 2014-02-07 17:44:47 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -19,30 +19,30 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Reduce given variable over specified dimensions 
-  "Reduce" means to rank-reduce variable by performing arithmetic operation
-  Output variable is duplicate of input variable, except for averaging dimensions
-  Default operation is averaging, but nco_op_typ can also be min, max, etc.
-  nco_var_avg() overwrites contents, if any, of tally array with number of valid input elements contributing to each valid output element
+     "Reduce" means to rank-reduce variable by performing arithmetic operation
+     Output variable is duplicate of input variable, except for averaging dimensions
+     Default operation is averaging, but nco_op_typ can also be min, max, etc.
+     nco_var_avg() overwrites contents, if any, of tally array with number of valid input elements contributing to each valid output element
 
-  Input variable structure is destroyed and routine returns resized, partially reduced variable
-  For some operations, such as min, max, ttl, variable returned by nco_var_avg() is complete and need not be further processed
-  For averaging operation, output variable must be normalized by its tally array
-  In other words, nco_var_nrm() should be called subsequently if normalization is desired
-  Normalization is not done internally to nco_var_avg() to allow user more flexibility */ 
-
+     Input variable structure is destroyed and routine returns resized, partially reduced variable
+     For some operations, such as min, max, ttl, variable returned by nco_var_avg() is complete and need not be further processed
+     For averaging operation, output variable must be normalized by its tally array
+     In other words, nco_var_nrm() should be called subsequently if normalization is desired
+     Normalization is not done internally to nco_var_avg() to allow user more flexibility */ 
+  
   /* Routine keeps track of three variables whose abbreviations are:
-  avg: Array of averaging blocks, each a contiguous arrangement of all 
-  elements of var which contribute to a single element of fix.
-  fix: Output (averaged) variable
-  rdd: Output (averaged) variable which retains degenerate dimensions
-  var: Input variable (already hyperslabbed)
-
-  It is easier to implement averaging as if all averaged dimensions are eliminated
-  This presumption allows us to ignore degenerate dimension indices
-  Including degenerate dimensions in fix would also complicate MRV-detection code 
-  The core averaging algorithm treats input data as single 1-D array
-  To retain degenerate dimensions, fxm */
-
+     avg: Array of averaging blocks, each a contiguous arrangement of all 
+     elements of var which contribute to a single element of fix.
+     fix: Output (averaged) variable
+     rdd: Output (averaged) variable which retains degenerate dimensions
+     var: Input variable (already hyperslabbed)
+     
+     It is easier to implement averaging as if all averaged dimensions are eliminated
+     This presumption allows us to ignore degenerate dimension indices
+     Including degenerate dimensions in fix would also complicate MRV-detection code 
+     The core averaging algorithm treats input data as single 1-D array
+     To retain degenerate dimensions, fxm */
+  
   nco_bool AVG_DMN_ARE_MRV=False; /* [flg] Avergaging dimensions are MRV dimensions */
 
   dmn_sct **dmn_avg;
@@ -69,11 +69,11 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   fix=nco_var_dpl(var);
 
   /* Create lists of averaging and fixed dimensions (in order of their appearance 
-  in the variable). We do not know a priori how many dimensions remain in the 
-  output (averaged) variable, but dmn_var_nbr is an upper bound. Similarly, we do
-  not know a priori how many of the dimensions in the input list of averaging 
-  dimensions (dim) actually occur in the current variable, so we do not know
-  dmn_avg_nbr, but nbr_dim is an upper bound on it. */
+     in the variable). We do not know a priori how many dimensions remain in the 
+     output (averaged) variable, but dmn_var_nbr is an upper bound. Similarly, we do
+     not know a priori how many of the dimensions in the input list of averaging 
+     dimensions (dim) actually occur in the current variable, so we do not know
+     dmn_avg_nbr, but nbr_dim is an upper bound on it. */
   dmn_var_nbr=var->nbr_dim;
   dmn_fix_nbr=0;
   dmn_avg_nbr=0;
@@ -119,13 +119,13 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   } /* end if */
 
   /* Use dmn_rdd_nbr rather than dmn_fix_nbr for dmn_fix memory management
-  When flg_rdd is true, than malloc() and reallloc() will create/leave enough
-  room in dmn_fix arrays to ultimately hold all dmn_rdd data
-  However, dmn_fix_nbr remains same in flg_rdd and !flg_rdd cases
-  Hence loops and averaging algorithm itself need not be re-coded
-  Reconcile contents of dmn_fix structures with dengenerate dimensions at end */
+     When flg_rdd is true, than malloc() and reallloc() will create/leave enough
+     room in dmn_fix arrays to ultimately hold all dmn_rdd data
+     However, dmn_fix_nbr remains same in flg_rdd and !flg_rdd cases
+     Hence loops and averaging algorithm itself need not be re-coded
+     Reconcile contents of dmn_fix structures with dengenerate dimensions at end */
   dmn_rdd_nbr=flg_rdd ? dmn_var_nbr : dmn_fix_nbr;
-
+  
   /* Free extra list space */
   dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,dmn_rdd_nbr*sizeof(dmn_sct *));
   dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,dmn_avg_nbr*sizeof(dmn_sct *));
@@ -169,8 +169,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
 
   if(avg_sz == 1L){
     /* If averaging block size is 1L, input and output value arrays are identical 
-    var->val was copied to fix->val by nco_var_dpl() at beginning of routine
-    Only one task remains: to set fix->tally appropriately */
+       var->val was copied to fix->val by nco_var_dpl() at beginning of routine
+       Only one task remains: to set fix->tally appropriately */
     long *fix_tally;
 
     fix_tally=fix->tally;
@@ -195,8 +195,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   } /* end if avg_sz == 1L */
 
   /* Distribute all elements of input hyperslab into averaging block in avg_val
-  Each block contains avg_sz elements in contiguous buffer 
-  Reduction step then "reduces" each block into single output element */
+     Each block contains avg_sz elements in contiguous buffer 
+     Reduction step then "reduces" each block into single output element */
   if(avg_sz != 1L){
     ptr_unn avg_val;
 
@@ -204,8 +204,8 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     var_sz=var->sz;
 
     /* Value buffer of size var_sz is currently duplicate of input values
-    MRV algorithm uses these values without re-arranging
-    General collection algorithm overwrites avg_val with averaging blocks */
+       MRV algorithm uses these values without re-arranging
+       General collection algorithm overwrites avg_val with averaging blocks */
     avg_val=fix->val;
     /* Create new value buffer for output (averaged) size */
     fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
@@ -215,15 +215,15 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     (void)nco_var_zero(fix->type,fix_sz,fix->val);
 
     /* Complex expensive collection step for creating averaging blocks works 
-    in all cases though is unnecessary in one important case.
-    No re-arrangement is necessary when averaging dimensions are most rapidly varying 
-    (MRV) dimensions because original variable is stored in averaging block order.
-    Averaging dimensions are MRV dimensions iff dmn_fix_nbr fixed dimensions are 
-    one-to-one with first dmn_fix_nbr input dimensions. 
-    Alternatively, could compare dmn_avg_nbr averaging dimensions to last 
-    dmn_avg_nbr dimensions of input variable.
-    However, averaging dimensions may appear in any order so it is more
-    straightforward to compare fixed dimensions to LRV input dimensions. */
+       in all cases though is unnecessary in one important case.
+       No re-arrangement is necessary when averaging dimensions are most rapidly varying 
+       (MRV) dimensions because original variable is stored in averaging block order.
+       Averaging dimensions are MRV dimensions iff dmn_fix_nbr fixed dimensions are 
+       one-to-one with first dmn_fix_nbr input dimensions. 
+       Alternatively, could compare dmn_avg_nbr averaging dimensions to last 
+       dmn_avg_nbr dimensions of input variable.
+       However, averaging dimensions may appear in any order so it is more
+       straightforward to compare fixed dimensions to LRV input dimensions. */
     for(idx=0;idx<dmn_fix_nbr;idx++) 
       if(idx_fix_var[idx] != idx) break;
     if(idx == dmn_fix_nbr){
@@ -232,9 +232,9 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
     } /* idx != dmn_fix_nbr */
 
     /* MRV algorithm simply skips this collection step 
-    Some DDRA benchmarks need to know cost of collection
-    Always invoke collection step by uncommenting following line: */
-    /*    AVG_DMN_ARE_MRV=False;*/
+       Some DDRA benchmarks need to know cost of collection
+       Always invoke collection step by uncommenting following line: */
+    /* AVG_DMN_ARE_MRV=False;*/
     if(!AVG_DMN_ARE_MRV){
       /* Dreaded, expensive collection algorithm sorts input into averaging blocks */
       char *avg_cp;
@@ -280,16 +280,16 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
       for(var_lmn=0;var_lmn<var_sz;var_lmn++){
         /* dmn_ss are corresponding indices (subscripts) into N-D array */
         /* Operations: 1 modulo, 1 pointer offset, 1 user memory fetch
-        Repetitions: \lmnnbr
-        Total Counts: \rthnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
-        NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
+	   Repetitions: \lmnnbr
+	   Total Counts: \rthnbr=2\lmnnbr, \mmrusrnbr=\lmnnbr
+	   NB: LHS assumed compact and cached, counted RHS offsets and fetches only */
         dmn_ss[dmn_var_nbr_m1]=var_lmn%var_cnt[dmn_var_nbr_m1];
         for(idx=0;idx<dmn_var_nbr_m1;idx++){
           /* Operations: 1 divide, 1 modulo, 2 pointer offset, 2 user memory fetch
-          Repetitions: \lmnnbr(\dmnnbr-1)
-          Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
-          NB: LHS assumed compact and cached, counted RHS offsets and fetches only
-          NB: Neglected loop arithmetic/compare */
+	     Repetitions: \lmnnbr(\dmnnbr-1)
+	     Counts: \rthnbr=4\lmnnbr(\dmnnbr-1), \mmrusrnbr=2\lmnnbr(\dmnnbr-1)
+	     NB: LHS assumed compact and cached, counted RHS offsets and fetches only
+	     NB: Neglected loop arithmetic/compare */
           dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
           dmn_ss[idx]%=var_cnt[idx];
         } /* end loop over dimensions */
@@ -297,30 +297,30 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
         /* Map variable's N-D array indices into a 1-D index into averaged data */
         fix_lmn=0L;
         /* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
-        Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
-        Counts: \rthnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
+	   Repetitions: \lmnnbr(\dmnnbr-\avgnbr)
+	   Counts: \rthnbr=5\lmnnbr(\dmnnbr-\avgnbr), \mmrusrnbr=3\lmnnbr(\dmnnbr-\avgnbr) */
         for(idx=0;idx<dmn_fix_nbr;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
 
         /* Map N-D array indices into 1-D offset from group offset */
         avg_lmn=0L;
         /* Operations: 1 add, 1 multiply, 3 pointer offset, 3 user memory fetch
-        Repetitions: \lmnnbr\avgnbr
-        Counts: \rthnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
+	   Repetitions: \lmnnbr\avgnbr
+	   Counts: \rthnbr=5\lmnnbr\avgnbr, \mmrusrnbr=3\lmnnbr\avgnbr */
         for(idx=0;idx<dmn_avg_nbr;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
 
         /* Copy current element in input array into its slot in sorted avg_val */
         /* Operations: 3 add, 3 multiply, 0 pointer offset, 1 system memory copy
-        Repetitions: \lmnnbr
-        Counts: \rthnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
+	   Repetitions: \lmnnbr
+	   Counts: \rthnbr=6\lmnnbr, \mmrusrnbr=0, \mmrsysnbr=1 */
         (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);
       } /* end loop over var_lmn */
     } /* AVG_DMN_ARE_MRV */
 
     /* Input data are now sorted and stored (in avg_val) in blocks (of length avg_sz)
-    in same order as blocks' average values will appear in output buffer. 
-    Averaging routines can take advantage of this by casting avg_val to 
-    two dimensional variable and averaging over inner dimension. 
-    nco_var_avg_rdc_*() sets tally array */
+       in same order as blocks' average values will appear in output buffer. 
+       Averaging routines can take advantage of this by casting avg_val to 
+       two dimensional variable and averaging over inner dimension. 
+       nco_var_avg_rdc_*() sets tally array */
     switch(nco_op_typ){
     case nco_op_max:
       (void)nco_var_avg_rdc_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
@@ -346,7 +346,7 @@ nco_var_avg /* [fnc] Reduce given variable over specified dimensions */
   /* Retain degenerate dimensions? */
   if(flg_rdd){
     /* Simplest way to retain degenerate dimensions is average over them,
-    then insert degenerate dimensions back into list at end */
+       then insert degenerate dimensions back into list at end */
 
     /* Get rid of averaged dimensions */
     fix->nbr_dim=dmn_rdd_nbr;

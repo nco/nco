@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.75 2014-02-07 05:36:15 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.76 2014-02-07 17:44:47 zender Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -257,40 +257,36 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
   rcd=0*(nbr_dim+(int)strlen(fnc_nm)+out_id+sizeof(var)+nbr_var+sizeof(dim)+nco_op_typ);
 
-  /*
-  cell_methods attribute values and description
-
-  point	: The data values are representative of points in space or time (instantaneous). 
-  sum	  : The data values are representative of a sum or accumulation over the cell. 
-  maximum	: Maximum
-  median	: Median
-  mid_range	: Average of maximum and minimum
-  minimum	: Minimum
-  mean	: Mean (average value)
-  mode	: Mode (most common value)
-  range	: Absolute difference between maximum and minimum
-  standard_deviation : Standard deviation
-  variance	: Variance
-
-  ncwa operation types
-
-  avg Mean value
-  sqravg Square of the mean
-  avgsqr Mean of sum of squares
-  max Maximium value
-  min Minimium value
-  rms Root-mean-square (normalized by N)
-  rmssdn Root-mean square (normalized by N-1)
-  sqrt Square root of the mean
-  ttl Sum of values
-
-  */
-
+  /* cell_methods attribute values and description
+     
+     point	: The data values are representative of points in space or time (instantaneous). 
+     sum	  : The data values are representative of a sum or accumulation over the cell. 
+     maximum	: Maximum
+     median	: Median
+     mid_range	: Average of maximum and minimum
+     minimum	: Minimum
+     mean	: Mean (average value)
+     mode	: Mode (most common value)
+     range	: Absolute difference between maximum and minimum
+     standard_deviation : Standard deviation
+     variance	: Variance
+     
+     NCO operation types:
+     avg Mean value
+     sqravg Square of the mean
+     avgsqr Mean of sum of squares
+     max Maximium value
+     min Minimium value
+     rms Root-mean-square (normalized by N)
+     rmssdn Root-mean square (normalized by N-1)
+     sqrt Square root of the mean
+     ttl Sum of values */
+  
   /* Initialize common members */
   aed.att_nm=strdup("cell_methods");
   aed.var_nm=NULL;
   aed.type=NC_CHAR;
-
+  
   /* Process all variables */
   for(int idx_var=0;idx_var<nbr_var;idx_var++){ 
     char *grp_out_fll=NULL; /* [sng] Group name */
@@ -324,10 +320,10 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           rcd=nco_inq_att_flg(grp_out_id,var_out_id,"cell_methods",&att_typ,&att_sz);
 
           /* Set "exists" flag */
-          if (rcd == NC_NOERR) att_xst=True; else att_xst=False;
+          if(rcd == NC_NOERR) att_xst=True; else att_xst=False;
 
           /* Set attribute mode (create or append). If it exists, append, else create */
-          if (att_xst == True) aed.mode=aed_append; else aed.mode=aed_create;
+          if(att_xst == True) aed.mode=aed_append; else aed.mode=aed_create;
 
           /* Initialize values */
           aed.val.cp=NULL;
@@ -336,8 +332,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           aed.sz=-1L;
           aed.id=-1;
 
-          switch (nco_op_typ)
-          {
+          switch(nco_op_typ){
+	    /* Next four operations are defined in CF Conventions */
           case nco_op_avg:               /* nco_op_avg,  Average */
             strcpy(att_op,"mean");  
             break;
@@ -350,6 +346,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           case nco_op_ttl:               /* nco_op_ttl,  Linear sum */
             strcpy(att_op,"sum"); 
             break;
+	    /* Remaining operations are supported by NCO but are not in CF Conventions */
           case nco_op_sqravg:            /* nco_op_sqravg,  Square of mean */          
             strcpy(att_op,"sqravg"); 
             break;
@@ -366,28 +363,24 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
             strcpy(att_op,"rmssdn"); 
             break;
           case nco_op_nil:               /* nco_op_nil  Nil or undefined operation type */    
-
-            if(nco_dbg_lvl_get() >= nco_dbg_var) 
-              (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Cell method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,
-              var_trv->nm_fll,nco_op_typ);
-
+            if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s variable <%s> Cell method not implemented for operation %d\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,nco_op_typ);
             continue;
           } /* End switch */
 
           /* Build attribute and write */
           
-          /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method". */
+          /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method" */
 
           /* Concatenate attribute parts (e.g "time: mean" */
           aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen(att_op)+1L;
 
           /* Append mode : add a space */
-          if (aed.mode == aed_append) aed.sz+=1;
+          if(aed.mode == aed_append) aed.sz+=1;
 
           att_val=(char *)nco_malloc(aed.sz);
 
           /* Append mode : add a space */
-          if (aed.mode == aed_append){
+          if(aed.mode == aed_append){
             strcpy(att_val," ");
             strcat(att_val,dim[idx_dmn]->nm);
           }else{ 
@@ -404,10 +397,9 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
           /* Edit attribute */
           (void)nco_aed_prc(grp_out_id,var_out_id,aed);
 
-          /* Delete currente value */
-          if (aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
+          /* Delete current value */
+          if(aed.val.cp) aed.val.cp=(char *)nco_free(aed.val.cp);
           aed.sz=-1L;
-       
 
         } /*  Match name */
       } /* Loop dimensions */

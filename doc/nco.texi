@@ -7,7 +7,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.958 2014-02-05 21:20:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.959 2014-02-07 17:44:47 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -15791,9 +15791,9 @@ result for each.
 
 @cindex degenerate dimension
 Averaged dimensions are, by default, eliminated as dimensions.
-Their corresponding coordinates, if any, are output as scalars.
-The @samp{-b} switch 
-(and its long option equivalents @samp{--rdd} and
+Their corresponding coordinates, if any, are output as scalar
+variables. 
+The @samp{-b} switch (and its long option equivalents @samp{--rdd} and 
 @samp{--retain-degenerate-dimensions}) causes @command{ncwa} to retain
 averaged dimensions as degenerate (@w{size 1}) dimensions.
 This maintains the association between a dimension (or coordinate) and
@@ -15873,7 +15873,7 @@ of the hyperslab.
 Option @samp{-I} overrides this default behavior and causes
 @command{ncwa} not to weight or mask coordinate variables
 @footnote{The default behavior of (@samp{-I}) changed on
-1998/12/01---before this date the default was not to weight or mask
+19981201---before this date the default was not to weight or mask
 coordinate variables.}.
 In the above case, this causes the value of @code{latitude} in the
 @var{output-file} to @w{be 45.0}, an appealing result.
@@ -16076,7 +16076,7 @@ As explained in @xref{Operation Types}, @command{ncwa}
 @emph{always averages} coordinate variables regardless of the arithmetic 
 operation type performed on the non-coordinate variables. 
 The single exception is shown in the above example.
-The @samp{-N} switch turns off normalization so variable which are to be
+The @samp{-N} switch turns off normalization so variables which are to be
 averaged, including coordinate variables, are not normalized.
 This is equivalent to summation or integration.
 @end ignore

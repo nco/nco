@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.401 2014-02-05 23:27:26 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.402 2014-02-07 17:44:47 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.401 2014-02-05 23:27:26 pvicente Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.401 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.402 2014-02-07 17:44:47 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.402 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -879,7 +879,7 @@ main(int argc,char **argv)
       /* Check weight found for this variable, using wgt */
       if(wgt && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
         /* fxm: nco_var_cnf_dmn() has bug where it does not allocate tally array
-        for weights that do already conform to var_prc. TODO #114. */
+	   for weights that do already conform to var_prc. TODO #114. */
         wgt_out=nco_var_cnf_dmn(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
         if(DO_CONFORM_WGT){
           wgt_out=nco_var_cnf_typ(var_prc[idx]->type,wgt_out);
@@ -892,7 +892,7 @@ main(int argc,char **argv)
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
       /* 20050516: fxm: destruction of var_prc_out in nco_var_avg() leaves dangling pointers in var_out? */
       /* Reduce variable over specified dimensions (tally array is set here)
-      NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
+	 NB: var_prc_out[idx] is new, so corresponding var_out[idx] is dangling */
       var_prc_out[idx]=nco_var_avg(var_prc_out[idx],dmn_avg,dmn_avg_nbr,nco_op_typ,flg_rdd,&ddra_info);
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	 Denominator is also tricky due to sundry normalization options
@@ -975,9 +975,9 @@ main(int argc,char **argv)
             (nco_op_typ != nco_op_min) && /* ...operation is not min() and... */
             (nco_op_typ != nco_op_max) && /* ...operation is not max() and... */
             (nco_op_typ != nco_op_ttl || /* ...operation is not ttl() or... */
-            var_prc[idx]->is_crd_var) /* ...variable is a coordinate */
+	     var_prc[idx]->is_crd_var) /* ...variable is a coordinate */
             ){ /* Divide numerator by masked, averaged, weights */
-              (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
+	    (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
           } /* endif */
           /* Free wgt_avg, but keep wgt_out, after each use */
           if(wgt_avg) wgt_avg=nco_var_free(wgt_avg);
