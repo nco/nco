@@ -19929,7 +19929,7 @@ $as_echo "#define ENABLE_DEBUG_CUSTOM 1" >>confdefs.h
 
     if (test "x${GCC}" = 'xyes'); then
 	CC="${CC} ${GCC_CMD_ARGS}"
-        GCC_CUSTOM_FLAGS='-g -Wall -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-prototypes -fno-common'
+        GCC_CUSTOM_FLAGS='-g -Wall -Wuninitialized -Wmaybe-uninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-prototypes -fno-common'
 	CFLAGS="${GCC_CUSTOM_FLAGS} ${OPENMP_CFLAGS}"
 	if (test "x${CXX}" = 'xg++' && test "x${GXX}" = 'xyes'); then
 	    CXXFLAGS="${GCC_CUSTOM_FLAGS}"

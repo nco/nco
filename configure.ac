@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.36 2014-02-05 21:17:07 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.37 2014-02-07 18:08:12 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -827,7 +827,7 @@ if test "${enable_debug_custom}" = 'yes'; then
     AC_DEFINE(ENABLE_DEBUG_CUSTOM,1,[Custom debugging: Pedantic, bounds checking (slowest execution)])
     if (test "x${GCC}" = 'xyes'); then
 	CC="${CC} ${GCC_CMD_ARGS}"
-        GCC_CUSTOM_FLAGS='-g -Wall -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-prototypes -fno-common'
+        GCC_CUSTOM_FLAGS='-g -Wall -Wuninitialized -Wmaybe-uninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-prototypes -fno-common'
 	CFLAGS="${GCC_CUSTOM_FLAGS} ${OPENMP_CFLAGS}"
 	if (test "x${CXX}" = 'xg++' && test "x${GXX}" = 'xyes'); then
 	    CXXFLAGS="${GCC_CUSTOM_FLAGS}"
