@@ -2,7 +2,7 @@
 
 	* Add test data for cell_methods CF attribute convention
 
-	* ncks regression #58, #59 cell_methods CF attribute convention (average and maximum)
+	* ncks regression #58, #59, #60 cell_methods CF attribute convention (create average and maximum, append)
 
 2014-02-06  Charlie Zender  <zender@uci.edu>
 

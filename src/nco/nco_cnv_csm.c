@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.74 2014-02-06 23:48:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.75 2014-02-07 05:36:15 pvicente Exp $ */
 
 /* Purpose: CCM/CCSM/CF conventions */
 
@@ -376,14 +376,27 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
           /* Build attribute and write */
           
-          
+          /* Cell methods format: string attribute comprising a list of blank-separated words of the form "name: method". */
 
           /* Concatenate attribute parts (e.g "time: mean" */
           aed.sz=strlen(dim[idx_dmn]->nm)+strlen(": ")+strlen(att_op)+1L;
+
+          /* Append mode : add a space */
+          if (aed.mode == aed_append) aed.sz+=1;
+
           att_val=(char *)nco_malloc(aed.sz);
-          strcpy(att_val,dim[idx_dmn]->nm);
+
+          /* Append mode : add a space */
+          if (aed.mode == aed_append){
+            strcpy(att_val," ");
+            strcat(att_val,dim[idx_dmn]->nm);
+          }else{ 
+            strcpy(att_val,dim[idx_dmn]->nm);
+          } /* Create mode */
+
           strcat(att_val,": ");
           strcat(att_val,att_op);
+
           /* Type is NC_CHAR */
           aed.val.cp=(char *)strdup(att_val);
           att_val=(char *)nco_free(att_val);

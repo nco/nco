@@ -1,6 +1,6 @@
 package NCO_rgr;
 
-# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.435 2014-02-06 21:07:51 pvicente Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/NCO_rgr.pm,v 1.436 2014-02-07 05:36:15 pvicente Exp $
 
 # Purpose: All REGRESSION tests for NCO operators
 # BENCHMARKS are coded in "NCO_benchmarks.pm"
@@ -4827,7 +4827,7 @@ print "\n";
 #ncwa -O -y avg -a time301 -v time301 -C in_grp_3.nc out.nc	  
 #ncks -m out.nc
 
-    $dsc_sng="Cell methods (average) -y avg -a time -v time";
+    $dsc_sng="Cell methods (Create, average) -y avg -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y avg -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";
     $tst_cmd[2]="time301 attribute 1: cell_methods, size = 14 NC_CHAR, value = time301: mean";
@@ -4840,10 +4840,25 @@ print "\n";
 #ncwa -O -y max -a time301 -v time301 -C in_grp_3.nc out.nc	  
 #ncks -m out.nc	
 
-    $dsc_sng="Cell methods (maximum) -y max -a time -v time";
+    $dsc_sng="Cell methods (Create, maximum) -y max -a time -v time";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y max -a time301 -v time301 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -m %tmp_fl_00%";
     $tst_cmd[2]="time301 attribute 1: cell_methods, size = 17 NC_CHAR, value = time301: maximum";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array		
+
+	#time302 attribute 1: cell_methods, size = 31 NC_CHAR, value = time302: mean time302: maximum
+	
+#NEW 4.4.2	
+#ncwa #60
+#ncks -O -y max -a time302 -v time302 -C in_grp_3.nc out.nc
+#ncks -m out.nc	
+
+    $dsc_sng="Cell methods (Append) -y max -a time -v time";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -y max -a time302 -v time302 -C $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -m %tmp_fl_00%";
+    $tst_cmd[2]="time302 attribute 1: cell_methods, size = 31 NC_CHAR, value = time302: mean time302: maximum";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array			
