@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.455 2014-02-06 08:06:58 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.h,v 1.456 2014-02-07 23:48:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -772,6 +772,12 @@ void
 nco_prn_var                           /* [fnc] Print variable (debug only) */
 (const int nc_id,                     /* I [ID] netCDF file ID (Input or output file) */
  trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
+
+void
+nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_sct (name only) */
+(lmt_sct **lmt,                        /* I [lst] lmt_sct array  */
+ const int nbr_lmt,                    /* I [nbr] Size of lmt_sct array  */
+ dmn_sct ***dmn);                      /* O [sct] dmn_sct array  */
 
 
 #ifdef __cplusplus

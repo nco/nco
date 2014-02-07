@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1236 2014-02-07 21:52:00 pvicente Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1237 2014-02-07 23:48:45 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -9004,4 +9004,33 @@ nco_prn_var                           /* [fnc] Print variable (debug only) */
     } /* Is variable */
   } /* Loop table */
 } /* nco_prn_var() */
+
+
+void
+nco_dmn_lmt                            /* [fnc] Convert a lmt_sct array to dmn_sct (name only) */
+(lmt_sct **lmt,                        /* I [lst] lmt_sct array  */
+ const int nbr_lmt,                    /* I [nbr] Size of lmt_sct array  */
+ dmn_sct ***dmn)                       /* O [sct] dmn_sct array  */
+{
+  for(int idx=0;idx<nbr_lmt;idx++){
+    (*dmn)[idx]=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+    (*dmn)[idx]->nm=(char *)strdup(lmt[idx]->nm);
+    (*dmn)[idx]->id=-1;
+    (*dmn)[idx]->nc_id=-1;
+    (*dmn)[idx]->xrf=NULL;
+    (*dmn)[idx]->val.vp=NULL;
+    (*dmn)[idx]->is_rec_dmn=lmt[idx]->is_rec_dmn;
+    (*dmn)[idx]->cnt=-1;
+    (*dmn)[idx]->sz=-1;
+    (*dmn)[idx]->srt=-1;
+    (*dmn)[idx]->end=-1;
+    (*dmn)[idx]->srd=-1;
+    (*dmn)[idx]->cid=-1;
+    (*dmn)[idx]->cnk_sz=-1;
+    (*dmn)[idx]->type=(nc_type)-1;
+  }  
+
+  return;
+
+} /* end nco_dmn_lmt() */
 
