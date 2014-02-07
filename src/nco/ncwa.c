@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.403 2014-02-07 20:16:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.404 2014-02-07 20:27:43 pvicente Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -133,8 +133,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char trv_pth[]="/"; /* [sng] Root path of traversal tree */
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.403 2014-02-07 20:16:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.403 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.404 2014-02-07 20:27:43 pvicente Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.404 $";
   const char * const opt_sht_lst="3467Aa:B:bCcD:d:Fg:G:hIL:l:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
@@ -1154,7 +1154,7 @@ main(int argc,char **argv)
     var_prc=(var_sct **)nco_free(var_prc);
     var_fix=(var_sct **)nco_free(var_fix);
     var_out=(var_sct **)nco_free(var_out);
-    for(int idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
+    for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
     if (flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);
   } /* !flg_cln */
 
