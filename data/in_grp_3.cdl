@@ -665,7 +665,7 @@ group: g30 { //test cell_methods attribute
 	time301=unlimited;
 	variables:
 	float time301(time301);
-	time301:long_name = "time";
+	time301:long_name = "time301";
 	data:
 	time301=1,2;
    }// end g30g1
@@ -674,8 +674,8 @@ group: g30 { //test cell_methods attribute
 	time302=unlimited;
 	variables:
 	float time302(time302);
-	time302:long_name = "time";
-	time302:cell_methods = "time: mean";
+	time302:long_name = "time302";
+	time302:cell_methods = "time302: mean";
 	data:
 	time302=1,2;
    }// end g30g2
