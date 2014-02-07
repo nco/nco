@@ -1,3 +1,7 @@
+2014-02-06  Pedro Vicente  <pvicente@uci.edu>
+
+	* ncra regression #32 cell_methods CF attribute convention (create)
+
 2014-02-07  Charlie Zender  <zender@uci.edu>
 
 	* Change cell_methods to agree with actual method used for coordinates
@@ -10,7 +14,7 @@
 
 	* Add test data for cell_methods CF attribute convention
 
-	* ncks regression #58, #59, #60 cell_methods CF attribute convention (create average and maximum, append)
+	* ncwa regression #58, #59, #60 cell_methods CF attribute convention (create average and maximum, append)
 
 2014-02-06  Charlie Zender  <zender@uci.edu>
 

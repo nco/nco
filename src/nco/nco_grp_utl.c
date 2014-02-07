@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1235 2014-02-06 23:48:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_grp_utl.c,v 1.1236 2014-02-07 21:52:00 pvicente Exp $ */
 
 /* Purpose: Group utilities */
 
@@ -5958,9 +5958,6 @@ nco_dmn_lst_ass_var_trv                /* [fnc] Create list of all dimensions as
   long dmn_sz;      /* [nbr] Size of dimension  */  
 
   nco_bool dmn_flg; /* [flg] Is dimension already inserted in output array  */  
-
-  /* Used only by ncpdq , ncwa */
-  assert(nco_prg_id_get() == ncpdq || nco_prg_id_get() == ncwa);
 
   nbr_dmn=0;
 
