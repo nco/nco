@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.37 2014-02-07 18:08:12 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.ac,v 1.38 2014-02-07 20:21:20 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template autoconf uses to generate NCO configure script
 # Newer convention names this file configure.ac, rather than configure.in
@@ -782,7 +782,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # 20070310: Change to no-shadow so ncoLexer.cpp compiles
 
     GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
-    GCC_BASE_FLAGS='-Wall -Wuninitialized -Wmaybe-uninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
+    GCC_BASE_FLAGS='-Wall -Wuninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
     GCC_BASE_FLAGS="${GCC_BASE_FLAGS} ${OPENMP_CFLAGS}"
     GCC_CFLAGS="${GCC_BASE_FLAGS} -Wmissing-prototypes"
     GCC_CXXFLAGS="${GCC_BASE_FLAGS}"
@@ -796,7 +796,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # -Wall: Warn about common programming problems
 # -Wcast-align: Warn if casting pointer to type of different size
 # -Wcast-qual: Warn if const qualifier removed from pointer
-# -Wmaybe-uninitialized: Warn on uninitialized variables. GCC has many false negatives, clang is better?
+# -Wmaybe-uninitialized: Warn on uninitialized variables. GCC has many false negatives, clang is better? Available on GCC 4.8.2+. Not available on GCC 4.6.3-.
 # -Wmissing-prototypes: Warn if missing prototypes (C only, not C++)
 # -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
 # -Wshadow: Warn if local variable has same name as other local variable
@@ -827,7 +827,7 @@ if test "${enable_debug_custom}" = 'yes'; then
     AC_DEFINE(ENABLE_DEBUG_CUSTOM,1,[Custom debugging: Pedantic, bounds checking (slowest execution)])
     if (test "x${GCC}" = 'xyes'); then
 	CC="${CC} ${GCC_CMD_ARGS}"
-        GCC_CUSTOM_FLAGS='-g -Wall -Wuninitialized -Wmaybe-uninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-prototypes -fno-common'
+        GCC_CUSTOM_FLAGS='-g -Wall -Wuninitialized -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -Wmissing-prototypes -fno-common'
 	CFLAGS="${GCC_CUSTOM_FLAGS} ${OPENMP_CFLAGS}"
 	if (test "x${CXX}" = 'xg++' && test "x${GXX}" = 'xyes'); then
 	    CXXFLAGS="${GCC_CUSTOM_FLAGS}"

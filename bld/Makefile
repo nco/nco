@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.686 2014-02-05 21:17:07 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.687 2014-02-07 20:21:20 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make---AT&T Make chokes on GNU syntax
@@ -995,7 +995,7 @@ ifeq (${GCC_OR_CLANG},Y)
 # -Wcast-qual: Warn if const qualifier removed from pointer
 # -Werror: Consider warnings as errors
 # -Werror=format-security: Consider this specific warning as errors
-# -Wmaybe-uninitialized: Warn on uninitialized variables. GCC has many false negatives, clang is better?
+# -Wmaybe-uninitialized: Warn on uninitialized variables. GCC has many false negatives, clang is better? Available on GCC 4.8.2+. Not available on GCC 4.6.3-.
 # -Wmissing-prototypes: Warn if missing prototypes
 # -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
 # -Wshadow: Warn if local variable has same name as other local variable
